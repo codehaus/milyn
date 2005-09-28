@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<!-- root element -->
+<!ELEMENT cdres-list (cdres+) >
+
+<!ATTLIST cdres-list
+	default-uatarget	CDATA 	#IMPLIED
+	default-selector	CDATA 	#IMPLIED
+	default-path		CDATA 	#IMPLIED
+>
+
+<!ELEMENT cdres (param*) >
+<!ATTLIST cdres
+	uatarget	CDATA 	#IMPLIED
+	selector	CDATA 	#IMPLIED
+	path 		CDATA 	#IMPLIED
+>
+
+<!ELEMENT param (#PCDATA)>
+<!ATTLIST param
+	name 		CDATA 	#REQUIRED
+	type 		CDATA 	#IMPLIED
+>

@@ -1,0 +1,6 @@
+org.milyn.device
+org.milyn.device.ident
+org.milyn.device.profile
+org.milyn.device.request
+org.milyn.servlet
+org.milyn.tinak
