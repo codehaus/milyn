@@ -1,0 +1,115 @@
+<project name="Smooks Project Ant build script" default="build">
+	<description>Smooks Project</description>
+
+    <!-- Set the properties. -->
+	<property file="build.properties" />
+    <!-- The version should get set by the release target -->
+	<property name="smooks.version" value="x.x.x" />
+	<property name="build.dtd.package" value="${build.classes}/org/milyn/dtd" />
+	<property name="taglib.root" value="${build.root}/taglib" />
+	<property name="taglib.src" value="${taglib.root}/src" />
+	<property name="taglib.classes" value="${taglib.root}/classes" />
+    <property name="javadoc.output" value="${build.docs}/api" />
+    <property name="sample.cnn" value="${build.root}/webapps/cnn" />
+
+    <!-- Set the classpath. -->
+	<path id="build.classpath">
+		<pathelement location="${build.classes}"/>
+		<fileset dir="${build.lib}" includes="*.jar"/>
+		<fileset dir="${test.lib}" includes="*.jar"/>
+	</path>
+
+    <!-- TARGETS.... -->
+
+	<target name="build" depends="compile,jar,deploy" description="Build Smooks." />
+
+	<target name="clean" description="Clean.">
+		<delete failonerror="false">
+			<fileset dir="${build.classes}" />
+			<fileset dir="${mock.classes}" />
+			<fileset dir="${taglib.classes}" />
+			<fileset dir="${sample.cnn}/WEB-INF/classes" includes="**/*.class"/>
+			<fileset dir="${sample.cnn}/WEB-INF/lib" excludes="struts.jar"/>
+            <fileset dir="${build.lib}" includes="milyn-smooks*.jar"/>
+			<fileset dir="${javadoc.output}" />		
+	        <fileset dir="${deploy.lib}" />
+        </delete>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build.classes}" />
+		<mkdir dir="${taglib.classes}" />
+		<mkdir dir="${mock.classes}" />
+		<javac srcdir="${build.src}" destdir="${build.classes}" debug="on">
+			<classpath refid="build.classpath" />
+		</javac>
+		<javac srcdir="${mock.src}" destdir="${mock.classes}" debug="on">
+			<classpath refid="build.classpath" />
+		</javac>
+		<javac srcdir="${sample.cnn}/WEB-INF/classes" destdir="${sample.cnn}/WEB-INF/classes" debug="on">
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar">
+		<mkdir dir="${build.lib}" />
+		<mkdir dir="${build.dtd.package}" />
+		<copy todir="${build.dtd.package}">
+			<fileset dir="${build.root}/dtd"/>
+		</copy>
+        <jar destfile="${build.lib}/milyn-smooks-${smooks.version}.jar">
+			<fileset dir="${build.classes}" excludes="**/*UnitTest.class"/>
+			<fileset dir="${build.src}" excludes="**/*.java,**/package.html,**/overview.html"/>
+		</jar>
+        <jar destfile="${build.lib}/milyn-smooks-mocks-${smooks.version}.jar">
+            <fileset dir="${mock.classes}" excludes="**/*$UnitTest.class" />
+            <fileset dir="${mock.src}" includes="META-INF/**" />
+        </jar>
+    </target>
+
+	<target name="javadoc">
+		<mkdir dir="${javadoc.output}"/>
+		<javadoc classpathref="build.classpath" destdir="${javadoc.output}" failonerror="true" windowtitle="Milyn-Smooks" overview="${build.src}/overview.html" stylesheetfile="build/stylesheet.css">
+			<packageset dir="${build.src}"/>
+            <doctitle>
+                <![CDATA[<h1>Milyn-Smooks</h1>Version ${smooks.version}]]>
+            </doctitle>
+            <header>
+                <![CDATA[<a href="http://www.milyn.org/smooks/" target="top">Milyn-Smooks</a> Version ${smooks.version}]]>
+            </header>
+			<link offline="true" href="http://www.milyn.org/commons/" packagelistLoc="javadoc-package-lists/commons"/>
+			<link offline="true" href="http://www.milyn.org/tinak/api/" packagelistLoc="javadoc-package-lists/tinak"/>
+		</javadoc>
+	</target>
+
+	<target name="deploy">
+		<property name="unrepackedlibs" value="milyn-smooks-mocks-${smooks.version}*.jar,commons-logging*.jar,spring*.jar,xercesImpl.jar" />
+		
+		<mkdir dir="${deploy.lib}" />
+
+		<!-- Going to repackage all the dependencies into the smooks jar
+			in order to make the deployment a bit cleaner. -->
+		<delete dir="${deploy.lib}/repack" />
+		<mkdir dir="${deploy.lib}/repack" />
+		<unjar dest="${deploy.lib}/repack">
+			<fileset dir="${build.lib}" excludes="${unrepackedlibs},servlet.jar" />
+		</unjar>
+        <jar destfile="${deploy.lib}/milyn-smooks-${smooks.version}.jar">
+			<fileset dir="${deploy.lib}/repack" />
+		</jar>		
+		<delete dir="${deploy.lib}/repack" />
+		
+		<!-- Copy the other dependencies - the ones we're not repackaging into 
+			the smooks jar. -->
+		<copy todir="${deploy.lib}">
+            <fileset dir="${build.lib}" includes="${unrepackedlibs}"/>
+        </copy>
+        <delete>
+            <fileset dir="${build.lib}" includes="milyn-smooks*.jar"/>
+        </delete>
+		<copy todir="${sample.cnn}/WEB-INF/lib">
+			<fileset dir="${deploy.lib}" excludes="milyn-smooks-mocks-${smooks.version}.jar"/>
+		</copy>
+    </target>
+</project>
+
