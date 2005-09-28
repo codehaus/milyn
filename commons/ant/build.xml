@@ -1,0 +1,21 @@
+<project name="Milyn Commons Ant build script" default="build">
+	<description>Common</description>
+
+	<target name="build" description="Build Milyn Commons.">
+		<ant antfile="build/build.xml"/>
+	</target>
+
+	<target name="test" depends="build" description="Execute Tests.">
+		<ant antfile="test/test.xml" />
+	</target>
+
+	<target name="javadoc" description="Build Milyn Commons API Javadoc.">
+		<ant antfile="build/build.xml" target="javadoc"/>
+	</target>
+
+	<target name="clean" description="Clean.">
+		<ant antfile="build/build.xml" target="clean"/>
+		<ant antfile="test/test.xml" target="clean"/>
+	</target>
+</project>
+
