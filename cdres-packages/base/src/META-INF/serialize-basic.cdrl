@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" 
+			"http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	This CDRL defines basic serialisation units and maps them to their 
+	appropriate device profile.
+
+	NB: See device-profile.xml
+-->
+
+<cdres-list> 
+
+	<!--
+		Default serializer for all elements is the "DefaultSerializationUnit".
+	-->
+	<cdres 	uatarget="*" selector="*" 
+			path="org/milyn/delivery/serialize/DefaultSerializationUnit.class" />
+
+	<!--
+		Print elements that are marked "EMPTY" in their DTD in the <xx /> format.
+	-->
+	<cdres 	uatarget="*" selector="xmldef:elcspec:empty" 
+			path="org/milyn/cdres/serialize/EmptyElementSU.class" />
+		
+</cdres-list>
+
