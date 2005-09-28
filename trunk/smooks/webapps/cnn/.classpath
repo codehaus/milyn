@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry output="WEB-INF/classes" kind="src" path="WEB-INF/classes"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-logging1.0.4.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/dtdparser121.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/milyn-commons.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/milyn-smooks.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/milyn-smooks-mocks.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/milyn-tinak.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/milyn-tinak-taglib.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/nekohtml-0.9.4.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/spring-1.1.2-core.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/struts.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/xercesImpl-2.6.2.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/xml-apis-2.6.2.jar"/>
+	<classpathentry kind="lib" path="H:/jakarta-tomcat-5.0.28/common/lib/servlet-api.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

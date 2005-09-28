@@ -1,0 +1,40 @@
+<project name="Commons release." default="release">
+
+	<target name="release">
+		<property name="commons.ant" value="../commons/ant" />
+		<property file="${commons.ant}/build.properties" />
+		<property name="release.distrib" value="milyn-commons-${commons.version}" />
+
+		<!-- delete old releases, copy, jar and delete -->		
+		<antcall target="clean" />
+		<ant antfile="build.xml" target="clean" dir="${commons.ant}" />
+		<ant antfile="build.xml" target="build" dir="${commons.ant}" />
+		<ant antfile="build.xml" target="test" dir="${commons.ant}" />
+		<ant antfile="build.xml" target="javadoc" dir="${commons.ant}" />
+		<antcall target="deploy-javadocs" />
+
+		<mkdir dir="${release.distrib}"/>
+		<copy todir="${release.distrib}">
+			<fileset dir="../commons" excludes="*.*, **/classes/**, **/report/**" />
+		</copy>
+        <zip destfile="../${release.distrib}.zip" basedir="." includes="${release.distrib}/**"/>
+        <delete dir="${release.distrib}"/>
+    </target>
+	
+	<!-- Deploy the Tinak javadoc to the www.milyn.org pages -->
+	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Sourceforge Docs.">
+		<delete dir="../www.milyn.org/commons/" excludes="cvsempty" />
+		<copy todir="../www.milyn.org/commons/">
+			<fileset dir="../commons/docs/api/" includes="**/**"/>
+		</copy>
+    </target>
+
+	<target name="clean">
+		<delete failonerror="false">
+			<fileset file="../${release.distrib}.zip" />
+			<fileset dir="${release.distrib}" />
+		</delete>
+	</target>
+    
+</project>
+

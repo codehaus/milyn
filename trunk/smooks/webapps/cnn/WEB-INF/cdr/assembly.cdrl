@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" 
+			"http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	This CDRL defines Assembly Units and maps them to their 
+	appropriate device profile.
+
+	NB: See device-profile.xml
+-->
+
+<cdres-list default-uatarget="*"> 
+	<!--
+		Hook scontent elements to their request ElementList and then remove the 
+		element from the document.
+	-->
+	<cdres 	selector="scontent" 
+			path="org/milyn/cdres/assemble/AssemblyPhaseRequestAttacher.class" />
+	<cdres 	selector="scontent" 
+			path="org/milyn/cdres/assemble/RemoveElementAU.class" />
+	
+	<!--
+		Process sput elements.  Perform the inserts from the content referenced
+		by the scontent elements.
+	-->
+	<cdres 	selector="sput" 
+			path="org/milyn/smooks/assembly/SPutAU.class" />
+</cdres-list>
