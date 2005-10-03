@@ -23,8 +23,9 @@
 	
 	<!-- Deploy the Tinak javadoc to the www.milyn.org pages -->
 	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Sourceforge Docs.">
-		<delete dir="../www.milyn.org/commons/" excludes="cvsempty" />
-		<copy todir="../www.milyn.org/commons/">
+		<delete dir="${public_html}/javadoc/commons/" />
+		<mkdir dir="${public_html}/javadoc/commons/" />
+		<copy todir="${public_html}/javadoc/commons/">
 			<fileset dir="../commons/docs/api/" includes="**/**"/>
 		</copy>
     </target>
