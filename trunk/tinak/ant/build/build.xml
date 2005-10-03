@@ -114,9 +114,9 @@
                 <![CDATA[<h1>Milyn-Tinak</h1>Version ${tinak.version}]]>
             </doctitle>
             <header>
-                <![CDATA[<a href="http://www.milyn.org/tinak/" target="top">Milyn-Tinak</a> Version ${tinak.version}]]>
+                <![CDATA[<a href="http://milyn.codehaus.org/javadoc/tinak/" target="top">Milyn-Tinak</a> Version ${tinak.version}]]>
             </header>
-			<link offline="true" href="http://www.milyn.org/commons/" packagelistLoc="javadoc-package-lists/commons"/>
+			<link offline="true" href="http://milyn.codehaus.org/javadoc/commons/" packagelistLoc="javadoc-package-lists/commons"/>
 		</javadoc>
 	</target>
 	
