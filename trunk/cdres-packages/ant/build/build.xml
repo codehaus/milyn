@@ -39,6 +39,9 @@
 			<link offline="true" href="http://www.milyn.org/tinak/api/" packagelistLoc="javadoc-package-lists/tinak"/>
 			<link offline="true" href="http://www.milyn.org/smooks/api/" packagelistLoc="javadoc-package-lists/smooks"/>
 		</javadoc>
+		<copy todir="${module.api}">
+			<fileset dir="${module.src}" excludes="**/*.java" />
+		</copy>
         <jar destfile="${module.root}/${module.jar.prefix}-${module.version}-api.zip">
 			<fileset dir="${module.api}"/>
 		</jar>

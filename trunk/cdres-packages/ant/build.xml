@@ -14,18 +14,19 @@
 			<param name="module.root" value="../css" />
 			<param name="module.version" value="0.1" />
 		</antcall>
-		<antcall target="build-ie6" />
+		<antcall target="build-ie" />
 		<delete file="../dtd/dtd.cdrar" quiet="true"/>
         <jar destfile="../WEB-INF/cdr/dtd.cdrar">
 			<fileset dir="../dtd"/>
 		</jar>
+		<zip destfile="../WEB-INF.zip/" basedir="../" includes="WEB-INF/**"/>
 	</target>
 
-	<target name="build-ie6" description="Build IE6 CDRES modules.">
+	<target name="build-ie" description="Build IE CDRES modules.">
 		<antcall target="build">
-			<param name="module.name" value="Smooks IE6 Fixes Content Delivery Resource Module" />
-			<param name="module.jar.prefix" value="smooks-ie6-fixes" />
-			<param name="module.root" value="../ie6-fixes" />
+			<param name="module.name" value="Smooks IE-Fixes Content Delivery Resource Module" />
+			<param name="module.jar.prefix" value="smooks-ie-fixes" />
+			<param name="module.root" value="../ie-fixes" />
 			<param name="module.version" value="0.1" />
 		</antcall>
 	</target>
@@ -41,7 +42,12 @@
 			<param name="module.root" value="../css" />
 			<param name="module.version" value="0.1" />
 		</antcall>
-		<delete file="../WEB-INF/cdr/dtd.cdrar" quiet="true"/>
+		<antcall target="clean">
+			<param name="module.jar.prefix" value="smooks-ie-fixes" />
+			<param name="module.root" value="../ie-fixes" />
+			<param name="module.version" value="0.1" />
+		</antcall>
+		<delete dir="../WEB-INF/cdr/" includes="*.cdrar" quiet="true"/>
 	</target>
 
 	<target name="build">

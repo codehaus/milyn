@@ -9,6 +9,7 @@
 			<pathelement location="${module.src}"/>
 			<pathelement location="${module.test}/classes"/>
 			<pathelement location="${module.test}/src"/>
+			<fileset dir="../test-lib" includes="*.jar"/>
 		</path>
 		<delete dir="${module.test}/report" failonerror="false"/>
 		<mkdir dir="${module.test}/report" />
