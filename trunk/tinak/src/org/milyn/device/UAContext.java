@@ -16,6 +16,8 @@
 
 package org.milyn.device;
 
+import java.io.Serializable;
+
 import org.milyn.device.profile.ProfileSet;
 
 /**
@@ -25,7 +27,7 @@ import org.milyn.device.profile.ProfileSet;
  * the useragent ProfileSet.
  * @author tfennelly
  */
-public interface UAContext {
+public interface UAContext extends Serializable {
 	/**
 	 * Get the useragent common name.
 	 * @return The useragent common name.

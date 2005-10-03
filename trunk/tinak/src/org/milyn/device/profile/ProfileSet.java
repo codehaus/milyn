@@ -16,6 +16,8 @@
 
 package org.milyn.device.profile;
 
+import java.io.Serializable;
+
 /**
  * Device ProfileSet interface.
  * <p/>
@@ -23,7 +25,7 @@ package org.milyn.device.profile;
  * maintains a list of profiles for the device.
  * @author tfennelly
  */
-public interface ProfileSet {
+public interface ProfileSet extends Serializable {
 
 	/**
 	 * Is the associated device a member of the specified profile. 
