@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.crimson.tree.XmlDocument;
 import org.apache.xerces.parsers.AbstractSAXParser;
 import org.cyberneko.html.HTMLConfiguration;
+import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.w3c.dom.CDATASection;
@@ -45,24 +46,24 @@ import org.xml.sax.ext.LexicalHandler;
 public class Parser {
 
 	private static Log logger = LogFactory.getLog(Parser.class);
-	private ContentDeliveryConfig deliveryConfig;
+	private ContainerRequest request;
 	HashSet emptyElements = new HashSet();
 	
 	public Parser() {
 	}
 	
-	public Parser(ContentDeliveryConfig deliveryConfig) {
-		if(deliveryConfig == null) {
-			throw new IllegalArgumentException("null 'deliveryConfig' arg in method call.");
+	public Parser(ContainerRequest request) {
+		if(request == null) {
+			throw new IllegalArgumentException("null 'request' arg in method call.");
 		}
-		this.deliveryConfig = deliveryConfig;
+		this.request = request;
 		initialiseEmptyElements();
 	}
 	
 	private void initialiseEmptyElements() {
-		DTDObjectContainer dtd = deliveryConfig.getDTD();
+		DTDObjectContainer dtd = request.getDeliveryConfig().getDTD();
 		if(dtd != null) {
-			String[] emptyEls = deliveryConfig.getDTD().getEmptyElements();
+			String[] emptyEls = dtd.getEmptyElements();
 			
 			if(emptyEls != null && emptyEls.length > 0) {
 				for(int i = 0; i < emptyEls.length; i++) {
@@ -145,7 +146,7 @@ public class Parser {
 
 		private Document ownerDocument;
 		private Stack nodeStack = new Stack();
-		private boolean inEntity;
+		private boolean inEntity = false;
 		
 		public void startDocument() throws SAXException {
 			if(ownerDocument == null) {
@@ -185,12 +186,14 @@ public class Parser {
 			Element newElement = null;
 			int attsCount = atts.getLength();
 			String elName = localName.toLowerCase();
-
+			Node currentNode = (Node)nodeStack.peek();
+			
 			try {
-				Node currentNode = (Node)nodeStack.peek();
-				
 				newElement = ownerDocument.createElement(elName);
 				currentNode.appendChild(newElement);
+				if(!emptyElements.contains(elName)) {
+					nodeStack.push(newElement);
+				}
 			} catch(DOMException e) {
 				logger.error("DOMException creating start element: namespaceURI=" + namespaceURI + ", localName=" + elName, e);
 				throw e;
@@ -206,24 +209,46 @@ public class Parser {
 					throw e;
 				}
 			}
-			
-			// if it's not an empty, push it onto the stack.
-			if(!emptyElements.contains(elName)) {
-				nodeStack.push(newElement);
-			}
 		}
 
 		public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
 			String elName = localName.toLowerCase();
-			Node stackNode = (Node)nodeStack.pop();
-			
-			// Pop more off untill we arrive back at localName element.
-			while(stackNode != null) {
-				if(stackNode.getNodeType() == Node.ELEMENT_NODE && ((Element)stackNode).getTagName().equals(elName)) {
-					break;
+			if(!emptyElements.contains(elName)) {
+				int index = getIndex(elName);
+				if(index != -1) {
+					nodeStack.setSize(index);
+				} else {
+					logger.warn("Ignoring unexpected end [" + localName + "] element event. Request: [" + request.getRequestURI() + "] - document location: [" + getCurPath() + "]");
 				}
-				stackNode = (Node)nodeStack.pop();
 			}
+		}
+
+		private String getCurPath() {
+			StringBuffer path = new StringBuffer();
+			int stackSize = nodeStack.size();
+			
+			for(int i = 0; i < stackSize; i++) {
+				Node node = (Node)nodeStack.elementAt(i);
+				if(node.getNodeType() == Node.ELEMENT_NODE) {
+					path.append('/').append(((Element)node).getTagName());
+				}
+			}
+			
+			return path.toString();
+		}
+		
+		private int getIndex(String elName) {
+			for(int i = nodeStack.size() - 1; i >= 0; i--) {
+				Node node = (Node)nodeStack.elementAt(i);
+				if(node.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element)node;
+					if(element.getTagName().equals(elName)) {
+						return i;
+					}
+				}
+			}
+			
+			return -1;
 		}
 
 		public void characters(char[] ch, int start, int length) throws SAXException {
@@ -255,9 +280,10 @@ public class Parser {
 		}
 
 		public void startCDATA() throws SAXException {
-			Node currentNode = (Node)nodeStack.peek();
 			CDATASection newCDATASection = ownerDocument.createCDATASection("dummy");
+			Node currentNode;
 			
+			currentNode = (Node)nodeStack.peek();
 			currentNode.appendChild(newCDATASection);
 			nodeStack.push(newCDATASection);
 		}

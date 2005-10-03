@@ -78,7 +78,7 @@ import org.milyn.resource.ContainerResourceLocator;
  * 	<li>Deploy the Smooks dependencies into the Servlet container i.e. into <code>/WEB-INF/lib</code>.
  * 	The dependencies are located in the "lib" folder in the distribution.<br/>
  *  <i>Note: <u>Don't copy the servlet.jar file</u> to the target container</i>.<br/>
- *  <i>Note: The Smooks distribution contains the <a href="http://www.milyn.org/tinak/">Tinak</a> binaries so there's
+ *  <i>Note: The Smooks distribution contains the <a href="http://milyn.codehaus.org/downloads">Tinak</a> binaries so there's
  * 	no need to pre-install Tinak.</i>
  *  </li>
  * </ol>
