@@ -5,8 +5,8 @@
 	<classpathentry output="base/test/classes" kind="src" path="base/test/src"/>
 	<classpathentry output="css/classes" kind="src" path="css/src"/>
 	<classpathentry output="css/test/classes" kind="src" path="css/test/src"/>
-	<classpathentry output="ie6-fixes/classes" kind="src" path="ie6-fixes/src"/>
-	<classpathentry output="ie6-fixes/test/classes" kind="src" path="ie6-fixes/test/src"/>
+	<classpathentry output="ie-fixes/classes" kind="src" path="ie-fixes/src"/>
+	<classpathentry output="ie-fixes/test/classes" kind="src" path="ie-fixes/test/src"/>
 	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="lib" path="css-src"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/batik-css.jar"/>

@@ -18,12 +18,12 @@
 		<link>
 			<name>css-classes</name>
 			<type>2</type>
-			<location>H:/projects/milyn/cdres/css/classes</location>
+			<location>H:/projects/codehaus/cdres-packages/css/classes</location>
 		</link>
 		<link>
 			<name>css-src</name>
 			<type>2</type>
-			<location>H:/projects/milyn/cdres/css/src</location>
+			<location>H:/projects/codehaus/cdres-packages/css/src</location>
 		</link>
 	</linkedResources>
 </projectDescription>
