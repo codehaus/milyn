@@ -18,7 +18,7 @@
 				<jsp:include page="/html32-small-medium.nav.top.slinks" />
 			</slinks>
 			<snavsrc>
-				<sput idref="cnn.home:html/body/table[4]/tr[1]/td/table[1]//a" />
+				<sput idref='cnn.home:html/body//div[@class="cnnNavText"]/a' />
 			</snavsrc>
 			<snavblock>
 				<a>${text}</a>
@@ -59,7 +59,7 @@
 				<jsp:include page="/html32-small-medium.nav.bottom.slinks" />
 			</slinks>
 			<snavsrc>
-				<sput idref="cnn.home:html/body/table[4]/tr[1]/td/table[1]//a" />
+				<sput idref='cnn.home:html/body//div[@class="cnnNavText"]/a' />
 			</snavsrc>
 			<snavblock>
 				<a>${text}</a>

@@ -75,10 +75,10 @@
                 <![CDATA[<h1>Milyn-Smooks</h1>Version ${smooks.version}]]>
             </doctitle>
             <header>
-                <![CDATA[<a href="http://www.milyn.org/smooks/" target="top">Milyn-Smooks</a> Version ${smooks.version}]]>
+                <![CDATA[<a href="http://milyn.codehaus.org/javadoc/smooks/" target="top">Milyn-Smooks</a> Version ${smooks.version}]]>
             </header>
-			<link offline="true" href="http://www.milyn.org/commons/" packagelistLoc="javadoc-package-lists/commons"/>
-			<link offline="true" href="http://www.milyn.org/tinak/api/" packagelistLoc="javadoc-package-lists/tinak"/>
+			<link offline="true" href="http://milyn.codehaus.org/javadoc/commons/" packagelistLoc="javadoc-package-lists/commons"/>
+			<link offline="true" href="http://milyn.codehaus.org/javadoc/tinak/" packagelistLoc="javadoc-package-lists/tinak"/>
 		</javadoc>
 	</target>
 

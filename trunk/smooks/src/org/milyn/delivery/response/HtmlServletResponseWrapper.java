@@ -1,8 +1,11 @@
 package org.milyn.delivery.response;
 
+import java.io.ByteArrayOutputStream;
 import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -176,12 +179,13 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 	public void deliverResponse() throws IOException {
 		ServletOutputStream targetOutputStream;
 		OutputStreamWriter writer;
+		HtmlByteArrayOutputStream outStream = new HtmlByteArrayOutputStream(1024 * 10);
 		char[] content;
 
-		addResponseHeaders();
+		modifyResponseHeaders();
 		
 		targetOutputStream = getResponse().getOutputStream();
-		writer = new OutputStreamWriter(targetOutputStream, getCharacterEncoding());
+		writer = new OutputStreamWriter(outStream, getCharacterEncoding());
 		
 		content = charArrayWriter.toCharArray();
 		
@@ -192,6 +196,8 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 			deliveryNode = smooks.applyTransform(inputReader);
 			smooks.serailize(deliveryNode, writer);
 			writer.flush();
+			super.setIntHeader("Content-Length", outStream.size());
+			outStream.writeToTarget(targetOutputStream);
 		} catch (SmooksException e) {
 			IOException ioE = new IOException("Unable to deliver response.");
 			PrintWriter printWriter = new PrintWriter(writer);
@@ -215,11 +221,12 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 	}
 
 	/**
-	 * Apply the 'add' header actions.
+	 * Modify the response headers.
 	 */
-	private void addResponseHeaders() {
+	private void modifyResponseHeaders() {
 		ServletResponse response = getResponse();
 		
+		// Apply the 'add' header actions.
 		for(int i = 0; i < addHeaderActions.size(); i++) {
 			HeaderAction action = (HeaderAction)addHeaderActions.get(i);
 			
@@ -460,4 +467,12 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 		return "Top level response wrapper wrapping the Smooks HTML manipulated/transformed response in a Servlet environment.  Hooks the Smooks class into the Servlet container.";
 	}
 
+	private class HtmlByteArrayOutputStream extends ByteArrayOutputStream {
+		public HtmlByteArrayOutputStream(int size) {
+			super(size);
+		}
+		private void writeToTarget(OutputStream outStream) throws IOException {
+			outStream.write(buf, 0, count);
+		}
+	}
 }

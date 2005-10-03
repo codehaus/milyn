@@ -7,7 +7,7 @@
 				<jsp:include page="/wml.nav.template.slinks" />
 			</slinks>
 			<snavsrc>
-				<sput idref="cnn.home:html/body/table[4]/tr[1]/td/table[1]//a" />
+				<sput idref='cnn.home:html/body//div[@class="cnnNavText"]/a' />
 			</snavsrc>
 			<snavblock>
 				<do label="${text}"><go cache-control="${cache-control}" href="${href}" /></do>

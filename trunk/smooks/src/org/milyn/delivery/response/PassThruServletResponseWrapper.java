@@ -58,6 +58,7 @@ public class PassThruServletResponseWrapper extends ServletResponseWrapper {
 
 	public void deliverResponse() throws IOException {
 		// Leave to the HttpServletResponseWrapper
+		getResponse().getOutputStream().write(new String("<html><body>yo</body></html>").getBytes());
 	}
 
 	public void close() {

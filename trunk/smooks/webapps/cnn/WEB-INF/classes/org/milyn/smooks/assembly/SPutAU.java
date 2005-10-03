@@ -135,7 +135,7 @@ public class SPutAU extends AbstractAssemblyUnit {
 				        try {
 				        	// Parse the fragment and merge into the scontent.
 				        	// TODO: Encoding?? 
-				        	Parser parser = new Parser(request.getDeliveryConfig());
+				        	Parser parser = new Parser(request);
 				        	parser.append(new InputStreamReader(srcStream), scontent);
 						} catch (SAXException e) {
 							logger.error("SAXExcepting parsing scontent src [" + src + "]", e);

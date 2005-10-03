@@ -118,7 +118,7 @@ public class SmooksHtml {
 		} 
 		
 		try {
-			Parser parser = new Parser(deliveryConfig);
+			Parser parser = new Parser(containerRequest);
 			Document document = parser.parse(source); 
 			
 			deliveryNode = applyTransform(document);
