@@ -28,18 +28,21 @@
 	
 	<!-- Deploy the Tinak javadoc to the www.milyn.org pages -->
 	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Sourceforge Docs.">
-		<delete dir="../www.milyn.org/smooks/api" excludes="cvsempty" />
-		<copy todir="../www.milyn.org/smooks/">
-			<fileset dir="../smooks/docs/" includes="api/**"/>
+		<delete dir="${public_html}/javadoc/smooks/" />
+		<mkdir dir="${public_html}/javadoc/smooks/" />
+		<copy todir="${public_html}/javadoc/smooks/">
+			<fileset dir="../smooks/docs/api/" includes="**/**"/>
 		</copy>
     </target>
     
 	<target name="copy-delivery-units">
 		<taskdef name="java2html" classname="de.java2html.anttasks.Java2HtmlTask" classpath="lib/java2html.jar" />
-		<property name="destdir" value="../www.milyn.org/demo/" />
+		<property name="destdir" value="${public_html}/demo/" />
 
+		<delete dir="${destdir}" />
+		<mkdir dir="${destdir}" />
+		
 		<!-- Java2Html the Content Delivery Units -->		
-		<delete dir="${destdir}/org" />
 		<java2html srcdir="${smooks.webapps}/cnn/WEB-INF/classes" 
 		       destdir="${destdir}"
 		       includes="**/*.java"
@@ -48,7 +51,7 @@
 			overwrite="true"
 		/>
 		
-		<!-- Copy the .adf files -->		
+		<!-- Copy the .cdrl files -->		
 		<delete dir="${destdir}" includes="*.cdrl"/>
 		<copy todir="${destdir}">
 			<fileset dir="${smooks.webapps}/cnn/WEB-INF/cdr/" includes="*.cdrl" />

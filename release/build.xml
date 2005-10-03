@@ -1,19 +1,25 @@
 <project name="Milyn project subproject release." default="default">
 	<description>Milyn project subproject release.</description>
 
+	<property name="public_html" value="../public_html" />
+	
 	<target name="rel-commons" description="Milyn Commons release.">
+		<mkdir dir="${public_html}" />
 		<ant antfile="rel-commons.xml"/>
     </target>
 
 	<target name="rel-tinak" description="Milyn Tinak release.">
+		<mkdir dir="${public_html}" />
 		<ant antfile="rel-tinak.xml"/>
     </target>
 
 	<target name="rel-smooks" description="Milyn Smooks release.">
+		<mkdir dir="${public_html}" />
 		<ant antfile="rel-smooks.xml"/>
     </target>
 	
 	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Sourceforge Docs.">
+		<mkdir dir="${public_html}" />
 		<ant antfile="rel-commons.xml" target="deploy-javadocs"/>
 		<ant antfile="rel-tinak.xml" target="deploy-javadocs"/>
 		<ant antfile="rel-smooks.xml" target="deploy-javadocs"/>
