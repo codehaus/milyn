@@ -25,7 +25,7 @@ import org.milyn.cdr.CDRStore;
 import org.milyn.cdr.cdrar.CDRArchive;
 import org.milyn.cdr.cdrar.CDRArchiveEntry;
 import org.milyn.container.MockContainerContext;
-import org.milyn.test.FileSysUtils;
+import org.milyn.util.FileSysUtils;
 
 import junit.framework.TestCase;
 

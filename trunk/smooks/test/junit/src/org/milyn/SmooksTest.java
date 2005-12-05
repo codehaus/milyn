@@ -24,7 +24,6 @@ import org.milyn.container.MockContainerRequest;
 import org.milyn.delivery.SmooksHtml;
 import org.milyn.util.SmooksUtil;
 import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 
 import junit.framework.TestCase;
 

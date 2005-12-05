@@ -32,7 +32,7 @@ import org.milyn.cdr.CDRDef;
  * 		<li><b>Product</b>: {@link ContentDeliveryUnit}</li>
  * 		<li><b>ConcreteProduct</b>: Implementations of {@link ContentDeliveryUnit}</li>
  * </ul> 
- * The <b>ConcreteCreator</b> implemtations are loaded using {@link org.milyn.delivery.ContentDeliveryUnitCreatorFactory}. 
+ * The <b>ConcreteCreator</b> implemtations are loaded using the {@link org.milyn.ioc.BeanFactory#getContentDeliveryUnitCreator(String)} method. 
  * @see org.milyn.delivery.trans.TransUnit
  * @see org.milyn.delivery.trans.TransUnitPrototype
  * @author tfennelly

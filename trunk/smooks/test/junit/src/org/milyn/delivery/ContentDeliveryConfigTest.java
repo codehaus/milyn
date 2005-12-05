@@ -32,7 +32,7 @@ import org.milyn.delivery.serialize.SerializationUnit;
 import org.milyn.delivery.trans.TransSet;
 import org.milyn.delivery.trans.TransUnit;
 import org.milyn.device.MockUAContext;
-import org.milyn.test.FileSysUtils;
+import org.milyn.util.FileSysUtils;
 
 import junit.framework.TestCase;
 
@@ -57,7 +57,6 @@ public class ContentDeliveryConfigTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
 		containerRequest = new MockContainerRequest();
-		containerRequest.context.containerResourceLocator.setResource("/deliveryunit-config.xml", getClass().getResourceAsStream("/deliveryunit-config.xml"));
 		containerRequest.uaContext = new MockUAContext("deviceX");
 		loadTestCdrar();	
 	}
@@ -241,7 +240,6 @@ public class ContentDeliveryConfigTest extends TestCase {
 		MockContainerResourceLocator resourceLocator = new MockContainerResourceLocator();
 		
 		context.addProfiles(profiles);
-		resourceLocator.setResource("/deliveryunit-config.xml", getClass().getResourceAsStream("/deliveryunit-config.xml"));
 		return ContentDeliveryConfigImpl.getInstance(context, containerRequest.getContext());
 	}
 }

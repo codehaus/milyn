@@ -26,6 +26,7 @@ import org.milyn.cdr.cdrar.CDRArchiveEntry;
 import org.milyn.cdr.cdrar.CDRArchiveEntryNotFoundException;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.report.ReportSerializationUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
@@ -159,7 +160,11 @@ public class Serializer {
 		String publicId = docType.getPublicId();
 		String systemId = docType.getSystemId();
 		
-		writer.write("<!DOCTYPE ");
+		if(defaultSU instanceof ReportSerializationUnit) {
+			writer.write("&lt;!DOCTYPE ");
+		} else {
+			writer.write("<!DOCTYPE ");
+		}
 		writer.write(rootElement);
 		writer.write(' ');
 		if(publicId != null) {
@@ -172,7 +177,12 @@ public class Serializer {
 			writer.write(systemId);
 			writer.write('"');
 		}
-		writer.write('>');
+		if(defaultSU instanceof ReportSerializationUnit) {
+			writer.write("&gt;");
+		} else {
+			writer.write('>');
+		}
+		writer.write('\n');
 	}
 
 	/**

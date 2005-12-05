@@ -194,7 +194,7 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 			Node deliveryNode;
 			
 			deliveryNode = smooks.applyTransform(inputReader);
-			smooks.serailize(deliveryNode, writer);
+			smooks.serialize(deliveryNode, writer);
 			writer.flush();
 			super.setIntHeader("Content-Length", outStream.size());
 			outStream.writeToTarget(targetOutputStream);

@@ -47,7 +47,7 @@ import org.w3c.dom.NodeList;
  * This executes the <a href="delivery/doc-files/delivery-phases.html">3 phases of HTML content delivery</a>.
  * The <b>Assembly</b> and <b>Transformation</b> phases are executed by the 
  * {@link #applyTransform(Document)} method and the <b>Serialisation</b> phase
- * is performed by the {@link #serailize(Node, Writer)} method.
+ * is performed by the {@link #serialize(Node, Writer)} method.
  * <p/>
  * This class will be controlled by a container specific class.  At the moment Smooks is only
  * supported in the J2EE Servlet Container and this class is hooked into the process
@@ -111,12 +111,11 @@ public class SmooksHtml {
 	 * @throws SmooksException
 	 */
 	public Node applyTransform(Reader source) throws SmooksException {
-		Node deliveryNode;
+		Node deliveryNode;		
 		
 		if(source == null) {
 			throw new IllegalArgumentException("null 'source' arg passed in method call.");
 		} 
-		
 		try {
 			Parser parser = new Parser(containerRequest);
 			Document document = parser.parse(source); 
@@ -142,6 +141,11 @@ public class SmooksHtml {
 		TransSet globalTransSet;
 		Node deliveryNode;
 		Hashtable deviceAssemblyUnits = deliveryConfig.getAssemblyUnits();
+		
+		if(doc.getDocumentElement() == null) {
+			logger.warn("Empty Document [" + containerRequest.getRequestURI() + "].  Not performaing any transformation.");
+			return doc;
+		}
 		
 		// Skip the assembly phase if there are no configured assembly units.
 		if(!deviceAssemblyUnits.isEmpty()) {
@@ -286,9 +290,9 @@ public class SmooksHtml {
 	 * @param writer Output writer.
 	 * @throws CDRArchiveEntryNotFoundException DOM Serialiser exception.
 	 * @throws IOException Unable to write to output writer.
-	 * @throws SmooksException Unable to serialise do to bad Smooks environment.  Check cause.
+	 * @throws SmooksException Unable to serialise due to bad Smooks environment.  Check cause.
 	 */
-	public void serailize(Node node, Writer writer) throws IOException, SmooksException {
+	public void serialize(Node node, Writer writer) throws IOException, SmooksException {
 		Serializer serializer;
 		
 		if(node == null) {

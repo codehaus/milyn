@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 /**
  * W3C DOM utility methods.
@@ -241,5 +242,165 @@ public abstract class DomUtils {
 		}
 		
 		return attributeValue;
+	}
+
+	/**
+	 * Count the DOM nodes of the supplied type (nodeType) before supplied
+	 * node, not including the node itself.
+	 * <p/>
+	 * Counts the sibling nodes.
+	 * @param node Node whose siblings are to be counted.
+	 * @param nodeType The DOM {@link Node} type of the siblings to be counted. 
+	 * @return The number of siblings of the supplied type before the supplied node.
+	 */
+	public static int countNodesBefore(Node node, short nodeType) {
+		Node parent = node.getParentNode();
+		NodeList siblings = parent.getChildNodes();
+		int count = 0;
+		int siblingCount = siblings.getLength();
+		
+		for(int i = 0; i < siblingCount; i++) {
+			Node sibling = siblings.item(i);
+			
+			if(sibling == node) {
+				break;
+			}
+			if(sibling.getNodeType() == nodeType) {
+				count++;
+			}			
+		}
+		
+		return count;
+	}
+
+	/**
+	 * Count the DOM nodes before the supplied node, not including the node itself.
+	 * <p/>
+	 * Counts the sibling nodes.
+	 * @param node Node whose siblings are to be counted.
+	 * @return The number of siblings before the supplied node.
+	 */
+	public static int countNodesBefore(Node node) {
+		Node parent = node.getParentNode();
+		NodeList siblings = parent.getChildNodes();
+		int count = 0;
+		int siblingCount = siblings.getLength();
+		
+		for(int i = 0; i < siblingCount; i++) {
+			Node sibling = siblings.item(i);
+			
+			if(sibling == node) {
+				break;
+			}
+			count++;
+		}
+		
+		return count;
+	}
+
+
+	/**
+	 * Count the DOM element nodes before the supplied node, having the specified 
+	 * tag name, not including the node itself.
+	 * <p/>
+	 * Counts the sibling nodes.
+	 * @param node Node whose element siblings are to be counted.
+	 * @param tagName The tag name of the sibling elements to be counted. 
+	 * @return The number of siblings elements before the supplied node with the 
+	 * specified tag name.
+	 */
+	public static int countElementsBefore(Node node, String tagName) {
+		Node parent = node.getParentNode();
+		NodeList siblings = parent.getChildNodes();
+		int count = 0;
+		int siblingCount = siblings.getLength();
+		
+		for(int i = 0; i < siblingCount; i++) {
+			Node sibling = siblings.item(i);
+			
+			if(sibling == node) {
+				break;
+			}
+			if(sibling.getNodeType() == Node.ELEMENT_NODE && ((Element)sibling).getTagName().equals(tagName)) {
+				count++;
+			}			
+		}
+		
+		return count;
+	}
+
+	/**
+	 * Get all the text DOM sibling nodes before the supplied node and 
+	 * concatenate them together into a single String.
+	 * @param node Test node.
+	 * @return String containing the concatentated text.
+	 */
+	public static String getTextBefore(Node node) {
+		Node parent = node.getParentNode();
+		NodeList siblings = parent.getChildNodes();
+		StringBuffer text = new StringBuffer();
+		int siblingCount = siblings.getLength();
+		
+		for(int i = 0; i < siblingCount; i++) {
+			Node sibling = siblings.item(i);
+			
+			if(sibling == node) {
+				break;
+			}
+			if(sibling.getNodeType() == Node.TEXT_NODE) {
+				text.append(((Text)sibling).getData());
+			}			
+		}
+		
+		return text.toString();
+	}
+	
+	/**
+	 * Construct the XPath of the supplied DOM Node.
+	 * <p/>
+	 * Supports element, comment and cdata sections DOM Node types.
+	 * @param node DOM node for XPath generation.
+	 * @return XPath string representation of the supplied DOM Node.
+	 */
+	public static String getXPath(Node node) {
+		StringBuffer xpath = new StringBuffer();
+		Node parent = node.getParentNode();
+		
+		switch (node.getNodeType()) {
+		case Node.ELEMENT_NODE:
+			xpath.append(getXPathToken((Element)node));
+			break;
+		case Node.COMMENT_NODE:
+			int commentNum = DomUtils.countNodesBefore(node, Node.COMMENT_NODE);
+			xpath.append("/{COMMENT}[" + commentNum + 1 + "]");
+			break;
+		case Node.CDATA_SECTION_NODE:
+			int cdataNum = DomUtils.countNodesBefore(node, Node.CDATA_SECTION_NODE);
+			xpath.append("/{CDATA}[" + cdataNum + 1 + "]");
+			break;
+		default:
+			throw new UnsupportedOperationException("XPath generation for supplied DOM Node type not supported.  Only supports element, comment and cdata section DOM nodes.");
+		}
+
+		while(parent != null && parent.getNodeType() == Node.ELEMENT_NODE) {
+			xpath.insert(0, getXPathToken((Element)parent));			
+			parent = parent.getParentNode();
+		}
+
+		return xpath.toString();
+	}
+
+	private static String getXPathToken(Element element) {
+		String tagName = element.getTagName();
+		int count = DomUtils.countElementsBefore(element, tagName);
+		String xpathToken;
+		
+		if(count > 0) {
+			xpathToken = "/" + tagName + "[" + (count + 1) + "]";
+		} else {
+			xpathToken = "/" + tagName;
+		}
+		
+		return xpathToken;
 	}
 }

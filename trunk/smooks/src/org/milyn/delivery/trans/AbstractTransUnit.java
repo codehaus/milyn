@@ -29,8 +29,8 @@ public abstract class AbstractTransUnit implements TransUnit {
 	
 	/**
 	 * Public constructor.
-	 * @param unitDef Unit CDRDef.
+	 * @param cdrDef Unit configuration.
 	 */
-	public AbstractTransUnit(CDRDef unitDef) {
+	public AbstractTransUnit(CDRDef cdrDef) {
 	}
 }
