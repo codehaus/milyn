@@ -58,8 +58,6 @@ public class SerializerTest extends TestCase {
 		unitDef = new CDRDef("zzz", "deviceX", "....");
 		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("zzz", new TestSerializationUnit_EmptyEl(unitDef));
 		
-		containerRequest.context.containerResourceLocator.setResource("/deliveryunit-config.xml", getClass().getResourceAsStream("/deliveryunit-config.xml"));
-		
 		try {
 			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testmarkup.xxml"), false);
 			Serializer serializer = new Serializer(doc, containerRequest);

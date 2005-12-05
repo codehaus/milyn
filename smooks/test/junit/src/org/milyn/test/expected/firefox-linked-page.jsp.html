@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<title>Smooks Page/Site Report</title>
+		<link href="../style.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript">
+		<!--
+			function popup(mylink) {
+				var href;
+		
+				if (! window.focus) {
+					return true;
+				}
+		
+				if (typeof(mylink) == 'string') {
+				   href=mylink;
+				} else {
+					href=mylink.href;
+				}
+				
+				window.open(href, 'notes', 'width=600,height=200,scrollbars=no,screenX=200,screenY=200,left=200,top=200');
+				
+				return false;
+			}
+		//-->
+		</script>
+	</head>
+	<body>
+				<span class="pagelink"><a href="../index.html">Top...</a></span>
+		<span class="pagelink"><a href="index.html">This Browser...</a></span><div class='pagetitle'>http://x.com/a/b/linked-page.jsp</div>
+<html>
+	<body>
+		Element k should trigger a report entry
+		<nodereport href="node1_linked-page.jsp.html" onClick="return popup(this)" img-title="The following node has 1 report item.  Click for detail..."></nodereport><k></k>
+	</body>
+</html>	</body>
+</html>

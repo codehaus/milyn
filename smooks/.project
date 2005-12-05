@@ -16,9 +16,29 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>sreportclasses</name>
+			<type>2</type>
+			<location>H:/projects/codehaus/cdres-packages/smooks-report-0.1/classes</location>
+		</link>
+		<link>
 			<name>test-src</name>
 			<type>2</type>
-			<location>H:/projects/milyn/smooks/test/junit/src</location>
+			<location>H:/projects/codehaus/smooks/test/junit/src</location>
+		</link>
+		<link>
+			<name>smooksreportclasses</name>
+			<type>2</type>
+			<location>H:/projects/codehaus/cdres-packages/smooks-report-0.1/classes</location>
+		</link>
+		<link>
+			<name>smooksreport-classes</name>
+			<type>2</type>
+			<location>H:/projects/codehaus/cdres-packages/smooks-report-0.1/classes</location>
+		</link>
+		<link>
+			<name>smooks-src</name>
+			<type>2</type>
+			<location>H:/projects/codehaus/smooks/src</location>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 
@@ -177,6 +178,7 @@ public class CDRDef {
 	 * CDRDef parameters - String name and String value.
 	 */
 	private HashMap parameters;
+	private int parameterCount;
 	
 	/**
 	 * Public constructor.
@@ -245,10 +247,7 @@ public class CDRDef {
 	 * @param value Parameter value.
 	 */
 	public void setParameter(String name, String value) {
-		if(parameters == null) {
-			parameters = new LinkedHashMap();
-		}
-		parameters.put(name, new Parameter(null, value));
+		setParmeter(name, new Parameter(null, value));
 	}
 
 	/**
@@ -260,14 +259,33 @@ public class CDRDef {
 	 * @param value Parameter value.
 	 */
 	public void setParameter(String name, String type, String value) {
+		setParmeter(name, new Parameter(type, value));
+	}
+
+	private void setParmeter(String name, Parameter parameter) {
 		if(parameters == null) {
 			parameters = new LinkedHashMap();
 		}
-		parameters.put(name, new Parameter(type, value));
+		Object exists = parameters.get(name);
+		
+		if(exists == null) {
+			parameters.put(name, parameter);
+		} else if(exists instanceof Parameter) {
+			Vector paramList = new Vector();			
+			paramList.add(exists);
+			paramList.add(parameter);
+			parameters.put(name, paramList);
+		} else if(exists instanceof List) {
+			((List)exists).add(parameter);
+		}
+		parameterCount++;
 	}
 
 	/**
-	 * Get the named CDRDef parameter.
+	 * Get the named CDRDef {@link CDRDef.Parameter parameter}.
+	 * <p/>
+	 * If there is more than one of the named parameters defined, the first
+	 * defined value is returned.  
 	 * @param name Name of parameter to get. 
 	 * @return Parameter value, or null if not set.
 	 */
@@ -275,7 +293,38 @@ public class CDRDef {
 		if(parameters == null) {
 			return null;
 		}
-		return (Parameter)parameters.get(name);
+		Object parameter = parameters.get(name);
+		
+		if(parameter instanceof List) {
+			return (Parameter)((List)parameter).get(0);
+		} else if(parameter instanceof Parameter) {
+			return (Parameter)parameter;
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Get the named CDRDef {@link CDRDef.Parameter parameter} List.
+	 * @param name Name of parameter to get. 
+	 * @return {@link CDRDef.Parameter} value {@link List}, or null if not set.
+	 */
+	public List getParameters(String name) {
+		if(parameters == null) {
+			return null;
+		}
+		Object parameter = parameters.get(name);
+		
+		if(parameter instanceof List) {
+			return (List)parameter;
+		} else if(parameter instanceof Parameter) {
+			Vector paramList = new Vector();			
+			paramList.add(parameter);
+			parameters.put(name, paramList);
+			return paramList;
+		}
+		
+		return null;
 	}
 
 	/**
@@ -304,7 +353,7 @@ public class CDRDef {
 		if(parameters == null) {
 			return defaultVal;
 		}
-		parameter = (Parameter)parameters.get(name);
+		parameter = getParameter(name);
 		return (parameter != null?parameter.value:defaultVal);
 	}
 
@@ -341,10 +390,7 @@ public class CDRDef {
 	 * @return Number of parameters defined on this CDRDef.
 	 */
 	public int getParameterCount() {
-		if(parameters == null) {
-			return 0;
-		}
-		return parameters.size();
+		return parameterCount;
 	}
 
 	/**

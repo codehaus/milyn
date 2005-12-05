@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<cdres-list> 
+
+	<cdres uatarget="msie6" selector="xxx" path="org/milyn/cdres/trans/RemoveAttributeTU.class">
+		<param name="attributeName">attrib1</param>
+	</cdres>
+
+	<!-- Test configurations for the report generator. -->
+	<cdres uatarget="*" selector="a" path="org/milyn/report/AHrefRecorder.class" />
+	<cdres uatarget="msie6w" selector="g" path="org/milyn/report/testcdus/SimpleReportingUnit.class">
+		<param name="description">
+			The &lt;g&gt; element is not supported by the IE6 browsers on Windows.
+		</param>		
+		<param name="suggestion">
+			Replace the element with ???
+		</param>
+	</cdres>
+	<cdres uatarget="msie6w" selector="j" path="org/milyn/report/testcdus/SimpleReportingUnit.class">
+		<param name="description">
+			The location of this &lt;j&gt; element may cause problems for the
+			reportingtestclient browser. It can cause problem xyz...
+		</param>
+		
+		<param name="suggestion">
+			See &lt;a href="http://blah.com/jxyzreport.html"&gt;J-xyz report&lt;a&gt; on Blah.com.
+		</param>
+		<param name="suggestion">
+			Move the element to ???.
+		</param>
+		<param name="suggestion">
+			Replace the element with ???.
+		</param>
+	</cdres>
+	<cdres uatarget="firefox" selector="j" path="org/milyn/report/testcdus/SimpleReportingUnit.class">
+		<param name="description">
+			The &lt;j&gt; element not wrapped within element &lt;fff&gt; can result in problem ????.
+		</param>
+		
+		<param name="suggestion">
+			See &lt;a href="http://blah.com/jfffreport.html"&gt;J-fff report&lt;a&gt; on Blah.com.
+		</param>
+		<param name="suggestion">
+			Wrap the element in &lt;fff&gt;.
+		</param>
+		<param name="suggestion">
+			Replace the element with ???.
+		</param>
+	</cdres>
+	<cdres uatarget="msie6w,firefox" selector="k" path="org/milyn/report/testcdus/SimpleReportingUnit.class">
+		<param name="description">
+			The &lt;k&gt; element can cause text content to be rendered incorrectly on
+			some HTML browsers.
+		</param>
+		<param name="suggestion">
+			Set the ZZZ CSS property on the element.  This will only work if ....
+		</param>
+		<param name="suggestion">
+			Replace the element with ???.
+		</param>
+	</cdres>
+
+</cdres-list>

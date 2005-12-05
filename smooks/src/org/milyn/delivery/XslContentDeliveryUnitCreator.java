@@ -44,11 +44,6 @@ import org.w3c.dom.NodeList;
  * This Content Delivery Unit creator needs to be reviewed by someone that knows more about XSL etc.
  * Not convinced that it's implemented correctly.  Works, but?  Not even convinced that it makes sense!
  * May be dumped.
- * <p/>
- * This Creator is initialised by adding the following bean configuration to the
- * deliveryunit-config.xml file:
- * <pre>
- * 	&lt;bean id="xsl" class="org.milyn.delivery.XslContentDeliveryUnitCreator" singleton="true" /&gt;</pre>
  * 
  * @see JavaContentDeliveryUnitCreator 
  * @author tfennelly
@@ -60,24 +55,24 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 	 * <p/>
 	 * @see JavaContentDeliveryUnitCreator 
 	 */
-	public synchronized ContentDeliveryUnit create(CDRDef unitDef, CDRStore cdrarStore) throws InstantiationException {
+	public synchronized ContentDeliveryUnit create(CDRDef cdrDef, CDRStore cdrarStore) throws InstantiationException {
 		try {
 			byte[] xslBytes = null;
 
 			try {
 				// Try load it from the cdrars.
-				xslBytes = cdrarStore.getEntry(unitDef).getEntryBytes();
+				xslBytes = cdrarStore.getEntry(cdrDef).getEntryBytes();
 			} catch (CDRArchiveEntryNotFoundException e) {
 				// OK, try get the xsl file from the classpath.
-				xslBytes = StreamUtils.readStream(getClass().getResourceAsStream("/" + unitDef.getPath()));
+				xslBytes = StreamUtils.readStream(getClass().getResourceAsStream("/" + cdrDef.getPath()));
 			}
-			return new XslTransUnit(xslBytes, unitDef.getBoolParameter("visitBefore", false));
+			return new XslTransUnit(xslBytes, cdrDef.getBoolParameter("visitBefore", false));
 		} catch (TransformerConfigurationException e) {
-			InstantiationException instanceException = new InstantiationException("XSL TransUnit class resource [" + unitDef.getPath() + "] not loadable.  XSL resource invalid.");
+			InstantiationException instanceException = new InstantiationException("XSL TransUnit class resource [" + cdrDef.getPath() + "] not loadable.  XSL resource invalid.");
 			instanceException.initCause(e);
 			throw instanceException;
 		} catch (IOException e) {
-			InstantiationException instanceException = new InstantiationException("XSL TransUnit class resource [" + unitDef.getPath() + "] not loadable.  XSL resource not found.");
+			InstantiationException instanceException = new InstantiationException("XSL TransUnit class resource [" + cdrDef.getPath() + "] not loadable.  XSL resource not found.");
 			instanceException.initCause(e);
 			throw instanceException;
 		}

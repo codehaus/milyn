@@ -37,6 +37,7 @@ import org.milyn.delivery.trans.TransUnit;
 import org.milyn.device.UAContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
+import org.milyn.ioc.BeanFactory;
 import org.milyn.logging.SmooksLogger;
 
 
@@ -62,10 +63,6 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * XML selector content spec definition prefix
 	 */
 	private static final String ELCSPEC_PREFIX = "elcspec:";
-	/**
-	 * ContentDeliveryUnitCreator factory.
-	 */
-	private static ContentDeliveryUnitCreatorFactory cducFactory;
 	/**
 	 * Table of CDRDef instances keyed by selector value. Each table entry
 	 * contains a List of CDRDef instances.
@@ -121,11 +118,6 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 			throw new IllegalArgumentException("null 'containerContext' arg passed in method call.");
 		}
 
-		// Make sure the ContentDeliveryUnitCreatorFactory is initialised.
-		if(cducFactory == null) {
-			cducFactory = new ContentDeliveryUnitCreatorFactory(containerContext.getResourceLocator());
-		}
-		
 		// Get the delivery config table from container context.
 		configTable = (Hashtable)containerContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
 		if(configTable == null) {
@@ -410,7 +402,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				if(type == null || type.trim().equals("")) {
 					return;
 				}
-				creator = cducFactory.getInstance(type);
+				creator = BeanFactory.getContentDeliveryUnitCreator(type);
 			} catch (UnsupportedContentDeliveryUnitTypeException e) {
 				// Just ignore it - something else will use it
 				return;

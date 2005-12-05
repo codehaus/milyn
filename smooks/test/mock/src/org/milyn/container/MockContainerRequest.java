@@ -19,7 +19,6 @@ package org.milyn.container;
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.milyn.delivery.ContentDeliveryConfig;
@@ -27,6 +26,7 @@ import org.milyn.delivery.ElementList;
 import org.milyn.delivery.MockContentDeliveryConfig;
 import org.milyn.device.MockUAContext;
 import org.milyn.device.UAContext;
+import org.milyn.util.IteratorEnumeration;
 
 /**
  * 
@@ -143,19 +143,6 @@ public class MockContainerRequest implements ContainerRequest {
 		attributes.remove(name);
 	}
 	
-	private static class IteratorEnumeration implements Enumeration {
-		private Iterator iterator;
-		public IteratorEnumeration(Iterator iterator) {
-			this.iterator = iterator;
-		}		
-		public boolean hasMoreElements() {
-			return iterator.hasNext();
-		}
-		public Object nextElement() {
-			return iterator.next();
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.milyn.container.ContainerRequest#getElementList(java.lang.String)
 	 */

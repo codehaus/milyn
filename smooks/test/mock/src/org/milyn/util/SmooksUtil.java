@@ -81,7 +81,6 @@ public class SmooksUtil {
 		request.requestURI = URI.create("http://www.milyn.org");
 		request.uaContext = new MockUAContext(deviceName);
 		resourceLocator = new MockContainerResourceLocator();
-		resourceLocator.setResource("/deliveryunit-config.xml", MockContainerRequest.class.getResourceAsStream("/deliveryunit-config.xml"));
 		request.context = context;
 		request.context.containerResourceLocator = resourceLocator;
 		
@@ -89,7 +88,7 @@ public class SmooksUtil {
 			context.getCdrarStore().getCdrars();
 		}catch(IllegalStateException noCdrars) {
 			// Just add one to avoid state exceptions
-			addCDRDef("*", "*", "org/milyn/delivery/serialize/DefaultSerializationUnit.class", null);
+			addCDRDef("*", "*", "org/milyn/delivery/serialize/ReportSerializationUnit.class", null);
 		}
 
 		request.deliveryConfig = ContentDeliveryConfigImpl.getInstance(request.uaContext, context);

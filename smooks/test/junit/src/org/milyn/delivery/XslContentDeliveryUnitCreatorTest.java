@@ -88,7 +88,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
 			Writer writer = new OutputStreamWriter(output);
-			smooks.serailize(deliveryNode, writer);
+			smooks.serialize(deliveryNode, writer);
 			writer.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
