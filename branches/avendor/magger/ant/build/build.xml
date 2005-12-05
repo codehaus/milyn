@@ -1,0 +1,79 @@
+<project name="Magger Project Ant build script" default="build">
+	<description>Magger Project</description>
+
+    <!-- Set the properties. -->
+	<property file="build.properties" />
+    <!-- The version should get set by the release target -->
+	<property name="mock.src" value="${build.root}/test/mock/src" />
+	<property name="mock.classes" value="${build.root}/test/mock/classes" />
+    <property name="javadoc.output" value="${build.docs}/api" />
+
+    <!-- Set the classpath. -->
+	<path id="build.classpath">
+		<pathelement location="${build.classes}"/>
+		<fileset dir="${build.lib}" includes="*.jar"/>
+	</path>
+
+    <!-- TARGETS.... -->
+
+	<target name="build" depends="compile,jar,deploy" description="Build Magger." />
+
+	<target name="clean">
+		<delete dir="${build.classes}" />
+		<delete dir="${javadoc.output}" />
+		<delete dir="${mock.classes}" />
+		<delete dir="${deploy.lib}" />
+		<delete>
+			<fileset dir="${build.lib}" includes="/milyn-magger*.jar" />
+		</delete>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build.classes}" />
+		<mkdir dir="${mock.classes}" />
+		<javac srcdir="${build.src}" destdir="${build.classes}" debug="on">
+			<classpath refid="build.classpath" />
+		</javac>
+		<javac srcdir="${mock.src}" destdir="${mock.classes}" debug="on">
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar">
+		<mkdir dir="${build.lib}" />
+        <jar destfile="${build.lib}/milyn-magger-${module.version}.jar">
+			<fileset dir="${build.classes}" excludes="**/*UnitTest.class"/>
+			<fileset dir="${build.src}" excludes="**/*.java"/>
+		</jar>
+        <jar destfile="${build.lib}/milyn-magger-mocks-${module.version}.jar">
+            <fileset dir="${mock.classes}" excludes="**/*$UnitTest.class" />
+            <fileset dir="${mock.src}" includes="META-INF/**" />
+        </jar>
+    </target>
+
+	<target name="deploy">
+		<mkdir dir="${deploy.lib}" />
+        <copy todir="${deploy.lib}">
+            <fileset dir="${build.lib}" includes="milyn-magger*.jar"/>
+        </copy>
+        <delete>
+            <fileset dir="${build.lib}" includes="milyn-magger*.jar"/>
+        </delete>
+    </target>
+
+	<target name="javadoc">
+		<mkdir dir="${javadoc.output}"/>
+		<javadoc classpathref="build.classpath" destdir="${javadoc.output}" failonerror="true" windowtitle="Milyn-Magger" overview="${build.src}/overview.html" stylesheetfile="build/stylesheet.css">
+			<packageset dir="${build.src}" excludes="**/*UnitTest"/>
+            <doctitle>
+                <![CDATA[<h1>Milyn-Magger</h1>Version ${module.version}]]>
+            </doctitle>
+            <header>
+                <![CDATA[<a href="http://milyn.codehaus.org/javadoc/magger/" target="top">Milyn-Magger</a> Version ${module.version}]]>
+            </header>
+			<link offline="true" href="http://milyn.codehaus.org/javadoc/commons/" packagelistLoc="javadoc-package-lists/commons"/>
+		</javadoc>
+	</target>
+	
+</project>
+
