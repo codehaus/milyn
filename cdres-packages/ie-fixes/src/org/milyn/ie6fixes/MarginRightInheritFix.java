@@ -20,10 +20,10 @@ import java.util.HashSet;
 
 import org.apache.batik.css.engine.value.Value;
 import org.milyn.cdr.CDRDef;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.cdres.css.CssAccessor;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.trans.AbstractTransUnit;
-import org.milyn.param.ParameterAccessor;
 import org.w3c.dom.Element;
 
 /**
