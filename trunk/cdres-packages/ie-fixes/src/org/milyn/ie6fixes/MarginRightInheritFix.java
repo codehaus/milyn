@@ -18,10 +18,10 @@ package org.milyn.ie6fixes;
 
 import java.util.HashSet;
 
-import org.apache.batik.css.engine.value.Value;
 import org.milyn.cdr.CDRDef;
 import org.milyn.cdr.ParameterAccessor;
-import org.milyn.cdres.css.CssAccessor;
+import org.milyn.css.CssAccessor;
+import org.milyn.magger.CSSProperty;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.trans.AbstractTransUnit;
 import org.w3c.dom.Element;
@@ -90,7 +90,7 @@ public class MarginRightInheritFix extends AbstractTransUnit {
 		Element parent = null;
 		
 		while((parent = (Element)element.getParentNode()) != null) {
-			Value marginRight = cssAccessor.getPropertyValue(parent, "margin-right");
+			CSSProperty marginRight = cssAccessor.getProperty(parent, "margin-right");
 			if(marginRight != null) {
 				return true;
 			}

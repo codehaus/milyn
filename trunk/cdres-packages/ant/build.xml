@@ -8,13 +8,8 @@
 			<param name="module.root" value="../base" />
 			<param name="module.version" value="0.1" />
 		</antcall>
-		<antcall target="build">
-			<param name="module.name" value="Smooks CSS Content Delivery Resource Module" />
-			<param name="module.jar.prefix" value="smooks-css" />
-			<param name="module.root" value="../css" />
-			<param name="module.version" value="0.1" />
-		</antcall>
 		<antcall target="build-ie" />
+		
 		<delete file="../dtd/dtd.cdrar" quiet="true"/>
         <jar destfile="../WEB-INF/cdr/dtd.cdrar">
 			<fileset dir="../dtd"/>
@@ -35,11 +30,6 @@
 		<antcall target="clean">
 			<param name="module.jar.prefix" value="smooks-base" />
 			<param name="module.root" value="../base" />
-			<param name="module.version" value="0.1" />
-		</antcall>
-		<antcall target="clean">
-			<param name="module.jar.prefix" value="smooks-css" />
-			<param name="module.root" value="../css" />
 			<param name="module.version" value="0.1" />
 		</antcall>
 		<antcall target="clean">

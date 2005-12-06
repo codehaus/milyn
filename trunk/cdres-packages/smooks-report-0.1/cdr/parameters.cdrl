@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<cdres-list default-selector="device-parameters"> 
+
+	<cdres uatarget="msie6">
+		<param name="friendly-name">Internet Explorer 6</param>
+	</cdres>
+	<cdres uatarget="msie6w">
+		<param name="friendly-name">Internet Explorer 6 (Windows)</param>
+	</cdres>
+	<cdres uatarget="msie6m">
+		<param name="friendly-name">Internet Explorer 6 (Mac)</param>
+	</cdres>
+
+	<cdres uatarget="firefox">
+		<param name="friendly-name">Mozilla Firefox</param>
+	</cdres>
+
+</cdres-list>

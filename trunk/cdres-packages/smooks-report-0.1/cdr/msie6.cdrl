@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	msie6 Reporting Units.  
+	
+	Default uatarget is msie6.  Windows or Mac versions can be target simply by setting the
+	uatarget on the individual cdres elements to "msie6w" or "msie6m".
+-->
+<cdres-list default-uatarget="msie6"> 
+
+	<!--
+		See http://www.positioniseverything.net/explorer/dup-characters.html
+	-->
+	<cdres selector="*" path="org/milyn/report/msie6/CommentsBetweenFloats.class" />
+	
+</cdres-list>

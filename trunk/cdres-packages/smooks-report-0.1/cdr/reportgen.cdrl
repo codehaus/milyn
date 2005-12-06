@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<cdres-list default-uatarget="*"> 
+
+	<!--
+		Record anchors in support of "deep" testing.
+	-->
+	<cdres selector="a" path="org/milyn/report/AHrefRecorder.class" />
+
+	<!--
+		Report Serialization Units.
+		
+		ReportSerializationUnit HTML'ifies content. NodeReportSerializationUnit serializes
+		<nodereport> elements to anchors with the "warn" gif.
+	-->
+	<cdres selector="*" path="org/milyn/report/serialize/ReportSerializationUnit.class" />
+	<cdres selector="nodereport" path="org/milyn/report/NodeReportSerializationUnit.class" />
+	<cdres selector="xmldef:elcspec:empty" path="org/milyn/report/serialize/ReportSerializationUnit.class">
+		<param name="isEmpty">true</param>
+	</cdres>
+
+	<!--
+		Turn on CSS processing for all browsers.
+	-->
+	<cdres selector="style" path="org/milyn/cdres/css/CssStyleScraper.class" />
+	<cdres selector="link" path="org/milyn/cdres/css/CssStyleScraper.class" />
+	
+</cdres-list>
