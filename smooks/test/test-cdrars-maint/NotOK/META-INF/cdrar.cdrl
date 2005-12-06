@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
-
-<cdres-list> 
-	<cdres element="a" uatarget="xxx,yyy,zzz" path="org/milyn/dom/HtmlDOMParserTest.class" />
-	<cdres element="b" uatarget="fff" path="org/milyn/cdrar/ArchiveDefTest.class" />
-</cdres-list>
