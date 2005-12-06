@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.report;
+package org.milyn.report.serialize;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -22,7 +22,6 @@ import java.io.Writer;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.serialize.DefaultSerializationUnit;
-import org.milyn.report.serialize.PageReportWriter;
 import org.w3c.dom.Element;
 
 /**

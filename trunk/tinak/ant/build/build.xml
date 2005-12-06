@@ -116,6 +116,7 @@
             <header>
                 <![CDATA[<a href="http://milyn.codehaus.org/javadoc/tinak/" target="top">Milyn-Tinak</a> Version ${tinak.version}]]>
             </header>
+		    <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api/" packagelistLoc="javadoc-package-lists/j2se" />
 			<link offline="true" href="http://milyn.codehaus.org/javadoc/commons/" packagelistLoc="javadoc-package-lists/commons"/>
 		</javadoc>
 	</target>

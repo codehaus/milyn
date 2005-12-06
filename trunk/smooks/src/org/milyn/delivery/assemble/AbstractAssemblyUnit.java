@@ -26,9 +26,9 @@ public abstract class AbstractAssemblyUnit implements AssemblyUnit {
 	
 	/**
 	 * Public constructor.
-	 * @param unitDef Unit CDRDef.
+	 * @param cdrDef Unit CDRDef.
 	 */
-	public AbstractAssemblyUnit(CDRDef unitDef) {
+	public AbstractAssemblyUnit(CDRDef cdrDef) {
 	}
 
 	/**

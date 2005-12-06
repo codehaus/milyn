@@ -77,8 +77,10 @@
             <header>
                 <![CDATA[<a href="http://milyn.codehaus.org/javadoc/smooks/" target="top">Milyn-Smooks</a> Version ${smooks.version}]]>
             </header>
+		    <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api/" packagelistLoc="javadoc-package-lists/j2se" />
 			<link offline="true" href="http://milyn.codehaus.org/javadoc/commons/" packagelistLoc="javadoc-package-lists/commons"/>
 			<link offline="true" href="http://milyn.codehaus.org/javadoc/tinak/" packagelistLoc="javadoc-package-lists/tinak"/>
+			<link offline="true" href="http://milyn.codehaus.org/javadoc/magger/" packagelistLoc="javadoc-package-lists/magger"/>
 		</javadoc>
 	</target>
 
@@ -87,8 +89,10 @@
 		
 		<mkdir dir="${deploy.lib}" />
 
-		<!-- Going to repackage all the dependencies into the smooks jar
-			in order to make the deployment a bit cleaner. -->
+		<!-- 
+			Going to repackage all the dependencies into the smooks jar
+			in order to make the deployment a bit cleaner. 
+		-->
 		<delete dir="${deploy.lib}/repack" />
 		<mkdir dir="${deploy.lib}/repack" />
 		<unjar dest="${deploy.lib}/repack">

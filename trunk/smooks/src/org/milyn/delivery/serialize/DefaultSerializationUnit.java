@@ -50,12 +50,12 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 
 	/**
 	 * Public constructor.
-	 * @param unitDef
+	 * @param cdrDef
 	 */
-	public DefaultSerializationUnit(CDRDef unitDef) {
-		super(unitDef);
-		if(unitDef != null) {
-			lowerCaseElNames = unitDef.getBoolParameter("lowerCaseElNames", false);
+	public DefaultSerializationUnit(CDRDef cdrDef) {
+		super(cdrDef);
+		if(cdrDef != null) {
+			lowerCaseElNames = cdrDef.getBoolParameter("lowerCaseElNames", false);
 		}
 	}
 
