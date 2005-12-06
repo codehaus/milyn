@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.milyn.logging.SmooksLogger;
-import org.milyn.report.NodeReportSerializationUnit;
 import org.milyn.report.PageReport;
 
 public class PageReportWriter extends AbstractPageWriter {

@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.report;
+package org.milyn.report.serialize;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -78,22 +78,34 @@ public class ReportSerializationUnit extends DefaultSerializationUnit {
 	 */
 	public void writeElementText(Text text, Writer writer, ContainerRequest containerRequest) throws IOException {
 		String string = text.getData();
-		StringBuffer stringBuf = new StringBuffer(string.length());
 		
 		for(int i = 0; i < string.length(); i++) {
-			char character = string.charAt(i);
-			
-			if(character == ' ') {
-				stringBuf.append("&nbsp;");
-			} else if(character == '\t') {
-				stringBuf.append("&nbsp;&nbsp;&nbsp;&nbsp;");
-			} else if(character == '\n') {
-				stringBuf.append("<br/>");
-			} else {
-				stringBuf.append(character);
+			char c = string.charAt(i);
+
+			switch (c) {
+			case ' ':
+				writer.write("&nbsp;");
+				break;
+			case '\t':
+				writer.write("&nbsp;&nbsp;&nbsp;&nbsp;");
+				break;
+			case '\n':
+				writer.write("<br/>");
+				break;
+			case '<':
+				writer.write("&lt;");
+				break;
+			case '>':
+				writer.write("&gt;");
+				break;
+			case '&':
+				writer.write("&amp;");
+				break;
+			default:
+				writer.write(c);
+				break;
 			}
 		}
-		writer.write(stringBuf.toString());
 	}
 
 	/* (non-Javadoc)

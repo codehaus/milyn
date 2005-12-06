@@ -26,7 +26,7 @@ import org.milyn.cdr.cdrar.CDRArchiveEntry;
 import org.milyn.cdr.cdrar.CDRArchiveEntryNotFoundException;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.report.ReportSerializationUnit;
+import org.milyn.report.serialize.ReportSerializationUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;

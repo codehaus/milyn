@@ -29,8 +29,8 @@ public abstract class AbstractSerializationUnit implements SerializationUnit {
 	
 	/**
 	 * Public constructor.
-	 * @param unitDef Unit CDRDef.
+	 * @param cdrDef Unit CDRDef.
 	 */
-	public AbstractSerializationUnit(CDRDef unitDef) {
+	public AbstractSerializationUnit(CDRDef cdrDef) {
 	}
 }
