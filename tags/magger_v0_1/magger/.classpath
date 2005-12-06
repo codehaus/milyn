@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry output="test/junit/classes" kind="src" path="test/junit/src"/>
+	<classpathentry output="test/mock/classes" kind="src" path="test/mock/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/flute.jar"/>
+	<classpathentry kind="lib" path="lib/sac.jar"/>
+	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry kind="lib" path="lib/milyn-commons-0.6.1.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>
