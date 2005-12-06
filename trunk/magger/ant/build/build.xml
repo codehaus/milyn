@@ -52,11 +52,22 @@
     </target>
 
 	<target name="deploy">
+		<!-- 
+			Going to repackage all the dependencies into the smooks jar
+			in order to make the deployment a bit cleaner. 
+		-->
 		<mkdir dir="${deploy.lib}" />
-        <copy todir="${deploy.lib}">
-            <fileset dir="${build.lib}" includes="milyn-magger*.jar"/>
-        </copy>
-        <delete>
+		<delete dir="${deploy.lib}/repack" />
+		<mkdir dir="${deploy.lib}/repack" />
+		<unjar dest="${deploy.lib}/repack">
+			<fileset dir="${build.lib}" excludes="*mocks*.jar" />
+		</unjar>
+        <jar destfile="${deploy.lib}/milyn-magger-${module.version}.jar">
+			<fileset dir="${deploy.lib}/repack" />
+		</jar>		
+		<delete dir="${deploy.lib}/repack" />
+		
+		<delete>
             <fileset dir="${build.lib}" includes="milyn-magger*.jar"/>
         </delete>
     </target>
@@ -71,7 +82,9 @@
             <header>
                 <![CDATA[<a href="http://milyn.codehaus.org/javadoc/magger/" target="top">Milyn-Magger</a> Version ${module.version}]]>
             </header>
+		    <link offline="true" href="http://java.sun.com/j2se/1.4.2/docs/api/" packagelistLoc="javadoc-package-lists/j2se" />
 			<link offline="true" href="http://milyn.codehaus.org/javadoc/commons/" packagelistLoc="javadoc-package-lists/commons"/>
+			<link offline="true" href="http://www.w3.org/Style/CSS/SAC/doc/" packagelistLoc="javadoc-package-lists/sac"/>
 		</javadoc>
 	</target>
 	
