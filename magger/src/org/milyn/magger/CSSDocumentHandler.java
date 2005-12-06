@@ -30,15 +30,15 @@ import org.w3c.css.sac.SelectorList;
 
 class CSSDocumentHandler implements org.w3c.css.sac.DocumentHandler {
 
-	private URI cssURI;
+	private URI baseURI;
 	private Stack mediaStack = new Stack();
 	private CSSStylesheet stylesheet;
 	private SelectorList curSelectors;
 	private ExternalResourceLocator resourceLocator;
 	
-	CSSDocumentHandler(CSSStylesheet stylesheet, URI cssURI, SACMediaList media, ExternalResourceLocator resourceLocator) {
+	CSSDocumentHandler(CSSStylesheet stylesheet, URI baseURI, SACMediaList media, ExternalResourceLocator resourceLocator) {
 		this.stylesheet = stylesheet;
-		this.cssURI = cssURI;
+		this.baseURI = baseURI;
 		if(media != null) {
 			mediaStack.push(media);
 		}
@@ -62,7 +62,7 @@ class CSSDocumentHandler implements org.w3c.css.sac.DocumentHandler {
 	}
 
 	public void importStyle(String uri, SACMediaList media, String defaultNamespaceURI) throws CSSException {
-		URI importURI = cssURI.resolve(uri);
+		URI importURI = baseURI.resolve(uri);
 		CSSParser parser = new CSSParser(resourceLocator);
 		
 		try {
