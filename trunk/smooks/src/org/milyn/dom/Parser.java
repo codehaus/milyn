@@ -27,7 +27,6 @@ import org.apache.crimson.tree.XmlDocument;
 import org.apache.xerces.parsers.AbstractSAXParser;
 import org.cyberneko.html.HTMLConfiguration;
 import org.milyn.container.ContainerRequest;
-import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;

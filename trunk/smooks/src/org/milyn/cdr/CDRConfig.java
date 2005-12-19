@@ -21,9 +21,11 @@ import java.io.InputStream;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
+import org.milyn.dom.DomUtils;
 import org.milyn.logging.SmooksLogger;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -123,9 +125,9 @@ public final class CDRConfig {
 			while((paramNode = XmlUtil.getNode(cdresNode, paramSelector)) != null) {
 				String paramName = XmlUtil.getString(paramNode, "@name");
 				String paramType = XmlUtil.getString(paramNode, "@type");
-				String paramValue = XmlUtil.getString(paramNode, "text()");
-
-				cdrDef.setParameter(paramName, paramType, XmlUtil.removeEntities(paramValue));
+				String paramValue = DomUtils.getAllText((Element)paramNode, true);
+				
+				cdrDef.setParameter(paramName, paramType, paramValue);
 				paramIndex++;
 				paramSelector = "param[" + paramIndex + "]";
 			}

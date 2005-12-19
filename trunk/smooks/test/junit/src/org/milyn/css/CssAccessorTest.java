@@ -52,7 +52,7 @@ public class CssAccessorTest extends TestCase {
 		styleSheet1 = CssTestUtil.parseCSS("style1.css");
 		store.add(styleSheet1, style);
 		
-		CssAccessor cssAccessor = new CssAccessor(request);
+		CSSAccessor cssAccessor = CSSAccessor.getInstance(request);
 		
 		CSSProperty propVal_p = cssAccessor.getProperty(p, "font-size");
 		assertNotNull(propVal_p);

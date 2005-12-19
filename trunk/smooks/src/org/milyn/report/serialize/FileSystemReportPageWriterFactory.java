@@ -142,8 +142,10 @@ public class FileSystemReportPageWriterFactory implements ReportPageWriterFactor
 	 * @see org.milyn.report.serialize.ReportPageWriterFactory#getPageListWriter(java.lang.String)
 	 */
 	public PageListWriter getPageListWriter(String browserName) {
-		Writer writer = getWriter(new File(outputFolder, browserName + "/index.html"));		
-		return new PageListWriter(writer);
+		Writer writer = getWriter(new File(outputFolder, browserName + "/" + ReportPageWriterFactory.BROWSER_PAGELIST_INDEXPAGE));		
+		PageListWriter pageList = new PageListWriter(writer);
+		
+		return pageList;
 	}
 	
 	/* (non-Javadoc)
@@ -158,7 +160,7 @@ public class FileSystemReportPageWriterFactory implements ReportPageWriterFactor
 	 * @see org.milyn.report.serialize.ReportPageWriterFactory#getWarningReportWriter(java.lang.String, java.lang.String, int)
 	 */
 	public NodeReportWriter getNodeReportWriter(String browserName, String pagePath, int nodeReportNumber) {
-		Writer writer = getWriter(new File(outputFolder, browserName + NodeReportWriter.getPath(pagePath, nodeReportNumber)));		
+		Writer writer = getWriter(new File(outputFolder, browserName + "/" + pagePath));		
 		return new NodeReportWriter(writer);
 	}
 

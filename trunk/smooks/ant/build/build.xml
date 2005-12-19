@@ -85,7 +85,7 @@
 	</target>
 
 	<target name="deploy">
-		<property name="unrepackedlibs" value="milyn-smooks-mocks-${smooks.version}*.jar,commons-logging*.jar,spring*.jar,xercesImpl.jar" />
+		<property name="unrepackedlibs" value="milyn-smooks-mocks-${smooks.version}*.jar,commons-logging*.jar,spring*.jar,xercesImpl.jar,bsh-core-*.jar" />
 		
 		<mkdir dir="${deploy.lib}" />
 

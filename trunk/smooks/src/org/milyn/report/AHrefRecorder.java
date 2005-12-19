@@ -44,14 +44,21 @@ public class AHrefRecorder extends AbstractTransUnit {
 
 	public void visit(Element element, ContainerRequest containerRequest) {
 		String href = element.getAttribute("href");
+
+		if(href == null) {
+			return;
+		}
+
+		href = href.trim();
+		if(href.equals("") || href.startsWith("#")) {
+			return;
+		}
+
+		List ahrefList = SessionAHrefList.getList(containerRequest.getSession());
+		URI absoluteURI = containerRequest.getRequestURI().resolve(href);
 		
-		if(href != null && !href.trim().equals("")) {
-			List ahrefList = SessionAHrefList.getList(containerRequest.getSession());
-			URI absoluteURI = containerRequest.getRequestURI().resolve(href);
-			
-			if(!ahrefList.contains(href)) {
-				ahrefList.add(absoluteURI);
-			}
+		if(!ahrefList.contains(absoluteURI)) {
+			ahrefList.add(absoluteURI);
 		}
 	}
 

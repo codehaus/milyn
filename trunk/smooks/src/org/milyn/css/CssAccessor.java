@@ -34,16 +34,18 @@ import org.w3c.dom.Element;
  * Page CSS accessor class.
  * <p/>
  * Transformation Units use this class to access CSS information for the 
- * current page.  The CSS info is "pre-gathered" by the {@link org.milyn.cdres.css.CssStyleScraper}
- * Assembly Unit, if configured for the requesting device.  
+ * current page.  The CSS info is "pre-gathered" by the {@link org.milyn.cdres.css.CSSStyleScraper}
+ * Assembly Unit, if configured for the requesting device.
+ * <p/>
+ * This class is instanciated via the {@link #getInstance(ContainerRequest)} factory method.  
  * @author tfennelly
  */
-public class CssAccessor {
+public class CSSAccessor {
 
 	/**
 	 * Logger.
 	 */
-	private static Log logger = LogFactory.getLog(CssAccessor.class);
+	private static Log logger = LogFactory.getLog(CSSAccessor.class);
 	/**
 	 * Request stylesheet store.
 	 */
@@ -53,21 +55,42 @@ public class CssAccessor {
 	 */
 	private ContainerRequest request;
 	/**
+	 * CSSAccessor request key.
+	 */
+	private static final String REQUEST_REQUESTKEY = CSSAccessor.class + "#request";
+	/**
 	 * Element level style cache key.
 	 */
-	private static final String ELEMENT_STYLE_DECL_REQUESTKEY = CssAccessor.class + "#elementStyleDecls";
+	private static final String ELEMENT_STYLE_DECL_REQUESTKEY = CSSAccessor.class + "#elementStyleDecls";
 	
 	/**
 	 * Public constructor.
 	 * @param request The container request associated with the current page 
 	 * being delivered.
 	 */
-	public CssAccessor(ContainerRequest request) {
+	private CSSAccessor(ContainerRequest request) {
 		if(request == null) {
 			throw new IllegalArgumentException("null 'request' arg in constructor call.");
 		}
 		this.request = request;
 		stylesheetStore = StyleSheetStore.getStore(request);
+	}
+	
+	/**
+	 * CSSAccessor Factory method.
+	 * @param request The container request associated with the current page 
+	 * being delivered.
+	 * @return The CSSAccessor associated with the supplied request.
+	 */
+	public static CSSAccessor getInstance(ContainerRequest request) {
+		CSSAccessor accessor = (CSSAccessor)request.getAttribute(REQUEST_REQUESTKEY);
+		
+		if(accessor == null) {
+			accessor = new CSSAccessor(request);
+			request.setAttribute(REQUEST_REQUESTKEY, accessor);
+		}
+		
+		return accessor;
 	}
 
 	/**

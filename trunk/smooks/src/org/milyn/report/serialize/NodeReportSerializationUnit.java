@@ -37,12 +37,18 @@ public class NodeReportSerializationUnit extends DefaultSerializationUnit {
 	public void writeElementStart(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
 		String title;
 		String nextId;
+		String id;
 		
 		title = element.getAttribute("img-title");
 		element.removeAttribute("img-title");
+		id = element.getAttribute("id");
+		element.removeAttribute("id");
 		nextId = element.getAttribute("next-id");
 		element.removeAttribute("next-id");
 		
+		writer.write("<span id='");
+		writer.write(id);
+		writer.write("' />");
 		writer.write("<a");
 		writeAttributes(element.getAttributes(), writer);
 		writer.write((int)'>');

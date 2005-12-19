@@ -33,8 +33,8 @@ public class PageReportWriter extends AbstractPageWriter {
 	public void writeSummary(PageReport report, String pagePath) {
 		int nodeReportCount = report.getNodeReportEntries().size();
 		
-		writeln("<div class='reportsummary'>");
-		write("	</b>Num Report Items</b>: ");
+		writeln("<div class='reportsummary indented'>");
+		write("	<b>Num Report Items</b>: ");
 		if(nodeReportCount > 0) {
 			String nextId = NodeReportWriter.getPath(pagePath, 1);
 			write(nodeReportCount + " ");
@@ -53,7 +53,7 @@ public class PageReportWriter extends AbstractPageWriter {
 	 */
 	public static void writeNextReportItemHref(Writer writer, String nextId) {
 		try {
-			writer.write("<a href='#" + nextId + "'><img src='../down.gif' title='Next' border='0' /></a>");
+			writer.write("<a class='nextnritemlink' href='#" + nextId + "'><img src='../down.gif' title='Goto next report item...' border='0' /></a>");
 		} catch (IOException e) {
 			SmooksLogger.getLog().error("Failed to write 'next' report item href.", e);
 		}
