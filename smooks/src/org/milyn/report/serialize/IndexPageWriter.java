@@ -27,7 +27,6 @@ public class IndexPageWriter extends AbstractPageWriter {
 	public IndexPageWriter(Writer writer) {
 		super(writer);
 		write(getClass().getResourceAsStream("index-header.html"));
-		write(getClass().getResourceAsStream("navlinks.html"));
 	}
 	
 	/**
@@ -36,7 +35,7 @@ public class IndexPageWriter extends AbstractPageWriter {
 	 */
 	public void addBrowser(String name, String friendlyName) {
 		write("<div class='pagelink'>");
-		write("<a href='" + name + "/index.html'>");
+		write("<a href='" + name + "/" + ReportPageWriterFactory.BROWSER_PAGELIST_INDEXPAGE + "'>");
 		write(friendlyName);
 		write("</a>");
 		write("</div>\r\n");

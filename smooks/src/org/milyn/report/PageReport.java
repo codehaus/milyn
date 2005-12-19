@@ -16,6 +16,7 @@
 
 package org.milyn.report;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Vector;
 
@@ -129,10 +130,11 @@ public class PageReport {
 	 * @param browserName The browser name for which the report is being written.
 	 * @param pagePath The pagePath for the source test page i.e. the page from 
 	 * which the report was generated. 
+	 * @param baseURI The base URI under which this report was generated.
 	 * @param writerFactory The {@link ReportPageWriterFactory} instance used to
 	 * create the {@link org.milyn.report.serialize.NodeReportWriter} instances.
 	 */
-	public void applyReport(String browserName, String pagePath, ReportPageWriterFactory writerFactory) {
+	public void applyReport(String browserName, String pagePath, URI baseURI, ReportPageWriterFactory writerFactory) {
 		int reportSize = reportEntries.size();
 		
 		for(int i = 0; i < reportSize; i++) {
@@ -162,7 +164,8 @@ public class PageReport {
 			// Generate the node report itself.  This will be "popped up" from
 			// the HTML'ified source page.
 			nodeReportWriter = writerFactory.getNodeReportWriter(browserName, nodeReportPath, i + 1);
-			nodeReportWriter.writeSource(containerRequest.getRequestURI(), nodeReport.getNode());
+			String relPath = containerRequest.getRequestURI().toString().substring(baseURI.toString().length());
+			nodeReportWriter.writeSource(relPath, nodeReport.getNode());
 			nodeReportWriter.write(nodeReport);
 			nodeReportWriter.close();
 		}

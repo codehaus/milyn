@@ -37,7 +37,7 @@ public class PageListWriter extends AbstractPageWriter {
 		path = path.replace('/', '_');
 		path = path.replace('\\', '_');
 		
-		write("<div class='pagelink'>");
+		write("<div class='pagelink" + (reportItemCount != 0?" hasreportitems":"") + "'>");
 		write("<a href='" + path + "'>");
 		write(requestPageURI.toString());
 		write("</a> (" + reportItemCount +")");

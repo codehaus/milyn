@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="lib/milyn-commons-0.6.1.jar"/>
 	<classpathentry kind="lib" path="smooks-src"/>
 	<classpathentry kind="lib" path="lib/milyn-magger-0.1.jar"/>
+	<classpathentry kind="lib" path="lib/bsh-core-2.0b4.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

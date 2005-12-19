@@ -24,6 +24,8 @@ package org.milyn.report.serialize;
  */
 public interface ReportPageWriterFactory {
 
+	public static final String BROWSER_PAGELIST_INDEXPAGE = "srpagelist.html";
+
 	/**
 	 * Create the top level index.html page writer.
 	 * @return Page writer.

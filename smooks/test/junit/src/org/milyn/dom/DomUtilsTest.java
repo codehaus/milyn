@@ -16,6 +16,8 @@
 
 package org.milyn.dom;
 
+import java.io.InputStreamReader;
+
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -90,7 +92,15 @@ public class DomUtilsTest extends TestCase {
 		test_getXPath(doc, "/x/y/b[2]/c");
 		test_getXPath(doc, "/x/y/b[2]/c[2]");
 		test_getXPath(doc, "/x/y/b[2]/c[3]");
-}
+	}
+	
+	public void test_getAllText() {
+		Document doc = parseDoc("test6.html");
+		Element element = (Element)XmlUtil.getNode(doc, "/x/y");
+		String allText = DomUtils.getAllText(element, true);
+		
+		assertEquals("This is wh&#97;t we're looking for€", allText);
+	}
 	
 	private void test_getXPath(Document doc, String testPath) {
 		Element element = (Element)XmlUtil.getNode(doc, testPath);
@@ -100,7 +110,8 @@ public class DomUtilsTest extends TestCase {
 
 	private Document parseDoc(String classpath) {
 		try {
-			return XmlUtil.parseStream(getClass().getResourceAsStream(classpath), false);
+			Parser parser = new Parser();
+			return parser.parse(new InputStreamReader(getClass().getResourceAsStream(classpath)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

@@ -18,7 +18,6 @@ package org.milyn.report.serialize;
 
 import java.io.File;
 import java.io.Writer;
-import java.net.URI;
 import java.util.List;
 
 import org.milyn.cdr.CDRDef;
@@ -58,37 +57,46 @@ public class NodeReportWriter extends AbstractPageWriter {
 		return reconstructedPath.toString();
 	}
 
-	public void writeSource(URI requestURI, Node node) {
-		writeln("<table>");
-		writeln("<tr><td class='reportsrc'>Source Page URI:</td><td>" + requestURI + "</td><tr>");
-		writeln("<tr><td class='reportsrc'>Node XPath:</td><td>" + DomUtils.getXPath(node) + "</td><tr>");
-		writeln("</table>");
+	public void writeSource(String relURI, Node node) {
+		writeln("<div id='nrsummary'>");
+		writeln("<p class='nrsourcetitle'>Source Page URI:</p><p id='nrsourcedata'> <i>&lt;base-uri&gt;</i>/" + relURI + "</p>");
+		writeln("<p class='nrsourcetitle'>Node XPath:</p><p id='nrsourcedata'>" + DomUtils.getXPath(node) + "</p>");
+		writeln("</div>");
 	}
 
 	public void write(NodeReport nodeReport) {
 		int reportItemCount = nodeReport.getReportCount();
 		
-		writeln("<table class='nodereport'>");
-		writeln("<tr><th>Description</th><th>Suggestions</th></tr>");
+		writeln("<div id='nrdetail'>");
+		writeln("<div id='nrheader'>");
+		writeln("<span class='nridheader'>ID</span><span class='nrdescheader'>Description</span><span class='nrsuggestheader'>Suggestions</span>");
+		writeln("</div>");
+
 		for(int i = 0; i < reportItemCount; i++) {
 			CDRDef cdrDef = nodeReport.getReportConfig(i);
+			String id = cdrDef.getStringParameter("id", "<b>ERROR</b>: 'id' &lt;param&gt; not set.");
 			String desc = cdrDef.getStringParameter("description", "<b>ERROR</b>: 'description' &lt;param&gt; not set.");
 			List suggestions = cdrDef.getParameters("suggestion");
 				
 			if(i % 2 == 0) {
-				writeln("<tr class='nodereporteven'>");
+				writeln("<div class='nrrow nrrowodd'>");
 			} else {
-				writeln("<tr class='nodereportodd'>");
+				writeln("<div class='nrrow nrroweven'>");
 			}
-			write("<td class='nodereportdesc'>");
-			write(desc);
-			writeln("</td>");
 
-			writeln("<td class='nodereportsuggest'>");
+			writeln("<span class='nrid'>");
+			write(id);
+			writeln("</span>");
+			
+			writeln("<span class='nrdesc'>");
+			write(desc);
+			writeln("</span>");
+
+			writeln("<span class='nrsuggest'>");
 			if(suggestions == null || suggestions.size() == 0) {
-				writeln("&nbsp");
+				writeln("Sorry, no suggestions available on this!");
 			} else if(suggestions.size() > 0) {
-				writeln("<ol>");
+				writeln("<ol class='suggestionlist'>");
 				for(int suggestIndex = 0; suggestIndex < suggestions.size(); suggestIndex++) {
 					Parameter param = (Parameter)suggestions.get(suggestIndex);
 					
@@ -98,10 +106,9 @@ public class NodeReportWriter extends AbstractPageWriter {
 				}
 				writeln("</ol>");
 			}
-			writeln("</td>");
-			
-			writeln("</tr>");
+			writeln("</span>");
+			writeln("</div>");
 		}
-		write("</table>");
+		write("</div>");
 	}
 }

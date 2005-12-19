@@ -218,6 +218,8 @@ public class SmooksReportGenerator {
 				// all the test pages for this browser. See javadoc at top of this file.
 				pageList = writerFactory.getPageListWriter(curBrowserName);
 				pageList.writeTitle(curBrowserNameFN);
+				pageList.write(getClass().getResourceAsStream("serialize/page-list-info.html"));
+				pageList.writeln("<div class='pagelist'>");
 				
 				// Start the test run.
 				generateReport(requestPageURI, pageList, curBrowserName);
@@ -232,9 +234,12 @@ public class SmooksReportGenerator {
 							generateReport((URI)ahrefList.get(i), pageList, curBrowserName);
 						} catch(IllegalArgumentException e) {
 							SmooksLogger.getLog().warn("Not processing source of internal anchor href. " + e.getMessage());
+						} catch(IOException e) {
+							SmooksLogger.getLog().warn("Failed to process source of internal anchor href. [" + e.getClass().getName() + "] " + e.getMessage());
 						}
 					}
 				}
+				pageList.writeln("</div>");
 				pageList.close();				
 				while(browsers.hasMoreTokens()) {
 					try {
@@ -284,12 +289,12 @@ public class SmooksReportGenerator {
 		pageReportWriter = writerFactory.getPageReportWriter(curBrowserName, pagePath);
 		
 		// Apply the report to the source page and generate the node reports.
-		report.applyReport(curBrowserName, pagePath, writerFactory);
+		report.applyReport(curBrowserName, pagePath, baseURI, writerFactory);
 
 		// Write the request page report for the page.
 		pageReportWriter.writeTitle(pageURI.toString());
 		pageReportWriter.writeSummary(report, pagePath);
-		pageReportWriter.writeln("<div class='srccontent'>");
+		pageReportWriter.writeln("<div class='srccontent indented'>");
 		smooksSA.serialize(doc, pageReportWriter.getWriter());
 		pageReportWriter.writeln("</div>");
 		pageReportWriter.close();

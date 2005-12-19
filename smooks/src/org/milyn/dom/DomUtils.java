@@ -19,7 +19,9 @@ package org.milyn.dom;
 import java.util.List;
 import java.util.Vector;
 
+import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -244,8 +246,40 @@ public abstract class DomUtils {
 		return attributeValue;
 	}
 
+	public static Node getPreviousSibling(Node node, short nodeType) {
+		Node parent = node.getParentNode();
+		NodeList siblings = parent.getChildNodes();
+		int siblingCount = siblings.getLength();
+		int nodeIndex = 0;
+		
+		// Locate the node
+		for(int i = 0; i < siblingCount; i++) {
+			Node sibling = siblings.item(i);
+			
+			if(sibling == node) {
+				nodeIndex = i;
+				break;
+			}
+		}
+		
+		if(nodeIndex == 0) {
+			return null;
+		}
+
+		// Wind back to sibling
+		for(int i = nodeIndex - 1; i >= 0; i--) {
+			Node sibling = siblings.item(i);
+			
+			if(sibling.getNodeType() == nodeType) {
+				return sibling;
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
-	 * Count the DOM nodes of the supplied type (nodeType) before supplied
+	 * Count the DOM nodes of the supplied type (nodeType) before the supplied
 	 * node, not including the node itself.
 	 * <p/>
 	 * Counts the sibling nodes.
@@ -268,6 +302,38 @@ public abstract class DomUtils {
 			if(sibling.getNodeType() == nodeType) {
 				count++;
 			}			
+		}
+		
+		return count;
+	}
+
+	/**
+	 * Count the DOM nodes of the supplied type (nodeType) between the supplied
+	 * sibling nodes, not including the nodes themselves.
+	 * <p/>
+	 * Counts the sibling nodes.
+	 * @param node1 First sibling node.
+	 * @param node2 Second sibling node.
+	 * @param nodeType The DOM {@link Node} type of the siblings to be counted. 
+	 * @return The number of siblings of the supplied type between the supplied
+	 * sibling nodes.
+	 * @throws UnsupportedOperationException if the supplied {@link Node Nodes}
+	 * don't have the same parent node i.e. are not sibling nodes.
+	 */
+	public static int countNodesBetween(Node node1, Node node2, short nodeType) {
+		Node parent1 = node1.getParentNode();
+		Node parent2 = node2.getParentNode();
+		
+		if(parent1 != parent2) {
+			throw new UnsupportedOperationException("Nodes must be siblings.");
+		}
+		
+		int countBeforeNode1 = countNodesBefore(node1, nodeType);
+		int countBeforeNode2 = countNodesBefore(node2, nodeType);
+		int count = countBeforeNode2 - countBeforeNode1;
+		
+		if(node1.getNodeType() == nodeType) {
+			count--;
 		}
 		
 		return count;
@@ -298,6 +364,31 @@ public abstract class DomUtils {
 		return count;
 	}
 
+	/**
+	 * Count the DOM nodes between the supplied sibling nodes, not including 
+	 * the nodes themselves.
+	 * <p/>
+	 * Counts the sibling nodes.
+	 * @param node1 First sibling node.
+	 * @param node2 Second sibling node.
+	 * @return The number of siblings between the supplied sibling nodes.
+	 * @throws UnsupportedOperationException if the supplied {@link Node Nodes}
+	 * don't have the same parent node i.e. are not sibling nodes.
+	 */
+	public static int countNodesBetween(Node node1, Node node2) {
+		Node parent1 = node1.getParentNode();
+		Node parent2 = node2.getParentNode();
+		
+		if(parent1 != parent2) {
+			throw new UnsupportedOperationException("Nodes must be siblings.");
+		}
+		
+		int countBeforeNode1 = countNodesBefore(node1);
+		int countBeforeNode2 = countNodesBefore(node2);
+		int count = countBeforeNode2 - countBeforeNode1 - 1;
+		
+		return count;
+	}
 
 	/**
 	 * Count the DOM element nodes before the supplied node, having the specified 
@@ -332,7 +423,7 @@ public abstract class DomUtils {
 	/**
 	 * Get all the text DOM sibling nodes before the supplied node and 
 	 * concatenate them together into a single String.
-	 * @param node Test node.
+	 * @param node Text node.
 	 * @return String containing the concatentated text.
 	 */
 	public static String getTextBefore(Node node) {
@@ -348,6 +439,42 @@ public abstract class DomUtils {
 				break;
 			}
 			if(sibling.getNodeType() == Node.TEXT_NODE) {
+				text.append(((Text)sibling).getData());
+			}			
+		}
+		
+		return text.toString();
+	}
+
+	/**
+	 * Get all the text DOM sibling nodes before the supplied node and 
+	 * concatenate them together into a single String.
+	 * @param node1 Test node.
+	 * @return String containing the concatentated text.
+	 */
+	public static String getTextBetween(Node node1, Node node2) {
+		Node parent1 = node1.getParentNode();
+		Node parent2 = node2.getParentNode();
+		
+		if(parent1 != parent2) {
+			throw new UnsupportedOperationException("Nodes must be siblings.");
+		}
+
+		NodeList siblings = parent1.getChildNodes();
+		StringBuffer text = new StringBuffer();
+		boolean append = false;
+		int siblingCount = siblings.getLength();
+		
+		for(int i = 0; i < siblingCount; i++) {
+			Node sibling = siblings.item(i);
+			
+			if(sibling == node1) {
+				append = true;
+			}
+			if(sibling == node2) {
+				break;
+			}
+			if(append && sibling.getNodeType() == Node.TEXT_NODE) {
 				text.append(((Text)sibling).getData());
 			}			
 		}
@@ -402,5 +529,47 @@ public abstract class DomUtils {
 		}
 		
 		return xpathToken;
+	}
+
+	/**
+	 * Get the combined text from all the text, comment and cdata DOM nodes
+	 * contained within the supplied parent element. 
+	 * @param parent The parent DOM element.
+	 * @param removeEntities Remove all HTML entity and character references from
+	 * the DOM Text child nodes and replace them with their equivalent characters.  Note
+	 * this is not performed on Comment or CDATA section nodes.
+	 * @return The combined (concatenated) contents of all child text, comment
+	 * and cdata DOM nodes.  An empty String no such nodes are present.
+	 */
+	public static String getAllText(Element parent, boolean removeEntities) {
+		NodeList children = parent.getChildNodes();
+		StringBuffer text = new StringBuffer();
+		int childCount = children.getLength();
+		
+		for(int i = 0; i < childCount; i++) {
+			Node child = children.item(i);
+
+			switch (child.getNodeType()) {
+			case Node.TEXT_NODE:
+				String data = ((Text)child).getData();
+				if(removeEntities) {
+					text.append(XmlUtil.removeEntities(data));
+				} else {
+					text.append(data);
+				}
+				break;
+			case Node.CDATA_SECTION_NODE:
+				// CDATA_SECTION_NODE nodes are a subtype of the Text node.
+				text.append(((Text)child).getData());
+				break;
+			case Node.COMMENT_NODE:
+				text.append(((Comment)child).getData());
+				break;
+			default:
+				break;
+			}
+		}
+		
+		return text.toString();
 	}
 }
