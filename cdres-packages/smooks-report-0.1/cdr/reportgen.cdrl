@@ -15,15 +15,16 @@
 		<nodereport> elements to anchors with the "warn" gif.
 	-->
 	<cdres selector="*" path="org/milyn/report/serialize/ReportSerializationUnit.class" />
-	<cdres selector="nodereport" path="org/milyn/report/NodeReportSerializationUnit.class" />
+	<cdres selector="nodereport" path="org/milyn/report/serialize/NodeReportSerializationUnit.class" />
 	<cdres selector="xmldef:elcspec:empty" path="org/milyn/report/serialize/ReportSerializationUnit.class">
 		<param name="isEmpty">true</param>
 	</cdres>
 
 	<!--
-		Turn on CSS processing for all browsers.
+		Turn CSS processing on for all browsers - <style> and <link> elements. 
+		See CssStyleScraper Javadoc - core Smooks Javadoc.
 	-->
-	<cdres selector="style" path="org/milyn/cdres/css/CssStyleScraper.class" />
-	<cdres selector="link" path="org/milyn/cdres/css/CssStyleScraper.class" />
+	<cdres selector="style" path="org/milyn/css/CSSStyleScraper.class" />
+	<cdres selector="link" path="org/milyn/css/CSSStyleScraper.class" />
 	
 </cdres-list>

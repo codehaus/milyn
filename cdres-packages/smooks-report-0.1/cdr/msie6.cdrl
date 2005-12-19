@@ -12,6 +12,21 @@
 	<!--
 		See http://www.positioniseverything.net/explorer/dup-characters.html
 	-->
-	<cdres selector="*" path="org/milyn/report/msie6/CommentsBetweenFloats.class" />
+	<cdres selector="*" path="org/milyn/report/msie/v6/MSIE6_0001.class">
+		<param name="id">msie6-0001</param>
+		<param name="description"><!--
+			This element and its previous sibling element:
+			<ol>
+				<li>both have CSS float properties targeted at them, and</li>
+				<li>only have comment (1+ comments) and whitespace text nodes between them.</li>
+			</ol>
+			<p/>
+			On IE6, this can cause some of the text in this float (the second float) to "bleed" outside the
+			float.-->
+		</param>
+
+		<param name="suggestion"><!--See <a href="http://www.positioniseverything.net/explorer/dup-characters.html" target="new">www.positioniseverything.net</a>-->.</param>
+		<param name="suggestion">Consider removing the comments if possible.</param>
+	</cdres>
 	
 </cdres-list>
