@@ -8,13 +8,13 @@
 			<param name="module.root" value="../base" />
 			<param name="module.version" value="0.1" />
 		</antcall>
-		<antcall target="build-ie" />
+		<!-- <antcall target="build-ie" /> -->
 		
 		<delete file="../dtd/dtd.cdrar" quiet="true"/>
         <jar destfile="../WEB-INF/cdr/dtd.cdrar">
 			<fileset dir="../dtd"/>
 		</jar>
-		<zip destfile="../WEB-INF.zip/" basedir="../" includes="WEB-INF/**"/>
+		<zip destfile="../milyn-smooks-sf-X.X.zip" basedir="../" includes="WEB-INF/**"/>
 	</target>
 
 	<target name="build-ie" description="Build IE CDRES modules.">

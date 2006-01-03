@@ -3,6 +3,7 @@
 
 <cdres-list default-selector="device-parameters"> 
 
+	<!-- Microsoft IE Browsers -->
 	<cdres uatarget="msie6">
 		<param name="friendly-name">Internet Explorer 6</param>
 	</cdres>
@@ -13,8 +14,20 @@
 		<param name="friendly-name">Internet Explorer 6 (Mac)</param>
 	</cdres>
 
+	<!-- Mozilla Firefox Browsers -->
 	<cdres uatarget="firefox">
 		<param name="friendly-name">Mozilla Firefox</param>
+	</cdres>
+
+	<!-- Opera Browsers -->
+	<cdres uatarget="opera7">
+		<param name="friendly-name">Opera 7</param>
+	</cdres>
+	<cdres uatarget="opera8">
+		<param name="friendly-name">Opera 8</param>
+	</cdres>
+	<cdres uatarget="opera9">
+		<param name="friendly-name">Opera 9</param>
 	</cdres>
 
 </cdres-list>

@@ -2,10 +2,7 @@
 <!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
 
 <!--
-	msie6 Reporting Units.  
-	
-	Default uatarget is msie6.  Windows or Mac versions can be target simply by setting the
-	uatarget on the individual cdres elements to "msie6w" or "msie6m".
+	msie common Reporting Units.  
 -->
 <cdres-list default-uatarget="msie"> 
 

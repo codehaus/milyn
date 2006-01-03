@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	mozilla common Reporting Units.  
+-->
+<cdres-list default-uatarget="mozilla"> 
+
+	<!--
+		See ADD WWW REPORT LINK HERE...
+	-->
+	<cdres selector="button" path="org/milyn/report/BeanShellReportingUnit.class">
+		<param name="id">mozilla-common-0001</param>
+		<param name="description"> <!--
+				ADD DESCRIPTION HERE...
+			-->
+		</param>
+		<param name="suggestion"><!--ADD SUGGESTION 1 HERE...-->.</param>
+		<param name="suggestion"><!--ADD SUGGESTION 2... HERE...-->.</param>
+		<param name="code"> <!--
+			// ADD PATTERN MATCHING CODE HERE...
+			// Or, if this code is to complex, write an implementation of org.milyn.report.AbstractReportingUnit
+			-->
+		</param>
+	</cdres>
+
+</cdres-list>

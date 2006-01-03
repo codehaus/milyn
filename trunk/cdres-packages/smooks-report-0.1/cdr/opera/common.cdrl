@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	opera common Reporting Units.  
+-->
+<cdres-list default-uatarget="opera"> 
+
+	<!--
+		See http://www.quirksmode.org/bugreports/archives/2005/12/Buttons_lose_shape_when_floated.html
+	-->
+	<cdres selector="button" path="org/milyn/report/BeanShellReportingUnit.class">
+		<param name="id">opera-common-0001</param>
+		<param name="description"> <!--
+			This &lt;button&gt; element is floated.  Floated &lt;button/&gt; elements can loose their style 
+			on Opera browsers.
+			-->
+		</param>
+		<param name="suggestion"><!--See <a href="http://www.quirksmode.org/bugreports/archives/2005/12/Buttons_lose_shape_when_floated.html" target="new">www.quirksmode.org</a>-->.</param>
+		<param name="suggestion"><!--Try using an &lt;input/&gt; element.--></param>
+		<param name="code"> <!--
+			if(cssAccessor.getProperty(element, "float") != null) {
+				// Trigger the report!
+				return true;
+			}
+			-->
+		</param>
+	</cdres>
+
+	<!--
+		See http://www.quirksmode.org/bugreports/archives/2005/10/Opera_incorrectly_reporting_empty_values_of_radio_.html
+	-->
+	<cdres selector="input" path="org/milyn/report/BeanShellReportingUnit.class">
+		<param name="id">opera-common-0002</param>
+		<param name="description"> <!--
+			This input radio/checkbox has an empty value attribute. <p/>
+			When a radio button or a checkbox has a value="" (empty), Opera nonetheless reports a value="on".
+			-->
+		</param>
+		<param name="suggestion"><!--See <a href="http://www.quirksmode.org/bugreports/archives/2005/10/Opera_incorrectly_reporting_empty_values_of_radio_.html" target="new">www.quirksmode.org</a>-->.</param>
+		<param name="code"> <!--
+			String type = element.getAttribute("type");
+			if("radio".equals(type) || "checkbox".equals(type)) {
+				org.w3c.dom.Attr value = element.getAttributeNode("value");
+				return (value != null && value.getValue().equals(""));
+			}
+			-->
+		</param>
+	</cdres>
+
+</cdres-list>
