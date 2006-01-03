@@ -190,8 +190,6 @@ public class SmooksReportGeneratorTest extends TestCase {
 		testPageWriter = (TestPageWriter)testPageWriters.get(11);
 		assertIsExpected("expected/firefox-node1_linked-page.jsp.html", testPageWriter);
 
-		// To sysout:
-		//System.out.println("[" + new String(testPageWriter.getWriter().toCharArray()) + "]");
 	}
 
 	private void assertIsExpected(String classpath, TestPageWriter testPageWriter) {
