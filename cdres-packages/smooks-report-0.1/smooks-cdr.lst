@@ -1,7 +1,25 @@
+########################################
+# General configurations
+########################################
 /cdr/reportgen.cdrl
 /cdr/dtd.cdrar
 /cdr/smooks-base-0.1.cdrar
-/cdr/smooks-css-0.1.cdrar
-
 /cdr/parameters.cdrl
-/cdr/msie6.cdrl
+
+########################################
+# Mozilla reporting configurations
+########################################
+/cdr/mozilla/common.cdrl
+/cdr/mozilla/firefox.cdrl
+
+########################################
+# MSIE reporting configurations
+########################################
+/cdr/msie/common.cdrl
+/cdr/msie/v6.cdrl
+
+
+########################################
+# Opera reporting configurations
+########################################
+/cdr/opera/common.cdrl

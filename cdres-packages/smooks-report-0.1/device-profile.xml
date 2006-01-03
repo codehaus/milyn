@@ -2,7 +2,14 @@
 <!DOCTYPE device-profiles PUBLIC "-//MILYN//DTD TINAK 1.0//EN" "http://www.milyn.org/dtd/device-profile-1.0.dtd">
 
 <device-profiles>
+	<device-profile name="msie5"	list="msie5w,msie5m"/>
 	<device-profile name="msie6"	list="msie6w,msie6m"/>
-	<device-profile name="html4"	list="msie6,firefox,reportingtestclient"/>
+	<device-profile name="msie"		list="msie5,msie6"/>
+
+	<device-profile name="opera"	list="opera7,opera8,opera9"/>
+	
+	<device-profile name="mozilla"	list="firefox,netscape"/>
+	
+	<device-profile name="html4"	list="msie,mozilla,opera"/>
 	<device-profile name="html"		list="html4"/>
 </device-profiles>

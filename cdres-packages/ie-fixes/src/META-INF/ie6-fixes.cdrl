@@ -13,8 +13,8 @@
 	<!--
 		Need to be able to process CSS
 	-->
-	<cdres selector="style" path="org/milyn/cdres/css/CssStyleScraper.class" />
-	<cdres selector="link" path="org/milyn/cdres/css/CssStyleScraper.class" />
+	<cdres selector="style" path="org/milyn/cdres/css/CSSStyleScraper.class" />
+	<cdres selector="link" path="org/milyn/cdres/css/CSSStyleScraper.class" />
 
 	<!--
 		Fix for the IE6 "Margin-Right Inheritance" bug:
