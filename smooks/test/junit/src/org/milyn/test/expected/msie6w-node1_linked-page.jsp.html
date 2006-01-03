@@ -4,19 +4,24 @@
 		<link href="../style.css" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
-<table>
-<tr><td class='reportsrc'>Source Page URI:</td><td>http://x.com/a/b/linked-page.jsp</td><tr>
-<tr><td class='reportsrc'>Node XPath:</td><td>/html/body/k</td><tr>
-</table>
-<table class='nodereport'>
-<tr><th>Description</th><th>Suggestions</th></tr>
-<tr class='nodereporteven'>
-<td class='nodereportdesc'>
+<div id='nrsummary'>
+<p class='nrsourcetitle'>Source Page URI:</p><p id='nrsourcedata'> <i>&lt;base-uri&gt;</i>/linked-page.jsp</p>
+<p class='nrsourcetitle'>Node XPath:</p><p id='nrsourcedata'>/html/body/k</p>
+</div>
+<div id='nrdetail'>
+<div id='nrheader'>
+<span class='nridheader'>ID</span><span class='nrdescheader'>Description</span><span class='nrsuggestheader'>Suggestions</span>
+</div>
+<div class='nrrow nrrowodd'>
+<span class='nrid'>
+<b>ERROR</b>: 'id' &lt;param&gt; not set.</span>
+<span class='nrdesc'>
+
 			The <k> element can cause text content to be rendered incorrectly on
 			some HTML browsers.
-		</td>
-<td class='nodereportsuggest'>
-<ol>
+		</span>
+<span class='nrsuggest'>
+<ol class='suggestionlist'>
 <li>
 			Set the ZZZ CSS property on the element.  This will only work if ....
 		</li>
@@ -24,7 +29,7 @@
 			Replace the element with ???.
 		</li>
 </ol>
-</td>
-</tr>
-</table>	</body>
+</span>
+</div>
+</div>	</body>
 </html>
