@@ -128,7 +128,7 @@ public class CDRStore {
 		
 		while((cdrar = cdrarLoadList.readLine()) != null) {
 			cdrar = cdrar.trim();
-			if(cdrar.equals("")) {
+			if(cdrar.equals("") || cdrar.charAt(0) == '#') {
 				continue;
 			}
 			

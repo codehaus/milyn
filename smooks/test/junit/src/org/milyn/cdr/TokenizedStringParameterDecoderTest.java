@@ -62,7 +62,7 @@ public class TokenizedStringParameterDecoderTest extends TestCase {
 		CDRDef cdrDef;
 		ContainerRequest request;
 		
-		smooksUtil.addCDRDef(Parameter.PARAM_TYPE_PREFIX + type, "device", "org.milyn.param.TokenizedStringParameterDecoder", null);
+		smooksUtil.addCDRDef(Parameter.PARAM_TYPE_PREFIX + type, "device", "org.milyn.cdr.TokenizedStringParameterDecoder", null);
 		cdrDef = smooksUtil.addCDRDef("config", "device", null, null);
 		cdrDef.setParameter("param1", type, value);
 		request = smooksUtil.getRequest("device");

@@ -32,11 +32,36 @@ import bsh.Primitive;
  * <p/>
  * Uses the <a href="http://www.beanshell.org/">BeanShell</a> Java scripting 
  * framework for triggering node reports.  This allows the code to be added as a
- * &lt;param /&gt; element in the cdr.
+ * &lt;param /&gt; element in the .cdrl.
  * <p/>
- * Example:<br/>
+ * Example cdrl Configuration:<br/>
  * <pre>
- * 	
+	&lt;cdres selector="*" path="org/milyn/report/BeanShellReportingUnit.class"&gt;
+		&lt;param name="id"&gt;msie-common-0001&lt;/param&gt;
+		&lt;param name="description"&gt; &lt;!--
+			This element has &lt;u&gt;font-variant: small-caps&lt;/u&gt; and &lt;u&gt;text-transform&lt;/u&gt; (uppercase or lowercase)
+			CSS applied.  &lt;p/&gt;On IE, the &lt;code&gt;text-transform&lt;/code&gt; CSS rule may get ignored.
+			--&gt;
+		&lt;/param&gt;
+		&lt;param name="suggestion"&gt;&lt;!--See &lt;a href="http://www.quirksmode.org/bugreports/archives/2005/12/fontvariant_sma.html" target="new"&gt;www.quirksmode.org&lt;/a&gt;--&gt;.&lt;/param&gt;
+		&lt;param name="code"&gt; &lt;!--
+			org.milyn.magger.{@link org.milyn.magger.CSSProperty} fontVariant = {@link org.milyn.css.CSSAccessor cssAccessor}.getProperty(element, "font-variant");
+			org.milyn.magger.CSSProperty textTransform = cssAccessor.getProperty({@link org.w3c.dom.Element element}, "text-transform");
+			
+			if(fontVariant == null || textTransform == null) {
+				return false;
+			}
+			if(fontVariant.getValue().getStringValue().equals("small-caps")) {
+				String textTransformVal = textTransform.getValue().getStringValue();
+				if(textTransformVal.equals("uppercase") || textTransformVal.equals("lowercase")) {
+					// Trigger the report!
+					return true;
+				}
+			}			
+			// Other available script variables: {@link org.milyn.container.ContainerRequest request} and {@link org.milyn.cdr.CDRDef cdrDef}. 
+			--&gt;
+		&lt;/param&gt;
+	&lt;/cdres&gt;
  * </pre>
  * @author tfennelly
  */
