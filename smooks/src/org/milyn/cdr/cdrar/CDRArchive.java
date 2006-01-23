@@ -230,19 +230,29 @@ public final class CDRArchive {
 					String[] devices = cdrDef.getUaTargets();
 					
 					for(int deviceIndex = 0; deviceIndex < devices.length; deviceIndex++) {
-						String device = devices[deviceIndex]; 
+						String device = devices[deviceIndex];
+						boolean negated = device.startsWith("not:");
 
-						// Match against a wildcard astrix.
-						if(device.equals("*")) {
-							matchingCDRDefsColl.addElement(cdrDef);
-							break;
+						if(!negated) {
+							// Match against a wildcard astrix.
+							if(device.equals("*")) {
+								matchingCDRDefsColl.addElement(cdrDef);
+								break;
+							}
+							// Is this cdres device name the commonname on the deviceContext,
+							// or one of its profiles.
+							if(UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
+								matchingCDRDefsColl.addElement(cdrDef);
+								break;
+							} 
+						} else {
+							// Trim off the "not:" prefix.
+							device = device.substring(4);
+							if(!UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
+								matchingCDRDefsColl.addElement(cdrDef);
+								break;
+							} 
 						}
-						// Is this cdres device name the commonname on the deviceContext,
-						// or one of its profiles.
-						if(UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
-							matchingCDRDefsColl.addElement(cdrDef);
-							break;
-						} 
 					}
 				}
 			}

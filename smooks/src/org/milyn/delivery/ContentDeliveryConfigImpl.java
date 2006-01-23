@@ -392,13 +392,27 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 */
 	private final class ContentDeliveryExtractionStrategy implements CDRDefStrategy {
 		
-		public void applyStrategy(String elementName, CDRDef unitDef) {
+		public void applyStrategy(String elementName, CDRDef cdrDef) {
 			ContentDeliveryUnitCreator creator;
 			CDRArchiveEntry cdrarEntry;
-			ContentDeliveryUnit contentDeliveryUnit;
 
 			try {
-				String type = getExtension(unitDef.getPath());
+				// Try it as a Java class before trying anything else.  This is to
+				// accomodate specification of the class in the standard 
+				// Java form e.g. java.lang.String Vs java/lang/String.class
+				creator = BeanFactory.getContentDeliveryUnitCreator("class");
+				if(addCDU(elementName, cdrDef, creator)) {
+					// Job done - it's a CDU and we've added it!
+					return;
+				}
+			} catch (UnsupportedContentDeliveryUnitTypeException e) {
+				throw new IllegalStateException("No ContentDeliveryUnitCreator configured (IoC) for type 'class' (Java).");
+			} catch (Exception e) {
+				// Ignore it again - not a CDU - continue on, may be a different type...
+			}					
+			
+			try {
+				String type = getExtension(cdrDef.getPath());
 				if(type == null || type.trim().equals("")) {
 					return;
 				}
@@ -408,13 +422,25 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				return;
 			}					
 			
-			// Create the ContentDeliveryUnit.
 			try {
-				contentDeliveryUnit = creator.create(unitDef, containerContext.getCdrarStore());
+				addCDU(elementName, cdrDef, creator);
 			} catch (InstantiationException e) {
 				SmooksLogger.getLog().error("ContentDeliveryUnit creation failure.", e);
-				return;
 			}
+		}
+
+		/**
+		 * Add a {@link ContentDeliveryUnit} for the specified element and configuration.
+		 * @param elementName Element name against which to associate the CDU.
+		 * @param cdrDef Configuration.
+		 * @param creator CDU Creator class.
+		 * @throws InstantiationException 
+		 */
+		private boolean addCDU(String elementName, CDRDef cdrDef, ContentDeliveryUnitCreator creator) throws InstantiationException {
+			ContentDeliveryUnit contentDeliveryUnit;
+
+			// Create the ContentDeliveryUnit.
+			contentDeliveryUnit = creator.create(cdrDef, containerContext.getCdrarStore());
 			
 			if(contentDeliveryUnit instanceof AssemblyUnit) {
 				addAssemblyUnit(elementName, (AssemblyUnit)contentDeliveryUnit);				
@@ -422,7 +448,13 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				addTransUnit(elementName, (TransUnit)contentDeliveryUnit);
 			} else if(contentDeliveryUnit instanceof SerializationUnit) {
 				addSerializationUnit(elementName, (SerializationUnit)contentDeliveryUnit);
-			} 
+			} else {
+				// It's not a CDU type we know of!  Leave for now - whatever's using it
+				// can instantiate it itself.
+				return false;
+			}
+			
+			return true;
 		}
 
 		/**

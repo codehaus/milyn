@@ -32,8 +32,6 @@ import org.w3c.dom.Node;
 public abstract class AbstractReportingUnit extends AbstractTransUnit {
 	
 	private CDRDef cdrDef;
-	private String longDesc;
-	private String shortDesc;
 
 	/**
 	 * Public Constructor.
@@ -45,8 +43,6 @@ public abstract class AbstractReportingUnit extends AbstractTransUnit {
 			throw new IllegalArgumentException("null 'cdrDef' arg in constructor call.");
 		}
 		this.cdrDef = cdrDef;
-		shortDesc = cdrDef.getStringParameter("shortDesc", "'shortDesc' param not set.");
-		longDesc = cdrDef.getStringParameter("description", "'description' param not set.");
 	}
 	
 	/**
@@ -71,13 +67,5 @@ public abstract class AbstractReportingUnit extends AbstractTransUnit {
 	protected final void report(Node node, ContainerRequest containerRequest) {
 		PageReport testReport = PageReport.getInstance(containerRequest);
 		testReport.report(node, cdrDef);
-	}
-
-	public String getShortDescription() {
-		return shortDesc;
-	}
-	
-	public String getDetailDescription() {
-		return longDesc;
 	}
 }
