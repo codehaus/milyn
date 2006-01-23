@@ -49,6 +49,7 @@ public abstract class ServletResponseWrapper extends HttpServletResponseWrapper 
 	 */
 	public ServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
 		super(originalResponse);
+		this.containerRequest = containerRequest;
 	}
 
 	/**

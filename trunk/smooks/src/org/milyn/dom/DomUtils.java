@@ -22,6 +22,7 @@ import java.util.Vector;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -571,5 +572,23 @@ public abstract class DomUtils {
 		}
 		
 		return text.toString();
+	}
+
+	/**
+	 * Add literal text to the supplied element.
+	 * @param element Target DOM Element.
+	 * @param literalText Literal text to be added.
+	 */
+	public static void addLiteral(Element element, String literalText) {
+		if(element == null) {
+			throw new IllegalArgumentException("null 'element' arg in method call.");
+		}
+		if(literalText == null) {
+			throw new IllegalArgumentException("null 'literalText' arg in method call.");
+		}
+		
+		Document document = element.getOwnerDocument();
+		Text literal = document.createTextNode(literalText);
+		element.appendChild(literal);
 	}
 }

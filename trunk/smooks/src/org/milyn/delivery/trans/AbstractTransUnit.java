@@ -26,11 +26,27 @@ import org.milyn.cdr.CDRDef;
  * @author tfennelly
  */
 public abstract class AbstractTransUnit implements TransUnit {
+
+	private String longDesc;
+	private String shortDesc;
 	
 	/**
 	 * Public constructor.
 	 * @param cdrDef Unit configuration.
 	 */
 	public AbstractTransUnit(CDRDef cdrDef) {
+		if(cdrDef == null) {
+			throw new IllegalArgumentException("null 'cdrDef' arg in constructor call.");
+		}
+		shortDesc = cdrDef.getStringParameter("shortDesc", "'shortDesc' param not set.");
+		longDesc = cdrDef.getStringParameter("description", "'description' param not set.");
+	}
+
+	public String getShortDescription() {
+		return shortDesc;
+	}
+	
+	public String getDetailDescription() {
+		return longDesc;
 	}
 }

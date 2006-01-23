@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.report;
+package org.milyn.delivery.trans;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
@@ -25,37 +25,32 @@ import org.w3c.dom.Element;
 import bsh.BshMethod;
 import bsh.Interpreter;
 import bsh.NameSpace;
-import bsh.Primitive;
 
 /**
- * BeanShell report unit.
+ * BeanShell transformation unit.
  * <p/>
  * Uses the <a href="http://www.beanshell.org/">BeanShell</a> Java scripting 
- * framework for triggering node reports.  This allows the code to be added as a
+ * framework for performing transformations.  This allows the code to be added as a
  * &lt;param /&gt; element in the .cdrl.
+ * <p/>
+ * <b>Note</b>: We recommend not using BeanShell scripting where performance is 
+ * an issue.
  * <p/>
  * Example cdrl Configuration:<br/>
  * <pre>
-	&lt;cdres selector="*" path="org/milyn/report/BeanShellTransUnit.class"&gt;
-		&lt;param name="id"&gt;msie-common-0001&lt;/param&gt;
-		&lt;param name="description"&gt; &lt;!--
-			This element has &lt;u&gt;font-variant: small-caps&lt;/u&gt; and &lt;u&gt;text-transform&lt;/u&gt; (uppercase or lowercase)
-			CSS applied.  &lt;p/&gt;On IE, the &lt;code&gt;text-transform&lt;/code&gt; CSS rule may get ignored.
-			--&gt;
-		&lt;/param&gt;
-		&lt;param name="suggestion"&gt;&lt;!--See &lt;a href="http://www.quirksmode.org/bugreports/archives/2005/12/fontvariant_sma.html" target="new"&gt;www.quirksmode.org&lt;/a&gt;--&gt;.&lt;/param&gt;
+	&lt;cdres selector="*" path="org/milyn/delivery/trans/BeanShellTransUnit.class"&gt;
+		&lt;param name="visitBefore"&gt;true&lt;/param&gt; &lt;!-- default false --&gt;
 		&lt;param name="code"&gt; &lt;!--
 			org.milyn.magger.{@link org.milyn.magger.CSSProperty} fontVariant = {@link org.milyn.css.CSSAccessor cssAccessor}.getProperty(element, "font-variant");
 			org.milyn.magger.CSSProperty textTransform = cssAccessor.getProperty({@link org.w3c.dom.Element element}, "text-transform");
 			
 			if(fontVariant == null || textTransform == null) {
-				return false;
+				// Do something...
 			}
 			if(fontVariant.getValue().getStringValue().equals("small-caps")) {
 				String textTransformVal = textTransform.getValue().getStringValue();
 				if(textTransformVal.equals("uppercase") || textTransformVal.equals("lowercase")) {
-					// Trigger the report!
-					return true;
+					// Do something else....
 				}
 			}			
 			// Other available script variables: {@link org.milyn.container.ContainerRequest request} and {@link org.milyn.cdr.CDRDef cdrDef}. 
@@ -65,39 +60,53 @@ import bsh.Primitive;
  * </pre>
  * @author tfennelly
  */
-public class BeanShellReportingUnit extends AbstractReportingUnit {
+public class BeanShellTransUnit extends AbstractTransUnit {
 	
 	private CDRDef cdrDef;
+	private boolean visitBefore = false;
 	private BshMethod method;
+	private boolean usesCssAccessor = false;
+	private Interpreter bsh;
 
-	public BeanShellReportingUnit(CDRDef cdrDef) {
+	public BeanShellTransUnit(CDRDef cdrDef) {
 		super(cdrDef);
 		this.cdrDef = cdrDef;
-		Interpreter bsh = new Interpreter();
+		this.visitBefore = cdrDef.getBoolParameter("visitBefore", false);
+		
+		bsh = new Interpreter();
 		
 		try {
+			String code = cdrDef.getStringParameter("code", "");
 			StringBuffer methodString = new StringBuffer();
+
+			usesCssAccessor = (code.indexOf("cssAccessor") != -1);
 			
 			// Construct the method signature.
-			methodString.append("public boolean report(").append(Element.class.getName()).append(" element, ");
+			methodString.append("public void visit(").append(Element.class.getName()).append(" element, ");
 			methodString.append(ContainerRequest.class.getName()).append(" request, ");
-			methodString.append(CSSAccessor.class.getName()).append(" cssAccessor, ");
+			if(usesCssAccessor) {
+				methodString.append(CSSAccessor.class.getName()).append(" cssAccessor, ");
+			}
 			methodString.append(CDRDef.class.getName()).append(" cdrDef) {");
 
 			// Add the method code from the cdrl
-			methodString.append(cdrDef.getStringParameter("code"));
+			methodString.append(code);
 			
 			// close the method.
-			methodString.append("return false; }");
+			methodString.append("}");
 
 			// Evaluate the script.
 			bsh.eval(methodString.toString());
 			
-			// Get a reference to the "report" method.
+			// Get a reference to the "visit" method.
 			NameSpace namespace = bsh.getNameSpace();
-			method = namespace.getMethod("report", new Class[] {Element.class, ContainerRequest.class, CSSAccessor.class, CDRDef.class});
+			if(usesCssAccessor) {
+				method = namespace.getMethod("visit", new Class[] {Element.class, ContainerRequest.class, CSSAccessor.class, CDRDef.class});
+			} else {
+				method = namespace.getMethod("visit", new Class[] {Element.class, ContainerRequest.class, CDRDef.class});
+			}
 		} catch (Exception e) {
-			SmooksLogger.getLog().error("Failed to construct BeanShell method instance for report script.", e);
+			SmooksLogger.getLog().error("Failed to construct BeanShell method instance for 'visit' script.", e);
 			IllegalStateException state = new IllegalStateException();
 			state.initCause(e);
 			throw state;
@@ -110,16 +119,18 @@ public class BeanShellReportingUnit extends AbstractReportingUnit {
 
 	public void visit(Element element, ContainerRequest request) {
 		try {
-			CSSAccessor cssAccessor = CSSAccessor.getInstance(request);
-			Object retVal = method.invoke(new Object[] {element, request, cssAccessor, cdrDef}, new Interpreter());
-			if(retVal instanceof Primitive) {
-				Primitive prim = (Primitive)retVal;
-				if(!prim.isNumber() && prim.booleanValue()) {
-					report(element, request);
-				}
+			if(usesCssAccessor) {
+				CSSAccessor cssAccessor = CSSAccessor.getInstance(request);
+				method.invoke(new Object[] {element, request, cssAccessor, cdrDef}, bsh);
+			} else {
+				method.invoke(new Object[] {element, request, cdrDef}, bsh);
 			}
 		} catch (Exception e) {
-			SmooksLogger.getLog().error("Error executing BeanShell method instance for report script.", e);
+			SmooksLogger.getLog().error("Error executing BeanShell method instance for 'visit' script.", e);
 		}
+	}
+
+	public boolean visitBefore() {
+		return visitBefore;
 	}
 }

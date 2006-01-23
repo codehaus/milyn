@@ -3,7 +3,6 @@ package org.milyn.delivery.response;
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayReader;
 import java.io.CharArrayWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -22,6 +21,7 @@ import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.SmooksHtml;
 import org.milyn.delivery.http.HeaderAction;
 import org.milyn.logging.SmooksLogger;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
@@ -61,6 +61,11 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 	 * List of 'remove' HeaderAction instances.
 	 */
 	private List removeHeaderActions = new Vector();
+	/**
+	 * Key for access a request bound DOM passed from a down-stream
+	 * Servlet or Filter.
+	 */
+	public static final String SOURCE_DOCUMENT = HtmlServletResponseWrapper.class.toString();
 	
 	/**
 	 * Constructor.
@@ -186,14 +191,21 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 		
 		targetOutputStream = getResponse().getOutputStream();
 		writer = new OutputStreamWriter(outStream, getCharacterEncoding());
-		
 		content = charArrayWriter.toCharArray();
 		
 		try {
-			Reader inputReader = new CharArrayReader(content);
 			Node deliveryNode;
+			Document sourceDoc = (Document)getContainerRequest().getAttribute(HtmlServletResponseWrapper.SOURCE_DOCUMENT);
 			
-			deliveryNode = smooks.applyTransform(inputReader);
+			if(sourceDoc == null) {
+				Reader inputReader = new CharArrayReader(content);
+
+				logger.info("Filtering content stream from down-stream Servlet/Filter.");
+				deliveryNode = smooks.applyTransform(inputReader);
+			} else {
+				logger.info("Filtering W3C DOM from down-stream Servlet/Filter.");
+				deliveryNode = smooks.applyTransform(sourceDoc);
+			}
 			smooks.serialize(deliveryNode, writer);
 			writer.flush();
 			super.setIntHeader("Content-Length", outStream.size());
