@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry output="test/junit/classes" kind="src" path="test/junit/src"/>
-	<classpathentry kind="lib" path="lib/milyn-commons-0.6.jar"/>
 	<classpathentry kind="lib" path="lib/servlet.jar"/>
 	<classpathentry kind="lib" path="test/junit/lib/httpunit.jar"/>
 	<classpathentry kind="lib" path="test/junit/lib/mockobjects-0.07-core.jar"/>
