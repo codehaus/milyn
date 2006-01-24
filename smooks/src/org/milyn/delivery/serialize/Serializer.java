@@ -92,7 +92,8 @@ public class Serializer {
 		// Set the default SerializationUnit
 		defaultSU = (SerializationUnit)serializationUnits.get("*");
 		if(defaultSU == null) {
-			defaultSU = new DefaultSerializationUnit(null);
+			CDRDef cdrDef = new CDRDef("*", "*", DefaultSerializationUnit.class.getName());
+			defaultSU = new DefaultSerializationUnit(cdrDef);
 		}
 	}
 	
@@ -192,14 +193,25 @@ public class Serializer {
 	 * @throws IOException Exception writing to Writer. 
 	 */
 	private void recursiveDOMWrite(Element element, Writer writer) throws IOException {
-		SerializationUnit elementSU = (SerializationUnit)serializationUnits.get(element.getTagName());
+		String elementName;
+		SerializationUnit elementSU;
 		NodeList children = element.getChildNodes();
-		
+		boolean isInNamespace;
+
+		elementName = element.getLocalName();
+		if(elementName == null) {
+			elementName = element.getTagName();
+		}
+
+		elementSU = (SerializationUnit)serializationUnits.get(elementName);
 		if(elementSU == null) {
 			elementSU = defaultSU;
 		}
-
-		elementSU.writeElementStart(element, writer, containerRequest);
+		
+		isInNamespace = elementSU.isInNamespace(element);
+		if(isInNamespace) {
+			elementSU.writeElementStart(element, writer, containerRequest);
+		}
 		if(children != null && children.getLength() > 0) {
 			int childCount = children.getLength();
 
@@ -236,6 +248,8 @@ public class Serializer {
 				}
 			}
 		}
-		elementSU.writeElementEnd(element, writer, containerRequest);
+		if(isInNamespace) {
+			elementSU.writeElementEnd(element, writer, containerRequest);
+		}
 	}
 }

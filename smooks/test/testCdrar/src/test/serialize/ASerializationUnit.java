@@ -21,7 +21,7 @@ import java.io.Writer;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
-import org.milyn.delivery.serialize.SerializationUnit;
+import org.milyn.delivery.serialize.AbstractSerializationUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
@@ -33,10 +33,10 @@ import org.w3c.dom.Text;
  * 
  * @author tfennelly
  */
-public class ASerializationUnit implements SerializationUnit {
+public class ASerializationUnit extends AbstractSerializationUnit {
 	
 	public ASerializationUnit(CDRDef unitDef) {
-		
+		super(unitDef);
 	}
 
 	/* (non-Javadoc)

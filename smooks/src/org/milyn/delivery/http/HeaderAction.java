@@ -17,6 +17,7 @@
 package org.milyn.delivery.http;
 
 import org.milyn.cdr.CDRDef;
+import org.milyn.delivery.AbstractContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnit;
 
 /**
@@ -24,7 +25,7 @@ import org.milyn.delivery.ContentDeliveryUnit;
  * content delivery response. 
  * @author tfennelly
  */
-public class HeaderAction implements ContentDeliveryUnit {
+public class HeaderAction extends AbstractContentDeliveryUnit {
 	/**
 	 * Add action param value def.
 	 */
@@ -51,6 +52,8 @@ public class HeaderAction implements ContentDeliveryUnit {
 	 * @param cdrDef action cdres instance.
 	 */
 	public HeaderAction(CDRDef cdrDef) {
+		super(cdrDef);
+		
 		if(cdrDef == null) {
 			IllegalStateException state = new IllegalStateException("Bad HeaderAction defintion.");
 			state.initCause(new IllegalArgumentException("null 'unitDef' arg in constructor call."));

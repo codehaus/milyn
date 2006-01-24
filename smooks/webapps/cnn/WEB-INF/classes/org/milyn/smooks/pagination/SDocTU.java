@@ -21,6 +21,7 @@ import java.util.Collection;
 import org.milyn.delivery.SmooksHtml;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
+import org.milyn.delivery.trans.AbstractTransUnit;
 import org.milyn.delivery.trans.TransUnit;
 import org.w3c.dom.Element;
 
@@ -28,13 +29,14 @@ import org.w3c.dom.Element;
  * sdoc transformation unit.
  * @author tfennelly
  */
-public class SDocTU implements TransUnit {
+public class SDocTU extends AbstractTransUnit {
 
 	/**
 	 * Public Constructor
 	 * @param unitDef Element CDRDef
 	 */
 	public SDocTU(CDRDef unitDef) {
+		super(unitDef);
 	}
 	
 	/* (non-Javadoc)

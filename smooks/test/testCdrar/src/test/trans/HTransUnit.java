@@ -18,6 +18,7 @@ package test.trans;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
+import org.milyn.delivery.trans.AbstractTransUnit;
 import org.milyn.delivery.trans.TransUnit;
 import org.w3c.dom.Element;
 
@@ -25,9 +26,10 @@ import org.w3c.dom.Element;
  * 
  * @author tfennelly
  */
-public class HTransUnit implements TransUnit {
+public class HTransUnit extends AbstractTransUnit {
 
 	public HTransUnit(CDRDef unitDef) {
+		super(unitDef);
 	}
 
 	/* (non-Javadoc)

@@ -17,6 +17,7 @@
 package org.milyn.delivery.trans;
 
 import org.milyn.cdr.CDRDef;
+import org.milyn.delivery.AbstractContentDeliveryUnit;
 
 /**
  * Abstract TransUnit implementation.
@@ -25,28 +26,13 @@ import org.milyn.cdr.CDRDef;
  * CDRDef param.
  * @author tfennelly
  */
-public abstract class AbstractTransUnit implements TransUnit {
+public abstract class AbstractTransUnit extends AbstractContentDeliveryUnit implements TransUnit {
 
-	private String longDesc;
-	private String shortDesc;
-	
 	/**
 	 * Public constructor.
 	 * @param cdrDef Unit configuration.
 	 */
 	public AbstractTransUnit(CDRDef cdrDef) {
-		if(cdrDef == null) {
-			throw new IllegalArgumentException("null 'cdrDef' arg in constructor call.");
-		}
-		shortDesc = cdrDef.getStringParameter("shortDesc", "'shortDesc' param not set.");
-		longDesc = cdrDef.getStringParameter("description", "'description' param not set.");
-	}
-
-	public String getShortDescription() {
-		return shortDesc;
-	}
-	
-	public String getDetailDescription() {
-		return longDesc;
+		super(cdrDef);
 	}
 }

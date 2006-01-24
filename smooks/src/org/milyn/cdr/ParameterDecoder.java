@@ -16,6 +16,7 @@
 
 package org.milyn.cdr;
 
+import org.milyn.delivery.AbstractContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnit;
 
 /**
@@ -25,13 +26,14 @@ import org.milyn.delivery.ContentDeliveryUnit;
  * The actual decoded {@link java.lang.Object} type depends on the implementation.
  * @author tfennelly
  */
-public abstract class ParameterDecoder implements ContentDeliveryUnit {
+public abstract class ParameterDecoder extends AbstractContentDeliveryUnit {
 
 	/**
 	 * Parameter Decoder Constructor.
 	 * @param cdrDef cdres Configuration.
 	 */
 	public ParameterDecoder(CDRDef cdrDef) {
+		super(cdrDef);
 	}
 
 	/**
