@@ -16,6 +16,8 @@
 
 package org.milyn.delivery;
 
+import org.w3c.dom.Node;
+
 /**
  * Content Delivery Unit interface definition.
  * </p>
@@ -62,4 +64,12 @@ public interface ContentDeliveryUnit {
 	 * @see #getShortDescription()
 	 */
 	public abstract String getDetailDescription();
+	
+	/**
+	 * Is the supplied node in the namespace of the element to which
+	 * this CDU is targeted.
+	 * @param node Node to be checked.
+	 * @return True if the node is in the same namespace, otherwise false.
+	 */
+	public abstract boolean isInNamespace(Node node);
 }

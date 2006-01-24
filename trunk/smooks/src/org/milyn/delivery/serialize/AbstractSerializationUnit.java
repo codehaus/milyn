@@ -17,6 +17,7 @@
 package org.milyn.delivery.serialize;
 
 import org.milyn.cdr.CDRDef;
+import org.milyn.delivery.AbstractContentDeliveryUnit;
 
 /**
  * Abstract SerializationUnit implementation.
@@ -25,12 +26,13 @@ import org.milyn.cdr.CDRDef;
  * CDRDef param.
  * @author tfennelly
  */
-public abstract class AbstractSerializationUnit implements SerializationUnit {
+public abstract class AbstractSerializationUnit extends AbstractContentDeliveryUnit implements SerializationUnit {
 	
 	/**
 	 * Public constructor.
 	 * @param cdrDef Unit CDRDef.
 	 */
 	public AbstractSerializationUnit(CDRDef cdrDef) {
+		super(cdrDef);
 	}
 }

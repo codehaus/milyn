@@ -100,18 +100,21 @@ public final class CDRConfig {
 		Node cdresNode;
 		String cdresSelector = null;
 		String defaultSelector = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-selector"));
+		String defaultNamespace = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-namespace"));
 		String defaultUatarget = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-uatarget"));
 		String defaultPath = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-path"));
 		
 		cdresSelector = "/cdres-list/cdres[" + cdrIndex + "]";
 		while((cdresNode = XmlUtil.getNode(archiveDefDoc, cdresSelector)) != null) {
 			String selector = trimToNull(XmlUtil.getString(cdresNode, "@selector"));
+			String namespace = trimToNull(XmlUtil.getString(cdresNode, "@namespace"));
 			String uatargets = trimToNull(XmlUtil.getString(cdresNode, "@uatarget"));
 			String path = trimToNull(XmlUtil.getString(cdresNode, "@path"));
 			CDRDef cdrDef;
 			
 			try {
-				cdrDef = new CDRDef((selector != null?selector:defaultSelector), 
+				cdrDef = new CDRDef((selector != null?selector:defaultSelector),
+									(namespace != null?namespace:defaultNamespace),
 									(uatargets != null?uatargets:defaultUatarget), 
 									(path != null?path:defaultPath));
 			} catch(IllegalArgumentException e) {

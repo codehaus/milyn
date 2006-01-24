@@ -18,16 +18,17 @@ package test.assembly;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
-import org.milyn.delivery.assemble.AssemblyUnit;
+import org.milyn.delivery.assemble.AbstractAssemblyUnit;
 import org.w3c.dom.Element;
 
 /**
  * 
  * @author tfennelly
  */
-public class AAssemblyUnit implements AssemblyUnit {
+public class AAssemblyUnit extends AbstractAssemblyUnit {
 	
 	public AAssemblyUnit(CDRDef unitDef) {
+		super(unitDef);
 	}
 
 	/* (non-Javadoc)

@@ -188,6 +188,7 @@ public class Parser {
 			Node currentNode = (Node)nodeStack.peek();
 			
 			try {
+				// TODO: What about namespaces?
 				newElement = ownerDocument.createElement(elName);
 				currentNode.appendChild(newElement);
 				if(!emptyElements.contains(elName)) {

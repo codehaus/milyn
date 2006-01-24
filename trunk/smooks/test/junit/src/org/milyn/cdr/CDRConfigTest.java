@@ -137,12 +137,13 @@ public class CDRConfigTest extends TestCase {
 	
 	public void testGetCDRDefinitions() {
 		try {
-			String streamData =	DOC_HEADER + "<cdres-list><cdres selector='a' uatarget='xxx,yyy,zzz' path='/a/b/res.class'/></cdres-list>";
+			String streamData =	DOC_HEADER + "<cdres-list><cdres selector='a' namespace='http://xxxx' uatarget='xxx,yyy,zzz' path='/a/b/res.class'/></cdres-list>";
 			CDRConfig archDef = new CDRConfig("test", new ByteArrayInputStream(streamData.getBytes()));
 			CDRDef unitDefs[] = archDef.getCDRDefs();
 			
 			assertEquals(1, unitDefs.length);
 			assertEquals("a", unitDefs[0].getSelector());
+			assertEquals("http://xxxx", unitDefs[0].getNamespaceURI());
 			assertEquals("/a/b/res.class", unitDefs[0].getPath());
 			assertEquals(3, unitDefs[0].getUaTargets().length);
 		} catch(Exception e) {

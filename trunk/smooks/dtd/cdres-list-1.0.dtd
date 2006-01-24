@@ -6,6 +6,7 @@
 <!ATTLIST cdres-list
 	default-uatarget	CDATA 	#IMPLIED
 	default-selector	CDATA 	#IMPLIED
+	default-namespace	CDATA 	#IMPLIED
 	default-path		CDATA 	#IMPLIED
 >
 
@@ -13,6 +14,7 @@
 <!ATTLIST cdres
 	uatarget	CDATA 	#IMPLIED
 	selector	CDATA 	#IMPLIED
+	namespace	CDATA 	#IMPLIED
 	path 		CDATA 	#IMPLIED
 >
 

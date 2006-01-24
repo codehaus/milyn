@@ -31,6 +31,7 @@ import org.milyn.cdr.CDRStore;
 import org.milyn.cdr.CDRDef;
 import org.milyn.cdr.cdrar.CDRArchiveEntryNotFoundException;
 import org.milyn.container.ContainerRequest;
+import org.milyn.delivery.trans.AbstractTransUnit;
 import org.milyn.delivery.trans.TransUnit;
 import org.milyn.io.StreamUtils;
 import org.w3c.dom.Element;
@@ -66,7 +67,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 				// OK, try get the xsl file from the classpath.
 				xslBytes = StreamUtils.readStream(getClass().getResourceAsStream("/" + cdrDef.getPath()));
 			}
-			return new XslTransUnit(xslBytes, cdrDef.getBoolParameter("visitBefore", false));
+			return new XslTransUnit(cdrDef, xslBytes, cdrDef.getBoolParameter("visitBefore", false));
 		} catch (TransformerConfigurationException e) {
 			InstantiationException instanceException = new InstantiationException("XSL TransUnit class resource [" + cdrDef.getPath() + "] not loadable.  XSL resource invalid.");
 			instanceException.initCause(e);
@@ -82,7 +83,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 	 * XSLT template application TransUnit.
 	 * @author tfennelly
 	 */
-	private static class XslTransUnit implements TransUnit {
+	private static class XslTransUnit extends AbstractTransUnit {
 
 		/**
 		 * XSL template to be applied to the visited element.
@@ -97,11 +98,13 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 		 * Constructor.
 		 * <p/>
 		 * Create the XSL Template from the Content Delivery Resource bytes.
+		 * @param cdrDef Config. 
 		 * @param transUnitRes The XSL file contents to be parsed into an XSL Template.
 		 * @param visitBefore True if XSL is to be applied before visiting child elements.
 		 * @throws TransformerConfigurationException Unable to parse XSL.
 		 */
-		private XslTransUnit(byte[] transUnitRes, boolean visitBefore) throws TransformerConfigurationException {
+		private XslTransUnit(CDRDef cdrDef, byte[] transUnitRes, boolean visitBefore) throws TransformerConfigurationException {
+			super(cdrDef);
 			StreamSource xslStreamSource = new StreamSource(new ByteArrayInputStream(transUnitRes));
 			TransformerFactory transformer = TransformerFactory.newInstance();
 

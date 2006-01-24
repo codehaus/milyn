@@ -17,18 +17,20 @@
 package org.milyn.delivery.assemble;
 
 import org.milyn.cdr.CDRDef;
+import org.milyn.delivery.AbstractContentDeliveryUnit;
 
 /**
  * Abstract AssemblyUnit implementation.
  * @author tfennelly
  */
-public abstract class AbstractAssemblyUnit implements AssemblyUnit {
+public abstract class AbstractAssemblyUnit extends AbstractContentDeliveryUnit implements AssemblyUnit {
 	
 	/**
 	 * Public constructor.
 	 * @param cdrDef Unit CDRDef.
 	 */
 	public AbstractAssemblyUnit(CDRDef cdrDef) {
+		super(cdrDef);
 	}
 
 	/**

@@ -35,7 +35,7 @@ public class HeaderActionTest extends TestCase {
 		try {
 			headerAction = new HeaderAction(null);
 			fail("expected fail - null CDRDef");
-		} catch(IllegalStateException s) {
+		} catch(IllegalArgumentException a) {
 			//OK
 		}
 

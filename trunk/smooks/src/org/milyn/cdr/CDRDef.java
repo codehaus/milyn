@@ -179,6 +179,11 @@ public class CDRDef {
 	 */
 	private HashMap parameters;
 	private int parameterCount;
+	/**
+	 * The XML namespace of the tag to which this config 
+	 * should only be applied.
+	 */
+	private String namespaceURI;
 	
 	/**
 	 * Public constructor.
@@ -216,11 +221,36 @@ public class CDRDef {
 	}
 	
 	/**
+	 * Public constructor.
+	 * @param selector The selector definition.
+	 * @param namespaceURI The XML namespace URI of the element to which this config
+	 * applies.
+	 * @param uatargets The device/profile uaTargets - comma separated uaTargets.
+	 * @param path The cdrar path of the Content Delivery Resource.
+	 */
+	public CDRDef(String selector, String namespaceURI, String uatargets, String path) {
+		this(selector, uatargets, path);
+		if(namespaceURI != null) {
+			this.namespaceURI = namespaceURI.intern();
+		}
+	}
+
+	/**
 	 * Get the selector definition for this CDRDef.
 	 * @return The selector definition.
 	 */
 	public String getSelector() {
 		return selector;
+	}
+
+	/**
+	 * The the XML namespace URI of the element to which this configuration
+	 * applies.
+	 * @return The XML namespace URI of the element to which this configuration
+	 * applies, or null if not namespaced.
+	 */
+	public String getNamespaceURI() {
+		return namespaceURI;
 	}
 
 	/**
@@ -478,4 +508,5 @@ public class CDRDef {
 			return value;
 		}
 	}
+
 }

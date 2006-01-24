@@ -196,14 +196,20 @@ public class SmooksHtml {
 		List nodeListCopy = copyList(element.getChildNodes());
 		int childCount = nodeListCopy.size();
 		Hashtable deviceAssemblyUnits = deliveryConfig.getAssemblyUnits();
-		List elementAssemblyUnits = (Vector)deviceAssemblyUnits.get(element.getTagName());
+		String elementName = element.getLocalName();
+		List elementAssemblyUnits;
+		
+		if(elementName == null) {
+			elementName = element.getTagName();
+		}
+		elementAssemblyUnits = (Vector)deviceAssemblyUnits.get(elementName);
 
 		// Visit elements with assembly units to be applied before iterating the
 		// elements child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
 				AssemblyUnit assemblyUnit = (AssemblyUnit)elementAssemblyUnits.get(i);
-				if(assemblyUnit.visitBefore()) {
+				if(assemblyUnit.visitBefore() && assemblyUnit.isInNamespace(element)) {
 					try {
 						assemblyUnit.visit(element, containerRequest);
 					} catch(Exception e) {
@@ -226,7 +232,7 @@ public class SmooksHtml {
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
 				AssemblyUnit assemblyUnit = (AssemblyUnit)elementAssemblyUnits.get(i);
-				if(!assemblyUnit.visitBefore()) {
+				if(!assemblyUnit.visitBefore() && assemblyUnit.isInNamespace(element)) {
 					try {
 						assemblyUnit.visit(element, containerRequest);
 					} catch(Exception e) {
@@ -244,10 +250,16 @@ public class SmooksHtml {
 	 * @param element Current element being tested.  Starts at the document root element.
 	 */
 	private void buildTransformationList(List transList, Element element) {
-		String elementName = element.getTagName();
-		TransSet transSet = deliveryConfig.getTransSet(elementName);
+		String elementName;
+		TransSet transSet;
 		List visitBeforeTUs = null;
 		List visitAfterTUs = null;
+		
+		elementName = element.getLocalName();
+		if(elementName == null) {
+			elementName = element.getTagName();
+		}
+		transSet = deliveryConfig.getTransSet(elementName);
 		
 		if(transSet != null) {
 			visitBeforeTUs = transSet.getVisitBeforeTransUnits();
@@ -381,7 +393,9 @@ public class SmooksHtml {
 				// every time. Doing this for every element could be very 
 				// costly.
 				try {
-					transUnit.visit(element, containerRequest);
+					if(transUnit.isInNamespace(element)) {
+						transUnit.visit(element, containerRequest);
+					}
 				} catch(Exception e) {
 					logger.error("Failed to apply transformation unit [" + transUnit.getClass().getName() + "] to element [" + element.getTagName() + "].", e);
 				}

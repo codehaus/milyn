@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryUnit;
+import org.w3c.dom.Node;
 
 /**
  * Abstract Servlet Response Wrapper for the Smooks framework.
@@ -51,7 +52,19 @@ public abstract class ServletResponseWrapper extends HttpServletResponseWrapper 
 		super(originalResponse);
 		this.containerRequest = containerRequest;
 	}
-
+	
+	/**
+	 * Is the supplied node in the namespace of this response wrapper.
+	 * <p/>
+	 * This doesn't really make sense on this ContentDeliveryUnit, so it
+	 * always returns true.
+	 * @param node Node to be checked.
+	 * @return True if the node is in the same namespace, otherwise false.
+	 */
+	public boolean isInNamespace(Node node) {
+		return true;
+	}
+	
 	/**
 	 * Get the {@link ContainerRequest} instance associated with this response wrapper. 
 	 * @return The {@link ContainerRequest}.
