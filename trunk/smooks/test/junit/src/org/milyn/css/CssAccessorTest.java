@@ -49,6 +49,9 @@ public class CssAccessorTest extends TestCase {
 		CSSStylesheet styleSheet1;
 		CSSStylesheet styleSheet2;
 		
+		request.uaContext.addProfile("screen");
+		request.uaContext.addProfile("audio");
+		
 		styleSheet1 = CssTestUtil.parseCSS("style1.css");
 		store.add(styleSheet1, style);
 		

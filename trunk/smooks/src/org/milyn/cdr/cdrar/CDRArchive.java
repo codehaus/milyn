@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -218,6 +219,8 @@ public final class CDRArchive {
 		Vector matchingCDRDefsColl = new Vector();
 		CDRDef[] matchingCDRDefs = null;
 		
+		// TODO: The following loops need to be cleaned up
+		
 		// Iterate over archive definitions on this cdrar file.
 		for(int archiveDefsIndex = 0; archiveDefsIndex < archiveDefs.size(); archiveDefsIndex++) {
 			CDRConfig arcDef = (CDRConfig)archiveDefs.elementAt(archiveDefsIndex);
@@ -227,31 +230,14 @@ public final class CDRArchive {
 				// Iterate over the CDRDefs defined on the current CDRConfig
 				for(int unitDefIndex = 0; unitDefIndex < cdrDefs.length; unitDefIndex++) {
 					CDRDef cdrDef = cdrDefs[unitDefIndex];
-					String[] devices = cdrDef.getUaTargets();
+					String[] uaTargetExpressions = cdrDef.getUaTargets();
 					
-					for(int deviceIndex = 0; deviceIndex < devices.length; deviceIndex++) {
-						String device = devices[deviceIndex];
-						boolean negated = device.startsWith("not:");
-
-						if(!negated) {
-							// Match against a wildcard astrix.
-							if(device.equals("*")) {
-								matchingCDRDefsColl.addElement(cdrDef);
-								break;
-							}
-							// Is this cdres device name the commonname on the deviceContext,
-							// or one of its profiles.
-							if(UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
-								matchingCDRDefsColl.addElement(cdrDef);
-								break;
-							} 
-						} else {
-							// Trim off the "not:" prefix.
-							device = device.substring(4);
-							if(!UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
-								matchingCDRDefsColl.addElement(cdrDef);
-								break;
-							} 
+					for(int expIndex = 0; expIndex < uaTargetExpressions.length; expIndex++) {
+						String expression = uaTargetExpressions[expIndex];
+						
+						if(isMatchingDevice(expression, deviceContext)) {
+							matchingCDRDefsColl.addElement(cdrDef);
+							break;
 						}
 					}
 				}
@@ -262,6 +248,50 @@ public final class CDRArchive {
 		matchingCDRDefsColl.toArray(matchingCDRDefs);
 		
 		return matchingCDRDefs;
+	}
+
+	/**
+	 * @param uaTargetExpression
+	 * @param deviceContext
+	 * @return
+	 */
+	private boolean isMatchingDevice(String uaTargetExpression, UAContext deviceContext) {
+		StringTokenizer tokenizer = new StringTokenizer(uaTargetExpression, "+");
+		
+		// So, the uaTargetExpression will in one of the following
+		// forms (note: only supports "AND" operations):
+		// 1. "deviceX" (or "profileX") i.e. a single entity.
+		// 2. "deviceX + profileY" i.e. a compound entity.
+		// 3. "profileX + profileY" i.e. a compound entity.
+		// 4. "profileX + not:profileY" i.e. a compound entity.
+		while(tokenizer.hasMoreTokens()) {
+			String device = tokenizer.nextToken().trim();
+			boolean negated = device.startsWith("not:");
+	
+			if(!negated) {
+				// Match against a wildcard astrix.
+				if(device.equals("*")) {
+					continue; // matches!
+				} else if(UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
+					// Is this cdres device name the commonname on the deviceContext,
+					// or one of its profiles.
+					continue; // matches!
+				} 
+			} else {
+				// Trim off the "not:" prefix.
+				device = device.substring(4);
+				if(!UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
+					continue; // matches!
+				} 
+			}
+
+			// Not a match => the rest of the expression is ignored
+			// because we only support AND operations (but you can "not"
+			// an entity) meaning all entities must be a match.
+			return false;
+		}
+		
+		return true;
 	}
 	
 	/**
