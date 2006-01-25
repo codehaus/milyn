@@ -1,6 +1,15 @@
+##################################################################
+# Common configurations.
+##################################################################
 /WEB-INF/cdr/dtd.cdrar
 /WEB-INF/cdr/smooks-base-0.1.cdrar
 /WEB-INF/cdr/common.cdrl
 
-# XForms Chiba transformations.
-/WEB-INF/cdr/xforms/head.cdrl
+##################################################################
+# XForms Chiba configurations.
+##################################################################
+/WEB-INF/cdr/xforms/html4/head.cdrl
+
+# Make sure the following config file is loaded after all other
+# configs containing XForms serialization unit configs.
+#/WEB-INF/cdr/xforms/unsupported.cdrl

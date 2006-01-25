@@ -6,7 +6,7 @@
 	
 	Document <head> transformations.
 -->
-<cdres-list default-uatarget="not:xforms" default-namespace="http://www.w3.org/2002/xforms"> 
+<cdres-list default-uatarget="html4 + not:xforms" default-namespace="http://www.w3.org/2002/xforms"> 
 
 	<!--
 		Add the <link> element for the Chiba XForms CSS file.
