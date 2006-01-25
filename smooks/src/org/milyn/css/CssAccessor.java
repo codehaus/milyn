@@ -24,10 +24,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.css.StyleSheetStore.StoreEntry;
 import org.milyn.container.ContainerRequest;
+import org.milyn.device.UAContext;
+import org.milyn.device.UAContextUtil;
 import org.milyn.magger.CSSParser;
 import org.milyn.magger.CSSProperty;
 import org.milyn.magger.CSSRule;
 import org.milyn.magger.CSSStylesheet;
+import org.w3c.css.sac.SACMediaList;
 import org.w3c.dom.Element;
 
 /**
@@ -95,6 +98,9 @@ public class CSSAccessor {
 
 	/**
 	 * Get the named CSS property for the supplied DOM element, if one exists.
+	 * <p/>
+	 * Cross references the rules media list (if specified) against the
+	 * requesting browser/device name and profile.
 	 * @param domElement The DOM element.
 	 * @param inlinePropertyName The required CSS property.
 	 * @return The {@link CSSProperty} associated with the named CSS property for the supplied element,
@@ -122,6 +128,7 @@ public class CSSAccessor {
 			CSSStylesheet styleSheet = storeEntry.getStylesheet();
 			List rules = styleSheet.getRules();
 			int ruleCount = rules.size();
+			UAContext uaContext = request.getUseragentContext();
 			
 			// Iterate over the rules
 			for(int i = 0; i < ruleCount; i++) {
@@ -135,7 +142,8 @@ public class CSSAccessor {
 				// interns all the property names, therefore allowing us to
 				// perform a direct ref comparison.
 				if(nextProperty.getName() == internPropertyName && 
-						nextRule.getSelector().match(domElement, null)) {
+						nextRule.getSelector().match(domElement, null) &&
+						isForDevice(nextRule, uaContext)) {
 					
 					if(matchingRule == null) {
 						matchingRule = nextRule;
@@ -148,6 +156,34 @@ public class CSSAccessor {
 		}
 		
 		return (matchingRule != null?matchingRule.getProperty():null);
+	}
+
+	/**
+	 * Is the supplied rule targeted at the requesting device.
+	 * <p/>
+	 * Performs a check of the rules media list against the devices
+	 * name or profileset. 
+	 * @param nextRule CSS Rule.
+	 * @param uaContext Requesting device uaContext.
+	 * @return True if the rule is targeted at the device, otherwise
+	 * false.
+	 */
+	private boolean isForDevice(CSSRule nextRule, UAContext uaContext) {
+		SACMediaList targetMediaList = nextRule.getMediaList();
+		
+		if(targetMediaList == null || targetMediaList.getLength() == 0) {
+			return true;
+		}
+		
+		int listLen = targetMediaList.getLength();
+		for(int i = 0; i < listLen; i++) {
+			String media = targetMediaList.item(i);
+			if(UAContextUtil.isDeviceOrProfile(media, uaContext)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/**

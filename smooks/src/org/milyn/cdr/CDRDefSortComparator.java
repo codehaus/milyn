@@ -58,6 +58,11 @@ import org.milyn.device.UAContext;
 	} else {
 		// Explicit selector listed
 		specificity += 10;
+	}
+		
+	// Check the 'namespace' attribute.
+	if(cdrDef.getNamespaceURI() != null) {
+		specificity += 5;
 	}</pre>  
  * For more details on this please refer to the code in this class.
  * 
@@ -137,6 +142,11 @@ public class CDRDefSortComparator implements Comparator {
 		} else {
 			// Explicit selector listed
 			specificity += 10;
+		}
+		
+		// Check the 'namespace' attribute.
+		if(cdrDef.getNamespaceURI() != null) {
+			specificity += 5;
 		}
 		
 		return specificity;
