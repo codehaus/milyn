@@ -128,7 +128,6 @@ public class CSSAccessor {
 			CSSStylesheet styleSheet = storeEntry.getStylesheet();
 			List rules = styleSheet.getRules();
 			int ruleCount = rules.size();
-			UAContext uaContext = request.getUseragentContext();
 			
 			// Iterate over the rules
 			for(int i = 0; i < ruleCount; i++) {
@@ -143,7 +142,7 @@ public class CSSAccessor {
 				// perform a direct ref comparison.
 				if(nextProperty.getName() == internPropertyName && 
 						nextRule.getSelector().match(domElement, null) &&
-						isForDevice(nextRule, uaContext)) {
+						isForDevice(nextRule)) {
 					
 					if(matchingRule == null) {
 						matchingRule = nextRule;
@@ -164,17 +163,17 @@ public class CSSAccessor {
 	 * Performs a check of the rules media list against the devices
 	 * name or profileset. 
 	 * @param nextRule CSS Rule.
-	 * @param uaContext Requesting device uaContext.
 	 * @return True if the rule is targeted at the device, otherwise
 	 * false.
 	 */
-	private boolean isForDevice(CSSRule nextRule, UAContext uaContext) {
+	private boolean isForDevice(CSSRule nextRule) {
 		SACMediaList targetMediaList = nextRule.getMediaList();
 		
 		if(targetMediaList == null || targetMediaList.getLength() == 0) {
 			return true;
 		}
 		
+		UAContext uaContext = request.getUseragentContext();
 		int listLen = targetMediaList.getLength();
 		for(int i = 0; i < listLen; i++) {
 			String media = targetMediaList.item(i);
