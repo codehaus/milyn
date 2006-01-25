@@ -162,12 +162,12 @@ public class CSSAccessor {
 	 * <p/>
 	 * Performs a check of the rules media list against the devices
 	 * name or profileset. 
-	 * @param nextRule CSS Rule.
+	 * @param rule CSS Rule.
 	 * @return True if the rule is targeted at the device, otherwise
 	 * false.
 	 */
-	private boolean isForDevice(CSSRule nextRule) {
-		SACMediaList targetMediaList = nextRule.getMediaList();
+	private boolean isForDevice(CSSRule rule) {
+		SACMediaList targetMediaList = rule.getMediaList();
 		
 		if(targetMediaList == null || targetMediaList.getLength() == 0) {
 			return true;
