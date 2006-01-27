@@ -13,7 +13,7 @@
 	<classpathentry kind="lib" path="lib/dwr.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/mail.jar"/>
-	<classpathentry kind="lib" path="lib/milyn-smooks-0.5.jar"/>
+	<classpathentry sourcepath="/smooks" kind="lib" path="lib/milyn-smooks-0.5.jar"/>
 	<classpathentry kind="lib" path="lib/spring-1.1.2-core.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl-2.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis.jar"/>
