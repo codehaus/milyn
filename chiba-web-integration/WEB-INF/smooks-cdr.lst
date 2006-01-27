@@ -9,6 +9,8 @@
 # XForms Chiba configurations.
 ##################################################################
 /WEB-INF/cdr/xforms/html4/head.cdrl
+/WEB-INF/cdr/xforms/html4/group.cdrl
+/WEB-INF/cdr/xforms/html4/controls.cdrl
 
 # Make sure the following config file is loaded after all other
 # configs containing XForms serialization unit configs.
