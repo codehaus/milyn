@@ -591,4 +591,49 @@ public abstract class DomUtils {
 		Text literal = document.createTextNode(literalText);
 		element.appendChild(literal);
 	}
+
+	/**
+	 * Get the child element having the supplied localname, position
+	 * and namespace.
+	 * <p/>
+	 * Can be used instead of XPath.
+	 * @param parent Parent element to be searched.
+	 * @param localname Localname of the element required.
+	 * @param position The position of the element relative to other sibling
+	 * elements having the same name (and namespace if specified) e.g. if
+	 * searching for the 2nd &ltinput&gt; element, this param needs to
+	 * have a value of 2. 
+	 * @param namespaceURI Namespace URI of the required element, or null
+	 * if a namespace comparison is not to be performed.
+	 * @return
+	 */
+	public static Element getElement(Element parent, String localname, int position, String namespaceURI) {
+		NodeList children = parent.getChildNodes();
+		int count = children.getLength();
+		int nextPosition = 1;
+		
+		for(int i = 0; i < count; i++) {
+			Node child = children.item(i);
+			
+			if(child.getNodeType() == Node.ELEMENT_NODE) {
+				Element element = (Element)child;
+				if(element.getLocalName().equals(localname)) {
+					// The local name matches the element we're after...
+					if(namespaceURI != null && 
+							!element.getNamespaceURI().equals(namespaceURI)) {
+						// ... the namespaces don't match.
+						continue;
+					} else if(nextPosition != position) {
+						// ... it's not in the position we're looking for.
+						nextPosition++;
+						continue;
+					}
+					// ... this is the element!
+					return element;
+				}
+			}
+		}
+		
+		return null;
+	}
 }
