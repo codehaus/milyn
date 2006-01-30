@@ -9,6 +9,7 @@
 	<property name="testCdrar" value="${build.root}/test/testCdrar" />
 	<property name="testCdrar.src" value="${testCdrar}/src" />
 	<property name="testCdrar.classes" value="${testCdrar}/classes" />
+	<property name="test-cdrars-maint" value="${build.root}/test/test-cdrars-maint" />
 
     <!-- Set the classpath. -->
 	<path id="build.classpath">
@@ -69,6 +70,10 @@
 		<javac srcdir="${testCdrar.src}" destdir="${testCdrar.classes}" debug="on">
 			<classpath refid="build.classpath" />
 		</javac>
+		<javac srcdir="${test-cdrars-maint}/CDRClassLoaderTest" destdir="${test-cdrars-maint}/CDRClassLoaderTest" debug="on">
+			<classpath refid="build.classpath" />
+		</javac>
+			
 		<delete quiet="true" file="${testCdrar.src}/../testCdrar.cdrar" />
         <jar destfile="${testCdrar.src}/../testCdrar.cdrar" >
             <fileset dir="${testCdrar.classes}" />
@@ -106,6 +111,7 @@
 		<delete quiet="true"  dir="${testCdrar.classes}" />
 		<delete quiet="true"  dir="${testCdrar}" includes="**/*.class" />
 		<delete quiet="true" file="${testCdrar.src}/../testCdrar.cdrar" />
+		<delete quiet="true"  dir="${test-cdrars-maint}/CDRClassLoaderTest" includes="**/*.class" />
 	</target>
 </project>
 

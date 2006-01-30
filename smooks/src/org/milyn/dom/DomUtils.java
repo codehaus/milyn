@@ -208,24 +208,76 @@ public abstract class DomUtils {
 	}
 	
 	/**
+	 * Get a boolean attribute from the supplied element.
+	 * @param element The element.
+	 * @param namespaceURI Namespace URI of the required attribute.
+	 * @param attribName The attribute name.
+	 * @return True if the attribute value is "true" (case insensitive), otherwise false.
+	 */
+	public static boolean getBooleanAttrib(Element element, String attribName, String namespaceURI) {
+		String attribVal = element.getAttributeNS(namespaceURI, attribName);
+		
+		return (attribVal != null?attribVal.equalsIgnoreCase("true"):false);
+	}
+	
+	/**
 	 * Get the parent element of the supplied element having the
 	 * specified tag name.
 	 * @param child Child element. 
-	 * @param parentName Parent element name.
+	 * @param parentLocalName Parent element local name.
 	 * @return The first parent element of "child" having the tagname "parentName",
 	 * or null if no such parent element exists.
 	 */
-	public static Element getParentElement(Element child, String parentName) {
-		Element parent = (Element)child.getParentNode();
+	public static Element getParentElement(Element child, String parentLocalName) {
+		return getParentElement(child, parentLocalName, null);
+	}
+	
+	/**
+	 * Get the parent element of the supplied element having the
+	 * specified tag name.
+	 * @param child Child element. 
+	 * @param parentLocalName Parent element local name.
+	 * @param namespaceURI Namespace URI of the required parent element,
+	 * or null if a non-namespaced get is to be performed.
+	 * @return The first parent element of "child" having the tagname "parentName",
+	 * or null if no such parent element exists.
+	 */
+	public static Element getParentElement(Element child, String parentLocalName, String namespaceURI) {
+		Node parentNode = child.getParentNode();
 		
-		while(parent != null) {
-			if(parent.getTagName().equalsIgnoreCase(parentName)) {
-				return parent;
-			} 
-			parent = (Element)parent.getParentNode();
+		while(parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
+			Element parentElement = (Element)parentNode;
+
+			if(getName(parentElement).equalsIgnoreCase(parentLocalName)) {
+				if(namespaceURI == null) {
+					return parentElement;
+				} else if(parentElement.getNamespaceURI().equals(namespaceURI)) {
+					return parentElement;
+				}
+			}
+			parentNode = parentNode.getParentNode();
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Get the name from the supplied element.
+	 * <p/>
+	 * Returns the {@link Node#getLocalName() localName} of the element
+	 * if set (namespaced element), otherwise the 
+	 * element's {@link Element#getTagName() tagName} is returned.
+	 * @param element The element.
+	 * @return The element name.
+	 */
+	private static String getName(Element element) {
+		String name = element.getLocalName();
+		
+		if(name != null) {
+			return name;
+		} else {
+			return element.getTagName();
+		}
 	}
 	
 	/**
@@ -238,7 +290,28 @@ public abstract class DomUtils {
 	 * @return The attribute value, or <code>null</code> if unset.
 	 */
 	public static String getAttributeValue(Element element, String attributeName) {
-		String attributeValue = element.getAttribute(attributeName);
+		return getAttributeValue(element, attributeName, null);
+	}
+	
+	/**
+	 * Get attribute value, returning <code>null</code> if unset.
+	 * <p/>
+	 * Some DOM implementations return an empty string for an unset
+	 * attribute.
+	 * @param element The DOM element.
+	 * @param attributeName The attribute to get.
+	 * @param namespaceURI Namespace URI of the required attribute, or null
+	 * to perform a non-namespaced get.
+	 * @return The attribute value, or <code>null</code> if unset.
+	 */
+	public static String getAttributeValue(Element element, String attributeName, String namespaceURI) {
+		String attributeValue;
+		
+		if(namespaceURI == null) {
+			attributeValue = element.getAttribute(attributeName);
+		} else {
+			attributeValue = element.getAttributeNS(namespaceURI, attributeName);
+		}
 		
 		if(attributeValue.length() == 0 && !element.hasAttribute(attributeName)) {
 			return null;
@@ -603,6 +676,23 @@ public abstract class DomUtils {
 	 * elements having the same name (and namespace if specified) e.g. if
 	 * searching for the 2nd &ltinput&gt; element, this param needs to
 	 * have a value of 2. 
+	 * @return
+	 */
+	public static Element getElement(Element parent, String localname, int position) {
+		return getElement(parent, localname, position, null);
+	}
+
+	/**
+	 * Get the child element having the supplied localname, position
+	 * and namespace.
+	 * <p/>
+	 * Can be used instead of XPath.
+	 * @param parent Parent element to be searched.
+	 * @param localname Localname of the element required.
+	 * @param position The position of the element relative to other sibling
+	 * elements having the same name (and namespace if specified) e.g. if
+	 * searching for the 2nd &ltinput&gt; element, this param needs to
+	 * have a value of 2. 
 	 * @param namespaceURI Namespace URI of the required element, or null
 	 * if a namespace comparison is not to be performed.
 	 * @return
@@ -617,7 +707,7 @@ public abstract class DomUtils {
 			
 			if(child.getNodeType() == Node.ELEMENT_NODE) {
 				Element element = (Element)child;
-				if(element.getLocalName().equals(localname)) {
+				if(getName(element).equals(localname)) {
 					// The local name matches the element we're after...
 					if(namespaceURI != null && 
 							!element.getNamespaceURI().equals(namespaceURI)) {
