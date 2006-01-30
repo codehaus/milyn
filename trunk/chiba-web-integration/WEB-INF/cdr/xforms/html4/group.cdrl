@@ -13,9 +13,5 @@
 		in html <form> tags.
 	-->
 	<cdres selector="group" path="org.chiba.smooks.WriteGroupAsFieldset" />
-	<!--
-		Just convert the labels to legends.
-	-->
-	<cdres selector="label" path="org.chiba.smooks.WriteLabelAsLegend" />	
 	
 </cdres-list>

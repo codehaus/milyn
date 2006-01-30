@@ -48,7 +48,7 @@ public class SmooksUIGenerator implements UIGenerator {
 
 	public void generate() throws XFormsException {
 		try {
-			output.write("Response DOM is bound to the request.");
+			output.write("Response DOM is bound to the request. Use Smooks filter to render.");
 		} catch (IOException e) {
             throw new XFormsException(e);
 		}
