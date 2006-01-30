@@ -33,7 +33,7 @@ public class WriteOutputControl extends DefaultSerializationUnit {
 
 	public void writeElementStart(Element output, Writer writer, ContainerRequest request) throws IOException {
 		String id = output.getAttribute("id");
-		String appearance = output.getAttribute(output.getPrefix() + ":appearance");
+		String appearance = output.getAttributeNS(Namespace.XFORMS, "appearance");
 		String classAttrib = output.getAttribute("class");
 		Element chibaData = DomUtils.getElement(output, "data", 1, Namespace.CHIBA);
 		String dataText;

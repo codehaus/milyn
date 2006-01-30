@@ -7,7 +7,7 @@
 		Turn CSS processing on for all browsers - <style> and <link> elements. 
 		See CssStyleScraper Javadoc - core Smooks Javadoc.
 	-->
-	<cdres selector="style" path="org/milyn/css/CSSStyleScraper.class" />
-	<cdres selector="link" path="org/milyn/css/CSSStyleScraper.class" />
+	<cdres selector="style" path="org.milyn.css.CSSStyleScraper" />
+	<cdres selector="link" path="org.milyn.css.CSSStyleScraper" />
 	
 </cdres-list>

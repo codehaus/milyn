@@ -22,6 +22,8 @@ import java.io.Writer;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.serialize.DefaultSerializationUnit;
+import org.milyn.dom.DomUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class WriteGroupAsFieldset extends DefaultSerializationUnit {
@@ -35,6 +37,8 @@ public class WriteGroupAsFieldset extends DefaultSerializationUnit {
 	public void writeElementStart(Element group, Writer writer, ContainerRequest request) throws IOException {
 		if(isOuterGroup(group, request)) {
 			// TODO: Where does the action URL come from? 
+			// TODO: Write a transformation Unit that's targeted at all xforms elements such 
+			// that all "outter" XForms elements are wrapped in a <form>.
 			writer.write("<form name=\"chibaform\" action=\"" 
 					+ request.getContextPath() 
 					+ "/PlainHtml\" method=\"POST\" "
@@ -45,14 +49,30 @@ public class WriteGroupAsFieldset extends DefaultSerializationUnit {
 		writer.write("<fieldset id=\""
 			+ group.getAttribute("id") + "\" class=\"group "
 			+ group.getAttribute("class") + " " 
-			+ group.getAttribute(group.getPrefix() + ":appearance")
+			+ group.getAttributeNS(Namespace.XFORMS, "appearance")
 			+ "-group\">\n");
+		
+		translateLabel(group);
+	}
+
+	private void translateLabel(Element group) throws IOException {
+		Element label = DomUtils.getElement(group, "label", 1);
+		
+		if(label != null) {
+			Document doc = group.getOwnerDocument();
+			Element legend = doc.createElement("legend");
+			
+			legend.setAttribute("id", group.getAttribute("id") + "-label");
+			legend.setAttribute("class", "label");
+			group.replaceChild(legend, label);
+			DomUtils.copyChildNodes(label, legend);
+		}
 	}
 
 	public void writeElementEnd(Element group, Writer writer, ContainerRequest request) throws IOException {
 		writer.write("</fieldset>\n");
 		if(isOuterGroup(group, request)) {
-			writer.write("</form>\n"); 
+			writer.write("</form>"); 
 		}
 	}
 
