@@ -20,6 +20,7 @@ import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.trans.AbstractTransUnit;
 import org.milyn.dom.DomUtils;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -46,17 +47,36 @@ public class TransformInputControl extends AbstractTransUnit {
 
 	private void createStandardInput(Element input, Element chibaData, String type) {
 		String id = input.getAttribute("id");
-		Element titleAttribContainer = DomUtils.getElement(input, "hint", 1, Namespace.XFORMS);
 		String readonly = chibaData.getAttributeNS(Namespace.CHIBA, "readonly");
 		String dataText = chibaData.getTextContent();
-		StringBuffer transBuf = new StringBuffer();		
+		Document document = input.getOwnerDocument();
+		Element htmlInput;
 		
 		ControlTransUtils.wrapControl(input, chibaData, id);
 		
-		transBuf.append("<input id=\"").append(id).append("-value\" ")
-				.append("name=\"").append(Prefix.DATA).append(id).append("\" ")
-				.append("type=\"text\" value=\"").append(dataText).append("\" ");
+		htmlInput = document.createElement("input");
+		htmlInput.setAttribute("id", id + "-value");
+		htmlInput.setAttribute("name", Prefix.DATA + id);
+		htmlInput.setAttribute("type", "text");
+		htmlInput.setAttribute("value", dataText);
 		
+		addTitleAttribute(input, htmlInput);
+		if("true".equals(readonly)) {
+			htmlInput.setAttribute("disabled", "disabled");
+		}
+		addClassAttribute(input, htmlInput);
+		
+		// replace the xforms input with the html input.
+		input.getParentNode().replaceChild(htmlInput, input);
+	}
+
+	/**
+	 * @param input
+	 * @param htmlInput
+	 * @throws DOMException
+	 */
+	private void addTitleAttribute(Element input, Element htmlInput) throws DOMException {
+		Element titleAttribContainer = DomUtils.getElement(input, "hint", 1, Namespace.XFORMS);
 		if(titleAttribContainer == null) {
 			titleAttribContainer = DomUtils.getElement(input, "alert", 1, Namespace.XFORMS);
 		}
@@ -64,25 +84,12 @@ public class TransformInputControl extends AbstractTransUnit {
 			String title = titleAttribContainer.getTextContent();
 			
 			if(title != null && !(title = title.trim()).equals("")) {
-				transBuf.append("title=\"").append(title).append("\" ");
+				htmlInput.setAttribute("title", title);
 			}
 		}
-		
-		if("true".equals(readonly)) {
-			transBuf.append("disabled=\"disabled\" ");
-		}
-		
-		writeClassAttribute(input, transBuf);
-
-		transBuf.append("/>");
-		
-		// replace the xforms input with the html form input.
-		Document document = input.getOwnerDocument();
-		Text transNode = document.createTextNode(transBuf.toString());
-		input.getParentNode().replaceChild(transNode, input);
 	}
 
-	private void writeClassAttribute(Element input, StringBuffer transBuf) {
+	private void addClassAttribute(Element input, Element htmlInput) {
 		Element repeat = DomUtils.getParentElement(input, "repeat", Namespace.XFORMS);
 		String repeatId;
 		
@@ -90,17 +97,17 @@ public class TransformInputControl extends AbstractTransUnit {
 			repeatId = repeat.getAttribute("id").trim();
 			if(!repeatId.equals("")) {
 				int position = DomUtils.countElementsBefore(input, input.getLocalName()) + 1;
-				transBuf.append("class=\"" + repeatId + "-" + position +" value\" ");
+				htmlInput.setAttribute("class", repeatId + "-" + position + " value");
 				return;
 			}
 		}
 		String classAttrib = input.getAttribute("class").trim();
 		if(!classAttrib.equals("")) {
 			int position = DomUtils.countElementsBefore(input, input.getLocalName()) + 1;
-			transBuf.append("class=\"" + classAttrib + " value\" ");
+			htmlInput.setAttribute("class", classAttrib + " value");
 			return;
 		}
-		transBuf.append("class=\"value\" ");
+		htmlInput.setAttribute("class", "value");
 	}
 
 	public boolean visitBefore() {
