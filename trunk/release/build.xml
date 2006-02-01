@@ -13,15 +13,21 @@
 		<ant antfile="rel-tinak.xml"/>
     </target>
 
+	<target name="rel-magger" description="Milyn Magger release.">
+		<mkdir dir="${public_html}" />
+		<ant antfile="rel-magger.xml"/>
+    </target>
+
 	<target name="rel-smooks" description="Milyn Smooks release.">
 		<mkdir dir="${public_html}" />
 		<ant antfile="rel-smooks.xml"/>
     </target>
 	
-	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Sourceforge Docs.">
+	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Docs.">
 		<mkdir dir="${public_html}" />
 		<ant antfile="rel-commons.xml" target="deploy-javadocs"/>
 		<ant antfile="rel-tinak.xml" target="deploy-javadocs"/>
+		<ant antfile="rel-magger.xml" target="deploy-javadocs"/>
 		<ant antfile="rel-smooks.xml" target="deploy-javadocs"/>
     </target>
 	
