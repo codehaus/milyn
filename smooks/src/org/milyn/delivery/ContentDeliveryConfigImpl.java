@@ -514,9 +514,13 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		 * @param serializationUnit SerializationUnit to be added.
 		 */
 		private void addSerializationUnit(String elementName, SerializationUnit serializationUnit) {
-			if(!serializationUnitTable.containsKey(elementName)) {
-				serializationUnitTable.put(elementName, serializationUnit);
+			List elementSerUnits = (List)serializationUnitTable.get(elementName);
+			
+			if(elementSerUnits == null) {
+				elementSerUnits = new Vector();
+				serializationUnitTable.put(elementName, elementSerUnits);
 			}
+			elementSerUnits.add(serializationUnit);
 		}
 	}
 
