@@ -19,7 +19,9 @@ package org.milyn.delivery.serialize;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.cdr.cdrar.CDRArchiveEntry;
@@ -66,7 +68,7 @@ public class Serializer {
 	/**
 	 * Default SerializationUnit.
 	 */
-	private SerializationUnit defaultSU;
+	private List defaultSUs;
 	/**
 	 * Carriage-Return Line-Feed static def.
 	 */
@@ -90,10 +92,11 @@ public class Serializer {
 		// Initialise the serializationUnits member
 		serializationUnits = deliveryConfig.getSerailizationUnits();
 		// Set the default SerializationUnit
-		defaultSU = (SerializationUnit)serializationUnits.get("*");
-		if(defaultSU == null) {
+		defaultSUs = (List)serializationUnits.get("*");
+		if(defaultSUs == null) {
 			CDRDef cdrDef = new CDRDef("*", "*", DefaultSerializationUnit.class.getName());
-			defaultSU = new DefaultSerializationUnit(cdrDef);
+			defaultSUs = new Vector();
+			defaultSUs.add(new DefaultSerializationUnit(cdrDef));
 		}
 	}
 	
@@ -161,7 +164,7 @@ public class Serializer {
 		String publicId = docType.getPublicId();
 		String systemId = docType.getSystemId();
 		
-		if(defaultSU instanceof ReportSerializationUnit) {
+		if(defaultSUs instanceof ReportSerializationUnit) {
 			writer.write("&lt;!DOCTYPE ");
 		} else {
 			writer.write("<!DOCTYPE ");
@@ -178,7 +181,7 @@ public class Serializer {
 			writer.write(systemId);
 			writer.write('"');
 		}
-		if(defaultSU instanceof ReportSerializationUnit) {
+		if(defaultSUs instanceof ReportSerializationUnit) {
 			writer.write("&gt;");
 		} else {
 			writer.write('>');
@@ -193,25 +196,11 @@ public class Serializer {
 	 * @throws IOException Exception writing to Writer. 
 	 */
 	private void recursiveDOMWrite(Element element, Writer writer) throws IOException {
-		String elementName;
 		SerializationUnit elementSU;
 		NodeList children = element.getChildNodes();
-		boolean isInNamespace;
 
-		elementName = element.getLocalName();
-		if(elementName == null) {
-			elementName = element.getTagName();
-		}
-
-		elementSU = (SerializationUnit)serializationUnits.get(elementName);
-		if(elementSU == null) {
-			elementSU = defaultSU;
-		}
-		
-		isInNamespace = elementSU.isInNamespace(element);
-		if(isInNamespace) {
-			elementSU.writeElementStart(element, writer, containerRequest);
-		}
+		elementSU = getSerializationUnit(element);
+		elementSU.writeElementStart(element, writer, containerRequest);
 		if(children != null && children.getLength() > 0) {
 			int childCount = children.getLength();
 
@@ -248,8 +237,33 @@ public class Serializer {
 				}
 			}
 		}
-		if(isInNamespace) {
-			elementSU.writeElementEnd(element, writer, containerRequest);
+		elementSU.writeElementEnd(element, writer, containerRequest);
+	}
+
+	/**
+	 * Get the first matching serialisation unit for the supplied element.
+	 * @param element Element to be serialized.
+	 * @return SerializationUnit.
+	 */
+	private SerializationUnit getSerializationUnit(Element element) {
+		String elementName;
+		elementName = element.getLocalName();
+		if(elementName == null) {
+			elementName = element.getTagName();
 		}
+		List elementSUs = (List)serializationUnits.get(elementName);
+		if(elementSUs == null) {
+			elementSUs = defaultSUs;
+		}
+		int numSUs = elementSUs.size();
+		
+		for(int i = 0; i < numSUs; i++) {
+			SerializationUnit su = (SerializationUnit)elementSUs.get(i);
+			if(su.isInNamespace(element)) {
+				return su;
+			}
+		}
+		
+		throw new IllegalStateException("At least 1 SerializationUnit needs to be configured for an element. " + element.getTagName() + " has no configured SerializationUnit.");
 	}
 }

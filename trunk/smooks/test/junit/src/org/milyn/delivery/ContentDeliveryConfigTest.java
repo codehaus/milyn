@@ -181,8 +181,8 @@ public class ContentDeliveryConfigTest extends TestCase {
 
 		Hashtable serializationUnits = deliveryContext.getSerailizationUnits();
 		assertEquals("Expected 2 SerializationUnit", 2, serializationUnits.size());
-		assertNotNull("Expected SerializationUnit for element 'a'", (SerializationUnit)serializationUnits.get("a"));
-		assertNotNull("Expected SerializationUnit for element 'b'", (SerializationUnit)serializationUnits.get("b"));
+		assertNotNull("Expected SerializationUnit for element 'a'", serializationUnits.get("a"));
+		assertNotNull("Expected SerializationUnit for element 'b'", serializationUnits.get("b"));
 
 		Hashtable assemblyUnits = deliveryContext.getAssemblyUnits();
 		assertEquals("Expected AssemblyUnits on 1 element - 'b'", 1, assemblyUnits.size());

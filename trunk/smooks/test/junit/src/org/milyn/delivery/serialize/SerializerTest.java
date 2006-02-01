@@ -19,6 +19,7 @@ package org.milyn.delivery.serialize;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Vector;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.MockContainerRequest;
@@ -47,16 +48,22 @@ public class SerializerTest extends TestCase {
 		
 		// Don't write xxx but write its child elements
 		CDRDef unitDef = new CDRDef("xxx", "deviceX", "....");
-		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("xxx", new TestSerializationUnit_Remove(unitDef));
+		Vector serUnits = new Vector();
+		serUnits.add(new TestSerializationUnit_Remove(unitDef));
+		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("xxx", serUnits);
 
 		// write yyyy as a badly-formed empty element
 		unitDef = new CDRDef("yyyy", "deviceX", "....");
 		unitDef.setParameter("wellformed", "false");
-		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("yyyy", new TestSerializationUnit_EmptyEl(unitDef));
+		serUnits = new Vector();
+		serUnits.add(new TestSerializationUnit_EmptyEl(unitDef));
+		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("yyyy", serUnits);
 
 		/// write zzz as a well-formed empty element
 		unitDef = new CDRDef("zzz", "deviceX", "....");
-		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("zzz", new TestSerializationUnit_EmptyEl(unitDef));
+		serUnits = new Vector();
+		serUnits.add(new TestSerializationUnit_EmptyEl(unitDef));
+		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("zzz", serUnits);
 		
 		try {
 			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testmarkup.xxml"), false);
