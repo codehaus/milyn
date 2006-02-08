@@ -18,7 +18,7 @@ package org.milyn.report;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
-import org.milyn.css.CSSAccessor;
+import org.milyn.css.CssAccessor;
 import org.milyn.logging.SmooksLogger;
 import org.w3c.dom.Element;
 
@@ -45,7 +45,7 @@ import bsh.Primitive;
 		&lt;/param&gt;
 		&lt;param name="suggestion"&gt;&lt;!--See &lt;a href="http://www.quirksmode.org/bugreports/archives/2005/12/fontvariant_sma.html" target="new"&gt;www.quirksmode.org&lt;/a&gt;--&gt;.&lt;/param&gt;
 		&lt;param name="code"&gt; &lt;!--
-			org.milyn.magger.{@link org.milyn.magger.CSSProperty} fontVariant = {@link org.milyn.css.CSSAccessor cssAccessor}.getProperty(element, "font-variant");
+			org.milyn.magger.{@link org.milyn.magger.CSSProperty} fontVariant = {@link org.milyn.css.CssAccessor cssAccessor}.getProperty(element, "font-variant");
 			org.milyn.magger.CSSProperty textTransform = cssAccessor.getProperty({@link org.w3c.dom.Element element}, "text-transform");
 			
 			if(fontVariant == null || textTransform == null) {
@@ -81,7 +81,7 @@ public class BeanShellReportingUnit extends AbstractReportingUnit {
 			// Construct the method signature.
 			methodString.append("public boolean report(").append(Element.class.getName()).append(" element, ");
 			methodString.append(ContainerRequest.class.getName()).append(" request, ");
-			methodString.append(CSSAccessor.class.getName()).append(" cssAccessor, ");
+			methodString.append(CssAccessor.class.getName()).append(" cssAccessor, ");
 			methodString.append(CDRDef.class.getName()).append(" cdrDef) {");
 
 			// Add the method code from the cdrl
@@ -95,7 +95,7 @@ public class BeanShellReportingUnit extends AbstractReportingUnit {
 			
 			// Get a reference to the "report" method.
 			NameSpace namespace = bsh.getNameSpace();
-			method = namespace.getMethod("report", new Class[] {Element.class, ContainerRequest.class, CSSAccessor.class, CDRDef.class});
+			method = namespace.getMethod("report", new Class[] {Element.class, ContainerRequest.class, CssAccessor.class, CDRDef.class});
 		} catch (Exception e) {
 			SmooksLogger.getLog().error("Failed to construct BeanShell method instance for report script.", e);
 			IllegalStateException state = new IllegalStateException();
@@ -110,7 +110,7 @@ public class BeanShellReportingUnit extends AbstractReportingUnit {
 
 	public void visit(Element element, ContainerRequest request) {
 		try {
-			CSSAccessor cssAccessor = CSSAccessor.getInstance(request);
+			CssAccessor cssAccessor = CssAccessor.getInstance(request);
 			Object retVal = method.invoke(new Object[] {element, request, cssAccessor, cdrDef}, new Interpreter());
 			if(retVal instanceof Primitive) {
 				Primitive prim = (Primitive)retVal;

@@ -36,8 +36,6 @@ import org.milyn.magger.CSSStylesheet;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.InputSource;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * CSS scraping Assembly Unit.
@@ -47,11 +45,11 @@ import org.w3c.dom.NodeList;
  * <p/>
  * Triggered on &lt;style&gt; and &lt;link&gt; elements. Reads and parses the referenced CSS
  * using Apache Batik.  Makes the gathered CSS data available to 
- * transformation units via the {@link org.milyn.cdres.css.CSSAccessor} class.
+ * transformation units via the {@link org.milyn.cdres.css.CssAccessor} class.
  * <h3>.cdrl Configuration</h3>
  * <pre>
  * &lt;cdres	uatarget="<i>device/profile</i>" selector="style" 
- * 	path="org/milyn/cdres/css/CSSStyleScraper.class" &gt;
+ * 	path="org.milyn.cdres.css.CSSStyleScraper" &gt;
  * 
  * 	&lt;!-- (Optional) Only process the CSS if the 'media' attribute lists
  * 		one of the requesting devices profiles. Default true. --&gt;
@@ -63,7 +61,7 @@ import org.w3c.dom.NodeList;
  * &lt;/cdres&gt;
  * 
  * &lt;cdres	uatarget="<i>device/profile</i>" selector="link" 
- * 	path="org/milyn/cdres/css/CSSStyleScraper.class" &gt;
+ * 	path="org/milyn/cdres/css/CssStyleScraper.class" &gt;
  * 
  * 	&lt;!-- (Optional) Only process the CSS if the 'media' attribute, if present, lists
  * 		one of the requesting devices profiles. Default true. --&gt;
@@ -85,15 +83,15 @@ import org.w3c.dom.NodeList;
  * See {@link org.milyn.cdr.CDRDef}.
  * @author tfennelly
  */
-public class CSSStyleScraper extends AbstractAssemblyUnit {
+public class CssStyleScraper extends AbstractAssemblyUnit {
 
-	private static Log logger = LogFactory.getLog(CSSStyleScraper.class);
+	private static Log logger = LogFactory.getLog(CssStyleScraper.class);
 	private boolean checkMediaAttribute = true;
 	private boolean checkTypeAttribute = true;
 	private boolean checkRelAttributeForStylesheet = true;
 	private boolean checkRelAttributeForAlternate = true;
 	
-	public CSSStyleScraper(CDRDef cdres) {
+	public CssStyleScraper(CDRDef cdres) {
 		super(cdres);
 		checkMediaAttribute = cdres.getBoolParameter("checkMediaAttribute", true);
 		checkTypeAttribute = cdres.getBoolParameter("checkTypeAttribute", true);
@@ -217,6 +215,6 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 	}
 
 	public String getDetailDescription() {
-		return "TransUnit for scraping CSS from the page and making the information available to other TransUnits via the CSSAccessor class.";
+		return "TransUnit for scraping CSS from the page and making the information available to other TransUnits via the CssAccessor class.";
 	}
 }
