@@ -14,17 +14,26 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.chiba.smooks;
+package org.chiba.smooks.serializers;
 
 import java.io.IOException;
 import java.io.Writer;
 
+import org.chiba.smooks.Namespace;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.serialize.DefaultSerializationUnit;
 import org.milyn.dom.DomUtils;
 import org.w3c.dom.Element;
 
+/**
+ * Serializer for the xforms:output control.
+ * <p/>
+ * So, at the moment the xforms:output control is not "transformed".  This class
+ * gets triggered during the document serialisation phase i.e. after the document has
+ * been transformed.  May want to redo this as a Transformation Unit.
+ * @author tfennelly
+ */
 public class WriteOutputControl extends DefaultSerializationUnit {
 	
 	public WriteOutputControl(CDRDef cdrDef) {
@@ -42,7 +51,7 @@ public class WriteOutputControl extends DefaultSerializationUnit {
 			return;
 		}
 		
-		dataText = chibaData.getTextContent();
+		dataText = DomUtils.getAllText(chibaData, false);
 		if("image".equals(appearance)) {
 			writer.write("<img id=\"" + id + "-value\"");
 			if(classAttrib != null && !classAttrib.equals("")) {

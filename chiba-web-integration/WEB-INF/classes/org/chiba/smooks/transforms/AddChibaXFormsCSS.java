@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.chiba.smooks;
+package org.chiba.smooks.transforms;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
@@ -22,15 +22,25 @@ import org.milyn.delivery.trans.AbstractTransUnit;
 import org.milyn.dom.DomUtils;
 import org.w3c.dom.Element;
 
+/**
+ * Simple TransUnit that just adds a link to the Chiba CSS stylesheet
+ * in the document head. 
+ * @author tfennelly
+ */
 public class AddChibaXFormsCSS extends AbstractTransUnit {
 
 	public AddChibaXFormsCSS(CDRDef cdrDef) {
 		super(cdrDef);
 	}
 
-	public void visit(Element element, ContainerRequest request) {
+	/**
+	 * HTML head visit method.  Called by the Smooks framework.
+	 * <p/>
+	 * Called to trigger the element transformation.
+	 */
+	public void visit(Element head, ContainerRequest request) {
 		// Add the CSS.
-		DomUtils.addLiteral(element, 
+		DomUtils.addLiteral(head, 
 				"<link type='text/css' rel='stylesheet' href='" 
 				+ request.getContextPath() 
 				+ "/forms/styles/xforms.css' />\n");
