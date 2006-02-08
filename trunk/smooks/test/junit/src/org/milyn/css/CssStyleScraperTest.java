@@ -88,14 +88,14 @@ public class CssStyleScraperTest extends TestCase {
 		Element style = (Element)XmlUtil.getNode(doc, "/x/style");
 		Element paragraph = (Element)XmlUtil.getNode(doc, "/x/p");
 		CDRDef cdrDef = new CDRDef("link", "device", "xxx");
-		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
+		CssStyleScraper delivUnit = new CssStyleScraper(cdrDef);
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
 		request.requestURI = URI.create("http://www.milyn.org/myapp/aaa/mypage.html");
 		request.context.containerResourceLocator = mockrl;
 		
 		delivUnit.visit(style, request);
-		CSSAccessor accessor = CSSAccessor.getInstance(request);
+		CssAccessor accessor = CssAccessor.getInstance(request);
 		
 		CSSProperty property = accessor.getProperty(paragraph, "background-color");
 		assertNotNull("Expected CSS property.", property);
@@ -105,7 +105,7 @@ public class CssStyleScraperTest extends TestCase {
 		Document doc = CssTestUtil.parseXMLString("<x><link href='" + href + "' /></x>"); 
 		Element link = (Element)XmlUtil.getNode(doc, "/x/link");
 		CDRDef cdrDef = new CDRDef("link", "device", "xxx");
-		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
+		CssStyleScraper delivUnit = new CssStyleScraper(cdrDef);
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
 		request.requestURI = URI.create(requestUri);
@@ -121,7 +121,7 @@ public class CssStyleScraperTest extends TestCase {
 		Document doc = CssTestUtil.parseXMLString("<x><link " + attribs + " /></x>"); 
 		Element link = (Element)XmlUtil.getNode(doc, "/x/link");
 		CDRDef cdrDef = new CDRDef("link", "device", "xxx");
-		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
+		CssStyleScraper delivUnit = new CssStyleScraper(cdrDef);
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
 		request.requestURI = URI.create("http://www.milyn.org/myapp/aaa/mypage.html");

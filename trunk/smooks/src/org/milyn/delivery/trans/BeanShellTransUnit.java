@@ -18,7 +18,7 @@ package org.milyn.delivery.trans;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
-import org.milyn.css.CSSAccessor;
+import org.milyn.css.CssAccessor;
 import org.milyn.logging.SmooksLogger;
 import org.w3c.dom.Element;
 
@@ -41,7 +41,7 @@ import bsh.NameSpace;
 	&lt;cdres selector="*" path="org/milyn/delivery/trans/BeanShellTransUnit.class"&gt;
 		&lt;param name="visitBefore"&gt;true&lt;/param&gt; &lt;!-- default false --&gt;
 		&lt;param name="code"&gt; &lt;!--
-			org.milyn.magger.{@link org.milyn.magger.CSSProperty} fontVariant = {@link org.milyn.css.CSSAccessor cssAccessor}.getProperty(element, "font-variant");
+			org.milyn.magger.{@link org.milyn.magger.CSSProperty} fontVariant = {@link org.milyn.css.CssAccessor cssAccessor}.getProperty(element, "font-variant");
 			org.milyn.magger.CSSProperty textTransform = cssAccessor.getProperty({@link org.w3c.dom.Element element}, "text-transform");
 			
 			if(fontVariant == null || textTransform == null) {
@@ -85,7 +85,7 @@ public class BeanShellTransUnit extends AbstractTransUnit {
 			methodString.append("public void visit(").append(Element.class.getName()).append(" element, ");
 			methodString.append(ContainerRequest.class.getName()).append(" request, ");
 			if(usesCssAccessor) {
-				methodString.append(CSSAccessor.class.getName()).append(" cssAccessor, ");
+				methodString.append(CssAccessor.class.getName()).append(" cssAccessor, ");
 			}
 			methodString.append(CDRDef.class.getName()).append(" cdrDef) {");
 
@@ -101,7 +101,7 @@ public class BeanShellTransUnit extends AbstractTransUnit {
 			// Get a reference to the "visit" method.
 			NameSpace namespace = bsh.getNameSpace();
 			if(usesCssAccessor) {
-				method = namespace.getMethod("visit", new Class[] {Element.class, ContainerRequest.class, CSSAccessor.class, CDRDef.class});
+				method = namespace.getMethod("visit", new Class[] {Element.class, ContainerRequest.class, CssAccessor.class, CDRDef.class});
 			} else {
 				method = namespace.getMethod("visit", new Class[] {Element.class, ContainerRequest.class, CDRDef.class});
 			}
@@ -120,7 +120,7 @@ public class BeanShellTransUnit extends AbstractTransUnit {
 	public void visit(Element element, ContainerRequest request) {
 		try {
 			if(usesCssAccessor) {
-				CSSAccessor cssAccessor = CSSAccessor.getInstance(request);
+				CssAccessor cssAccessor = CssAccessor.getInstance(request);
 				method.invoke(new Object[] {element, request, cssAccessor, cdrDef}, bsh);
 			} else {
 				method.invoke(new Object[] {element, request, cdrDef}, bsh);
