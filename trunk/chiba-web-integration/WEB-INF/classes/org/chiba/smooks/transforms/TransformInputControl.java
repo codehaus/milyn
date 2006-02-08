@@ -14,8 +14,10 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.chiba.smooks;
+package org.chiba.smooks.transforms;
 
+import org.chiba.smooks.Namespace;
+import org.chiba.smooks.Prefix;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.trans.AbstractTransUnit;
@@ -23,14 +25,25 @@ import org.milyn.dom.DomUtils;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Text;
 
+/**
+ * TransUnit for the xforms:input element.
+ * <p/>
+ * Only supports transformation to a "standard" inout element i.e. doesn't
+ * have any support for "date" or "dateTime" type input elements.
+ * @author tfennelly
+ */
 public class TransformInputControl extends AbstractTransUnit {
 
 	public TransformInputControl(CDRDef cdrDef) {
 		super(cdrDef);
 	}
 
+	/**
+	 * xforms:input visit method.  Called by the Smooks framework.
+	 * <p/>
+	 * Called to trigger the element transformation.
+	 */
 	public void visit(Element input, ContainerRequest containerRequest) {
 		Element chibaData = DomUtils.getElement(input, "data", 1, Namespace.CHIBA);
 		
@@ -42,17 +55,17 @@ public class TransformInputControl extends AbstractTransUnit {
 			} else {
 				createStandardInput(input, chibaData, type);
 			}
-		}		
+		}
 	}
 
 	private void createStandardInput(Element input, Element chibaData, String type) {
 		String id = input.getAttribute("id");
 		String readonly = chibaData.getAttributeNS(Namespace.CHIBA, "readonly");
-		String dataText = chibaData.getTextContent();
+		String dataText = DomUtils.getAllText(chibaData, false);
 		Document document = input.getOwnerDocument();
 		Element htmlInput;
 		
-		ControlTransUtils.wrapControl(input, chibaData, id);
+		ControlTransUtils.wrapControl(input, chibaData);
 		
 		htmlInput = document.createElement("input");
 		htmlInput.setAttribute("id", id + "-value");
@@ -70,18 +83,13 @@ public class TransformInputControl extends AbstractTransUnit {
 		input.getParentNode().replaceChild(htmlInput, input);
 	}
 
-	/**
-	 * @param input
-	 * @param htmlInput
-	 * @throws DOMException
-	 */
 	private void addTitleAttribute(Element input, Element htmlInput) throws DOMException {
 		Element titleAttribContainer = DomUtils.getElement(input, "hint", 1, Namespace.XFORMS);
 		if(titleAttribContainer == null) {
 			titleAttribContainer = DomUtils.getElement(input, "alert", 1, Namespace.XFORMS);
 		}
 		if(titleAttribContainer != null) {
-			String title = titleAttribContainer.getTextContent();
+			String title = DomUtils.getAllText(titleAttribContainer, false);
 			
 			if(title != null && !(title = title.trim()).equals("")) {
 				htmlInput.setAttribute("title", title);
@@ -103,7 +111,6 @@ public class TransformInputControl extends AbstractTransUnit {
 		}
 		String classAttrib = input.getAttribute("class").trim();
 		if(!classAttrib.equals("")) {
-			int position = DomUtils.countElementsBefore(input, input.getLocalName()) + 1;
 			htmlInput.setAttribute("class", classAttrib + " value");
 			return;
 		}

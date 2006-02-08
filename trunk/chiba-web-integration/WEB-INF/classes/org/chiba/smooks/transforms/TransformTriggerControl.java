@@ -14,8 +14,9 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.chiba.smooks;
+package org.chiba.smooks.transforms;
 
+import org.chiba.smooks.Namespace;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.trans.AbstractTransUnit;
@@ -24,12 +25,24 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
+/**
+ * Transunit for the xforms:trigger element.
+ * <p/>
+ * Replaces the trigger with an HTML form input submit button wrapped
+ * in a styled span element. 
+ * @author tfennelly
+ */
 public class TransformTriggerControl extends AbstractTransUnit {
 
 	public TransformTriggerControl(CDRDef cdrDef) {
 		super(cdrDef);
 	}
 
+	/**
+	 * xforms:trigger visit method.  Called by the Smooks framework.
+	 * <p/>
+	 * Called to trigger the element transformation.
+	 */
 	public void visit(Element trigger, ContainerRequest containerRequest) {
 		StringBuffer transBuf = new StringBuffer(100);
 		Document document = trigger.getOwnerDocument();
@@ -38,11 +51,12 @@ public class TransformTriggerControl extends AbstractTransUnit {
 		String value;
 		
 		if(label != null) {
-			value = label.getTextContent();
+			value = DomUtils.getAllText(label, false);
 		} else {
 			value ="no label";
 		}
 		
+		// TODO: convert this transformation to use DOM elements etc Vs String literals.
 		// write the span and input element i.e. transform the trigger.
 		transBuf.append("<span id=\"").append(id).append("\" class=\"trigger\">"); 
 		transBuf.append("<input id=\"").append(id).append("-value\" name=\"t_").append(id); 
