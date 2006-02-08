@@ -19,7 +19,6 @@ package org.milyn.delivery.serialize;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -69,10 +68,6 @@ public class Serializer {
 	 * Default SerializationUnit.
 	 */
 	private List defaultSUs;
-	/**
-	 * Carriage-Return Line-Feed static def.
-	 */
-	private static final String CRLF = "\r\n";
 
 	/**
 	 * Public constructor.

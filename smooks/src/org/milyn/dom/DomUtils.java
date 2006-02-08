@@ -270,7 +270,7 @@ public abstract class DomUtils {
 	 * @param element The element.
 	 * @return The element name.
 	 */
-	private static String getName(Element element) {
+	public static String getName(Element element) {
 		String name = element.getLocalName();
 		
 		if(name != null) {
@@ -695,12 +695,36 @@ public abstract class DomUtils {
 	 * have a value of 2. 
 	 * @param namespaceURI Namespace URI of the required element, or null
 	 * if a namespace comparison is not to be performed.
-	 * @return
+	 * @return The element at the requested position, or null if no such child
+	 * element exists on the parent element.
 	 */
 	public static Element getElement(Element parent, String localname, int position, String namespaceURI) {
+		List elements = getElements(parent, localname, namespaceURI);
+
+		position = Math.max(position, 1);
+		if(position > elements.size()) {
+			return null;
+		}
+		
+		return (Element)elements.get(position - 1);
+	}
+
+
+	/**
+	 * Get the child elements having the supplied localname and namespace.
+	 * <p/>
+	 * Can be used instead of XPath.
+	 * @param parent Parent element to be searched.
+	 * @param localname Localname of the element required.
+	 * @param namespaceURI Namespace URI of the required element, or null
+	 * if a namespace comparison is not to be performed.
+	 * @return A list of W3C DOM {@link Element}s.  An empty list if no such
+	 * child elements exist on the parent element.
+	 */
+	public static List getElements(Element parent, String localname, String namespaceURI) {
 		NodeList children = parent.getChildNodes();
 		int count = children.getLength();
-		int nextPosition = 1;
+		Vector elements = new Vector();
 		
 		for(int i = 0; i < count; i++) {
 			Node child = children.item(i);
@@ -713,17 +737,12 @@ public abstract class DomUtils {
 							!element.getNamespaceURI().equals(namespaceURI)) {
 						// ... the namespaces don't match.
 						continue;
-					} else if(nextPosition != position) {
-						// ... it's not in the position we're looking for.
-						nextPosition++;
-						continue;
 					}
-					// ... this is the element!
-					return element;
+					elements.add(element);
 				}
 			}
 		}
 		
-		return null;
+		return elements;
 	}
 }
