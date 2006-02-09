@@ -49,7 +49,7 @@ import org.w3c.dom.Element;
  * <h3>.cdrl Configuration</h3>
  * <pre>
  * &lt;cdres	uatarget="<i>device/profile</i>" selector="style" 
- * 	path="org.milyn.cdres.css.CSSStyleScraper" &gt;
+ * 	path="org.milyn.cdres.css.CssStyleScraper" &gt;
  * 
  * 	&lt;!-- (Optional) Only process the CSS if the 'media' attribute lists
  * 		one of the requesting devices profiles. Default true. --&gt;
