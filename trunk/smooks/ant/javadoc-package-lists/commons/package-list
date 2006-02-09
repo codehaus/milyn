@@ -1,4 +1,5 @@
 org.milyn.io
 org.milyn.resource
 org.milyn.servlet
+org.milyn.util
 org.milyn.xml
