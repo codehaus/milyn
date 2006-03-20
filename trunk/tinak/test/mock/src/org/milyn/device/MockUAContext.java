@@ -16,6 +16,7 @@
 
 package org.milyn.device;
 
+import org.milyn.device.profile.BasicProfile;
 import org.milyn.device.profile.DefaultProfileSet;
 import org.milyn.device.profile.ProfileSet;
 
@@ -38,7 +39,7 @@ public class MockUAContext implements UAContext {
 	 * @param profile The profile to add.
 	 */
 	public void addProfile(String profile) {
-		profileSet.addProfile(profile);
+		profileSet.addProfile(new BasicProfile(profile));
 	}
 
 	/**
@@ -47,7 +48,7 @@ public class MockUAContext implements UAContext {
 	 */
 	public void addProfiles(String[] profiles) {		
 		for(int i = 0; i < profiles.length; i++) {
-			profileSet.addProfile(profiles[i]);
+			profileSet.addProfile(new BasicProfile(profiles[i]));
 		}
 	}
 	

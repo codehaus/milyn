@@ -18,12 +18,15 @@ package org.milyn.servlet;
 
 import org.milyn.device.UAContext;
 import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.device.profile.Profile;
 import org.milyn.device.profile.ProfileSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletConfig;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Servlet useragent context.
@@ -181,11 +184,20 @@ public final class ServletUAContext implements UAContext {
         context = (ServletUAContext)contexts.get(deviceMatchCName);
         if(context == null) {
             context = new ServletUAContext(deviceMatchCName);
-            context.profileSet = DeviceProfiler.getDeviceProfile(deviceMatchCName, config);
+            context.profileSet = DeviceProfiler.getDeviceProfile(deviceMatchCName, request, config);
             if(context.profileSet == null) {
             	context.profileSet = new ProfileSet() {
 					public boolean isMember(String profile) {
 						return false;
+					}
+					public void addProfile(Profile profile) {
+					}
+					public Profile getProfile(String profile) {
+						return null;
+					}
+					public Iterator iterator() {
+						// return an empty iterator
+						return (new Vector()).iterator();
 					}};
             }
 			contexts.put(deviceMatchCName, context);

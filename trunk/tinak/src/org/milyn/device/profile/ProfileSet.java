@@ -17,6 +17,7 @@
 package org.milyn.device.profile;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * Device ProfileSet interface.
@@ -36,4 +37,26 @@ public interface ProfileSet extends Serializable {
 	 * profile, otherwise false.
 	 */
 	public boolean isMember(String profile);
+
+	/**
+	 * Add a profile to the ProfileSet.
+	 * @param profile The profile to add.
+	 */
+	public abstract void addProfile(Profile profile);
+
+	/**
+	 * Get a profile from the {@link ProfileSet}.
+	 * @param profile The name of the profile.
+	 * @return The requested Profile, or null if the profile is not a
+	 * member of the {@link ProfileSet}.
+	 */
+	public abstract Profile getProfile(String profile);
+
+	/**
+	 * Get an {@link Iterator} to allow iteration over the 
+	 * {@link Profile Profiles}in this {@link ProfileSet}.
+	 * @return An {@link Iterator} that allows iteration over the 
+	 * {@link Profile Profiles}in this {@link ProfileSet}.
+	 */
+	public abstract Iterator iterator();
 }

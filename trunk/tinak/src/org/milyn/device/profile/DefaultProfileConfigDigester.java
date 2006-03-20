@@ -52,7 +52,7 @@ public class DefaultProfileConfigDigester implements ProfileConfigDigester {
 		if(input == null) {
 			throw new IllegalArgumentException("null 'stream' exception in method call.");
 		}
-		profileDoc = XmlUtil.parseStream(input, true);
+		profileDoc = XmlUtil.parseStream(input, true, true);
 
 		// While there are device profile definitions.
 		profileSelector = "/device-profiles/device-profile[" + profileIndex + "]";
@@ -96,7 +96,7 @@ public class DefaultProfileConfigDigester implements ProfileConfigDigester {
 						throw saxE;
 					}
 				}
-				profileSet.addProfile(name);
+				profileSet.addProfile(new BasicProfile(name));
 			}
 			
 			count++;

@@ -17,10 +17,13 @@
 package org.milyn.servlet;
 
 import java.io.InputStream;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
 
 import org.milyn.device.profile.DefaultProfileConfigDigester;
+import org.milyn.device.profile.HttpAcceptHeaderProfile;
 import org.milyn.device.profile.ProfileConfigDigester;
 import org.milyn.device.profile.ProfileSet;
 import org.milyn.device.profile.ProfileStore;
@@ -42,6 +45,9 @@ import org.milyn.resource.URLResourceLocator;
  * 			defaults to "/WEB-INF/device-profile.xml".
  * 		</li>
  * </ol>
+ * <p/>
+ * This profiler also adds the requesting devices "Accept" header media types as profiles.  
+ * See {@link org.milyn.device.profile.HttpAcceptHeaderProfile}.
  * @author tfennelly
  */
 public abstract class DeviceProfiler {
@@ -66,10 +72,12 @@ public abstract class DeviceProfiler {
     /**
      * Get the ProfileSet for the named device.
      * @param deviceName The name of the device for which a ProfileSet is sought.
+     * @param request Requesting device's HttpServletRequest.  Used to extract
+     * request headers from which a set of profiles is created.
      * @param config Servlet config used to load the profile configuration.
      * @return DeviceIdent instance
      */
-    protected static ProfileSet getDeviceProfile(String deviceName, ServletConfig config) {
+    protected static ProfileSet getDeviceProfile(String deviceName, HttpServletRequest request, ServletConfig config) {
         InputStream configStream;
 
         if(deviceName == null) {
@@ -79,19 +87,27 @@ public abstract class DeviceProfiler {
         if(deviceName.equals("")) {
         	throw new IllegalArgumentException("empty 'deviceName' param in method call.");
         }
+        if(request == null) {
+        	throw new IllegalArgumentException("null 'request' param in method call.");
+        }
         if(config == null) {
         	throw new IllegalArgumentException("null 'config' param in method call.");
         }
         
         try {
+        	ProfileSet profileSet;
+        	
         	if(profileStore == null) {
         		ServletResourceLocator resLocator = new ServletResourceLocator(config, new URLResourceLocator());
         		
 				configStream = resLocator.getResource(DEVICE_PROFILE_CONFIG_PARAM, DEFAULT_CONFIG);
 				profileStore = (DeviceProfiler.getConfigDigester(config)).parse(configStream);
         	}
+        	profileSet = profileStore.getProfileSet(deviceName);
+    		// Add the request accept header media types as profiles...
+    		addAcceptHeaderProfiles(request, profileSet);
         	
-        	return profileStore.getProfileSet(deviceName);
+        	return profileSet;
         } catch(Exception excep) {
             IllegalStateException state = new IllegalStateException("Error loading device profile config.");
             state.initCause(excep);
@@ -99,7 +115,7 @@ public abstract class DeviceProfiler {
         }
     }
 
-    /**
+	/**
      * Construct an instance of the configured (or default) ProfileConfigDigester.
      * @param config The ServletConfig instance.
      * @return An instance of the configured ProfileConfigDigester.
@@ -113,4 +129,33 @@ public abstract class DeviceProfiler {
 			throw state;
 		}
     }
+
+    /**
+     * Parse the request Accept header and add the media entities as profiles.
+     * <p/>
+     * See {@link HttpAcceptHeaderProfile} and RFC2068 section 14.1.
+     * @param request The HTTP request containing the request headers.
+     * @param profileSet The ProfileSet to be updated.
+     */
+    private static void addAcceptHeaderProfiles(HttpServletRequest request, ProfileSet profileSet) {
+    	String acceptHeaderValue = request.getHeader("Accept");
+    	
+    	if(acceptHeaderValue != null) {
+    		StringTokenizer acceptMediaRules = new StringTokenizer(acceptHeaderValue, ",");
+    		
+    		while(acceptMediaRules.hasMoreTokens()) {
+    			String[] mediaRule = acceptMediaRules.nextToken().split(";");
+    			String media = mediaRule[0];
+    			
+    			if(mediaRule.length > 1) {
+    				// Just passing in the whole array of Strings.  The first entry is not a param
+    				// at all (it's the actual media type) but that won't cause a problem for the 
+    				// getParam methods - they'll simple always fail on this media type entry.
+        			profileSet.addProfile(new HttpAcceptHeaderProfile(media, mediaRule));
+    			} else {
+        			profileSet.addProfile(new HttpAcceptHeaderProfile(media, new String[0]));
+    			}
+    		}
+    	}
+	}
 }
