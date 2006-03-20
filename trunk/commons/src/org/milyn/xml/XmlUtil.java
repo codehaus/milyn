@@ -220,15 +220,15 @@ public class XmlUtil {
         }
     }
 
-	private static DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();    
 	/**
 	 * Parse the XML stream and return the associated W3C Document object.
 	 * @param stream The stream to be parsed.
 	 * @param validate True if the document is to be validated, otherwise false.
+	 * @param expandEntityRefs Expand entity References as per {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
 	 * @return The W3C Document object associated with the input stream.
 	 */
-	public static Document parseStream(InputStream stream, boolean validate) throws SAXException, IOException {
-		return parseStream(stream, new LocalEntityResolver(), validate);
+	public static Document parseStream(InputStream stream, boolean validate, boolean expandEntityRefs) throws SAXException, IOException {
+		return parseStream(stream, new LocalEntityResolver(), validate, expandEntityRefs);
 	}
 		
     /**
@@ -236,16 +236,19 @@ public class XmlUtil {
      * @param stream The stream to be parsed.
      * @param entityResolver Entity resolver to be used during the parse.
      * @param validate True if the document is to be validated, otherwise false.
+	 * @param expandEntityRefs Expand entity References as per {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
      * @return The W3C Document object associated with the input stream.
      */
-    public static Document parseStream(InputStream stream, EntityResolver entityResolver, boolean validate) throws SAXException, IOException {
+    public static Document parseStream(InputStream stream, EntityResolver entityResolver, boolean validate, boolean expandEntityRefs) throws SAXException, IOException {
 		if(stream == null) {
 			throw new IllegalArgumentException("null 'stream' arg in method call.");
 		}
 		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = null;
 			
 			factory.setValidating(validate);
+			factory.setExpandEntityReferences(expandEntityRefs);
 			docBuilder = factory.newDocumentBuilder();
 			docBuilder.setEntityResolver(entityResolver);
 			docBuilder.setErrorHandler(XMLParseErrorHandler.getInstance());

@@ -11,8 +11,8 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="H:/projects/codehaus/smooks/build/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="H:/projects/codehaus/smooks/build/commons-logging1.0.4.jar"/>
-	<classpathentry sourcepath="/smooks" kind="lib" path="H:/projects/codehaus/smooks/build/milyn-smooks-0.5.jar"/>
-	<classpathentry kind="lib" path="H:/projects/codehaus/smooks/build/milyn-smooks-mocks-0.5.jar"/>
 	<classpathentry kind="lib" path="H:/projects/codehaus/smooks/build/spring-1.1.2-core.jar"/>
+	<classpathentry kind="lib" path="/smooks/build/milyn-smooks-0.6-M1.jar"/>
+	<classpathentry kind="lib" path="/smooks/build/milyn-smooks-mocks-0.6-M1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
