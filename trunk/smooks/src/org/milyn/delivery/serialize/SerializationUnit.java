@@ -32,7 +32,7 @@ import org.w3c.dom.Text;
  * W3C Node Serailization interface definition.
  * <p/>
  * Implementations of this interface are applied to the content during the
- * <a href="../doc-files/delivery-phases.html">Serialisation phase</a>.
+ * <a href="../SmooksXML.html#phases">Serialisation phase</a>.
  * <p/>
  * This interface allows element targeted (by device, profile, DTD info etc)
  * serialization code to be implemented.  It gives control over how an

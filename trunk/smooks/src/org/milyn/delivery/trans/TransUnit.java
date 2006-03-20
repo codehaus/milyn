@@ -22,7 +22,7 @@ import org.milyn.delivery.ElementVisitor;
  * Transformation unit interface.
  * <p/>
  * Implementations of this interface are applied to the content during the
- * <a href="../doc-files/delivery-phases.html">Transformation phase</a>.
+ * <a href="../SmooksXML.html#phases">Transformation phase</a>.
  * <p/>
  * TransUnit implementations should contain transformation logic to perform a
  * discreet operation on the element being visited.  They should try not perform 

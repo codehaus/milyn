@@ -325,20 +325,6 @@ public class SnavTU extends AbstractTransUnit {
 		return pattern;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Navigation processing Transformation Unit.";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Navigation processing Transformation Unit. Takes the snav element and processes it along with its snavsrc and snavtgt elements.";
-	}
-
 	/**
 	 * srepeat container class.
 	 * <p/>

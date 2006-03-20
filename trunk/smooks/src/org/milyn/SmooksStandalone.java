@@ -31,7 +31,7 @@ import java.util.LinkedHashMap;
 import org.milyn.container.standalone.StandaloneContainerContext;
 import org.milyn.container.standalone.StandaloneContainerRequest;
 import org.milyn.container.standalone.StandaloneContainerSession;
-import org.milyn.delivery.SmooksHtml;
+import org.milyn.delivery.SmooksXML;
 import org.milyn.device.ident.UnknownDeviceException;
 import org.w3c.dom.Node;
 
@@ -40,7 +40,7 @@ import sun.io.CharToByteConverter;
 /**
  * Smooks standalone execution class.
  * <p/>
- * Allows Smooks to be executed on a "non-container" type environemt e.g.
+ * Allows {@link org.milyn.delivery.SmooksXML} to be executed in a "non-container" type environemt e.g.
  * from the commandline.
  * <p/>
  * TODO: Add support for passing parameters and setting HTTP headers. 
@@ -139,6 +139,7 @@ public class SmooksStandalone {
 	 * The content of the buffer returned is totally dependent on the configured
 	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
 	 * implementations. 
+	 * @param requestURI URI of the content to be processed.
 	 * @param stream Stream to be processed.  Will be closed before returning.
 	 * @return The Smooks processed content DOM {@link Node}.
 	 * @throws SmooksException Excepting processing content stream.
@@ -151,10 +152,10 @@ public class SmooksStandalone {
 			throw new IllegalArgumentException("null 'stream' arg in method call.");
 		}
 		Node node;
-		SmooksHtml smooks;
+		SmooksXML smooks;
 		
 		request = new StandaloneContainerRequest(requestURI, new LinkedHashMap(), session);
-		smooks = new SmooksHtml(request);
+		smooks = new SmooksXML(request);
 		if(contentEncoding == null) {
 			node = smooks.applyTransform(new InputStreamReader(stream));
 		} else {
@@ -208,7 +209,7 @@ public class SmooksStandalone {
 	 * @throws SmooksException Unable to serialise due to bad Smooks environment.  Check cause.
 	 */
 	public void serialize(Node node, Writer writer) throws IOException, SmooksException {
-		SmooksHtml smooks;
+		SmooksXML smooks;
 		StandaloneContainerRequest serRequest = getLastRequest();
 		
 		if(node == null) {
@@ -224,7 +225,7 @@ public class SmooksStandalone {
 			// only be called after calling the process method.
 			serRequest = new StandaloneContainerRequest(URI.create("http://x.com"), new LinkedHashMap(), session);
 		}
-		smooks = new SmooksHtml(request);
+		smooks = new SmooksXML(request);
 		smooks.serialize(node, writer);
 	}
 

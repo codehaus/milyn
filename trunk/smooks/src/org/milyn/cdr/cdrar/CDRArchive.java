@@ -29,6 +29,7 @@ import java.util.jar.JarInputStream;
 import org.milyn.cdr.*;
 import org.milyn.device.UAContext;
 import org.milyn.device.UAContextUtil;
+import org.milyn.xml.XmlUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -230,12 +231,12 @@ public final class CDRArchive {
 				// Iterate over the CDRDefs defined on the current CDRConfig
 				for(int unitDefIndex = 0; unitDefIndex < cdrDefs.length; unitDefIndex++) {
 					CDRDef cdrDef = cdrDefs[unitDefIndex];
-					String[] uaTargetExpressions = cdrDef.getUaTargets();
+					UATargetExpression[] uaTargetExpressions = cdrDef.getUaTargetExpressions();
 					
 					for(int expIndex = 0; expIndex < uaTargetExpressions.length; expIndex++) {
-						String expression = uaTargetExpressions[expIndex];
+						UATargetExpression expression = uaTargetExpressions[expIndex];
 						
-						if(isMatchingDevice(expression, deviceContext)) {
+						if(expression.isMatchingDevice(deviceContext)) {
 							matchingCDRDefsColl.addElement(cdrDef);
 							break;
 						}
@@ -251,11 +252,14 @@ public final class CDRArchive {
 	}
 
 	/**
+	 * Is the uatarget expression for the specified device.
+	 * <p/>
+	 * The uatarget value may have
 	 * @param uaTargetExpression
 	 * @param deviceContext
 	 * @return
 	 */
-	private boolean isMatchingDevice(String uaTargetExpression, UAContext deviceContext) {
+	public static boolean isMatchingDevice(String uaTargetExpression, UAContext deviceContext) {
 		StringTokenizer tokenizer = new StringTokenizer(uaTargetExpression, "+");
 		
 		// So, the uaTargetExpression will in one of the following
@@ -265,22 +269,22 @@ public final class CDRArchive {
 		// 3. "profileX + profileY" i.e. a compound entity.
 		// 4. "profileX + not:profileY" i.e. a compound entity.
 		while(tokenizer.hasMoreTokens()) {
-			String device = tokenizer.nextToken().trim();
-			boolean negated = device.startsWith("not:");
+			String uatarget = XmlUtil.removeEntities(tokenizer.nextToken().trim());
+			boolean negated = uatarget.startsWith("not:");
 	
 			if(!negated) {
 				// Match against a wildcard astrix.
-				if(device.equals("*")) {
+				if(uatarget.equals("*")) {
 					continue; // matches!
-				} else if(UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
+				} else if(UAContextUtil.isDeviceOrProfile(uatarget, deviceContext)) {
 					// Is this cdres device name the commonname on the deviceContext,
 					// or one of its profiles.
 					continue; // matches!
 				} 
 			} else {
 				// Trim off the "not:" prefix.
-				device = device.substring(4);
-				if(!UAContextUtil.isDeviceOrProfile(device, deviceContext)) {
+				uatarget = uatarget.substring(4);
+				if(!UAContextUtil.isDeviceOrProfile(uatarget, deviceContext)) {
 					continue; // matches!
 				} 
 			}

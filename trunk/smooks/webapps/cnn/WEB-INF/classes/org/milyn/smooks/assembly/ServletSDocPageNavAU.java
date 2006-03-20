@@ -106,20 +106,6 @@ public class ServletSDocPageNavAU extends AbstractAssemblyUnit {
 		return spagelink.getChildNodes();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Adds the interpage navigation links.";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Adds the interpage navigation links. Servlet container only.";
-	}
-
 	/**
 	 * Get document page list from the request.
 	 * @param request The request.

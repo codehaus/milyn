@@ -26,7 +26,15 @@ import org.milyn.container.ContainerRequest;
 /**
  * ServletResponseWrapper Factory (GoF) class.
  * <p/>
- * See {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
+ * Used by the {@link org.milyn.SmooksServletFilter} to allow browser aware 
+ * manipulation of a Servlet response right at the response stream level via
+ * {@link org.milyn.delivery.response.ServletResponseWrapper} implementations.
+ * This mechanism allows different {@link javax.servlet.http.HttpServletResponseWrapper}
+ * implementations to be applied to a Servlet response based on characteristics of
+ * the requesting browser e.g. perform different image transformations.
+ * <p/>
+ * See {@link org.milyn.delivery.response.XMLServletResponseWrapper} and 
+ * {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
  * @author tfennelly
  */
 public abstract class ServletResponseWrapperFactory {

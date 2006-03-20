@@ -25,8 +25,6 @@ import org.w3c.dom.Node;
  */
 public abstract class AbstractContentDeliveryUnit implements ContentDeliveryUnit {
 
-	private String longDesc;
-	private String shortDesc;
 	private String namespace;
 	
 	/**
@@ -37,8 +35,6 @@ public abstract class AbstractContentDeliveryUnit implements ContentDeliveryUnit
 		if(cdrDef == null) {
 			throw new IllegalArgumentException("null 'cdrDef' arg in constructor call.");
 		}
-		shortDesc = cdrDef.getStringParameter("shortDesc", "'shortDesc' param not set.");
-		longDesc = cdrDef.getStringParameter("description", "'description' param not set.");
 		namespace = cdrDef.getNamespaceURI();
 		
 		// A config namespace value of "*" means that this config
@@ -48,14 +44,6 @@ public abstract class AbstractContentDeliveryUnit implements ContentDeliveryUnit
 		if("*".equals(namespace)) {
 			namespace = null;
 		}
-	}
-
-	public String getShortDescription() {
-		return shortDesc;
-	}
-	
-	public String getDetailDescription() {
-		return longDesc;
 	}
 	
 	/**

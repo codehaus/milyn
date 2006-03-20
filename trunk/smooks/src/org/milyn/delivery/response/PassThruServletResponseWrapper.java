@@ -25,7 +25,7 @@ import org.milyn.container.ContainerRequest;
 /**
  * Pass-through ServletResponseWrapper.
  * <p/>
- * Pass content through without performing any manipulation/transformation.  Triggered
+ * Pass content through without performing any filtering.  Triggered
  * by supplying "<b>smooksrw</b>=<b>passthru-smooksrw</b>" as a HTTP request parameter.  
  * <p/>
  * This response wrapper is configured to be applicable to all devices through the 
@@ -63,13 +63,4 @@ public class PassThruServletResponseWrapper extends ServletResponseWrapper {
 
 	public void close() {
 	}
-
-	public String getShortDescription() {
-		return "Pass-through ServletResponseWrapper";
-	}
-
-	public String getDetailDescription() {
-		return "Passes content through without performing any manipulation/transformation.";
-	}
-
 }

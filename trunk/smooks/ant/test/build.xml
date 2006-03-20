@@ -6,6 +6,9 @@
 	<property name="test.src" value="${test.root}/src" />
 	<property name="test.classes" value="${test.root}/classes" />
 	<property name="test.report" value="${test.root}/report" />
+	<property name="test.emma" location="${test.root}/emma" />
+	<property name="test.report.emma" value="${test.emma}/report" />
+	<property name="build.classes.emmainstr" value="${test.emma}/instr" />
 	<property name="testCdrar" value="${build.root}/test/testCdrar" />
 	<property name="testCdrar.src" value="${testCdrar}/src" />
 	<property name="testCdrar.classes" value="${testCdrar}/classes" />
@@ -15,28 +18,52 @@
 	<path id="build.classpath">
 		<pathelement location="${test.classes}"/>
 		<pathelement location="${test.src}"/>
-		<pathelement location="${build.root}/classes"/>
-		<pathelement location="${build.root}/src"/>
+		<pathelement location="${build.classes}"/>
+		<pathelement location="${build.src}"/>
 		<pathelement location="${mock.classes}"/>
 		<fileset dir="${build.lib}" includes="*.jar"/>
 		<fileset dir="${test.lib}" includes="*.jar"/>
 	</path>
 
+	<!-- set up emma -->
+	<path id="emma.lib" >
+		<pathelement location="lib/emma.jar" />
+		<pathelement location="lib/emma_ant.jar" />
+	</path>
+	<path id="emma.classpath">
+		<pathelement location="${build.classes.emmainstr}" />
+		<path refid="emma.lib" />
+	</path>
+	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
 
 	<target name="test" depends="compile-tests" description="Execute JUnit Tests.">
+		<!-- Instrument the code for emma code coverage. -->
+	    <mkdir dir="${test.report.emma}" />
+	    <emma>
+			<instr instrpath="${build.classes}" destdir="${build.classes.emmainstr}" metadatafile="${test.emma}/coverage.emma">
+				<filter excludes="**.*UnitTest.*" />
+			</instr>
+	    </emma>
+
 		<mkdir dir="${test.report}" />
 		<delete failonerror="false">
 			<fileset dir="${test.report}" includes="TEST-*.xml"/>
 		</delete>
 
 		<junit printsummary="yes" failureproperty="test.unit.failure" fork="on" dir=".">
-			<classpath refid="build.classpath" />
+			<classpath>
+				<path refid="emma.classpath" />
+				<path refid="build.classpath" />
+			</classpath>
 			<formatter type="xml"/>
 			<batchtest fork="yes" todir="${test.report}">
 				<fileset dir="${test.src}">
 					<include name="**/${select.unittest.target}Test.java"/>
 				</fileset>
 			</batchtest>
+			<!-- emma jvm args -->
+			<jvmarg value="-Demma.coverage.out.file=${test.emma}/coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=true" />
 		</junit>
 
 		<junitreport todir="${test.report}">
@@ -45,6 +72,14 @@
 			</fileset>
 			<report todir="${test.report}"/>
 		</junitreport>
+	    <emma>
+			<report sourcepath="${build.src}" sort="+block,+name,+method,+class" metrics="method:70,block:80,line:80,class:100">
+		        <fileset dir="${test.emma}" >
+					<include name="*.emma" />
+		        </fileset>
+		        <html outfile="${test.report.emma}/coverage.html" depth="method" columns="name,line,class,method,block"/>
+			</report>
+	    </emma>
 
 		<echo message="*** Unit test report at: ${test.report}" />
 
@@ -112,6 +147,7 @@
 		<delete quiet="true"  dir="${testCdrar}" includes="**/*.class" />
 		<delete quiet="true" file="${testCdrar.src}/../testCdrar.cdrar" />
 		<delete quiet="true"  dir="${test-cdrars-maint}/CDRClassLoaderTest" includes="**/*.class" />
+		<delete dir="${test.emma}" quiet="true" />
 	</target>
 </project>
 

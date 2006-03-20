@@ -18,20 +18,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.milyn.SmooksException;
 import org.milyn.container.ContainerRequest;
-import org.milyn.delivery.SmooksHtml;
+import org.milyn.delivery.SmooksXML;
 import org.milyn.delivery.http.HeaderAction;
 import org.milyn.logging.SmooksLogger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
- * HTML Response Wrapper.
+ * XML/XHTML/HTML Servlet Response Wrapper.
  * <p/>
- * Servlet response wrapper for the {@link org.milyn.delivery.SmooksHtml} class for
- * HTML manipulation/transformation.  This is the default response wrapper.
+ * This class hooks the {@link org.milyn.delivery.SmooksXML} class into a
+ * Servlet response filter chain via the {@link org.milyn.SmooksServletFilter}.  
+ * <p/>
+ * <b style="color: red">This is the default ServletResponse wrapper.</b>
  * @author tfennelly
  */
-public class HtmlServletResponseWrapper extends ServletResponseWrapper {
+public class XMLServletResponseWrapper extends ServletResponseWrapper {
 
 	/**
 	 * Logger.
@@ -48,7 +50,7 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 	/**
 	 * Smooks delivery instance.
 	 */
-	private SmooksHtml smooks;
+	private SmooksXML smooks;
 	/**
 	 * The CharArrayWriter capturing the content.
 	 */
@@ -65,16 +67,16 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 	 * Key for access a request bound DOM passed from a down-stream
 	 * Servlet or Filter.
 	 */
-	public static final String SOURCE_DOCUMENT = HtmlServletResponseWrapper.class.toString();
+	public static final String SOURCE_DOCUMENT = XMLServletResponseWrapper.class.toString();
 	
 	/**
 	 * Constructor.
 	 * @param containerRequest Container Request.
 	 * @param originalResponse Original servlet response.
 	 */
-	public HtmlServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
+	public XMLServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
 		super(containerRequest, originalResponse);
-		smooks = new SmooksHtml(containerRequest);
+		smooks = new SmooksXML(containerRequest);
 		initHeaderActions(containerRequest.getDeliveryConfig().getObjects("http-response-header"));
 	}
 	
@@ -195,7 +197,7 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 		
 		try {
 			Node deliveryNode;
-			Document sourceDoc = (Document)getContainerRequest().getAttribute(HtmlServletResponseWrapper.SOURCE_DOCUMENT);
+			Document sourceDoc = (Document)getContainerRequest().getAttribute(XMLServletResponseWrapper.SOURCE_DOCUMENT);
 			
 			if(sourceDoc == null) {
 				Reader inputReader = new CharArrayReader(content);
@@ -302,7 +304,7 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 		 * Constructor.
 		 * @param responseWrapper Response wrapper instance.
 		 */
-		private SmooksServletOutputStream(HtmlServletResponseWrapper responseWrapper, CharArrayWriter charArrayWriter) {
+		private SmooksServletOutputStream(XMLServletResponseWrapper responseWrapper, CharArrayWriter charArrayWriter) {
 			this.responseWrapper = responseWrapper;
 			this.charArrayWriter = charArrayWriter;
 			printWriter = new PrintWriter(charArrayWriter);
@@ -463,20 +465,6 @@ public class HtmlServletResponseWrapper extends ServletResponseWrapper {
 			super.close();
 			charArrayWriter.close();
 		}
-	}
-
-	/**
-	 * {@link org.milyn.delivery.ContentDeliveryUnit#getShortDescription() ContentDeliveryUnit short description}.
-	 */
-	public String getShortDescription() {
-		return "Smooks Servlet Resoponse Wrapper";
-	}
-
-	/**
-	 * {@link org.milyn.delivery.ContentDeliveryUnit#getDetailDescription() ContentDeliveryUnit detail description}.
-	 */
-	public String getDetailDescription() {
-		return "Top level response wrapper wrapping the Smooks HTML manipulated/transformed response in a Servlet environment.  Hooks the Smooks class into the Servlet container.";
 	}
 
 	private class HtmlByteArrayOutputStream extends ByteArrayOutputStream {

@@ -31,12 +31,4 @@ public class SimpleReportingUnit extends AbstractReportingUnit {
 		// Just report on it emmediately
 		this.report(element, containerRequest);
 	}
-
-	public String getShortDescription() {
-		return null;
-	}
-
-	public String getDetailDescription() {
-		return null;
-	}
 }

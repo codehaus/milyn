@@ -153,18 +153,4 @@ public class SPutAU extends AbstractAssemblyUnit {
 		
         return scontent;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Inserts content from the referenced 'scontent' element.";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Inserts content from the referenced 'scontent' element.  The 'scontent' element sources the content and 'sput' elements insert parts (or all) of it in different locations in the document.";
-	}
 }

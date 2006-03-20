@@ -23,47 +23,11 @@ import org.w3c.dom.Node;
  * </p>
  * Base interface for all content delivery components.  See extending interfaces.
  * <p/>
- * This interface defines 2 methods for accessing descriptive information on the 
- * content delivery unit:
- * <ul>
- * 		<li>{@link #getShortDescription()}</li>
- * 		<li>{@link #getDetailDescription()()}</li>
- * </ul>
  * All implementations must contain a public constructor that takes a {@link org.milyn.cdr.CDRDef} instance as 
  * a parameter.
  * @author tfennelly
  */
 public interface ContentDeliveryUnit {
-	/**
-	 * Get a short description of the Content Delivery Unit and what it does.
-	 * <p/>
-	 * This description will be used as the short description text in UI tools.
-	 * <br/>
-	 * Example: "<i>Unclose EMPTY Element</i>" 
-	 * <p/>
-	 * <b>Note:</b> Implementations of this method should declare this 
-	 * string statically.
-	 * @return Short description String.
-	 * @see #getDetailDescription()
-	 */
-	public abstract String getShortDescription();
-
-	/**
-	 * Get a detail (more verbose) description of the Content Delivery Unit and 
-	 * what it does.
-	 * <p/>
-	 * This description will be used as the detail description text in UI tools.
-	 * <br/>
-	 * Example: "<i>Replace element with an unclosed (badly formed!) equivalent if the 
-	 * element contains no content i.e. is empty.  This is required by some older
-	 * useragents.</i>" 
-	 * <p/>
-	 * <b>Note:</b> Implementations of this method should declare this 
-	 * string statically.
-	 * @return Detail description String.
-	 * @see #getShortDescription()
-	 */
-	public abstract String getDetailDescription();
 	
 	/**
 	 * Is the supplied node in the namespace of the element to which

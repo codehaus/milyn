@@ -94,20 +94,6 @@ public class TestSerializationUnit_EmptyEl extends DefaultSerializationUnit {
 	 */
 	public void writeElementNode(Node node, Writer writer, ContainerRequest containerRequest) throws IOException {
 	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Write empty elements";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Writes empty elements well-formed (<xxx/>) or badly-formed (<xxx>).  Ensures that any child content is not writen.";
-	}
 	
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeChildElements()

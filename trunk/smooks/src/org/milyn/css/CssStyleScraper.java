@@ -209,12 +209,4 @@ public class CssStyleScraper extends AbstractAssemblyUnit {
 		styleSheet = parser.parse(inputSource, request.getRequestURI(), null, null);
 		store.add(styleSheet, element);
 	}
-
-	public String getShortDescription() {
-		return "CSS Scraper Transformation Unit";
-	}
-
-	public String getDetailDescription() {
-		return "TransUnit for scraping CSS from the page and making the information available to other TransUnits via the CssAccessor class.";
-	}
 }

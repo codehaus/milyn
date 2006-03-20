@@ -53,18 +53,4 @@ public class CTransUnit extends AbstractContentDeliveryUnit implements TransUnit
 	 */
 	public void visit(Element element, ContainerRequest containerRequest) {
 	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.trans.TransUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Short Description";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.trans.TransUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Long Description..... etc......";
-	}
 }

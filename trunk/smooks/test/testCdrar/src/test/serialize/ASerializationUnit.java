@@ -82,20 +82,6 @@ public class ASerializationUnit extends AbstractSerializationUnit {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeChildElements()
 	 */
 	public boolean writeChildElements() {

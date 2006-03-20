@@ -143,13 +143,5 @@ public class HeaderAction extends AbstractContentDeliveryUnit {
 	public String toString() {
 		return "HeaderAction: " + action + ", " + headerName + ", " + headerValue;
 	}
-
-	public String getShortDescription() {
-		return "Content Delivery Unit for HTTP response header manipulation.";
-	}
-
-	public String getDetailDescription() {
-		return "Content Delivery Unit for HTTP response header manipulation.  Add/Remove a header.";
-	}
 }
  

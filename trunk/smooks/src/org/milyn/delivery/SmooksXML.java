@@ -42,21 +42,99 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * Smooks HTML content manipulation and delivery class.
+ * Smooks XML/XHTML/HTML/etc content filtering class.
  * <p/>
- * This executes the <a href="delivery/doc-files/delivery-phases.html">3 phases of HTML content delivery</a>.
- * The <b>Assembly</b> and <b>Transformation</b> phases are executed by the 
+ * This class executes the <a href="#phases">2 phases of XML content delivery</a>.
+ * The <b>Assembly &amp; Transformation</b> phase is executed by the 
  * {@link #applyTransform(Document)} method and the <b>Serialisation</b> phase
- * is performed by the {@link #serialize(Node, Writer)} method.
+ * is optionally performed by the {@link #serialize(Node, Writer)} method.
  * <p/>
- * This class will be controlled by a container specific class.  At the moment Smooks is only
- * supported in the J2EE Servlet Container and this class is hooked into the process
- * through the {@link org.milyn.delivery.response.HtmlServletResponseWrapper}.
+ * This class will be controlled by a container specific class.  For the Servet Container
+ * see the {@link org.milyn.SmooksServletFilter} and 
+ * {@link org.milyn.delivery.response.XMLServletResponseWrapper} classes.  For a
+ * standalone (non-container) implementation, see the {@link org.milyn.SmooksStandalone}
  * class.
+ * 
+ * <h3 id="phases">Smooks XML/XHTML/HTML Content Filtering Process</h3>
+ * 
+ * Smooks markup filtering (XML/XHTML/HTML) is a 2 phase process, depending on what
+ * needs to be done.  Through this filtering process, Smooks can be used to transform or
+ * analyse markup (or a combination of both).  The first phase is called "Assembly &amp; 
+ * Transformation" and is executed by either the {@link #applyTransform(Document)}
+ * or {@link #applyTransform(Reader)} methods.  The 2nd phase is called "Serialisation" and is optionally 
+ * executed by the {@link #serialize(Node, Writer)} method (which uses the 
+ * {@link org.milyn.delivery.serialize.Serializer} class).
+ * <ul>
+ * 	<i>Note: We say that the Serialization phase (DOM Serialisation) can be optionally 
+ * 	executed via the {@link org.milyn.delivery.serialize.Serializer} class simply
+ * 	because you may not wish to perform DOM Serialisation, or you may wish to perform
+ * 	DOM Serialisation via some other mechanism e.g. XSL-FO via something like Apache FOP.</i>
+ * </ul>
+ * 
+ * <p/>
+ * So, in a little more detail, the 2 phases are:
+ * <ol>
+ * 	<li>
+ * 		<b><u>Assembly &amp; Transformation</u></b>: So, this is really 2 "sub" phases.
+ * 		<ul>
+ * 			<li>
+ * 				<b><u>Assembly</u></b>: Assembly is the process of <u>assembling the content
+ * 				to be filtered</u> i.e. getting it into a Document Object Model (DOM). 
+ * 				This means parsing the input document and iterating over 
+ * 				it to apply all {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}.  This phase 
+ * 				can result in DOM elements getting added to, or trimmed from, the DOM.  This phase is also
+ * 				very usefull for gathering information about the DOM, which can be used during the 
+ * 				transformation phase (see below).
+ * 			</li>
+ * 			<li>
+ * 				<b><u>Transformation</u></b>: Transformation takes the assembled DOM and 
+ * 				iterates over it to apply all {@link org.milyn.delivery.trans.TransUnit TransUnits}.
+ * 				This phase will only operate on DOM elements that were present in the assembled
+ * 				document; {@link org.milyn.delivery.trans.TransUnit TransUnits} will not be applied
+ * 				to elements that are introduced to the DOM during this phase.
+ * 			</li>
+ * 		</ul>
+ * 	</li>
+ * 	<li>
+ * 		<b><u>Serialisation</u></b>: The serialisation phase takes the transformed DOM and 
+ * 		iterates over it to apply all {@link org.milyn.delivery.serialize.SerializationUnit SerializationUnits},
+ * 		which write the document to the target output stream.
+ * 	</li>
+ * </ol>
+ * This whole process sounds like a lot of processing.  Well, it is.  Three iterations
+ * over the DOM.  However, the thinking on this is that:
+ * <ul>
+ * 	<li>
+ * 		The assembly phase is bypassed if there are no {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}
+ * 		configured for the requesting device.
+ * 	</li>
+ * 	<li>
+ * 		{@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits} are stateless, which means
+ * 		that only a single instance needs to be created.
+ * 	</li>
+ * 	<li>
+ * 		The transformation phase is likely to be the most processing intensive of the three 
+ * 		phases but the DOM to be transformed should have been reduced as much as possible by the
+ * 		assembly phase.  Remember, assembly doesn't just mean "adding" to the DOM.
+ * 	</li>
+ * 	<li>
+ * 		The transformation phase is only applied to elements that were in the DOM 
+ * 		at the start of that phase.
+ * 	</li>
+ * 	<li>
+ * 		{@link org.milyn.delivery.trans.TransUnit TransUnits} are normally stateless (see {@link org.milyn.delivery.trans.TransUnitPrototype}) 
+ * 		which means that multiple instances shouldn't need to be instanciated.
+ * 	</li>
+ * 	<li>
+ * 		A single instance of the {@link org.milyn.delivery.serialize.DefaultSerializationUnit}
+ * 		performs the vast majority of the work in the serialisation phase.  Only elements that require
+ * 		special attention require a specialised {@link org.milyn.delivery.serialize.SerializationUnit}.
+ * 	</li>
+ * </ul>
  * 
  * @author tfennelly
  */
-public class SmooksHtml {
+public class SmooksXML {
 
 	/**
 	 * Logger.
@@ -94,7 +172,7 @@ public class SmooksHtml {
 	 * associated with the uaContext.
 	 * @param containerRequest Container request for this Smooks content delivery instance.
 	 */
-	public SmooksHtml(ContainerRequest containerRequest) {
+	public SmooksXML(ContainerRequest containerRequest) {
 		if(containerRequest == null) {
 			throw new IllegalArgumentException("null 'containerRequest' arg passed in constructor call.");
 		}
@@ -131,7 +209,7 @@ public class SmooksHtml {
 	/**
 	 * Transform the supplied W3C Document.
 	 * <p/>
-	 * Executes the <a href="delivery/doc-files/delivery-phases.html">Assembly and Transformation phases</a>.
+	 * Executes the <a href="#phases">Assembly &amp Transformation phase</a>.
 	 * @param doc The W3C Document to be transformed.
 	 * @return Node representing transformed document; content to be delivered.
 	 */
@@ -296,7 +374,7 @@ public class SmooksHtml {
 	/**
 	 * Serialise the node to the supplied output writer instance.
 	 * <p/>
-	 * Executes the <a href="delivery/doc-files/delivery-phases.html">Serialisation phase</a>,
+	 * Executes the <a href="#phases">Serialisation phase</a>,
 	 * using the {@link Serializer} class to perform the serialization.
 	 * @param node Document to be serialised.
 	 * @param writer Output writer.

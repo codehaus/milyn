@@ -27,6 +27,7 @@ import org.milyn.cdr.cdrar.CDRArchiveEntry;
 import org.milyn.cdr.cdrar.CDRArchiveEntryNotFoundException;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.dom.DomUtils;
 import org.milyn.report.serialize.ReportSerializationUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -114,21 +115,45 @@ public class Serializer {
 		} 
 
 		if(node instanceof Document) {
-			// Get the DOCTYPE decl CDRDefs for this delivery context and write the 1st one.
+			Document doc = (Document)node;
+			Element rootElement = doc.getDocumentElement();
+			String rootElementName = DomUtils.getName(rootElement);
+			CDRDef docTypeCDRDef = null;
+
+			// Check for a DOCTYPE decl CDRDefs for this delivery context.
 			docTypeUDs = deliveryConfig.getCDRDefs("doctype");
 			if(docTypeUDs != null && docTypeUDs.size() > 0) {
-				CDRDef docTypeCDRDef = (CDRDef)docTypeUDs.get(0);			
-				CDRArchiveEntry docTypeEntry = containerRequest.getContext().getCdrarStore().getEntry(docTypeCDRDef.getPath());
+				docTypeCDRDef = (CDRDef)docTypeUDs.get(0);
+			}
+			
+			// Only use the cdrdef if the override flag is set.  The override flag will
+			// cause this DOCTYPE to override any DOCYTPE decl from the source doc.
+			if(docTypeCDRDef != null && docTypeCDRDef.getBoolParameter("override", true)) {
+				String path = docTypeCDRDef.getPath();
 				
-				writer.write(new String(docTypeEntry.getEntryBytes()));
+				if(path != null) {
+					CDRArchiveEntry docTypeEntry = containerRequest.getContext().getCdrarStore().getEntry(docTypeCDRDef.getPath());
+					
+					writer.write(new String(docTypeEntry.getEntryBytes()));
+				} else {
+					String publicId = docTypeCDRDef.getStringParameter("publicId", "!!publicId undefined - fix cdres!!");
+					String systemId = docTypeCDRDef.getStringParameter("systemId", "!!systemId undefined - fix cdres!!");
+					String xmlns = docTypeCDRDef.getStringParameter("xmlns");
+
+					serializeDoctype(publicId, systemId, rootElementName, writer);
+					if(xmlns != null) {
+						rootElement.setAttribute("xmlns", xmlns);
+					} else {
+						rootElement.removeAttribute("xmlns");
+					}
+				}
 			} else {
 				// If there's no CDRDef doctypes defined, was there a DOCTYPE decl in 
 				// the source Document?  If there was, write this out as the DOCTYPE.
-				Document doc = (Document)node;
 				DocumentType docType = doc.getDoctype();
+				
 				if(docType != null) {
-					String rootElement = doc.getDocumentElement().getTagName();
-					serializeDoctype(docType, rootElement, writer);
+					serializeDoctype(docType.getPublicId(), docType.getSystemId(), rootElementName, writer);
 				}
 			}
 		}
@@ -155,10 +180,8 @@ public class Serializer {
 	 * @param writer The target writer.
 	 * @throws IOException Exception writing to the output writer.
 	 */
-	private void serializeDoctype(DocumentType docType, String rootElement, Writer writer) throws IOException {
-		String publicId = docType.getPublicId();
-		String systemId = docType.getSystemId();
-		
+	private void serializeDoctype(String publicId, String systemId, String rootElement, Writer writer) throws IOException {
+
 		if(defaultSUs instanceof ReportSerializationUnit) {
 			writer.write("&lt;!DOCTYPE ");
 		} else {

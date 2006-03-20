@@ -22,7 +22,7 @@ import org.milyn.delivery.ElementVisitor;
  * Document Assembly Unit interface definition.
  * <p/>
  * Implementations of this interface are applied to the content during the
- * <a href="../doc-files/delivery-phases.html">Assembly phase</a>.
+ * Assembly &amp; Transformation phase (see {@link org.milyn.delivery.SmooksXML}).
  * <p/>
  * Multiple AssemblyUnit implementations can be applied to a single element.  The order in which 
  * they are applied is determined by the {@link org.milyn.cdr.CDRDef} specificity. 

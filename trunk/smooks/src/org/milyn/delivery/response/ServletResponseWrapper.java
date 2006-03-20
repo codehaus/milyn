@@ -28,12 +28,15 @@ import org.w3c.dom.Node;
 /**
  * Abstract Servlet Response Wrapper for the Smooks framework.
  * <p/>
- * Allows browser aware manipulation of a Servlet response right at the
- * response stream level. 
+ * Implementations are hooked into the {@link org.milyn.SmooksServletFilter} by the
+ * {@link org.milyn.delivery.response.ServletResponseWrapperFactory} to allow browser aware 
+ * manipulation of a Servlet response right at the response stream level. 
  * <p/>
  * ServletResponseWrapper implementations are triggered
  * by supplying "<b>smooksrw</b>=<i>cdrl-selector</i>" as a HTTP request parameter.  
- * See {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
+ * <p/>
+ * See {@link org.milyn.delivery.response.XMLServletResponseWrapper} and 
+ * {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
  * @author tfennelly
  */
 public abstract class ServletResponseWrapper extends HttpServletResponseWrapper implements ContentDeliveryUnit {

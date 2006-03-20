@@ -33,12 +33,4 @@ public class TestServletResponseWrapper extends ServletResponseWrapper {
 
 	public void close() {
 	}
-
-	public String getShortDescription() {
-		return null;
-	}
-
-	public String getDetailDescription() {
-		return null;
-	}
 }

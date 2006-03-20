@@ -65,12 +65,4 @@ public class AHrefRecorder extends AbstractTransUnit {
 	public boolean visitBefore() {
 		return true;
 	}
-
-	public String getShortDescription() {
-		return "A-Href Visitor";
-	}
-
-	public String getDetailDescription() {
-		return "Gathers a-href information from the current page and stores them for performing 'deep' page test runs.";
-	}
 }

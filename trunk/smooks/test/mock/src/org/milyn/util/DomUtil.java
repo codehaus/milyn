@@ -43,7 +43,7 @@ public abstract class DomUtil {
 	 */
 	public static Document parse(InputStream stream) {
 		try {
-			return XmlUtil.parseStream(stream, false);
+			return XmlUtil.parseStream(stream, false, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			TestCase.fail("Failed to parse Document stream: " + e.getMessage());
