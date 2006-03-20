@@ -43,12 +43,4 @@ public abstract class ParameterDecoder extends AbstractContentDeliveryUnit {
 	 * @throws ParameterDecodeException Unable to decode parameter value.
 	 */
 	public abstract Object decodeValue(String value) throws ParameterDecodeException;
-
-	public String getShortDescription() {
-		return "cdres configuration parameter decoder";
-	}
-
-	public String getDetailDescription() {
-		return "cdres configuration parameter decoder";
-	}
 }

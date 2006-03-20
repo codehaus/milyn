@@ -35,7 +35,10 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * An instance of this class defines the following attributes of a Content Delivery Resource
  * from a .cdrl file:
  * <ul>
- * 		<li><b id="uatarget">uatarget</b>: The browser target to which the resource is applied.
+ * 		<li><b id="uatarget">uatarget</b>: A list of 1 or more browser/useragent target(s) to which this 
+ * 			resource is to be applied.  Each entry ("uatarget expression") in this list is seperated
+ * 			by a comma.  Uatarget expressions are represented by the {@link org.milyn.cdr.UATargetExpression}
+ * 			class.  
  * 			<br/> 
  * 			Can be one of:
  * 			<ol>
@@ -45,9 +48,16 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * 			</ol>
  * 			See <a href="#res-targeting">Resource Targeting</a>.
  * 			<p/>
+ * 			<b>AND</b> and <b>NOT</b> expressions are supported on the uatarget attribute.
+ * 			NOT expressions are specified in the "not:&lt;<i>profile-name</i>&gt;"
+ * 			format. AND expressions are supported simply - by seperating the device/profile
+ * 			names using "AND".  An example of the use of these expressions
+ * 			in one uatarget attribute value could be <i>uatarget="html4 AND not:xforms"</i> -
+ * 			target the resource at browsers/devices that have the "html4" profile but don't
+ * 			have the "xforms" profile.
+ * 			<p/>
  * 		</li>
- * 		<li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a resource during the 
- * 			<a href="../delivery/doc-files/delivery-phases.html">content delivery process</a>.
+ * 		<li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a .cdrl resource.
  * 			<br/> 
  * 			Example values currently being used are:
  * 			<ol>
@@ -68,18 +78,24 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * 					<a href="../delivery/doc-files/dtds.cdrl">targets DTDs</a>.  Content Delivery Units
  * 				</li>
  * 			</ol>
- * 			The first 3 of these are used by Smooks to select {@link org.milyn.delivery.ContentDeliveryUnit}s during 
- * 			the <a href="../delivery/doc-files/delivery-phases.html">content delivery process</a>.
+ * 			The first 3 of these are used by Smooks to select {@link org.milyn.delivery.ContentDeliveryUnit}s.
  * 			<br/>
  * 			See <a href="#res-targeting">Resource Targeting</a>.
  * 			<p/>
  * 		</li>
- * 		<li><b>path</b>: The path to the resource within the classpath or one of the loaded .cdrar files.</li>
+ * 		<li><b>path</b>: The path to the resource within the classpath or one of the loaded .cdrar files.
+ * 			<p/>
+ * 		</li>
+ * 		<li><b id="namespace">namespace</b>: The XML namespace of the target for this resource.  This is used
+ * 			to target {@link org.milyn.delivery.ContentDeliveryUnit}s at XML elements from a
+ * 			specific XML namespace e.g. "http://www.w3.org/2002/xforms".  If not defined, the resource
+ * 			is targeted at all namespces. 
+ * 		</li>
  * </ul>
  * The following is a sample showing the basic structure of the .cdrl file.
  * <pre>
  * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-cdres-list-1.0.dtd 
+ * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-cdres-list-1.0.dtd> 
  * &lt;cdres-list&gt;
  * 	&lt;cdres uatarget="value" selector="value" path="value"/&gt;
  * &lt;/cdres-list&gt;</pre>
@@ -88,14 +104,15 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * Just prefix the attribute name with "default-".  Example:
  * <pre>
  * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-liscdres-list-1.0.dtd * &lt;cdres-list default-uatarget="value" default-selector="value" &gt;
+ * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-liscdres-list-1.0.dtd>
+ * &lt;cdres-list default-uatarget="value" default-selector="value" default-namespace="http://www.w3.org/2002/xforms"&gt;
  * 	&lt;cdres path="value"/&gt;
  * &lt;/cdres-list&gt;</pre>
  * 
  * <h3 id="res-targeting">Resource Targeting</h3>
  * <a href="../delivery/doc-files/unit-config.html#cdrs">Content Delivery Resources</a> are targeted
- * using a combination of the <a href="#uatarget">uatarget</a> and <a href="#selector">selector</a> 
- * attributes (see above).
+ * using a combination of the <a href="#uatarget">uatarget</a>, <a href="#selector">selector</a> 
+ * and <a href="#namespace">namespace</a> attributes (see above).
  * <p/>
  * Smooks does this at runtime by building (and caching) a table of resources per requesting device/browser type.
  * When Smooks receives a request it uses the device recognition and profiling information provided by
@@ -123,6 +140,11 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * 		&lt;param name="paramname"&gt;paramval&lt;/param&gt;
  * 	&lt;/cdres&gt;
  * &lt;/cdres-list&gt;</pre>
+ * <p/>
+ * Complex parameter values can be defined and decoded via configured 
+ * {@link org.milyn.cdr.ParameterDecoder}s and the 
+ * {@link #getParameter(String)}.{@link CDRDef.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)} 
+ * method (see {@link org.milyn.cdr.TokenizedStringParameterDecoder} as an example).
  *  
  * <h3 id="cdrs">Content Delivery Resources</h3>
  * &lt;cdres&gt;s can also be used to define <a href="../delivery/doc-files/unit-config.html#cdrs">Content 
@@ -130,7 +152,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * ({@link org.milyn.delivery.assemble.AssemblyUnit}s, 
  * {@link org.milyn.delivery.trans.TransUnit}s and
  * {@link org.milyn.delivery.serialize.SerializationUnit}s).  In this case the type attribute is
- * not required. This "feature" is used by Smooks to target specific DTD and DOCTYPE header files at
+ * not required. Amoung other things, this "feature" is used by Smooks to target specific DTD and DOCTYPE header files at
  * specific browsers e.g.
  * <pre>
  * &lt;?xml version='1.0'?&gt;
@@ -162,6 +184,10 @@ public class CDRDef {
 	 * for instances of selector.
 	 */
 	private String[] uaTargets;
+	/**
+	 * UATarget expresssions built from the uatargets list.
+	 */
+	private UATargetExpression[] uaTargetExpressions;
 	/**
 	 * The path to the Content Delivery Resource within the cdrar.
 	 */
@@ -198,11 +224,6 @@ public class CDRDef {
 		if(uatargets == null || uatargets.trim().equals("")) {
 			throw new IllegalArgumentException("null or empty 'uatargets' arg in constructor call.");
 		}
-		/*
-		if(path == null || path.trim().equals("")) {
-			throw new IllegalArgumentException("null or empty 'path' arg in constructor call.");
-		}
-		*/
 		this.selector = selector.toLowerCase();
 		isXmlDef = selector.startsWith(XML_DEF_PREFIX);
 		this.path = path;
@@ -212,10 +233,12 @@ public class CDRDef {
 		if(tokenizer.countTokens() == 0) {
 			throw new IllegalArgumentException("Empty device/profile uaTargets. [" + selector + "][" + path + "]");
 		} else {
-			int i = 0;
 			this.uaTargets = new String[tokenizer.countTokens()];			
-			while(tokenizer.hasMoreTokens()) {
-				this.uaTargets[i++] = tokenizer.nextToken();
+			uaTargetExpressions = new UATargetExpression[tokenizer.countTokens()];			
+			for(int i = 0; tokenizer.hasMoreTokens(); i++) {
+				String expression = tokenizer.nextToken();
+				this.uaTargets[i] = expression;
+				uaTargetExpressions[i] = new UATargetExpression(expression);
 			}
 		}
 	}
@@ -257,10 +280,10 @@ public class CDRDef {
 	 * Get the device/profile uaTargets for this CDRDef.
 	 * @return The device/profile uaTargets.
 	 */
-	public String[] getUaTargets() {
-		return uaTargets;
+	public UATargetExpression[] getUaTargetExpressions() {
+		return uaTargetExpressions;
 	}
-
+	
 	/**
 	 * Get the cdrar path of the Content Delivery Resource for this CDRDef.
 	 * @return The cdrar path.

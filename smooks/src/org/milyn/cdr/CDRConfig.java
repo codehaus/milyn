@@ -18,10 +18,12 @@ package org.milyn.cdr;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.milyn.dom.DomUtils;
+import org.milyn.dom.Parser;
 import org.milyn.logging.SmooksLogger;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -95,21 +97,25 @@ public final class CDRConfig {
 	 * @param stream
 	 */
 	private void digestStream(InputStream stream) throws SAXException, IOException {
-		Document archiveDefDoc = XmlUtil.parseStream(stream, true);
+		//Document archiveDefDoc = XmlUtil.parseStream(stream, true, true);
+		Parser parser = new Parser();
+		Document archiveDefDoc = parser.parse(new InputStreamReader(stream));
 		int cdrIndex = 1;
-		Node cdresNode;
+		Element currentElement;
 		String cdresSelector = null;
-		String defaultSelector = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-selector"));
-		String defaultNamespace = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-namespace"));
-		String defaultUatarget = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-uatarget"));
-		String defaultPath = trimToNull(XmlUtil.getString(archiveDefDoc, "/cdres-list/@default-path"));
+		
+		currentElement = (Element)XmlUtil.getNode(archiveDefDoc, "/cdres-list");
+		String defaultSelector = trimToNull(currentElement.getAttribute("default-selector"));
+		String defaultNamespace = trimToNull(currentElement.getAttribute("default-namespace"));
+		String defaultUatarget = trimToNull(currentElement.getAttribute("default-uatarget"));
+		String defaultPath = trimToNull(currentElement.getAttribute("default-path"));
 		
 		cdresSelector = "/cdres-list/cdres[" + cdrIndex + "]";
-		while((cdresNode = XmlUtil.getNode(archiveDefDoc, cdresSelector)) != null) {
-			String selector = trimToNull(XmlUtil.getString(cdresNode, "@selector"));
-			String namespace = trimToNull(XmlUtil.getString(cdresNode, "@namespace"));
-			String uatargets = trimToNull(XmlUtil.getString(cdresNode, "@uatarget"));
-			String path = trimToNull(XmlUtil.getString(cdresNode, "@path"));
+		while((currentElement = (Element)XmlUtil.getNode(archiveDefDoc, cdresSelector)) != null) {
+			String selector = trimToNull(currentElement.getAttribute("selector"));
+			String namespace = trimToNull(currentElement.getAttribute("namespace"));
+			String uatargets = trimToNull(currentElement.getAttribute("uatarget"));
+			String path = trimToNull(currentElement.getAttribute("path"));
 			CDRDef cdrDef;
 			
 			try {
@@ -125,7 +131,7 @@ public final class CDRConfig {
 			String paramSelector = null; 
 			
 			paramSelector = "param[" + paramIndex + "]";
-			while((paramNode = XmlUtil.getNode(cdresNode, paramSelector)) != null) {
+			while((paramNode = XmlUtil.getNode(currentElement, paramSelector)) != null) {
 				String paramName = XmlUtil.getString(paramNode, "@name");
 				String paramType = XmlUtil.getString(paramNode, "@type");
 				String paramValue = DomUtils.getAllText((Element)paramNode, true);

@@ -52,19 +52,4 @@ public class TestSerializationUnit_Remove extends  DefaultSerializationUnit {
 		// Remove by not printing the start or end of the element.
 		// Leaves the child content.
 	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Remove element - leave children";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Remove element - leave children";
-	}
-
 }

@@ -145,7 +145,7 @@ public class CDRConfigTest extends TestCase {
 			assertEquals("a", unitDefs[0].getSelector());
 			assertEquals("http://xxxx", unitDefs[0].getNamespaceURI());
 			assertEquals("/a/b/res.class", unitDefs[0].getPath());
-			assertEquals(3, unitDefs[0].getUaTargets().length);
+			assertEquals(3, unitDefs[0].getUaTargetExpressions().length);
 		} catch(Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -159,11 +159,11 @@ public class CDRConfigTest extends TestCase {
 
 			assertEquals("a", unitDefs[0].getSelector());
 			assertEquals("/a/b/resa.class", unitDefs[0].getPath());
-			assertEquals(3, unitDefs[0].getUaTargets().length);
+			assertEquals(3, unitDefs[0].getUaTargetExpressions().length);
 
 			assertEquals("b", unitDefs[1].getSelector());
 			assertEquals("/a/b/resb.class", unitDefs[1].getPath());
-			assertEquals(1, unitDefs[1].getUaTargets().length);
+			assertEquals(1, unitDefs[1].getUaTargetExpressions().length);
 		} catch(Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

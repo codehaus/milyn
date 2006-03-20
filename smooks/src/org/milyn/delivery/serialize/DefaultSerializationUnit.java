@@ -153,22 +153,6 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 		throw new IOException("writeElementNode not implemented yet. Node: " + node.getNodeValue() + ", node: [" + node + "]");
 	}
 
-	private static final String SHORT_DESC = "Default element SerializationUnit implementation.";
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return SHORT_DESC;
-	}
-
-	private static final String DETAIL_DESC = "Writes the element as standard XML. Supports a few parameters - see class Javadoc.";
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return DETAIL_DESC;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeChildElements()
 	 */

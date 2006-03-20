@@ -18,7 +18,7 @@ package org.milyn.smooks.pagination;
 
 import java.util.Collection;
 
-import org.milyn.delivery.SmooksHtml;
+import org.milyn.delivery.SmooksXML;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.trans.AbstractTransUnit;
@@ -69,21 +69,7 @@ public class SDocTU extends AbstractTransUnit {
 			}
 			
 			pageNum--;
-			request.setAttribute(SmooksHtml.DELIVERY_NODE_REQUEST_KEY, pages[pageNum]);
+			request.setAttribute(SmooksXML.DELIVERY_NODE_REQUEST_KEY, pages[pageNum]);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Document pagination 'sdocument' element Transformation Unit.";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Document pagination 'sdocument' element Transformation Unit.";
 	}
 }

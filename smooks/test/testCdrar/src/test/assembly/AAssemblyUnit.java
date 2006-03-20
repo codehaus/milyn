@@ -37,20 +37,6 @@ public class AAssemblyUnit extends AbstractAssemblyUnit {
 	public void visit(Element element, ContainerRequest containerRequest) {
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return "Test Assembly Unit";
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return "Test Assembly Unit";
-	}
-
 	public boolean visitBefore() {
 		return false;
 	}

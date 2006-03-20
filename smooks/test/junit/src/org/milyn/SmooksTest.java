@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.milyn.container.MockContainerRequest;
-import org.milyn.delivery.SmooksHtml;
+import org.milyn.delivery.SmooksXML;
 import org.milyn.util.SmooksUtil;
 import org.w3c.dom.Node;
 
@@ -44,7 +44,7 @@ public class SmooksTest extends TestCase {
 	
 	public void test_applyTransform_bad_params() {
 		InputStream stream = getClass().getResourceAsStream("html_1.html");
-		SmooksHtml smooks = new SmooksHtml(request);
+		SmooksXML smooks = new SmooksXML(request);
 		
 		try {
 			smooks.applyTransform((Reader)null);
@@ -58,12 +58,12 @@ public class SmooksTest extends TestCase {
 	}
 	
 	public void test_applyTransform_DocumentCheck() {
-		SmooksHtml smooks;
+		SmooksXML smooks;
 		InputStream stream = null;
 		Node deliveryNode = null;
 		
 		stream = getClass().getResourceAsStream("html_1.html");
-		smooks = new SmooksHtml(request);
+		smooks = new SmooksXML(request);
 		try {
 			deliveryNode = smooks.applyTransform(new InputStreamReader(stream));
 		} catch (SmooksException e) {

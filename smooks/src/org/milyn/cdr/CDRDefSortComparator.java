@@ -22,7 +22,7 @@ import org.milyn.device.UAContext;
 
 
 /**
- * Sort Comparator for Unit def Objects based on their "specificity".
+ * Sort Comparator for {@link org.milyn.cdr.CDRDef} Objects based on their "specificity".
  * <p/>
  * Before reading this be sure to read the {@link org.milyn.cdr.CDRDef} class Javadoc.
  * <p/>
@@ -36,33 +36,28 @@ import org.milyn.device.UAContext;
  * The following outlines how this specificity value is calculated at present.  This
  * "algorithm" wasn't arrived at through any real scientific process so it could
  * be very questionable:
- * <!-- Just cat-n-paste from the code -->
+ * <!-- Just cut-n-paste from the code -->
  * <pre>
-	// Check the 'uatarget' attribute value.
-	if(containsDevice(cdrDef.getUaTargets())) {
-		// Exact device listed
-		specificity += 10;
-	} 
-	if(containsMatchingProfile(cdrDef.getUaTargets())) {
-		specificity += 5;
-	} 
-	if(containsAstrix(cdrDef.getUaTargets())) {
-		specificity += 1;
+	// Check the 'uatarget' attribute specificity by adding the specificity
+	// of all its uatarget expressions.
+	{@link org.milyn.cdr.UATargetExpression}[] uaTargets = cdrDef.{@link org.milyn.cdr.CDRDef#getUaTargetExpressions() getUaTargetExpressions()};
+	for(int i = 0; i < uaTargets.length; i++) {
+		specificity += uaTargets[i].{@link org.milyn.cdr.UATargetExpression#getSpecificity(UAContext) getSpecificity(deviceContext)};
 	}
 	
 	// Check the 'selector' attribute value.
-	if(cdrDef.isXmlDef()) {
+	if(cdrDef.{@link org.milyn.cdr.CDRDef#isXmlDef() isXmlDef()}) {
 		specificity += 1;
-	} else if(cdrDef.getselector().equals("*")) {
-		specificity += 5;
+	} else if(cdrDef.{@link org.milyn.cdr.CDRDef#getSelector() getselector()}.equals("*")) {
+		specificity += 10;
 	} else {
 		// Explicit selector listed
-		specificity += 10;
+		specificity += 100;
 	}
 		
 	// Check the 'namespace' attribute.
-	if(cdrDef.getNamespaceURI() != null) {
-		specificity += 5;
+	if(cdrDef.{@link org.milyn.cdr.CDRDef#getNamespaceURI() getNamespaceURI()} != null) {
+		specificity += 10;
 	}</pre>  
  * For more details on this please refer to the code in this class.
  * 
@@ -96,8 +91,8 @@ public class CDRDefSortComparator implements Comparator {
 			return 0;
 		}
 		
-		int unitDef1Specificity = getSpecificity(unitDef1);
-		int unitDef2Specificity = getSpecificity(unitDef2);				
+		double unitDef1Specificity = getSpecificity(unitDef1);
+		double unitDef2Specificity = getSpecificity(unitDef2);				
 		
 		// They are ordered as follow (most specific first). 
 		if(unitDef1Specificity > unitDef2Specificity) {
@@ -117,36 +112,31 @@ public class CDRDefSortComparator implements Comparator {
 	 * @param cdrDef
 	 * @return
 	 */
-	private int getSpecificity(CDRDef cdrDef) {
-		int specificity = 0;
+	private double getSpecificity(CDRDef cdrDef) {
+		double specificity = 0;
 		
 		// If the following code is modified, please update the class Javadoc.
 
-		// Check the 'uatarget' attribute value.
-		if(containsDevice(cdrDef.getUaTargets())) {
-			// Exact device listed
-			specificity += 10;
-		} 
-		if(containsMatchingProfile(cdrDef.getUaTargets())) {
-			specificity += 5;
-		} 
-		if(containsAstrix(cdrDef.getUaTargets())) {
-			specificity += 1;
+		// Check the 'uatarget' attribute specificity by adding the specificity
+		// of all its uatarget expressions.
+		UATargetExpression[] uaTargets = cdrDef.getUaTargetExpressions();
+		for(int i = 0; i < uaTargets.length; i++) {
+			specificity += uaTargets[i].getSpecificity(deviceContext);
 		}
 		
 		// Check the 'selector' attribute value.
 		if(cdrDef.isXmlDef()) {
 			specificity += 1;
 		} else if(cdrDef.getSelector().equals("*")) {
-			specificity += 5;
+			specificity += 10;
 		} else {
 			// Explicit selector listed
-			specificity += 10;
+			specificity += 100;
 		}
 		
 		// Check the 'namespace' attribute.
 		if(cdrDef.getNamespaceURI() != null) {
-			specificity += 5;
+			specificity += 10;
 		}
 		
 		return specificity;

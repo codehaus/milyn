@@ -51,7 +51,6 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 	}	
 
 	public void testXslUnitTrans_from_cdrar() {
-		InputStream stream = null;
 		SmooksUtil smooksUtil;
 		byte[] xslBytes = null;
 		
@@ -73,10 +72,10 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 	 * @param deliveryNode
 	 */
 	private void transAndCompare(MockContainerRequest request) {
-		SmooksHtml smooks;
+		SmooksXML smooks;
 		Node deliveryNode = null;
 
-		smooks = new SmooksHtml(request);
+		smooks = new SmooksXML(request);
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
 			deliveryNode = smooks.applyTransform(new InputStreamReader(stream));

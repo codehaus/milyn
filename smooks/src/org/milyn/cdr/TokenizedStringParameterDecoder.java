@@ -22,14 +22,20 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.milyn.cdr.CDRDef.Parameter;
+import org.milyn.delivery.ContentDeliveryConfig;
 
 
 /**
- * {@link ParameterDecoder} used to tokenize a parameter value.
+ * {@link ParameterDecoder} used to tokenize a parameter value in a {@link java.util.List}
+ * or {@link java.util.HashSet}.
  * <p/>
  * Tokenizes the parameter value into a {@link java.util.List} (selector="param-type:string-list")
  * or {@link java.util.HashSet} (selector="param-type:string-hashset") using {@link java.util.StringTokenizer}.
  * <h3>.cdrl Configuration</h3>
+ * The following configuration shows how this {@link ParameterDecoder} is configured into
+ * Smooks such that it can be used by {@link org.milyn.delivery.ContentDeliveryUnit}s
+ * for accessing tokenised param values.  See the <a href="#exampleusage">example usage</a>
+ * below for an example on how this decoder can be used once configured.
  * <pre>
  * &lt;!-- Tokenize value into a {@link java.util.List} i.e. 
  * 		{@link org.milyn.cdr.CDRDef#getParameter(java.lang.String)}.getValue({@link org.milyn.delivery.ContentDeliveryConfig}) --&gt;
@@ -60,6 +66,25 @@ import org.milyn.cdr.CDRDef.Parameter;
  * 	&lt;!-- (Optional) Trim token values. Default true. --&gt;
  * 	&lt;param name="<b>trimTokens</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * &lt;/cdres&gt;</pre>
+ * 
+ * <h3 id="exampleusage">Example Usage</h3>
+ * Once this decoder has been configured into Smooks, it can be used as with the
+ * following example:
+ * <p/>
+ * .cdrl param:
+ * <pre>
+ * &lt;cdres uatarget="html4" path="com.acme.XXXContentDeliveryUnit"&gt;
+ * 	&lt;param name="blockLevelElements" <b>type="string-hashset"</b>&gt;
+ * 		p,h1,h2,h3,h4,h5,h6,div,ul,ol,dl,menu,dir,pre,hr,blockquote,address,center,noframes,isindex,fieldset,table
+ * 	&lt;/param&gt;
+ * &lt;/cdres&gt;</pre>
+ * <p/>
+ * ... and the "com.acme.XXXContentDeliveryUnit" {@link org.milyn.delivery.ContentDeliveryUnit} accessing this parameter value:
+ * <pre>
+ * {@link org.milyn.cdr.CDRDef.Parameter} param = {@link org.milyn.cdr.CDRDef cdrDef}.{@link org.milyn.cdr.CDRDef#getParameter(String) getParameter("blockLevelElements")};
+ * {@link java.util.HashSet} blockLevelElements = (HashSet)param.{@link org.milyn.cdr.CDRDef.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)}; 
+ * </pre>
+ * 
  * See {@link org.milyn.cdr.CDRDef}.
  * @author tfennelly
  */

@@ -40,7 +40,7 @@ import org.milyn.container.ContainerRequest;
 import org.milyn.container.servlet.HttpServletContainerRequest;
 import org.milyn.container.servlet.ServletContainerContext;
 import org.milyn.delivery.response.ServletResponseWrapper;
-import org.milyn.delivery.response.HtmlServletResponseWrapper;
+import org.milyn.delivery.response.XMLServletResponseWrapper;
 import org.milyn.delivery.response.ServletResponseWrapperFactory;
 import org.milyn.device.ident.UnknownDeviceException;
 import org.milyn.logging.SmooksLogger;
@@ -52,8 +52,8 @@ import org.milyn.resource.ContainerResourceLocator;
  * Smooks controller class for the J2EE Servlet environment.  This 
  * class pipes the Servlet response into a {@link javax.servlet.ServletResponseWrapper}
  * instance for transformation and serialisation.  The default response wrapper is the
- * {@link org.milyn.delivery.response.HtmlServletResponseWrapper} which transforms a
- * HTML stream based on the content delivery resource configuration for the requesting
+ * {@link org.milyn.delivery.response.XMLServletResponseWrapper} which transforms an
+ * XML/XHTML/HTML stream based on the content delivery resource configuration for the requesting
  * device. See {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
  * 
  * <h3>Requirements</h3>
@@ -175,7 +175,6 @@ public class SmooksServletFilter implements Filter {
 		try {
 			long startTime = 0L;
 			ContainerRequest containerRequest = new HttpServletContainerRequest((HttpServletRequest)request, servletConfig, smooksContainerContext);
-			List responseWrappers;
 
 			if(logger.isDebugEnabled()) {
 				startTime = System.currentTimeMillis();
@@ -189,8 +188,8 @@ public class SmooksServletFilter implements Filter {
 				responseWrapper = getResponseWrapper("html-smooksrw", response, containerRequest);
 			}
 			if(responseWrapper == null) {
-				// Default to the HtmlServletResponseWrapper.
-				responseWrapper = new HtmlServletResponseWrapper(containerRequest, (HttpServletResponse)response);
+				// Default to the XMLServletResponseWrapper.
+				responseWrapper = new XMLServletResponseWrapper(containerRequest, (HttpServletResponse)response);
 			}
 
 			if(logger.isDebugEnabled()) {

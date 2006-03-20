@@ -21,6 +21,11 @@ import org.w3c.dom.Element;
 
 /**
  * Element <b>Visitor</b> (GoF) interface.
+ * <p/>
+ * This is probably the most important interface in the {@link org.milyn.delivery.SmooksXML} 
+ * filtering framework.  It defines the
+ * interface through which XML/XHTML/HTML filtering (transformation and/or analysis) logic
+ * "visits" a source XML DOM tree.
  * @author tfennelly
  */
 public interface ElementVisitor extends ContentDeliveryUnit {
@@ -28,7 +33,7 @@ public interface ElementVisitor extends ContentDeliveryUnit {
 	 * Visit the supplied element.
 	 * <p/>
 	 * Implementations of this method should contain logic to perform an 
-	 * operation on the supplied DOM element.
+	 * operation on (transformation and/or analysis) the supplied DOM element.
 	 * @param element The DOM element being visited.
 	 * @param containerRequest Request relative instance.
 	 */

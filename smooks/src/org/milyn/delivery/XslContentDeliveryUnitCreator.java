@@ -143,19 +143,5 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 			}
 			parent.removeChild(element);
 		}
-
-		/* (non-Javadoc)
-		 * @see org.milyn.trans.TransUnit#getShortDescription()
-		 */
-		public String getShortDescription() {
-			return "XSL Transformation Unit";
-		}
-
-		/* (non-Javadoc)
-		 * @see org.milyn.trans.TransUnit#getDetailDescription()
-		 */
-		public String getDetailDescription() {
-			return "XSL Transformation Unit";
-		}		
 	}
 }

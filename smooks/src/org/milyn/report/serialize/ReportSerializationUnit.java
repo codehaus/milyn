@@ -142,22 +142,6 @@ public class ReportSerializationUnit extends DefaultSerializationUnit {
 		throw new IOException("writeElementNode not implemented yet. Node: " + node.getNodeValue() + ", node: [" + node + "]");
 	}
 
-	private static final String SHORT_DESC = "Report element SerializationUnit implementation.";
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getShortDescription()
-	 */
-	public String getShortDescription() {
-		return SHORT_DESC;
-	}
-
-	private static final String DETAIL_DESC = "Writes the report content such that the content is viewable on the page i.e. it's HTML'ified.";
-	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getDetailDescription()
-	 */
-	public String getDetailDescription() {
-		return DETAIL_DESC;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeChildElements()
 	 */
