@@ -507,13 +507,13 @@ public class XmlUtilTest extends TestCase {
     
     public void testParseStream() {
 		try {
-			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("/a.adf"), new LocalEntityResolver(getDTDfolder()), true);
+			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("/a.adf"), new LocalEntityResolver(getDTDfolder()), true, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}  
 		try {
-			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("/b.adf"), new LocalEntityResolver(getDTDfolder()), true);
+			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("/b.adf"), new LocalEntityResolver(getDTDfolder()), true, true);
 			fail("No failure for invalid document.");
 		} catch (SAXException e) {
 			// OK
@@ -528,7 +528,7 @@ public class XmlUtilTest extends TestCase {
 			ByteArrayInputStream stream = new ByteArrayInputStream(
 					"<x><y attrib='attribval'/><z>zval</z></x> ".getBytes());
 					 
-			return XmlUtil.parseStream(stream, new LocalEntityResolver(getDTDfolder()), false);
+			return XmlUtil.parseStream(stream, new LocalEntityResolver(getDTDfolder()), false, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

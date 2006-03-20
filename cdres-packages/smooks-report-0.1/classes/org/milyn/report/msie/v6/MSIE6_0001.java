@@ -19,7 +19,7 @@ package org.milyn.report.msie.v6;
 import org.milyn.cdr.CDRDef;
 import org.milyn.container.ContainerRequest;
 import org.milyn.dom.DomUtils;
-import org.milyn.css.CSSAccessor;
+import org.milyn.css.CssAccessor;
 import org.milyn.report.AbstractReportingUnit;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

@@ -20,9 +20,9 @@ import java.util.HashSet;
 
 import org.milyn.cdr.CDRDef;
 import org.milyn.cdr.ParameterAccessor;
-import org.milyn.css.CSSAccessor;
 import org.milyn.magger.CSSProperty;
 import org.milyn.container.ContainerRequest;
+import org.milyn.css.CssAccessor;
 import org.milyn.delivery.trans.AbstractTransUnit;
 import org.w3c.dom.Element;
 
@@ -86,7 +86,7 @@ public class MarginRightInheritFix extends AbstractTransUnit {
 	}
 
 	private boolean ancestorHasMarginRight(Element element, ContainerRequest request) {
-		CSSAccessor cssAccessor = CSSAccessor.getInstance(request);
+		CssAccessor cssAccessor = CssAccessor.getInstance(request);
 		Element parent = null;
 		
 		while((parent = (Element)element.getParentNode()) != null) {
@@ -101,13 +101,5 @@ public class MarginRightInheritFix extends AbstractTransUnit {
 
 	public boolean visitBefore() {
 		return false;
-	}
-
-	public String getShortDescription() {
-		return null;
-	}
-
-	public String getDetailDescription() {
-		return null;
 	}
 }
