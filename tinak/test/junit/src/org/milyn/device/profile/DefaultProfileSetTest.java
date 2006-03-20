@@ -32,7 +32,7 @@ public class DefaultProfileSetTest extends TestCase {
 		DefaultProfileSet set = new DefaultProfileSet();
 
 		try {
-			set.addProfile(null);
+			set.addProfile((Profile)null);
 			fail("no arg exception on null");
 		} catch(IllegalArgumentException e) {}
 		try {
@@ -51,14 +51,6 @@ public class DefaultProfileSetTest extends TestCase {
 		try {
 			set.isMember(null);
 			fail("no arg exception on null");
-		} catch(IllegalArgumentException e) {}
-		try {
-			set.isMember("");
-			fail("no arg exception on empty");
-		} catch(IllegalArgumentException e) {}
-		try {
-			set.isMember(" ");
-			fail("no arg exception on whitespace");
 		} catch(IllegalArgumentException e) {}
 	}
 

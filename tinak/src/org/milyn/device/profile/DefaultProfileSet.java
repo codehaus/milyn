@@ -17,27 +17,23 @@
 package org.milyn.device.profile;
 
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.LinkedHashMap;
 
 /**
  * Default ProfileSet implementation.
  * @author tfennelly
  */
-public class DefaultProfileSet extends LinkedHashSet implements ProfileSet {
-	
-	/**
-	 * Indexable list of profiles
-	 */
-	private Vector indexableLookup = new Vector();
+public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 
 	/* (non-Javadoc)
 	 * @see org.milyn.device.profile.ProfileSet#isMember(java.lang.String)
 	 */
 	public boolean isMember(String profile) {
-		assertProfileOK(profile);
+		if(profile == null) {
+			throw new IllegalArgumentException("null 'profile' arg in method call.");
+		}
 
-		return contains(profile.trim().toLowerCase());
+		return containsKey(profile.trim().toLowerCase());
 	}
 
 	/**
@@ -45,38 +41,39 @@ public class DefaultProfileSet extends LinkedHashSet implements ProfileSet {
 	 * @param profile The profile to add.
 	 */
 	public void addProfile(String profile) {
-		assertProfileOK(profile);
+		addProfile(new BasicProfile(profile));
+	}
 
-		add(profile.trim().toLowerCase());
-	}	
-	
-	/* (non-Javadoc)
-	 * @see java.util.Collection#add(java.lang.Object)
-	 */
-	public boolean add(Object o) {
-		if(super.add(o)) {
-			return indexableLookup.add(o);
-		}
-		return false;
-	}
-	
-	/* (non-Javadoc)
-	 * @see java.util.Collection#remove(java.lang.Object)
-	 */
-	public boolean remove(Object o) {
-		if(super.remove(o)) {
-			return indexableLookup.remove(o);
-		}
-		return false;
-	}
-	
 	/**
-	 * Get the profile at the specified index.
-	 * @param index Index of profile to be returned.
-	 * @return Profile name to be returned.
+	 * Add profile to the ProfileSet.
+	 * @param profile The profile to add.
 	 */
-	protected String getProfile(int index) {
-		return (String)indexableLookup.get(index);
+	public void addProfile(Profile profile) {
+		if(profile == null) {
+			throw new IllegalArgumentException("null 'profile' arg in method call.");
+		}
+
+		put(profile.getName(), profile);
+	}	
+
+	/**
+	 * Get a profile from the {@link ProfileSet}.
+	 * @param profile The name of the profile.
+	 * @return The requested Profile, or null if the profile is not a
+	 * member of the {@link ProfileSet}.
+	 */
+	public Profile getProfile(String profile) {
+		return (Profile)get(profile);
+	}
+
+	/**
+	 * Get an {@link Iterator} to allow iteration over the 
+	 * {@link Profile Profiles}in this {@link ProfileSet}.
+	 * @return An {@link Iterator} that allows iteration over the 
+	 * {@link Profile Profiles}in this {@link ProfileSet}.
+	 */
+	public Iterator iterator() {
+		return values().iterator();
 	}
 	
 	/**
@@ -88,7 +85,7 @@ public class DefaultProfileSet extends LinkedHashSet implements ProfileSet {
 			throw new IllegalArgumentException("null 'profileSet' arg in method call.");
 		}
 		
-		addAll(profileSet);
+		putAll(profileSet);
 	}
 	
 	/* (non-Javadoc)
@@ -96,7 +93,7 @@ public class DefaultProfileSet extends LinkedHashSet implements ProfileSet {
 	 */
 	public String toString() {
 		StringBuffer setDescription = new StringBuffer();
-		Iterator iterator = iterator();
+		Iterator iterator = keySet().iterator();
 		
 		while(iterator.hasNext()) {
 			String profile = (String)iterator.next();
@@ -108,18 +105,5 @@ public class DefaultProfileSet extends LinkedHashSet implements ProfileSet {
 		}
 		
 		return setDescription.toString();
-	}
-	
-	/**
-	 * Profile String assertion method.
-	 * @param profile The profile String.
-	 * @throws IllegalArgumentException If the profile is null or empty.
-	 */
-	private void assertProfileOK(String profile) throws IllegalArgumentException {
-		if(profile == null) {
-			throw new IllegalArgumentException("null 'profile' arg in method call.");
-		} else if(profile.trim().equals("")) {
-			throw new IllegalArgumentException("empty 'profile' arg in method call.");
-		}
 	}
 }

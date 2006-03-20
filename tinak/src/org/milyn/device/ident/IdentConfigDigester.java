@@ -40,7 +40,7 @@ public class IdentConfigDigester {
 	 */
 	public DeviceIdent parse(InputStream input) throws SAXException, IOException {
 		DeviceIdent deviceIdent = new DeviceIdent();
-		Document identDoc = XmlUtil.parseStream(input, false);
+		Document identDoc = XmlUtil.parseStream(input, false, true);
 		int deviceIndex = 1;
 		String deviceSelector = null; 
 

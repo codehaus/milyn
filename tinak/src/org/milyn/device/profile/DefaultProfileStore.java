@@ -19,6 +19,7 @@ package org.milyn.device.profile;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 
 import org.milyn.device.ident.UnknownDeviceException;
 
@@ -71,19 +72,26 @@ public class DefaultProfileStore implements ProfileStore {
 		
 		while(storeIterator.hasNext()) {
 			Map.Entry entry = (Map.Entry)storeIterator.next();
-			String deviceName = (String)entry.getKey();
 			DefaultProfileSet profileSet = (DefaultProfileSet)entry.getValue();
+			Iterator iterator = profileSet.values().iterator();
+			Vector addOns = new Vector();
 			
-			for(int i = 0; i < profileSet.size(); i++) {
-				String profile = profileSet.getProfile(i);
+			while(iterator.hasNext()) {
+				Profile profile = (Profile)iterator.next();
+				
 				try {
-					DefaultProfileSet deviceProfileSet = (DefaultProfileSet)getProfileSet(profile);
+					DefaultProfileSet deviceProfileSet = (DefaultProfileSet)getProfileSet(profile.getName());
 					if(deviceProfileSet != null) {
-						profileSet.addProfileSet(deviceProfileSet);
+						addOns.add(deviceProfileSet);
 					}
 				} catch (UnknownDeviceException e) {
 					// Ignore - not an expandable profile
 				}				
+			}
+			// perfomed after the above iteration simply to avoid concurrent mod exceptions
+			// on the ProfileSet.
+			for(int i = 0; i < addOns.size(); i++) {
+				profileSet.addProfileSet((DefaultProfileSet)addOns.get(i));
 			}
 		}
 	}
