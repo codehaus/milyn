@@ -110,7 +110,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * &lt;/cdres-list&gt;</pre>
  * 
  * <h3 id="res-targeting">Resource Targeting</h3>
- * <a href="../delivery/doc-files/unit-config.html#cdrs">Content Delivery Resources</a> are targeted
+ * Content Delivery Resources ({@link org.milyn.delivery.trans.TransUnit} etc) are targeted
  * using a combination of the <a href="#uatarget">uatarget</a>, <a href="#selector">selector</a> 
  * and <a href="#namespace">namespace</a> attributes (see above).
  * <p/>
@@ -120,8 +120,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * It evaluates this based on the <a href="#uatarget">uatarget</a> attribute value.  Once the table 
  * is built it is cached so it doesn't need to be rebuilt for future requests from this browser type. 
  * <p/>
- * Once the resource table is built Smooks can "lookup" resources (during the 
- * <a href="delivery-phases">content delivery process</a>) based on the <a href="#selector">selector</a> attribute value.
+ * Once the resource table is built Smooks can "lookup" resources based on the <a href="#selector">selector</a> attribute value.
  * As you'll probably notice, the types of configurations that the .cdrl file permits can/will result in  
  * multiple resources being mapped to a browser under the same "selector" value i.e. if you request the resource
  * by selector "x", there may be 1+ matches.  Because of this Smooks sorts these matches based on what we call
