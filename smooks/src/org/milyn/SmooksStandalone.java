@@ -41,9 +41,13 @@ import sun.io.CharToByteConverter;
  * Smooks standalone execution class.
  * <p/>
  * Allows {@link org.milyn.delivery.SmooksXML} to be executed in a "non-container" type environemt e.g.
- * from the commandline.
+ * from the commandline.  See {@link org.milyn.report.SmooksReportGenerator} as an example of a class
+ * using SmooksStandalone.
  * <p/>
- * TODO: Add support for passing parameters and setting HTTP headers. 
+ * This class effectively turns the file system into an execution "container" for
+ * {@link org.milyn.delivery.SmooksXML}.  It requires a "baseDir" as a construction parameter,  
+ * and expects the baseDir file and directory structure to be similar to that of the {@link org.milyn.SmooksServletFilter}
+ * WEB-INF folder (the WEB-INF folder is the {@link org.milyn.SmooksServletFilter} equivalent to this classes baseDir folder).
  * @author tfennelly
  */
 public class SmooksStandalone {

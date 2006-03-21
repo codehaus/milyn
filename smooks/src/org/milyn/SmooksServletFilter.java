@@ -49,12 +49,16 @@ import org.milyn.resource.ContainerResourceLocator;
 /**
  * Smooks Servlet Filter.
  * <p/>
- * Smooks controller class for the J2EE Servlet environment.  This 
- * class pipes the Servlet response into a {@link javax.servlet.ServletResponseWrapper}
- * instance for transformation and serialisation.  The default response wrapper is the
- * {@link org.milyn.delivery.response.XMLServletResponseWrapper} which transforms an
- * XML/XHTML/HTML stream based on the content delivery resource configuration for the requesting
- * device. See {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
+ * This Servlet Filter plugs {@link org.milyn.delivery.SmooksXML} into a Servlet Container via
+ * the {@link org.milyn.delivery.response.XMLServletResponseWrapper}.
+ * <p/>
+ * This Filter can also be configured to filter other response types in a useragent optimizable
+ * fashion e.g. filter using a differnt image filter depending on the requesting browser.
+ * See {@link org.milyn.delivery.response.ServletResponseWrapperFactory}.
+ * <p/>
+ * So, this class simply pipes the Servlet response into a {@link org.milyn.delivery.response.ServletResponseWrapper}
+ * implementation.  The default response wrapper is the {@link org.milyn.delivery.response.XMLServletResponseWrapper}. 
+ * See {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
  * 
  * <h3>Requirements</h3>
  * <ul>
@@ -65,25 +69,14 @@ import org.milyn.resource.ContainerResourceLocator;
  * <h3 id="deployment">Deployment</h3>
  * To deploy Smooks:
  * <ol>
- * 	<li>Download and explode the Smooks distribution.</li>
- * 	<li>The distribution "build" folder contains the file "WEB-INF.zip".  This is 
- *  	the WEB-INF folder from the CNN.com sample (minus binaries i.e. empty lib folder).
- * 		This file contains the only Smooks configuration-set that's available at the moment.
- * 		Unzip this file into the root of your target application.  This is a temporary
- * 		measure - the next release should manage the configurations more cleanly.</li>
- * 	<li>Deploy the Smooks binaries into the Servlet container i.e. into <code>/WEB-INF/lib</code>.
- * 	The binaries are located in the "build" folder in the distribution.<br/>
- *  <i>Note: <u>Don't copy the WEB-INF.zip file</u> to the target container</i>.
- *  </li>
- * 	<li>Deploy the Smooks dependencies into the Servlet container i.e. into <code>/WEB-INF/lib</code>.
- * 	The dependencies are located in the "lib" folder in the distribution.<br/>
- *  <i>Note: <u>Don't copy the servlet.jar file</u> to the target container</i>.<br/>
- *  <i>Note: The Smooks distribution contains the <a href="http://milyn.codehaus.org/downloads">Tinak</a> binaries so there's
- * 	no need to pre-install Tinak.</i>
+ * 	<li>Download the <b>milyn-smooks-sf-<i>X</i>.zip</b> distribution from 
+ * 		<a href="http://www.milyn.org/downloads">Milyn Downloads</a>.</li>
+ * 	<li>This distrubution can be unzipped into your web application.  Note it also contains a web.xml, so be 
+ * 		sure not to loose your existing configurations.
  *  </li>
  * </ol>
- * To enable Smooks Content delivery in your Servlet container, add the following
- * to the application web.xml file.
+ * As can be seen from the web.xml in this distro, to enable this Filter in your Servlet container simply 
+ * add the following to the application web.xml file.
  * <pre>
  * &lt;filter&gt;
  *	&lt;filter-name&gt;SmooksFilter&lt;/filter-name&gt;
@@ -95,9 +88,6 @@ import org.milyn.resource.ContainerResourceLocator;
  * &lt;/filter-mapping&gt;</pre>
  * 
  * <h3 id="cdu-config">Content Delivery Unit Configuration</h3>
- * Read the <a href="delivery/doc-files/unit-config.html">Content Delivery Units</a> overview 
- * before reading this section.
- * <p/>
  * How does Smooks load Content Delivery Units in a Servlet container?  This section tries
  * to explain how this works at present.  
  * <div class="indent">

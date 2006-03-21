@@ -39,6 +39,8 @@ import org.milyn.device.profile.Profile;
  * </ol>
  * Note, we only supports "AND" operations between the tokens, but a token can be
  * negated by prefixing it with "not:".
+ * <p/>
+ * See {@link UATargetExpression.ExpressionToken}.
  * @author tfennelly
  */
 public class UATargetExpression {
@@ -185,34 +187,34 @@ public class UATargetExpression {
 		 * <p/>
 		 * The following outlines the algorithm:
 		 * <pre>
-			if({@link #isNegated() isNegated()}) {
-				if({@link UAContext deviceContext}.getCommonName().equals(uatarget)) {
-					return 0;
-				} else if({@link UAContext deviceContext}.getProfileSet().isMember(uatarget)) {
-					return 0;
-				} else if({@link #isWildcard() isWildcard()}) {
-					return 0;
-				}
-				return 1;
+	if({@link #isNegated() isNegated()}) {
+		if({@link UAContext deviceContext}.getCommonName().equals(uatarget)) {
+			return 0;
+		} else if({@link UAContext deviceContext}.getProfileSet().isMember(uatarget)) {
+			return 0;
+		} else if({@link #isWildcard() isWildcard()}) {
+			return 0;
+		}
+		return 1;
+	} else {
+		Profile profile = deviceContext.getProfileSet().getProfile(uatarget);
+	
+		if(deviceContext.getCommonName().equals(uatarget)) {
+			return 100;
+		} else if(profile != null) {
+			// If it's a HTTP "Accept" header media profile, multiply
+			// the specificity by the media qvalue.  See the
+			// {@link HttpAcceptHeaderProfile HttpAcceptHeaderProfile javadocs}.
+			if(profile instanceof HttpAcceptHeaderProfile) {
+				return (10 * ((HttpAcceptHeaderProfile)profile).getParamNumeric("q", 1));
 			} else {
-				Profile profile = deviceContext.getProfileSet().getProfile(uatarget);
-
-				if(deviceContext.getCommonName().equals(uatarget)) {
-					return 100;
-				} else if(profile != null) {
-					// If it's a HTTP "Accept" header media profile, multiply
-					// the specificity by the media qvalue.  See the
-					// {@link HttpAcceptHeaderProfile HttpAcceptHeaderProfile javadocs}.
-					if(profile instanceof HttpAcceptHeaderProfile) {
-						return (10 * ((HttpAcceptHeaderProfile)profile).getParamNumeric("q", 1));
-					} else {
-						return 10;
-					}
-				} else if(isWildcard()) {
-					return 1;
-				}
-				return 0;
+				return 10;
 			}
+		} else if(isWildcard()) {
+			return 1;
+		}
+		return 0;
+	}
 		 * </pre>
 		 * @param deviceContext Device context.
 		 * @return Specificity value for the token.

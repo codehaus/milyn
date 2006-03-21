@@ -101,6 +101,26 @@ import org.w3c.dom.NodeList;
  * 		which write the document to the target output stream.
  * 	</li>
  * </ol>
+ * 
+ * It is expected that the vast majority of Smooks usecases will involve implementing the
+ * {@link org.milyn.delivery.trans.TransUnit TransUnit} interface (most likely via
+ * {@link org.milyn.delivery.trans.AbstractTransUnit}).  It is not expected that many usecases will
+ * require implementation of the {@link org.milyn.delivery.assemble.AssemblyUnit} interface,
+ * and even less will require implementation of the
+ * {@link org.milyn.delivery.serialize.SerializationUnit} interface. 
+ * A {@link org.milyn.delivery.serialize.DefaultSerializationUnit} exists and this should solve the
+ * vast majority of XML serialisation requirements.
+ * 
+ * See {@link org.milyn.SmooksServletFilter} for details of how SmooksXML is used in a Servlet Container.
+ * 
+ * <h4>Other Documents</h4>
+ * <ul>
+ * 	<li>{@link org.milyn.cdr.CDRDef}</li>
+ * 	<li>{@link org.milyn.cdr.CDRDefSortComparator}</li>
+ * </ul>
+ * 
+ * 
+ * <!--
  * This whole process sounds like a lot of processing.  Well, it is.  Three iterations
  * over the DOM.  However, the thinking on this is that:
  * <ul>
@@ -131,6 +151,7 @@ import org.w3c.dom.NodeList;
  * 		special attention require a specialised {@link org.milyn.delivery.serialize.SerializationUnit}.
  * 	</li>
  * </ul>
+ * -->
  * 
  * @author tfennelly
  */
