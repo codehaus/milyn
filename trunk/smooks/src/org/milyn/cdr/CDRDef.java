@@ -37,6 +37,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * <pre>
  * &lt;?xml version='1.0'?&gt;
  * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-list-1.0.dtd>
+ * &lt;cdres-list&gt;
  * 	&lt;!--	
  * 		Note: 
  * 		1. 	"wml11" is a browser profile.
