@@ -23,7 +23,7 @@ import org.milyn.delivery.AbstractContentDeliveryUnit;
  * Abstract TransUnit implementation.
  * <p/>
  * Really just defines the required public constructor that takes the
- * CDRDef param.
+ * CDRDef param.  See {@link org.milyn.delivery.trans.TransUnit} docs.
  * @author tfennelly
  */
 public abstract class AbstractTransUnit extends AbstractContentDeliveryUnit implements TransUnit {

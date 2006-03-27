@@ -30,12 +30,10 @@ import org.milyn.device.UAContext;
  * {@link org.milyn.delivery.serialize.SerializationUnit}s) it may discover that in a given case more than 1 {@link org.milyn.delivery.ContentDeliveryUnit}
  * can be applied.  How does Smooks decide on the order in which these {@link org.milyn.delivery.ContentDeliveryUnit}s are to be applied to the content?
  * <p/>
- * At the moment, Smooks uses this class to calculate a "specificity" rating for each {@link org.milyn.delivery.ContentDeliveryUnit} based on its 
- * {@link org.milyn.cdr.CDRDef &lt;cdres&gt;} configuration and sorts the {@link org.milyn.delivery.ContentDeliveryUnit}s in decreasing order of specificity.
+ * At the moment, Smooks uses this class to calculate a "specificity" rating for each Content Delivery Resource based on its 
+ * {@link org.milyn.cdr.CDRDef &lt;cdres&gt;} configuration, and sorts them in decreasing order of specificity.
  * <p/>
- * The following outlines how this specificity value is calculated at present.  This
- * "algorithm" wasn't arrived at through any real scientific process so it could
- * be very questionable:
+ * The following outlines how this specificity value is calculated at present.
  * <!-- Just cut-n-paste from the code -->
  * <pre>
 	// Check the 'uatarget' attribute specificity by adding the specificity

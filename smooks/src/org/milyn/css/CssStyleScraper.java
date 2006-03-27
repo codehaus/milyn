@@ -41,11 +41,12 @@ import org.w3c.dom.Element;
  * CSS scraping Assembly Unit.
  * <p/>
  * Gathers CSS information during the Assembly phase.  This information is then
- * available to transformation units during the Transformation phase.
+ * available to {@link org.milyn.delivery.trans.TransUnit transformation units} 
+ * during the Transformation phase.
  * <p/>
  * Triggered on &lt;style&gt; and &lt;link&gt; elements. Reads and parses the referenced CSS
- * using Apache Batik.  Makes the gathered CSS data available to 
- * transformation units via the {@link org.milyn.cdres.css.CssAccessor} class.
+ * using the {@link org.milyn.magger.CSSParser Magger CSSParser}.  Makes the gathered CSS data available to 
+ * transformation units via the {@link org.milyn.css.CssAccessor} class.
  * <h3>.cdrl Configuration</h3>
  * <pre>
  * &lt;cdres	uatarget="<i>device/profile</i>" selector="style" 
@@ -61,7 +62,7 @@ import org.w3c.dom.Element;
  * &lt;/cdres&gt;
  * 
  * &lt;cdres	uatarget="<i>device/profile</i>" selector="link" 
- * 	path="org/milyn/cdres/css/CssStyleScraper.class" &gt;
+ * 	path="org.milyn.cdres.css.CssStyleScraper" &gt;
  * 
  * 	&lt;!-- (Optional) Only process the CSS if the 'media' attribute, if present, lists
  * 		one of the requesting devices profiles. Default true. --&gt;

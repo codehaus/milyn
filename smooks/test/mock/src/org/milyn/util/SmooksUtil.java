@@ -26,6 +26,10 @@ import org.milyn.container.MockContainerContext;
 import org.milyn.container.MockContainerRequest;
 import org.milyn.container.MockContainerResourceLocator;
 import org.milyn.delivery.ContentDeliveryConfigImpl;
+import org.milyn.delivery.MockContentDeliveryConfig;
+import org.milyn.delivery.http.HeaderAction;
+import org.milyn.delivery.trans.TransSet;
+import org.milyn.delivery.trans.TransUnit;
 import org.milyn.device.MockUAContext;
 
 /**
@@ -94,5 +98,25 @@ public class SmooksUtil {
 		request.deliveryConfig = ContentDeliveryConfigImpl.getInstance(request.uaContext, context);
 		
 		return request;
+	}
+
+	public static void addHeaderAction(String action, String headerName, String headerValue, MockContentDeliveryConfig deliveryConfig) {
+		CDRDef cdrDef = new CDRDef("X", "X", "X");
+		
+		cdrDef.setParameter("action", action);
+		cdrDef.setParameter("header-name", headerName);
+		cdrDef.setParameter("header-value", headerValue);
+		
+		deliveryConfig.addObject("http-response-header", new HeaderAction(cdrDef));
+	}
+
+	public static void addTransUnit(String targetElement, TransUnit transUnit, MockContentDeliveryConfig deliveryConfig) {
+		TransSet transSet = (TransSet)deliveryConfig.transSets.get(targetElement);
+		
+		if(transSet == null) {
+			transSet = new TransSet();
+			deliveryConfig.transSets.put(targetElement, transSet);
+		}
+		transSet.addTransUnit(transUnit);
 	}
 }

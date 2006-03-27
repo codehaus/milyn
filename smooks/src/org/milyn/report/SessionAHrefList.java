@@ -39,7 +39,7 @@ public abstract class SessionAHrefList {
 	}
 
 	/**
-	 * Get the SessionAHrefList instance for the supplied request.
+	 * Get the list of anchors (as {@link java.net.URI}) for the supplied request.
 	 * @param containerSession Container session.
 	 * @return The SessionAHrefList instance for the supplied session.
 	 */

@@ -28,11 +28,28 @@ import org.milyn.delivery.ContentDeliveryConfig;
 /**
  * Content Delivery Resource Definition.
  * <p/>
- * Represents an instance of the &lt;cdres&gt; element within a .cdrl file (Content Delivery Resource List file).
+ * A <b>Content Deliver Resource</b> is anything that can be used by Smooks in the process of analysing or
+ * manipulating/transforming a data stream e.g. a J2EE Servlet Response.  They could be pieces
+ * of Java logic ({@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.trans.TransUnit}, 
+ * {@link org.milyn.delivery.serialize.SerializationUnit}), some text or script resource, or perhaps
+ * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).  Smooks configures these
+ * resources in <b>.cdrl</b> files.  An example of such a file is as follows (with an explanation below):
+ * <pre>
+ * &lt;?xml version='1.0'?&gt;
+ * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-list-1.0.dtd>
+ * 	&lt;!--	
+ * 		Note: 
+ * 		1. 	"wml11" is a browser profile.
+ * 	--&gt;
+ * 	&lt;cdres uatarget="wml11" selector="dtd" path="www.wapforum.org/DTD/wml_1_1.dtd" /&gt;
+ * 	&lt;cdres uatarget="wml11" selector="table" path="{@link org.milyn.delivery.trans.TransUnit com.acme.transform.TableWML11}" /&gt;
+ * &lt;/cdres-list&gt;</pre>
+ * <p/>
+ * This class represents an instance of the &lt;cdres&gt; element within a .cdrl file (Content Delivery Resource List file).
  * The .cdrl DTD can be seen at <a href="http://www.milyn.org/dtd/cdres-list-1.0.dtd">
  * http://www.milyn.org/dtd/cdres-list-1.0.dtd</a>
  * <p/> 
- * An instance of this class defines the following attributes of a Content Delivery Resource
+ * An instance of this class provides access to the attributes of a Content Delivery Resource
  * from a .cdrl file:
  * <ul>
  * 		<li><b id="uatarget">uatarget</b>: A list of 1 or more browser/useragent target(s) to which this 
@@ -42,9 +59,9 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * 			<br/> 
  * 			Can be one of:
  * 			<ol>
- * 				<li>A browser "Common Name" as defined in the device recognition configuration.</li>
- * 				<li>A browser profile as defined in the device profiling configuration.</li>
- * 				<li>Astrix ("*") indicating a match for all browsers.</li>
+ * 				<li>A browser "Common Name" as defined in the device recognition configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
+ * 				<li>A browser profile as defined in the device profiling configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
+ * 				<li>Astrix ("*") indicating a match for all useragents.</li>
  * 			</ol>
  * 			See <a href="#res-targeting">Resource Targeting</a>.
  * 			<p/>
@@ -92,19 +109,11 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * 			is targeted at all namespces. 
  * 		</li>
  * </ul>
- * The following is a sample showing the basic structure of the .cdrl file.
- * <pre>
- * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-cdres-list-1.0.dtd> 
- * &lt;cdres-list&gt;
- * 	&lt;cdres uatarget="value" selector="value" path="value"/&gt;
- * &lt;/cdres-list&gt;</pre>
- * <p/>
  * All of the &lt;cdres&gt; attributes can be defaulted on the enclosing &lt;cdres-list&gt; element.
  * Just prefix the attribute name with "default-".  Example:
  * <pre>
  * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-liscdres-list-1.0.dtd>
+ * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-list-1.0.dtd>
  * &lt;cdres-list default-uatarget="value" default-selector="value" default-namespace="http://www.w3.org/2002/xforms"&gt;
  * 	&lt;cdres path="value"/&gt;
  * &lt;/cdres-list&gt;</pre>
@@ -114,13 +123,19 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * using a combination of the <a href="#uatarget">uatarget</a>, <a href="#selector">selector</a> 
  * and <a href="#namespace">namespace</a> attributes (see above).
  * <p/>
- * Smooks does this at runtime by building (and caching) a table of resources per requesting device/browser type.
- * When Smooks receives a request it uses the device recognition and profiling information provided by
- * Tinak to iterate over the .cdrl configurations and select the definitions that apply to that browser type.
- * It evaluates this based on the <a href="#uatarget">uatarget</a> attribute value.  Once the table 
- * is built it is cached so it doesn't need to be rebuilt for future requests from this browser type. 
- * <p/>
- * Once the resource table is built Smooks can "lookup" resources based on the <a href="#selector">selector</a> attribute value.
+ * Smooks does this at runtime by building (and caching) a table of resources per useragent type (e.g. requesting browser).
+ * For example, when the {@link org.milyn.SmooksServletFilter} receives a request, it 
+ * <ol>
+ * 	<li>
+ * 		Uses the device recognition and profiling information provided by
+ * 		<a href="http://milyn.org/Tinak">Milyn Tinak</a> to iterate over the .cdrl configurations and select the definitions that apply to that browser type.
+ * 		It evaluates this based on the <a href="#uatarget">uatarget</a> attribute value.  Once the table 
+ * 		is built it is cached so it doesn't need to be rebuilt for future requests from this browser type. 
+ * 	</li>
+ * 	<li>
+ * 		Smooks can then "lookup" resources based on the <a href="#selector">selector</a> attribute value.
+ * 	</li>
+ * </ol>
  * As you'll probably notice, the types of configurations that the .cdrl file permits can/will result in  
  * multiple resources being mapped to a browser under the same "selector" value i.e. if you request the resource
  * by selector "x", there may be 1+ matches.  Because of this Smooks sorts these matches based on what we call
@@ -134,7 +149,8 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * param element e.g.
  * <pre>
  * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-list-1.0.cdres-list-1.0.dtd;cdres-list default-uatarget="value" default-selector="value" &gt;
+ * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-list-1.0.dtd>
+ * &lt;cdres-list default-uatarget="value" default-selector="value" &gt;
  * 	&lt;cdres path="value"&gt;
  * 		&lt;param name="paramname"&gt;paramval&lt;/param&gt;
  * 	&lt;/cdres&gt;
@@ -145,30 +161,9 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * {@link #getParameter(String)}.{@link CDRDef.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)} 
  * method (see {@link org.milyn.cdr.TokenizedStringParameterDecoder} as an example).
  *  
- * <h3 id="cdrs">Content Delivery Resources</h3>
- * &lt;cdres&gt;s can also be used to define <a href="../delivery/doc-files/unit-config.html#cdrs">Content 
- * Delivery Resources</a> other than {@link org.milyn.delivery.ContentDeliveryUnit}s
- * ({@link org.milyn.delivery.assemble.AssemblyUnit}s, 
- * {@link org.milyn.delivery.trans.TransUnit}s and
- * {@link org.milyn.delivery.serialize.SerializationUnit}s).  In this case the type attribute is
- * not required. Amoung other things, this "feature" is used by Smooks to target specific DTD and DOCTYPE header files at
- * specific browsers e.g.
- * <pre>
- * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE cdres-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/cdres-list-1.0.dtdcdres-list-1.0.dtdres-list&gt;
- * 	&lt;!--	
- * 		Note: 
- * 		1. 	"wml11" is a browser profile.
- * 	--&gt;
- * 	&lt;cdres uatarget="wml11" selector="doctype" path="www.wapforum.org/DTD/wml_1_1.doctype" /&gt;
- * 	&lt;cdres uatarget="wml11" selector="dtd" path="www.wapforum.org/DTD/wml_1_1.dtd"" /&gt;
- * &lt;/cdres-list&gt;</pre>
- * This feature could be used by 
- * {@link org.milyn.delivery.assemble.AssemblyUnit}s, 
- * {@link org.milyn.delivery.trans.TransUnit}s and
- * {@link org.milyn.delivery.serialize.SerializationUnit}s to load other resources.  See
- * {@link org.milyn.delivery.ContentDeliveryConfig#getObjects(String)} and 
- * {@link org.milyn.delivery.ContentDeliveryConfig#getCDRDefs(String)}.
+ * <h3>.cdrar files</h3>
+ * Content Delivery Resources and .cdrl files can be bundled in archive files called .cdrar
+ * files.  See <a href="../delivery/doc-files/res-bundling.html">Resource Bundling</a>.
  *   
  * @see CDRDefSortComparator 
  * @author tfennelly
