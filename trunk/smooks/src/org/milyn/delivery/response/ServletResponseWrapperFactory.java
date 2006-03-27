@@ -33,6 +33,17 @@ import org.milyn.container.ContainerRequest;
  * implementations to be applied to a Servlet response based on characteristics of
  * the requesting browser e.g. perform different image transformations.
  * <p/>
+ * {@link org.milyn.delivery.response.ServletResponseWrapper} implementations are triggered
+ * by a HTTP request parameter named "<b>smooksrw</b>".  Smooks
+ * uses the parameter value as a selector to select the most specific
+ * {@link org.milyn.delivery.response.ServletResponseWrapper} for the requesting useragent
+ * (see {@link org.milyn.cdr.CDRDef}). 
+ * {@link org.milyn.delivery.response.XMLServletResponseWrapper} is the default
+ * {@link org.milyn.delivery.response.ServletResponseWrapper} when no
+ * <b>smooksrw</b> request parameter is specified, or no 
+ * {@link org.milyn.delivery.response.ServletResponseWrapper} is configured for the
+ * requesting device under the supplied <b>smooksrw</b> parameter value.
+ * <p/>
  * See {@link org.milyn.delivery.response.XMLServletResponseWrapper} and 
  * {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
  * @author tfennelly

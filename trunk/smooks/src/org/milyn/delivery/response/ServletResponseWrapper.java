@@ -32,9 +32,6 @@ import org.w3c.dom.Node;
  * {@link org.milyn.delivery.response.ServletResponseWrapperFactory} to allow browser aware 
  * manipulation of a Servlet response right at the response stream level. 
  * <p/>
- * ServletResponseWrapper implementations are triggered
- * by supplying "<b>smooksrw</b>=<i>cdrl-selector</i>" as a HTTP request parameter.  
- * <p/>
  * See {@link org.milyn.delivery.response.XMLServletResponseWrapper} and 
  * {@link org.milyn.delivery.response.PassThruServletResponseWrapper}.
  * @author tfennelly

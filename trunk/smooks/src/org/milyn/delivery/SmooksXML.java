@@ -44,61 +44,74 @@ import org.w3c.dom.NodeList;
 /**
  * Smooks XML/XHTML/HTML/etc content filtering class.
  * <p/>
- * This class executes the <a href="#phases">2 phases of XML content delivery</a>.
- * The <b>Assembly &amp; Transformation</b> phase is executed by the 
- * {@link #applyTransform(Document)} method and the <b>Serialisation</b> phase
- * is optionally performed by the {@link #serialize(Node, Writer)} method.
+ * This class is responsible for <b>Filtering</b> and <b>Serialising</b> XML streams
+ * (XML/XHTML/HTML etc) through a process of iterating over the source XML DOM tree
+ * and applying the {@link org.milyn.cdr.CDRDef configured} Content Delivery Units
+ * ({@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}, 
+ * {@link org.milyn.delivery.trans.TransUnit TransUnits} and 
+ * {@link org.milyn.delivery.serialize.SerializationUnit SerializationUnits}).
  * <p/>
- * This class will be controlled by a container specific class.  For the Servet Container
- * see the {@link org.milyn.SmooksServletFilter} and 
- * {@link org.milyn.delivery.response.XMLServletResponseWrapper} classes.  For a
- * standalone (non-container) implementation, see the {@link org.milyn.SmooksStandalone}
- * class.
+ * This class doesn't get used directly.  See {@link org.milyn.SmooksServletFilter}
+ * and {@link org.milyn.SmooksStandalone}.
  * 
- * <h3 id="phases">Smooks XML/XHTML/HTML Content Filtering Process</h3>
- * 
- * Smooks markup filtering (XML/XHTML/HTML) is a 2 phase process, depending on what
- * needs to be done.  Through this filtering process, Smooks can be used to transform or
- * analyse markup (or a combination of both).  The first phase is called "Assembly &amp; 
- * Transformation" and is executed by either the {@link #applyTransform(Document)}
- * or {@link #applyTransform(Reader)} methods.  The 2nd phase is called "Serialisation" and is optionally 
- * executed by the {@link #serialize(Node, Writer)} method (which uses the 
- * {@link org.milyn.delivery.serialize.Serializer} class).
- * <ul>
- * 	<i>Note: We say that the Serialization phase (DOM Serialisation) can be optionally 
- * 	executed via the {@link org.milyn.delivery.serialize.Serializer} class simply
- * 	because you may not wish to perform DOM Serialisation, or you may wish to perform
- * 	DOM Serialisation via some other mechanism e.g. XSL-FO via something like Apache FOP.</i>
- * </ul>
+ * <h3 id="phases">XML/XHTML/HTML Filtering and Serialisation</h3>
+ * SmooksXML markup processing (XML/XHTML/HTML) is a 2 phase process, depending on what
+ * needs to be done.  The first phase is called the "Filtering Phase", and the second 
+ * phase is called the "Serialisation Phase".  SmooksXML can be used to execute either or both of these 
+ * phases (depending on what needs to be done!).
+ * <p/>
+ * Through this process, Smooks can be used to analyse and/or transform markup, and then
+ * serialise it.
  * 
  * <p/>
  * So, in a little more detail, the 2 phases are:
  * <ol>
  * 	<li>
- * 		<b><u>Assembly &amp; Transformation</u></b>: So, this is really 2 "sub" phases.
+ * 		<b><u>Filtering</u></b>: This phase is executed via either of the
+ * 		{@link #applyTransform(Document)} or {@link #applyTransform(Reader)} methods. 
+ * 		This phase is really 2 "sub" phases.
  * 		<ul>
  * 			<li>
- * 				<b><u>Assembly</u></b>: Assembly is the process of <u>assembling the content
- * 				to be filtered</u> i.e. getting it into a Document Object Model (DOM). 
- * 				This means parsing the input document and iterating over 
- * 				it to apply all {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}.  This phase 
- * 				can result in DOM elements getting added to, or trimmed from, the DOM.  This phase is also
- * 				very usefull for gathering information about the DOM, which can be used during the 
- * 				transformation phase (see below).
+ * 				<b>Assembly</b>: Assembly is the process of <u>assembling/analysing 
+ * 				the content to be transformed</u>.
+ * 				This process involves iterating over the source XML DOM, 
+ * 				{@link org.milyn.delivery.ElementVisitor visiting} all the
+ * 				DOM elements with {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}
+ * 				that are {@link org.milyn.cdr.CDRDef configured} for the SmooksXML processing context
+ * 				(e.g. for the requesting browser to the {@link org.milyn.SmooksServletFilter}). 
+ * 				This phase can result in DOM elements getting added to, or trimmed from, the DOM.  
+ * 				This phase is also very usefull for gathering information about the DOM, 
+ * 				which can be used during the transformation phase (see below).  This phase is only
+ * 				executed if there are {@link org.milyn.cdr.CDRDef configured}
+ * 				{@link org.milyn.delivery.assemble.AssemblyUnit} for the SmooksXML processing context
+ * 				(e.g. for the requesting browser to the {@link org.milyn.SmooksServletFilter}).
+ * 				<p/> 
+ * 				An example of an AssemblyUnit shiped with Smooks is the 
+ * 				{@link org.milyn.css.CssStyleScraper} class.
  * 			</li>
  * 			<li>
- * 				<b><u>Transformation</u></b>: Transformation takes the assembled DOM and 
- * 				iterates over it to apply all {@link org.milyn.delivery.trans.TransUnit TransUnits}.
+ * 				<b>Transformation</b>: Transformation takes the assembled DOM and 
+ * 				iterates over it again, {@link org.milyn.delivery.ElementVisitor visiting} all the
+ * 				DOM elements with {@link org.milyn.delivery.trans.TransUnit}
+ * 				that are {@link org.milyn.cdr.CDRDef configured} for the SmooksXML processing context
+ * 				(e.g. for the requesting browser to the {@link org.milyn.SmooksServletFilter}). 
  * 				This phase will only operate on DOM elements that were present in the assembled
  * 				document; {@link org.milyn.delivery.trans.TransUnit TransUnits} will not be applied
  * 				to elements that are introduced to the DOM during this phase.
+ * 				<p/>  
+ * 				An example of a TransUnit shiped with Smooks is the {@link org.milyn.report.AHrefRecorder}
+ * 				class.
  * 			</li>
  * 		</ul>
  * 	</li>
  * 	<li>
- * 		<b><u>Serialisation</u></b>: The serialisation phase takes the transformed DOM and 
+ * 		<b><u>Serialisation</u></b>: This phase is executed by the {@link #serialize(Node, Writer)} method (which uses the 
+ * 		{@link org.milyn.delivery.serialize.Serializer} class).  The serialisation phase takes the transformed DOM and 
  * 		iterates over it to apply all {@link org.milyn.delivery.serialize.SerializationUnit SerializationUnits},
  * 		which write the document to the target output stream.
+ * 		<p/>
+ * 		Instead of using this serialisation mechanism, you may wish to perform
+ * 		DOM Serialisation via some other mechanism e.g. XSL-FO via something like Apache FOP.
  * 	</li>
  * </ol>
  * 
@@ -111,10 +124,10 @@ import org.w3c.dom.NodeList;
  * A {@link org.milyn.delivery.serialize.DefaultSerializationUnit} exists and this should solve the
  * vast majority of XML serialisation requirements.
  * 
- * See {@link org.milyn.SmooksServletFilter} for details of how SmooksXML is used in a Servlet Container.
- * 
  * <h4>Other Documents</h4>
  * <ul>
+ * 	<li>{@link org.milyn.SmooksServletFilter}</li>
+ * 	<li>{@link org.milyn.SmooksStandalone}</li>
  * 	<li>{@link org.milyn.cdr.CDRDef}</li>
  * 	<li>{@link org.milyn.cdr.CDRDefSortComparator}</li>
  * </ul>

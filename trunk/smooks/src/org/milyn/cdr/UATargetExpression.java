@@ -24,9 +24,9 @@ import org.milyn.device.profile.Profile;
 /**
  * Represents a single parsed uatarget attribute value expression.
  * <p/>
- * uatarget attribute values can be contain multiple "uatarget expressions" i.e.
+ * The <a>uatarget</a> attribute can contain multiple comma seperated "uatarget expressions" i.e.
  * a list of them.  See {@link org.milyn.cdr.CDRDef} docs.  This class represents
- * a single expression within a list of uatarget attribute value expressions.
+ * a single expression within a list of uatarget attribute expressions.
  * <p/>
  * So, an expression is composed of 1 or more "expression tokens" seperated by 
  * "AND".  The expression arg to the constructor will be in one of 

@@ -21,6 +21,8 @@ import org.milyn.delivery.AbstractContentDeliveryUnit;
 
 /**
  * Abstract AssemblyUnit implementation.
+ * <p/>
+ * See {@link org.milyn.delivery.assemble.AssemblyUnit} docs.
  * @author tfennelly
  */
 public abstract class AbstractAssemblyUnit extends AbstractContentDeliveryUnit implements AssemblyUnit {

@@ -30,7 +30,12 @@ import org.w3c.dom.Element;
  * This {@link org.milyn.delivery.trans.AbstractTransUnit} implementation
  * simply records &lt;a href=".." /&gt; information from the request page and
  * stores it on the request session {@link org.milyn.report.SessionAHrefList}.
- * This is done in support of peforming "deep" test runs.
+ * This is an analysing {@link org.milyn.delivery.trans.TransUnit} in that it
+ * doesn't perform any manipulations on the anchor elements.  
+ * <p/>
+ * This {@link org.milyn.delivery.trans.TransUnit} is used by the
+ * {@link org.milyn.report.SmooksReportGenerator} for gathering anchor information in
+ * order to perform "deep" site analysis.
  * <p/>
  * hrefs are stored on the the request session {@link org.milyn.report.SessionAHrefList}
  * as instances of {@link java.net.URI}.

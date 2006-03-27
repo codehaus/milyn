@@ -1,10 +1,6 @@
-		<h2>Archive Definition File Structure</h2>
-		See the <a href="../../cdr/CDRDef.html">CDRDef</a> class Javadoc.
-		
-		<h2 id="cdu-selection">Content Delivery Unit Selection</h2>
-		See the <a href="../../cdr/CDRDef.html">CDRDef</a> class Javadoc.
-
-		<h2 id="cdrar">.cdrar Files</h2>
+		<h2>Resource Bundling</h2>
+		(<i>See the <a href="../../cdr/CDRDef.html">CDRDef</a> class Javadoc before reading this</i>).
+		<p/>
 		.cdrar files are a Jar format file used to bundle Content Delivery Units/Resources and .cdrl files (optional).
 		While Content Delivery Resources can be loaded in the standard way from the classpath, it is thought that 
 		this may be a cleaner way to deliver resources in a production environment.
@@ -19,10 +15,10 @@
 		<p/>
 		<img src="serialisationunits.gif" border="1" />
 		<p/>
-		From this image you can see there are 3 <a href="../../cdr/CDRDef.html">CDRDef.html">CDRDefs</a> defined in this archive.
+		From this image you can see there are 3 <a href="../../cdr/CDRDef.html">CDRDefs</a> defined in this archive.
 		It might occur to you that all 3 definitions are applicable to EMPTY elements on "wml" profile browsers.
-		To see how the correct Serialisation Unit is selected, see the section on 
-		<a href="#cdu-selection">Content Delivery Unit Selection</a>.
+		To understand how the correct Serialisation Unit is selected, read about
+		<a href="../../cdr/CDRDef.html#res-targeting">Resource Targeting</a>.
 		<h3>Sample 2 - assembly.cdrl</h3>
 		It targets a number of <a href="../assemble/AssemblyUnit.html">Assembly Units</a> at some custom sample tags created to pull/scrape 
 		content from the CNN.com homepage source.

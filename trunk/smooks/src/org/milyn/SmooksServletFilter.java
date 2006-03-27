@@ -94,9 +94,8 @@ import org.milyn.resource.ContainerResourceLocator;
  * <h4>Webapp WEB-INF Structure</h4>
  * The following illustration shows a sample Smooks Content Delivery Unit/Resource 
  * configuration in a Servlet container.  Smooks uses the "smooks-cdr.lst" file to
- * load the .cdrl and <a href="delivery/doc-files/unit-config.html#cdrar">.cdrar</a> files from the cdr folder.
- * Read the <a href="delivery/doc-files/unit-config.html">Content Delivery Units</a> overview for more
- * on how Smooks uses the .cdrl and .cdrar files to load the Content Delivery Resources.
+ * load the {@link org.milyn.cdr.CDRDef .cdrl} and <a href="delivery/doc-files/res-bundling.html#cdrar">.cdrar</a> 
+ * files from the cdr folder.  Make sure to read the docs on the {@link org.milyn.cdr.CDRDef .cdrl configuration files}.
  * <p/>
  * <div align="center"><img src="doc-files/cdu-servlet-structure.png" border="1" /></div>
  * </div>

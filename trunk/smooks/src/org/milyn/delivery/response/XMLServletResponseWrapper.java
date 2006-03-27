@@ -87,6 +87,10 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	 * @param headerActions
 	 */
 	private void initHeaderActions(List headerActions) {
+		if(headerActions == null) {
+			return;
+		}
+		
 		for(int i = 0; i < headerActions.size(); i++) {
 			HeaderAction action = (HeaderAction)headerActions.get(i);
 			
