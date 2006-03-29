@@ -1,2 +1,0 @@
-
-XPath totally kills performance!!
