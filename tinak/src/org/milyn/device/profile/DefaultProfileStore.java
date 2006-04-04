@@ -55,7 +55,7 @@ public class DefaultProfileStore implements ProfileStore {
 	 * @param deviceName The device name.
 	 * @param profileSet The devices ProfileSet.
 	 */
-	protected void addProfileSet(String deviceName, ProfileSet profileSet) {
+	public void addProfileSet(String deviceName, ProfileSet profileSet) {
 		assertDeviceNameOK(deviceName);
 		if(profileSet == null) {
 			throw new IllegalArgumentException("null 'profileSet' arg in method call.");
