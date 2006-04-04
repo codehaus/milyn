@@ -19,6 +19,7 @@ package org.milyn.report;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.milyn.SmooksException;
 import org.milyn.SmooksStandalone;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.standalone.StandaloneContainerRequest;
+import org.milyn.container.standalone.StandaloneContainerSession;
 import org.milyn.device.ident.UnknownDeviceException;
 import org.milyn.logging.SmooksLogger;
 import org.milyn.report.serialize.FileSystemReportPageWriterFactory;
@@ -51,7 +53,7 @@ import sun.io.CharToByteConverter;
  */
 public class SmooksReportGenerator {
 	private File smooksHome;
-	private SmooksStandalone smooksSA;
+	private SmooksReportingStandalone smooksSA;
 	private URI baseURI;
 	private boolean deep;
 	private File outputFolder;
@@ -105,7 +107,7 @@ public class SmooksReportGenerator {
 	 * defaults to "ISO-8859-1".
 	 */
 	private void setSmooksStandalone(String browserName, String contentEncoding) {
-		if(browserName == null) {
+		if(browserName == null || browserName.trim().equals("")) {
 			throw new IllegalArgumentException("null or empty 'browserName' arg in constructor call.");
 		}
 		contentEncoding = (contentEncoding == null)?"ISO-8859-1":contentEncoding;
@@ -119,7 +121,7 @@ public class SmooksReportGenerator {
 		}
 		try {
 			browsers = new StringTokenizer(browserName, ",");
-			smooksSA = new SmooksStandalone(smooksHome, browsers.nextToken().trim(), contentEncoding);
+			smooksSA = new SmooksReportingStandalone(smooksHome, browsers.nextToken().trim(), contentEncoding);
 		} catch (UnknownDeviceException e) {
 			IllegalArgumentException argE = new IllegalArgumentException("Invalid 'browserName' arg [" + browserName + "].  'browserName' must be profiled in device-profile.xml.");
 			argE.initCause(e);
@@ -407,5 +409,30 @@ public class SmooksReportGenerator {
 			
 			return isSet;
 		}
+	}
+	
+	private class SmooksReportingStandalone extends SmooksStandalone {
+		private String browserName;
+		
+		public SmooksReportingStandalone(File smooksHome, String browserName, String contentEncoding) {
+			super(smooksHome, contentEncoding);
+			this.browserName = browserName;
+		}
+
+		public void setBrowser(String browserName) {
+			this.browserName = browserName;
+		}
+
+		public Node process(URI pageURI) {
+			return super.process(browserName, pageURI);
+		}
+
+		public void serialize(Node doc, Writer writer) {
+			super.serialize(browserName, doc, writer);
+		}
+
+		public StandaloneContainerSession getSession() {
+			return super.getSession(browserName);
+		}		
 	}
 }

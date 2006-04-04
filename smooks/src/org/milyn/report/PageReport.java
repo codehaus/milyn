@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.milyn.cdr.CDRDef;
+import org.milyn.cdr.Parameter;
 import org.milyn.container.ContainerRequest;
 import org.milyn.report.serialize.NodeReportWriter;
 import org.milyn.report.serialize.ReportPageWriterFactory;
@@ -74,7 +75,7 @@ public class PageReport {
 	 * Add the report configuration for the supplied DOM node to this page report. 
 	 * @param node The node to be associated with the report message entry.
 	 * @param cdrDef Report configuration.  The test unit configuration
-	 * will contain {@link CDRDef.Parameter parameters} used in the report.
+	 * will contain {@link Parameter parameters} used in the report.
 	 */
 	public void report(Node node, CDRDef cdrDef) {
 		NodeReport reportEntry = getNodeReport(node);
@@ -196,7 +197,7 @@ public class PageReport {
 		/**
 		 * Add a report entry.
 		 * @param cdrDef Test unit configuration.  The test unit configuration
-		 * will contain {@link CDRDef.Parameter parameters} used in the report.
+		 * will contain {@link Parameter parameters} used in the report.
 		 */
 		public void addReportConfig(CDRDef cdrDef) {
 			if(cdrDef == null) {

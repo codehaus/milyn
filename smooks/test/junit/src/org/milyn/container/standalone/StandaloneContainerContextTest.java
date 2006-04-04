@@ -17,10 +17,9 @@
 package org.milyn.container.standalone;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 import org.milyn.container.MockContainerResourceLocator;
+import org.milyn.device.profile.DefaultProfileStore;
 
 import junit.framework.TestCase;
 
@@ -28,7 +27,13 @@ public class StandaloneContainerContextTest extends TestCase {
 
 	public void testConstructor() {
 		try {
-			new StandaloneContainerContext(null);
+			new StandaloneContainerContext(null, new MockContainerResourceLocator());
+			fail("Expected IllegalArgumentException on null baseDir.");
+		} catch(IllegalArgumentException e) {
+			//OK
+		}
+		try {
+			new StandaloneContainerContext(new DefaultProfileStore(), null);
 			fail("Expected IllegalArgumentException on null baseDir.");
 		} catch(IllegalArgumentException e) {
 			//OK

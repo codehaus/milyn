@@ -25,11 +25,10 @@ public class TestSmooksStandalone extends SmooksStandalone {
 
 	/**
 	 * Public Constructor.
-	 * @param browserName Browser name.
 	 * @throws UnknownDeviceException Unknown browser.
 	 */
-	public TestSmooksStandalone(String browserName) throws UnknownDeviceException {
-		super(MockContainerResourceLocator.TEST_STANDALONE_CTX_BASE, browserName);
+	public TestSmooksStandalone() throws UnknownDeviceException {
+		super(MockContainerResourceLocator.TEST_STANDALONE_CTX_BASE, "ISO-8859-1");
 	}
 
 }

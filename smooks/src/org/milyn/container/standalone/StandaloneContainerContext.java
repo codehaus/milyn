@@ -26,9 +26,12 @@ import java.util.Hashtable;
 import org.milyn.cdr.CDRStore;
 import org.milyn.container.ContainerContext;
 import org.milyn.device.profile.DefaultProfileConfigDigester;
+import org.milyn.device.profile.DefaultProfileStore;
 import org.milyn.device.profile.ProfileStore;
 import org.milyn.ioc.BeanFactory;
+import org.milyn.resource.ClasspathResourceLocator;
 import org.milyn.resource.ContainerResourceLocator;
+import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
 
 /**
@@ -42,10 +45,32 @@ public class StandaloneContainerContext implements ContainerContext {
 
 	private static final String DEVICE_PROFILE_XML = "/device-profile.xml";
 	private Hashtable attributes = new Hashtable();
-	private File baseDir;
-	private ContainerResourceLocator resourceLocator;
-	private CDRStore cdrarStore;
+	private Hashtable sessions = new Hashtable();
+	private ContainerResourceLocator resourceLocator;	
+	private CDRStore cdrStore;
 	private ProfileStore profileStore;
+
+	/**
+	 * Public constructor.
+	 * <p/>
+	 * Context instances constructed in this way can be populated manually with
+	 * {@link org.milyn.device.profile.Profile} and {@link org.milyn.cdr.CDRDef}
+	 * info.  This supports non-XML type configuration.
+	 * @param profileStore The {@link ProfileStore} for tis context.
+	 * @param resourceLocator The {@link ContainerResourceLocator} for this context.
+	 */
+	public StandaloneContainerContext(ProfileStore profileStore, ContainerResourceLocator resourceLocator) {
+		if(profileStore == null) {
+			throw new IllegalArgumentException("null 'profileStore' arg in constructor call.");
+		}
+		if(resourceLocator == null) {
+			throw new IllegalArgumentException("null 'resourceLocator' arg in constructor call.");
+		}
+		
+		this.profileStore = profileStore;
+		this.resourceLocator = resourceLocator;
+		cdrStore = new CDRStore(this);
+	}
 	
 	/**
 	 * Public constructor.
@@ -59,12 +84,11 @@ public class StandaloneContainerContext implements ContainerContext {
 		if(!baseDir.exists() || !baseDir.isDirectory()) {
 			throw new IllegalArgumentException("Invalid 'baseDir' arg in constructor call.  Directory [" + baseDir.getAbsolutePath() + "] does'nt exist.");
 		}
-		this.baseDir = baseDir;
 		resourceLocator = (ContainerResourceLocator)BeanFactory.getBean("standaloneResourceLocator");
-		if(resourceLocator instanceof StandaloneResourceLocator) {
-			((StandaloneResourceLocator)resourceLocator).setBaseURI(baseDir.toURI());
+		if(resourceLocator instanceof URIResourceLocator) {
+			((URIResourceLocator)resourceLocator).setBaseURI(baseDir.toURI());
 		}
-		cdrarStore = new CDRStore(this);
+		cdrStore = new CDRStore(this);
 		initProfileStore();
 		loadCdrarStore();
 	}
@@ -135,7 +159,7 @@ public class StandaloneContainerContext implements ContainerContext {
 	}
 
 	public CDRStore getCdrarStore() {
-		return cdrarStore;
+		return cdrStore;
 	}
 
 	/**
@@ -144,6 +168,27 @@ public class StandaloneContainerContext implements ContainerContext {
 	 */
 	public ProfileStore getProfileStore() {
 		return profileStore;
+	}
+
+	/**
+	 * Get a session instance for the specified useragent.
+	 * @param useragent Useragent identification.
+	 * @return Standalone Session instance.
+	 */
+	public StandaloneContainerSession getSession(String useragent) {
+		StandaloneContainerSession session;
+		
+		if(useragent == null || useragent.trim().equals("")) {
+			throw new IllegalArgumentException("null or empty 'useragent' arg in method call.");
+		}
+		session = (StandaloneContainerSession) sessions.get(useragent);
+		if(session == null) {
+			// create a new session for the requesting useragent
+			session = new StandaloneContainerSession(useragent, this);
+			sessions.put(useragent, session);
+		}
+		
+		return session;
 	}
 
 }

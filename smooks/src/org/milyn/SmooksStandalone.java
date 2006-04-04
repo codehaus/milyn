@@ -28,11 +28,20 @@ import java.net.URI;
 import java.net.URL;
 import java.util.LinkedHashMap;
 
+import org.milyn.cdr.CDRConfig;
+import org.milyn.cdr.CDRDef;
+import org.milyn.cdr.cdrar.CDRArchive;
 import org.milyn.container.standalone.StandaloneContainerContext;
 import org.milyn.container.standalone.StandaloneContainerRequest;
 import org.milyn.container.standalone.StandaloneContainerSession;
 import org.milyn.delivery.SmooksXML;
 import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.device.profile.BasicProfile;
+import org.milyn.device.profile.DefaultProfileSet;
+import org.milyn.device.profile.DefaultProfileStore;
+import org.milyn.device.profile.ProfileSet;
+import org.milyn.device.profile.ProfileStore;
+import org.milyn.resource.ClasspathResourceLocator;
 import org.w3c.dom.Node;
 
 import sun.io.CharToByteConverter;
@@ -44,48 +53,65 @@ import sun.io.CharToByteConverter;
  * from the commandline.  See {@link org.milyn.report.SmooksReportGenerator} as an example of a class
  * using SmooksStandalone.
  * <p/>
- * This class effectively turns the file system into an execution "container" for
- * {@link org.milyn.delivery.SmooksXML}.  It requires a "baseDir" as a construction parameter,  
- * and expects the baseDir file and directory structure to be similar to that of the {@link org.milyn.SmooksServletFilter}
- * WEB-INF folder (the WEB-INF folder is the {@link org.milyn.SmooksServletFilter} equivalent to this classes baseDir folder).
+ * SmooksStandalone can be constructed and configured manually or from the file system.  See
+ * {@link #SmooksStandalone(String)} and {@link #SmooksStandalone(File, String)}.
  * @author tfennelly
  */
 public class SmooksStandalone {
 
 	private StandaloneContainerContext context;
-	private StandaloneContainerSession session;
 	private StandaloneContainerRequest request;
 	private String contentEncoding;
+	private CDRConfig defaultCDRConfig;
 	
 	/**
-	 * Public constructor.
+	 * Public Constructor.
 	 * <p/>
-	 * Uses the system character encoding for parsing content streams. 
-	 * @param baseDir Directory in which the Smooks Standalone Deployment 
-	 * is located. 
-	 * @param browserName The initial browser to be emulated by this Stanadlone
-	 * Smooks instance.  See {@link #setBrowser(String)}.
-	 * @throws UnknownDeviceException Thrown when the named device/browser is not known i.e. typically means
-	 * the deviceName is not mapped into any profiles in device-profiles.xml.
+	 * Allows a SmooksStandalone instance to be created and configured from
+	 * code i.e. not configured from config files etc.
+	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
+	 * defaults to "ISO-8859-1".
+	 * @see #registerUseragent(String)
+	 * @see #registerProfiles(String, String[])
+	 * @see #registerResource(CDRDef)
 	 */
-	public SmooksStandalone(File baseDir, String browserName) throws UnknownDeviceException {
-		context = new StandaloneContainerContext(baseDir);
-		setBrowser(browserName);
+	public SmooksStandalone(String contentEncoding) {
+		setEncoding(contentEncoding);
+		context = new StandaloneContainerContext(new DefaultProfileStore(), new ClasspathResourceLocator());
+		createDefaultCDRConfig();
 	}
 	
 	/**
 	 * Public constructor.
+	 * <p/>
+	 * Allows a SmooksStandalone instance to be created and configured from
+	 * config files.
+	 * <p/>
+	 * This constructor effectively turns the file system into an execution "container" for
+	 * {@link org.milyn.delivery.SmooksXML}.  It requires a "baseDir" as a construction parameter,  
+	 * and expects the baseDir file and directory structure to be similar to that of the {@link org.milyn.SmooksServletFilter}
+	 * WEB-INF folder (the WEB-INF folder is the {@link org.milyn.SmooksServletFilter} equivalent to this classes baseDir folder).
 	 * @param baseDir Directory in which the Smooks Standalone Deployment 
 	 * is located. 
-	 * @param browserName The initial browser to be emulated by this Stanadlone
-	 * Smooks instance.  See {@link #setBrowser(String)}.
 	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
 	 * defaults to "ISO-8859-1".
-	 * @throws UnknownDeviceException Thrown when the named device/browser is not known i.e. typically means
-	 * the deviceName is not mapped into any profiles in device-profiles.xml.
 	 */
-	public SmooksStandalone(File baseDir, String browserName, String contentEncoding) throws UnknownDeviceException {
-		this(baseDir, browserName);
+	public SmooksStandalone(File baseDir, String contentEncoding) {
+		context = new StandaloneContainerContext(baseDir);
+		setEncoding(contentEncoding);
+		createDefaultCDRConfig();
+		
+		// add one "null" CDRDef just incase no manual configurations are carried out!
+		defaultCDRConfig.addCDRDef(new CDRDef("<null>", "<null>", "<null>"));
+	}
+
+	/**
+	 * Set the content encoding to be used when parsing content on this standalone instance. 
+	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
+	 * defaults to "ISO-8859-1".
+	 * @throws IllegalArgumentException Invalid encoding.
+	 */
+	private void setEncoding(String contentEncoding) throws IllegalArgumentException {
 		contentEncoding = (contentEncoding == null)?"ISO-8859-1":contentEncoding;
 		try {
 			CharToByteConverter.getConverter(contentEncoding);
@@ -96,30 +122,25 @@ public class SmooksStandalone {
 		}
 		this.contentEncoding = contentEncoding;
 	}
-	
-	/**
-	 * Set the browser to be emulated by this Stanadlone Smooks instance.
-	 * <p/>
-	 * Must be a browser for which there exists a profile set i.e. has profile
-	 * configurations set the device-profiles.xml file.
-	 * <p/>
-	 * Creates a new {@link StandaloneContainerSession} associated with the browserName.
-	 * @param browserName The browser name.
-	 * @throws UnknownDeviceException Thrown when the named device/browser is not known i.e. typically means
-	 * the deviceName is not mapped into any profiles in device-profiles.xml.
-	 */
-	public void setBrowser(String browserName) throws UnknownDeviceException {
-		if(browserName == null || browserName.trim().equals("")) {
-			throw new IllegalArgumentException("null or empty 'browserName' arg in method call.");
+
+	private void createDefaultCDRConfig() {
+		if(context == null) {
+			throw new IllegalArgumentException("createDefaultCDRConfig() called before the ContainerContext has been initialised.");
 		}
-		session = new StandaloneContainerSession(browserName, context);
+		CDRArchive defaultArchive = new CDRArchive("standalone-default-archive");
+		
+		defaultCDRConfig = new CDRConfig("standalone-default-config");		
+		defaultArchive.addArchiveDef(defaultCDRConfig);
+		context.getCdrarStore().load(defaultArchive);
 	}
 	
 	/**
 	 * Process the content at the specified URI for the current browser.
 	 * <p/>
-	 * Calls {@link #process(InputStream)} after opening an {@link InputStream}
+	 * Calls {@link #process(URI, InputStream)} after opening an {@link InputStream}
 	 * to the specified {@link URI}.
+	 * @param useragent The useragent on behalf of whom the transformation
+	 * process is to be executed.
 	 * @param requestURI URI of the content to be processed.
 	 * @return The Smooks processed content DOM {@link Node}.
 	 * @throws IOException Is a:<br/>
@@ -129,8 +150,33 @@ public class SmooksStandalone {
 	 * - {@link IOException} If unable to read content.
 	 * @throws SmooksException Excepting processing content stream.
 	 */
-	public Node process(URI requestURI) throws IOException, SmooksException {
-		return process(requestURI, context.getResourceLocator().getResource(requestURI.toString()));
+	public Node process(String useragent, URI requestURI) throws SmooksException {
+		try {
+			return process(useragent, requestURI, context.getResourceLocator().getResource(requestURI.toString()));
+		} catch (IOException e) {
+			throw new SmooksException("Error opening/reading stream at URI: " + requestURI, e);
+		}
+	}
+
+	/**
+	 * Process the content at the specified {@link InputStream} for the current browser.
+	 * <p/>
+	 * So this version of the process method doesn't actually open a stream to the
+	 * specified URI.  It uses the supplied stream.  The URI is supplied simply to
+	 * namespace the stream and satisfy dependencies on the
+	 * {@link StandaloneContainerRequest#getRequestURI()} method.
+	 * <p/>
+	 * The content of the buffer returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
+	 * implementations. 
+	 * @param useragent The useragent on behalf of whom the transformation
+	 * process is to be executed.
+	 * @param stream Stream to be processed.  Will be closed before returning.
+	 * @return The Smooks processed content DOM {@link Node}.
+	 * @throws SmooksException Excepting processing content stream.
+	 */
+	public Node process(String useragent, InputStream stream) throws SmooksException {
+		return process(useragent, null, stream);
 	}
 
 	/**
@@ -142,19 +188,19 @@ public class SmooksStandalone {
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
 	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
-	 * implementations. 
+	 * implementations.
+	 * @param useragent The useragent on behalf of whom the transformation
+	 * process is to be executed.
 	 * @param requestURI URI of the content to be processed.
 	 * @param stream Stream to be processed.  Will be closed before returning.
 	 * @return The Smooks processed content DOM {@link Node}.
 	 * @throws SmooksException Excepting processing content stream.
 	 */
-	public Node process(URI requestURI, InputStream stream) throws SmooksException {
-		if(requestURI == null) {
-			throw new IllegalArgumentException("null 'requestURI' arg in method call.");
-		}
+	public Node process(String useragent, URI requestURI, InputStream stream) throws SmooksException {
 		if(stream == null) {
 			throw new IllegalArgumentException("null 'stream' arg in method call.");
 		}
+		StandaloneContainerSession session = context.getSession(useragent);
 		Node node;
 		SmooksXML smooks;
 		
@@ -182,22 +228,50 @@ public class SmooksStandalone {
 	 * The content of the buffer returned is totally dependent on the configured
 	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
 	 * implementations. 
+	 * @param useragent The useragent on behalf of whom the transformation
+	 * process is to be executed.
 	 * @param stream Stream to be processed.  Will be closed before returning.
 	 * @return The Smooks processed content buffer.
 	 * @throws IOException Exception using or closing the supplied InputStream.
 	 * @throws SmooksException Excepting processing content stream.
 	 */
-	public String processAndSerialize(URI requestURI, InputStream stream) throws IOException, SmooksException {
+	public String processAndSerialize(String useragent, InputStream stream) throws SmooksException {
+		return processAndSerialize(useragent, null, stream);
+	}
+
+	/**
+	 * Process the content at the specified {@link InputStream} for the current browser
+	 * and serialise into a String buffer.  See {@link #process(URI, InputStream)}.
+	 * <p/>
+	 * The content of the buffer returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
+	 * implementations. 
+	 * @param useragent The useragent on behalf of whom the transformation
+	 * process is to be executed.
+	 * @param requestURI The request URI to be associated with the transformation.  This
+	 * is effectively the namespace of the content being transformed.
+	 * @param stream Stream to be processed.  Will be closed before returning.
+	 * @return The Smooks processed content buffer.
+	 * @throws IOException Exception using or closing the supplied InputStream.
+	 * @throws SmooksException Excepting processing content stream.
+	 */
+	public String processAndSerialize(String useragent, URI requestURI, InputStream stream) throws SmooksException {
 		String responseBuf = null;
 		CharArrayWriter writer = new CharArrayWriter();
 		try {
 			Node node;
 
-			node = process(requestURI, stream);
-			serialize(node, writer);
+			node = process(useragent, requestURI, stream);
+			serialize(useragent, node, writer);
 			responseBuf = writer.toString();
 		} finally {
-			stream.close();
+			if(stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					new SmooksException("Failed to close stream...", e);
+				}
+			}
 			writer.close();
 		}
 		
@@ -207,12 +281,14 @@ public class SmooksStandalone {
 	/**
 	 * Serialise the supplied node based on the current browsers serialisation
 	 * configuration.
+	 * @param useragent The useragent on behalf of whom the serialisation
+	 * process is to be executed.
 	 * @param node Node to be serialised.
 	 * @param writer Serialisation output writer.
 	 * @throws IOException Unable to write to output writer.
 	 * @throws SmooksException Unable to serialise due to bad Smooks environment.  Check cause.
 	 */
-	public void serialize(Node node, Writer writer) throws IOException, SmooksException {
+	public void serialize(String useragent, Node node, Writer writer) throws SmooksException {
 		SmooksXML smooks;
 		StandaloneContainerRequest serRequest = getLastRequest();
 		
@@ -224,24 +300,25 @@ public class SmooksStandalone {
 		}
 		
 		if(serRequest == null) {
-			// Create a "bogus" request - fine for serialization.  This is an unexpected
-			// usecase but one we can still handle!!  We'd expect that this method
-			// only be called after calling the process method.
-			serRequest = new StandaloneContainerRequest(URI.create("http://x.com"), new LinkedHashMap(), session);
+			StandaloneContainerSession session = context.getSession(useragent);
+			serRequest = new StandaloneContainerRequest(null, new LinkedHashMap(), session);
 		}
 		smooks = new SmooksXML(request);
-		smooks.serialize(node, writer);
+		try {
+			smooks.serialize(node, writer);
+		} catch (IOException e) {
+			throw new SmooksException("Serialisation failed...", e);
+		}
 	}
 
 	/**
-	 * Get the current {@link StandaloneContainerSession} associated with the
-	 * current browser.
-	 * <p/>
-	 * See {@link #setBrowser(String)}.
-	 * @return
+	 * Get the current {@link StandaloneContainerSession} associated with
+	 * specified useragent.
+	 * @param useragent The useragent whose session instance is required.
+	 * @return Session instance.
 	 */
-	public StandaloneContainerSession getSession() {
-		return session;
+	public StandaloneContainerSession getSession(String useragent) {
+		return context.getSession(useragent);
 	}
 
 	/**
@@ -252,5 +329,65 @@ public class SmooksStandalone {
 	 */
 	public StandaloneContainerRequest getLastRequest() {
 		return request;
+	}
+
+	/**
+	 * Manually register the specified useragent.
+	 * @param useragent The useragent name.
+	 * @param profiles List of profiles with which the useragent is to be associated.
+	 */
+	public void registerUseragent(String useragent, String[] profiles) {
+		if(useragent == null) {
+			throw new IllegalArgumentException("null 'useragent' arg in method call.");
+		}
+		
+		ProfileStore profileStore = context.getProfileStore();
+		try {
+			profileStore.getProfileSet(useragent);
+		} catch(UnknownDeviceException e) {
+			profileStore.addProfileSet(useragent, new DefaultProfileSet());
+		}
+		
+		// now register the profiles...
+		registerProfiles(useragent, profiles);
+	}
+
+	/**
+	 * Manually register a set of profiles for the specified useragent.
+	 * @param useragent The useragent name.
+	 * @param profiles List of profiles with which the useragent is to be associated.
+	 */
+	private void registerProfiles(String useragent, String[] profiles) {
+		if(useragent == null) {
+			throw new IllegalArgumentException("null 'useragent' arg in method call.");
+		}
+		if(profiles == null || profiles.length == 0) {
+			throw new IllegalArgumentException("null or empty 'profiles' array arg in method call.");
+		}
+
+		ProfileStore profileStore = context.getProfileStore();
+		ProfileSet profileSet = profileStore.getProfileSet(useragent);
+		
+		if(profileSet == null) {
+			throw new IllegalStateException("Call to registerProfiles() before the useragent [" + useragent + "] has been registered via registerUseragent.");
+		}
+		
+		for(int i = 0; i < profiles.length; i++) {
+			if(profiles[i] == null) {
+				throw new IllegalArgumentException("null 'profiles' arg array element at index " + i);
+			}			
+			profileSet.addProfile(new BasicProfile(profiles[i]));
+		}
+	}
+
+	/**
+	 * Register a {@link CDRDef} on this {@link SmooksStandalone} instance.
+	 * @param cdrDef The Content Delivery Resource definition to be  registered.
+	 */
+	public void registerResource(CDRDef cdrDef) {
+		if(cdrDef == null) {
+			throw new IllegalArgumentException("null 'cdrDef' arg in method call.");
+		}
+		defaultCDRConfig.addCDRDef(cdrDef);
 	}
 }

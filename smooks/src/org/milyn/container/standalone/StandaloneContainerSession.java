@@ -116,12 +116,12 @@ public class StandaloneContainerSession implements ContainerSession {
 	 * Useragent Context for the Standalone Container.
 	 * @author tfennelly
 	 */
-	private class StandaloneUAContext implements UAContext {
+	public class StandaloneUAContext implements UAContext {
 		private static final long serialVersionUID = 1L;
 		private String commonName;
 		private ProfileSet profileSet;
 		
-		private StandaloneUAContext(String commonName) throws UnknownDeviceException {
+		public StandaloneUAContext(String commonName) throws UnknownDeviceException {
 			this.commonName = commonName;
 			profileSet = context.getProfileStore().getProfileSet(commonName);
 		}

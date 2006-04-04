@@ -23,7 +23,7 @@ import org.milyn.cdr.CDRStore;
 import org.milyn.container.ContainerContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.ServletResourceLocator;
-import org.milyn.resource.URLResourceLocator;
+import org.milyn.resource.URIResourceLocator;
 
 /**
  * ContainerContext adapter for the javax.servlet.ServletContext interface.
@@ -57,7 +57,7 @@ public class ServletContainerContext implements ContainerContext {
 			throw new IllegalArgumentException("null 'servletConfig' arg in constructor call.");
 		}
 		this.servletContext = servletContext;
-		resourceLocator = new ServletResourceLocator(servletConfig, new URLResourceLocator());		
+		resourceLocator = new ServletResourceLocator(servletConfig, new URIResourceLocator());		
 		cdrarStore = new CDRStore(this);
 	}
 	

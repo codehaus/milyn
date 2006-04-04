@@ -37,7 +37,7 @@ import org.w3c.dom.Element;
  * Page CSS accessor class.
  * <p/>
  * Transformation Units use this class to access CSS information for the 
- * current page.  The CSS info is "pre-gathered" by the {@link org.milyn.cdres.css.CssStyleScraper}
+ * current page.  The CSS info is "pre-gathered" by the {@link org.milyn.css.CssStyleScraper}
  * Assembly Unit, if configured for the requesting device.
  * <p/>
  * This class is instanciated via the {@link #getInstance(ContainerRequest)} factory method.  

@@ -16,8 +16,10 @@
 
 package org.milyn;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
 
+import org.milyn.cdr.CDRDef;
 import org.milyn.container.standalone.TestSmooksStandalone;
 import org.milyn.util.DomUtil;
 import org.milyn.xml.XmlUtil;
@@ -30,8 +32,8 @@ public class SmooksStandaloneTest extends TestCase {
 	public void testProcess() {
 		SmooksStandalone smooksSA = null;
 		try {
-			smooksSA = new TestSmooksStandalone("msie6");
-			String response = smooksSA.processAndSerialize(URI.create("http://www.x.y.com/"), getClass().getResourceAsStream("html_2.html"));
+			smooksSA = new TestSmooksStandalone();
+			String response = smooksSA.processAndSerialize("msie6", getClass().getResourceAsStream("html_2.html"));
 			System.out.println(response);
 			Document doc = DomUtil.parse(response);
 			
@@ -41,5 +43,28 @@ public class SmooksStandaloneTest extends TestCase {
 			e.printStackTrace();
 			fail("Unexpected exception: " + e.getMessage());
 		}
+	}
+	
+	public void test_Standalone_CodeConfig() {
+		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		
+		// Add 2 useragents and configure them with profiles...
+		smooks.registerUseragent("useragent1", new String[] {"profile1", "profile2"});
+		smooks.registerUseragent("useragent2", new String[] {"profile2", "profile3"});
+	
+		// Create CDU configs and target them at the profiles...
+		CDRDef cdrDef = new CDRDef("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
+		cdrDef.setParameter("new-name", "xxx");
+		smooks.registerResource(cdrDef);
+		cdrDef = new CDRDef("aaa", "profile2", RenameElementTrans.class.getName());
+		cdrDef.setParameter("new-name", "zzz");
+		smooks.registerResource(cdrDef);
+
+		// Transform the same message for each useragent...
+		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
+		String result = smooks.processAndSerialize("useragent1", new ByteArrayInputStream(message.getBytes()));
+		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", result);
+		result = smooks.processAndSerialize("useragent2", new ByteArrayInputStream(message.getBytes()));
+		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><ccc>999</ccc></zzz>", result);
 	}
 }

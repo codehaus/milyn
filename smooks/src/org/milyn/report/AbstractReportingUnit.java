@@ -17,6 +17,7 @@
 package org.milyn.report;
 
 import org.milyn.cdr.CDRDef;
+import org.milyn.cdr.Parameter;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.trans.AbstractTransUnit;
 import org.w3c.dom.Node;
@@ -60,7 +61,7 @@ public abstract class AbstractReportingUnit extends AbstractTransUnit {
 	 * associated with the supplied request.
 	 * <p/>
 	 * The test unit {@link CDRDef configuration} will contain 
-	 * {@link CDRDef.Parameter parameters} used in the report.
+	 * {@link Parameter parameters} used in the report.
 	 * @param node The node to be associated with the report entry.
 	 * @param containerRequest The request associated with the page being tested.
 	 */
