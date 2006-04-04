@@ -18,7 +18,6 @@ package org.milyn.cdr;
 
 import java.util.List;
 
-import org.milyn.cdr.CDRDef.Parameter;
 import org.milyn.delivery.ContentDeliveryConfig;
 
 /**

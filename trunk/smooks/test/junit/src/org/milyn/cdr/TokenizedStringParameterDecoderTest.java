@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.milyn.cdr.CDRDef;
-import org.milyn.cdr.CDRDef.Parameter;
 import org.milyn.container.ContainerRequest;
 import org.milyn.util.SmooksUtil;
 

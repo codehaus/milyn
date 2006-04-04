@@ -159,7 +159,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * <p/>
  * Complex parameter values can be defined and decoded via configured 
  * {@link org.milyn.cdr.ParameterDecoder}s and the 
- * {@link #getParameter(String)}.{@link CDRDef.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)} 
+ * {@link #getParameter(String)}.{@link Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)} 
  * method (see {@link org.milyn.cdr.TokenizedStringParameterDecoder} as an example).
  *  
  * <h3>.cdrar files</h3>
@@ -295,7 +295,7 @@ public class CDRDef {
 	 * @param value Parameter value.
 	 */
 	public void setParameter(String name, String value) {
-		setParmeter(name, new Parameter(null, value));
+		setParameter(new Parameter(name, value));
 	}
 
 	/**
@@ -307,22 +307,22 @@ public class CDRDef {
 	 * @param value Parameter value.
 	 */
 	public void setParameter(String name, String type, String value) {
-		setParmeter(name, new Parameter(type, value));
+		setParameter(new Parameter(name, value, type));
 	}
 
-	private void setParmeter(String name, Parameter parameter) {
+	public void setParameter(Parameter parameter) {
 		if(parameters == null) {
 			parameters = new LinkedHashMap();
 		}
-		Object exists = parameters.get(name);
+		Object exists = parameters.get(parameter.getName());
 		
 		if(exists == null) {
-			parameters.put(name, parameter);
+			parameters.put(parameter.getName(), parameter);
 		} else if(exists instanceof Parameter) {
 			Vector paramList = new Vector();			
 			paramList.add(exists);
 			paramList.add(parameter);
-			parameters.put(name, paramList);
+			parameters.put(parameter.getName(), paramList);
 		} else if(exists instanceof List) {
 			((List)exists).add(parameter);
 		}
@@ -330,7 +330,7 @@ public class CDRDef {
 	}
 
 	/**
-	 * Get the named CDRDef {@link CDRDef.Parameter parameter}.
+	 * Get the named CDRDef {@link Parameter parameter}.
 	 * <p/>
 	 * If there is more than one of the named parameters defined, the first
 	 * defined value is returned.  
@@ -353,9 +353,9 @@ public class CDRDef {
 	}
 
 	/**
-	 * Get the named CDRDef {@link CDRDef.Parameter parameter} List.
+	 * Get the named CDRDef {@link Parameter parameter} List.
 	 * @param name Name of parameter to get. 
-	 * @return {@link CDRDef.Parameter} value {@link List}, or null if not set.
+	 * @return {@link Parameter} value {@link List}, or null if not set.
 	 */
 	public List getParameters(String name) {
 		if(parameters == null) {
@@ -457,74 +457,4 @@ public class CDRDef {
 	public String toString() {
 		return "[" + Arrays.asList(uaTargets) +"][" + selector + "][" + path + "]";
 	}
-	
-	/**
-	 * CDRDef Parameter.
-	 * <p/>
-	 * Wrapper for a param.  Handles decoding.
-	 * @author tfennelly
-	 */
-	public static class Parameter {
-		public static final String PARAM_TYPE_PREFIX = "param-type:";
-		private String type;
-		private String value;
-		private Object objValue;
-
-		private Parameter(String type, String value) {
-			this.type = type;
-			this.value = value;
-		}
-
-		/**
-		 * Get the parameter value "undecoded".
-		 * @return Parameter value.
-		 */
-		public String getValue() {
-			return value;
-		}
-
-		/**
-		 * Get the parameter value "decoded" into an Object.
-		 * <p/>
-		 * Uses the supplied <code>deliveryConfig</code> to get the {@link ParameterDecoder}
-		 * implementation to be used to decode the parameter value.  Looks up the
-		 * {@link ParameterDecoder} using the parameter type - selector="decoder-<i>&lt;type&gt;</i>".
-		 * @param deliveryConfig Requesting device {@link ContentDeliveryConfig}.
-		 * @return Decoded value.
-		 * @throws ParameterDecodeException Unable to decode parameter value. 
-		 */
-		public Object getValue(ContentDeliveryConfig deliveryConfig) throws ParameterDecodeException {
-			if(objValue == null) {
-				synchronized (value) {
-					if(objValue == null) {
-						if(type == null) {
-							objValue = value;
-						} else {
-							List decoders = deliveryConfig.getObjects(PARAM_TYPE_PREFIX + type);
-							if(!decoders.isEmpty()) {
-								try {
-									ParameterDecoder paramDecoder = (ParameterDecoder)decoders.get(0);
-									objValue = paramDecoder.decodeValue(value);
-								} catch(ClassCastException cast) {
-									throw new ParameterDecodeException("Configured ParameterDecoder '" + PARAM_TYPE_PREFIX + type + "' for device must be of type " + ParameterDecoder.class);
-								}
-							} else {
-								throw new ParameterDecodeException("ParameterDecoder '" + PARAM_TYPE_PREFIX + type + "' not defined for requesting device.");
-							}
-						}
-					}
-				}
-			}
-			
-			return objValue;
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.Object#toString()
-		 */
-		public String toString() {
-			return value;
-		}
-	}
-
 }

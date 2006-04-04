@@ -23,7 +23,9 @@ package org.milyn;
  * target device.  Chained Exception added. 
  * @author tfennelly
  */
-public class SmooksException extends Exception {
+public class SmooksException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Public constructor.

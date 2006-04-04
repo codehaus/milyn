@@ -21,7 +21,7 @@ import java.io.Writer;
 import java.util.List;
 
 import org.milyn.cdr.CDRDef;
-import org.milyn.cdr.CDRDef.Parameter;
+import org.milyn.cdr.Parameter;
 import org.milyn.dom.DomUtils;
 import org.milyn.report.PageReport.NodeReport;
 import org.w3c.dom.Node;

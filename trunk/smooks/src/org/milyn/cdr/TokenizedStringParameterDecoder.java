@@ -21,7 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.milyn.cdr.CDRDef.Parameter;
 import org.milyn.delivery.ContentDeliveryConfig;
 
 
@@ -81,8 +80,8 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * <p/>
  * ... and the "com.acme.XXXContentDeliveryUnit" {@link org.milyn.delivery.ContentDeliveryUnit} accessing this parameter value:
  * <pre>
- * {@link org.milyn.cdr.CDRDef.Parameter} param = {@link org.milyn.cdr.CDRDef cdrDef}.{@link org.milyn.cdr.CDRDef#getParameter(String) getParameter("blockLevelElements")};
- * {@link java.util.HashSet} blockLevelElements = (HashSet)param.{@link org.milyn.cdr.CDRDef.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)}; 
+ * {@link org.milyn.cdr.Parameter} param = {@link org.milyn.cdr.CDRDef cdrDef}.{@link org.milyn.cdr.CDRDef#getParameter(String) getParameter("blockLevelElements")};
+ * {@link java.util.HashSet} blockLevelElements = (HashSet)param.{@link org.milyn.cdr.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)}; 
  * </pre>
  * 
  * See {@link org.milyn.cdr.CDRDef}.

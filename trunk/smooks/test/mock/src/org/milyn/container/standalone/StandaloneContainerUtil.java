@@ -30,8 +30,8 @@ public class StandaloneContainerUtil {
 	public static StandaloneContainerRequest getRequest(String requestURI, String browserName) {
 		StandaloneContainerRequest request = null;
 		try {
-			SmooksStandalone smooksSA = new TestSmooksStandalone(browserName);
-			request = new StandaloneContainerRequest(new URI(requestURI), new LinkedHashMap(), smooksSA.getSession());
+			SmooksStandalone smooksSA = new TestSmooksStandalone();
+			request = new StandaloneContainerRequest(new URI(requestURI), new LinkedHashMap(), smooksSA.getSession(browserName));
 		} catch (UnknownDeviceException e) {
 			TestCase.fail(e.getMessage());
 		} catch (URISyntaxException e) {

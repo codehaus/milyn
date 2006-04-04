@@ -54,9 +54,6 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	 * @param session The container session within which this request is to be processed.
 	 */
 	public StandaloneContainerRequest(URI requestURI, LinkedHashMap parameters, StandaloneContainerSession session) {
-		if(requestURI == null) {
-			throw new IllegalArgumentException("null 'requestURI' arg in constructor call.");
-		}
 		if(parameters == null) {
 			throw new IllegalArgumentException("null 'parameters' arg in constructor call.");
 		}
@@ -73,6 +70,9 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	}
 	
 	public URI getRequestURI() {
+		if(requestURI == null) {
+			throw new IllegalStateException("Cannot request access to a 'requestURI' from an execution context that was not supplied a 'requestURI'.");
+		}
 		return requestURI;
 	}
 
