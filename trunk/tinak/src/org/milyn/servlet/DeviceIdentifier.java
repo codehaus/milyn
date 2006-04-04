@@ -17,7 +17,7 @@
 package org.milyn.servlet;
 
 import org.milyn.resource.ServletResourceLocator;
-import org.milyn.resource.URLResourceLocator;
+import org.milyn.resource.URIResourceLocator;
 import org.milyn.device.ident.DeviceIdent;
 import org.milyn.device.ident.IdentConfigDigester;
 import org.milyn.device.ident.UnknownDeviceException;
@@ -110,7 +110,7 @@ abstract class DeviceIdentifier {
      */
     private static DeviceIdent getDeviceIdent(ServletConfig config) {
         InputStream configStream = null;
-        ServletResourceLocator resLocator = new ServletResourceLocator(config, new URLResourceLocator()); 
+        ServletResourceLocator resLocator = new ServletResourceLocator(config, new URIResourceLocator()); 
 
         try {
 			configStream = resLocator.getResource(DEVICE_IDENT_CONFIG_PARAM, DEFAULT_CONFIG);

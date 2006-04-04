@@ -28,7 +28,7 @@ import org.milyn.device.profile.ProfileConfigDigester;
 import org.milyn.device.profile.ProfileSet;
 import org.milyn.device.profile.ProfileStore;
 import org.milyn.resource.ServletResourceLocator;
-import org.milyn.resource.URLResourceLocator;
+import org.milyn.resource.URIResourceLocator;
 
 /**
  * J2EE Servlet Device Profiler class.
@@ -98,7 +98,7 @@ public abstract class DeviceProfiler {
         	ProfileSet profileSet;
         	
         	if(profileStore == null) {
-        		ServletResourceLocator resLocator = new ServletResourceLocator(config, new URLResourceLocator());
+        		ServletResourceLocator resLocator = new ServletResourceLocator(config, new URIResourceLocator());
         		
 				configStream = resLocator.getResource(DEVICE_PROFILE_CONFIG_PARAM, DEFAULT_CONFIG);
 				profileStore = (DeviceProfiler.getConfigDigester(config)).parse(configStream);

@@ -28,6 +28,13 @@ import org.milyn.device.ident.UnknownDeviceException;
 public interface ProfileStore {
 
 	/**
+	 * Add a ProfileSet for the named device to this ProfileStore
+	 * @param deviceName The device name.
+	 * @param profileSet The devices ProfileSet.
+	 */
+	public void addProfileSet(String deviceName, ProfileSet profileSet);
+	
+	/**
 	 * Get the ProfileSet associated with the specified device.
 	 * <p/>
 	 * Implementations must be case insensitive.

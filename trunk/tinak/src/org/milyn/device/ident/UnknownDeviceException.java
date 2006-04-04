@@ -21,9 +21,11 @@ package org.milyn.device.ident;
  * @author Tom Fennelly
  */
 
-public class UnknownDeviceException extends Exception {
+public class UnknownDeviceException extends RuntimeException {
 
-    /**
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Public constructor.
      */
     public UnknownDeviceException() {
