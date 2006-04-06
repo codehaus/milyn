@@ -42,6 +42,7 @@ import org.milyn.device.profile.DefaultProfileStore;
 import org.milyn.device.profile.ProfileSet;
 import org.milyn.device.profile.ProfileStore;
 import org.milyn.resource.ClasspathResourceLocator;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import sun.io.CharToByteConverter;
@@ -71,8 +72,7 @@ public class SmooksStandalone {
 	 * code i.e. not configured from config files etc.
 	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
 	 * defaults to "ISO-8859-1".
-	 * @see #registerUseragent(String)
-	 * @see #registerProfiles(String, String[])
+	 * @see #registerUseragent(String, String[])
 	 * @see #registerResource(CDRDef)
 	 */
 	public SmooksStandalone(String contentEncoding) {
@@ -135,7 +135,7 @@ public class SmooksStandalone {
 	}
 	
 	/**
-	 * Process the content at the specified URI for the current browser.
+	 * Process the content at the specified URI for the specified useragent.
 	 * <p/>
 	 * Calls {@link #process(URI, InputStream)} after opening an {@link InputStream}
 	 * to the specified {@link URI}.
@@ -159,7 +159,7 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process the content at the specified {@link InputStream} for the current browser.
+	 * Process the content at the specified {@link InputStream} for the specified useragent.
 	 * <p/>
 	 * So this version of the process method doesn't actually open a stream to the
 	 * specified URI.  It uses the supplied stream.  The URI is supplied simply to
@@ -180,18 +180,20 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process the content at the specified {@link InputStream} for the current browser.
+	 * Process the content at the specified {@link InputStream} for the specified useragent.
 	 * <p/>
 	 * The difference between this method and {@link #process(URI)} is simply that this implementation
 	 * uses the supplied stream rather than attempting to open another stream from the requestURI
-	 * parameter.  This makes unit testing of this class easier.
+	 * parameter.
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
 	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
 	 * implementations.
 	 * @param useragent The useragent on behalf of whom the transformation
 	 * process is to be executed.
-	 * @param requestURI URI of the content to be processed.
+	 * @param requestURI The URI context of the content to be processed.  This arg needs to
+	 * be supplied if any of the {@link org.milyn.delivery.ElementVisitor} implemenmtations
+	 * use call {@link org.milyn.container.ContainerRequest#getRequestURI()}.
 	 * @param stream Stream to be processed.  Will be closed before returning.
 	 * @return The Smooks processed content DOM {@link Node}.
 	 * @throws SmooksException Excepting processing content stream.
@@ -222,7 +224,51 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process the content at the specified {@link InputStream} for the current browser
+	 * Process supplied {@link Document} for the specified useragent.
+	 * <p/>
+	 * The content of the buffer returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
+	 * implementations.
+	 * @param useragent The useragent on behalf of whom the transformation
+	 * process is to be executed.
+	 * @param document Document to be processed.
+	 * @return The Smooks processed content DOM {@link Node}.
+	 * @throws SmooksException Excepting processing the document.
+	 */
+	public Node process(String useragent, Document document) throws SmooksException {
+		return process(useragent, null, document);
+	}
+
+	/**
+	 * Process supplied {@link Document} for the specified useragent.
+	 * <p/>
+	 * The content of the buffer returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.trans.TransUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
+	 * implementations.
+	 * @param useragent The useragent on behalf of whom the transformation
+	 * process is to be executed.
+	 * @param requestURI The URI context of the content to be processed.  This arg needs to
+	 * be supplied if any of the {@link org.milyn.delivery.ElementVisitor} implemenmtations
+	 * use call {@link org.milyn.container.ContainerRequest#getRequestURI()}.
+	 * @param document Document to be processed.
+	 * @return The Smooks processed content DOM {@link Node}.
+	 * @throws SmooksException Excepting processing the document.
+	 */
+	public Node process(String useragent, URI requestURI, Document document) throws SmooksException {
+		if(document == null) {
+			throw new IllegalArgumentException("null 'document' arg in method call.");
+		}
+		StandaloneContainerSession session = context.getSession(useragent);
+		SmooksXML smooks;
+		
+		request = new StandaloneContainerRequest(requestURI, new LinkedHashMap(), session);
+		smooks = new SmooksXML(request);
+
+		return smooks.applyTransform(document);
+	}
+	
+	/**
+	 * Process the content at the specified {@link InputStream} for the specified useragent
 	 * and serialise into a String buffer.  See {@link #process(URI, InputStream)}.
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
@@ -240,7 +286,7 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process the content at the specified {@link InputStream} for the current browser
+	 * Process the content at the specified {@link InputStream} for the specified useragent
 	 * and serialise into a String buffer.  See {@link #process(URI, InputStream)}.
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
@@ -279,7 +325,7 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Serialise the supplied node based on the current browsers serialisation
+	 * Serialise the supplied node based on the specified useragents serialisation
 	 * configuration.
 	 * @param useragent The useragent on behalf of whom the serialisation
 	 * process is to be executed.
