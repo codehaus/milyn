@@ -1,0 +1,57 @@
+<project name="junit-test" default="test">
+	<description>JUnit Testing.</description>
+
+	<target name="test" description="Execute JUnit Tests.">
+		<path id="test.classpath">
+			<pathelement location="${module.classes}"/>
+			<fileset dir="${module.lib}" includes="*.jar"/>
+			<fileset dir="../WEB-INF/lib" includes="*.jar"/>
+			<pathelement location="${module.src}"/>
+			<pathelement location="${module.test}/classes"/>
+			<pathelement location="${module.test}/src"/>
+			<fileset dir="../test-lib" includes="*.jar"/>
+		</path>
+		<delete dir="${module.test}/report" failonerror="false"/>
+		<mkdir dir="${module.test}/report" />
+
+		<antcall target="compile-tests" />
+		<junit printsummary="yes" failureproperty="test.unit.failure" fork="on" dir=".">
+			<classpath refid="test.classpath" />
+			<formatter type="xml"/>
+			<batchtest fork="yes" todir="${module.test}/report">
+				<fileset dir="${module.test}/src">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${module.test}/report">
+			<fileset dir="${module.test}/report">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report todir="${module.test}/report"/>
+		</junitreport>
+
+		<echo message="*** Unit test report at: ${module.test}/report" />
+
+		<antcall target="assert-test-fail" />
+	</target>
+
+	<target name="assert-test-fail" if="test.unit.failure">
+		<fail message="Some unit tests have failed.  See report at: ${module.test}/report" />
+	</target>
+
+	<target name="compile-tests">
+		<delete quiet="true" dir="${module.test}/classes" />
+		<mkdir dir="${module.test}/classes" />
+		<javac srcdir="${module.test}/src" destdir="${module.test}/classes" debug="on">
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+	
+	<target name="clean" description="Clean.">
+		<delete quiet="true"  dir="${module.test}/classes" />
+		<delete quiet="true"  dir="${module.test}/report" />
+	</target>
+</project>
+

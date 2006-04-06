@@ -1,0 +1,41 @@
+<project name="Magger release." default="release">
+
+	<target name="release">
+		<property name="magger.ant" value="../magger/ant" />
+		<property file="${magger.ant}/build.properties" />
+		<property name="release.distrib" value="milyn-magger-${module.version}" />
+
+		<!-- delete old releases, copy, jar and delete -->		
+		<antcall target="clean" />
+		<ant antfile="build.xml" target="clean" dir="${magger.ant}" />
+		<ant antfile="build.xml" target="build" dir="${magger.ant}" />
+		<ant antfile="build.xml" target="test" dir="${magger.ant}" />
+		<ant antfile="build.xml" target="javadoc" dir="${magger.ant}" />
+		<antcall target="deploy-javadocs" />
+
+		<mkdir dir="${release.distrib}"/>
+		<copy todir="${release.distrib}">
+			<fileset dir="../magger" excludes="**/classes/**, **/report/**" />
+		</copy>
+        <zip destfile="../${release.distrib}.zip" basedir="." includes="${release.distrib}/**"/>
+        <delete dir="${release.distrib}"/>
+    </target>
+	
+	<!-- Deploy the Magger javadoc to the www.milyn.org pages -->
+	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Docs.">
+		<delete dir="${public_html}/javadoc/magger/" />
+		<mkdir dir="${public_html}/javadoc/magger/" />
+		<copy todir="${public_html}/javadoc/magger/">
+			<fileset dir="../magger/docs/api/" includes="**/**"/>
+		</copy>
+    </target>
+
+	<target name="clean">
+		<delete failonerror="false">
+			<fileset file="../${release.distrib}.zip" />
+			<fileset dir="${release.distrib}" />
+		</delete>
+	</target>
+    
+</project>
+

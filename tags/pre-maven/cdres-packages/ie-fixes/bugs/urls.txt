@@ -1,0 +1,3 @@
+http://www.quirksmode.org/bugreports/archives/2005/09/Margin_inheritance_bug.html
+http://www.quirksmode.org/bugreports/archives/2005/09/positionrelative_breaks_out_of_overflow_constraint.html
+http://www.quirksmode.org/bugreports/archives/2005/09/span_width_affected_by_width_of_fixed_width_div.html

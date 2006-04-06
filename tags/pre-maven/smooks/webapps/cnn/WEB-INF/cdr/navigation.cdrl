@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	This CDRL defines Transformation Units for navigation.
+
+	NB: See device-profile.xml
+-->
+
+<cdres-list default-uatarget="*"> 
+	<!--
+		Transformation phase.  Process snav elements.
+	-->
+	<cdres selector="snav" path="org/milyn/smooks/nav/SnavTU.class" />
+</cdres-list>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	msie common Reporting Units.  
+-->
+<cdres-list default-uatarget="msie"> 
+
+	<!--
+		See http://www.quirksmode.org/bugreports/archives/2005/12/fontvariant_sma.html
+	-->
+	<cdres selector="*" path="org/milyn/report/BeanShellReportingUnit.class">
+		<param name="id">msie-common-0001</param>
+		<param name="description"> <!--
+			This element has <u>font-variant: small-caps</u> and <u>text-transform</u> (uppercase or lowercase)
+			CSS applied.  <p/>On IE, the <code>text-transform</code> CSS rule may get ignored.
+			-->
+		</param>
+		<param name="suggestion"><!--See <a href="http://www.quirksmode.org/bugreports/archives/2005/12/fontvariant_sma.html" target="new">www.quirksmode.org</a>-->.</param>
+		<param name="code"> <!--
+			org.milyn.magger.CSSProperty fontVariant = cssAccessor.getProperty(element, "font-variant");
+			org.milyn.magger.CSSProperty textTransform = cssAccessor.getProperty(element, "text-transform");
+			
+			if(fontVariant == null || textTransform == null) {
+				return false;
+			}
+			if(fontVariant.getValue().getStringValue().equals("small-caps")) {
+				String textTransformVal = textTransform.getValue().getStringValue();
+				if(textTransformVal.equals("uppercase") || textTransformVal.equals("lowercase")) {
+					// Trigger the report!
+					return true;
+				}
+			}
+			-->
+		</param>
+	</cdres>
+	
+</cdres-list>

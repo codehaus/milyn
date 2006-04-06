@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	XForms Transformation Units for browsers without XForms Support.
+	
+	Document <head> transformations.
+-->
+<cdres-list default-uatarget="html4 + not:xforms" default-namespace="http://www.w3.org/2002/xforms"> 
+
+	<!--
+		Add the <link> element for the Chiba XForms CSS file.
+		Overriding default namespace to match all - may want to target it 
+		specifically at XHTML namespace.
+	-->
+	<cdres selector="head" namespace="*" path="org.chiba.smooks.AddChibaXFormsCSS" />
+
+	<!--
+		Capture the xforms model elements and attach to the request.
+		Then remove the model from the document.
+	-->
+	<cdres selector="model" path="org.milyn.cdres.trans.TransformationPhaseRequestAttacher" />
+	<cdres selector="model" path="org.milyn.cdres.trans.RemoveElementTU" />
+	
+</cdres-list>
