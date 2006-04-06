@@ -17,6 +17,8 @@
 package org.milyn;
 
 import java.io.ByteArrayInputStream;
+import java.io.CharArrayWriter;
+import java.io.IOException;
 import java.net.URI;
 
 import org.milyn.cdr.CDRDef;
@@ -24,6 +26,8 @@ import org.milyn.container.standalone.TestSmooksStandalone;
 import org.milyn.util.DomUtil;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
@@ -45,12 +49,12 @@ public class SmooksStandaloneTest extends TestCase {
 		}
 	}
 	
-	public void test_Standalone_CodeConfig() {
+	public void test_Standalone_CodeConfig_1() {
 		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
 		
 		// Add 2 useragents and configure them with profiles...
-		smooks.registerUseragent("useragent1", new String[] {"profile1", "profile2"});
-		smooks.registerUseragent("useragent2", new String[] {"profile2", "profile3"});
+		smooks.registerUseragent("message-target1", new String[] {"profile1", "profile2"});
+		smooks.registerUseragent("message-target2", new String[] {"profile2", "profile3"});
 	
 		// Create CDU configs and target them at the profiles...
 		CDRDef cdrDef = new CDRDef("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
@@ -62,9 +66,37 @@ public class SmooksStandaloneTest extends TestCase {
 
 		// Transform the same message for each useragent...
 		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
-		String result = smooks.processAndSerialize("useragent1", new ByteArrayInputStream(message.getBytes()));
+		String result = smooks.processAndSerialize("message-target1", new ByteArrayInputStream(message.getBytes()));
+		System.out.println(result);
 		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", result);
-		result = smooks.processAndSerialize("useragent2", new ByteArrayInputStream(message.getBytes()));
+		result = smooks.processAndSerialize("message-target2", new ByteArrayInputStream(message.getBytes()));
+		System.out.println(result);
 		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><ccc>999</ccc></zzz>", result);
+	}
+
+	public void test_Standalone_CodeConfig_2() throws SAXException, IOException {
+		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		
+		// Add 2 useragents and configure them with profiles...
+		smooks.registerUseragent("message-target1", new String[] {"profile1", "profile2"});
+		smooks.registerUseragent("message-target2", new String[] {"profile2", "profile3"});
+	
+		// Create CDU configs and target them at the profiles...
+		CDRDef cdrDef = new CDRDef("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
+		cdrDef.setParameter("new-name", "xxx");
+		smooks.registerResource(cdrDef);
+		cdrDef = new CDRDef("aaa", "profile2", RenameElementTrans.class.getName());
+		cdrDef.setParameter("new-name", "zzz");
+		smooks.registerResource(cdrDef);
+
+		// Transform the same message for each useragent...
+		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
+		Document doc = XmlUtil.parseStream(new ByteArrayInputStream(message.getBytes()), false, false);
+
+		doc = (Document)smooks.process("message-target1", doc);
+
+		CharArrayWriter writer = new CharArrayWriter();
+		smooks.serialize("message-target1", doc, writer);
+		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
 	}
 }
