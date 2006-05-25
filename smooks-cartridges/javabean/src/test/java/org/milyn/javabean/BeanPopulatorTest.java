@@ -34,7 +34,7 @@ import junit.framework.TestCase;
 public class BeanPopulatorTest extends TestCase {
 
     public void testConstructorConfigValidation() {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhasePopulatorUnit.class.getName());
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         
         testConstructorConfigValidation(config, "'beanId' param not specified");
 
@@ -55,16 +55,16 @@ public class BeanPopulatorTest extends TestCase {
         config.removeParameter("beanClass");
         config.setParameter("beanClass", MyGoodBean.class.getName());
 
-        ProcessingPhasePopulatorUnit pppu;
+        ProcessingPhaseBeanPopulator pppu;
 
         config.setParameter("attributeName", "attributeX");
 
-        pppu = new ProcessingPhasePopulatorUnit(config);
+        pppu = new ProcessingPhaseBeanPopulator(config);
     }
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
         try {
-            new ProcessingPhasePopulatorUnit(config);
+            new ProcessingPhaseBeanPopulator(config);
             fail("Expected SmooksConfigurationException - " + expected);
         } catch(SmooksConfigurationException e) {
             if(e.getMessage().indexOf(expected) == -1) {
@@ -74,7 +74,7 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_visit_validateSetterName() throws SAXException, IOException {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhasePopulatorUnit.class.getName());
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         MockContainerRequest request = new MockContainerRequest();
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), false, true);
         
@@ -82,7 +82,7 @@ public class BeanPopulatorTest extends TestCase {
         config.setParameter("beanClass", MyGoodBean.class.getName());
         config.setParameter("attributeName", "phoneNumber");
         config.setParameter("setterName", "setX");
-        ProcessingPhasePopulatorUnit pppu = new ProcessingPhasePopulatorUnit(config);
+        ProcessingPhaseBeanPopulator pppu = new ProcessingPhaseBeanPopulator(config);
         try {
             pppu.visit(doc.getDocumentElement(), request);
             fail("Expected SmooksConfigurationException");
@@ -93,30 +93,30 @@ public class BeanPopulatorTest extends TestCase {
     
     public void test_visit() throws SAXException, IOException {
         SmooksResourceConfiguration config = null;
-        ProcessingPhasePopulatorUnit pppu;
+        ProcessingPhaseBeanPopulator pppu;
         MockContainerRequest request = new MockContainerRequest();
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), false, true);
 
         // create the configuration for populating the "name" property
-        config = new SmooksResourceConfiguration("x", ProcessingPhasePopulatorUnit.class.getName());
+        config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         config.setParameter("beanId", "userBean");
         config.setParameter("beanClass", MyGoodBean.class.getName());
         config.setParameter("attributeName", "name");
-        pppu = new ProcessingPhasePopulatorUnit(config);
+        pppu = new ProcessingPhaseBeanPopulator(config);
         pppu.visit(doc.getDocumentElement(), request);
 
         // create the configuration for populating the "phoneNumber" property
-        config = new SmooksResourceConfiguration("x", ProcessingPhasePopulatorUnit.class.getName());
+        config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         config.setParameter("beanId", "userBean");
         config.setParameter("attributeName", "phoneNumber");
-        pppu = new ProcessingPhasePopulatorUnit(config);
+        pppu = new ProcessingPhaseBeanPopulator(config);
         pppu.visit(doc.getDocumentElement(), request);
         
         // create the configuration for populating the "phoneNumber" property
-        config = new SmooksResourceConfiguration("x", ProcessingPhasePopulatorUnit.class.getName());
+        config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         config.setParameter("beanId", "userBean");
         config.setParameter("setterName", "setAddress");
-        pppu = new ProcessingPhasePopulatorUnit(config);
+        pppu = new ProcessingPhaseBeanPopulator(config);
         pppu.visit(doc.getDocumentElement(), request);
         
         // Check did we get the phoneNumber populated on the bean

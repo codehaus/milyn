@@ -22,10 +22,10 @@ import org.milyn.delivery.assemble.AssemblyUnit;
 /**
  * Javabean populator for the {@link org.milyn.delivery.SmooksXML assembly phase}.
  * <p/>
- * See the {@link org.milyn.javabean.BeanPopulator} class for configuration details.
+ * See the {@link org.milyn.javabean.AbstractBeanPopulator} class for configuration details.
  * @author tfennelly
  */
-public class AssemblyPhaseBeanPopulator extends BeanPopulator implements AssemblyUnit {
+public class AssemblyPhaseBeanPopulator extends AbstractBeanPopulator implements AssemblyUnit {
 
     /**
      * Public constructor.
