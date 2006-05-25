@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-smooks-beanshell</artifactId>
+	<name>Milyn Smooks BeanShell Cartridge</name>
+	
+	<!-- Version from root project.properties file - need to check out from the milyn cvs root. -->
+	<currentVersion>${milyn.version.smooks-beanshell}</currentVersion>
+	
+	<description>
+		<![CDATA[
+	  Milyn Smooks BeanShell Cartridge.
+      <p/>
+      This Cartridge contains processing units for specifying DOM manipulation code inside the
+      Smooks configuration files.  This was just an experiment.
+      ]]>
+	</description>
+	<shortDescription>Milyn Smooks BeanShell Cartridge</shortDescription>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>lib</groupId>
+			<artifactId>bsh-core</artifactId>
+		</dependency>
+		
+	</dependencies>
+
+</project>
