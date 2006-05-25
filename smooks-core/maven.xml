@@ -1,0 +1,8 @@
+<project default="milyn:build" xmlns:j="jelly:core" >	
+
+	<goal name="milyn:build">
+		<attainGoal name="jar:install"/>
+		<attainGoal name="eclipse" />
+	</goal>
+
+</project>
