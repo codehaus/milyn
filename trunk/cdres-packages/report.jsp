@@ -1,1 +1,0 @@
-<a href="ie-bugs/">IE Bugs</a>
