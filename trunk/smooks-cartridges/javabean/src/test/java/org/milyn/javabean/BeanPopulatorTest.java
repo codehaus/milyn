@@ -55,11 +55,9 @@ public class BeanPopulatorTest extends TestCase {
         config.removeParameter("beanClass");
         config.setParameter("beanClass", MyGoodBean.class.getName());
 
-        ProcessingPhaseBeanPopulator pppu;
-
         config.setParameter("attributeName", "attributeX");
 
-        pppu = new ProcessingPhaseBeanPopulator(config);
+        new ProcessingPhaseBeanPopulator(config);
     }
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
