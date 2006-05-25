@@ -66,7 +66,7 @@ import org.w3c.dom.Element;
  * &lt;/smooks-resource&gt;
  * @author tfennelly
  */
-abstract class BeanPopulator extends AbstractContentDeliveryUnit implements ElementVisitor {
+abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit implements ElementVisitor {
 
     private String beanId;
     private Class beanClass;
@@ -80,7 +80,7 @@ abstract class BeanPopulator extends AbstractContentDeliveryUnit implements Elem
      * Public constructor.
      * @param config Smooks resource configuration.
      */
-    public BeanPopulator(SmooksResourceConfiguration config) {
+    public AbstractBeanPopulator(SmooksResourceConfiguration config) {
         super(config);
         
         // Bean ID...

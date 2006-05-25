@@ -22,16 +22,16 @@ import org.milyn.delivery.process.ProcessingUnit;
 /**
  * Javabean populator for the {@link org.milyn.delivery.SmooksXML processing phase}.
  * <p/>
- * See the {@link org.milyn.javabean.BeanPopulator} class for configuration details.
+ * See the {@link org.milyn.javabean.AbstractBeanPopulator} class for configuration details.
  * @author tfennelly
  */
-public class ProcessingPhasePopulatorUnit extends BeanPopulator implements ProcessingUnit {
+public class ProcessingPhaseBeanPopulator extends AbstractBeanPopulator implements ProcessingUnit {
 
     /**
      * Public constructor.
      * @param config Configuration.
      */
-    public ProcessingPhasePopulatorUnit(SmooksResourceConfiguration config) {
+    public ProcessingPhaseBeanPopulator(SmooksResourceConfiguration config) {
         super(config);
     }
 }
