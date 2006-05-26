@@ -81,7 +81,7 @@ import java.util.Vector;
  * i.e. and absolute URL.  The ability to define an external URL means that two or more web
  * applications can share the same configuration.  It also means that the device recognition
  * data can be stored in a database (or some other format) and accessed as an XML stream via a HTTP request.
- * See "<a href="http://www.milyn.org/tinak/device-recognition.shtml">Device Recognition</a>" for more.
+ * See "<a href="http://milyn.codehaus.org/tinak/device-recognition.shtml">Device Recognition</a>" for more.
  * <p/>
  * The default deployment location of the profiling XML module can also be overridden in exactly the same fashion.
  * The name of the parameter in this case is "<b>DeviceProfileUrl</b>". 
@@ -102,7 +102,7 @@ import java.util.Vector;
  * 	<li>get the browser (device) common name, and</li>
  * 	<li>check the browser for membership of a given profile.</li>
  * </ul>
- * See the <a href="http://www.milyn.org/tinak/" target="new">online user docs</a> for details on how to configure
+ * See the <a href="http://milyn.codehaus.org/tinak/" target="new">online user docs</a> for details on how to configure
  * device recognition and profiling in a Servlet container.
  * @author Tom Fennelly
  */

@@ -70,7 +70,7 @@ import org.milyn.resource.ContainerResourceLocator;
  * To deploy Smooks:
  * <ol>
  * 	<li>Download the <b>milyn-smooks-sf-<i>X</i>.zip</b> distribution from 
- * 		<a href="http://www.milyn.org/downloads">Milyn Downloads</a>.</li>
+ * 		<a href="http://milyn.codehaus.org/downloads">Milyn Downloads</a>.</li>
  * 	<li>This distrubution can be unzipped into your web application.  Note it also contains a web.xml, so be 
  * 		sure not to loose your existing configurations.
  *  </li>

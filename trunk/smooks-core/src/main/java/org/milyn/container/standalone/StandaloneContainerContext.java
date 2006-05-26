@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ContainerContext;
 import org.milyn.device.profile.DefaultProfileConfigDigester;
@@ -37,6 +39,7 @@ import org.xml.sax.SAXException;
  */
 public class StandaloneContainerContext implements ContainerContext {
 
+    private static Log logger = LogFactory.getLog(StandaloneContainerContext.class);
 	private static final String DEVICE_PROFILE_XML = "/device-profile.xml";
 	private Hashtable attributes = new Hashtable();
 	private Hashtable sessions = new Hashtable();
@@ -81,7 +84,11 @@ public class StandaloneContainerContext implements ContainerContext {
 		InputStream configStream;
 		try {
 			configStream = resLocator.getResource("device-profiles", DEVICE_PROFILE_XML);
-			profileStore = profileDigester.parse(configStream);
+            if(configStream != null) {            
+                profileStore = profileDigester.parse(configStream);
+            } else {
+                logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container.");
+            }
 		} catch (IOException e) {
 			IllegalStateException state = new IllegalStateException("Unable to read [" + DEVICE_PROFILE_XML + "] from container context.");
 			state.initCause(e);

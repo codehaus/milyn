@@ -33,7 +33,7 @@ import org.milyn.container.ContainerRequest;
  * <pre>
  * &lt;?xml version="1.0"?&gt;
  * &lt;!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" 
- * 			"http://www.milyn.org/dtd/smooksres-list-1.0.dtd"&gt;
+ * 			"http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd"&gt;
  * 
  * &lt;!--
  * 	This CDRL defines common delivery units shared across all browsers.

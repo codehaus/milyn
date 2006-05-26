@@ -43,7 +43,7 @@ import org.w3c.dom.Node;
  * follows (with an explanation below):
  * <pre>
  * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/smooksres-list-1.0.dtd>
+ * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd>
  * &lt;smooks-resource-list&gt;
  * 	&lt;!--	
  * 		Note: 
@@ -53,8 +53,8 @@ import org.w3c.dom.Node;
  * 	&lt;smooks-resource useragent="wml11" selector="table" path="{@link org.milyn.delivery.process.ProcessingUnit com.acme.transform.TableWML11}" /&gt;
  * &lt;/smooks-resource-list&gt;</pre>
  * <p/>
- * The .cdrl DTD can be seen at <a href="http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
- * http://www.milyn.org/dtd/smooksres-list-1.0.dtd</a>
+ * The .cdrl DTD can be seen at <a href="http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd">
+ * http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd</a>
  * 
  * <h3 id="attribdefs">Attribute Definitions</h3>
  * <ul>
@@ -123,7 +123,7 @@ import org.w3c.dom.Node;
  * Just prefix the attribute name with "default-".  Example:
  * <pre>
  * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/smooksres-list-1.0.dtd>
+ * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd>
  * &lt;smooks-resource-list default-useragent="value" default-selector="value" default-namespace="http://www.w3.org/2002/xforms"&gt;
  * 	&lt;smooks-resource path="value"/&gt;
  * &lt;/smooks-resource-list&gt;</pre>
@@ -153,13 +153,13 @@ import org.w3c.dom.Node;
  * See {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}.
  * 
  * <h3>&lt;param&gt; Elements</h3>
- * As can be seen from the <a href="http://www.milyn.org/dtd/smooksres-list-1.0.dtd">DTD</a>, the &lt;smooks-resource&gt; element can 
+ * As can be seen from the <a href="http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd">DTD</a>, the &lt;smooks-resource&gt; element can 
  * also define zero or more &lt;param&gt; elements. These elements allow runtime parameters to be passed to content delivery units.
  * This element defines a single mandatory attribute called "<b>name</b>".  The parameter value is inclosed in the
  * param element e.g.
  * <pre>
  * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/smooksres-list-1.0.dtd>
+ * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd>
  * &lt;smooks-resource-list default-useragent="value" default-selector="value" &gt;
  * 	&lt;smooks-resource path="value"&gt;
  * 		&lt;param name="paramname"&gt;paramval&lt;/param&gt;

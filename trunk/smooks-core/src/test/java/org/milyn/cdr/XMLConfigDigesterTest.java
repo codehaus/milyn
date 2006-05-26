@@ -38,13 +38,13 @@ public class XMLConfigDigesterTest extends TestCase {
         assertEquals("a", resList.get(0).getSelector());
         assertEquals("xxx", resList.get(0).getUseragentExpressions()[0].getExpression());
         assertEquals("x.txt", resList.get(0).getPath());
-        assertEquals("http://www.milyn.org/smooks", resList.get(0).getNamespaceURI());
+        assertEquals("http://milyn.codehaus.org/smooks", resList.get(0).getNamespaceURI());
         
         // Test the default inherited attribute values from the 2nd config entry.
         assertEquals("b", resList.get(1).getSelector());
         assertEquals("yyy", resList.get(1).getUseragentExpressions()[0].getExpression());
         assertEquals("y.txt", resList.get(1).getPath());
-        assertEquals("http://www.milyn.org/smooks-default", resList.get(1).getNamespaceURI());
+        assertEquals("http://milyn.codehaus.org/smooks-default", resList.get(1).getNamespaceURI());
         
         // Test the parameters on the 2nd config entry.
         assertEquals("param1Val", resList.get(1).getStringParameter("param1"));
