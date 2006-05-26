@@ -64,9 +64,11 @@ import org.w3c.dom.Element;
  *  &lt;param name="<b>attributeName</b>"&gt;<i>the name of the element attribute</i>&lt;/param&gt;
  * 
  * &lt;/smooks-resource&gt;
+ * </pre>
+ * 
  * @author tfennelly
  */
-abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit implements ElementVisitor {
+public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit implements ElementVisitor {
 
     private String beanId;
     private Class beanClass;
