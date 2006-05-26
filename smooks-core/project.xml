@@ -45,15 +45,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>milyn</groupId>
+			<groupId>nekohtml</groupId>
 			<artifactId>nekohtml</artifactId>
-			<version>X</version>
+			<version>0.9.5</version>
 		</dependency>
 
 		<dependency>
-			<groupId>milyn</groupId>
+			<groupId>dtdparser</groupId>
 			<artifactId>dtdparser</artifactId>
-			<version>121</version>
+			<version>1.21</version>
 		</dependency>
 		
 	</dependencies>
