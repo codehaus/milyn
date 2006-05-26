@@ -33,7 +33,7 @@ public abstract class CssTestUtil {
 
 	public static CSSStylesheet parseCSS(String classpath) {
 		org.w3c.css.sac.InputSource inputSrc = new InputSource(new InputStreamReader(CssTestUtil.class.getResourceAsStream(classpath)));
-		URI baseURI = URI.create("http://www.milyn.org");
+		URI baseURI = URI.create("http://milyn.codehaus.org");
 		CSSParser parser = new CSSParser(new MockContainerResourceLocator());
 		CSSStylesheet styleSheet = null;
 

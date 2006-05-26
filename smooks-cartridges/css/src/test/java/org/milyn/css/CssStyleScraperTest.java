@@ -44,7 +44,7 @@ public class CssStyleScraperTest extends TestCase {
     protected void setUp() throws Exception {
         smooks = new SmooksStandalone("ISO-8859-1");
         smooks.registerUseragent("device1", new String[] {"blah"});
-        request = new StandaloneContainerRequest(URI.create("http://www.milyn.org/myapp/aaa/mypage.html"), null, smooks.getSession("device1"));
+        request = new StandaloneContainerRequest(URI.create("http://milyn.codehaus.org/myapp/aaa/mypage.html"), null, smooks.getSession("device1"));
         context = smooks.getSession("device1").getContext();
     }
 		
@@ -74,21 +74,21 @@ public class CssStyleScraperTest extends TestCase {
 	}
 	
 	public void test_link_href_resolution() {
-		String requestUri = "http://www.milyn.org/myapp/aaa/mypage.html";
+		String requestUri = "http://milyn.codehaus.org/myapp/aaa/mypage.html";
 		
-		assertEquals("http://www.milyn.org/xxx/yyy/mycss.css", 
+		assertEquals("http://milyn.codehaus.org/xxx/yyy/mycss.css", 
 				getResolvedUri("/xxx/yyy/mycss.css", requestUri));
 
-		assertEquals("http://www.milyn.org/myapp/aaa/mycss.css", 
+		assertEquals("http://milyn.codehaus.org/myapp/aaa/mycss.css", 
 				getResolvedUri("mycss.css", requestUri));
 
-		assertEquals("http://www.milyn.org/myapp/mycss.css", 
+		assertEquals("http://milyn.codehaus.org/myapp/mycss.css", 
 				getResolvedUri("../mycss.css", requestUri));
 
-		assertEquals("http://www.milyn.org/mycss.css", 
+		assertEquals("http://milyn.codehaus.org/mycss.css", 
 				getResolvedUri("../../mycss.css", requestUri));
 
-		assertEquals("http://www.milyn.org/../mycss.css", 
+		assertEquals("http://milyn.codehaus.org/../mycss.css", 
 				getResolvedUri("../../../mycss.css", requestUri));
 	}
 	
