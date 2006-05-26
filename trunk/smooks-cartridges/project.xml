@@ -30,15 +30,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>milyn</groupId>
+			<groupId>nekohtml</groupId>
 			<artifactId>nekohtml</artifactId>
-			<version>X</version>
+			<version>${nekohtml.version}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>milyn</groupId>
+			<groupId>dtdparser</groupId>
 			<artifactId>dtdparser</artifactId>
-			<version>121</version>
+			<version>${dtdparser.version}</version>
 		</dependency>
 		
 	</dependencies>
