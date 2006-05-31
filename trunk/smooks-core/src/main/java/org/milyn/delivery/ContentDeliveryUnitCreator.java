@@ -40,7 +40,8 @@ public interface ContentDeliveryUnitCreator {
 	
 	/**
 	 * Create the {@link ContentDeliveryUnit} instance. 
-	 * @param resourceConfig The SmooksResourceConfiguration for the {@link ContentDeliveryUnit}.
+	 * @param resourceConfig The SmooksResourceConfiguration for the {@link ContentDeliveryUnit}
+     * to be created.
 	 * @return {@link ContentDeliveryUnit} instance.
 	 * @throws InstantiationException Unable to create ContentDeliveryUnit instance.
 	 */

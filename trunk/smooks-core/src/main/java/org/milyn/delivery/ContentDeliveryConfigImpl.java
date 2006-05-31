@@ -28,6 +28,7 @@ import java.util.Vector;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksResourceConfigurationSortComparator;
+import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ContainerContext;
 import org.milyn.delivery.assemble.AssemblyUnit;
 import org.milyn.delivery.process.ProcessingSet;
@@ -36,7 +37,6 @@ import org.milyn.delivery.serialize.SerializationUnit;
 import org.milyn.device.UAContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
-import org.milyn.ioc.BeanFactory;
 import org.milyn.logging.SmooksLogger;
 
 
@@ -249,7 +249,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * their respective tables.
 	 */
 	private void extractContentDeliveryUnits() {
-		SmooksResourceConfigurationStrategy cduStrategy = new ContentDeliveryExtractionStrategy();
+		SmooksResourceConfigurationStrategy cduStrategy = new ContentDeliveryExtractionStrategy(containerContext);
 		SmooksResourceConfigurationTableIterator tableIterator = new SmooksResourceConfigurationTableIterator(cduStrategy);
 		tableIterator.iterate();
 	}
@@ -393,18 +393,21 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 */
 	private final class ContentDeliveryExtractionStrategy implements SmooksResourceConfigurationStrategy {
 		
-		public ContentDeliveryExtractionStrategy() {
+        private SmooksResourceConfigurationStore store;
+
+        public ContentDeliveryExtractionStrategy(ContainerContext containerContext) {
+            store = containerContext.getStore();
         }
 
         public void applyStrategy(String elementName, SmooksResourceConfiguration resourceConfig) {
 			ContentDeliveryUnitCreator creator;
 
-            if(resourceConfig.isJavaResource()) {
+            if(resourceConfig.isContentDeliveryUnit()) {
     			try {                
     				// Try it as a Java class before trying anything else.  This is to
     				// accomodate specification of the class in the standard 
     				// Java form e.g. java.lang.String Vs java/lang/String.class
-    				creator = BeanFactory.getContentDeliveryUnitCreator("class");
+    				creator = store.getContentDeliveryUnitCreator("class");
     				if(addCDU(elementName, resourceConfig, creator)) {
     					// Job done - it's a CDU and we've added it!
     					return;
@@ -421,7 +424,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				if(type == null || type.trim().equals("")) {
 					return;
 				}
-				creator = BeanFactory.getContentDeliveryUnitCreator(type);
+				creator = store.getContentDeliveryUnitCreator(type);
 			} catch (UnsupportedContentDeliveryUnitTypeException e) {
 				// Just ignore it - something else will use it
 				return;

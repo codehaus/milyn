@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.dom.DomUtils;
 import org.milyn.io.StreamUtils;
 import org.w3c.dom.Element;
@@ -533,10 +534,11 @@ public class SmooksResourceConfiguration {
     }
     
     /**
-     * Is this resource a Java class resource.
-     * @return True if this resource is a Java class resource, otherwise false.
+     * Is this resource a {@link org.milyn.delivery.ContentDeliveryUnit} resource.
+     * @return True if this resource refers to an instance of
+     * {@link org.milyn.delivery.ContentDeliveryUnit}, otherwise false.
      */
-    public boolean isJavaResource() {
+    public boolean isContentDeliveryUnit() {
         String className;
         
         if(path == null) {
@@ -545,8 +547,9 @@ public class SmooksResourceConfiguration {
         
         className = ClasspathUtils.toClassName(path);
         try {
-            Class.forName(className);
-            return true;
+            Class runtimeClass = Class.forName(className);
+            
+            return ContentDeliveryUnit.class.isAssignableFrom(runtimeClass);
         } catch (ClassNotFoundException e) {
             return false;
         }

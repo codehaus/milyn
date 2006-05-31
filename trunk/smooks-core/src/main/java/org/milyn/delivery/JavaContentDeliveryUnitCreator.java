@@ -32,18 +32,27 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  */
 public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
 
-	/**
+    /**
+     * Public constructor.
+     * @param config Configuration details for this ContentDeliveryUnitCreator.
+     */
+    public JavaContentDeliveryUnitCreator(SmooksResourceConfiguration config) {        
+    }
+
+    /**
 	 * Create a Java based ContentDeliveryUnit instance ie from a Java Class byte stream.
-	 * <p/>
-	 * @throws ClassNotFoundException 
+     * @param resourceConfig The SmooksResourceConfiguration for the Java {@link ContentDeliveryUnit}
+     * to be created.
+     * @return Java {@link ContentDeliveryUnit} instance.
 	 * @see XslContentDeliveryUnitCreator 
 	 */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
 		ContentDeliveryUnit deliveryUnit = null;
         Exception exception = null;
+        String className = null;
 		
 		try {
-            String className = ClasspathUtils.toClassName(resourceConfig.getPath());
+            className = ClasspathUtils.toClassName(resourceConfig.getPath());
 			Class classRuntime = Class.forName(className);
 			Constructor constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});
 			

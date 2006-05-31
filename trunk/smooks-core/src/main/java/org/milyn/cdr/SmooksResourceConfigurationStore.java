@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Vector;
 
 import org.milyn.container.ContainerContext;
+import org.milyn.delivery.ContentDeliveryUnitCreator;
+import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
 import org.milyn.device.UAContext;
 import org.milyn.logging.SmooksLogger;
 import org.milyn.resource.ContainerResourceLocator;
@@ -66,7 +68,21 @@ public class SmooksResourceConfigurationStore {
 		this.containerContext = containerContext;
         // add the default list to the list.
         configLists.add(defaultList);
+        registerInstalledCDUCreators();
 	}
+
+    /**
+     * Register the pre-installed CDU Creator classes.
+     */
+    private void registerInstalledCDUCreators() {
+        try {
+            registerResources("installed-cdu-creators", getClass().getResourceAsStream("installed-cdu-creators.cdrl"));
+        } catch (Exception e) {
+            IllegalStateException state = new IllegalStateException("Failed to load installed-cdu-creators.cdrl.  Expected to be in the same package as " + getClass().getName());
+            state.initCause(e);
+            throw state;
+        }
+    }
 
 	/**
 	 * Load all .cdrl files listed in the BufferedReader stream.
@@ -193,4 +209,34 @@ public class SmooksResourceConfigurationStore {
 		
 		return object;
 	}
+
+    /**
+     * Get the {@link ContentDeliveryUnitCreator} for a resource based on the
+     * supplied resource file extension.
+     * @param resourceExtension Resource file extension.
+     * @return {@link ContentDeliveryUnitCreator} for the resource.
+     * @throws UnsupportedContentDeliveryUnitTypeException No {@link ContentDeliveryUnitCreator}
+     * registered for the specified resource extension.
+     */
+    public ContentDeliveryUnitCreator getContentDeliveryUnitCreator(String resourceExtension) throws UnsupportedContentDeliveryUnitTypeException {
+        if(resourceExtension == null) {
+            throw new IllegalArgumentException("null 'resourceExtension' arg in method call.");
+        }
+        
+        for(int i = 0; i < configLists.size(); i++) {
+            SmooksResourceConfigurationList list = (SmooksResourceConfigurationList) configLists.get(i);
+            
+            for(int ii = 0; ii < list.size(); ii++) {
+                SmooksResourceConfiguration config = list.get(ii);
+                String selector = config.getSelector();
+                
+                if("cdu-creator".equals(selector) && 
+                        resourceExtension.equals(config.getStringParameter("extention"))) {
+                    return (ContentDeliveryUnitCreator) getObject(config);
+                }
+            }
+        }
+        
+        throw new UnsupportedContentDeliveryUnitTypeException(resourceExtension);
+    }
 }
