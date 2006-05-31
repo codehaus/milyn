@@ -13,12 +13,6 @@
 
 		<dependency>
 			<groupId>milyn</groupId>
-			<artifactId>milyn-magger</artifactId>
-			<version>${milyn.version.magger}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>milyn</groupId>
 			<artifactId>milyn-tinak</artifactId>
 			<version>${milyn.version.tinak}</version>
 		</dependency>

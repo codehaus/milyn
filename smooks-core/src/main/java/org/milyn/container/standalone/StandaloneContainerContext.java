@@ -26,7 +26,7 @@ import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ContainerContext;
 import org.milyn.device.profile.DefaultProfileConfigDigester;
 import org.milyn.device.profile.ProfileStore;
-import org.milyn.ioc.BeanFactory;
+import org.milyn.resource.ClasspathResourceLocator;
 import org.milyn.resource.ContainerResourceLocator;
 import org.xml.sax.SAXException;
 
@@ -51,7 +51,7 @@ public class StandaloneContainerContext implements ContainerContext {
      * Public constructor.
      */
     public StandaloneContainerContext() {
-        resourceLocator = (ContainerResourceLocator)BeanFactory.getBean("standaloneResourceLocator");
+        resourceLocator = new ClasspathResourceLocator();
         resStore = new SmooksResourceConfigurationStore(this);
         initProfileStore();
     }

@@ -30,10 +30,9 @@ public class HeaderActionTest extends TestCase {
 
 	public void testConstructor() {
 		SmooksResourceConfiguration unitDef;
-		HeaderAction headerAction;
 		
 		try {
-			headerAction = new HeaderAction(null);
+			new HeaderAction(null);
 			fail("expected fail - null SmooksResourceConfiguration");
 		} catch(IllegalArgumentException a) {
 			//OK
@@ -41,21 +40,21 @@ public class HeaderActionTest extends TestCase {
 
 		unitDef = new SmooksResourceConfiguration("selector", "useragent", "xxx");
 		try {
-			headerAction = new HeaderAction(unitDef);
+			new HeaderAction(unitDef);
 			fail("expected fail - no params set");
 		} catch(IllegalStateException s) {
 			//OK
 		}
 		unitDef.setParameter("action", "add");
 		try {
-			headerAction = new HeaderAction(unitDef);
+			new HeaderAction(unitDef);
 			fail("expected fail - only 'action' set");
 		} catch(IllegalStateException s) {
 			//OK
 		}
 		unitDef.setParameter("header-name", "namex");
 		try {
-			headerAction = new HeaderAction(unitDef);
+			new HeaderAction(unitDef);
 			fail("expected fail - only 'action' anad 'header-name' set");
 		} catch(IllegalStateException s) {
 			//OK
@@ -63,7 +62,7 @@ public class HeaderActionTest extends TestCase {
 		unitDef.setParameter("header-value", "valuex");
 
 		// Should work now
-		headerAction = new HeaderAction(unitDef);
+		new HeaderAction(unitDef);
 	}
 	
 	/*

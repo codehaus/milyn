@@ -47,9 +47,18 @@ import org.w3c.dom.NodeList;
  */
 public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
 
+    /**
+     * Public constructor.
+     * @param config Configuration details for this ContentDeliveryUnitCreator.
+     */
+    public XslContentDeliveryUnitCreator(SmooksResourceConfiguration config) {        
+    }
+    
 	/**
 	 * Create an XSL based ContentDeliveryUnit instance ie from an XSL byte stream.
-	 * <p/>
+     * @param resourceConfig The SmooksResourceConfiguration for the XSL {@link ContentDeliveryUnit}
+     * to be created.
+     * @return XSL {@link ContentDeliveryUnit} instance.
 	 * @see JavaContentDeliveryUnitCreator 
 	 */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
