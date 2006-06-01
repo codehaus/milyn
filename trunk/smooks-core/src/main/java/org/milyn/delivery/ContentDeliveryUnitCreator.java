@@ -26,8 +26,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * This creation mechanism follows the Gang of Four "Factory Method" design pattern:
  * <ul>
  * 		<li><b>Creator</b>: {@link ContentDeliveryUnitCreator}</li>
- * 		<li><b>ConcreteCreator</b>: e.g. {@link org.milyn.delivery.JavaContentDeliveryUnitCreator} 
- * 				or {@link org.milyn.delivery.XslContentDeliveryUnitCreator}</li>
+ * 		<li><b>ConcreteCreator</b>: e.g. {@link org.milyn.delivery.JavaContentDeliveryUnitCreator}</li>
  * 		<li><b>Product</b>: {@link ContentDeliveryUnit}</li>
  * 		<li><b>ConcreteProduct</b>: Implementations of {@link ContentDeliveryUnit}</li>
  * </ul> 

@@ -27,7 +27,6 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * <p/>
  * Java-based ContentDeliveryUnit implementations should contain a public 
  * constructor that takes a SmooksResourceConfiguration instance as a parameter.
- * @see XslContentDeliveryUnitCreator 
  * @author tfennelly
  */
 public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
@@ -44,7 +43,6 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
      * @param resourceConfig The SmooksResourceConfiguration for the Java {@link ContentDeliveryUnit}
      * to be created.
      * @return Java {@link ContentDeliveryUnit} instance.
-	 * @see XslContentDeliveryUnitCreator 
 	 */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
 		ContentDeliveryUnit deliveryUnit = null;
