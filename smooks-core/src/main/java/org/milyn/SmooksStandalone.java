@@ -410,5 +410,14 @@ public class SmooksStandalone {
      */
     public void registerResources(String name, InputStream resourceConfigStream) throws SAXException, IOException {
         context.getStore().registerResources(name, resourceConfigStream);
+    }
+
+    /**
+     * Get the Smooks {@link org.milyn.container.ContainerContext} associated with
+     * this SmooksStandalone instance.
+     * @return The Smooks {@link org.milyn.container.ContainerContext}.
+     */
+    public StandaloneContainerContext getContext() {
+        return context;
     }    
 }

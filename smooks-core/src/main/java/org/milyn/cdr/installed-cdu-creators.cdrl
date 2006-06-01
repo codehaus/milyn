@@ -11,9 +11,5 @@
 	<smooks-resource path="org.milyn.delivery.JavaContentDeliveryUnitCreator">
 		<param name="extention">class</param>
 	</smooks-resource>	
-		
-	<smooks-resource path="org.milyn.delivery.XslContentDeliveryUnitCreator">
-		<param name="extention">xsl</param>
-	</smooks-resource>	
 	
 </smooks-resource-list>
