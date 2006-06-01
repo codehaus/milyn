@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<title>Test</title>
+	</head>
+	<body>
+		<table>
+			<tr>
+				&#162;
+				<!-- Comment Data &amp; -->
+				<![CDATA[CDATA Data &gt;]]>
+				<x id="">Content from template!!</x>
+				&#38;
+				<x id="para1 &">Content from template!!</x>
+				<x id="para2">Content from template!!</x>
+			</tr>
+		</table>
+	</body>
+</html>

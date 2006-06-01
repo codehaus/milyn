@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-smooks-templating</artifactId>
+	<name>Milyn Smooks Templating Cartridge</name>
+	
+	<!-- Version from parent project.properties file. -->
+	<currentVersion>${milyn.version.smooks.templating}</currentVersion>
+	
+	<description>
+		<![CDATA[
+	  Milyn Smooks Templating Cartridge.
+      <p/>
+      This Cartridge contains resources for adding DOM Node level Templating support to Smooks.
+      ]]>
+	</description>
+	<shortDescription>Milyn Smooks Templating Cartridge</shortDescription>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>milyn-smooks-javabean</artifactId>
+			<version>${milyn.version.smooks.javabean}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>stringtemplate</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>2.7.2</version>
+		</dependency>
+
+	</dependencies>
+	
+</project>
