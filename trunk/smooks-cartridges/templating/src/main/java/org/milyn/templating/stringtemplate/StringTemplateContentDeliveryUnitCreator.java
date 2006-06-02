@@ -81,17 +81,16 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             String path = config.getPath();
             String encoding = config.getStringParameter("encoding", "UTF-8");
             
-            if(path.charAt(0) != '/') {
-                path = "/" + path;
+            if(path.charAt(0) == '/') {
+                path = path.substring(1);
+            }
+            if(path.endsWith(".st")) {
+                path = path.substring(0, path.length() - 3);
             }
             
-            InputStream templateResStream = getClass().getResourceAsStream(path);
-            if(templateResStream == null) {
-                throw new SmooksConfigurationException("Unable to load StringTemplate resource stream: " + path);
-            }
-            
-            SmooksStringTemplateGroup templateGroup = new SmooksStringTemplateGroup();
-            template = templateGroup.loadTemplate(path, templateResStream, encoding);        
+            StringTemplateGroup templateGroup = new StringTemplateGroup(path);
+            templateGroup.setFileCharEncoding(encoding);
+            template = templateGroup.getInstanceOf(path);        
         }
 
         public void visit(Element element, ContainerRequest request) {
@@ -113,21 +112,4 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             return visitBefore;
         }
 	}
-    
-    private static class SmooksStringTemplateGroup extends StringTemplateGroup {
-        private SmooksStringTemplateGroup() {
-            super("smooks-st-group");
-        }
-        
-        private StringTemplate loadTemplate(String name, InputStream stream, String encoding) {
-            try {
-                InputStreamReader reader = new InputStreamReader(stream, encoding);
-                return loadTemplate(name, new BufferedReader(reader));
-            } catch (UnsupportedEncodingException e) {
-                throw new SmooksConfigurationException("Invalid StringTemplate template encoding configuration.", e);
-            } catch (IOException e) {
-                throw new SmooksConfigurationException("Unable to read StringTemplate template: " + name, e);
-            }
-        }
-    }
 }

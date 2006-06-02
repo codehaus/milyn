@@ -298,7 +298,37 @@ public class SmooksResourceConfiguration {
 	public String getSelector() {
 		return selector;
 	}
+    
+    /**
+     * Get the contextual selector definition for this SmooksResourceConfiguration.
+     * <p/>
+     * See details about the "selector" attribute in the 
+     * <a href="#attribdefs">Attribute Definitions</a> section.
+     * @return The contxtual selector definition.
+     */
+    public String[] getContextualSelector() {
+        return contextualSelector;
+    }
 
+    /**
+     * Get the name of the target element where the {@link #getSelector() selector}
+     * is targeting the resource at an XML element.
+     * <p/>
+     * Accomodates the fact that element based selectors can be contextual. This method
+     * is not relevant where the selector is not targeting an XML element.
+     * <p/>
+     * See details about the "selector" attribute in the 
+     * <a href="#attribdefs">Attribute Definitions</a> section.
+     * @return The target XML element name.
+     */
+    public String getTargetElement() {
+        if(contextualSelector != null) {
+            return contextualSelector[contextualSelector.length - 1];
+        } else {
+            return null;
+        }
+    }
+    
 	/**
 	 * The the XML namespace URI of the element to which this configuration
 	 * applies.

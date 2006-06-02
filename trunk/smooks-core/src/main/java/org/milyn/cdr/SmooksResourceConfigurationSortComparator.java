@@ -51,6 +51,14 @@ import org.milyn.device.UAContext;
 	} else {
 		// Explicit selector listed
 		specificity += 100;
+            
+        // If the selector is contextual it's therefore more specific so
+        // account for that.  Subtract 1 because that "1" is already accounted
+        // for by the addition of 100 - it's the extra we're accounting for here...
+        if(resourceConfig.isSelectorContextual()) {
+            int contextSpecificity = resourceConfig.getContextualSelector().length;
+            specificity += (10 * (contextSpecificity - 1));
+        }
 	}
 		
 	// Check the 'namespace' attribute.
@@ -130,6 +138,14 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 		} else {
 			// Explicit selector listed
 			specificity += 100;
+            
+            // If the selector is contextual it's therefore more specific so
+            // account for that.  Subtract 1 because that "1" is already accounted
+            // for by the addition of 100 - it's the extra we're accounting for here...
+            if(resourceConfig.isSelectorContextual()) {
+                int contextSpecificity = resourceConfig.getContextualSelector().length;
+                specificity += (10 * (contextSpecificity - 1));
+            }
 		}
 		
 		// Check the 'namespace' attribute.

@@ -53,8 +53,9 @@ import org.w3c.dom.Element;
  *          is specified and this param is not specified, the setterName defaults to
  *          the Javabean setter name for the attribute e.g. an attributeName param
  *          value of 'phoneNumber' will default setterName to 'setPhoneNumber'. 
- *          If both 'attributeName' and 'setterName' are unspecified, an error
- *          will result. If 'attributeName' is not set and 'setterName' is
+ *          If both 'attributeName' and 'setterName' are unspecified, the bean
+ *          instance is simply created and bound to the request. 
+ *          If 'attributeName' is not set and 'setterName' is
  *          set, the elements child text will be set on the bean. --&gt;
  *  &lt;param name="<b>setterName</b>"&gt;<i>the name of the bean setter method</i>&lt;/param&gt;
  * 
@@ -118,7 +119,8 @@ public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit 
             if(isAttribute) {
                 setterName = "set" + Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
             } else {
-                throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param not specified.");
+                // setterName and attributeName are not set - visit method should only
+                // create the bean!!
             }
         }
     }
@@ -130,6 +132,12 @@ public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit 
      */
     public void visit(Element element, ContainerRequest request) {
         Object bean = getBean(request);
+        
+        if(setterName == null && attributeName == null) {
+            // setterName and attributeName are not set - visit method should only
+            // create the bean!!
+            return;
+        }
 
         // If we need to create the bean setter method instance...
         if(beanSetterMethod ==  null) {
