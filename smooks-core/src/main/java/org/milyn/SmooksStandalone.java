@@ -339,8 +339,16 @@ public class SmooksStandalone {
 		return request;
 	}
 
+    /**
+     * Register the specified useragent.
+     * @param useragent The useragent name.
+     */
+    public void registerUseragent(String useragent) {
+        registerUseragent(useragent, new String[] {"anything"});
+    }
+
 	/**
-	 * Manually register the specified useragent.
+	 * Register the specified useragent.
 	 * @param useragent The useragent name.
 	 * @param profiles List of profiles with which the useragent is to be associated.
 	 */

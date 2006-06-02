@@ -40,8 +40,6 @@ public class BeanPopulatorTest extends TestCase {
 
         config.setParameter("beanId", "beanID");
 
-        testConstructorConfigValidation(config, "'setterName' param not specified");
-
         config.setParameter("setterName", "setX");
         config.setParameter("beanClass", " ");
 
