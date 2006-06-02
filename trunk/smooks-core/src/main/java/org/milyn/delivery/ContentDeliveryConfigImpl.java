@@ -185,17 +185,23 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		Iterator iterator = resourceConfigsList.iterator();
 		
 		while(iterator.hasNext()) {
-			SmooksResourceConfiguration unitDef = (SmooksResourceConfiguration)iterator.next();
+			SmooksResourceConfiguration config = (SmooksResourceConfiguration)iterator.next();
+            String target = config.getSelector();
+            
+            // If it's contextual, it's targeting an XML element...
+            if(config.isSelectorContextual()) {
+                target = config.getTargetElement();
+            }
 			
-			Vector selectorUnits = (Vector)resourceConfigTable.get(unitDef.getSelector());
+			Vector selectorUnits = (Vector)resourceConfigTable.get(target);
 			
 			if(selectorUnits == null) {
 				selectorUnits = new Vector();
-				resourceConfigTable.put(unitDef.getSelector(), selectorUnits);
+				resourceConfigTable.put(target, selectorUnits);
 			}
 			
 			// Add to the smooks-resource on the resourceConfigTable
-			selectorUnits.addElement(unitDef);
+			selectorUnits.addElement(config);
 		}
 	}
 	
