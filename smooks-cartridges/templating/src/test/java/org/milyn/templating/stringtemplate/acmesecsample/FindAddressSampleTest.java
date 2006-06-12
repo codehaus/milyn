@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.templating.stringtemplate.sample;
+package org.milyn.templating.stringtemplate.acmesecsample;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,32 +25,23 @@ import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
-public class ShippingIntegSampleTest extends TestCase {
+public class FindAddressSampleTest extends TestCase {
 
     public void testTransform() throws SAXException, IOException {
         SmooksStandalone smooks = new SmooksStandalone("UTF-8");
 
         // Configure Smooks
-        smooks.registerUseragent("shipping-request");
-        smooks.registerUseragent("shipping-response");
+        smooks.registerUseragent("acme-findAddresses-request", new String[] {"acme-request"});
         TemplatingUtils.registerCDUCreators(smooks.getContext());
-        smooks.registerResources("trans-request", getClass().getResourceAsStream("trans-request.cdrl"));
-        smooks.registerResources("trans-response", getClass().getResourceAsStream("trans-response.cdrl"));
+        smooks.registerResources("acme-creds", getClass().getResourceAsStream("acme-creds.cdrl"));
                 
-        InputStream requestStream = getClass().getResourceAsStream("request.xml");
-        String requestResult = smooks.filterAndSerialize("shipping-request", requestStream);
+        InputStream requestStream = getClass().getResourceAsStream("AcmeFindaddressRequest.xml");
+        String requestResult = smooks.filterAndSerialize("acme-findAddresses-request", requestStream);
         System.out.println(requestResult);
         
         // Node requestTrans = smooks.filter("shipping-request", requestStream);
         // smooks.serialize("shipping-request", requestTrans, outputWriter);
-
-        InputStream responseStream = getClass().getResourceAsStream("response.xml");
-        String responseResult = smooks.filterAndSerialize("shipping-response", responseStream);
-        System.out.println(responseResult);
-
-        // Node responseTrans = smooks.filter("shipping-response", responseStream);
-        // smooks.serialize("shipping-response", responseTrans, responseOutputWriter);
-        
+      
         // get assertions on this - need something for doing the compare that can handle the \r and \n chars
     }
 }
