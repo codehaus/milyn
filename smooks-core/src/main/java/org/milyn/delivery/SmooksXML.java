@@ -33,6 +33,7 @@ import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
 import org.milyn.delivery.process.ProcessingUnitPrototype;
 import org.milyn.delivery.serialize.Serializer;
+import org.milyn.dom.DomUtils;
 import org.milyn.dom.Parser;
 import org.milyn.logging.SmooksLogger;
 
@@ -217,9 +218,9 @@ public class SmooksXML {
 	}
 	
 	/**
-	 * Filter the supplied InputSource.
+	 * Filter the supplied input reader.
 	 * <p/>
-	 * Simply parses the InputSource into a W3C DOM and calls {@link #filter(Document)}.
+	 * Simply parses the input reader into a W3C DOM and calls {@link #filter(Document)}.
 	 * @param source The source of markup to be filtered.
 	 * @return Node representing filtered document.
 	 * @throws SmooksException
@@ -310,13 +311,10 @@ public class SmooksXML {
 		List nodeListCopy = copyList(element.getChildNodes());
 		int childCount = nodeListCopy.size();
 		Hashtable deviceAssemblyUnits = deliveryConfig.getAssemblyUnits();
-		String elementName = element.getLocalName();
+		String elementName = DomUtils.getName(element);
 		List elementAssemblyUnits;
 		
-		if(elementName == null) {
-			elementName = element.getTagName();
-		}
-		elementAssemblyUnits = (List)deviceAssemblyUnits.get(elementName);
+		elementAssemblyUnits = (List)deviceAssemblyUnits.get(elementName.toLowerCase());
 
 		// Visit elements with assembly units to be applied before iterating the
 		// elements child content.
@@ -385,10 +383,7 @@ public class SmooksXML {
 		List visitBeforeTUs = null;
 		List visitAfterTUs = null;
 		
-		elementName = element.getLocalName();
-		if(elementName == null) {
-			elementName = element.getTagName();
-		}
+		elementName = DomUtils.getName(element);
 		processingSet = deliveryConfig.getProcessingSet(elementName);
 		
 		if(processingSet != null) {

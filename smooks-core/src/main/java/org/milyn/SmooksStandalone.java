@@ -49,8 +49,7 @@ import sun.io.CharToByteConverter;
  * Smooks standalone execution class.
  * <p/>
  * Allows {@link org.milyn.delivery.SmooksXML} to be executed in a "non-container" type environemt e.g.
- * from the commandline.  See {@link org.milyn.report.SmooksReportGenerator} as an example of a class
- * using SmooksStandalone.
+ * directly from your code. See <a href="http://milyn.codehaus.org/Tutorials">Milyn Tutorials</a>.
  * <p/>
  * SmooksStandalone is manually configured by registering useragents 
  * ({@link #registerUseragent(String, String[])}) and resources 

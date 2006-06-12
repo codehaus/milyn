@@ -135,11 +135,12 @@ import org.w3c.dom.Node;
  * and <a href="#namespace">namespace</a> attributes (see above).
  * <p/>
  * Smooks does this at runtime by building (and caching) a table of resources per useragent type (e.g. requesting browser).
- * For example, when the {@link org.milyn.SmooksServletFilter} receives a request, it 
+ * For example, when the <a href="http://milyn.codehaus.org/Tutorials">SmooksServletFilter</a> receives a request, it 
  * <ol>
  * 	<li>
  * 		Uses the device recognition and profiling information provided by
- * 		<a href="http://milyn.org/Tinak">Milyn Tinak</a> to iterate over the .cdrl configurations and select the definitions that apply to that browser type.
+ * 		<a href="http://milyn.codehaus.org/Tinak">Milyn Tinak</a> to iterate over the .cdrl configurations 
+ *      and select the definitions that apply to that browser type.
  * 		It evaluates this based on the <a href="#useragent">useragent</a> attribute value.  Once the table 
  * 		is built it is cached so it doesn't need to be rebuilt for future requests from this browser type. 
  * 	</li>
@@ -242,7 +243,7 @@ public class SmooksResourceConfiguration {
             // Default the useragent to everything if not specified.
             useragents = "*";
 		}
-        this.selector = selector.toLowerCase();
+        this.selector = selector.toLowerCase().intern();
         isXmlDef = selector.startsWith(XML_DEF_PREFIX);
         this.path = path;
 		

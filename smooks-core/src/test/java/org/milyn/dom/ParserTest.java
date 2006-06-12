@@ -35,8 +35,7 @@ import junit.framework.TestCase;
 public class ParserTest extends TestCase {
 
 	public void testParseNode() {
-		// Can the parser parse badly formed markup
-		parseCheck("Text value parse failure.", "<x>Some Text",
+		parseCheck("Text value parse failure.", "<x>Some Text</x>",
 				"x/text()", "Some Text");
 	}
 	
