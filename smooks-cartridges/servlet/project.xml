@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-smooks-servlet</artifactId>
+	<name>Milyn Smooks Servlet Integration Cartridge</name>
+	
+	<!-- Version from parent project.properties file. -->
+	<currentVersion>${milyn.version.smooks.servlet}</currentVersion>
+	
+	<description>
+		<![CDATA[
+	  Milyn Smooks Servlet Integration Cartridge.
+      <p/>
+      This Cartridge contains code for integrating Smooks into a Servlet container.
+      ]]>
+	</description>
+	<shortDescription>Milyn Smooks Servlet Integration Cartridge</shortDescription>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>nekohtml</groupId>
+			<artifactId>nekohtml</artifactId>
+			<version>${nekohtml.version}</version>
+		</dependency>
+		
+	</dependencies>
+	
+</project>
