@@ -19,6 +19,8 @@
 		Use a StringTemplate template to perform the transformation.
 		We're transforming the "history" element...
 	-->
-	<smooks-resource selector="history" path="/org/milyn/templating/stringtemplate/sample/HistoryTrans.st" />
+	<smooks-resource selector="history" path="/org/milyn/templating/stringtemplate/sample/HistoryTrans.st">
+		<param name="action">replace</param>
+	</smooks-resource>
 	
 </smooks-resource-list>
