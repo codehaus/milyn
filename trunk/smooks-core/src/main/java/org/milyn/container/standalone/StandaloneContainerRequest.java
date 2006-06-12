@@ -84,7 +84,7 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	
 	public URI getRequestURI() {
 		if(requestURI == null) {
-			throw new IllegalStateException("Cannot request access to a 'requestURI' from an execution context that was not supplied a 'requestURI'.");
+			return URI.create("http://milyn.codehaus.org/request/uri/not/set");
 		}
 		return requestURI;
 	}

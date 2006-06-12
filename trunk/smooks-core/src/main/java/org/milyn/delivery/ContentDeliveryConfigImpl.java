@@ -318,7 +318,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * @return ProcessingSet for the specified tag name, or null if none is specified.  
 	 */
 	public ProcessingSet getProcessingSet(String tag) {
-		return (ProcessingSet)processingSetTable.get(tag);
+		return (ProcessingSet)processingSetTable.get(tag.toLowerCase());
 	}
 	
 	/**

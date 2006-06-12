@@ -24,8 +24,6 @@ import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.crimson.tree.XmlDocument;
-import org.apache.xerces.parsers.AbstractSAXParser;
-import org.cyberneko.html.HTMLConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.w3c.dom.CDATASection;
@@ -41,12 +39,14 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 public class Parser {
 
 	private static Log logger = LogFactory.getLog(Parser.class);
 	private ContainerRequest request;
 	HashSet emptyElements = new HashSet();
+    private String saxDriver;
 	
 	public Parser() {
 	}
@@ -58,7 +58,12 @@ public class Parser {
 		this.request = request;
 		initialiseEmptyElements();
 	}
-	
+    
+    public Parser(ContainerRequest request, String saxDriver) {
+        this(request);
+        this.saxDriver = saxDriver;
+    }
+    
 	private void initialiseEmptyElements() {
 		DTDObjectContainer dtd = request.getDeliveryConfig().getDTD();
 		if(dtd != null) {
@@ -113,28 +118,22 @@ public class Parser {
 	 * @throws IOException Unable to read the input stream.
 	 */
 	private void parse(Reader source, SmooksContentHandler contentHandler) throws SAXException, IOException {
-		XMLReader reader = new HTMLSAXParser();
+        XMLReader reader;
+        
+        if(saxDriver != null) {
+            reader = XMLReaderFactory.createXMLReader(saxDriver);
+        } else {
+            reader = XMLReaderFactory.createXMLReader();
+        }
 
 		reader.setContentHandler(contentHandler);
 		reader.setProperty("http://xml.org/sax/properties/lexical-handler", contentHandler);
-		reader.setFeature("http://cyberneko.org/html/features/balance-tags", false);
-		reader.setFeature("http://cyberneko.org/html/features/scanner/cdata-sections", true);
-		reader.setFeature("http://apache.org/xml/features/scanner/notify-char-refs", true);
-		reader.setFeature("http://apache.org/xml/features/scanner/notify-builtin-refs", true);
-		reader.setFeature("http://cyberneko.org/html/features/scanner/notify-builtin-refs", true);
+        reader.setFeature("http://xml.org/sax/features/namespaces", true);
+        reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+
 		reader.parse(new InputSource(source));
 	}
 
-	/**
-	 * HTML parser using the cyberneko HTML configuration.
-	 * @author tfennelly
-	 */
-	public static class HTMLSAXParser extends AbstractSAXParser {
-	    public HTMLSAXParser() {
-	        super(new HTMLConfiguration());
-	    }
-	}
-	
 	/**
 	 * Content and Lexical Handler class for DOM construction.
 	 * @see org.xml.sax.ContentHandler
@@ -184,35 +183,44 @@ public class Parser {
 		public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
 			Element newElement = null;
 			int attsCount = atts.getLength();
-			String elName = localName.toLowerCase();
 			Node currentNode = (Node)nodeStack.peek();
 			
 			try {
-				// TODO: What about namespaces?
-				newElement = ownerDocument.createElement(elName);
+                if(namespaceURI != null && qName != null) {
+                    newElement = ownerDocument.createElementNS(namespaceURI.intern(), qName);
+                } else {
+                    newElement = ownerDocument.createElement(localName.intern());
+                }
+                
 				currentNode.appendChild(newElement);
-				if(!emptyElements.contains(elName)) {
+				if(!emptyElements.contains(qName != null?qName.toLowerCase():localName.toLowerCase())) {
 					nodeStack.push(newElement);
 				}
 			} catch(DOMException e) {
-				logger.error("DOMException creating start element: namespaceURI=" + namespaceURI + ", localName=" + elName, e);
+				logger.error("DOMException creating start element: namespaceURI=" + namespaceURI + ", localName=" + localName, e);
 				throw e;
 			}
 			
 			for(int i = 0; i < attsCount; i++) {
-				String attName = atts.getLocalName(i).toLowerCase();
-				String attValue = atts.getValue(i);				
+				String attNamespace = atts.getURI(i);
+                String attQName = atts.getQName(i);
+                String attLocalName = atts.getLocalName(i);
+				String attValue = atts.getValue(i);
 				try {
-					newElement.setAttribute(attName, attValue);
+                    if(attNamespace != null && attQName != null) {
+                        newElement.setAttributeNS(attNamespace.intern(), attQName, attValue);
+                    } else {
+                        newElement.setAttribute(attLocalName.intern(), attValue);
+                    }
 				} catch(DOMException e) {
-					logger.error("DOMException setting element attribute " + attName + "=" + attValue + "[namespaceURI=" + namespaceURI + ", localName=" + elName + "].", e);
+					logger.error("DOMException setting element attribute " + attLocalName + "=" + attValue + "[namespaceURI=" + namespaceURI + ", localName=" + localName + "].", e);
 					throw e;
 				}
 			}
 		}
 
 		public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-			String elName = localName.toLowerCase();
+			String elName = (qName != null?qName.toLowerCase():localName.toLowerCase());
 			if(!emptyElements.contains(elName)) {
 				int index = getIndex(elName);
 				if(index != -1) {
@@ -242,7 +250,7 @@ public class Parser {
 				Node node = (Node)nodeStack.elementAt(i);
 				if(node.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element)node;
-					if(element.getTagName().equals(elName)) {
+					if(element.getTagName().toLowerCase().equals(elName)) {
 						return i;
 					}
 				}

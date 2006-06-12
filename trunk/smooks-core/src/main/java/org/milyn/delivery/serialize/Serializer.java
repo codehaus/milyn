@@ -261,12 +261,9 @@ public class Serializer {
 	 * @return SerializationUnit.
 	 */
 	private SerializationUnit getSerializationUnit(Element element) {
-		String elementName;
-		elementName = element.getLocalName();
-		if(elementName == null) {
-			elementName = element.getTagName();
-		}
-		List elementSUs = (List)serializationUnits.get(elementName);
+		String elementName = DomUtils.getName(element);
+        List elementSUs = (List)serializationUnits.get(elementName.toLowerCase());
+        
 		if(elementSUs == null) {
 			elementSUs = defaultSUs;
 		}

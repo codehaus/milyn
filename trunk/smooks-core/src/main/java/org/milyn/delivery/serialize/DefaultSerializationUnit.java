@@ -34,19 +34,9 @@ import org.w3c.dom.Text;
  * Default SerializationUnit implementation.
  * <p/>
  * Default SerialisationUnit where none defined.
- * <p/>
- * Also, takes a SmooksResourceConfiguration parameter:
- * <ul>
- * 		<li><b>lowerCaseElNames</b>: Default: false.  Lowercase all element names. </li>
- * </ul>
  * @author tfennelly
  */
 public class DefaultSerializationUnit extends AbstractSerializationUnit {
-	
-	/**
-	 * Lower case element names.
-	 */
-	private boolean lowerCaseElNames = false;
 
 	/**
 	 * Public constructor.
@@ -54,9 +44,6 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	 */
 	public DefaultSerializationUnit(SmooksResourceConfiguration resourceConfig) {
 		super(resourceConfig);
-		if(resourceConfig != null) {
-			lowerCaseElNames = resourceConfig.getBoolParameter("lowerCaseElNames", false);
-		}
 	}
 
 	/* (non-Javadoc)
@@ -64,12 +51,8 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	 */
 	public void writeElementStart(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
 		writer.write((int)'<');
-		if(lowerCaseElNames) {
-			writer.write(element.getTagName().toLowerCase());
-		} else {
-			writer.write(element.getTagName());
-		}
-		writeAttributes(element.getAttributes(), writer);
+        writer.write(element.getTagName());
+        writeAttributes(element.getAttributes(), writer);
 		writer.write((int)'>');
 	}
 
@@ -88,7 +71,7 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 			int enclosingChar = (int)'"';
 			
 			writer.write((int)' ');
-			writer.write(attribute.getName());
+            writer.write(attribute.getName());
 			writer.write((int)'=');
 			if(attribValue.indexOf((int)'"') != -1) {
 				enclosingChar = (int)'\'';
@@ -104,11 +87,7 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	 */
 	public void writeElementEnd(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
 		writer.write("</");
-		if(lowerCaseElNames) {
-			writer.write(element.getTagName().toLowerCase());
-		} else {
-			writer.write(element.getTagName());
-		}
+		writer.write(element.getTagName());
 		writer.write((int)'>');
 	}
 
