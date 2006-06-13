@@ -30,11 +30,12 @@ public class FindAddressSampleTest extends TestCase {
     public void testTransform() throws SAXException, IOException {
         SmooksStandalone smooks = new SmooksStandalone("UTF-8");
 
-        // Configure Smooks
+        // Configure Smooks...
         smooks.registerUseragent("acme-findAddresses-request", new String[] {"acme-request"});
         TemplatingUtils.registerCDUCreators(smooks.getContext());
         smooks.registerResources("acme-creds", getClass().getResourceAsStream("acme-creds.cdrl"));
-                
+
+        // Perform the transformation...
         InputStream requestStream = getClass().getResourceAsStream("AcmeFindaddressRequest.xml");
         String requestResult = smooks.filterAndSerialize("acme-findAddresses-request", requestStream);
         System.out.println(requestResult);
