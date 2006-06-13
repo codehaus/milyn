@@ -36,7 +36,7 @@
 
 	<!-- Remove the acmecreds element from the SOAP body.  In reality, you'd
 		 prob not need to remove this element in this way. It would probably
-		 get removed as part of a more general revamp of SOAP body i.e. to
+		 get removed as part of a more general revamp of the SOAP body i.e. to
 		 "make it fit" a different schema altogether.-->
 	<smooks-resource selector="acmeCreds"
 				namespace="http://schemas.acme.com/security/"
