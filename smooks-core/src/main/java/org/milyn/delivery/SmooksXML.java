@@ -81,28 +81,23 @@ import org.w3c.dom.NodeList;
  * 				{@link org.milyn.delivery.ElementVisitor visiting} all the
  * 				DOM elements with {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}
  * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
- * 				(e.g. for the requesting browser to the {@link org.milyn.SmooksServletFilter}). 
+ * 				(e.g. for the requesting browser). 
  * 				This phase can result in DOM elements getting added to, or trimmed from, the DOM.  
  * 				This phase is also very usefull for gathering information about the DOM, 
  * 				which can be used during the processing phase (see below).  This phase is only
  * 				executed if there are {@link org.milyn.cdr.SmooksResourceConfiguration configured}
  * 				{@link org.milyn.delivery.assemble.AssemblyUnit} for the SmooksXML processing context
- * 				(e.g. for the requesting browser to the {@link org.milyn.SmooksServletFilter}).
- * 				<p/> 
- * 				An example of an AssemblyUnit shiped with Smooks is the 
- * 				{@link org.milyn.css.CSSStyleScraper} class.
+ * 				(e.g. for the requesting browser).
  * 			</li>
  * 			<li>
  * 				<b>Processing</b>: Processing takes the assembled DOM and 
  * 				iterates over it again to "process" it (analyse/transform), {@link org.milyn.delivery.ElementVisitor visiting} all the
  * 				DOM elements with {@link org.milyn.delivery.process.ProcessingUnit}
  * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
- * 				(e.g. for the requesting browser to the {@link org.milyn.SmooksServletFilter}). 
+ * 				(e.g. for the requesting browser). 
  * 				This phase will only operate on DOM elements that were present in the assembled
  * 				document; {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} will not be applied
  * 				to elements that are introduced to the DOM during this phase.
- * 				<p/>  
- * 				An example of a ProcessingUnit shiped with Smooks is the {@link org.milyn.report.AHrefRecorder}
  * 				class.
  * 			</li>
  * 		</ul>
@@ -129,7 +124,6 @@ import org.w3c.dom.NodeList;
  * 
  * <h4>Other Documents</h4>
  * <ul>
- * 	<li>{@link org.milyn.SmooksServletFilter}</li>
  * 	<li>{@link org.milyn.SmooksStandalone}</li>
  * 	<li>{@link org.milyn.cdr.SmooksResourceConfiguration}</li>
  * 	<li>{@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}</li>
