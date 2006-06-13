@@ -24,12 +24,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>nekohtml</groupId>
-			<artifactId>nekohtml</artifactId>
-			<version>${nekohtml.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>dtdparser</groupId>
 			<artifactId>dtdparser</artifactId>
 			<version>${dtdparser.version}</version>
