@@ -8,12 +8,6 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.5.0</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>milyn</groupId>
 			<artifactId>j2ee</artifactId>
 			<version>1.4</version>
