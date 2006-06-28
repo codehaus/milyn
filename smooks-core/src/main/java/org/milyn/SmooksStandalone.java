@@ -38,6 +38,7 @@ import org.milyn.device.profile.DefaultProfileSet;
 import org.milyn.device.profile.DefaultProfileStore;
 import org.milyn.device.profile.ProfileSet;
 import org.milyn.device.profile.ProfileStore;
+import org.milyn.logging.SmooksLogger;
 import org.milyn.resource.ClasspathResourceLocator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -169,17 +170,25 @@ public class SmooksStandalone {
 		
 		request = new StandaloneContainerRequest(requestURI, new LinkedHashMap(), session);
 		smooks = new SmooksXML(request);
-		if(contentEncoding == null) {
-			node = smooks.filter(new InputStreamReader(stream));
-		} else {
-			try {
-				node = smooks.filter(new InputStreamReader(stream, contentEncoding));
-			} catch (UnsupportedEncodingException e) {
-				Error error = new Error("Unexpected exception.  Encoding has already been validated as being supported.");
-				error.initCause(e);
-				throw error;
-			}
-		}
+        try {
+    		if(contentEncoding == null) {
+    			node = smooks.filter(new InputStreamReader(stream));
+    		} else {
+    			try {
+    				node = smooks.filter(new InputStreamReader(stream, contentEncoding));
+    			} catch (UnsupportedEncodingException e) {
+    				Error error = new Error("Unexpected exception.  Encoding has already been validated as being unsupported.");
+    				error.initCause(e);
+    				throw error;
+    			}
+    		}
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                SmooksLogger.getLog().error("Exception closing input stream.", e);
+            }
+        }
 		
 		return node;
 	}
