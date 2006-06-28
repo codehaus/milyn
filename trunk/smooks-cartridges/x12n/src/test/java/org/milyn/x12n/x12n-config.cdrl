@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
+
+<smooks-resource-list default-useragent="x12n-requester"> 
+
+	<!--
+		Set the SAX parser for all requests coming from X12N client
+		useragents to be X12nToSaxXMLReader. 
+	-->
+	<smooks-resource selector="device-parameters">
+		<param name="org.xml.sax.driver">org.milyn.x12n.X12nToSaxXMLReader</param>
+	</smooks-resource>	
+	
+</smooks-resource-list>
