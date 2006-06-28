@@ -39,7 +39,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * the X12N stream.
  * @author tfennelly
  */
-public class X12nToSaxXMLReader implements XMLReader {
+public class X12nToSaxEventParser implements XMLReader {
 
     private ContentHandler contentHandler;
     private int depth = 0;
