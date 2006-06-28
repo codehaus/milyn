@@ -28,7 +28,7 @@ import junit.framework.TestCase;
  *
  * @author tfennelly
  */
-public class X12nToSaxXMLReaderTest extends TestCase {
+public class X12nToSaxEventParserTest extends TestCase {
 
     public void testTransform() throws SAXException, IOException {
         SmooksStandalone smooks = new SmooksStandalone("UTF-8");
