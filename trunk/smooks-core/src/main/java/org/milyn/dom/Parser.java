@@ -24,6 +24,7 @@ import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.crimson.tree.XmlDocument;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ContainerRequest;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.w3c.dom.CDATASection;
@@ -57,6 +58,9 @@ public class Parser {
 		}
 		this.request = request;
 		initialiseEmptyElements();
+        
+        // Allow the sax driver to be specified as a useragent parameter (under "org.xml.sax.driver").
+        saxDriver = ParameterAccessor.getStringParameter("org.xml.sax.driver", request.getDeliveryConfig());
 	}
     
     public Parser(ContainerRequest request, String saxDriver) {
@@ -186,7 +190,7 @@ public class Parser {
 			Node currentNode = (Node)nodeStack.peek();
 			
 			try {
-                if(namespaceURI != null && qName != null) {
+                if(namespaceURI != null && qName != null && !qName.equals("")) {
                     newElement = ownerDocument.createElementNS(namespaceURI.intern(), qName);
                 } else {
                     newElement = ownerDocument.createElement(localName.intern());
@@ -220,7 +224,14 @@ public class Parser {
 		}
 
 		public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-			String elName = (qName != null?qName.toLowerCase():localName.toLowerCase());
+			String elName;
+            
+            if(qName != null && !qName.equals("")) {
+                elName = qName.toLowerCase();
+            }else {
+                elName = localName.toLowerCase();
+            }
+            
 			if(!emptyElements.contains(elName)) {
 				int index = getIndex(elName);
 				if(index != -1) {
