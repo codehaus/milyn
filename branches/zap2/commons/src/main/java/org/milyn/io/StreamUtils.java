@@ -26,6 +26,8 @@ import java.io.InputStream;
  */
 public abstract class StreamUtils {
 
+	// buuu
+	
 	/**
 	 * Read the supplied InputStream and return as a byte array.
 	 * @param stream The stream to read.
