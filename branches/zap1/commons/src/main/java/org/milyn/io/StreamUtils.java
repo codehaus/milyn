@@ -37,6 +37,8 @@ public abstract class StreamUtils {
 			throw new IllegalArgumentException("null 'stream' arg in method call.");
 		}
 		
+		// Add something here...
+		
 		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 		byte[] byteBuf = new byte[1024];
 		int readCount = 0;
