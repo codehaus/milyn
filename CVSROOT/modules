@@ -26,4 +26,4 @@
 # spread out over the entire source repository.
 
 milyn -a commons magger tinak smooks-core smooks-cartridges
-all -a milyn site-report
+milyn-all -a milyn site-report
