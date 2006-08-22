@@ -81,7 +81,9 @@
 			<version>2.7</version>
 			<type>plugin</type>
 		</dependency>
-		<dependency>
+
+		<!-- Removed the following dependencies because they were causing build issues - check do they still exist on ibiblio -->
+		<!-- dependency>
 			<groupId>lint4j</groupId>
 			<artifactId>jutils-lint4j-plugin</artifactId>
 			<version>1.1</version>
@@ -92,7 +94,7 @@
 			<artifactId>maven-macker-plugin</artifactId>
 			<version>0.4.2</version>
 			<type>plugin</type>
-		</dependency>
+		</dependency -->
 
 	</dependencies>
 	
