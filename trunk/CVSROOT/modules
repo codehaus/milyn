@@ -25,6 +25,6 @@
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
 
-milyn -a commons magger tinak smooks-core smooks-cartridges
+milyn -a commons magger tinak smooks-core smooks-cartridges mavenenv.cmd maven.xml project.properties project.xml
 milyn-all -a milyn site-report
 all -a ./
