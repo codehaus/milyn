@@ -27,3 +27,4 @@
 
 milyn -a commons magger tinak smooks-core smooks-cartridges
 milyn-all -a milyn site-report
+all -a ./
