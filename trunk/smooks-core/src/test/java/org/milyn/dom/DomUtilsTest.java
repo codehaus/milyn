@@ -99,7 +99,7 @@ public class DomUtilsTest extends TestCase {
 		Element element = (Element)XmlUtil.getNode(doc, "/x/y");
 		String allText = DomUtils.getAllText(element, true);
 		
-		assertEquals("This is wh&#97;t were looking for", allText);
+		assertEquals("This is wh&#97;t were looking forÉ.", allText);
 	}
 	
 	private void test_getXPath(Document doc, String testPath) {
