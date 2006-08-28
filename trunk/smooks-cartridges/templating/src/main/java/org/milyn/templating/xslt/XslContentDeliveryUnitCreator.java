@@ -38,11 +38,7 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * XSL ProcessingUnit ConcreteCreator class (GoF - Factory Method).
- * <p/>
- * This Content Delivery Unit creator needs to be reviewed by someone that knows more about XSL etc.
- * Not convinced that it's implemented correctly.  Works, but?
- * May be dumped.
+ * XSL ProcessingUnit Creator class (GoF - Factory Method).
  * 
  * @author tfennelly
  */
@@ -126,7 +122,6 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 			Node parent = element.getParentNode();
 			NodeList children = null;
 
-			// TODO:  This is probably completely wrong.  Need to find someone that knows something about XSLT.
 			try {
 				xslTemplate.newTransformer().transform(new DOMSource(element), new DOMResult(transRes));
 			} catch (TransformerConfigurationException e) {
