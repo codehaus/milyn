@@ -18,7 +18,6 @@ package org.milyn.templating;
 
 import java.io.InputStream;
 
-import org.milyn.SmooksStandalone;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ContainerContext;
 
