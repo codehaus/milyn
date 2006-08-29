@@ -33,10 +33,7 @@ import junit.framework.TestCase;
  */
 public class XslContentDeliveryUnitCreatorTest extends TestCase {
 
-    /**
-     * Removed because of problems caused in Maven.
-     */
-	public void testXslUnitTrans() {
+	public void testXslUnitTrans_filebased_replace() {
 		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
 		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename", "org/milyn/templating/xslt/xsltransunit.xsl");
 		String transResult = null;
@@ -53,9 +50,47 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 			e.printStackTrace();
 			fail("unexpected exception: " + e.getMessage());
 		}
-		boolean equalsExpected = CharUtils.compareCharStreams(getClass().getResourceAsStream("xsltransunit.expected"), new ByteArrayInputStream(transResult.getBytes()));
+		boolean equalsExpected = CharUtils.compareCharStreams(getClass().getResourceAsStream("xsltransunit.expected1"), new ByteArrayInputStream(transResult.getBytes()));
 		if(!equalsExpected) {
 			System.out.println("XSL Comparison Failure - See xsltransunit.expected.");
+			System.out.println("============== Actual ==================");
+			System.out.println(transResult);
+			System.out.println("====================================================================================");
+		}
+		assertTrue("Expected XSL Transformation result failure.", equalsExpected);
+	}	
+
+	public void testXslUnitTrans_parambased() {
+		testXslUnitTrans_parambased("insertbefore", "xsltransunit.expected2");
+		testXslUnitTrans_parambased("insertafter", "xsltransunit.expected3");
+		testXslUnitTrans_parambased("addto", "xsltransunit.expected4");
+		testXslUnitTrans_parambased("replace", "xsltransunit.expected5");
+	}
+	
+	public void testXslUnitTrans_parambased(String action, String expectedFileName) {
+		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename");
+		String transResult = null;
+
+		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
+		
+		res.setParameter("restype", "xsl");
+		res.setParameter("resdata", "<z id=\"{@id}\">Content from template!!</z>");
+		res.setParameter("action", action);
+		smooks.registerUseragent("devicename");
+		smooks.registerResource(res);
+		TemplatingUtils.registerCDUCreators(smooks.getContext());
+		
+		try {
+			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
+			transResult = smooks.filterAndSerialize("devicename", stream);
+		} catch (SmooksException e) {
+			e.printStackTrace();
+			fail("unexpected exception: " + e.getMessage());
+		}
+		boolean equalsExpected = CharUtils.compareCharStreams(getClass().getResourceAsStream(expectedFileName), new ByteArrayInputStream(transResult.getBytes()));
+		if(!equalsExpected) {
+			System.out.println("XSL Comparison Failure.  action=" + action + ".  See " + expectedFileName );
 			System.out.println("============== Actual ==================");
 			System.out.println(transResult);
 			System.out.println("====================================================================================");
