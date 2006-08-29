@@ -16,7 +16,10 @@
 
 package org.milyn.templating.stringtemplate;
 
+import java.io.IOException;
 import java.util.HashMap;
+
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
@@ -24,16 +27,13 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
-import org.milyn.delivery.process.AbstractProcessingUnit;
-import org.milyn.dom.DomUtils;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
-
 /**
- * StringTemplate {@link org.milyn.delivery.process.ProcessingUnit} ConcreteCreator class (GoF - Factory Method).
+ * StringTemplate {@link org.milyn.delivery.process.ProcessingUnit} Creator class.
  * <p/>
  * Creates {@link org.milyn.delivery.ContentDeliveryUnit} instances for applying
  * <a href="http://www.stringtemplate.org/">StringTemplate</a> transformations (i.e. ".st" files).
@@ -57,12 +57,12 @@ import org.w3c.dom.Text;
  * &lt;smooks-resource path="<b>org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator</b>" &gt;
  * 
  *  &lt;!-- 
- *      (Mandatory) Specifying the resource extension.  This param bsaically 
+ *      (Mandatory) Specifying the resource type.  This param bsaically 
  *      tells Smooks use the {@link StringTemplateContentDeliveryUnitCreator} to
  *      create {@link org.milyn.delivery.process.ProcessingUnit} instances for
  *      applying ".st" files (<a href="http://www.stringtemplate.org/">StringTemplate</a> template files).
  *  --&gt;
- *  &lt;param name="<b>extention</b>"&gt;st&lt;/param&gt;
+ *  &lt;param name="<b>restype</b>"&gt;st&lt;/param&gt;
  * 
  * &lt;/smooks-resource&gt;
  * </pre>
@@ -90,6 +90,10 @@ import org.w3c.dom.Text;
  *          Default "false".--&gt;
  *  &lt;param name="<b>visitBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * 
+ *  &lt;!-- (Optional) Template encoding. 
+ *          Default "UTF-8".--&gt;
+ *  &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
+ * 
  * &lt;/smooks-resource&gt;
  * </pre>
  * 
@@ -110,32 +114,32 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
      * @return The StringTemplate {@link ContentDeliveryUnit} instance.
 	 */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
-        return new StringTemplateProcessingUnit(resourceConfig);
+        try {
+			return new StringTemplateProcessingUnit(resourceConfig);
+		} catch (TransformerConfigurationException e) {
+			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.  StringTemplate resource invalid.");
+			instanceException.initCause(e);
+			throw instanceException;
+		} catch (IOException e) {
+			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.  StringTemplate resource not found.");
+			instanceException.initCause(e);
+			throw instanceException;
+		}
 	}
 
 	/**
 	 * StringTemplate template application ProcessingUnit.
 	 * @author tfennelly
 	 */
-	private static class StringTemplateProcessingUnit extends AbstractProcessingUnit {
+	private static class StringTemplateProcessingUnit extends AbstractTemplateProcessingUnit {
 
-        private static final int REPLACE = 0;
-        private static final int ADDTO = 1;
-        private static final int INSERT_BEFORE = 2;
-        private static final int INSERT_AFTER = 3;
-        
-        private boolean visitBefore = false;
-        private int action = REPLACE;
         private StringTemplate template;
         
-        public StringTemplateProcessingUnit(SmooksResourceConfiguration config) {
+        public StringTemplateProcessingUnit(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException {
             super(config);
-            visitBefore = config.getBoolParameter("visitBefore", false);
-            loadTemplate(config);
-            setAction(config);
         }
 
-        private void loadTemplate(SmooksResourceConfiguration config) {
+        protected void loadTemplate(SmooksResourceConfiguration config) {
             String path = config.getPath();
             String encoding = config.getStringParameter("encoding", "UTF-8");
             
@@ -151,20 +155,6 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             template = templateGroup.getInstanceOf(path);
         }
 
-        private void setAction(SmooksResourceConfiguration config) {
-            String actionParam = config.getStringParameter("action");
-            
-            if("addto".equals(actionParam)) {
-                action = ADDTO;
-            } else if("insertbefore".equals(actionParam)) {
-                action = INSERT_BEFORE;
-            } else if("insertafter".equals(actionParam)) {
-                action = INSERT_AFTER;
-            } else {
-                action = REPLACE;
-            }
-        }
-
         public void visit(Element element, ContainerRequest request) {
             // First thing we do is clone the template for this transformation...
             StringTemplate thisTransTemplate = template.getInstanceOf();
@@ -178,34 +168,8 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             // Create the replacement DOM text node containing the applied template...            
             Text transformationTextNode = element.getOwnerDocument().createTextNode(templatingResult);
             
-            Node parent = element.getParentNode();
-            switch (action) {
-            case ADDTO:
-                element.appendChild(transformationTextNode);
-                break;
-            case INSERT_BEFORE:
-                parent.insertBefore(transformationTextNode, element);
-                break;
-            case INSERT_AFTER:
-                Node nextSibling = element.getNextSibling();
-                
-                if(nextSibling == null) {
-                    // "element" is the last child of "parent" so just add to "parent".
-                    parent.appendChild(transformationTextNode);
-                } else {
-                    // insert before the "nextSibling" - Node doesn't have an "insertAfter" operation!
-                    parent.insertBefore(transformationTextNode, nextSibling);
-                }
-                break;
-            case REPLACE:
-            default:
-                DomUtils.replaceNode(transformationTextNode, element);
-                break;
-            }
-        }
-
-        public boolean visitBefore() {
-            return visitBefore;
+            // Process the templating action, supplying the templating result...
+            processTemplateAction(element, transformationTextNode);
         }
 	}
 }
