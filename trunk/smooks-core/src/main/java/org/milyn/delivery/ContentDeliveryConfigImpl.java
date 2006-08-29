@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksResourceConfigurationSortComparator;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
@@ -37,7 +39,6 @@ import org.milyn.delivery.serialize.SerializationUnit;
 import org.milyn.device.UAContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
-import org.milyn.logging.SmooksLogger;
 
 
 /**
@@ -46,6 +47,10 @@ import org.milyn.logging.SmooksLogger;
  */
 public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	
+	/**
+	 * Logger.
+	 */
+	private static Log logger = LogFactory.getLog(ContentDeliveryConfigImpl.class);
 	/**
 	 * Context key for the table of loaded ContentDeliveryConfig instances.
 	 */
@@ -160,7 +165,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
     				// Initialise the DTD reference for this config table.
     				dtd = DTDStore.getDTDObject(deviceContext);
                 } else {
-                    SmooksLogger.getLog().error("DTD resource [" + dtdSmooksResourceConfiguration.getPath() + "] not found in classpath.");
+                	logger.error("DTD resource [" + dtdSmooksResourceConfiguration.getPath() + "] not found in classpath.");
                 }
 			} catch (IOException e) {
                 IllegalStateException state = new IllegalStateException("Error reading DTD resource.");
@@ -406,13 +411,13 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
         }
 
         public void applyStrategy(String elementName, SmooksResourceConfiguration resourceConfig) {
-			ContentDeliveryUnitCreator creator;
+			ContentDeliveryUnitCreator creator = null;;
 
-            if(resourceConfig.isContentDeliveryUnit()) {
+			// Try it as a Java class before trying anything else.  This is to
+			// accomodate specification of the class in the standard 
+			// Java form e.g. java.lang.String Vs java/lang/String.class
+            if(resourceConfig.isJavaContentDeliveryUnit()) {
     			try {                
-    				// Try it as a Java class before trying anything else.  This is to
-    				// accomodate specification of the class in the standard 
-    				// Java form e.g. java.lang.String Vs java/lang/String.class
     				creator = store.getContentDeliveryUnitCreator("class");
     				if(addCDU(elementName, resourceConfig, creator)) {
     					// Job done - it's a CDU and we've added it!
@@ -424,24 +429,48 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
                     // Ignore it again - not a CDU - continue on, may be a different type...
                 }
             }
+
+            // Get the resource type and "try" creating a ContentDeliveryUnitCreator for that resource
+            // type.
+            String restype = resourceConfig.getType();
+            creator = tryCreateCreator(restype);
 			
-			try {
-				String type = getExtension(resourceConfig.getPath());
-				if(type == null || type.trim().equals("")) {
-					return;
+            // If we have a creator but it's the JavaContentDeliveryUnitCreator we ignore it because
+            // we know the class in question is not a ContentDeliveryUnit.  We know this because the 
+            // resourceConfig.isContentDeliveryUnit() call at the start of this method failed.
+            if(creator != null && !(creator instanceof JavaContentDeliveryUnitCreator)) {
+				try {
+					addCDU(elementName, resourceConfig, creator);
+				} catch (InstantiationException e) {
+					logger.error("ContentDeliveryUnit creation failure.", e);
 				}
-				creator = store.getContentDeliveryUnitCreator(type);
-			} catch (UnsupportedContentDeliveryUnitTypeException e) {
-				// Just ignore it - something else will use it
-				return;
-			}					
-			
-			try {
-				addCDU(elementName, resourceConfig, creator);
-			} catch (InstantiationException e) {
-				SmooksLogger.getLog().error("ContentDeliveryUnit creation failure.", e);
-			}
+            } else {
+				// Just ignore it - something else will use it            	
+            }
 		}
+        
+        /**
+         * Try create the CDU creator for the specified resource type.
+         * <p/>
+         * Return null if unsuccessful i.e. no exceptions.
+         * @param restype The resource type.
+         * @return The appropriate CDU creator instance, or null if there is none.
+         */
+        private ContentDeliveryUnitCreator tryCreateCreator(String restype) {
+			ContentDeliveryUnitCreator creator;
+
+			try {
+				if(restype == null || restype.trim().equals("")) {
+					logger.warn("Request to attempt ContentDeliveryUnitCreator creation based on a null/empty resource type.");
+					return null;
+				}
+				creator = store.getContentDeliveryUnitCreator(restype);
+			} catch (UnsupportedContentDeliveryUnitTypeException e) {
+				return null;
+			}
+			
+			return creator;
+        }
 
         /**
 		 * Add a {@link ContentDeliveryUnit} for the specified element and configuration.
@@ -453,11 +482,6 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		private boolean addCDU(String elementName, SmooksResourceConfiguration resourceConfig, ContentDeliveryUnitCreator creator) throws InstantiationException {
 			ContentDeliveryUnit contentDeliveryUnit;
 
-            if(resourceConfig.getPath() == null) {
-                // Def not a CDU - no path specified!!
-                return false;
-            }
-            
 			// Create the ContentDeliveryUnit.
             contentDeliveryUnit = creator.create(resourceConfig);
 			
@@ -474,27 +498,6 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 			}
 			
 			return true;
-		}
-
-		/**
-		 * Get the file extension from the resource path.
-		 * @param path Resource path.
-		 * @return File extension, or null if the resource path has no file extension.
-		 */
-		private String getExtension(String path) {
-			if(path != null) {
-				File resFile = new File(path);
-				String resName = resFile.getName();
-				
-				if(resName != null && !resName.trim().equals("")) {
-					int extensionIndex = resName.lastIndexOf('.');
-					if(extensionIndex != -1 && (extensionIndex + 1 < resName.length())) {
-						return resName.substring(extensionIndex + 1);
-					}
-				}
-			}
-			
-			return null;
 		}
 
 		/**
