@@ -9,7 +9,7 @@
 <smooks-resource-list default-selector="cdu-creator"> 
 
 	<smooks-resource path="org.milyn.delivery.JavaContentDeliveryUnitCreator">
-		<param name="extention">class</param>
+		<param name="restype">class</param>
 	</smooks-resource>	
 	
 </smooks-resource-list>

@@ -16,6 +16,7 @@
 
 package org.milyn.cdr;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.dom.DomUtils;
@@ -111,7 +114,9 @@ import org.w3c.dom.Node;
  * 			See <a href="#res-targeting">Resource Targeting</a>.
  * 			<p/>
  * 		</li>
- * 		<li><b>path</b>: The path to the resource within the classpath or one of the loaded .cdrar files.
+ * 		<li><b>path</b>: The path to the resource file within the classpath.  The resource data can also be specified
+ * 			on a resource parameter called "resdata".  XML based data (or data containing special XML characters)
+ *  		should be enclosed in a CDATA section within the parameter.
  * 			<p/>
  * 		</li>
  * 		<li><b id="namespace">namespace</b>: The XML namespace of the target for this resource.  This is used
@@ -128,6 +133,8 @@ import org.w3c.dom.Node;
  * &lt;smooks-resource-list default-useragent="value" default-selector="value" default-namespace="http://www.w3.org/2002/xforms"&gt;
  * 	&lt;smooks-resource path="value"/&gt;
  * &lt;/smooks-resource-list&gt;</pre>
+ * 
+ * Also note that there is a resource "typing" mechanism in place.  See {@link #getType()}.
  * 
  * <h3 id="res-targeting">Resource Targeting</h3>
  * Content Delivery Resources ({@link org.milyn.delivery.process.ProcessingUnit} etc) are targeted
@@ -177,6 +184,11 @@ import org.w3c.dom.Node;
  * @author tfennelly
  */
 public class SmooksResourceConfiguration {
+
+	/**
+	 * Logger.
+	 */
+	private static Log logger = LogFactory.getLog(SmooksResourceConfiguration.class);
 	/**
 	 * Document target on which the resource is to be applied.
 	 */
@@ -200,6 +212,16 @@ public class SmooksResourceConfiguration {
 	 * The path to the Content Delivery Resource within the cdrar.
 	 */
 	private String path;
+	/**
+	 * The resource type can be specified as a resource parameter.  This constant defines
+	 * that parameter name.
+	 */
+	private static final String PARAM_RESTYPE = "restype";
+	/**
+	 * The resource data can be specified as a resource parameter.  This constant defines
+	 * that parameter name.
+	 */
+	private static final String PARAM_RESDATA = "resdata";
 	/**
 	 * XML selector type definition prefix
 	 */
@@ -354,6 +376,57 @@ public class SmooksResourceConfiguration {
 	 */
 	public String getPath() {
 		return path;
+	}
+	
+	/**
+	 * Get the resource "type" for this resource.
+	 * <p/>
+	 * Determines the type through the following checks (in order):
+	 * <ol>
+	 * 	<li>Is it a Java resource. See {@link #isJavaResource()}.  If it is, return "class".</li>
+	 * 	<li>Is the "restype" resource paramater specified.  If it is, return it's value.</li>
+	 * 	<li>Return the resource path file extension e.g. "xsl".</li>
+	 * </ol>
+	 * @return
+	 */
+	public String getType() {
+        String restype;
+
+        if(isJavaResource()) {
+        	return "class";
+        }
+        
+        restype = getStringParameter(PARAM_RESTYPE);
+        if(restype != null &&  !restype.trim().equals("")) {
+        	if(getParameter(PARAM_RESDATA) == null) {
+        		logger.warn("Resource configuration defined with '" + PARAM_RESTYPE + "' parameter but no '" + PARAM_RESDATA + "' parameter.");
+        	}
+        } else {
+        	restype = getExtension(getPath());
+        }
+        
+        return restype;
+	}
+
+	/**
+	 * Get the file extension from the resource path.
+	 * @param path Resource path.
+	 * @return File extension, or null if the resource path has no file extension.
+	 */
+	private String getExtension(String path) {
+		if(path != null) {
+			File resFile = new File(path);
+			String resName = resFile.getName();
+			
+			if(resName != null && !resName.trim().equals("")) {
+				int extensionIndex = resName.lastIndexOf('.');
+				if(extensionIndex != -1 && (extensionIndex + 1 < resName.length())) {
+					return resName.substring(extensionIndex + 1);
+				}
+			}
+		}
+		
+		return null;
 	}
 
 	/**
@@ -536,8 +609,14 @@ public class SmooksResourceConfiguration {
      * @throws IOException Failed to read the resource bytes.
      */
     public byte[] getBytes() throws IOException {
-        byte[] bytes = null;
+        String paramBasedData = getStringParameter(PARAM_RESDATA);
         
+        // If the resource data is specified as a parameter, return this.
+        if(paramBasedData != null) {
+        	return paramBasedData.getBytes();
+        }
+        
+        // If the resource data is specified on the resource path attribute, return this.
         if(path != null) {
             InputStream resStream = getClasspathResourceStream(path);
             
@@ -550,10 +629,10 @@ public class SmooksResourceConfiguration {
                 }
             }
             
-            bytes = StreamUtils.readStream(resStream);
+            return StreamUtils.readStream(resStream);
         }
         
-        return bytes;
+        return null;
     }
 
     private InputStream getClasspathResourceStream(String filePath) {
@@ -565,25 +644,43 @@ public class SmooksResourceConfiguration {
     }
     
     /**
-     * Is this resource a {@link org.milyn.delivery.ContentDeliveryUnit} resource.
-     * @return True if this resource refers to an instance of
-     * {@link org.milyn.delivery.ContentDeliveryUnit}, otherwise false.
+     * Returns the resource as a Java Class instance.
+     * @return The Java Class instance refered to be this resource configuration, or null
+     * if the resource doesn't refer to a Java Class.
      */
-    public boolean isContentDeliveryUnit() {
+    public Class toJavaResource() {
         String className;
         
         if(path == null) {
-            return false;
+            return null;
         }
         
         className = ClasspathUtils.toClassName(path);
         try {
-            Class runtimeClass = Class.forName(className);
-            
-            return ContentDeliveryUnit.class.isAssignableFrom(runtimeClass);
+            return Class.forName(className);
         } catch (ClassNotFoundException e) {
-            return false;
-        }
+            return null;
+        }    	
+    }
+
+    /**
+     * Does this resource configuration refer to a Java Class resource.
+     * @return True if this resource configuration refers to a Java Class 
+     * resource, otherwise false.
+     */
+    public boolean isJavaResource() {
+    	return (toJavaResource() != null);
+    }
+    
+    /**
+     * Is this resource a Java {@link org.milyn.delivery.ContentDeliveryUnit} resource.
+     * @return True if this resource refers to an instance of the
+     * {@link org.milyn.delivery.ContentDeliveryUnit} class, otherwise false.
+     */
+    public boolean isJavaContentDeliveryUnit() {
+        Class runtimeClass = toJavaResource();
+        
+        return (runtimeClass != null && ContentDeliveryUnit.class.isAssignableFrom(runtimeClass));
     }
 
     /**

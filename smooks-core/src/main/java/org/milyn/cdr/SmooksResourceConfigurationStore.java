@@ -212,14 +212,14 @@ public class SmooksResourceConfigurationStore {
 
     /**
      * Get the {@link ContentDeliveryUnitCreator} for a resource based on the
-     * supplied resource file extension.
-     * @param resourceExtension Resource file extension.
+     * supplied resource type.
+     * @param type {@link ContentDeliveryUnitCreator} type e.g. "class", "xsl" etc.
      * @return {@link ContentDeliveryUnitCreator} for the resource.
      * @throws UnsupportedContentDeliveryUnitTypeException No {@link ContentDeliveryUnitCreator}
-     * registered for the specified resource extension.
+     * registered for the specified resource type.
      */
-    public ContentDeliveryUnitCreator getContentDeliveryUnitCreator(String resourceExtension) throws UnsupportedContentDeliveryUnitTypeException {
-        if(resourceExtension == null) {
+    public ContentDeliveryUnitCreator getContentDeliveryUnitCreator(String type) throws UnsupportedContentDeliveryUnitTypeException {
+        if(type == null) {
             throw new IllegalArgumentException("null 'resourceExtension' arg in method call.");
         }
         
@@ -231,12 +231,12 @@ public class SmooksResourceConfigurationStore {
                 String selector = config.getSelector();
                 
                 if("cdu-creator".equals(selector) && 
-                        resourceExtension.equals(config.getStringParameter("extention"))) {
+                        type.equals(config.getStringParameter("restype"))) {
                     return (ContentDeliveryUnitCreator) getObject(config);
                 }
             }
         }
         
-        throw new UnsupportedContentDeliveryUnitTypeException(resourceExtension);
+        throw new UnsupportedContentDeliveryUnitTypeException(type);
     }
 }
