@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project>
-	<pomVersion>3</pomVersion>
+	<pomVersion>2</pomVersion>
 	<siteAddress>http://milyn.org</siteAddress>
 	<groupId>milyn</groupId>
 	
 	<dependencies>
 
 		<dependency>
-			<groupId>milyn</groupId>
-			<artifactId>j2ee</artifactId>
-			<version>1.4</version>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>${xerces.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>${xml_apis.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>mockobjects</groupId>
 			<artifactId>mockobjects-jdk1.4</artifactId>
@@ -32,6 +39,12 @@
 			<artifactId>httpunit</artifactId>
 			<version>1.6.1</version>
 		</dependency>		
+
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>j2ee</artifactId>
+			<version>1.4</version>
+		</dependency>
 
 		<!-- Jakarta dependencies 
 		-->
