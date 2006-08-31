@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.milyn.SmooksStandalone;
+import org.milyn.templating.CharUtils;
 import org.milyn.templating.TemplatingUtils;
 import org.xml.sax.SAXException;
 
@@ -38,11 +39,7 @@ public class FindAddressSampleTest extends TestCase {
         // Perform the transformation...
         InputStream requestStream = getClass().getResourceAsStream("AcmeFindaddressRequest.xml");
         String requestResult = smooks.filterAndSerialize("acme-findAddresses-request", requestStream);
-        System.out.println(requestResult);
         
-        // Node requestTrans = smooks.filter("shipping-request", requestStream);
-        // smooks.serialize("shipping-request", requestTrans, outputWriter);
-      
-        // get assertions on this - need something for doing the compare that can handle the \r and \n chars
+		CharUtils.assertEquals("StringTemplate test failed.", "/org/milyn/templating/stringtemplate/acmesecsample/AcmeFindaddressRequest.xml.tran.expected", requestResult);
     }
 }

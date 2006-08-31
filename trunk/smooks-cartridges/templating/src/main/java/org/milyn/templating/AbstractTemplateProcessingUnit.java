@@ -6,7 +6,7 @@ import javax.xml.transform.TransformerConfigurationException;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.process.AbstractProcessingUnit;
-import org.milyn.dom.DomUtils;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

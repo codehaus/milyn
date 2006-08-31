@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -34,8 +36,10 @@ import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.io.StreamUtils;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
+import org.milyn.xml.DomUtils;
+import org.milyn.xml.Namespace;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 
@@ -155,6 +159,12 @@ import org.w3c.dom.NodeList;
  * feature can be disabled by specifying the "is-xslt-templatelet" parameter with a value of "false".
  * <p/>
  * <a href="doc-files/templatelet.xsl" type="text/plain">See the template used to wrap the templatelet</a>.
+ * 
+ * <h3>JavaBean Support</h3>
+ * Support for injection of JavaBean values populated by the 
+ * <a href="http://milyn.codehaus.org/downloads">Smooks JavaBean Cartridge</a> is supported through the 
+ * <a href="http://xml.apache.org/xalan-j/">Xalan</a> extension {@link org.milyn.templating.xslt.XalanJavabeanExtension}.
+ * 
  * @author tfennelly
  */
 public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
@@ -176,12 +186,8 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
 		try {
 			return new XslProcessingUnit(resourceConfig);
-		} catch (TransformerConfigurationException e) {
-			InstantiationException instanceException = new InstantiationException("XSL ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.  XSL resource invalid.");
-			instanceException.initCause(e);
-			throw instanceException;
-		} catch (IOException e) {
-			InstantiationException instanceException = new InstantiationException("XSL ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.  XSL resource not found.");
+		} catch (Exception e) {
+			InstantiationException instanceException = new InstantiationException("XSL ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.");
 			instanceException.initCause(e);
 			throw instanceException;
 		}
@@ -197,6 +203,11 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 		 * XSL template to be applied to the visited element.
 		 */
 		private Templates xslTemplate;
+		/**
+		 * Is this processor processing an XSLT <a href="#templatelets">Templatelet</a>.
+		 */
+		private boolean isTemplatelet = true;
+		
 		
 		/**
 		 * Constructor.
@@ -205,20 +216,22 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 		 * @param resourceConfig Config. 
 		 * @throws TransformerConfigurationException Unable to parse XSL.
 		 * @throws IOException Failed to read resource data.
+		 * @throws FactoryConfigurationError 
+		 * @throws ParserConfigurationException 
 		 */
-		private XslProcessingUnit(SmooksResourceConfiguration resourceConfig) throws TransformerConfigurationException, IOException {
+		private XslProcessingUnit(SmooksResourceConfiguration resourceConfig) throws TransformerConfigurationException, IOException, ParserConfigurationException, FactoryConfigurationError {
 			super(resourceConfig);
 		}
 
 		protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
 			byte[] xslBytes = resourceConfig.getBytes();
-			boolean isTemplatelet = resourceConfig.getBoolParameter("is-xslt-templatelet", true);
 			TransformerFactory transformer = TransformerFactory.newInstance();
 			StreamSource xslStreamSource;
             String encoding = resourceConfig.getStringParameter("encoding", "UTF-8");
 
 			// If it's not a full XSL template, we need to make it so by wrapping it.
-			if(isTemplatelet) {
+            isTemplatelet = resourceConfig.getBoolParameter("is-xslt-templatelet", true);
+            if(isTemplatelet) {
 				String templatelet = new String(StreamUtils.readStream(getClass().getResourceAsStream("doc-files/templatelet.xsl")));
 				
 				templatelet = templatelet.replaceFirst("@@@templatelet@@@", new String(xslBytes));
@@ -230,8 +243,12 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 		}
 
 		public void visit(Element element, ContainerRequest containerRequest) {
-			Node transRes = element.getOwnerDocument().createElement("xsltrans");
+			Document ownerDoc = element.getOwnerDocument();
+			Element transRes = ownerDoc.createElement("xsltrans");
 			NodeList children = null;
+			Element docElement = ownerDoc.getDocumentElement();
+			
+			docElement.appendChild(transRes);
 			
 			try {
 				xslTemplate.newTransformer().transform(new DOMSource(element), new DOMResult(transRes));
@@ -239,8 +256,23 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 				e.printStackTrace();
 			} catch (TransformerException e) {
 				e.printStackTrace();
+			} finally {
+				docElement.removeChild(transRes);
 			}
-			children = transRes.getChildNodes();
+			
+			if(isTemplatelet) {
+				// If the template in use on this resource is a templatelet, check for an remove the
+				// enclosing "root-do-not-remove" element i.e. the templatelet content is inside
+				// the "root-do-not-remove" element.
+				Element dontRemoveEl = DomUtils.getElement(transRes, "root-do-not-remove", 1, Namespace.SMOOKS_URI);
+				if(dontRemoveEl != null) {
+					children = dontRemoveEl.getChildNodes();
+				} else {
+					children = transRes.getChildNodes();
+				}
+			} else {
+				children = transRes.getChildNodes();
+			}
             
             // Process the templating action, supplying the templating result...
             processTemplateAction(element, children);
