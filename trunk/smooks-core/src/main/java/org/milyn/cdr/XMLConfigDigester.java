@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
-import org.milyn.dom.DomUtils;
 import org.milyn.logging.SmooksLogger;
+import org.milyn.xml.DomUtils;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

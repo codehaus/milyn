@@ -27,7 +27,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
-import org.milyn.dom.DomUtils;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
