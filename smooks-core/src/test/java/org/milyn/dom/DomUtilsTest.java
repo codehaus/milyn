@@ -18,6 +18,8 @@ package org.milyn.dom;
 
 import java.io.InputStreamReader;
 
+import org.milyn.xml.DomUtils;
+import org.milyn.xml.Parser;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

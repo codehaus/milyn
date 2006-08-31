@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.milyn.dom.Parser;
+import org.milyn.xml.Parser;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -49,8 +49,8 @@ public class ParserTest extends TestCase {
 				"x/text()", "Some 'Text'");
 		parseCheck("Text value parse failure.", "<x>Some &amp; Text</x>",
 				"x/text()", "Some &#38; Text");
-		parseCheck("Text value parse failure.", "<x>Some + - ( ) : ; . , : # £ $ % ^ @ Text</x>",
-				"x/text()", "Some + - ( ) : ; . , : # £ $ % ^ @ Text");
+		parseCheck("Text value parse failure.", "<x>Some + - ( ) : ; . , : #  $ % ^ @ Text</x>",
+				"x/text()", "Some + - ( ) : ; . , : #  $ % ^ @ Text");
 	}
 	
 	public void testParseAttribute() {
@@ -84,8 +84,8 @@ public class ParserTest extends TestCase {
 		parseCheck("Attribute value parse failure.", "<x attrib='val&amp;ue' />",
 				"x/@attrib", "val&#38;ue");
 
-		parseCheck("Attribute value parse failure.", "<x attrib='value + - ( ) : ; . , : # £ $ % ^ @ value' />",
-				"x/@attrib", "value + - ( ) : ; . , : # £ $ % ^ @ value");
+		parseCheck("Attribute value parse failure.", "<x attrib='value + - ( ) : ; . , : #  $ % ^ @ value' />",
+				"x/@attrib", "value + - ( ) : ; . , : #  $ % ^ @ value");
 	}
 	*/
 

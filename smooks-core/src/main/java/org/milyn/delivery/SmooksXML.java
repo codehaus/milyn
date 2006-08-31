@@ -33,9 +33,9 @@ import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
 import org.milyn.delivery.process.ProcessingUnitPrototype;
 import org.milyn.delivery.serialize.Serializer;
-import org.milyn.dom.DomUtils;
-import org.milyn.dom.Parser;
 import org.milyn.logging.SmooksLogger;
+import org.milyn.xml.DomUtils;
+import org.milyn.xml.Parser;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -122,13 +122,19 @@ import org.w3c.dom.NodeList;
  * A {@link org.milyn.delivery.serialize.DefaultSerializationUnit} exists and this should solve the
  * vast majority of XML serialisation requirements.
  * 
- * <h4>Other Documents</h4>
+ * <h3 id="threading">Threading Issues</a>
+ * This class processes the data associated with a single {@link org.milyn.container.ContainerRequest} instance.  This
+ * {@link org.milyn.container.ContainerRequest} instance is bound to the current thread of execution for the lifetime of the 
+ * SmooksXML instance.  For this reason it is not recommended to execute more than one SmooksXML
+ * instance concurrently within the scope of thread i.e. don't interleave them.  Of course it's perfectly fine to
+ * create a SmooksXML instance, use it, "dump" it and create and use another instance all within a single thread of execution. 
+ * 
+ * <h3>Other Documents</h3>
  * <ul>
  * 	<li>{@link org.milyn.SmooksStandalone}</li>
  * 	<li>{@link org.milyn.cdr.SmooksResourceConfiguration}</li>
  * 	<li>{@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}</li>
  * </ul>
- * 
  * 
  * <!--
  * This whole process sounds like a lot of processing.  Well, it is.  Three iterations
@@ -195,20 +201,73 @@ public class SmooksXML {
 	 * the document root node.
 	 */
 	public static final String DELIVERY_NODE_REQUEST_KEY = ContentDeliveryConfig.class.getName() + "#DELIVERY_NODE_REQUEST_KEY";
+	/**
+	 * The Threadlocal storage instance for the ContainerRequest associated with this SmooksXML instance.
+	 */
+	private static ThreadLocal requestThreadLocal = new ThreadLocal();
 	
 	/**
 	 * Public constructor.
 	 * <p/>
 	 * Constructs a Smooks instance for delivering content to the target device
 	 * associated with the uaContext.
-	 * @param containerRequest Container request for this Smooks content delivery instance.
+	 * @param containerRequest Container request for this Smooks content delivery instance.  This instance 
+	 * is bound to the current Thread of execution.  See <a href="#threading">Threading Issues</a>. 
 	 */
 	public SmooksXML(ContainerRequest containerRequest) {
 		if(containerRequest == null) {
 			throw new IllegalArgumentException("null 'containerRequest' arg passed in constructor call.");
 		}
 		this.containerRequest = containerRequest;
+		// Bind the container request to the current thread.
+		requestThreadLocal.set(containerRequest);
 		deliveryConfig = containerRequest.getDeliveryConfig();
+	}
+	
+	/**
+	 * Cleanup.
+	 * <p/>
+	 * Clears the current thread-bound {@link ContainerRequest} instance, but only if this instance
+	 * "owns" it.  See <a href="#threading">Threading Issues</a>.
+	 */
+	protected void finalize() throws Throwable {
+		ContainerRequest curContainerRequest = getContainerRequest();
+		synchronized (curContainerRequest) {
+			// Initialise again in case the scheduler switched this thread out since initialisation and
+			// in the process changed the threadlocal request instance.  This is so so unlikely, but just in case...
+			curContainerRequest = getContainerRequest();
+			if(containerRequest == curContainerRequest) {
+				// Only reset if this instance "owns" the current thread bound instance.  It may not own
+				// the instance if finalization happens after the next SmooksXML instance is created on 
+				// this thread.
+				requestThreadLocal.set(null);
+			}
+			super.finalize();
+		}
+	}
+
+	/**
+	 * Get the {@link ContainerRequest} instance bound to the current thread. 
+	 * </p>
+	 * The {@link ContainerRequest} used to instantiate this class is bound to the current Thread of execution.
+	 * See <a href="#threading">Threading Issues</a>.
+	 * @return The thread-bound {@link ContainerRequest} instance.
+	 */
+	public static ContainerRequest getContainerRequest() {
+		return (ContainerRequest)requestThreadLocal.get();
+	}
+
+	/**
+	 * Assertion method that tries to catch instances where this class is used in an interleaved manner on a single
+	 * thread.  See <a href="#threading">Threading Issues</a>.  All public methods of this class should call this
+	 * method (enter an aspect!!).
+	 */
+	private void assertNotInterleaved() {
+		ContainerRequest curContainerRequest = getContainerRequest();
+		if(containerRequest != curContainerRequest) {
+			// Stall the ball here!! There's code in place which interleaves the use of this class.
+			throw new Error("Illegal interleaving of multiple instances of " + SmooksXML.class.getName() + ".  See class Javadocs.");
+		}
 	}
 	
 	/**
@@ -220,6 +279,8 @@ public class SmooksXML {
 	 * @throws SmooksException
 	 */
 	public Node filter(Reader source) throws SmooksException {
+		assertNotInterleaved();
+		
 		Node deliveryNode;		
 		
 		if(source == null) {
@@ -245,6 +306,8 @@ public class SmooksXML {
 	 * @return Node representing filtered document.
 	 */
 	public Node filter(Document doc) {
+		assertNotInterleaved();
+		
 		Vector transList = new Vector();
 		int transListLength;
 		ProcessingSet globalProcessingSet;
@@ -424,6 +487,8 @@ public class SmooksXML {
 	 * @throws SmooksException Unable to serialise due to bad Smooks environment.  Check cause.
 	 */
 	public void serialize(Node node, Writer writer) throws IOException, SmooksException {
+		assertNotInterleaved();
+		
 		Serializer serializer;
 		
 		if(node == null) {
