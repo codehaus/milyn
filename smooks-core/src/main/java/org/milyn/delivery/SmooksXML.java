@@ -122,12 +122,15 @@ import org.w3c.dom.NodeList;
  * A {@link org.milyn.delivery.serialize.DefaultSerializationUnit} exists and this should solve the
  * vast majority of XML serialisation requirements.
  * 
- * <h3 id="threading">Threading Issues</a>
+ * <h3 id="threading">Threading Issues</h3>
  * This class processes the data associated with a single {@link org.milyn.container.ContainerRequest} instance.  This
  * {@link org.milyn.container.ContainerRequest} instance is bound to the current thread of execution for the lifetime of the 
  * SmooksXML instance.  For this reason it is not recommended to execute more than one SmooksXML
  * instance concurrently within the scope of thread i.e. don't interleave them.  Of course it's perfectly fine to
- * create a SmooksXML instance, use it, "dump" it and create and use another instance all within a single thread of execution. 
+ * create a SmooksXML instance, use it, "dump" it and create and use another instance all within a single thread of execution.
+ * <p/>
+ * A {@link org.milyn.container.ContainerRequest} instance should only be bound to the thread for the lifetime of the SmooksXML instance
+ * it is associated with (i.e. used to instantiate).  See the {@link #finalize()} method.
  * 
  * <h3>Other Documents</h3>
  * <ul>
@@ -202,7 +205,7 @@ public class SmooksXML {
 	 */
 	public static final String DELIVERY_NODE_REQUEST_KEY = ContentDeliveryConfig.class.getName() + "#DELIVERY_NODE_REQUEST_KEY";
 	/**
-	 * The Threadlocal storage instance for the ContainerRequest associated with this SmooksXML instance.
+	 * The Threadlocal storage instance for the ContainerRequest associated with the "current" SmooksXML thread instance.
 	 */
 	private static ThreadLocal requestThreadLocal = new ThreadLocal();
 	
@@ -227,8 +230,8 @@ public class SmooksXML {
 	/**
 	 * Cleanup.
 	 * <p/>
-	 * Clears the current thread-bound {@link ContainerRequest} instance, but only if this instance
-	 * "owns" it.  See <a href="#threading">Threading Issues</a>.
+	 * Clears the current thread-bound {@link ContainerRequest} instance, but only if this SmooksXML instance
+	 * "owns" the {@link ContainerRequest} instance.  See <a href="#threading">Threading Issues</a>.
 	 */
 	protected void finalize() throws Throwable {
 		ContainerRequest curContainerRequest = getContainerRequest();
@@ -249,7 +252,8 @@ public class SmooksXML {
 	/**
 	 * Get the {@link ContainerRequest} instance bound to the current thread. 
 	 * </p>
-	 * The {@link ContainerRequest} used to instantiate this class is bound to the current Thread of execution.
+	 * The {@link ContainerRequest} used to instantiate the SmooksXML class is bound to the current Thread of execution.
+	 * If should only be bound to the thread for the lifetime of the SmooksXML instance.
 	 * See <a href="#threading">Threading Issues</a>.
 	 * @return The thread-bound {@link ContainerRequest} instance.
 	 */
