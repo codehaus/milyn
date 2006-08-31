@@ -126,8 +126,9 @@ import org.w3c.dom.NodeList;
  * This class processes the data associated with a single {@link org.milyn.container.ContainerRequest} instance.  This
  * {@link org.milyn.container.ContainerRequest} instance is bound to the current thread of execution for the lifetime of the 
  * SmooksXML instance.  For this reason it is not recommended to execute more than one SmooksXML
- * instance concurrently within the scope of thread i.e. don't interleave them.  Of course it's perfectly fine to
+ * instance concurrently within the scope of a single thread i.e. don't interleave them.  Of course it's perfectly fine to
  * create a SmooksXML instance, use it, "dump" it and create and use another instance all within a single thread of execution.
+ * This also means that SmooksXML instances cannot be cached/pooled and reused.
  * <p/>
  * A {@link org.milyn.container.ContainerRequest} instance should only be bound to the thread for the lifetime of the SmooksXML instance
  * it is associated with (i.e. used to instantiate).  See the {@link #finalize()} method.
