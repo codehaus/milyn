@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.milyn.SmooksStandalone;
+import org.milyn.templating.CharUtils;
 import org.milyn.templating.TemplatingUtils;
 import org.xml.sax.SAXException;
 
@@ -39,18 +40,10 @@ public class ShippingIntegSampleTest extends TestCase {
                 
         InputStream requestStream = getClass().getResourceAsStream("request.xml");
         String requestResult = smooks.filterAndSerialize("shipping-request", requestStream);
-        System.out.println(requestResult);
-        
-        // Node requestTrans = smooks.filter("shipping-request", requestStream);
-        // smooks.serialize("shipping-request", requestTrans, outputWriter);
+		CharUtils.assertEquals("StringTemplate test failed.", "/org/milyn/templating/stringtemplate/sample/request.xml.tran.expected", requestResult);
 
         InputStream responseStream = getClass().getResourceAsStream("response.xml");
         String responseResult = smooks.filterAndSerialize("shipping-response", responseStream);
-        System.out.println(responseResult);
-
-        // Node responseTrans = smooks.filter("shipping-response", responseStream);
-        // smooks.serialize("shipping-response", responseTrans, responseOutputWriter);
-        
-        // get assertions on this - need something for doing the compare that can handle the \r and \n chars
+		CharUtils.assertEquals("StringTemplate test failed.", "/org/milyn/templating/stringtemplate/sample/response.xml.tran.expected", responseResult);
     }
 }

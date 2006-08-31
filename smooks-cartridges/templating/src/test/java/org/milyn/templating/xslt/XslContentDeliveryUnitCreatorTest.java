@@ -16,7 +16,6 @@
 
 package org.milyn.templating.xslt;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.milyn.SmooksException;
@@ -50,14 +49,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 			e.printStackTrace();
 			fail("unexpected exception: " + e.getMessage());
 		}
-		boolean equalsExpected = CharUtils.compareCharStreams(getClass().getResourceAsStream("xsltransunit.expected1"), new ByteArrayInputStream(transResult.getBytes()));
-		if(!equalsExpected) {
-			System.out.println("XSL Comparison Failure - See xsltransunit.expected.");
-			System.out.println("============== Actual ==================");
-			System.out.println(transResult);
-			System.out.println("====================================================================================");
-		}
-		assertTrue("Expected XSL Transformation result failure.", equalsExpected);
+		CharUtils.assertEquals("XSL Comparison Failure - See xsltransunit.expected1.", "/org/milyn/templating/xslt/xsltransunit.expected1", transResult);
 	}	
 
 	public void testXslUnitTrans_parambased() {
@@ -88,13 +80,6 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 			e.printStackTrace();
 			fail("unexpected exception: " + e.getMessage());
 		}
-		boolean equalsExpected = CharUtils.compareCharStreams(getClass().getResourceAsStream(expectedFileName), new ByteArrayInputStream(transResult.getBytes()));
-		if(!equalsExpected) {
-			System.out.println("XSL Comparison Failure.  action=" + action + ".  See " + expectedFileName );
-			System.out.println("============== Actual ==================");
-			System.out.println(transResult);
-			System.out.println("====================================================================================");
-		}
-		assertTrue("Expected XSL Transformation result failure.", equalsExpected);
+		CharUtils.assertEquals("XSL Comparison Failure.  action=" + action + ".  See " + expectedFileName, "/org/milyn/templating/xslt/" + expectedFileName, transResult);
 	}	
 }
