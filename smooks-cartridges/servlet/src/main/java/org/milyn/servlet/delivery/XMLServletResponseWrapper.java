@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.milyn.SmooksException;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.SmooksXML;
-import org.milyn.dom.Parser;
+import org.milyn.xml.Parser;
 import org.milyn.logging.SmooksLogger;
 import org.milyn.servlet.http.HeaderAction;
 import org.milyn.servlet.parse.HTMLSAXParser;

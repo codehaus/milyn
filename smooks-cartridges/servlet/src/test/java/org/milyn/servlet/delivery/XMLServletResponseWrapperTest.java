@@ -27,7 +27,7 @@ import org.milyn.delivery.MockContentDeliveryConfig;
 import org.milyn.delivery.process.AbstractProcessingUnit;
 import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
-import org.milyn.dom.DomUtils;
+import org.milyn.xml.DomUtils;
 import org.milyn.servlet.http.HeaderAction;
 import org.w3c.dom.Element;
 
