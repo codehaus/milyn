@@ -222,8 +222,11 @@ public class SmooksXML {
 			throw new IllegalArgumentException("null 'containerRequest' arg passed in constructor call.");
 		}
 		this.containerRequest = containerRequest;
-		// Bind the container request to the current thread.
-		requestThreadLocal.set(containerRequest);
+		synchronized (requestThreadLocal) {
+			// Bind the container request to the current thread.
+			requestThreadLocal.set(containerRequest);
+
+		}
 		deliveryConfig = containerRequest.getDeliveryConfig();
 	}
 	
@@ -231,21 +234,23 @@ public class SmooksXML {
 	 * Cleanup.
 	 * <p/>
 	 * Clears the current thread-bound {@link ContainerRequest} instance, but only if this SmooksXML instance
-	 * "owns" the {@link ContainerRequest} instance.  See <a href="#threading">Threading Issues</a>.
+	 * "owns" the {@link ContainerRequest} instance that's bound to the current thread.  
+	 * See <a href="#threading">Threading Issues</a>.
 	 */
 	protected void finalize() throws Throwable {
-		ContainerRequest curContainerRequest = getContainerRequest();
-		synchronized (curContainerRequest) {
-			// Initialise again in case the scheduler switched this thread out since initialisation and
-			// in the process changed the threadlocal request instance.  This is so so unlikely, but just in case...
-			curContainerRequest = getContainerRequest();
-			if(containerRequest == curContainerRequest) {
-				// Only reset if this instance "owns" the current thread bound instance.  It may not own
-				// the instance if finalization happens after the next SmooksXML instance is created on 
-				// this thread.
-				requestThreadLocal.set(null);
+		synchronized (requestThreadLocal) {
+			try {
+				ContainerRequest curContainerRequest = getContainerRequest();
+				if(containerRequest == curContainerRequest) {
+					// Only reset if this instance "owns" the current thread bound instance.  It may not own
+					// the instance if finalization happens after the next SmooksXML instance is created on 
+					// this thread.
+					requestThreadLocal.set(null);
+				}
+			} finally {
+				// Make sure the super finalizer gets called!!
+				super.finalize();
 			}
-			super.finalize();
 		}
 	}
 
