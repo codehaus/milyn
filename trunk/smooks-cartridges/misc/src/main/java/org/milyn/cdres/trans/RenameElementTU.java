@@ -19,7 +19,7 @@ package org.milyn.cdres.trans;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.process.AbstractProcessingUnit;
-import org.milyn.dom.DomUtils;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
