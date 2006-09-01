@@ -21,8 +21,8 @@ import java.io.InputStream;
 import org.milyn.SmooksException;
 import org.milyn.SmooksStandalone;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.templating.CharUtils;
 import org.milyn.templating.TemplatingUtils;
+import org.milyn.templating.util.CharUtils;
 
 import junit.framework.TestCase;
 

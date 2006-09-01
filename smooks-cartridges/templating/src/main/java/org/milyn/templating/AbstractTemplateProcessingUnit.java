@@ -77,7 +77,9 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
 		
 		// Iterate over the NodeList and process each Node against the action. 
 		for(int i = 0; i < count; i++) {
-			_processTemplateAction(element, templatingResultNodeList.item(i), action);
+			// We iterate over the list in this way because the nodes are auto removed from the
+			// the list as they are added/inserted elsewhere.
+			_processTemplateAction(element, templatingResultNodeList.item(0), action);
 		}
 	}
 

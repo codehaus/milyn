@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.templating;
+package org.milyn.templating.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
