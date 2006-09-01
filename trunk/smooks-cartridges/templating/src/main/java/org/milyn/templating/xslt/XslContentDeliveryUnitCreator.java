@@ -30,6 +30,9 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryUnit;
@@ -169,6 +172,11 @@ import org.w3c.dom.NodeList;
  */
 public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
 
+	/**
+	 * Logger.
+	 */
+	private static Log logger = LogFactory.getLog(XslContentDeliveryUnitCreator.class);
+	
     /**
      * Public constructor.
      * @param config Configuration details for this ContentDeliveryUnitCreator.
@@ -232,10 +240,11 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 			// If it's not a full XSL template, we need to make it so by wrapping it.
             isTemplatelet = resourceConfig.getBoolParameter("is-xslt-templatelet", true);
             if(isTemplatelet) {
-				String templatelet = new String(StreamUtils.readStream(getClass().getResourceAsStream("doc-files/templatelet.xsl")));
+				String templateletWrapper = new String(StreamUtils.readStream(getClass().getResourceAsStream("doc-files/templatelet.xsl")));
+				String templatelet = new String(xslBytes);
 				
-				templatelet = templatelet.replaceFirst("@@@templatelet@@@", new String(xslBytes));
-				xslBytes = templatelet.getBytes();
+				templateletWrapper = StringUtils.replace(templateletWrapper, "@@@templatelet@@@", templatelet);
+				xslBytes = templateletWrapper.getBytes();
 			}
 
 			xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), encoding));
@@ -252,10 +261,9 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 			
 			try {
 				xslTemplate.newTransformer().transform(new DOMSource(element), new DOMResult(transRes));
-			} catch (TransformerConfigurationException e) {
-				e.printStackTrace();
-			} catch (TransformerException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				logger.error("Error applying XSLT to node [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "]", e);
+				return;
 			} finally {
 				docElement.removeChild(transRes);
 			}

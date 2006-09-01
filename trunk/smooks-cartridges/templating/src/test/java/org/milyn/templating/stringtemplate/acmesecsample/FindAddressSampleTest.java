@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.milyn.SmooksStandalone;
-import org.milyn.templating.CharUtils;
 import org.milyn.templating.TemplatingUtils;
+import org.milyn.templating.util.CharUtils;
 import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;

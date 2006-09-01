@@ -5,7 +5,7 @@
 				extension-element-prefixes="smooks-bean" 
 				version="1.0">
 
-	<xsl:template match="*">
+	<xsl:template match="*" name="templatelet">
 		<!-- 
 			Don't remove the enclosing "root-do-not-remove" element.  Smooks will remove this for you.
 			This "root-do-not-remove" element helps avoid the "can't add content before the root element"
