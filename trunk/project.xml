@@ -20,6 +20,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${commons_lang.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>mockobjects</groupId>
 			<artifactId>mockobjects-jdk1.4</artifactId>
 			<version>0.09</version>
