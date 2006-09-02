@@ -24,7 +24,6 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -255,21 +254,16 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 			Document ownerDoc = element.getOwnerDocument();
 			Element transRes = ownerDoc.createElement("xsltrans");
 			NodeList children = null;
-			Element docElement = ownerDoc.getDocumentElement();
-			
-			docElement.appendChild(transRes);
 			
 			try {
 				xslTemplate.newTransformer().transform(new DOMSource(element), new DOMResult(transRes));
 			} catch (Exception e) {
 				logger.error("Error applying XSLT to node [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "]", e);
 				return;
-			} finally {
-				docElement.removeChild(transRes);
 			}
 			
 			if(isTemplatelet) {
-				// If the template in use on this resource is a templatelet, check for an remove the
+				// If the template in use on this resource is a templatelet, check for and remove the
 				// enclosing "root-do-not-remove" element i.e. the templatelet content is inside
 				// the "root-do-not-remove" element.
 				Element dontRemoveEl = DomUtils.getElement(transRes, "root-do-not-remove", 1, Namespace.SMOOKS_URI);
