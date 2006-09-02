@@ -1,31 +1,24 @@
 <html>
     <head></head>
     <body>
-    	Smooks Content Filtering Framework.
+    	Smooks Content Filtering and Serialisation Framework.
 
 		<h1>Overview</h1>
-		Smooks is a framework for filtering content 
+		<a href="http://milyn.codehaus.org/Smooks" target="new">Smooks</a> is a framework for filtering and serialisation content 
 		(XML/XHTML/HTML etc) in a manner that can be optimised for a given execution context e.g. optimised for the requesting
-		browser in a Servlet Container.
-
-		<h2>XML/XHTML/HTML Filtering</h2>
-		<a href="org/milyn/delivery/SmooksXML.html">SmooksXML</a> is a filtering solution for
-		XML/XHTML/HTML etc.  It can be used as a Java alternative to templating solutions such as XSLT,
-		or simply as an XML analysis tool.
-		SmooksXML is a DOM <a href="org/milyn/delivery/ElementVisitor.html">visitor</a> type implementation.
+		browser in a Servlet Container.  It allows you perform transformation tasks on messages using different technologies
+		(Java, XSLT, StringTemplate etc) seperately or all at the same time i.e. it allows you mix technologies within the scope of a
+		single message transformation.
 		<p/>
-		As an alternative to XSLT, <a href="org/milyn/delivery/SmooksXML.html">SmooksXML</a> is a non-templating solution.  
-		By this we mean that it doesn't "manufacture" a completely new XML document using a source document as input.  Instead,
-		<a href="org/milyn/delivery/SmooksXML.html">SmooksXML</a> <a href="org/milyn/delivery/ElementVisitor.html">visits</a> the source
-		document and transforms the source i.e. no new document created.
+		Smooks can also be used simply as an XML analysis tool.
 
-		<h2>Other Docs</h2>
+		<h2>Good Starting Points:</h2>
 		<ol>
+			<li><a href="http://milyn.codehaus.org/Tutorials" target="new">Smooks Tutorials</a>.</li>
 			<li><a href="org/milyn/SmooksStandalone.html">SmooksStandalone</a>: SmooksXML in a non-containered environment.
-			This class provides the standard mechanism for using Smooks.</li>
+			This class provides the standard mechanism for using Smooks out side a containered environment.</li>
 			<li>Smooks User Docs at 
 			<a href="http://milyn.codehaus.org/Smooks" target="new">milyn.codehaus.org</a>.</li>
-			<li><a href="http://milyn.codehaus.org/Tutorials">Milyn Tutorials</a>.</li>
 		</ol>
     </body>
 </html>

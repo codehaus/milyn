@@ -17,7 +17,6 @@
 package org.milyn.delivery;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Hashtable;

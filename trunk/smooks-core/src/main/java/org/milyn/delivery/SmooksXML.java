@@ -406,7 +406,7 @@ public class SmooksXML {
 					try {
 						assemblyUnit.visit(element, containerRequest);
 					} catch(Exception e) {
-						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to element [" + element.getTagName() + "].", e);
+						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);
 					}
 				}
 			}
@@ -602,7 +602,7 @@ public class SmooksXML {
 				try {
 					processingUnit.visit(element, containerRequest);
 				} catch(Exception e) {
-					logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to element [" + element.getTagName() + "].", e);
+					logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);
 				}
 			}
 		}
