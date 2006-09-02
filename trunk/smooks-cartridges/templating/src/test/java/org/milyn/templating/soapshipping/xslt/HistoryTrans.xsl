@@ -13,7 +13,7 @@
 
 	<xsl:variable name="trackingNumberCount" select="smooks-bean:select('history.trackingNumbers.length')"/>
 	
-	<!-- Recursively called templste for outputting the trackingNumber elements -->
+	<!-- Recursively called template for outputting the trackingNumber elements -->
 	<xsl:template name="outputTrackingNumber">
 		<xsl:param name="i" select="0"/>
 
