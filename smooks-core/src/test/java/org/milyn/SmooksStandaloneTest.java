@@ -21,6 +21,7 @@ import java.io.CharArrayWriter;
 import java.io.IOException;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.standalone.StandaloneContainerRequest;
 import org.milyn.container.standalone.TestSmooksStandalone;
 import org.milyn.util.DomUtil;
 import org.milyn.xml.XmlUtil;
@@ -91,10 +92,11 @@ public class SmooksStandaloneTest extends TestCase {
 		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
 		Document doc = XmlUtil.parseStream(new ByteArrayInputStream(message.getBytes()), false, false);
 
-		doc = (Document)smooks.filter("message-target1", doc);
+		StandaloneContainerRequest request = smooks.createRequest("message-target1", null);
+		doc = (Document)smooks.filter(request, doc);
 
 		CharArrayWriter writer = new CharArrayWriter();
-		smooks.serialize("message-target1", doc, writer);
+		smooks.serialize(request, doc, writer);
 		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
 	}
 }

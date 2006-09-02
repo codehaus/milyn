@@ -97,10 +97,36 @@ public class SmooksStandalone {
 	}
 	
 	/**
-	 * Process the content at the specified URI for the specified useragent.
+	 * Create a {@link StandaloneContainerRequest} instance for use on this SmooksStandalone instance.
 	 * <p/>
-	 * Calls {@link #process(URI, InputStream)} after opening an {@link InputStream}
-	 * to the specified {@link URI}.
+	 * This method is used in subsequent calls to {@link #filter(StandaloneContainerRequest, Document) filter(1)},
+	 * {@link #filter(StandaloneContainerRequest, InputStream) filter(2)} and
+	 * {@link #serialize(StandaloneContainerRequest, Node, Writer)}.  It allows access to the container request instance 
+	 * before and after calls on these methods.  This means the caller has an opportunity to set and get data 
+	 * {@link org.milyn.container.BoundAttributeStore bound} to the request (before and after the calls), providing the 
+	 * caller with a mechanism for interacting with the filtering and serialisation processes.  
+	 * <p/> 
+	 * @param useragent The useragent on behalf of whom the filtering/serialisation
+	 * process is to be executed.
+	 * @param requestURI The URI context of the content to be processed.  This arg needs to
+	 * be supplied if any of the {@link org.milyn.delivery.ElementVisitor} implementations
+	 * used in subsequent {@link #filter(StandaloneContainerRequest, Document) filter(1)},
+	 * {@link #filter(StandaloneContainerRequest, InputStream) filter(2)}, or
+	 * {@link #serialize(StandaloneContainerRequest, Node, Writer)} calls call {@link org.milyn.container.ContainerRequest#getRequestURI()}.
+	 * @return
+	 */
+	public StandaloneContainerRequest createRequest(String useragent, URI requestURI) {
+		StandaloneContainerSession session = context.getSession(useragent);
+		
+		return new StandaloneContainerRequest(requestURI, new LinkedHashMap(), session);
+	}
+	
+	/**
+	 * Filter the content at the specified URI for the specified useragent.
+	 * <p/>
+	 * The content of the Node returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit} 
+	 * and {@link org.milyn.delivery.serialize.SerializationUnit} implementations.
 	 * @param useragent The useragent on behalf of whom the filtering
 	 * is to be executed.
 	 * @param requestURI URI of the content to be processed.
@@ -121,16 +147,11 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process the content at the specified {@link InputStream} for the specified useragent.
+	 * Filter the content at the specified {@link InputStream} for the specified useragent.
 	 * <p/>
-	 * So this version of the process method doesn't actually open a stream to the
-	 * specified URI.  It uses the supplied stream.  The URI is supplied simply to
-	 * namespace the stream and satisfy dependencies on the
-	 * {@link StandaloneContainerRequest#getRequestURI()} method.
-	 * <p/>
-	 * The content of the buffer returned is totally dependent on the configured
-	 * {@link org.milyn.delivery.process.ProcessingUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
-	 * implementations. 
+	 * The content of the Node returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit} 
+	 * and {@link org.milyn.delivery.serialize.SerializationUnit} implementations.
      * @param useragent The useragent on behalf of whom the filtering
      * is to be executed.
 	 * @param stream Stream to be processed.  Will be closed before returning.
@@ -142,15 +163,15 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process the content at the specified {@link InputStream} for the specified useragent.
+	 * Filter the content at the specified {@link InputStream} for the specified useragent.
 	 * <p/>
-	 * The difference between this method and {@link #process(URI)} is simply that this implementation
+	 * The difference between this method and {@link #filter(String, URI)} is simply that this implementation
 	 * uses the supplied stream rather than attempting to open another stream from the requestURI
 	 * parameter.
 	 * <p/>
-	 * The content of the buffer returned is totally dependent on the configured
-	 * {@link org.milyn.delivery.process.ProcessingUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
-	 * implementations.
+	 * The content of the Node returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit} 
+	 * and {@link org.milyn.delivery.serialize.SerializationUnit} implementations.
 	 * @param useragent The useragent on behalf of whom the transformation
 	 * process is to be executed.
 	 * @param requestURI The URI context of the content to be processed.  This arg needs to
@@ -161,21 +182,44 @@ public class SmooksStandalone {
 	 * @throws SmooksException Excepting processing content stream.
 	 */
 	public Node filter(String useragent, URI requestURI, InputStream stream) throws SmooksException {
+		return filter(createRequest(useragent, requestURI), stream);
+	}
+
+	/**
+	 * Filter the content at the specified {@link InputStream} for the useragent associated with the 
+	 * supplied request object.
+	 * <p/>
+	 * The difference between this method and {@link #process(URI)} is simply that this implementation
+	 * uses the supplied stream rather than attempting to open another stream from the requestURI
+	 * parameter.
+	 * <p/>
+	 * This method allows access to the container request instance before and after the filtering process.
+	 * This means the caller has an opportunity to set and get data bound to the request (before and after). 
+	 * <p/>
+	 * The content of the Node returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit} 
+	 * and {@link org.milyn.delivery.serialize.SerializationUnit} implementations.
+	 * @param request The {@link StandaloneContainerRequest} for this filter operation. See
+	 * {@link #createRequest(String, URI)}.
+	 * @param stream Stream to be processed.  Will be closed before returning.
+	 * @return The Smooks processed content DOM {@link Node}.
+	 * @throws SmooksException Excepting processing content stream.
+	 */
+	public Node filter(StandaloneContainerRequest request, InputStream stream) throws SmooksException {
+		if(request == null) {
+			throw new IllegalArgumentException("null 'request' arg in method call.");
+		}
 		if(stream == null) {
 			throw new IllegalArgumentException("null 'stream' arg in method call.");
 		}
-		StandaloneContainerSession session = context.getSession(useragent);
-		Node node;
-		SmooksXML smooks;
 		
-		request = new StandaloneContainerRequest(requestURI, new LinkedHashMap(), session);
-		smooks = new SmooksXML(request);
+		SmooksXML smooks = new SmooksXML(request);
         try {
     		if(contentEncoding == null) {
-    			node = smooks.filter(new InputStreamReader(stream));
+    			return smooks.filter(new InputStreamReader(stream));
     		} else {
     			try {
-    				node = smooks.filter(new InputStreamReader(stream, contentEncoding));
+    				return smooks.filter(new InputStreamReader(stream, contentEncoding));
     			} catch (UnsupportedEncodingException e) {
     				Error error = new Error("Unexpected exception.  Encoding has already been validated as being unsupported.");
     				error.initCause(e);
@@ -189,16 +233,14 @@ public class SmooksStandalone {
                 SmooksLogger.getLog().error("Exception closing input stream.", e);
             }
         }
-		
-		return node;
 	}
 
 	/**
-	 * Process supplied {@link Document} for the specified useragent.
+	 * Filter supplied {@link Document} for the specified useragent.
 	 * <p/>
-	 * The content of the buffer returned is totally dependent on the configured
-	 * {@link org.milyn.delivery.process.ProcessingUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
-	 * implementations.
+	 * The content of the Node returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit} 
+	 * and {@link org.milyn.delivery.serialize.SerializationUnit} implementations.
      * @param useragent The useragent on behalf of whom the filtering
      * is to be executed.
 	 * @param document Document to be processed.
@@ -210,35 +252,45 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process supplied {@link Document} for the specified useragent.
+	 * Filter supplied {@link Document} for the specified useragent.
 	 * <p/>
-	 * The content of the buffer returned is totally dependent on the configured
-	 * {@link org.milyn.delivery.process.ProcessingUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
-	 * implementations.
-	 * @param useragent The useragent on behalf of whom the transformation
-	 * process is to be executed.
-	 * @param requestURI The URI context of the content to be processed.  This arg needs to
-	 * be supplied if any of the {@link org.milyn.delivery.ElementVisitor} implemenmtations
-	 * use call {@link org.milyn.container.ContainerRequest#getRequestURI()}.
+	 * The content of the Node returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit} 
+	 * and {@link org.milyn.delivery.serialize.SerializationUnit} implementations.
 	 * @param document Document to be processed.
 	 * @return The Smooks processed content DOM {@link Node}.
 	 * @throws SmooksException Excepting processing the document.
 	 */
 	public Node filter(String useragent, URI requestURI, Document document) throws SmooksException {
+		return filter(createRequest(useragent, requestURI),  document);
+	}
+
+	/**
+	 * Filter supplied {@link Document} for the specified useragent.
+	 * <p/>
+	 * This method allows access to the container request instance before and after the filtering process.
+	 * This means the caller has an opportunity to set and get data bound to the request (before and after). 
+	 * <p/>
+	 * The content of the Node returned is totally dependent on the configured
+	 * {@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit} 
+	 * and {@link org.milyn.delivery.serialize.SerializationUnit} implementations.
+	 * @param request The {@link StandaloneContainerRequest} for this filter operation. See
+	 * {@link #createRequest(String, URI)}.
+	 * @param document Document to be processed.
+	 * @return The Smooks processed content DOM {@link Node}.
+	 * @throws SmooksException Excepting processing the document.
+	 */
+	public Node filter(StandaloneContainerRequest request, Document document) throws SmooksException {
 		if(document == null) {
 			throw new IllegalArgumentException("null 'document' arg in method call.");
 		}
-		StandaloneContainerSession session = context.getSession(useragent);
-		SmooksXML smooks;
-		
-		request = new StandaloneContainerRequest(requestURI, new LinkedHashMap(), session);
-		smooks = new SmooksXML(request);
+		SmooksXML smooks = new SmooksXML(request);
 
 		return smooks.filter(document);
 	}
 	
 	/**
-	 * Process the content at the specified {@link InputStream} for the specified useragent
+	 * Filter the content at the specified {@link InputStream} for the specified useragent
 	 * and serialise into a String buffer.  See {@link #process(URI, InputStream)}.
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
@@ -256,7 +308,7 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Process the content at the specified {@link InputStream} for the specified useragent
+	 * Filter the content at the specified {@link InputStream} for the specified useragent
 	 * and serialise into a String buffer.  See {@link #process(URI, InputStream)}.
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
@@ -275,10 +327,11 @@ public class SmooksStandalone {
 		String responseBuf = null;
 		CharArrayWriter writer = new CharArrayWriter();
 		try {
+			StandaloneContainerRequest request = createRequest(useragent, requestURI);
 			Node node;
 
-			node = filter(useragent, requestURI, stream);
-			serialize(useragent, node, writer);
+			node = filter(request, stream);
+			serialize(request, node, writer);
 			responseBuf = writer.toString();
 		} finally {
 			if(stream != null) {
@@ -295,18 +348,16 @@ public class SmooksStandalone {
 	}
 
 	/**
-	 * Serialise the supplied node based on the specified useragents serialisation
-	 * configuration.
-	 * @param useragent The useragent on behalf of whom the serialisation
-	 * process is to be executed.
+	 * Serialise the supplied node.
+	 * @param request The {@link StandaloneContainerRequest} for this serialisation operation. See
+	 * {@link #createRequest(String, URI)}.
 	 * @param node Node to be serialised.
 	 * @param writer Serialisation output writer.
 	 * @throws IOException Unable to write to output writer.
 	 * @throws SmooksException Unable to serialise due to bad Smooks environment.  Check cause.
 	 */
-	public void serialize(String useragent, Node node, Writer writer) throws SmooksException {
+	public void serialize(StandaloneContainerRequest request, Node node, Writer writer) throws SmooksException {
 		SmooksXML smooks;
-		StandaloneContainerRequest serRequest = getLastRequest();
 		
 		if(node == null) {
 			throw new IllegalArgumentException("null 'node' arg in method call.");
@@ -315,10 +366,6 @@ public class SmooksStandalone {
 			throw new IllegalArgumentException("null 'writer' arg in method call.");
 		}
 		
-		if(serRequest == null) {
-			StandaloneContainerSession session = context.getSession(useragent);
-			serRequest = new StandaloneContainerRequest(null, new LinkedHashMap(), session);
-		}
 		smooks = new SmooksXML(request);
 		try {
 			smooks.serialize(node, writer);
