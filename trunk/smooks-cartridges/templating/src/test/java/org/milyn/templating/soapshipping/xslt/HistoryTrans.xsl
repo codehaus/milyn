@@ -1,6 +1,5 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-				xmlns:smooks-bean="org.milyn.templating.xslt.XalanJavabeanExtension"
+				xmlns:smooks-bean="xalan://org.milyn.templating.xslt.XalanJavabeanExtension"
 				extension-element-prefixes="smooks-bean" 
 				version="1.0">
 
