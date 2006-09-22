@@ -19,6 +19,8 @@ package org.milyn.xml;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
@@ -34,6 +36,11 @@ import org.w3c.dom.Text;
  * @author tfennelly
  */
 public abstract class DomUtils {
+    
+    /**
+     * Logger.
+     */
+    private static Log logger = LogFactory.getLog(DomUtils.class);
 
 	/**
 	 * Copy child node references from source to target.
@@ -58,6 +65,25 @@ public abstract class DomUtils {
 		oldNode.getParentNode().replaceChild(newNode, oldNode);
 	}
 
+    /**
+     * Insert the supplied node before the supplied reference node (refNode).
+     * @param newNode Node to be inserted.
+     * @param refNode Reference node before which the supplied nodes should
+     * be inserted.
+     */
+    public static void insertBefore(Node newNode, Node refNode) {
+        Node parentNode = refNode.getParentNode();
+        
+        if(parentNode instanceof Document && newNode instanceof Element) {
+            // document node needs to be handled differently or else we'll get errors...
+            logger.warn("Request to insert an element before the Document root node.  This is not allowed.  Replacing the Document root with the new Node.");
+            parentNode.removeChild(refNode);
+            parentNode.appendChild(newNode);
+        } else {
+            parentNode.insertBefore(newNode, refNode);
+        }
+    }
+
 	/**
 	 * Insert the supplied nodes before the supplied reference node (refNode).
 	 * @param newNodes Nodes to be inserted.
@@ -69,9 +95,23 @@ public abstract class DomUtils {
 		int nodeCount = newNodes.getLength();
 		List nodeList = DomUtils.copyNodeList(newNodes);
 		
-		for(int i = 0; i < nodeCount; i++) {
-			parentNode.insertBefore((Node)nodeList.get(i), refNode);
-		}
+        if(nodeCount == 0) {
+            return;
+        }
+        
+        if(parentNode instanceof Document) {
+            // document node needs to be handled differently or else we'll get errors...
+            logger.warn("Request to insert an element before the Document root node.  This is not allowed.  Replacing the Document root with the first element from the supplied NodeList.");
+            parentNode.removeChild(refNode);
+            parentNode.appendChild((Node)nodeList.get(0));
+            if(nodeCount > 0) {
+                logger.warn("Supplied NodeList is 1+ in length.  Replacing root node with the first node from the NodeList.");
+            }
+        } else {
+    		for(int i = 0; i < nodeCount; i++) {
+    			parentNode.insertBefore((Node)nodeList.get(i), refNode);
+    		}
+        }
 	}
 	
 	/**
@@ -95,15 +135,28 @@ public abstract class DomUtils {
 		Node parentNode = oldNode.getParentNode();
 		int nodeCount = newNodes.getLength();
 		List nodeList = DomUtils.copyNodeList(newNodes);
-		
-		for(int i = 0; i < nodeCount; i++) {
-			if(clone) {
-				parentNode.insertBefore(((Node)nodeList.get(i)).cloneNode(true), oldNode);
-			} else {
-				parentNode.insertBefore((Node)nodeList.get(i), oldNode);
-			}
-		}
-		oldNode.getParentNode().removeChild(oldNode);
+        
+        if(nodeCount == 0) {
+            return;
+        }
+        
+        if(parentNode instanceof Document) {
+            // document node needs to be handled differently or else we'll get errors...
+            parentNode.removeChild(oldNode);
+            parentNode.appendChild((Node)nodeList.get(0));
+            if(nodeCount > 0) {
+                logger.warn("Request to replace the Document root node with a 1+ in length NodeList.  Replacing root node with the first node from the NodeList.");
+            }
+        } else {
+    		for(int i = 0; i < nodeCount; i++) {
+    			if(clone) {
+    				parentNode.insertBefore(((Node)nodeList.get(i)).cloneNode(true), oldNode);
+    			} else {
+    				parentNode.insertBefore((Node)nodeList.get(i), oldNode);
+    			}
+    		}
+    		oldNode.getParentNode().removeChild(oldNode);
+        }
 	}
 
 	/**

@@ -22,11 +22,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.apache.xpath.XPathAPI;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -264,7 +266,8 @@ public class XmlUtil {
 		}
     }
         
-	private static String ELEMENT_NAME_FUNC = "/name()";			
+	private static String ELEMENT_NAME_FUNC = "/name()";
+    private static XPathFactory xPathFactory = XPathFactory.newInstance();
     /**
      * Get the W3C NodeList instance associated with the XPath selection supplied.
      * @param node The document node to be searched.
@@ -273,23 +276,22 @@ public class XmlUtil {
      * document, or null.
      */
     public static NodeList getNodeList(Node node, String xpath) {
-    	String returnVal = null;
-    	Node selectedNode = null;    	
-
 		if(node == null) {
 			throw new IllegalArgumentException("null 'document' arg in method call.");
 		} else if(xpath == null) {
 			throw new IllegalArgumentException("null 'xpath' arg in method call.");
 		}
 		try {
+            XPath xpathEvaluater = xPathFactory.newXPath();
+            
 			if(xpath.endsWith(ELEMENT_NAME_FUNC)) {
-				return XPathAPI.selectNodeList(node, xpath.substring(0, xpath.length() - ELEMENT_NAME_FUNC.length()));
+                return (NodeList)xpathEvaluater.evaluate(xpath.substring(0, xpath.length() - ELEMENT_NAME_FUNC.length()), node, XPathConstants.NODESET);
 			} else {
-				return XPathAPI.selectNodeList(node, xpath);
+                return (NodeList)xpathEvaluater.evaluate(xpath, node, XPathConstants.NODESET);
 			}
-		} catch (TransformerException e) {
-			return null;
-		}
+		} catch (XPathExpressionException e) {
+            throw new IllegalArgumentException("bad 'xpath' expression [" + xpath + "].", e);
+        }
     }
 
     /**
