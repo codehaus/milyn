@@ -4,9 +4,12 @@ import java.io.IOException;
 
 import javax.xml.transform.TransformerConfigurationException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.process.AbstractProcessingUnit;
 import org.milyn.xml.DomUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,11 +30,13 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
     private static final int INSERT_BEFORE = 2;
     private static final int INSERT_AFTER = 3;
     
+    private Log logger;
     private boolean visitBefore = false;
     private int action = REPLACE;
 
     public AbstractTemplateProcessingUnit(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException {
 		super(config);
+        logger = LogFactory.getLog(getClass());
         visitBefore = config.getBoolParameter("visitBefore", false);
         setAction(config);
         loadTemplate(config);
@@ -84,13 +89,20 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
 	}
 
 	private void _processTemplateAction(Element element, Node node, int action) {
-		Node parent = element.getParentNode();
+        Node parent = element.getParentNode();
+
+        // Can't insert before or after the root element...
+        if(parent instanceof Document && (action == INSERT_BEFORE || action == INSERT_AFTER)) {
+            logger.warn("Insert before/after root element not allowed.  Consider using the replace action!!");
+            return;
+        }
+        
         switch (action) {
         case ADDTO:
             element.appendChild(node);
             break;
         case INSERT_BEFORE:
-            parent.insertBefore(node, element);
+            DomUtils.insertBefore(node, element);
             break;
         case INSERT_AFTER:
             Node nextSibling = element.getNextSibling();
@@ -100,7 +112,7 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
                 parent.appendChild(node);
             } else {
                 // insert before the "nextSibling" - Node doesn't have an "insertAfter" operation!
-                parent.insertBefore(node, nextSibling);
+                DomUtils.insertBefore(node, nextSibling);
             }
             break;
         case REPLACE:
