@@ -18,6 +18,10 @@ package org.milyn.dom;
 
 import java.io.InputStreamReader;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Parser;
 import org.milyn.xml.XmlUtil;
@@ -103,7 +107,7 @@ public class DomUtilsTest extends TestCase {
 		
 		assertEquals("This is wh&#97;t were looking for", allText);
 	}
-	
+    
 	private void test_getXPath(Document doc, String testPath) {
 		Element element = (Element)XmlUtil.getNode(doc, testPath);
 		String xpath = DomUtils.getXPath(element);
@@ -119,5 +123,5 @@ public class DomUtilsTest extends TestCase {
 			fail(e.getMessage());
 		}
 		return null;
-	}
+    }
 }
