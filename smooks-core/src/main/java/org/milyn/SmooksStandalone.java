@@ -60,7 +60,6 @@ import sun.io.CharToByteConverter;
 public class SmooksStandalone {
 
 	private StandaloneContainerContext context;
-	private StandaloneContainerRequest request;
 	private String contentEncoding;
 	
 	/**
@@ -382,16 +381,6 @@ public class SmooksStandalone {
 	 */
 	public StandaloneContainerSession getSession(String useragent) {
 		return context.getSession(useragent);
-	}
-
-	/**
-	 * Get the last request {@link #processAndSerialize(URI, InputStream) processed} on this
-	 * instance.
-	 * @return The last request {@link #processAndSerialize(URI, InputStream) processed} on this
-	 * instance, or null if none have yet been processed.
-	 */
-	public StandaloneContainerRequest getLastRequest() {
-		return request;
 	}
 
     /**

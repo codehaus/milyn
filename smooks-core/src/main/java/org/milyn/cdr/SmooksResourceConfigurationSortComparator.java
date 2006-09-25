@@ -40,7 +40,7 @@ import org.milyn.device.UAContext;
 	// of all its useragent expressions.
 	{@link org.milyn.cdr.UseragentExpression}[] useragents = resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getUseragentExpressions() getUseragentExpressions()};
 	for(int i = 0; i < useragents.length; i++) {
-		specificity += useragents[i].{@link org.milyn.cdr.UseragentExpression#getSpecificity(UAContext) getSpecificity(deviceContext)};
+		specificity += useragents[i].{@link org.milyn.cdr.UseragentExpression#getSpecificity(UAContext) getSpecificity(useragentContext)};
 	}
 	
 	// Check the 'selector' attribute value.
@@ -73,16 +73,16 @@ import org.milyn.device.UAContext;
 public class SmooksResourceConfigurationSortComparator implements Comparator {
 
 	/**
-	 * Browser/device context.
+	 * Useragent context.
 	 */
-	private UAContext deviceContext;
+	private UAContext useragentContext;
 
 	/**
 	 * Private constructor.
-	 * @param deviceContext Device context.
+	 * @param useragentContext Device context.
 	 */
-	public SmooksResourceConfigurationSortComparator(UAContext deviceContext) {
-		this.deviceContext = deviceContext;
+	public SmooksResourceConfigurationSortComparator(UAContext useragentContext) {
+		this.useragentContext = useragentContext;
 	}
 	
 	/* (non-Javadoc)
@@ -127,7 +127,7 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 		// of all its useragent expressions.
 		UseragentExpression[] useragents = resourceConfig.getUseragentExpressions();
 		for(int i = 0; i < useragents.length; i++) {
-			specificity += useragents[i].getSpecificity(deviceContext);
+			specificity += useragents[i].getSpecificity(useragentContext);
 		}
 		
 		// Check the 'selector' attribute value.

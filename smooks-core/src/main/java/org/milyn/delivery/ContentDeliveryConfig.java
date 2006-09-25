@@ -28,7 +28,7 @@ import org.milyn.dtd.DTDStore;
  * <p/>
  * Provides access to Content Delivery Resources 
  * (e.g. {@link org.milyn.delivery.ContentDeliveryUnit Content Delivery Units})
- * and other information for the requesting browser e.g. see {@link #getAssemblyUnits()}.  
+ * and other information for the requesting useragent e.g. see {@link #getAssemblyUnits()}.  
  * @author tfennelly
  */
 public interface ContentDeliveryConfig {
@@ -37,7 +37,7 @@ public interface ContentDeliveryConfig {
 	 * Get the list of {@link SmooksResourceConfiguration}s for the specified selector definition.
 	 * <p/>
 	 * This list will be preselected and {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator preordered} 
-	 * for the requesting browser.
+	 * for the requesting useragent.
 	 * <p/>
 	 * Use one or both of the following mechanisms to a access the resource bytes:
 	 * <ol>

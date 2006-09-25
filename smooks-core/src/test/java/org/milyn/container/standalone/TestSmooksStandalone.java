@@ -29,7 +29,7 @@ public class TestSmooksStandalone extends SmooksStandalone {
 	 * Public Constructor.
 	 * @throws IOException 
 	 * @throws SAXException 
-	 * @throws UnknownDeviceException Unknown browser.
+	 * @throws UnknownDeviceException Unknown useragent.
 	 */
 	public TestSmooksStandalone() throws SAXException, IOException {
 		super("ISO-8859-1");

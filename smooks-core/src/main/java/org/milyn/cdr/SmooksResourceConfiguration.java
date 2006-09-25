@@ -51,7 +51,7 @@ import org.w3c.dom.Node;
  * &lt;smooks-resource-list&gt;
  * 	&lt;!--	
  * 		Note: 
- * 		1. 	"wml11" is a browser profile.
+ * 		1. 	"wml11" is a useragent profile.
  * 	--&gt;
  * 	&lt;smooks-resource useragent="wml11" selector="dtd" path="www.wapforum.org/DTD/wml_1_1.dtd" /&gt;
  * 	&lt;smooks-resource useragent="wml11" selector="table" path="{@link org.milyn.delivery.process.ProcessingUnit com.acme.transform.TableWML11}" /&gt;
@@ -62,15 +62,15 @@ import org.w3c.dom.Node;
  * 
  * <h3 id="attribdefs">Attribute Definitions</h3>
  * <ul>
- * 		<li><b id="useragent">useragent</b>: A list of 1 or more browser/useragent target(s) to which this 
+ * 		<li><b id="useragent">useragent</b>: A list of 1 or more useragent targets to which this 
  * 			resource is to be applied.  Each entry ("useragent expression") in this list is seperated
  * 			by a comma.  Useragent expressions are represented by the {@link org.milyn.cdr.UseragentExpression}
  * 			class.  
  * 			<br/> 
  * 			Can be one of:
  * 			<ol>
- * 				<li>A browser "Common Name" as defined in the device recognition configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
- * 				<li>A browser profile as defined in the device profiling configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
+ * 				<li>A useragent "Common Name" as defined in the device recognition configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
+ * 				<li>A useragent profile as defined in the device profiling configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
  * 				<li>Astrix ("*") indicating a match for all useragents.  This is the default value if this
  *                  attribute is not specified.</li>
  * 			</ol>
@@ -81,7 +81,7 @@ import org.w3c.dom.Node;
  * 			format. AND expressions are supported simply - by seperating the device/profile
  * 			names using "AND".  An example of the use of these expressions
  * 			in one useragent attribute value could be <i>useragent="html4 AND not:xforms"</i> -
- * 			target the resource at browsers/devices that have the "html4" profile but don't
+ * 			target the resource at useragents/devices that have the "html4" profile but don't
  * 			have the "xforms" profile.
  * 			<p/>
  * 		</li>
@@ -94,7 +94,7 @@ import org.w3c.dom.Node;
  *              resource (e.g. a {@link org.milyn.delivery.process.ProcessingUnit}) at all "li" elements nested
  *              inside an "ol" element, which is in turn nested inside a "td" element.
  * 				</li>
- * 				<li><u>The requesting browser's markup definition i.e. DTD</u>.  Currently Smooks only support
+ * 				<li><u>The requesting useragent's markup definition i.e. DTD</u>.  Currently Smooks only support
  * 					"Element Content Spec" based selectors, identified by the "xmldef:elcspec:" prefix.  Supported
  * 					values are "xmldef:elcspec:<b>empty</b>", "xmldef:elcspec:<b>not-empty</b>", "xmldef:elcspec:<b>any</b>", 
  * 					"xmldef:elcspec:<b>not-any</b>", "xmldef:elcspec:<b>mixed</b>", "xmldef:elcspec:<b>not-mixed</b>", 
@@ -141,22 +141,22 @@ import org.w3c.dom.Node;
  * using a combination of the <a href="#useragent">useragent</a>, <a href="#selector">selector</a> 
  * and <a href="#namespace">namespace</a> attributes (see above).
  * <p/>
- * Smooks does this at runtime by building (and caching) a table of resources per useragent type (e.g. requesting browser).
+ * Smooks does this at runtime by building (and caching) a table of resources per useragent type (e.g. requesting useragent).
  * For example, when the <a href="http://milyn.codehaus.org/Tutorials">SmooksServletFilter</a> receives a request, it 
  * <ol>
  * 	<li>
  * 		Uses the device recognition and profiling information provided by
  * 		<a href="http://milyn.codehaus.org/Tinak">Milyn Tinak</a> to iterate over the .cdrl configurations 
- *      and select the definitions that apply to that browser type.
+ *      and select the definitions that apply to that useragent type.
  * 		It evaluates this based on the <a href="#useragent">useragent</a> attribute value.  Once the table 
- * 		is built it is cached so it doesn't need to be rebuilt for future requests from this browser type. 
+ * 		is built it is cached so it doesn't need to be rebuilt for future requests from this useragent type. 
  * 	</li>
  * 	<li>
  * 		Smooks can then "lookup" resources based on the <a href="#selector">selector</a> attribute value.
  * 	</li>
  * </ol>
  * As you'll probably notice, the types of configurations that the .cdrl file permits can/will result in  
- * multiple resources being mapped to a browser under the same "selector" value i.e. if you request the resource
+ * multiple resources being mapped to a useragent under the same "selector" value i.e. if you request the resource
  * by selector "x", there may be 1+ matches.  Because of this Smooks sorts these matches based on what we call
  * the definitions "specificity".  
  * See {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}.
@@ -637,7 +637,7 @@ public class SmooksResourceConfiguration {
 
     private InputStream getClasspathResourceStream(String filePath) {
         if(!filePath.startsWith("/")) {
-            // Make the path absolute if is already isn't.
+            // Make the path absolute...
             filePath = "/" + filePath;
         }            
         return getClass().getResourceAsStream(filePath);
@@ -659,6 +659,9 @@ public class SmooksResourceConfiguration {
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
+            if(path.equals(className)) {
+                logger.warn("Resource path [" + path + "] looks as though it may be a Java resource reference.  If so, this class is not available on the classpath.");
+            }
             return null;
         }    	
     }

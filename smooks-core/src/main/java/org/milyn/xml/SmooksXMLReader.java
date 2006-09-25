@@ -1,0 +1,45 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software 
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+
+package org.milyn.xml;
+
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ContainerRequest;
+import org.xml.sax.XMLReader;
+
+/**
+ * Smooks XMLReader.
+ * <p/>
+ * {@link org.milyn.xml.Parser} allows you to target a specific SAX Parser at a specific message type.
+ * This lets you parse a stream of any type, convert it to a stream of SAX event and so treat the stream
+ * as an XML data stream, even when the stream is non-XML.
+ *
+ * @author tfennelly
+ */
+public interface SmooksXMLReader extends XMLReader {
+
+	/**
+	 * Set the Parser configuration on the implementing class.
+	 * @param config Parser configuration.
+	 */
+	public void setConfiguration(SmooksResourceConfiguration config);
+
+	/**
+	 * Set the Smooks container request on the implementing class.
+	 * @param request Container Request.
+	 */
+	public void setRequest(ContainerRequest request);
+}

@@ -31,8 +31,6 @@ import org.milyn.util.IteratorEnumeration;
 
 /**
  * Standalone Container Request implementation.
- * <p/>
- * TODO: Add support for request HTTP headers.
  * @author tfennelly
  */
 public class StandaloneContainerRequest implements ContainerRequest {
@@ -42,13 +40,12 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	private Hashtable elementListTable = new Hashtable();
 	private URI requestURI;
 	private LinkedHashMap parameters;
-
     
     /**
      * Public Constructor.
      * <p/>
      * The request is constructed witin the scope of a container session.  The
-     * session is associated with a specific browser name.
+     * session is associated with a specific useragent name.
      * @param session The container session within which this request is to be processed.
      */
     public StandaloneContainerRequest(StandaloneContainerSession session) {
@@ -59,7 +56,7 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	 * Public Constructor.
 	 * <p/>
 	 * The request is constructed witin the scope of a container session.  The
-	 * session is associated with a specific browser name.
+	 * session is associated with a specific useragent name.
 	 * @param requestURI The requestURI to be processed.
 	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.

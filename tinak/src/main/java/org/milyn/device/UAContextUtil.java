@@ -31,7 +31,7 @@ public abstract class UAContextUtil {
 	 * or the name name of one of it's profiles. 
 	 */
 	public static boolean isDeviceOrProfile(String name, UAContext deviceContext) {
-		if(name.equals(deviceContext.getCommonName())) {
+		if(name.equalsIgnoreCase(deviceContext.getCommonName())) {
 			return true;
 		} else if(deviceContext.getProfileSet().isMember(name)) {
 			return true;

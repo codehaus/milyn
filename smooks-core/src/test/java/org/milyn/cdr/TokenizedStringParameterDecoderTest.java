@@ -59,6 +59,7 @@ public class TokenizedStringParameterDecoderTest extends TestCase {
         TokenizedStringParameterDecoder decoder;
 		
         decoderConfig = new SmooksResourceConfiguration(Parameter.PARAM_TYPE_PREFIX + type, "org.milyn.cdr.TokenizedStringParameterDecoder");
+        decoderConfig.setParameter(Parameter.PARAM_TYPE_PREFIX, type);
         decoder = new TokenizedStringParameterDecoder(decoderConfig);
         
 		return (Collection)decoder.decodeValue(value);

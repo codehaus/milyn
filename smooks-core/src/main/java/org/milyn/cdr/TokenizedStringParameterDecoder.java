@@ -25,36 +25,21 @@ import org.milyn.delivery.ContentDeliveryConfig;
 
 
 /**
- * {@link ParameterDecoder} used to tokenize a parameter value in a {@link java.util.List}
+ * {@link ParameterDecoder} used to tokenize a parameter values into a {@link java.util.List}
  * or {@link java.util.HashSet}.
  * <p/>
- * Tokenizes the parameter value into a {@link java.util.List} (selector="param-type:string-list")
- * or {@link java.util.HashSet} (selector="param-type:string-hashset") using {@link java.util.StringTokenizer}.
+ * Tokenizes the parameter value into a {@link java.util.List} (param-type="string-list")
+ * or {@link java.util.HashSet} (param-type="string-hashset") using {@link java.util.StringTokenizer}.
  * <h3>.cdrl Configuration</h3>
- * The following configuration shows how this {@link ParameterDecoder} is configured into
+ * The following configurations (installed by default, with defaults) show how this {@link ParameterDecoder} is configured into
  * Smooks such that it can be used by {@link org.milyn.delivery.ContentDeliveryUnit}s
  * for accessing tokenised param values.  See the <a href="#exampleusage">example usage</a>
  * below for an example on how this decoder can be used once configured.
  * <pre>
- * &lt;!-- Tokenize value into a {@link java.util.List} i.e. 
- * 		{@link org.milyn.cdr.SmooksResourceConfiguration#getParameter(java.lang.String)}.getValue({@link org.milyn.delivery.ContentDeliveryConfig}) --&gt;
- * &lt;smooks-resource	useragent="*" selector="param-type:string-list" 
- * 	path="org.milyn.param.TokenizedStringParameterDecoder"&gt;
+ * &lt;smooks-resource useragent="*" selector="param-type:string-collection-X" path="org.milyn.param.TokenizedStringParameterDecoder"&gt;
  * 
- * 	&lt;!-- (Optional) Tokenizer Delimiters. Default is ",". --&gt;
- * 	&lt;param name="<b>delims</b>"&gt;<i>delim-chars</i>&lt;/param&gt;
- * 
- * 	&lt;!-- (Optional) Return Delimiters. Default false. --&gt;
- * 	&lt;param name="<b>returnDelims</b>"&gt;<i>true/false</i>&lt;/param&gt;
- * 
- * 	&lt;!-- (Optional) Trim token values. Default true. --&gt;
- * 	&lt;param name="<b>trimTokens</b>"&gt;<i>true/false</i>&lt;/param&gt;
- * &lt;/smooks-resource&gt;
- * 
- * &lt;!-- Tokenize value into a {@link java.util.HashSet} i.e. 
- * 		{@link org.milyn.cdr.SmooksResourceConfiguration#getParameter(java.lang.String)}.getValue({@link org.milyn.delivery.ContentDeliveryConfig}) --&gt;
- * &lt;smooks-resource	useragent="*" selector="param-type:string-hashset"
- * 	path="org.milyn.param.TokenizedStringParameterDecoder"&gt;
+ * 	&lt;!-- (Optional) Tokenizer Delimiters. Default is "string-list". --&gt;
+ * 	&lt;param name="<b>param-type</b>"&gt;<i>string-list/string-hashset</i>&lt;/param&gt;
  * 
  * 	&lt;!-- (Optional) Tokenizer Delimiters. Default is ",". --&gt;
  * 	&lt;param name="<b>delims</b>"&gt;<i>delim-chars</i>&lt;/param&gt;
@@ -66,14 +51,17 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * 	&lt;param name="<b>trimTokens</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * &lt;/smooks-resource&gt;</pre>
  * 
+ * <p/>
+ * Two default configurations of this decoder are pre-installed for all useragents.  They're named
+ * "string-list" and "string-hashset".
+ * 
  * <h3 id="exampleusage">Example Usage</h3>
- * Once this decoder has been configured into Smooks, it can be used as with the
- * following example:
+ * The following example illustrates use of the pre-installed "string-hashset" decoder:
  * <p/>
  * .cdrl param:
  * <pre>
  * &lt;smooks-resource useragent="html4" path="com.acme.XXXContentDeliveryUnit"&gt;
- * 	&lt;param name="blockLevelElements" <b>type="string-hashset"</b>&gt;
+ * 	&lt;param name="blockLevelElements" type="<b>string-hashset</b>"&gt;
  * 		p,h1,h2,h3,h4,h5,h6,div,ul,ol,dl,menu,dir,pre,hr,blockquote,address,center,noframes,isindex,fieldset,table
  * 	&lt;/param&gt;
  * &lt;/smooks-resource&gt;</pre>
@@ -103,12 +91,14 @@ public class TokenizedStringParameterDecoder extends ParameterDecoder {
 		delims = resourceConfig.getStringParameter("delims", ",");
 		returnDelims = resourceConfig.getBoolParameter("returnDelims", false);
 		trimTokens = resourceConfig.getBoolParameter("trimTokens", true);
-		if(resourceConfig.getSelector().equals(Parameter.PARAM_TYPE_PREFIX + "string-list")) {
+		
+		String paramType = resourceConfig.getStringParameter(Parameter.PARAM_TYPE_PREFIX, "string-list");
+		if(paramType.equals("string-list")) {
 			returnType = Vector.class;
-		} else if(resourceConfig.getSelector().equals(Parameter.PARAM_TYPE_PREFIX + "string-hashset")) {
+		} else if(paramType.equals("string-hashset")) {
 			returnType = LinkedHashSet.class;
 		} else {
-			throw new ParameterDecodeException("Unsupported return type [" + resourceConfig.getSelector() + "]");
+			throw new ParameterDecodeException("Unsupported decoded return type [" + paramType + "]");
 		}
 	}
 
