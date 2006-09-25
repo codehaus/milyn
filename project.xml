@@ -20,6 +20,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>${xalan.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>${commons_lang.version}</version>

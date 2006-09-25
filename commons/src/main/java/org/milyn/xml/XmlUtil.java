@@ -290,7 +290,7 @@ public class XmlUtil {
                 return (NodeList)xpathEvaluater.evaluate(xpath, node, XPathConstants.NODESET);
 			}
 		} catch (XPathExpressionException e) {
-            throw new IllegalArgumentException("bad 'xpath' expression [" + xpath + "].", e);
+            throw new IllegalArgumentException("bad 'xpath' expression [" + xpath + "].");
         }
     }
 
