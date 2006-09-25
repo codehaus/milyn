@@ -19,6 +19,7 @@ package org.milyn.xml;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Stack;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -27,8 +28,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.ParameterAccessor;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
+import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -46,13 +48,36 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+/**
+ * Smooks data stream parser.
+ * <p/>
+ * This parser can be configured to use a SAX Parser targeted at a specific data stream type.
+ * This lets you parse a stream of any type, convert it to a stream of SAX event and so treat the stream
+ * as an XML data stream, even when the stream is non-XML.
+ * <p/>
+ * If the configured parser implements the {@link org.milyn.xml.SmooksXMLReader}, the configuration will be
+ * passed to the parser through the {@link org.milyn.xml.SmooksXMLReader#setConfiguration(SmooksResourceConfiguration)}
+ * method.  This allows you to configure the parser. 
+ * 
+ * <h3 id="parserconfig">.cdrl Configuration</h3>
+ * <pre>
+ * &lt;smooks-resource selector="org.xml.sax.driver" path="org.milyn.protocolx.XParser" &gt;
+ * 	&lt;!-- 
+ * 		Optional list of driver parameters for {@link org.milyn.xml.SmooksXMLReader} implementations.
+ * 		See {@link org.milyn.cdr.SmooksResourceConfiguration} for how to add configuration parameters. 
+ * 	--&gt;
+ * &lt;/smooks-resource&gt;
+ * </pre>
+ * 
+ * @author tfennelly
+ */
 public class Parser {
 
 	private static Log logger = LogFactory.getLog(Parser.class);
 	private static DocumentBuilder documentBuilder;
 	private ContainerRequest request;
-	HashSet emptyElements = new HashSet();
-    private String saxDriver;
+	private HashSet emptyElements = new HashSet();
+    private SmooksResourceConfiguration saxDriverConfig;
     
     static {
     	try {
@@ -63,10 +88,20 @@ public class Parser {
 			throw state;
 		}
     }
-    
+
+    /**
+     * Default constructor.
+     */
 	public Parser() {
 	}
-	
+
+	/**
+	 * Public constructor.
+	 * <p/>
+	 * This constructor attempts to lookup a SAX Parser config under the "org.xml.sax.driver" selector string.
+	 * See <a href="#parserconfig">.cdrl Configuration</a>.
+	 * @param request The Smooks Container Request that the parser is being instantiated on behalf of.
+	 */
 	public Parser(ContainerRequest request) {
 		if(request == null) {
 			throw new IllegalArgumentException("null 'request' arg in method call.");
@@ -74,13 +109,45 @@ public class Parser {
 		this.request = request;
 		initialiseEmptyElements();
         
-        // Allow the sax driver to be specified as a useragent parameter (under "org.xml.sax.driver").
-        saxDriver = ParameterAccessor.getStringParameter("org.xml.sax.driver", request.getDeliveryConfig());
+        // Allow the sax driver to be specified as a useragent config (under selector "org.xml.sax.driver").
+		saxDriverConfig = getSAXParserConfiguration(request.getDeliveryConfig());
 	}
     
-    public Parser(ContainerRequest request, String saxDriver) {
+	/**
+	 * Public constructor.
+	 * @param request The Smooks Container Request that the parser is being instantiated on behalf of.
+	 * @param saxDriverConfig SAX Parser configuration. See <a href="#parserconfig">.cdrl Configuration</a>.
+	 */
+    public Parser(ContainerRequest request, SmooksResourceConfiguration saxDriverConfig) {
         this(request);
-        this.saxDriver = saxDriver;
+        this.saxDriverConfig = saxDriverConfig;
+        if(saxDriverConfig.getPath() == null) {
+            throw new IllegalStateException("Invalid SAX Parser configuration.  Must specify 'path' attribute to contain the parser class name.");
+        }
+    }
+    
+    /**
+     * Get the SAX Parser configuration for the useragent associated with the supplied delivery configuration.
+     * @param useragentConfig Useragent content delivery configuration.
+     * @return Returns the SAX Parser configuration for the useragent associated with the supplied delivery 
+     * configuration, or null if no parser configuration is specified.
+     */
+    public static SmooksResourceConfiguration getSAXParserConfiguration(ContentDeliveryConfig useragentConfig) {
+    	if(useragentConfig == null) {
+    		throw new IllegalArgumentException("null 'useragentConfig' arg in method call.");
+    	}
+    	
+    	SmooksResourceConfiguration saxDriverConfig = null;
+        List saxConfigs = useragentConfig.getSmooksResourceConfigurations("org.xml.sax.driver");
+        
+        if(saxConfigs != null && !saxConfigs.isEmpty()) {
+            saxDriverConfig = (SmooksResourceConfiguration)saxConfigs.get(0);
+            if(saxDriverConfig.getPath() == null) {
+                throw new IllegalStateException("Invalid SAX Parser configuration.  Must specify 'path' attribute to contain the parser class name.");
+            }
+        }
+        
+        return saxDriverConfig;
     }
     
 	private void initialiseEmptyElements() {
@@ -139,8 +206,12 @@ public class Parser {
 	private void parse(Reader source, SmooksContentHandler contentHandler) throws SAXException, IOException {
         XMLReader reader;
         
-        if(saxDriver != null) {
-            reader = XMLReaderFactory.createXMLReader(saxDriver);
+        if(saxDriverConfig != null) {
+            reader = XMLReaderFactory.createXMLReader(saxDriverConfig.getPath());
+            if(reader instanceof SmooksXMLReader) {
+            	((SmooksXMLReader)reader).setConfiguration(saxDriverConfig);
+            	((SmooksXMLReader)reader).setRequest(request);
+            }
         } else {
             reader = XMLReaderFactory.createXMLReader();
         }

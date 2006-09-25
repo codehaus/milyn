@@ -31,7 +31,7 @@ import org.milyn.device.profile.ProfileSet;
  */
 public class StandaloneContainerSession implements ContainerSession {
 	private Hashtable attributes = new Hashtable();
-	private String browserName;
+	private String useragent;
 	private StandaloneContainerContext context;
 	private StandaloneUAContext uaContext;
 	private ContentDeliveryConfig deliveryConfig;
@@ -40,21 +40,21 @@ public class StandaloneContainerSession implements ContainerSession {
 	 * Public constructor.
 	 * <p/>
 	 * The session is constructed within the scope of the container context.
-	 * @param browserName The name of the browser being emulated for this session.
+	 * @param useragent The name of the useragent being emulated for this session.
 	 * @param context Container Context instance.
-	 * @throws UnknownDeviceException Thrown when the named device/browser is not known i.e. typically means
+	 * @throws UnknownDeviceException Thrown when the named device/useragent is not known i.e. typically means
 	 * the deviceName is not mapped into any profiles in device-profiles.xml.
 	 */
-	public StandaloneContainerSession(String browserName, StandaloneContainerContext context) throws UnknownDeviceException {
-		if(browserName == null) {
-			throw new IllegalArgumentException("null 'browserName' arg in constructor call.");
+	public StandaloneContainerSession(String useragent, StandaloneContainerContext context) throws UnknownDeviceException {
+		if(useragent == null) {
+			throw new IllegalArgumentException("null 'useragent' arg in constructor call.");
 		}
 		if(context == null) {
 			throw new IllegalArgumentException("null 'context' arg in constructor call.");
 		}
-		this.browserName = browserName;
+		this.useragent = useragent;
 		this.context = context;
-		uaContext = new StandaloneUAContext(browserName);
+		uaContext = new StandaloneUAContext(useragent);
 		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext, context);
 	}
 
@@ -80,11 +80,11 @@ public class StandaloneContainerSession implements ContainerSession {
 	}
 
 	/**
-	 * Get the name of the browser being emulated on this session.
-	 * @return The browser name.
+	 * Get the name of the useragent being emulated on this session.
+	 * @return The useragent name.
 	 */
-	public String getBrowserName() {
-		return browserName;
+	public String getUseragent() {
+		return useragent;
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class StandaloneContainerSession implements ContainerSession {
 	}
 
 	/**
-	 * Get the UAContext associated with this sessions browser.
+	 * Get the UAContext associated with this sessions useragent.
 	 * @return The UAContext.
 	 */
 	public UAContext getUseragentContext() {
@@ -105,7 +105,7 @@ public class StandaloneContainerSession implements ContainerSession {
 	}
 
 	/**
-	 * Get the ContentDeliveryConfig associated with this sessions browser.
+	 * Get the ContentDeliveryConfig associated with this sessions useragent.
 	 * @return The ContentDeliveryConfig.
 	 */
 	public ContentDeliveryConfig getDeliveryConfig() {

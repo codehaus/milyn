@@ -29,11 +29,11 @@ import org.xml.sax.SAXException;
 
 public class StandaloneContainerUtil {
 
-	public static StandaloneContainerRequest getRequest(String requestURI, String browserName) {
+	public static StandaloneContainerRequest getRequest(String requestURI, String useragent) {
 		StandaloneContainerRequest request = null;
 		try {
 			SmooksStandalone smooksSA = new TestSmooksStandalone();
-			request = new StandaloneContainerRequest(new URI(requestURI), new LinkedHashMap(), smooksSA.getSession(browserName));
+			request = new StandaloneContainerRequest(new URI(requestURI), new LinkedHashMap(), smooksSA.getSession(useragent));
 		} catch (UnknownDeviceException e) {
 			TestCase.fail(e.getMessage());
 		} catch (URISyntaxException e) {

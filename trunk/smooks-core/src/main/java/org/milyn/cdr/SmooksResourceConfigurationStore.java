@@ -66,19 +66,22 @@ public class SmooksResourceConfigurationStore {
 			throw new IllegalArgumentException("null 'containerContext' arg in constructor call.");
 		}
 		this.containerContext = containerContext;
-        // add the default list to the list.
+        
+		// add the default list to the list.
         configLists.add(defaultList);
-        registerInstalledCDUCreators();
+        
+        registerInstalledResources("installed-cdu-creators.cdrl");
+        registerInstalledResources("installed-param-decoders.cdrl");
 	}
 
     /**
      * Register the pre-installed CDU Creator classes.
      */
-    private void registerInstalledCDUCreators() {
+    private void registerInstalledResources(String resourceFile) {
         try {
-            registerResources("installed-cdu-creators", getClass().getResourceAsStream("installed-cdu-creators.cdrl"));
+            registerResources(resourceFile, getClass().getResourceAsStream(resourceFile));
         } catch (Exception e) {
-            IllegalStateException state = new IllegalStateException("Failed to load installed-cdu-creators.cdrl.  Expected to be in the same package as " + getClass().getName());
+            IllegalStateException state = new IllegalStateException("Failed to load " + resourceFile + ".  Expected to be in the same package as " + getClass().getName());
             state.initCause(e);
             throw state;
         }

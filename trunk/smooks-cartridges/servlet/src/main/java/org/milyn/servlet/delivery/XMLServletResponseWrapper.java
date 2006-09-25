@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.SmooksXML;
 import org.milyn.xml.Parser;
@@ -38,6 +39,15 @@ import org.xml.sax.SAXException;
  */
 public class XMLServletResponseWrapper extends ServletResponseWrapper {
 
+	/**
+	 * Default parser configuration.
+	 */
+	private static SmooksResourceConfiguration defaultSAXParserConfig;
+	/**
+	 * Request specific SAX parser configuration.  If not specified
+	 * (See {@link Parser}), {@link #defaultSAXParserConfig} is used.
+	 */
+	private SmooksResourceConfiguration requestSAXParserConfig;
 	/**
 	 * Logger.
 	 */
@@ -80,7 +90,12 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	public XMLServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
 		super(containerRequest, originalResponse);
 		smooks = new SmooksXML(containerRequest);
+		requestSAXParserConfig = Parser.getSAXParserConfiguration(containerRequest.getDeliveryConfig());
 		initHeaderActions(containerRequest.getDeliveryConfig().getObjects("http-response-header"));
+	}
+	
+	static {
+		defaultSAXParserConfig = new SmooksResourceConfiguration("org.xml.sax.driver", HTMLSAXParser.class.getName());
 	}
 	
 	/**
@@ -208,7 +223,13 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 			
 			if(sourceDoc == null) {
 				Reader inputReader = new CharArrayReader(content);
-                Parser parser = new Parser(getContainerRequest(), HTMLSAXParser.class.getName());
+                Parser parser;
+                
+                if(requestSAXParserConfig != null) {
+                	parser = new Parser(getContainerRequest(), requestSAXParserConfig);
+                } else {
+                	parser = new Parser(getContainerRequest(), defaultSAXParserConfig);
+                }
 
                 try {
                     sourceDoc = parser.parse(inputReader);

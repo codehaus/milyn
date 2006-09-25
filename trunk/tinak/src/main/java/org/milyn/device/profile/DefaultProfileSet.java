@@ -25,7 +25,9 @@ import java.util.LinkedHashMap;
  */
 public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 
-	/* (non-Javadoc)
+    private static final long serialVersionUID = 1L;
+
+    /* (non-Javadoc)
 	 * @see org.milyn.device.profile.ProfileSet#isMember(java.lang.String)
 	 */
 	public boolean isMember(String profile) {
@@ -41,7 +43,7 @@ public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 	 * @param profile The profile to add.
 	 */
 	public void addProfile(String profile) {
-		addProfile(new BasicProfile(profile));
+		addProfile(new BasicProfile(profile.toLowerCase()));
 	}
 
 	/**
@@ -53,7 +55,7 @@ public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 			throw new IllegalArgumentException("null 'profile' arg in method call.");
 		}
 
-		put(profile.getName(), profile);
+		put(profile.getName().toLowerCase(), profile);
 	}	
 
 	/**

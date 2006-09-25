@@ -81,20 +81,20 @@ import org.w3c.dom.NodeList;
  * 				{@link org.milyn.delivery.ElementVisitor visiting} all the
  * 				DOM elements with {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}
  * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
- * 				(e.g. for the requesting browser). 
+ * 				(e.g. for the requesting useragent). 
  * 				This phase can result in DOM elements getting added to, or trimmed from, the DOM.  
  * 				This phase is also very usefull for gathering information about the DOM, 
  * 				which can be used during the processing phase (see below).  This phase is only
  * 				executed if there are {@link org.milyn.cdr.SmooksResourceConfiguration configured}
  * 				{@link org.milyn.delivery.assemble.AssemblyUnit} for the SmooksXML processing context
- * 				(e.g. for the requesting browser).
+ * 				(e.g. for the requesting useragent).
  * 			</li>
  * 			<li>
  * 				<b>Processing</b>: Processing takes the assembled DOM and 
  * 				iterates over it again to "process" it (analyse/transform), {@link org.milyn.delivery.ElementVisitor visiting} all the
  * 				DOM elements with {@link org.milyn.delivery.process.ProcessingUnit}
  * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
- * 				(e.g. for the requesting browser). 
+ * 				(e.g. for the requesting useragent). 
  * 				This phase will only operate on DOM elements that were present in the assembled
  * 				document; {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} will not be applied
  * 				to elements that are introduced to the DOM during this phase.
