@@ -36,7 +36,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * for accessing tokenised param values.  See the <a href="#exampleusage">example usage</a>
  * below for an example on how this decoder can be used once configured.
  * <pre>
- * &lt;smooks-resource useragent="*" selector="param-type:string-collection-X" path="org.milyn.param.TokenizedStringParameterDecoder"&gt;
+ * &lt;smooks-resource useragent="*" selector="param-type:string-collection-X" path="org.milyn.cdr.TokenizedStringParameterDecoder"&gt;
  * 
  * 	&lt;!-- (Optional) Tokenizer Delimiters. Default is "string-list". --&gt;
  * 	&lt;param name="<b>param-type</b>"&gt;<i>string-list/string-hashset</i>&lt;/param&gt;

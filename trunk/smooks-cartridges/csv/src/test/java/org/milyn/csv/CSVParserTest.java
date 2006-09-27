@@ -46,19 +46,19 @@ public class CSVParserTest extends TestCase {
 		
 		csvMessage = "Tom Fennelly,Ireland";
 		result = smooks.filter("Order-List-Acme-AcmePartner1", new ByteArrayInputStream(csvMessage.getBytes("UTF-8")));
-		assertEquals("Tom Fennelly", XmlUtil.getString(result, "/cvs-set/cvs-record[1]/name/text()"));
-		assertEquals("Ireland", XmlUtil.getString(result, "/cvs-set/cvs-record[1]/address/text()"));
+		assertEquals("Tom Fennelly", XmlUtil.getString(result, "/csv-set/csv-record[1]/name/text()"));
+		assertEquals("Ireland", XmlUtil.getString(result, "/csv-set/csv-record[1]/address/text()"));
 
 		csvMessage = "Tom Fennelly,Ireland\nJoe Bloggs,England";
 		result = smooks.filter("Order-List-Acme-AcmePartner1", new ByteArrayInputStream(csvMessage.getBytes("UTF-8")));
-		assertEquals("Tom Fennelly", XmlUtil.getString(result, "/cvs-set/cvs-record[1]/name/text()"));
-		assertEquals("Ireland", XmlUtil.getString(result, "/cvs-set/cvs-record[1]/address/text()"));
-		assertEquals("Joe Bloggs", XmlUtil.getString(result, "/cvs-set/cvs-record[2]/name/text()"));
-		assertEquals("England", XmlUtil.getString(result, "/cvs-set/cvs-record[2]/address/text()"));
+		assertEquals("Tom Fennelly", XmlUtil.getString(result, "/csv-set/csv-record[1]/name/text()"));
+		assertEquals("Ireland", XmlUtil.getString(result, "/csv-set/csv-record[1]/address/text()"));
+		assertEquals("Joe Bloggs", XmlUtil.getString(result, "/csv-set/csv-record[2]/name/text()"));
+		assertEquals("England", XmlUtil.getString(result, "/csv-set/csv-record[2]/address/text()"));
 		
 		csvMessage = "Tom Fennelly\nJoe Bloggs,England";
 		result = smooks.filter("Order-List-Acme-AcmePartner1", new ByteArrayInputStream(csvMessage.getBytes("UTF-8")));
-		assertEquals("Joe Bloggs", XmlUtil.getString(result, "/cvs-set/cvs-record[1]/name/text()"));
-		assertEquals("England", XmlUtil.getString(result, "/cvs-set/cvs-record[1]/address/text()"));		
+		assertEquals("Joe Bloggs", XmlUtil.getString(result, "/csv-set/csv-record[1]/name/text()"));
+		assertEquals("England", XmlUtil.getString(result, "/csv-set/csv-record[1]/address/text()"));		
 	}
 }

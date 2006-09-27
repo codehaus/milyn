@@ -44,8 +44,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import sun.io.CharToByteConverter;
-
 /**
  * Smooks standalone execution class.
  * <p/>
@@ -86,7 +84,8 @@ public class SmooksStandalone {
 	private void setEncoding(String contentEncoding) throws IllegalArgumentException {
 		contentEncoding = (contentEncoding == null)?"ISO-8859-1":contentEncoding;
 		try {
-			CharToByteConverter.getConverter(contentEncoding);
+			// Make sure the encoding is supported....
+			"".getBytes(contentEncoding);
 		} catch (UnsupportedEncodingException e) {
 			IllegalArgumentException argE = new IllegalArgumentException("Invalid 'contentEncoding' arg [" + contentEncoding + "].  This encoding is not supported.");
 			argE.initCause(e);

@@ -196,6 +196,49 @@ public abstract class DomUtils {
 		
 		return replacement;
 	}
+
+	/**
+	 * Remove the supplied element from its containing document.
+	 * <p/>
+	 * Tries to manage scenarios where a request is made to remove the root element.
+	 * Cannot remove the root element in any of the following situations:
+	 * <ul>
+	 * 	<li>"keepChildren" parameter is false.</li>
+	 * 	<li>root element is empty of {@link Node#ELEMENT_NODE} nodes.</li>
+	 * </ul>
+	 * @param element Element to be removed.
+	 * @param keepChildren Keep child content.
+	 */
+	public static void removeElement(Element element, boolean keepChildren) {
+		Node parent = element.getParentNode();
+		NodeList children = element.getChildNodes();
+		
+		if(parent == null) {
+			logger.warn("Cannot remove element [" + DomUtils.getName(element) + "].  Element has no parent.");
+		} else if (parent instanceof Document) {
+			List childElements = null;
+			
+			if(!keepChildren) {
+				logger.warn("Cannot remove document root element [" + DomUtils.getName(element) + "] without keeping child content.");
+			} else {
+				if(children != null && children.getLength() > 0) {
+					childElements = DomUtils.getElements(element, "*", null);
+				}
+				
+				if(childElements != null && !childElements.isEmpty()) {
+					parent.removeChild(element);
+					parent.appendChild((Element)childElements.get(0));
+				} else {
+					logger.warn("Cannot remove empty document root element [" + DomUtils.getName(element) + "].");
+				}
+			}
+		} else {
+			if(keepChildren && children != null) {
+				DomUtils.insertBefore(children, element);
+			}
+			parent.removeChild(element);				
+		}
+	}
 	
 	/**
 	 * Remove all child nodes from the supplied node.
@@ -529,6 +572,11 @@ public abstract class DomUtils {
 	 */
 	public static int countElementsBefore(Node node, String tagName) {
 		Node parent = node.getParentNode();
+		
+		if(parent == null) {
+			return 0;
+		}
+		
 		NodeList siblings = parent.getChildNodes();
 		int count = 0;
 		int siblingCount = siblings.getLength();
@@ -768,7 +816,7 @@ public abstract class DomUtils {
 	 * <p/>
 	 * Can be used instead of XPath.
 	 * @param parent Parent element to be searched.
-	 * @param localname Localname of the element required.
+	 * @param localname Localname of the element required.  Supports "*" wildcards.
 	 * @param namespaceURI Namespace URI of the required element, or null
 	 * if a namespace comparison is not to be performed.
 	 * @return A list of W3C DOM {@link Element}s.  An empty list if no such
@@ -784,14 +832,11 @@ public abstract class DomUtils {
 			
 			if(child.getNodeType() == Node.ELEMENT_NODE) {
 				Element element = (Element)child;
-				if(getName(element).equals(localname)) {
+				if(localname.equals("*") || getName(element).equals(localname)) {
 					// The local name matches the element we're after...
-					if(namespaceURI != null && 
-							!element.getNamespaceURI().equals(namespaceURI)) {
-						// ... the namespaces don't match.
-						continue;
+					if(namespaceURI == null || namespaceURI.equals(element.getNamespaceURI())) {
+						elements.add(element);
 					}
-					elements.add(element);
 				}
 			}
 		}

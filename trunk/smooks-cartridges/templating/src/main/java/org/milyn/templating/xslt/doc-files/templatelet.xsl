@@ -1,9 +1,9 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-				xmlns:smooks="http://milyn.codehaus.org/smooks"
-				xmlns:smooks-bean="org.milyn.templating.xslt.XalanJavabeanExtension"
+				xmlns:smooks-bean="xalan://org.milyn.templating.xslt.XalanJavabeanExtension"
 				extension-element-prefixes="smooks-bean" 
 				version="1.0">
+
+	<xsl:output method="xml" encoding="UTF-8" />
 
 	<xsl:template match="*" name="templatelet">
 		<!-- 
@@ -11,7 +11,7 @@
 			This "root-do-not-remove" element helps avoid the "can't add content before the root element"
 			reported by Xalan if the template doesn't produce a single rot element node.
 		-->
-		<smooks:root-do-not-remove>@@@templatelet@@@</smooks:root-do-not-remove>
+		<smooks:root-do-not-remove xmlns:smooks="http://milyn.codehaus.org/smooks">@@@templatelet@@@</smooks:root-do-not-remove>
 	</xsl:template>
 
 </xsl:stylesheet>

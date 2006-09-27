@@ -19,6 +19,7 @@ package org.milyn.cdres.trans;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.process.AbstractProcessingUnit;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -26,17 +27,28 @@ import org.w3c.dom.Element;
  * <p/>
  * The element is visited by this Processing Unit after it's child content
  * has been iterated over.
+ * <p/>
+ * See {@link DomUtils#removeElement(org.w3c.dom.Element, boolean)}.
+ * 
  * <h3>.cdrl Configuration</h3>
  * <pre>
- * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="<i>target-element-name</i>" 
- * 	path="org.milyn.cdres.trans.RemoveElementTU" /&gt;</pre>
+ * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="<i>target-element-name</i>" path="org.milyn.cdres.trans.RemoveElementTU" &gt;
+ * 
+ * 	&lt;!-- (Optional) Keep child content. Default is true. --&gt;
+ * 	&lt;param name="<b>keepChildContent</b>"&gt;<i>true/false</i>&lt;/param&gt;
+ * 
+ * &lt;/smooks-resource&gt;</pre>
+ * 
  * See {@link org.milyn.cdr.SmooksResourceConfiguration}.
  * @author tfennelly
  */
 public class RemoveElementTU extends AbstractProcessingUnit {
 
+	private boolean keepChildContent;	
+
 	public RemoveElementTU(SmooksResourceConfiguration resourceConfig) {
 		super(resourceConfig);
+		keepChildContent = resourceConfig.getBoolParameter("keepChildContent", true);
 	}
 
 	/* (non-Javadoc)
@@ -50,6 +62,6 @@ public class RemoveElementTU extends AbstractProcessingUnit {
 	 * @see org.milyn.delivery.ElementVisitor#visit(org.w3c.dom.Element, org.milyn.container.ContainerRequest)
 	 */
 	public void visit(Element element, ContainerRequest request) {
-		element.getParentNode().removeChild(element);
+		DomUtils.removeElement(element, keepChildContent);
 	}
 }

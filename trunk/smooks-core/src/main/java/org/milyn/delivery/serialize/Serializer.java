@@ -22,6 +22,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
@@ -48,6 +50,10 @@ import org.w3c.dom.Text;
  */
 public class Serializer {
 	
+	/**
+	 * Logger.
+	 */
+	private static Log logger = LogFactory.getLog(Serializer.class);
 	/**
 	 * Node to be serialized.
 	 */
@@ -216,6 +222,7 @@ public class Serializer {
 
 		elementSU = getSerializationUnit(element);
 		elementSU.writeElementStart(element, writer, containerRequest);
+
 		if(children != null && children.getLength() > 0) {
 			int childCount = children.getLength();
 
@@ -276,14 +283,24 @@ public class Serializer {
             // Make sure the serialization unit is targeted at this element.
             // Check the namespace and context (if the selector is contextual)...
             if(!config.isTargetedAtElementNamespace(element)) {
+				if(logger.isDebugEnabled()) {
+					logger.debug("Not applying serailisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
+				}
                 continue;
             } else if(config.isSelectorContextual() && !config.isTargetedAtElementContext(element)) {
                 // Note: If the selector is not contextual, there's no need to perform the
                 // isTargetedAtElementContext check because we already know the unit is targetd at the
                 // element by name - because we looked it up by name in the 1st place.
+				if(logger.isDebugEnabled()) {
+					logger.debug("Not applying serailisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
+				}
                 continue;
             }            
 
+    		if(logger.isDebugEnabled()) {
+    			logger.debug("Applying serialisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+    		}
+            
             // This is the one, return it...
             return (SerializationUnit)configMap.getContentDeliveryUnit();
 		}

@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ContainerContext;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
@@ -44,6 +46,10 @@ import org.xml.sax.SAXException;
  */
 public class SmooksResourceConfigurationStore {
 	
+	/**
+	 * Logger.
+	 */
+	private static Log logger = LogFactory.getLog(SmooksResourceConfigurationStore.class);
 	/**
 	 * Table of loaded SmooksResourceConfigurationList objects.
 	 */
@@ -110,6 +116,7 @@ public class SmooksResourceConfigurationStore {
 				InputStream resource = resLocator.getResource(cdrl);
 				
 				if(cdrl.toLowerCase().endsWith(".cdrl")) {
+					logger.info("Loading Smooks Resources from file [" + cdrl + "].");
                     registerResources(cdrl, resource);
 				}
 				SmooksLogger.getLog().debug("[" + cdrl + "] Loaded.");

@@ -17,10 +17,7 @@
 package org.milyn.dom;
 
 import java.io.InputStreamReader;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.List;
 
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Parser;
@@ -107,13 +104,74 @@ public class DomUtilsTest extends TestCase {
 		
 		assertEquals("This is wh&#97;t were looking for", allText);
 	}
+	
+	public void test_removeElement() {
+		Document doc = parseDoc("test7.html");
+		Element x = (Element)XmlUtil.getNode(doc, "/x");
+		Element y = (Element)XmlUtil.getNode(doc, "/x/y");
+		Element z = (Element)XmlUtil.getNode(doc, "/x/y/z");
+
+		assertNotNull(x);
+		assertNotNull(y);
+		assertNotNull(z);
+
+		// Test that keepChildren works...
+		DomUtils.removeElement(y, true);
+		assertNull("Failed to remove element y.", y.getParentNode());
+		z = (Element)XmlUtil.getNode(doc, "/x/z");
+		assertNotNull("Failed to keep child content of element y.", z);
+		
+		// Test root element removal where it has child content...
+		DomUtils.removeElement(x, false);
+		assertEquals("Failed to remove root element.", x, doc.getDocumentElement());
+		DomUtils.removeElement(x, true);
+		assertEquals("Failed to remove root element.", z, doc.getDocumentElement());
+
+		// Try removing the new root element - should fail because element "z" has no child elements...
+		assertEquals("Remove root element but shouldn't have.", z, doc.getDocumentElement());
+	}
+	
+	public void test_getElements() {
+		Document doc = parseDoc("test8.html");
+		Element a = doc.getDocumentElement();
+		List searchRes;
+
+		// Straightforward searches - no namespaces etc
+		searchRes = DomUtils.getElements(a, "c", null); // exists
+		assertEquals(1, searchRes.size());
+		assertEquals("c", DomUtils.getName((Element)searchRes.get(0)));
+		searchRes = DomUtils.getElements(a, "d", null);
+		assertEquals(1, searchRes.size());
+		assertEquals("d", DomUtils.getName((Element)searchRes.get(0)));
+		searchRes = DomUtils.getElements(a, "x", null); // doesn't exist
+		assertEquals(0, searchRes.size());
+		
+		// Wildcard search - no namespaces
+		searchRes = DomUtils.getElements(a, "*", null);
+		assertEquals(3, searchRes.size());
+		assertEquals("b", DomUtils.getName((Element)searchRes.get(0)));
+		// Wildcard search - unknown namespace
+		searchRes = DomUtils.getElements(a, "*", "http://unknown");
+		assertEquals(0, searchRes.size());
+		// Wildcard search - unknown namespace
+		searchRes = DomUtils.getElements(a, "*", "http://milyn");
+		assertEquals(1, searchRes.size());
+		assertEquals("d", DomUtils.getName((Element)searchRes.get(0)));
+		
+		// Straightforward search with namespace
+		searchRes = DomUtils.getElements(a, "d", "http://milyn");
+		assertEquals(1, searchRes.size());
+		assertEquals("d", DomUtils.getName((Element)searchRes.get(0)));
+		searchRes = DomUtils.getElements(a, "d", "http://unknown");
+		assertEquals(0, searchRes.size());
+	}
     
 	private void test_getXPath(Document doc, String testPath) {
 		Element element = (Element)XmlUtil.getNode(doc, testPath);
 		String xpath = DomUtils.getXPath(element);
 		assertEquals(testPath, xpath);
 	}
-
+	
 	private Document parseDoc(String classpath) {
 		try {
 			Parser parser = new Parser();
@@ -123,5 +181,5 @@ public class DomUtilsTest extends TestCase {
 			fail(e.getMessage());
 		}
 		return null;
-    }
+	}
 }

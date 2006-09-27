@@ -72,6 +72,20 @@ public class BaseTransUnitsTest extends TestCase {
 		assertNotNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/head"));
 	}
 
+	public void test_RenameElementTU_root_element() {
+		Document doc = parseCPResource("testpage1.html");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
+		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
+		RenameElementTU tu;
+
+		SmooksResourceConfiguration.setParameter("replacementElement", "head");
+		tu = new RenameElementTU(SmooksResourceConfiguration);
+
+		tu.visit(body, null);
+		assertNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/body"));
+		assertNotNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/head"));
+	}
+
 	public void test_RemoveElementTU() {
 		Document doc = parseCPResource("testpage1.html");
 		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
@@ -84,6 +98,23 @@ public class BaseTransUnitsTest extends TestCase {
 		assertNull("Failed to remove target element.", XmlUtil.getNode(doc, "/html/body"));
 	}
 
+	public void test_RemoveElementTU_root_element() {
+		Document doc = parseCPResource("testpage1.html");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("html", "xxx");
+		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
+		RemoveElementTU tu;
+
+		tu = new RemoveElementTU(SmooksResourceConfiguration);
+
+		// So remove the root element...
+		tu.visit(doc.getDocumentElement(), null);
+		assertEquals("Failed to remove root element.", body, doc.getDocumentElement());
+
+		// Try removing the new root element - should fail because the body element has no child elements...
+		tu.visit(doc.getDocumentElement(), null);
+		assertEquals("Remove root element but shouldn't have.", body, doc.getDocumentElement());
+	}
+	
 	public void test_SetAttributeTU() {
 		Document doc = parseCPResource("testpage1.html");
 		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
