@@ -64,7 +64,7 @@ import org.w3c.dom.NodeList;
  * 
  * <h4>1. Registering XslContentDeliveryUnitCreator to Handle "xsl" resource types</h4>
  * <pre>
- * &lt;smooks-resource path="<b>org.milyn.templating.xslt.XslContentDeliveryUnitCreator</b>" &gt;
+ * &lt;smooks-resource selector="cdu-creator" path="<b>org.milyn.templating.xslt.XslContentDeliveryUnitCreator</b>" &gt;
  * 
  *  &lt;!-- 
  *      (Mandatory) Specifying the resource type.  This param basically tells Smooks to use the {@link XslContentDeliveryUnitCreator} to

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
-import org.milyn.logging.SmooksLogger;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
  */
 public final class XMLConfigDigester {
 
-    private static Log logger = SmooksLogger.getLog();
+    private static Log logger = LogFactory.getLog(XMLConfigDigester.class);
 
     /**
      * Digest the XML Smooks configuration stream.

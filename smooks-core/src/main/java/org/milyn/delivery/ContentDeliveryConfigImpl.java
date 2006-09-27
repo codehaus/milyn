@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -176,9 +177,34 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		// Expand the SmooksResourceConfiguration table and resort
 		expandSmooksResourceConfigurationTable();
 		sortSmooksResourceConfigurations(resourceConfigTable);
+
+		if(logger.isDebugEnabled()) {
+			logResourceConfig();
+		}
 		
 		// Extract the ContentDeliveryUnits and build the tables
 		extractContentDeliveryUnits();
+	}
+
+	/**
+	 * Print a debug log of the resource configurations for the associated useragent.
+	 */
+	private void logResourceConfig() {
+		logger.debug("==================================================================================================");
+		logger.debug("Resource configuration (sorted) for useragent [" + deviceContext.getCommonName() + "].  Profiles: [" + deviceContext.getProfileSet() + "]");
+		Iterator configurations = resourceConfigTable.entrySet().iterator();
+		int i = 0;
+		
+		while(configurations.hasNext()) {
+			Map.Entry entry = (Entry) configurations.next();
+			List resources = (List)entry.getValue();
+			
+			logger.debug(i + ") " + entry.getKey());
+			for (int ii = 0; ii < resources.size(); ii++) {
+				logger.debug("\t(" + ii + ") " + resources.get(ii));
+			}
+		}
+		logger.debug("==================================================================================================");
 	}
 
 	/**

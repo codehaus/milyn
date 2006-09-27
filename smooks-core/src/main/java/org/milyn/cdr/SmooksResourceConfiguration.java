@@ -599,7 +599,7 @@ public class SmooksResourceConfiguration {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "[" + Arrays.asList(useragents) +"][" + selector + "][" + path + "]";
+		return "Useragent: [" + Arrays.asList(useragents) +"], Selector: [" + selector + "], Target Namespace URI: [" + namespaceURI + "], Resource Path: [" + path + "], Num Params: [" + getParameterCount() + "]";
 	}
     
     /**

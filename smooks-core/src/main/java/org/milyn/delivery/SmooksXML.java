@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -180,7 +181,7 @@ public class SmooksXML {
 	/**
 	 * Logger.
 	 */
-	private Log logger = SmooksLogger.getLog();
+	private Log logger = LogFactory.getLog(SmooksXML.class);
 	/**
 	 * Container request for this Smooks content delivery instance.
 	 */
@@ -393,17 +394,26 @@ public class SmooksXML {
                 // Make sure the assembly unit is targeted at this element.
                 // Check the namespace and context (if the selector is contextual)...
                 if(!config.isTargetedAtElementNamespace(element)) {
+					if(logger.isDebugEnabled()) {
+						logger.debug("Not applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
+					}
                     continue;
                 } else if(config.isSelectorContextual() && !config.isTargetedAtElementContext(element)) {
                     // Note: If the selector is not contextual, there's no need to perform the
                     // isTargetedAtElementContext check because we already know the unit is targetd at the
                     // element by name - because we looked it up by name in the 1st place.
+					if(logger.isDebugEnabled()) {
+						logger.debug("Not applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
+					}
                     continue;
                 }            
                 
                 AssemblyUnit assemblyUnit = (AssemblyUnit)configMap.getContentDeliveryUnit();
 				if(assemblyUnit.visitBefore()) {
 					try {
+						if(logger.isDebugEnabled()) {
+							logger.debug("Applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+						}
 						assemblyUnit.visit(element, containerRequest);
 					} catch(Exception e) {
 						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);
@@ -582,11 +592,17 @@ public class SmooksXML {
                 // Make sure the processing unit is targeted at this element.
                 // Check the namespace and context (if the selector is contextual)...
                 if(!config.isTargetedAtElementNamespace(element)) {
+					if(logger.isDebugEnabled()) {
+						logger.debug("Not applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
+					}
                     continue;
                 } else if(config.isSelectorContextual() && !config.isTargetedAtElementContext(element)) {
                     // Note: If the selector is not contextual, there's no need to perform the
                     // isTargetedAtElementContext check because we already know the unit is targetd at the
                     // element by name - because we looked it up by name in the 1st place.
+					if(logger.isDebugEnabled()) {
+						logger.debug("Not applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Not targeted at elemeent in namespace [" + config.getNamespaceURI() + "].  Contextual selector check failed.");
+					}
                     continue;
                 }            
 
@@ -600,6 +616,9 @@ public class SmooksXML {
 				// every time. Doing this for every element could be very 
 				// costly.
 				try {
+					if(logger.isDebugEnabled()) {
+						logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+					}
 					processingUnit.visit(element, containerRequest);
 				} catch(Exception e) {
 					logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);

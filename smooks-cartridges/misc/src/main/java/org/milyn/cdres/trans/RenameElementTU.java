@@ -27,10 +27,12 @@ import org.w3c.dom.Element;
  * <p/>
  * The element is visited by this Processing Unit after it's child content
  * has been iterated over.
+ * <p/>
+ * See {@link DomUtils#renameElement(org.w3c.dom.Element, java.lang.String, boolean, boolean)}.
+ * 
  * <h3>.cdrl Configuration</h3>
  * <pre>
- * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="<i>target-element-name</i>" 
- * 	path="org.milyn.cdres.trans.RenameElementTU"&gt;
+ * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="<i>target-element-name</i>" path="org.milyn.cdres.trans.RenameElementTU"&gt;
  * 
  * 	&lt;!-- The name of the replacement element. --&gt;
  * 	&lt;param name="<b>replacementElement</b>"&gt;<i>replacement-element-name</i>&lt;/param&gt;

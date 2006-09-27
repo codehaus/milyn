@@ -19,6 +19,8 @@ package org.milyn.cdr;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.device.UAContext;
 
 /**
@@ -27,6 +29,10 @@ import org.milyn.device.UAContext;
  */
 public class SmooksResourceConfigurationList {
 
+	/**
+	 * Logger.
+	 */
+	private static Log logger = LogFactory.getLog(SmooksResourceConfigurationList.class);
     /**
      * List name.
      */
@@ -45,6 +51,7 @@ public class SmooksResourceConfigurationList {
             throw new IllegalArgumentException("null or empty 'name' arg in constructor call.");
         }
         this.name = name;
+        logger.debug("Smooks ResourceConfiguration List [" + name + "] created.");
     }
     
     /**
@@ -56,6 +63,7 @@ public class SmooksResourceConfigurationList {
             throw new IllegalArgumentException("null 'config' arg in method call.");
         }
         list.add(config);
+        logger.debug("Smooks ResourceConfiguration [" + config + "] added to list [" + name + "].");
     }
 
     /**
@@ -112,6 +120,8 @@ public class SmooksResourceConfigurationList {
                 if(expression.isMatchingDevice(useragentContext)) {
                     matchingSmooksResourceConfigurationsColl.addElement(resourceConfig);
                     break;
+                } else {
+            		logger.debug("Resource [" + resourceConfig + "] not targeted at useragent [" + useragentContext.getCommonName() + "].  Profiles: [" + useragentContext.getProfileSet() + "]");
                 }
             }
         }
