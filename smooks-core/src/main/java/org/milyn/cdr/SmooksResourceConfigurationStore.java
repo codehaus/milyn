@@ -119,13 +119,13 @@ public class SmooksResourceConfigurationStore {
 					logger.info("Loading Smooks Resources from file [" + cdrl + "].");
                     registerResources(cdrl, resource);
 				}
-				SmooksLogger.getLog().debug("[" + cdrl + "] Loaded.");
+				logger.debug("[" + cdrl + "] Loaded.");
 			} catch (IllegalArgumentException e) {
-				SmooksLogger.getLog().error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
+				logger.error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
 			} catch (IOException e) {
-				SmooksLogger.getLog().error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
+				logger.error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
 			} catch (SAXException e) {
-				SmooksLogger.getLog().error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
+				logger.error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
 			}
 		}
 	}

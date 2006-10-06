@@ -170,24 +170,28 @@
 		</unitTest>
 	</build>
 
-
 	<reports>
-		<!-- report>maven-jdepend-plugin</report>
+		<report>maven-junit-report-plugin</report>
+		<report>maven-cobertura-plugin</report>
+		
+		<!-- 
+		<report>maven-jdepend-plugin</report>
 		<report>maven-javancss-plugin</report>
 		
 		<report>maven-checkstyle-plugin</report>
 		<report>maven-pmd-plugin</report>
 		<report>maven-findbugs-plugin</report>
 		<report>jutils-lint4j-plugin</report>
-		<report>maven-macker-plugin</report -->
+		<report>maven-macker-plugin</report>
 		
 		<report>maven-junit-report-plugin</report>
 		<report>maven-cobertura-plugin</report>
 		<report>maven-javadoc-plugin</report>
 
-		<!-- report>maven-jxr-plugin</report>
+		<report>maven-jxr-plugin</report>
 		
-		<report>maven-files-plugin</report -->
+		<report>maven-files-plugin</report>
+		-->
 	</reports>
 	
 </project>

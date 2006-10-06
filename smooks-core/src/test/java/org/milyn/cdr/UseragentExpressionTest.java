@@ -44,8 +44,8 @@ public class UseragentExpressionTest extends TestCase {
 		expression = new UseragentExpression("*");
 		assertTrue(expression.isMatchingDevice(mockContext1));
 		assertTrue(expression.isMatchingDevice(mockContext2));
-		assertEquals(new Double(1), new Double(expression.getSpecificity(mockContext1)));
-		assertEquals(new Double(1), new Double(expression.getSpecificity(mockContext2)));
+		assertEquals(new Double(5), new Double(expression.getSpecificity(mockContext1)));
+		assertEquals(new Double(5), new Double(expression.getSpecificity(mockContext2)));
 
 		// Match against a profile
 		expression = new UseragentExpression("profile1");

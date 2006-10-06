@@ -45,9 +45,9 @@ import org.milyn.device.UAContext;
 	
 	// Check the 'selector' attribute value.
 	if(resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#isXmlDef() isXmlDef()}) {
-		specificity += 1;
-	} else if(resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() getselector()}.equals("*")) {
 		specificity += 10;
+	} else if(resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() getselector()}.equals("*")) {
+		specificity += 5;
 	} else {
 		// Explicit selector listed
 		specificity += 100;
@@ -88,22 +88,21 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
-	public int compare(Object unitDefObj1, Object unitDefObj2) {
-		SmooksResourceConfiguration unitDef1 = (SmooksResourceConfiguration)unitDefObj1;
-		SmooksResourceConfiguration unitDef2 = (SmooksResourceConfiguration)unitDefObj2;
+	public int compare(Object configObj1, Object configObj2) {
+		SmooksResourceConfiguration config1 = (SmooksResourceConfiguration)configObj1;
+		SmooksResourceConfiguration config = (SmooksResourceConfiguration)configObj2;
 
-		if(unitDef1 == unitDef2) {
-			// This should never happen.
+		if(config1 == config) {
 			return 0;
 		}
 		
-		double unitDef1Specificity = getSpecificity(unitDef1);
-		double unitDef2Specificity = getSpecificity(unitDef2);				
+		double config1Specificity = getSpecificity(config1);
+		double config2Specificity = getSpecificity(config);				
 		
 		// They are ordered as follow (most specific first). 
-		if(unitDef1Specificity > unitDef2Specificity) {
+		if(config1Specificity > config2Specificity) {
 			return -1;
-		} else if(unitDef1Specificity < unitDef2Specificity) {
+		} else if(config1Specificity < config2Specificity) {
 			return 1;
 		} else {
 			return 0;
@@ -118,7 +117,7 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 	 * @param resourceConfig
 	 * @return
 	 */
-	private double getSpecificity(SmooksResourceConfiguration resourceConfig) {
+	protected double getSpecificity(SmooksResourceConfiguration resourceConfig) {
 		double specificity = 0;
 		
 		// If the following code is modified, please update the class Javadoc.
@@ -132,20 +131,20 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 		
 		// Check the 'selector' attribute value.
 		if(resourceConfig.isXmlDef()) {
-			specificity += 1;
-		} else if(resourceConfig.getSelector().equals("*")) {
 			specificity += 10;
+		} else if(resourceConfig.getSelector().equals("*")) {
+			specificity += 5;
 		} else {
 			// Explicit selector listed
 			specificity += 100;
             
-            // If the selector is contextual it's therefore more specific so
-            // account for that.  Subtract 1 because that "1" is already accounted
-            // for by the addition of 100 - it's the extra we're accounting for here...
-            if(resourceConfig.isSelectorContextual()) {
-                int contextSpecificity = resourceConfig.getContextualSelector().length;
-                specificity += (10 * (contextSpecificity - 1));
-            }
+			// If the selector is contextual it's therefore more specific so
+			// account for that.  Subtract 1 because that "1" is already accounted
+			// for by the addition of 100 - it's the extra we're accounting for here...
+			if(resourceConfig.isSelectorContextual()) {
+			    int contextSpecificity = resourceConfig.getContextualSelector().length;
+			    specificity += (10 * (contextSpecificity - 1));
+			}
 		}
 		
 		// Check the 'namespace' attribute.

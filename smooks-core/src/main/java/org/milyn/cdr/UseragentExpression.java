@@ -123,7 +123,7 @@ public class UseragentExpression {
 	 */
 	public class ExpressionToken {
 		
-		private String useragent;
+		private String expressionToken;
 		private boolean negated;
 
 		/**
@@ -133,9 +133,9 @@ public class UseragentExpression {
 		private ExpressionToken(String useragentToken) {
 			negated = useragentToken.startsWith("not:");
 			if(negated) {
-				this.useragent = useragentToken.substring(4);
+				this.expressionToken = useragentToken.substring(4);
 			} else {
-				this.useragent = useragentToken;
+				this.expressionToken = useragentToken;
 			}
 		}
 
@@ -144,7 +144,7 @@ public class UseragentExpression {
 		 * @return The useragent specified in this token.
 		 */
 		public String getUseragent() {
-			return useragent;
+			return expressionToken;
 		}
 
 		/**
@@ -164,7 +164,7 @@ public class UseragentExpression {
 		 * @return True if the token is a wildcard token, otherwise false. 
 		 */
 		public boolean isWildcard() {
-			return useragent.equals("*");
+			return expressionToken.equals("*");
 		}
 		
 		/**
@@ -176,9 +176,9 @@ public class UseragentExpression {
 			if(isWildcard()) {
 				return true;
 			} else if(negated) {
-				return !UAContextUtil.isDeviceOrProfile(useragent, deviceContext);
+				return !UAContextUtil.isDeviceOrProfile(expressionToken, deviceContext);
 			} else {
-				return UAContextUtil.isDeviceOrProfile(useragent, deviceContext);
+				return UAContextUtil.isDeviceOrProfile(expressionToken, deviceContext);
 			}
 		}
 		
@@ -188,18 +188,20 @@ public class UseragentExpression {
 		 * The following outlines the algorithm:
 		 * <pre>
 	if({@link #isNegated() isNegated()}) {
-		if({@link UAContext deviceContext}.getCommonName().equals(useragent)) {
+		if({@link UAContext deviceContext}.getCommonName().equals(expressionToken)) {
 			return 0;
-		} else if({@link UAContext deviceContext}.getProfileSet().isMember(useragent)) {
+		} else if({@link UAContext deviceContext}.getProfileSet().isMember(expressionToken)) {
 			return 0;
 		} else if({@link #isWildcard() isWildcard()}) {
 			return 0;
 		}
 		return 1;
 	} else {
-		Profile profile = deviceContext.getProfileSet().getProfile(useragent);
+		// Is the "expressionToken" referencing the useragent name (common name), a profile,
+		// or is it a wildcard token.
+		Profile profile = deviceContext.getProfileSet().getProfile(expressionToken);
 	
-		if(deviceContext.getCommonName().equals(useragent)) {
+		if(deviceContext.getCommonName().equals(expressionToken)) {
 			return 100;
 		} else if(profile != null) {
 			// If it's a HTTP "Accept" header media profile, multiply
@@ -221,18 +223,20 @@ public class UseragentExpression {
 		 */
 		public double getSpecificity(UAContext deviceContext) {
 			if(isNegated()) {
-				if(deviceContext.getCommonName().equals(useragent)) {
+				if(deviceContext.getCommonName().equals(expressionToken)) {
 					return 0;
-				} else if(deviceContext.getProfileSet().isMember(useragent)) {
+				} else if(deviceContext.getProfileSet().isMember(expressionToken)) {
 					return 0;
 				} else if(isWildcard()) {
 					return 0;
 				}
 				return 1;
 			} else {
-				Profile profile = deviceContext.getProfileSet().getProfile(useragent);
+				// Is the "expressionToken" referencing the useragent name (common name), a profile,
+				// or is it a wildcard token.
+				Profile profile = deviceContext.getProfileSet().getProfile(expressionToken);
 
-				if(deviceContext.getCommonName().equals(useragent)) {
+				if(deviceContext.getCommonName().equalsIgnoreCase(expressionToken)) {
 					return 100;
 				} else if(profile != null) {
 					// If it's a HTTP "Accept" header media profile, multiple
@@ -244,7 +248,7 @@ public class UseragentExpression {
 						return 10;
 					}
 				} else if(isWildcard()) {
-					return 1;
+					return 5;
 				}
 				return 0;
 			}

@@ -27,6 +27,8 @@ import java.net.URI;
 import java.net.URL;
 import java.util.LinkedHashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.standalone.StandaloneContainerContext;
 import org.milyn.container.standalone.StandaloneContainerRequest;
@@ -57,6 +59,7 @@ import org.xml.sax.SAXException;
  */
 public class SmooksStandalone {
 
+	private static Log logger = LogFactory.getLog(SmooksStandalone.class);
 	private StandaloneContainerContext context;
 	private String contentEncoding;
 	
@@ -228,7 +231,7 @@ public class SmooksStandalone {
             try {
                 stream.close();
             } catch (IOException e) {
-                SmooksLogger.getLog().error("Exception closing input stream.", e);
+            	logger.error("Exception closing input stream.", e);
             }
         }
 	}
