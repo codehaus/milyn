@@ -34,7 +34,6 @@ import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
 import org.milyn.delivery.process.ProcessingUnitPrototype;
 import org.milyn.delivery.serialize.Serializer;
-import org.milyn.logging.SmooksLogger;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Parser;
 

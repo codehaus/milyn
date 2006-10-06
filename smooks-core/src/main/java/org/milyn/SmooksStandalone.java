@@ -40,7 +40,6 @@ import org.milyn.device.profile.DefaultProfileSet;
 import org.milyn.device.profile.DefaultProfileStore;
 import org.milyn.device.profile.ProfileSet;
 import org.milyn.device.profile.ProfileStore;
-import org.milyn.logging.SmooksLogger;
 import org.milyn.resource.ClasspathResourceLocator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
