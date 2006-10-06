@@ -30,7 +30,6 @@ import org.milyn.container.ContainerContext;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
 import org.milyn.device.UAContext;
-import org.milyn.logging.SmooksLogger;
 import org.milyn.resource.ContainerResourceLocator;
 import org.xml.sax.SAXException;
 
