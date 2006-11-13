@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
@@ -48,6 +49,9 @@ public abstract class DomUtils {
 	 * @param target Target Node.
 	 */
 	public static void copyChildNodes(Node source, Node target) {
+		AssertArgument.isNotNull(source, "source");
+		AssertArgument.isNotNull(target, "target");
+		
 		List nodeList = DomUtils.copyNodeList(source.getChildNodes());
 		int childCount = nodeList.size();
 		
@@ -62,56 +66,16 @@ public abstract class DomUtils {
 	 * @param oldNode Old node - removed.
 	 */
 	public static void replaceNode(Node newNode, Node oldNode) {
-		oldNode.getParentNode().replaceChild(newNode, oldNode);
-	}
+		AssertArgument.isNotNull(newNode, "newNode");
+		AssertArgument.isNotNull(oldNode, "oldNode");
 
-    /**
-     * Insert the supplied node before the supplied reference node (refNode).
-     * @param newNode Node to be inserted.
-     * @param refNode Reference node before which the supplied nodes should
-     * be inserted.
-     */
-    public static void insertBefore(Node newNode, Node refNode) {
-        Node parentNode = refNode.getParentNode();
-        
-        if(parentNode instanceof Document && newNode instanceof Element) {
-            // document node needs to be handled differently or else we'll get errors...
-            logger.warn("Request to insert an element before the Document root node.  This is not allowed.  Replacing the Document root with the new Node.");
-            parentNode.removeChild(refNode);
-            parentNode.appendChild(newNode);
-        } else {
-            parentNode.insertBefore(newNode, refNode);
-        }
-    }
-
-	/**
-	 * Insert the supplied nodes before the supplied reference node (refNode).
-	 * @param newNodes Nodes to be inserted.
-	 * @param refNode Reference node before which the supplied nodes should
-	 * be inserted.
-	 */
-	public static void insertBefore(NodeList newNodes, Node refNode) {
-		Node parentNode = refNode.getParentNode();
-		int nodeCount = newNodes.getLength();
-		List nodeList = DomUtils.copyNodeList(newNodes);
+		Node parentNode = oldNode.getParentNode();
 		
-        if(nodeCount == 0) {
-            return;
-        }
-        
-        if(parentNode instanceof Document) {
-            // document node needs to be handled differently or else we'll get errors...
-            logger.warn("Request to insert an element before the Document root node.  This is not allowed.  Replacing the Document root with the first element from the supplied NodeList.");
-            parentNode.removeChild(refNode);
-            parentNode.appendChild((Node)nodeList.get(0));
-            if(nodeCount > 0) {
-                logger.warn("Supplied NodeList is 1+ in length.  Replacing root node with the first node from the NodeList.");
-            }
-        } else {
-    		for(int i = 0; i < nodeCount; i++) {
-    			parentNode.insertBefore((Node)nodeList.get(i), refNode);
-    		}
-        }
+		if(parentNode == null) {
+			logger.warn("Cannot replace node [" + oldNode + "] with [" + newNode + "]. [" + oldNode + "] has no parent.");
+		} else {
+			parentNode.replaceChild(newNode, oldNode);
+		}
 	}
 	
 	/**
@@ -132,21 +96,36 @@ public abstract class DomUtils {
 	 * @param clone Clone Nodelist Nodes.
 	 */
 	public static void replaceNode(NodeList newNodes, Node oldNode, boolean clone) {
+		AssertArgument.isNotNull(newNodes, "newNodes");
+		AssertArgument.isNotNull(oldNode, "oldNode");
+
 		Node parentNode = oldNode.getParentNode();
+
+        if(parentNode == null) {
+			logger.warn("Cannot replace [" + oldNode + "] with a NodeList. [" + oldNode + "] has no parent.");
+			return;
+		}
+		
 		int nodeCount = newNodes.getLength();
 		List nodeList = DomUtils.copyNodeList(newNodes);
         
         if(nodeCount == 0) {
+            if(!(parentNode instanceof Document)) {
+            	parentNode.removeChild(oldNode);
+            }
             return;
         }
         
         if(parentNode instanceof Document) {
-            // document node needs to be handled differently or else we'll get errors...
-            parentNode.removeChild(oldNode);
-            parentNode.appendChild((Node)nodeList.get(0));
-            if(nodeCount > 0) {
-                logger.warn("Request to replace the Document root node with a 1+ in length NodeList.  Replacing root node with the first node from the NodeList.");
-            }
+			List elements = DomUtils.getElements(newNodes, "*", null);
+
+			if(!elements.isEmpty()) {
+                logger.warn("Request to replace the Document root node with a 1+ in length NodeList.  Replacing root node with the first element node from the NodeList.");
+	            parentNode.removeChild(oldNode);
+	            parentNode.appendChild((Node)elements.get(0));
+			} else {
+				logger.warn("Cannot replace document root element with a NodeList that doesn't contain an element node.");
+			}
         } else {
     		for(int i = 0; i < nodeCount; i++) {
     			if(clone) {
@@ -155,7 +134,82 @@ public abstract class DomUtils {
     				parentNode.insertBefore((Node)nodeList.get(i), oldNode);
     			}
     		}
-    		oldNode.getParentNode().removeChild(oldNode);
+    		parentNode.removeChild(oldNode);
+        }
+	}
+
+    /**
+     * Insert the supplied node before the supplied reference node (refNode).
+     * @param newNode Node to be inserted.
+     * @param refNode Reference node before which the supplied nodes should
+     * be inserted.
+     */
+    public static void insertBefore(Node newNode, Node refNode) {
+		AssertArgument.isNotNull(newNode, "newNode");
+		AssertArgument.isNotNull(refNode, "refNode");
+
+    	Node parentNode = refNode.getParentNode();
+    	
+    	if(parentNode == null) {
+			logger.warn("Cannot insert [" + newNode + "] before [" + refNode + "]. [" + refNode + "] has no parent.");
+			return;
+		}
+        
+        if(parentNode instanceof Document && newNode.getNodeType() == Node.ELEMENT_NODE) {
+            logger.warn("Request to insert an element before the Document root node.  This is not allowed.  Replacing the Document root with the new Node.");
+            parentNode.removeChild(refNode);
+            parentNode.appendChild(newNode);
+        } else {
+            parentNode.insertBefore(newNode, refNode);
+        }
+    }
+
+	/**
+	 * Insert the supplied nodes before the supplied reference node (refNode).
+	 * @param newNodes Nodes to be inserted.
+	 * @param refNode Reference node before which the supplied nodes should
+	 * be inserted.
+	 */
+	public static void insertBefore(NodeList newNodes, Node refNode) {
+		AssertArgument.isNotNull(newNodes, "newNodes");
+		AssertArgument.isNotNull(refNode, "refNode");
+		
+		Node parentNode = refNode.getParentNode();
+		
+		if(parentNode == null) {
+			logger.warn("Cannot insert a NodeList before [" + refNode + "]. [" + refNode + "] has no parent.");
+			return;
+		}
+		
+		int nodeCount = newNodes.getLength();
+		List nodeList = DomUtils.copyNodeList(newNodes);
+		
+        if(nodeCount == 0) {
+            return;
+        }
+        
+        if(parentNode instanceof Document) {
+			List elements = DomUtils.getElements(newNodes, "*", null);
+
+			if(!elements.isEmpty()) {
+	            logger.warn("Request to insert a NodeList before the Document root node.  Will replace the root element with the 1st element node from the NodeList.");
+	            parentNode.removeChild(refNode);
+	            parentNode.appendChild((Node)elements.get(0));
+			} else {
+				logger.warn("Cannot insert beforen the document root element from a NodeList that doesn't contain an element node.");
+			}
+        	
+    		for(int i = 0; i < nodeCount; i++) {
+    			Node node = (Node)nodeList.get(i);
+    			if(node.getNodeType() != Node.ELEMENT_NODE) {
+    				System.out.println("****" + node);
+    				parentNode.insertBefore(node, refNode);
+    			}
+    		}
+        } else {
+    		for(int i = 0; i < nodeCount; i++) {
+    			parentNode.insertBefore((Node)nodeList.get(i), refNode);
+    		}
         }
 	}
 
@@ -170,16 +224,10 @@ public abstract class DomUtils {
 	 * @return The renamed element.
 	 */
 	public static Element renameElement(Element element, String replacementElement, boolean keepChildContent, boolean keepAttributes) {
-		Element replacement; 
-
-		if(element == null) {
-			throw new IllegalStateException("null 'element' arg in method call.");
-		}
-		if(replacementElement == null) {
-			throw new IllegalStateException("null 'replacementElement' arg in method call.");
-		}
+		AssertArgument.isNotNull(element, "element");
+		AssertArgument.isNotNull(replacementElement, "replacementElement");
 		
-		replacement = element.getOwnerDocument().createElement(replacementElement);
+		Element replacement = element.getOwnerDocument().createElement(replacementElement);
 		if(keepChildContent) {
 			DomUtils.copyChildNodes(element, replacement);
 		}
@@ -210,12 +258,17 @@ public abstract class DomUtils {
 	 * @param keepChildren Keep child content.
 	 */
 	public static void removeElement(Element element, boolean keepChildren) {
+		AssertArgument.isNotNull(element, "element");
+
 		Node parent = element.getParentNode();
+		if(parent == null) {
+			logger.warn("Cannot remove element [" + element + "]. [" + element + "] has no parent.");
+			return;
+		}
+		
 		NodeList children = element.getChildNodes();
 		
-		if(parent == null) {
-			logger.warn("Cannot remove element [" + DomUtils.getName(element) + "].  Element has no parent.");
-		} else if (parent instanceof Document) {
+		if (parent instanceof Document) {
 			List childElements = null;
 			
 			if(!keepChildren) {
@@ -245,6 +298,8 @@ public abstract class DomUtils {
 	 * @param node to be "cleared".
 	 */
 	public static void removeChildren(Node node) {
+		AssertArgument.isNotNull(node, "node");
+
 		NodeList children = node.getChildNodes();
 		int nodeCount = children.getLength();
 		
@@ -284,6 +339,9 @@ public abstract class DomUtils {
 	 * @param nodes List of nodes to append.
 	 */
 	public static void appendList(Node node, List nodes) {
+		AssertArgument.isNotNull(node, "node");
+		AssertArgument.isNotNull(nodes, "nodes");
+
 		int nodeCount = nodes.size();
 	
 		for(int i = 0; i < nodeCount; i++) {
@@ -298,6 +356,9 @@ public abstract class DomUtils {
 	 * @return True if the attribute value is "true" (case insensitive), otherwise false.
 	 */
 	public static boolean getBooleanAttrib(Element element, String attribName) {
+		AssertArgument.isNotNull(element, "element");
+		AssertArgument.isNotNullAndNotEmpty(attribName, "attribName");
+
 		String attribVal = element.getAttribute(attribName);
 		
 		return (attribVal != null?attribVal.equalsIgnoreCase("true"):false);
@@ -311,6 +372,10 @@ public abstract class DomUtils {
 	 * @return True if the attribute value is "true" (case insensitive), otherwise false.
 	 */
 	public static boolean getBooleanAttrib(Element element, String attribName, String namespaceURI) {
+		AssertArgument.isNotNull(element, "element");
+		AssertArgument.isNotNullAndNotEmpty(attribName, "attribName");
+		AssertArgument.isNotNullAndNotEmpty(namespaceURI, "namespaceURI");
+
 		String attribVal = element.getAttributeNS(namespaceURI, attribName);
 		
 		return (attribVal != null?attribVal.equalsIgnoreCase("true"):false);
@@ -339,6 +404,9 @@ public abstract class DomUtils {
 	 * or null if no such parent element exists.
 	 */
 	public static Element getParentElement(Element child, String parentLocalName, String namespaceURI) {
+		AssertArgument.isNotNull(child, "child");
+		AssertArgument.isNotNullAndNotEmpty(parentLocalName, "parentLocalName");
+
 		Node parentNode = child.getParentNode();
 		
 		while(parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -367,6 +435,8 @@ public abstract class DomUtils {
 	 * @return The element name.
 	 */
 	public static String getName(Element element) {
+		AssertArgument.isNotNull(element, "element");
+
 		String name = element.getLocalName();
 		
 		if(name != null) {
@@ -401,6 +471,9 @@ public abstract class DomUtils {
 	 * @return The attribute value, or <code>null</code> if unset.
 	 */
 	public static String getAttributeValue(Element element, String attributeName, String namespaceURI) {
+		AssertArgument.isNotNull(element, "element");
+		AssertArgument.isNotNullAndNotEmpty(attributeName, "attributeName");
+
 		String attributeValue;
 		
 		if(namespaceURI == null) {
@@ -417,7 +490,14 @@ public abstract class DomUtils {
 	}
 
 	public static Node getPreviousSibling(Node node, short nodeType) {
+		AssertArgument.isNotNull(node, "node");
+
 		Node parent = node.getParentNode();
+        if(parent == null) {
+			logger.warn("Cannot get node [" + node + "] previous sibling. [" + node + "] has no parent.");
+			return null;
+		}
+		
 		NodeList siblings = parent.getChildNodes();
 		int siblingCount = siblings.getLength();
 		int nodeIndex = 0;
@@ -458,8 +538,15 @@ public abstract class DomUtils {
 	 * @return The number of siblings of the supplied type before the supplied node.
 	 */
 	public static int countNodesBefore(Node node, short nodeType) {
+		AssertArgument.isNotNull(node, "node");
+
 		Node parent = node.getParentNode();
-		NodeList siblings = parent.getChildNodes();
+        if(parent == null) {
+			logger.warn("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
+			return 0;
+		}
+
+        NodeList siblings = parent.getChildNodes();
 		int count = 0;
 		int siblingCount = siblings.getLength();
 		
@@ -491,11 +578,24 @@ public abstract class DomUtils {
 	 * don't have the same parent node i.e. are not sibling nodes.
 	 */
 	public static int countNodesBetween(Node node1, Node node2, short nodeType) {
+		AssertArgument.isNotNull(node1, "node1");
+		AssertArgument.isNotNull(node2, "node2");
+
 		Node parent1 = node1.getParentNode();
+        if(parent1 == null) {
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
+			return 0;
+		}
+		
 		Node parent2 = node2.getParentNode();
+        if(parent2 == null) {
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
+			return 0;
+		}
 		
 		if(parent1 != parent2) {
-			throw new UnsupportedOperationException("Nodes must be siblings.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
+			return 0;
 		}
 		
 		int countBeforeNode1 = countNodesBefore(node1, nodeType);
@@ -517,7 +617,14 @@ public abstract class DomUtils {
 	 * @return The number of siblings before the supplied node.
 	 */
 	public static int countNodesBefore(Node node) {
+		AssertArgument.isNotNull(node, "node");
+
 		Node parent = node.getParentNode();
+        if(parent == null) {
+			logger.warn("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
+			return 0;
+		}
+
 		NodeList siblings = parent.getChildNodes();
 		int count = 0;
 		int siblingCount = siblings.getLength();
@@ -546,11 +653,24 @@ public abstract class DomUtils {
 	 * don't have the same parent node i.e. are not sibling nodes.
 	 */
 	public static int countNodesBetween(Node node1, Node node2) {
+		AssertArgument.isNotNull(node1, "node1");
+		AssertArgument.isNotNull(node2, "node2");
+
 		Node parent1 = node1.getParentNode();
+        if(parent1 == null) {
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
+			return 0;
+		}
+		
 		Node parent2 = node2.getParentNode();
+        if(parent2 == null) {
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
+			return 0;
+		}
 		
 		if(parent1 != parent2) {
-			throw new UnsupportedOperationException("Nodes must be siblings.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
+			return 0;
 		}
 		
 		int countBeforeNode1 = countNodesBefore(node1);
@@ -571,9 +691,12 @@ public abstract class DomUtils {
 	 * specified tag name.
 	 */
 	public static int countElementsBefore(Node node, String tagName) {
+		AssertArgument.isNotNull(node, "node");
+		AssertArgument.isNotNullAndNotEmpty(tagName, "tagName");
+
 		Node parent = node.getParentNode();
-		
 		if(parent == null) {
+			logger.warn("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
 			return 0;
 		}
 		
@@ -602,7 +725,14 @@ public abstract class DomUtils {
 	 * @return String containing the concatentated text.
 	 */
 	public static String getTextBefore(Node node) {
+		AssertArgument.isNotNull(node, "node");
+
 		Node parent = node.getParentNode();
+		if(parent == null) {
+			logger.warn("Cannot get text before node [" + node + "]. [" + node + "] has no parent.");
+			return "";
+		}
+		
 		NodeList siblings = parent.getChildNodes();
 		StringBuffer text = new StringBuffer();
 		int siblingCount = siblings.getLength();
@@ -628,11 +758,24 @@ public abstract class DomUtils {
 	 * @return String containing the concatentated text.
 	 */
 	public static String getTextBetween(Node node1, Node node2) {
+		AssertArgument.isNotNull(node1, "node1");
+		AssertArgument.isNotNull(node2, "node2");
+
 		Node parent1 = node1.getParentNode();
+        if(parent1 == null) {
+			logger.warn("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
+			return "";
+		}
+		
 		Node parent2 = node2.getParentNode();
+        if(parent2 == null) {
+			logger.warn("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
+			return "";
+		}
 		
 		if(parent1 != parent2) {
-			throw new UnsupportedOperationException("Nodes must be siblings.");
+			logger.warn("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
+			return "";
 		}
 
 		NodeList siblings = parent1.getChildNodes();
@@ -665,6 +808,8 @@ public abstract class DomUtils {
 	 * @return XPath string representation of the supplied DOM Node.
 	 */
 	public static String getXPath(Node node) {
+		AssertArgument.isNotNull(node, "node");
+
 		StringBuffer xpath = new StringBuffer();
 		Node parent = node.getParentNode();
 		
@@ -693,6 +838,8 @@ public abstract class DomUtils {
 	}
 
 	private static String getXPathToken(Element element) {
+		AssertArgument.isNotNull(element, "element");
+
 		String tagName = element.getTagName();
 		int count = DomUtils.countElementsBefore(element, tagName);
 		String xpathToken;
@@ -717,6 +864,8 @@ public abstract class DomUtils {
 	 * and cdata DOM nodes.  An empty String no such nodes are present.
 	 */
 	public static String getAllText(Element parent, boolean removeEntities) {
+		AssertArgument.isNotNull(parent, "parent");
+
 		NodeList children = parent.getChildNodes();
 		StringBuffer text = new StringBuffer();
 		int childCount = children.getLength();
@@ -754,12 +903,8 @@ public abstract class DomUtils {
 	 * @param literalText Literal text to be added.
 	 */
 	public static void addLiteral(Element element, String literalText) {
-		if(element == null) {
-			throw new IllegalArgumentException("null 'element' arg in method call.");
-		}
-		if(literalText == null) {
-			throw new IllegalArgumentException("null 'literalText' arg in method call.");
-		}
+		AssertArgument.isNotNull(element, "element");
+		AssertArgument.isNotNull(literalText, "literalText");
 		
 		Document document = element.getOwnerDocument();
 		Text literal = document.createTextNode(literalText);
@@ -810,7 +955,6 @@ public abstract class DomUtils {
 		return (Element)elements.get(position - 1);
 	}
 
-
 	/**
 	 * Get the child elements having the supplied localname and namespace.
 	 * <p/>
@@ -823,15 +967,35 @@ public abstract class DomUtils {
 	 * child elements exist on the parent element.
 	 */
 	public static List getElements(Element parent, String localname, String namespaceURI) {
-		NodeList children = parent.getChildNodes();
-		int count = children.getLength();
+		AssertArgument.isNotNull(parent, "parent");
+		
+		return getElements(parent.getChildNodes(), localname, namespaceURI);
+	}
+
+	/**
+	 * Get the child elements having the supplied localname and namespace.
+	 * <p/>
+	 * Can be used instead of XPath.
+	 * @param nodeList List of DOM nodes on which to perform the search.
+	 * @param localname Localname of the element required.  Supports "*" wildcards.
+	 * @param namespaceURI Namespace URI of the required element, or null
+	 * if a namespace comparison is not to be performed.
+	 * @return A list of W3C DOM {@link Element}s.  An empty list if no such
+	 * child elements exist on the parent element.
+	 */
+	public static List getElements(NodeList nodeList, String localname, String namespaceURI) {
+		AssertArgument.isNotNull(nodeList, "nodeList");
+		AssertArgument.isNotNullAndNotEmpty(localname, "localname");
+		AssertArgument.isNotEmpty(namespaceURI, "namespaceURI");
+
+		int count = nodeList.getLength();
 		Vector elements = new Vector();
 		
 		for(int i = 0; i < count; i++) {
-			Node child = children.item(i);
+			Node node = nodeList.item(i);
 			
-			if(child.getNodeType() == Node.ELEMENT_NODE) {
-				Element element = (Element)child;
+			if(node.getNodeType() == Node.ELEMENT_NODE) {
+				Element element = (Element)node;
 				if(localname.equals("*") || getName(element).equals(localname)) {
 					// The local name matches the element we're after...
 					if(namespaceURI == null || namespaceURI.equals(element.getNamespaceURI())) {

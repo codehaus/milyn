@@ -40,7 +40,7 @@ import org.milyn.device.profile.DefaultProfileSet;
 import org.milyn.device.profile.DefaultProfileStore;
 import org.milyn.device.profile.ProfileSet;
 import org.milyn.device.profile.ProfileStore;
-import org.milyn.resource.ClasspathResourceLocator;
+import org.milyn.resource.URIResourceLocator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -73,8 +73,11 @@ public class SmooksStandalone {
 	 * @see #registerResource(SmooksResourceConfiguration)
 	 */
 	public SmooksStandalone(String contentEncoding) {
-		setEncoding(contentEncoding);
-		context = new StandaloneContainerContext(new DefaultProfileStore(), new ClasspathResourceLocator());
+		URIResourceLocator resourceLocator = new URIResourceLocator();
+		
+		setEncoding(contentEncoding);        
+		resourceLocator.setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
+		context = new StandaloneContainerContext(new DefaultProfileStore(), resourceLocator);
 	}
 
 	/**
