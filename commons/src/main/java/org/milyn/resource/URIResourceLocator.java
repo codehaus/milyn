@@ -22,16 +22,22 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.milyn.assertion.AssertArgument;
 import org.milyn.resource.ContainerResourceLocator;
 
 /**
  * URI resource locator.
  * <p/>
- * Loads resources from a URI i.e. "file://", "http://" etc.
+ * Loads resources from a URI i.e. "file://", "http://", "classpath:/" etc.
  * @author tfennelly
  */
 public class URIResourceLocator implements ContainerResourceLocator {
 
+	/**
+	 * Scheme name for classpath based resources.
+	 */
+	public static String SCHEME_CLASSPATH = "classpath";
+	
 	private URI baseURI = URI.create("./");
 
 	public InputStream getResource(String configName, String defaultUri) throws IllegalArgumentException, IOException {
@@ -43,10 +49,23 @@ public class URIResourceLocator implements ContainerResourceLocator {
 	}
 
 	private InputStream getResource(URI uri) throws IllegalArgumentException, IOException {
-		URL url = uri.toURL();
-		URLConnection connection = url.openConnection();
+		URL url;
+		String scheme = uri.getScheme();
 		
-		return connection.getInputStream();
+		if(scheme != null && scheme.equals(SCHEME_CLASSPATH)) {
+			String path = uri.getPath();
+			
+			if(path == null) {
+				throw new IllegalArgumentException("Unable to locate classpath resource [" + uri + "].  Resource path not specified in URI.");
+			}
+			
+			return getClass().getResourceAsStream(path);
+		} else {
+			url = uri.toURL();
+			URLConnection connection = url.openConnection();
+		
+			return connection.getInputStream();
+		}
 	}
 	
 	/**
