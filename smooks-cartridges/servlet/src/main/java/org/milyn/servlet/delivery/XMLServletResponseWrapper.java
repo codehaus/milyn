@@ -16,12 +16,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.SmooksXML;
 import org.milyn.xml.Parser;
-import org.milyn.logging.SmooksLogger;
 import org.milyn.servlet.http.HeaderAction;
 import org.milyn.servlet.parse.HTMLSAXParser;
 import org.w3c.dom.Document;
@@ -51,7 +51,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	/**
 	 * Logger.
 	 */
-	private Log logger = SmooksLogger.getLog();
+	private static Log logger = LogFactory.getLog(XMLServletResponseWrapper.class);
 	/**
 	 * ServletOutputStream instance - if getOutputStream is called by filter delegate.
 	 */

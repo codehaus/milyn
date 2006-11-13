@@ -35,10 +35,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.device.ident.UnknownDeviceException;
-import org.milyn.logging.SmooksLogger;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.servlet.container.HttpServletContainerRequest;
 import org.milyn.servlet.container.ServletContainerContext;
@@ -124,7 +124,7 @@ public class SmooksServletFilter implements Filter {
 	/**
 	 * Logger.
 	 */
-	private Log logger = SmooksLogger.getLog();
+	private static Log logger = LogFactory.getLog(SmooksServletFilter.class);
 	
 	/* (non-Javadoc)
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
