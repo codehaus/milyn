@@ -18,6 +18,7 @@ package org.milyn.container.standalone;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Hashtable;
 
 import org.apache.commons.logging.Log;
@@ -26,8 +27,8 @@ import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ContainerContext;
 import org.milyn.device.profile.DefaultProfileConfigDigester;
 import org.milyn.device.profile.ProfileStore;
-import org.milyn.resource.ClasspathResourceLocator;
 import org.milyn.resource.ContainerResourceLocator;
+import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
 
 /**
@@ -49,9 +50,12 @@ public class StandaloneContainerContext implements ContainerContext {
     
     /**
      * Public constructor.
+     * <p/>
+     * 
      */
     public StandaloneContainerContext() {
-        resourceLocator = new ClasspathResourceLocator();
+        resourceLocator = new URIResourceLocator();
+        ((URIResourceLocator)resourceLocator).setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
         resStore = new SmooksResourceConfigurationStore(this);
         initProfileStore();
     }

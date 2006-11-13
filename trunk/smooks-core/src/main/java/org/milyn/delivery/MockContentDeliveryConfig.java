@@ -18,6 +18,7 @@ package org.milyn.delivery;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.milyn.delivery.process.ProcessingSet;
@@ -44,6 +45,10 @@ public class MockContentDeliveryConfig implements ContentDeliveryConfig {
 
 	public List getSmooksResourceConfigurations(String nodeDef) {
 		return (List)resourceConfigs.get(nodeDef);
+	}
+	
+	public Map getSmooksResourceConfigurations() {
+		return resourceConfigs;
 	}
 
 	/* (non-Javadoc)

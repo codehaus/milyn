@@ -114,10 +114,8 @@ public class SmooksResourceConfigurationStore {
 			try {
 				InputStream resource = resLocator.getResource(cdrl);
 				
-				if(cdrl.toLowerCase().endsWith(".cdrl")) {
-					logger.info("Loading Smooks Resources from file [" + cdrl + "].");
-                    registerResources(cdrl, resource);
-				}
+				logger.info("Loading Smooks Resources from file [" + cdrl + "].");
+                registerResources(cdrl, resource);
 				logger.debug("[" + cdrl + "] Loaded.");
 			} catch (IllegalArgumentException e) {
 				logger.error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
@@ -222,6 +220,8 @@ public class SmooksResourceConfigurationStore {
     /**
      * Get the {@link ContentDeliveryUnitCreator} for a resource based on the
      * supplied resource type.
+     * <p/>
+     * Note that {@link ContentDeliveryUnitCreator} implementations must be  configured under a selector value of "cdu-creator". 
      * @param type {@link ContentDeliveryUnitCreator} type e.g. "class", "xsl" etc.
      * @return {@link ContentDeliveryUnitCreator} for the resource.
      * @throws UnsupportedContentDeliveryUnitTypeException No {@link ContentDeliveryUnitCreator}

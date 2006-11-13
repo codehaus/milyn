@@ -353,11 +353,25 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	
 	/**
 	 * Get the list of {@link SmooksResourceConfiguration}s for the specified selector definition.
-	 * @param selector "selector" attribute value from the .cdrl file in the .cdrar.
+	 * @param selector The configuration "selector" attribute value from the .cdrl file in the .cdrar.
 	 * @return List of SmooksResourceConfiguration instances, or null.
 	 */
 	public List getSmooksResourceConfigurations(String selector) {
 		return (List)resourceConfigTable.get(selector.toLowerCase());
+	}
+	
+	/**
+	 * Get the {@link SmooksResourceConfiguration} map for the requesting useragent.
+	 * <p/>
+	 * This Map will be {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator preordered} 
+	 * for the requesting useragent.
+	 * 
+	 * @return {@link SmooksResourceConfiguration} map for the requesting useragent, keyed by the configuration 
+	 * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
+	 * {@link List} of preordered {@link SmooksResourceConfiguration} instances.
+	 */
+	public Map getSmooksResourceConfigurations() {
+		return resourceConfigTable;
 	}
 
 	private static final Vector EMPTY_LIST = new Vector();

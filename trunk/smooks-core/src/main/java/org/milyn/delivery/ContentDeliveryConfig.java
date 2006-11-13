@@ -18,6 +18,7 @@ package org.milyn.delivery;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.process.ProcessingSet;
@@ -38,22 +39,25 @@ public interface ContentDeliveryConfig {
 	 * <p/>
 	 * This list will be preselected and {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator preordered} 
 	 * for the requesting useragent.
-	 * <p/>
-	 * Use one or both of the following mechanisms to a access the resource bytes:
-	 * <ol>
-	 * 	<li>{@link org.milyn.cdr.CDRStore#getEntry(SmooksResourceConfiguration)}</li>
-	 * 	<li>{@link ClassLoader#getResourceAsStream(java.lang.String)} if the 
-	 * 		resource is located in the classpath - using {@link SmooksResourceConfiguration#getPath()} for
-	 * 		the resource "name" parameter.  Prefix the name with "/".
-	 * 	</li>
-	 * </ol>
-	 * @param selector selector attribute value from the .cdrl file in the .cdrar.  This 
+	 * @param selector Configuration {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}.  This 
 	 * parameter is treated case incensitively.
 	 * @return List of {@link SmooksResourceConfiguration} instances, or null if no {@link SmooksResourceConfiguration}s are 
 	 * defined under that selector (for the device).
 	 * @see #getObjects(String)
 	 */
 	public abstract List getSmooksResourceConfigurations(String selector);
+
+	/**
+	 * Get the {@link SmooksResourceConfiguration} map for the requesting useragent.
+	 * <p/>
+	 * This Map will be {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator preordered} 
+	 * for the requesting useragent.
+	 * 
+	 * @return {@link SmooksResourceConfiguration} map for the requesting useragent, keyed by the configuration 
+	 * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
+	 * {@link List} of preordered {@link SmooksResourceConfiguration} instances.
+	 */
+	public abstract Map getSmooksResourceConfigurations();
 	
 	/**
 	 * Get a list of {@link Object}s from the {@link SmooksResourceConfiguration}s specified by the selector.
