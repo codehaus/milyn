@@ -522,7 +522,12 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 			ContentDeliveryUnit contentDeliveryUnit;
 
 			// Create the ContentDeliveryUnit.
-            contentDeliveryUnit = creator.create(resourceConfig);
+			try {
+				contentDeliveryUnit = creator.create(resourceConfig);
+			} catch(Exception e) {
+				logger.warn("ContentDeliveryUnitCreator [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", e);
+				return false;
+			}
 			
 			if(contentDeliveryUnit instanceof AssemblyUnit) {
 				addAssemblyUnit(elementName, contentDeliveryUnit, resourceConfig);				
