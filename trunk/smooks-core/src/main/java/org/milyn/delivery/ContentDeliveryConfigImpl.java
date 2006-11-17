@@ -481,7 +481,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				try {
 					addCDU(elementName, resourceConfig, creator);
 				} catch (InstantiationException e) {
-					logger.error("ContentDeliveryUnit creation failure.", e);
+					logger.warn("ContentDeliveryUnit creation failure.", e);
 				}
             } else {
 				// Just ignore it - something else will use it            	
@@ -524,8 +524,12 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 			// Create the ContentDeliveryUnit.
 			try {
 				contentDeliveryUnit = creator.create(resourceConfig);
-			} catch(Exception e) {
-				logger.warn("ContentDeliveryUnitCreator [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", e);
+			} catch(Throwable thrown) {
+				if(logger.isDebugEnabled()) {
+					logger.warn("ContentDeliveryUnitCreator [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
+				} else {
+					logger.warn("ContentDeliveryUnitCreator [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
+				}
 				return false;
 			}
 			
