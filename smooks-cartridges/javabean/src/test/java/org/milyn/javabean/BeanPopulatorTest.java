@@ -17,10 +17,13 @@
 package org.milyn.javabean;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.milyn.SmooksStandalone;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.MockContainerRequest;
+import org.milyn.container.standalone.StandaloneContainerRequest;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -87,7 +90,7 @@ public class BeanPopulatorTest extends TestCase {
         }
     }
     
-    public void test_visit() throws SAXException, IOException {
+    public void test_visit_1() throws SAXException, IOException {
         SmooksResourceConfiguration config = null;
         ProcessingPhaseBeanPopulator pppu;
         MockContainerRequest request = new MockContainerRequest();
@@ -120,5 +123,33 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals("Myself", bean.getName());
         assertEquals("0861070070", bean.getPhoneNumber());
         assertEquals("Skeagh Bridge...", bean.getAddress());
+    }
+    
+    public void test_visit_2() throws SAXException, IOException {
+        Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml2.txt"), false, true);
+    	SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+        SmooksResourceConfiguration config;
+    	
+    	smooks.registerUseragent("u");
+
+        config = new SmooksResourceConfiguration("OrderLine", ProcessingPhaseBeanPopulator.class.getName());
+        config.setParameter("beanId", "orderItem");
+        config.setParameter("beanClass", OrderItem.class.getName());
+        config.setParameter("addToList", "true");
+        smooks.registerResource(config);
+        config = new SmooksResourceConfiguration("OrderLine Product", ProcessingPhaseBeanPopulator.class.getName());
+        config.setParameter("beanId", "orderItem");
+        config.setParameter("attributeName", "productId");
+        smooks.registerResource(config);
+
+        StandaloneContainerRequest request = smooks.createRequest("u", null);
+        smooks.filter(request, doc);
+        
+        List beanList = (List)BeanAccessor.getBean("orderItemList", request);
+        assertEquals(2, beanList.size());
+        assertEquals("364", ((OrderItem)beanList.get(0)).getProductId());
+        assertEquals("299", ((OrderItem)beanList.get(1)).getProductId());
+        
+        //System.out.println(bean.);
     }
 }
