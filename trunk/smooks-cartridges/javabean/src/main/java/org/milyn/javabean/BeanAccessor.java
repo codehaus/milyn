@@ -54,12 +54,6 @@ public class BeanAccessor {
         HashMap beans = getBeans(request);
         Object bean = beans.get(beanId);
         
-        // If it's a bean list return the last (current) bean instance...
-        if(bean instanceof List) {
-            List beanList = (List) bean;
-            bean = beanList.get(beanList.size() - 1);
-        }
-        
         return bean;
     }
 
@@ -85,6 +79,10 @@ public class BeanAccessor {
 
     /**
      * Add a bean instance to the specified request under the specified beanId.
+     * <p/>
+     * When "addToList" is set to true, a new bean of type {@link List} is added to the bean map.  This
+     * bean is stored under a new key generated from the "beanId" appended with the string "List" e.g.
+     * the list associated with the beanId "customer" is called "customerList".
      * @param beanId The beanId under which the bean is to be stored.
      * @param bean The bean instance to be stored.
      * @param request The request on which the bean is to be stored.
@@ -104,12 +102,13 @@ public class BeanAccessor {
         HashMap beans = getBeans(request);
         
         if(addToList) {
-            Object beanList = beans.get(beanId);
+        	String beanListId = beanId + "List";
+            Object beanList = beans.get(beanListId);
             
             if(beanList == null) {
                 // Create the bean list and add it to the bean map...
                 beanList = new Vector();
-                beans.put(beanId, beanList);
+                beans.put(beanListId, beanList);
             } else if(!(beanList instanceof List)) {
                 throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and is not a List.  Arg 'addToList' set to true - this is inconsistent!!");
             }
@@ -121,9 +120,9 @@ public class BeanAccessor {
             if(currentBean instanceof List) {
                 throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and is a List.  Arg 'addToList' set to false - this is inconsistent!!");
             }
-            
-            // Just set the bean on the bean map...
-            beans.put(beanId, bean);
         }
+
+        // Set the bean on the bean map...
+        beans.put(beanId, bean);
     }
 }

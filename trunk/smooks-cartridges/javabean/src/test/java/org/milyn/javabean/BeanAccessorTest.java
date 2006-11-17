@@ -64,7 +64,7 @@ public class BeanAccessorTest extends TestCase {
         assertEquals(bean1, BeanAccessor.getBean("b", request));
         BeanAccessor.addBean("b", bean2, request, true);
         assertEquals(bean2, BeanAccessor.getBean("b", request));
-        List list = (List)BeanAccessor.getBeans(request).get("b");
+        List list = (List)BeanAccessor.getBeans(request).get("bList");
         assertEquals(2, list.size());
     }
 }
