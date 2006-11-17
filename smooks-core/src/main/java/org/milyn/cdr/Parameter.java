@@ -56,6 +56,14 @@ public class Parameter {
 	}
 
 	/**
+	 * Get the parameter type.
+	 * @return The parameter type.
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
 	 * Get the parameter value "undecoded".
 	 * @return Parameter value.
 	 */
