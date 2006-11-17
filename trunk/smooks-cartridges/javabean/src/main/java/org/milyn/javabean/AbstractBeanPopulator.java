@@ -19,6 +19,8 @@ package org.milyn.javabean;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
@@ -71,6 +73,7 @@ import org.w3c.dom.Element;
  */
 public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit implements ElementVisitor {
 
+	private static Log logger = LogFactory.getLog(AbstractBeanPopulator.class); 
     private String beanId;
     private Class beanClass;
     private boolean addToList = false;
@@ -123,6 +126,7 @@ public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit 
                 // create the bean!!
             }
         }
+        logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].  Add to list=" + addToList + ", attributeName=" + attributeName + ", setterName" + setterName);
     }
 
     /**
@@ -131,7 +135,11 @@ public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit 
      * @param request Container request.
      */
     public void visit(Element element, ContainerRequest request) {
-        Object bean = getBean(request);
+        if(logger.isDebugEnabled()) {
+        	logger.debug("Visiting bean populator for beanId [" + beanId + "] on element " + DomUtils.getXPath(element));
+        }
+    	    	
+    	Object bean = getBean(request);
         
         if(setterName == null && attributeName == null) {
             // setterName and attributeName are not set - visit method should only
@@ -172,9 +180,15 @@ public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit 
         if(beanClass != null) {
             bean = createBeanInstance();
             BeanAccessor.addBean(beanId, bean, request, addToList);
+            if(logger.isDebugEnabled()) {
+            	logger.debug("Bean [" + beanId + "] instance created.");
+            }
         } else {
             // Get the bean instance from the request.  If there is non, it's a bad config!!
             bean = BeanAccessor.getBean(beanId, request);
+            if(logger.isDebugEnabled()) {
+            	logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  Using [" + bean + "]");
+            }
             if(bean == null) {
                 throw new SmooksConfigurationException("Bean instance [id=" + beanId + "] not available and bean runtime class not set on configuration.");
             }
