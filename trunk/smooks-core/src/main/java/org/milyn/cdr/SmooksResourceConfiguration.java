@@ -19,6 +19,7 @@ package org.milyn.cdr;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -492,6 +493,21 @@ public class SmooksResourceConfiguration {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Get all {@link Parameter parameter} values set on this configuration.
+	 * @return {@link Parameter} value {@link List}, or null if not set.
+	 */
+	public List getParameters() {
+		if(parameters == null) {
+			return null;
+		}
+
+		List list = new ArrayList();
+		list.addAll(parameters.values());
+		
+		return list;
 	}
 
 	/**

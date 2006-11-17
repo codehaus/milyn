@@ -40,6 +40,11 @@ public class SmooksResourceConfigurationTest extends TestCase {
 		List yParams = resourceConfig.getParameters("y");
 		assertEquals("val y 1", ((Parameter)yParams.get(0)).getValue());
 		assertEquals("val y 2", ((Parameter)yParams.get(1)).getValue());
+		
+		List allParams = resourceConfig.getParameters();
+		assertEquals(2, allParams.size());
+		assertEquals("x", ((Parameter)allParams.get(0)).getName());
+		assertEquals(yParams, allParams.get(1));
 	}
 
 	public void test_getBoolParameter() {
