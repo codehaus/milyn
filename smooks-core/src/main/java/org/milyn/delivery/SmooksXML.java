@@ -414,7 +414,7 @@ public class SmooksXML {
 							logger.debug("Applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
 						}
 						assemblyUnit.visit(element, containerRequest);
-					} catch(Exception e) {
+					} catch(Throwable e) {
 						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);
 					}
 				}
@@ -439,7 +439,7 @@ public class SmooksXML {
 				if(!assemblyUnit.visitBefore() && configMap.getResourceConfig().isTargetedAtElementContext(element)) {
 					try {
 						assemblyUnit.visit(element, containerRequest);
-					} catch(Exception e) {
+					} catch(Throwable e) {
 						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to element [" + element.getTagName() + "].", e);
 					}
 				}
@@ -619,7 +619,7 @@ public class SmooksXML {
 						logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
 					}
 					processingUnit.visit(element, containerRequest);
-				} catch(Exception e) {
+				} catch(Throwable e) {
 					logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);
 				}
 			}
