@@ -221,45 +221,49 @@ public class Serializer {
 		NodeList children = element.getChildNodes();
 
 		elementSU = getSerializationUnit(element);
-		elementSU.writeElementStart(element, writer, containerRequest);
-
-		if(children != null && children.getLength() > 0) {
-			int childCount = children.getLength();
-
-			for(int i = 0; i < childCount; i++) {
-				Node childNode = children.item(i);
-				
-				switch(childNode.getNodeType()) {
-					case Node.CDATA_SECTION_NODE: {
-						elementSU.writeElementCDATA((CDATASection)childNode, writer, containerRequest);
-						break;
-					}		
-					case Node.COMMENT_NODE: { 
-						elementSU.writeElementComment((Comment)childNode, writer, containerRequest);
-						break;
-					}		
-					case Node.ELEMENT_NODE: { 
-						if(elementSU.writeChildElements()) {
-							recursiveDOMWrite((Element)childNode, writer);
+		try {
+			elementSU.writeElementStart(element, writer, containerRequest);
+	
+			if(children != null && children.getLength() > 0) {
+				int childCount = children.getLength();
+	
+				for(int i = 0; i < childCount; i++) {
+					Node childNode = children.item(i);
+					
+					switch(childNode.getNodeType()) {
+						case Node.CDATA_SECTION_NODE: {
+							elementSU.writeElementCDATA((CDATASection)childNode, writer, containerRequest);
+							break;
+						}		
+						case Node.COMMENT_NODE: { 
+							elementSU.writeElementComment((Comment)childNode, writer, containerRequest);
+							break;
+						}		
+						case Node.ELEMENT_NODE: { 
+							if(elementSU.writeChildElements()) {
+								recursiveDOMWrite((Element)childNode, writer);
+							}
+							break;
+						}		
+						case Node.ENTITY_REFERENCE_NODE: { 
+							elementSU.writeElementEntityRef((EntityReference)childNode, writer, containerRequest);
+							break;
+						}		
+						case Node.TEXT_NODE: { 
+							elementSU.writeElementText((Text)childNode, writer, containerRequest);
+							break;
+						}		
+						default: {
+							elementSU.writeElementNode(childNode, writer, containerRequest);
+							break;
 						}
-						break;
-					}		
-					case Node.ENTITY_REFERENCE_NODE: { 
-						elementSU.writeElementEntityRef((EntityReference)childNode, writer, containerRequest);
-						break;
-					}		
-					case Node.TEXT_NODE: { 
-						elementSU.writeElementText((Text)childNode, writer, containerRequest);
-						break;
-					}		
-					default: {
-						elementSU.writeElementNode(childNode, writer, containerRequest);
-						break;
 					}
 				}
 			}
+			elementSU.writeElementEnd(element, writer, containerRequest);
+		} catch(Throwable thrown) {
+			logger.error("Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", thrown);
 		}
-		elementSU.writeElementEnd(element, writer, containerRequest);
 	}
 
 	/**
