@@ -33,6 +33,7 @@ class BufferedSegmentReader {
     private Reader reader;
     private StringBuffer segmentBuffer = new StringBuffer(512);
     private String[] currentSegmentFields = null;
+	private int currentSegmentNumber = 0;
     private Delimiters delimiters;
 	private char[] segmentDelimiter;
 
@@ -100,6 +101,8 @@ class BufferedSegmentReader {
             c = reader.read();
         }
         
+        currentSegmentNumber++;
+        
         return true;
     }
     
@@ -135,6 +138,16 @@ class BufferedSegmentReader {
     	
         return currentSegmentFields;
     }
+
+    /**
+     * Get the current segment "number".
+     * <p/>
+     * The first segment is "segment number 1".
+     * @return The "number" of the current segment.
+     */
+	public int getCurrentSegmentNumber() {
+		return currentSegmentNumber;
+	}
 
 	/**
 	 * Assert that there is a current segment.
