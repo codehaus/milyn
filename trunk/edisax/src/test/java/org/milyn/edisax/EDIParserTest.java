@@ -85,6 +85,7 @@ public class EDIParserTest extends TestCase {
 		test("test12");
 		test("test13");
 		test("test14");
+		test("test15");
 	}
 
 	private void test(String testpack) throws IOException {

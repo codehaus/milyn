@@ -55,11 +55,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * <p/>
  * Generates a stream of SAX events from an EDI message stream based on the supplied
  * {@link #setMappingModel(Edimap) mapping model}.
- * <p/>
- * The EDI to SAX Event mapping is performed based on an "Mapping Model" supplied to
- * the parser.  This model must be based on the 
- * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
- * schema.
  * 
  * <h3>Usage</h3>
  * <pre>
@@ -74,6 +69,38 @@ import org.xml.sax.helpers.AttributesImpl;
  * 		parser.parse(new InputSource(ediInputStream));
  * 		etc... 
  * </pre>
+ *
+ * <h3>Mapping Model</h3>
+ * The EDI to SAX Event mapping is performed based on an "Mapping Model" supplied to
+ * the parser.  This model must be based on the 
+ * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
+ * schema.
+ * 
+ * <img src="doc-files/schema.png" />
+ * 
+ * From this schema you can see that segment groups are supported (nested segments), including groups within groups,
+ * repeating segments and repeating segment groups.  Be sure to review the 
+ * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">schema</a>.
+ *
+ * <h3>Example (Input EDI, EDI to XML Mapping and Output SAX Events)</h3>
+ * The following illustration attempts to create a visualisation of the mapping process.  The "edi-input.txt" file
+ * specifies the EDI input, "edi-to-xml-mapping.xml" describes how to map that EDI message to SAX events and
+ * "expected.xml" illustrates the XML that would result from applying the mapping.
+ * <p/>
+ * <img src="doc-files/edi-mapping.png" />
+ * <p/>
+ * So the above illustration attempts to highlight the following:
+ * <ol>
+ * 	<li>How the segment, field etc delimiters are specified in the mapping.  In particular, how special characters like 
+ * 		the linefeed character are specified using XML Character References.</li>
+ * 	<li>How segment groups (nested segments) are specified.  In this case the first 2 segments are part of a group.</li>
+ * 	<li>How the actual field, component and sub-component values are specified and mapped to the target SAX events (to generate the XML).</li>
+ * </ol>
+ * 
+ * What's not illustrated here is how the &lt;medi:segment&gt; element supports the 2 optional attributes "minOccurs" and
+ * "maxOccurs" (default value of 1 in both cases).  These attributes can be used to control the optional and required
+ * characteristics of a segment.  A maxOccurs value of -1 indicates that the segment can repeat any number of times
+ * in that location of the EDI message (unbounded).
  * 
  * @author tfennelly
  */
@@ -175,7 +202,7 @@ public class EDIParser implements XMLReader {
 
     		// If we reach the end of the mapping model and we still have more EDI segments in the message.... 
     		if(segmentReader.hasCurrentSegment()) {
-    			throw new EDIParseException(mappingModel, "Reached end of mapping model but there are more EDI segments in the incoming message.");
+    			throw new EDIParseException(mappingModel, "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s).");
     		}
         }
 
@@ -221,7 +248,7 @@ public class EDIParser implements XMLReader {
 			if(!currentSegmentFields[0].equals(expectedSegment.getSegcode())) {
 				// If we haven't read the minimum number of instances of the current "expected" segment, raise an error...
 				if(segmentProcessingCount < minOccurs) {
-					throw new EDIParseException(mappingModel, "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].");
+					throw new EDIParseException(mappingModel, "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 				} else {
 					// Otherwise, move to the next "expected" segment and start the loop again...
 					segmentMappingIndex++;
@@ -232,7 +259,7 @@ public class EDIParser implements XMLReader {
 
 			// Make sure we haven't encountered a message with too many instances of the current expected segment...
 			if(segmentProcessingCount >= maxOccurs) {
-				throw new EDIParseException(mappingModel, "Maximum of " + maxOccurs + " instances of segment [" + expectedSegment.getSegcode() + "] exceeded.");
+				throw new EDIParseException(mappingModel, "Maximum of " + maxOccurs + " instances of segment [" + expectedSegment.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 			}
 			
 			// The current read message segment appears to match that expected according to the mapping model.
@@ -243,7 +270,7 @@ public class EDIParser implements XMLReader {
 			segmentProcessingCount++;
 
 			while(segmentProcessingCount < minOccurs && !segmentReader.hasCurrentSegment()) {
-				throw new EDIParseException(mappingModel, "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].");
+				throw new EDIParseException(mappingModel, "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 			}
 		}
 	}
@@ -277,7 +304,7 @@ public class EDIParser implements XMLReader {
 	 */
 	private void mapFields(String[] currentSegmentFields, Field[] expectedFields, String segmentCode) throws SAXException {
 		if(currentSegmentFields.length != expectedFields.length + 1) {
-			throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "] expected to contain " + expectedFields.length + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).");
+			throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "] expected to contain " + expectedFields.length + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 		}
 		
 		// Iterate over the fields and map them...
@@ -307,7 +334,7 @@ public class EDIParser implements XMLReader {
 			String[] currentFieldComponents = StringUtils.splitPreserveAllTokens(fieldMessageVal, mappingModel.getDelimiters().getComponent());
 
 			if(currentFieldComponents.length != expectedComponents.length) {
-				throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain " + expectedComponents.length + " components.  Actually contains " + currentFieldComponents.length + " components.");
+				throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain " + expectedComponents.length + " components.  Actually contains " + currentFieldComponents.length + " components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 			}
 			
 			// Iterate over the field components and map them...
@@ -343,7 +370,7 @@ public class EDIParser implements XMLReader {
 			String[] currentComponentSubComponents = StringUtils.splitPreserveAllTokens(componentMessageVal, mappingModel.getDelimiters().getSubComponent());
 
 			if(currentComponentSubComponents.length != expectedSubComponents.length) {
-				throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain " + expectedSubComponents.length + " sub-components.  Actually contains " + currentComponentSubComponents.length + " sub-components.");
+				throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain " + expectedSubComponents.length + " sub-components.  Actually contains " + currentComponentSubComponents.length + " sub-components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 			}
 			
 			for(int i = 0; i < expectedSubComponents.length; i++) {
@@ -375,7 +402,7 @@ public class EDIParser implements XMLReader {
     }
 
     // HACK :-) it's hardly going to be deeper than this!!
-    private static final char[] indentChars = (new String("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t").toCharArray());
+    private static final char[] indentChars = (new String("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t").toCharArray());
     private void indent() throws SAXException {
         contentHandler.characters(indentChars, 0, depth + 1);
     }
