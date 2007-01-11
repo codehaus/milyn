@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	This CDRL defines pagination Assembly and Transformation Units and maps 
+	them to their appropriate device profile.
+
+	NB: See device-profile.xml
+-->
+
+<cdres-list default-uatarget="*"> 
+
+	<!--
+		Assembly phase. Support for adding the inter-page nav links.  Gather information about
+		spage tags and have it available for the transformation phase.  See below.
+	-->
+	<cdres selector="spage" path="org/milyn/cdres/assemble/AssemblyPhaseRequestAttacher.class" />
+	<cdres selector="spagelinks" path="org/milyn/cdres/assemble/AssemblyPhaseRequestAttacher.class" />
+	<cdres selector="sdoc" path="org/milyn/smooks/assembly/ServletSDocPageNavAU.class" />
+
+	<!--
+		Transformation phase.
+	-->
+	<cdres selector="spage" path="org/milyn/cdres/trans/TransformationPhaseRequestAttacher.class" />
+	<cdres selector="sdoc" path="org/milyn/smooks/pagination/SDocTU.class" />
+</cdres-list>

@@ -1,1 +1,0 @@
-ClasspathUtils - there are tests in the "smooks" "pre-maven" codebase - on the CDRClassLoaderTest class I think.

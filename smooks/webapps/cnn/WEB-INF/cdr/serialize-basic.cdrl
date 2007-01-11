@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" 
+			"http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	This CDRL defines basic serialisation units and maps them to their 
+	appropriate device profile.
+
+	NB: See device-profile.xml
+-->
+
+<cdres-list> 
+
+	<!--
+		Print all elements as lowercase for wml devices.
+	-->
+	<cdres 	uatarget="wml" selector="*" 
+			path="org/milyn/delivery/serialize/DefaultSerializationUnit.class">
+		<param name="lowerCaseElNames">true</param>
+	</cdres>
+
+	<!--
+		As a general serialization rule, we want to print all elements that are 
+		marked "EMPTY" in their DTD in the <xx /> format.
+		== Print all elements as lowercase for wml devices.
+	-->
+	<cdres 	uatarget="*" 
+			selector="xmldef:elcspec:empty" 
+			path="org/milyn/cdres/serialize/EmptyElementSU.class" />
+			
+	<cdres 	uatarget="wml" 
+			selector="xmldef:elcspec:empty" 
+			path="org/milyn/cdres/serialize/EmptyElementSU.class">
+		<param name="lowerCaseElNames">true</param>
+	</cdres>
+		
+</cdres-list>
+

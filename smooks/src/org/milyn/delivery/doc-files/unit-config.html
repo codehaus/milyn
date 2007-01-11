@@ -1,0 +1,74 @@
+		<h1>Content Delivery Units</h1>
+		Smooks manipulates/transforms content for the requesting browser by applying
+		Content Delivery Units.  At present there are 4 types of Content Delivery Unit
+		for manipulation of HTML markup:
+		<ol>
+			<li><a href="../response/HtmlServletResponseWrapper.html">HtmlServletResponseWrapper</a>: This Content Delivery Unit "hooks" the 
+			<a href="../SmooksHtml.html">SmooksHtml</a> class into the transformation process. <a href="../SmooksHtml.html">SmooksHtml</a>
+			transforms HTML for the requesting browser by applying the following Content Delivery Units.</li>
+			<li><a href="../assemble/AssemblyUnit.html">Assembly Units</a>: Applied during the <a href="delivery-phases.html">Assembly Phase</a>.</li>
+			<li><a href="../trans/TransUnit.html">Transformation Units</a>: Applied during the <a href="delivery-phases.html">Transformation Phase</a>.</li>
+			<li><a href="../serialize/SerializationUnit.html">Serialization Units</a>: Applied during the <a href="delivery-phases.html">Serialisation Phase</a>.</li>
+		</ol>
+		In a Servlet Container, other forms of content (e.g. images, .css etc) can be transformed for the requesting browser
+		by applying other implementations of the 
+		<a href="../response/ServletResponseWrapper.html">ServletResponseWrapper</a> abstract class.
+		<p/>
+		Content Delivery Units are what Smooks is all about!  Smooks is extended by developing and deploying 
+		Content Delivery Units.  
+
+		<p/>
+		Content Delivery Units are targeted at specific elements of content through a special
+		configuration file called a "Content Delivery Resource List File" (.cdrl).  The DTD for this file can be seen
+		at <a href="/dtd/cdres-list-1.0.dtd" type="text/plain">http://www.milyn.org/dtd/cdres-list-1.0.dtd</a>
+
+		<h2 id="cdrs">Content Delivery Resources</h2>
+		You will also encounter the term "Content Delivery Resource".  What is the difference between
+		"Content Delivery Resource" and "Content Delivery Unit?"
+		<ul>
+			<li><b>Content Delivery Resource</b>:  Any resource used by Smooks to deliver
+				content to the requesting browser.  These resources are targeted at browsers
+				using the .cdrl files (as above).
+			</li>
+			<li><b>Content Delivery Unit</b>:  An <u>executable</u> Content Delivery Resource.  See
+				<a href="../ContentDeliveryUnit.html">ContentDeliveryUnit</a> and it's sub-interfaces
+				(<a href="../assemble/AssemblyUnit.html">AssemblyUnit</a> etc).
+			</li>
+		</ul>
+		Examples of non-executable Content Delivery Resource would be "dtd" and "doctype" resources.  See
+		<a href="dtds.cdrl">dtds.cdrl</a> and <a href="doctype.cdrl">doctype.cdrl</a> from the 
+		<a href="http://www.milyn.org/demo/">CNN.com sample</a>.  Non-executable Content Delivery Resources
+		can be loaded (e.g. by a Content Delivery Unit) through calls to 
+		<a href="../ContentDeliveryConfig.html#getCDRDefs(java.lang.String)">ContentDeliveryConfig.html.getCDRDefs()</a>.
+		
+		<h2>Archive Definition File Structure</h2>
+		See the <a href="../../cdr/CDRDef.html">CDRDef</a> class Javadoc.
+		
+		<h2 id="cdu-selection">Content Delivery Unit Selection</h2>
+		See the <a href="../../cdr/CDRDef.html">CDRDef</a> class Javadoc.
+
+		<h2 id="cdrar">.cdrar Files</h2>
+		.cdrar files are a Jar format file used to bundle Content Delivery Units/Resources and .cdrl files (optional).
+		While Content Delivery Resources can be loaded in the standard way from the classpath, it is thought that 
+		this may be a cleaner way to deliver resources in a production environment.
+		<p/>
+		The following illustration shows the internal structure of a sample .cdrar file.
+		<p/>
+		<img src="cdrar.png" border="1" />
+		<h2>Sample Configurations</h2>
+		The following are sample .cdrl files from the <a href="http://www.milyn.org/demo/">CNN.com sample</a>.
+		<h3>Sample 1 - serialise-basic.cdrl</h3>
+		This .cdrl file targets some <a href="../serialize/SerializationUnit.html">Serialization Units</a>.
+		<p/>
+		<img src="serialisationunits.gif" border="1" />
+		<p/>
+		From this image you can see there are 3 <a href="../../cdr/CDRDef.html">CDRDef.html">CDRDefs</a> defined in this archive.
+		It might occur to you that all 3 definitions are applicable to EMPTY elements on "wml" profile browsers.
+		To see how the correct Serialisation Unit is selected, see the section on 
+		<a href="#cdu-selection">Content Delivery Unit Selection</a>.
+		<h3>Sample 2 - assembly.cdrl</h3>
+		It targets a number of <a href="../assemble/AssemblyUnit.html">Assembly Units</a> at some custom sample tags created to pull/scrape 
+		content from the CNN.com homepage source.
+		<p/>
+		<img src="assemblyunits.gif" border="1" />
+		

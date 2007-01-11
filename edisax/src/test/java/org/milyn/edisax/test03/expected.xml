@@ -1,1 +1,0 @@
-org.milyn.edisax.EDIParseException:EDI message processing failed [Test Message][1.0].  Maximum of 1 instances of segment [SEG] exceeded.  Currently at segment number 2.

@@ -1,0 +1,20 @@
+body
+{
+  background-color:#FF0000
+}
+
+.body
+{
+  border-style:solid;
+}
+
+.centered
+{
+  width:800px
+}
+
+#banner
+{
+  height:100px;
+  background-color:#999966;
+}

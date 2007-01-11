@@ -1,0 +1,6 @@
+<slink pattern="index.html" text="Home Page" />
+<slink pattern="WORLD/index.html" text="World" />
+<slink pattern="US/index.html" text="U.S." />
+<slink pattern="WEATHER/index.html" text="Weather" />
+<slink pattern="http://www.cnn.com/money/index.html" text="Business" /> 
+<slink pattern="http://www.cnn.com/si/index.html" text="Sports" />

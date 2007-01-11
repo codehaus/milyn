@@ -1,0 +1,54 @@
+<project name="Build script">
+	<description>Build script</description>
+
+	<target name="compile">
+		<path id="compile.classpath">
+			<pathelement location="${module.classes}"/>
+			<fileset dir="${module.lib}" includes="*.jar"/>
+			<fileset dir="../WEB-INF/lib" includes="*.jar"/>
+			<fileset dir="../WEB-INF/cdr/" includes="*.cdrar"/>
+		</path>
+
+		<mkdir dir="${module.classes}" />
+		<javac srcdir="${module.src}" destdir="${module.classes}" debug="on">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar">
+        <jar destfile="../WEB-INF/cdr/${module.jar.prefix}-${module.version}.cdrar">
+			<fileset dir="${module.classes}"/>
+			<fileset dir="${module.src}" excludes="**/*.java,**/package.html,**/overview.html"/>
+		</jar>
+    </target>
+
+	<target name="javadoc">
+		<mkdir dir="${module.api}"/>
+		<path id="javadoc.classpath">
+			<pathelement location="${module.classes}"/>
+			<fileset dir="${module.lib}" includes="*.jar"/>
+			<fileset dir="../WEB-INF/lib" includes="*.jar"/>
+			<fileset dir="../WEB-INF/cdr/" includes="*.cdrar"/>
+		</path>
+		<javadoc classpathref="javadoc.classpath" destdir="${module.api}" failonerror="true" windowtitle="${module.name}" overview="${module.src}/overview.html" stylesheetfile="build/stylesheet.css">
+			<packageset dir="${module.src}"/>
+            <doctitle>
+                <![CDATA[<h1>${module.name}</h1>Version ${module.version}]]>
+            </doctitle>
+			<link offline="true" href="http://www.milyn.org/commons/" packagelistLoc="javadoc-package-lists/commons"/>
+			<link offline="true" href="http://www.milyn.org/tinak/api/" packagelistLoc="javadoc-package-lists/tinak"/>
+			<link offline="true" href="http://www.milyn.org/smooks/api/" packagelistLoc="javadoc-package-lists/smooks"/>
+		</javadoc>
+        <jar destfile="${module.root}/${module.jar.prefix}-${module.version}-api.zip">
+			<fileset dir="${module.api}"/>
+		</jar>
+	</target>
+
+	<target name="clean" description="Clean.">
+		<delete quiet="true" dir="${module.classes}" />
+		<delete quiet="true" dir="${module.api}" />
+		<delete quiet="true" file="${module.root}/${module.jar.prefix}-${module.version}.cdrar" />
+		<delete quiet="true" file="${module.root}/${module.jar.prefix}-${module.version}-api.zip" />
+	</target>
+</project>
+
