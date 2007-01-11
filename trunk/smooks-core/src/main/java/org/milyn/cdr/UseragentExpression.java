@@ -117,6 +117,10 @@ public class UseragentExpression {
 		return expressionTokens;
 	}
 	
+	public String toString() {
+		return expression;
+	}
+	
 	/**
 	 * useragent expression token.
 	 * @author tfennelly
@@ -252,6 +256,10 @@ public class UseragentExpression {
 				}
 				return 0;
 			}
+		}
+
+		public String toString() {
+			return expressionToken;
 		}
 	}
 }
