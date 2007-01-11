@@ -75,9 +75,9 @@ import org.xml.sax.helpers.AttributesImpl;
  * the parser.  This model must be based on the 
  * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
  * schema.
- * 
+ * <p/>
  * <img src="doc-files/schema.png" />
- * 
+ * <p/>
  * From this schema you can see that segment groups are supported (nested segments), including groups within groups,
  * repeating segments and repeating segment groups.  Be sure to review the 
  * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">schema</a>.
@@ -91,8 +91,8 @@ import org.xml.sax.helpers.AttributesImpl;
  * <p/>
  * So the above illustration attempts to highlight the following:
  * <ol>
- * 	<li>How the segment, field etc delimiters are specified in the mapping.  In particular, how special characters like 
- * 		the linefeed character are specified using XML Character References.</li>
+ * 	<li>How the message delimiters (segment, field, component and sub-component) are specified in the mapping.  In particular, how special 
+ * 		characters like the linefeed character are specified using XML Character References.</li>
  * 	<li>How segment groups (nested segments) are specified.  In this case the first 2 segments are part of a group.</li>
  * 	<li>How the actual field, component and sub-component values are specified and mapped to the target SAX events (to generate the XML).</li>
  * </ol>
@@ -126,10 +126,16 @@ public class EDIParser implements XMLReader {
      * @throws SAXException Invalid model.
      */
     public static Edimap parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException {
-    	AssertArgument.isNotNull(mappingConfigStream, "null 'mapping' arg in method call.");
+    	AssertArgument.isNotNull(mappingConfigStream, "mapping");
     	
     	Edimap mappingModel = null;
-    	byte[] mappingConfigByte = StreamUtils.readStream(mappingConfigStream);
+    	byte[] mappingConfigByte;
+    	
+    	try {
+    		mappingConfigByte = StreamUtils.readStream(mappingConfigStream);
+    	} finally {
+    		mappingConfigStream.close();
+    	}
     	
     	assertMappingConfigValid(new ByteArrayInputStream(mappingConfigByte));
     	try {
@@ -156,7 +162,7 @@ public class EDIParser implements XMLReader {
      * @throws SAXException Invalid configuration.
 	 */
 	protected static void assertMappingConfigValid(InputStream mappingConfigStream) throws IOException, SAXException {
-    	AssertArgument.isNotNull(mappingConfigStream, "null 'mapping' arg in method call.");
+    	AssertArgument.isNotNull(mappingConfigStream, "mapping");
 		
    		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
    		Schema schema = factory.newSchema(new StreamSource(EDIParser.class.getResourceAsStream("/schema/edi-message-mapping-1.0.xsd")));
@@ -173,7 +179,7 @@ public class EDIParser implements XMLReader {
 	 * @param mappingModel The mapping model.
 	 */
 	public void setMappingModel(Edimap mappingModel) {
-    	AssertArgument.isNotNull(mappingModel, "null 'mappingModel' arg in method call.");
+    	AssertArgument.isNotNull(mappingModel, "mappingModel");
     	this.mappingModel = mappingModel;
     	delimiters = mappingModel.getDelimiters();
     }
