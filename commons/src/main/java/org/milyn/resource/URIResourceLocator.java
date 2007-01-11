@@ -22,13 +22,14 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.milyn.assertion.AssertArgument;
 import org.milyn.resource.ContainerResourceLocator;
 
 /**
- * URI resource locator.
+ * {@link java.net.URI} resource locator.
  * <p/>
- * Loads resources from a URI i.e. "file://", "http://", "classpath:/" etc.
+ * Loads resources from a {@link java.net.URI} i.e. "file://", "http://", "classpath:/" etc.  Note, it adds
+ * support for referencing classpath based via a {@link java.net.URI} e.g. "classpath:/org/milyn/x/my-resource.xml" references a
+ * "/org/milyn/x/my-resource.xml" resource on the classpath.
  * @author tfennelly
  */
 public class URIResourceLocator implements ContainerResourceLocator {
