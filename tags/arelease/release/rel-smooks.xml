@@ -1,0 +1,67 @@
+<project name="Smooks release." default="release">
+
+	<target name="release">
+		<property name="smooks.ant" value="../smooks/ant" />
+		<property file="${smooks.ant}/build.properties" />
+		<property name="smooks.webapps" value="../smooks/webapps" />
+		<property name="release.distrib" value="milyn-smooks-${smooks.version}" />
+
+		<!-- delete old releases, copy, jar and delete -->		
+		<antcall target="clean" />
+		<ant antfile="build.xml" target="clean" dir="${smooks.ant}" />
+		<ant antfile="build.xml" target="build" dir="${smooks.ant}" />
+		<ant antfile="build.xml" target="test" dir="${smooks.ant}" />
+		<ant antfile="build.xml" target="javadoc" dir="${smooks.ant}" />
+		<antcall target="deploy-javadocs" />
+		<antcall target="copy-delivery-units" />
+
+		<!-- ZIP the Smooks Distrib -->
+		<mkdir dir="${release.distrib}"/>
+		<copy todir="${release.distrib}">
+			<fileset dir="../smooks" excludes="classes/**,test/**/classes/**,**/report/**" />
+		</copy>
+        <zip destfile="../${release.distrib}.zip" basedir="." includes="${release.distrib}/**"/>
+        <delete dir="${release.distrib}"/>
+
+        <jar destfile="../CNN.com.sample-${smooks.version}.war" basedir="${smooks.webapps}/cnn" />
+    </target>
+	
+	<!-- Deploy the Tinak javadoc to the www.milyn.org pages -->
+	<target name="deploy-javadocs" description="Deploy Milyn Javadocs to Milyn Sourceforge Docs.">
+		<delete dir="../www.milyn.org/smooks/api" excludes="cvsempty" />
+		<copy todir="../www.milyn.org/smooks/">
+			<fileset dir="../smooks/docs/" includes="api/**"/>
+		</copy>
+    </target>
+    
+	<target name="copy-delivery-units">
+		<taskdef name="java2html" classname="de.java2html.anttasks.Java2HtmlTask" classpath="lib/java2html.jar" />
+		<property name="destdir" value="../www.milyn.org/demo/" />
+
+		<!-- Java2Html the Content Delivery Units -->		
+		<delete dir="${destdir}/org" />
+		<java2html srcdir="${smooks.webapps}/cnn/WEB-INF/classes" 
+		       destdir="${destdir}"
+		       includes="**/*.java"
+		       style="eclipse"
+		       showFileName="true"
+			overwrite="true"
+		/>
+		
+		<!-- Copy the .adf files -->		
+		<delete dir="${destdir}" includes="*.cdrl"/>
+		<copy todir="${destdir}">
+			<fileset dir="${smooks.webapps}/cnn/WEB-INF/cdr/" includes="*.cdrl" />
+		</copy>
+		
+	</target>
+
+	<target name="clean">
+		<delete failonerror="false">
+			<fileset file="../${release.distrib}.zip" />
+			<fileset dir="${release.distrib}" />
+		</delete>
+	</target>
+    
+</project>
+

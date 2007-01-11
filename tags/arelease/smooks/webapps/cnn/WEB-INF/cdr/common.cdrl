@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE cdres-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" 
+			"http://www.milyn.org/dtd/cdres-list-1.0.dtd">
+
+<!--
+	This CDRL defines common delivery units shared across all browsers.
+
+	NB: See device-profile.xml
+-->
+
+<cdres-list default-uatarget="*"> 
+	<!--
+		Pass-Thru response filter configuration - this basically turns of Smooks transformation.
+	-->
+	<cdres selector="passthru-smooksrw" path="org.milyn.delivery.response.PassThruServletResponseWrapper" />
+</cdres-list>

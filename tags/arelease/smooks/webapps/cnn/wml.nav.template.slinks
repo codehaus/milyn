@@ -1,0 +1,4 @@
+<slink pattern="index.html" text="CNN Home" />
+<slink pattern="WORLD/index.html" text="World News" cache-control="no-cache" />
+<slink pattern="US/index.html" text="U.S. News" cache-control="no-cache" />
+<slink pattern="WEATHER/index.html" text="Weather" />
