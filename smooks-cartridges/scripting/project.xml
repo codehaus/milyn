@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-smooks-scripting</artifactId>
+	<name>Milyn Smooks Scripting Cartridge</name>
+	
+	<!-- Version from parent project.properties file. -->
+	<currentVersion>${milyn.version.smooks.scripting}</currentVersion>
+	
+	<description>
+	<![CDATA[
+	Milyn Smooks Scripting Cartridge.
+	<p/>
+      	This Cartridge contains resources for scripting in Smooks, providing alternatives to
+	raw Java for DOM manipulation such as Groovy.
+	]]>
+	</description>
+	<shortDescription>Milyn Smooks Scripting Cartridge</shortDescription>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+	</dependencies>
+	
+</project>
