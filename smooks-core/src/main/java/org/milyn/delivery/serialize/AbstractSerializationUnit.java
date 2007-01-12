@@ -35,4 +35,12 @@ public abstract class AbstractSerializationUnit extends AbstractContentDeliveryU
 	public AbstractSerializationUnit(SmooksResourceConfiguration resourceConfig) {
 		super(resourceConfig);
 	}
+
+	/**
+	 * Set the resource configuration for the delivery unit.
+	 */
+	public void setConfiguration(SmooksResourceConfiguration resourceConfig) {
+		// Empty implementation.
+		// Extenders of this class receive their configuration via constructor.
+	}
 }

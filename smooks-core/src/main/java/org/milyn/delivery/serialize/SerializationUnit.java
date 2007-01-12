@@ -38,10 +38,6 @@ import org.w3c.dom.Text;
  * serialization code to be implemented.  It gives control over how an
  * element is "printed" to the target device.
  * <p/>
- * All implementations must contain a public constructor that takes a {@link org.milyn.cdr.SmooksResourceConfiguration} instance as 
- * a parameter.  For this reason condsider extending {@link org.milyn.delivery.serialize.AbstractSerializationUnit} for
- * convienience (your IDE should auto-add the constructor).
- * <p/>
  * Serialization Units are defined in the .cdrl file (in .cdrar file(s)) in the very
  * same way as any other content delivery resource (Assembly Units, Processing Units, 
  * DTDs etc).

@@ -34,11 +34,7 @@ import org.milyn.delivery.ElementVisitor;
  * <p/>
  * ProcessingUnit implementations should be stateless objects.  A single instance is created 
  * and used to visit all relevant Document objects.  Statefull ProcessingUnit implementations 
- * should be implemented through the ProcessingUnitPrototype interface.
- * <p/>
- * All implementations must contain a public constructor that takes a {@link org.milyn.cdr.SmooksResourceConfiguration} instance as 
- * a parameter.  For this reason consider extending {@link org.milyn.delivery.process.AbstractProcessingUnit} for
- * convienience (your IDE should auto-add the constructor).
+ * should be implemented through the {@link org.milyn.delivery.process.ProcessingUnitPrototype} interface.
  * <p/>
  * See <a href="../package-summary.html">Delivery Overview</a>.
  * <p/>

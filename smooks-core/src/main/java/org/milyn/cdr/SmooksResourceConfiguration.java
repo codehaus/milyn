@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.io.StreamUtils;
+import org.milyn.resource.URIResourceLocator;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -217,12 +218,12 @@ public class SmooksResourceConfiguration {
 	 * The resource type can be specified as a resource parameter.  This constant defines
 	 * that parameter name.
 	 */
-	private static final String PARAM_RESTYPE = "restype";
+	public static final String PARAM_RESTYPE = "restype";
 	/**
 	 * The resource data can be specified as a resource parameter.  This constant defines
 	 * that parameter name.
 	 */
-	private static final String PARAM_RESDATA = "resdata";
+	public static final String PARAM_RESDATA = "resdata";
 	/**
 	 * XML selector type definition prefix
 	 */
@@ -241,6 +242,10 @@ public class SmooksResourceConfiguration {
 	 * should only be applied.
 	 */
 	private String namespaceURI;
+	/**
+	 * URI resource locator.
+	 */
+	private static URIResourceLocator uriResourceLocator = new URIResourceLocator();
 
     
     /**
@@ -620,6 +625,10 @@ public class SmooksResourceConfiguration {
     
     /**
      * Get the resource as a byte array.
+     * <p/>
+     * If the resource data is not inlined in the configuration (in a "resdata" param), it will be 
+     * resolved using the {@link URIResourceLocator} i.e. the path will be enterpretted as a {@link java.net.URI}.
+     * 
      * @return The resource as a byte array, or null if resource path
      * is null or the resource doesn't exist.
      * @throws IOException Failed to read the resource bytes.
@@ -634,29 +643,23 @@ public class SmooksResourceConfiguration {
         
         // If the resource data is specified on the resource path attribute, return this.
         if(path != null) {
-            InputStream resStream = getClasspathResourceStream(path);
-            
+        	InputStream resStream = uriResourceLocator.getResource(path);
+        	byte[] resourceBytes = null;
+        	
             if(resStream == null) {
-                String filePath = ClasspathUtils.toFileName(path);
-    
-                resStream = getClasspathResourceStream(filePath);
-                if(resStream == null) {
-                    throw new IOException("Resource [" + path + "] not found in classpath.");
-                }
+                throw new IOException("Resource [" + path + "] not found.");
             }
             
-            return StreamUtils.readStream(resStream);
+            try {
+            	resourceBytes = StreamUtils.readStream(resStream);
+            } finally {
+            	resStream.close();
+            }
+        	
+            return resourceBytes;
         }
         
         return null;
-    }
-
-    private InputStream getClasspathResourceStream(String filePath) {
-        if(!filePath.startsWith("/")) {
-            // Make the path absolute...
-            filePath = "/" + filePath;
-        }            
-        return getClass().getResourceAsStream(filePath);
     }
     
     /**

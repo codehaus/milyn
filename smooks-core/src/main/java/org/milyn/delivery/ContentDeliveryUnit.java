@@ -16,14 +16,21 @@
 
 package org.milyn.delivery;
 
+import org.milyn.cdr.SmooksResourceConfiguration;
+
 /**
  * Content Delivery Unit interface definition.
  * </p>
  * Base interface for all content delivery components.  See extending interfaces.
- * <p/>
- * All implementations must contain a public constructor that takes a {@link org.milyn.cdr.SmooksResourceConfiguration} instance as 
- * a parameter.
+ * 
  * @author tfennelly
  */
 public interface ContentDeliveryUnit {
+	
+	/**
+	 * Set the resource configuration for the delivery unit.
+	 * @param resourceConfig The configuration.
+	 * @since Version 0.8
+	 */
+	public void setConfiguration(SmooksResourceConfiguration resourceConfig);
 }
