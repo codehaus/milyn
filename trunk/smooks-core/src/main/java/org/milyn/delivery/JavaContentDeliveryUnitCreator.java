@@ -52,11 +52,14 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
 		try {
             className = ClasspathUtils.toClassName(resourceConfig.getPath());
 			Class classRuntime = Class.forName(className);
-			Constructor constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});
-			
-			deliveryUnit = (ContentDeliveryUnit)constructor.newInstance(new Object[] {resourceConfig});
-		} catch (NoSuchMethodException e) {
-            exception = e;
+			Constructor constructor;
+			try {
+				constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});
+				deliveryUnit = (ContentDeliveryUnit) constructor.newInstance(new Object[] {resourceConfig});
+			} catch (NoSuchMethodException e) {
+				deliveryUnit = (ContentDeliveryUnit) classRuntime.newInstance();
+			}
+			deliveryUnit.setConfiguration(resourceConfig);
         } catch (InstantiationException e) {
             exception = e;
         } catch (IllegalAccessException e) {

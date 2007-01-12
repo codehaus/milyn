@@ -17,7 +17,9 @@
 package org.milyn.delivery.assemble;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.AbstractContentDeliveryUnit;
+import org.w3c.dom.Element;
 
 /**
  * Abstract AssemblyUnit implementation.
@@ -33,6 +35,14 @@ public abstract class AbstractAssemblyUnit extends AbstractContentDeliveryUnit i
 	 */
 	public AbstractAssemblyUnit(SmooksResourceConfiguration resourceConfig) {
 		super(resourceConfig);
+	}
+
+	/**
+	 * Set the resource configuration for the delivery unit.
+	 */
+	public void setConfiguration(SmooksResourceConfiguration resourceConfig) {
+		// Empty implementation.
+		// Extenders of this class receive their configuration via constructor.
 	}
 
 	/**

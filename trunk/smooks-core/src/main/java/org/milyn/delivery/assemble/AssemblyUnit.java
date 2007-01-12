@@ -28,12 +28,8 @@ import org.milyn.delivery.ElementVisitor;
  * they are applied is determined by the {@link org.milyn.cdr.SmooksResourceConfiguration} specificity. 
  * See {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}.
  * <p/>
- * All implementations must contain a public constructor that takes a {@link org.milyn.cdr.SmooksResourceConfiguration} instance as 
- * a parameter.  For this reason condsider extending {@link org.milyn.delivery.assemble.AbstractAssemblyUnit} for
- * convienience (your IDE should auto-add the constructor).
- * <p/>
  * Assembly Units are defined in the .cdrl file (in .cdrar file(s)) in the very
- * same way as any other content delivery resource (Trans Units, Serialization Units, 
+ * same way as any other content delivery resource (Processing Units, Serialization Units, 
  * DTDs etc).
  * <p/>
  * Assembly units always visit target elements <b>after</b> Smooks iterates over the child

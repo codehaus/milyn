@@ -36,6 +36,14 @@ public abstract class ParameterDecoder extends AbstractContentDeliveryUnit {
 	}
 
 	/**
+	 * Set the resource configuration for the delivery unit.
+	 */
+	public void setConfiguration(SmooksResourceConfiguration resourceConfig) {
+		// Empty implementation.
+		// Extenders of this class receive their configuration via constructor.
+	}
+
+	/**
 	 * Decode the supplied parameter value.
 	 * @param value The value to be decoded.
 	 * @return The decode value Object.
