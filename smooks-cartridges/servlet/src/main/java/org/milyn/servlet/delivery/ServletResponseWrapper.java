@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.ContentDeliveryUnit;
 
@@ -72,4 +73,7 @@ public abstract class ServletResponseWrapper extends HttpServletResponseWrapper 
 	 * Ensure all resources etc are closed
 	 */
 	public abstract void close();
+
+	public void setConfiguration(SmooksResourceConfiguration configuration) {
+	}
 }

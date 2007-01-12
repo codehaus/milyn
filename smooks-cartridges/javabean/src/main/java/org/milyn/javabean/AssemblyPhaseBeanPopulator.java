@@ -16,7 +16,6 @@
 
 package org.milyn.javabean;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.assemble.AssemblyUnit;
 
 /**
@@ -26,13 +25,4 @@ import org.milyn.delivery.assemble.AssemblyUnit;
  * @author tfennelly
  */
 public class AssemblyPhaseBeanPopulator extends AbstractBeanPopulator implements AssemblyUnit {
-
-    /**
-     * Public constructor.
-     * @param config Configuration.
-     */
-    public AssemblyPhaseBeanPopulator(SmooksResourceConfiguration config) {
-        super(config);
-    }
-
 }

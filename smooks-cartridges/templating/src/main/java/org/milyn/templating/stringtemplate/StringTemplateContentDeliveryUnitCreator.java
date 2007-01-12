@@ -54,7 +54,7 @@ import org.w3c.dom.Text;
  * 
  * <h4>1. Registering StringTemplateContentDeliveryUnitCreator to Handle ".st" Files</h4>
  * <pre>
- * &lt;smooks-resource path="<b>org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator</b>" &gt;
+ * &lt;smooks-resource selector="cdu-creator" path="<b>org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator</b>" &gt;
  * 
  *  &lt;!-- 
  *      (Mandatory) Specifying the resource type.  This param bsaically 
