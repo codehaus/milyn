@@ -142,5 +142,11 @@ public class HeaderAction extends AbstractContentDeliveryUnit {
 	public String toString() {
 		return "HeaderAction: " + action + ", " + headerName + ", " + headerValue;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ContentDeliveryUnit#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)
+	 */
+	public void setConfiguration(SmooksResourceConfiguration config) {
+	}
 }
  

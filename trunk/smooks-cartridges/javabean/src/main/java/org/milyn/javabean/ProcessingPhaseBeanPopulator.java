@@ -16,7 +16,6 @@
 
 package org.milyn.javabean;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.process.ProcessingUnit;
 
 /**
@@ -26,12 +25,4 @@ import org.milyn.delivery.process.ProcessingUnit;
  * @author tfennelly
  */
 public class ProcessingPhaseBeanPopulator extends AbstractBeanPopulator implements ProcessingUnit {
-
-    /**
-     * Public constructor.
-     * @param config Configuration.
-     */
-    public ProcessingPhaseBeanPopulator(SmooksResourceConfiguration config) {
-        super(config);
-    }
 }

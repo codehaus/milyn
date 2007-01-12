@@ -71,7 +71,7 @@ import org.w3c.dom.Element;
  * 
  * @author tfennelly
  */
-public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit implements ElementVisitor {
+public abstract class AbstractBeanPopulator implements ElementVisitor {
 
 	private static Log logger = LogFactory.getLog(AbstractBeanPopulator.class); 
     private String beanId;
@@ -83,12 +83,9 @@ public abstract class AbstractBeanPopulator extends AbstractContentDeliveryUnit 
     private String attributeName;
     
     /**
-     * Public constructor.
-     * @param config Smooks resource configuration.
+     * Set the resource configuration on the bean populator.
      */
-    public AbstractBeanPopulator(SmooksResourceConfiguration config) {
-        super(config);
-        
+	public void setConfiguration(SmooksResourceConfiguration config) {
         // Bean ID...
         beanId = config.getStringParameter("beanId");
         if(beanId == null || (beanId = beanId.trim()).equals("")) {
