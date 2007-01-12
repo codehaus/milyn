@@ -27,9 +27,13 @@ import org.milyn.resource.ContainerResourceLocator;
 /**
  * {@link java.net.URI} resource locator.
  * <p/>
- * Loads resources from a {@link java.net.URI} i.e. "file://", "http://", "classpath:/" etc.  Note, it adds
- * support for referencing classpath based via a {@link java.net.URI} e.g. "classpath:/org/milyn/x/my-resource.xml" references a
- * "/org/milyn/x/my-resource.xml" resource on the classpath.
+ * Loads resources from a {@link java.net.URI} i.e. "file://", "http://", "classpath:/" etc.  
+ * <p/>
+ * Note, it adds support for referencing classpath based resources through a {@link java.net.URI} 
+ * e.g. "classpath:/org/milyn/x/my-resource.xml" references a "/org/milyn/x/my-resource.xml" resource on the classpath.
+ * "classpath" is in fact the default scheme for this class i.e. if no scheme is specified in the supplied URI,
+ * this class defaults to treating the URI as a reference to a classpath based resource.
+ * 
  * @author tfennelly
  */
 public class URIResourceLocator implements ContainerResourceLocator {
@@ -53,14 +57,18 @@ public class URIResourceLocator implements ContainerResourceLocator {
 		URL url;
 		String scheme = uri.getScheme();
 		
-		if(scheme != null && scheme.equals(SCHEME_CLASSPATH)) {
+		if(scheme == null || scheme.equals(SCHEME_CLASSPATH)) {
 			String path = uri.getPath();
 			
 			if(path == null) {
 				throw new IllegalArgumentException("Unable to locate classpath resource [" + uri + "].  Resource path not specified in URI.");
 			}
 			
-			return getClass().getResourceAsStream(path);
+			if(uri.isAbsolute()) {
+				return getClass().getResourceAsStream(path);
+			} else {
+				return getClass().getResourceAsStream("/" + path);
+			}
 		} else {
 			url = uri.toURL();
 			URLConnection connection = url.openConnection();
