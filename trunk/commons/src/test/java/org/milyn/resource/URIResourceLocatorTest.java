@@ -68,6 +68,10 @@ public class URIResourceLocatorTest extends TestCase {
 		// Resource exists...
 		stream = locator.getResource("classpath:/org/milyn/resource/somefile.txt");
 		assertNotNull(stream);
+
+		// Resource exists - no scheme should default to classpath ...
+		stream = locator.getResource("/org/milyn/resource/somefile.txt");
+		assertNotNull(stream);
 	}
 	
 	public void test_setBaseURI() throws IllegalArgumentException, IOException {
