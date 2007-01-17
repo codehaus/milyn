@@ -25,6 +25,6 @@
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
 
-maven-root -a mavenenv.cmd maven.xml project.properties project.xml
+maven-root -a maven.xml project.properties project.xml
 milyn -a commons magger tinak edisax smooks-core smooks-cartridges maven-root
 milyn-all -a milyn site-report
