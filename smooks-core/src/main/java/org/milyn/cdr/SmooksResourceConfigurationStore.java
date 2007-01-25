@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -27,6 +28,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ContainerContext;
+import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
 import org.milyn.device.UAContext;
@@ -189,29 +191,49 @@ public class SmooksResourceConfigurationStore {
 	
 	/**
 	 * Load a Java Object defined by the supplied SmooksResourceConfiguration instance.
-	 * <p/>
-	 * The class implementation must contain a public constructor
-	 * that takes a {@link SmooksResourceConfiguration} parameter.
 	 * @param resourceConfig SmooksResourceConfiguration instance.
 	 * @return An Object instance from the SmooksResourceConfiguration.
 	 */
 	public Object getObject(SmooksResourceConfiguration resourceConfig) {
 		Object object = null;
         String className = ClasspathUtils.toClassName(resourceConfig.getPath());
-		
+
+        // Load the runtime class... 
+		Class classRuntime;
 		try {
-			Class classRuntime = Class.forName(className);
-			Constructor constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});
-			
-			object = constructor.newInstance(new Object[] {resourceConfig});
-		} catch (NoSuchMethodException e) {
-			IllegalStateException state = new IllegalStateException("Unable to load Java Object [" + resourceConfig.getPath() + "]. Implementation must provide a public constructor that takes a SmooksResourceConfiguration arg.");
+			classRuntime = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			IllegalStateException state = new IllegalStateException("Error loading Java class: " + className);
 			state.initCause(e);
 			throw state;
+		}
+		
+		// Try constructing via a SmooksResourceConfiguration constructor...
+		Constructor constructor = null;
+		try {
+			constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});
+			object = constructor.newInstance(new Object[] {resourceConfig});
+		} catch (NoSuchMethodException e) {
+			// OK, we'll try a default constructor later...
 		} catch (Exception e) {
 			IllegalStateException state = new IllegalStateException("Error loading Java class: " + className);
 			state.initCause(e);
 			throw state;
+		}
+		
+		// If we still don't have an object, try constructing via the default construtor...
+		if(object == null) {
+			try {
+				object = classRuntime.newInstance();
+			} catch (Exception e) {
+				IllegalStateException state = new IllegalStateException("Java class " + className + " must contain a default constructor if it does not contain a constructor that takes an instance of " + SmooksResourceConfiguration.class.getName() + ".");
+				state.initCause(e);
+				throw state;
+			}
+		}
+
+		if(object instanceof ContentDeliveryUnit) {
+			((ContentDeliveryUnit)object).setConfiguration(resourceConfig);
 		}
 		
 		return object;
