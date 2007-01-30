@@ -25,7 +25,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.xmlbeans.QNameSet;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlDocumentProperties;
@@ -517,6 +521,61 @@ public class BufferedSegmentReaderTest extends TestCase {
 		public void save(Writer arg0, XmlOptions arg1) throws IOException {
 			// TODO Auto-generated method stub
 			
+		}
+
+		public XmlObject selectAttribute(QName arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XmlObject selectAttribute(String arg0, String arg1) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XmlObject[] selectAttributes(QNameSet arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XmlObject[] selectChildren(QName arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XmlObject[] selectChildren(QNameSet arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XmlObject[] selectChildren(String arg0, String arg1) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XmlObject substitute(QName arg0, SchemaType arg1) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public void dump() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public Node getDomNode() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XMLStreamReader newXMLStreamReader() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public XMLStreamReader newXMLStreamReader(XmlOptions arg0) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 		
 	}

@@ -91,29 +91,35 @@ public class EDIParserTest extends TestCase {
 	private void test(String testpack) throws IOException {
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-input.txt")));
 		InputStream mapping = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-to-xml-mapping.xml")));
-		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/expected.xml")));
+		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/expected.xml"))).trim();
 		MockContentHandler contentHandler = new MockContentHandler();
 		
+		expected = removeCRLF(expected);
 		try {
 			EDIParser parser = new EDIParser();
+			String mappingResult = null; 
 			
 			parser.setContentHandler(contentHandler);
 			parser.setMappingModel(EDIParser.parseMappingModel(mapping));
 			parser.parse(new InputSource(input));
 			
-			if(!contentHandler.xmlMapping.toString().equals(expected)) {
-				System.out.println(contentHandler.xmlMapping.toString());
-				assertEquals("Testpack [" + testpack + "] failed.", expected, contentHandler.xmlMapping.toString());
+			mappingResult = contentHandler.xmlMapping.toString().trim();
+			mappingResult = removeCRLF(mappingResult);
+			if(!mappingResult.equals(expected)) {
+				System.out.println("Expected: \n[" + expected + "]");
+				System.out.println("Actual: \n[" + mappingResult + "]");
+				assertEquals("Testpack [" + testpack + "] failed.", expected, mappingResult);
 			}
 		} catch (SAXException e) {
 			String exceptionMessage = e.getClass().getName() + ":" + e.getMessage();
 			
+			exceptionMessage = removeCRLF(exceptionMessage);
 			if(!exceptionMessage.equals(expected)) {
 				assertEquals("Unexpected exception on testpack [" + testpack + "].  ", expected, exceptionMessage);
 			}
 		}
 	}
-	
+
 	public void test_x() throws IOException, SAXException {
 		InputStream ediInputStream = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-input.txt")));
 		InputStream edi2SaxMappingConfig = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-to-xml-mapping.xml")));
@@ -124,5 +130,18 @@ public class EDIParserTest extends TestCase {
 		parser.setContentHandler(contentHandler);
 		parser.setMappingModel(EDIParser.parseMappingModel(edi2SaxMappingConfig));
 		parser.parse(new InputSource(ediInputStream));
+	}
+	
+	private String removeCRLF(String string) {
+		StringBuffer buffer = new StringBuffer();
+		
+		for(int i = 0; i < string.length(); i++) {
+			char character = string.charAt(i);
+			if(character != '\r' && character != '\n') {
+				buffer.append(character);
+			}
+		}
+		
+		return buffer.toString();
 	}
 }
