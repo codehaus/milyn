@@ -17,9 +17,7 @@
 package org.milyn.delivery.assemble;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.AbstractContentDeliveryUnit;
-import org.w3c.dom.Element;
 
 /**
  * Abstract AssemblyUnit implementation.
