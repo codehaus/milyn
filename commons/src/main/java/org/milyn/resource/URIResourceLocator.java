@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.resource.ContainerResourceLocator;
 
 /**
@@ -41,6 +43,10 @@ import org.milyn.resource.ContainerResourceLocator;
  */
 public class URIResourceLocator implements ContainerResourceLocator {
 
+	/**
+	 * Logger.
+	 */
+	private static final Log logger = LogFactory.getLog(URIResourceLocator.class);
 	/**
 	 * Scheme name for classpath based resources.
 	 */
@@ -63,6 +69,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
 	private InputStream getResource(URI uri) throws IllegalArgumentException, IOException {
 		URL url;
 		String scheme = uri.getScheme();
+		InputStream stream = null;
 		
 		if(scheme == null || scheme.equals(SCHEME_CLASSPATH)) {
 			String path = uri.getPath();
@@ -71,17 +78,24 @@ public class URIResourceLocator implements ContainerResourceLocator {
 				throw new IllegalArgumentException("Unable to locate classpath resource [" + uri + "].  Resource path not specified in URI.");
 			}
 			
-			if(uri.isAbsolute()) {
-				return getClass().getResourceAsStream(path);
-			} else {
-				return getClass().getResourceAsStream("/" + path);
+			if(!uri.isAbsolute()) {
+				path = "/" + path;
+			}
+			stream = getClass().getResourceAsStream(path);
+			if(stream == null) {
+				logger.warn("Failed to access data stream for classpath resource [" + path + "].");
 			}
 		} else {
 			url = uri.toURL();
 			URLConnection connection = url.openConnection();
 		
-			return connection.getInputStream();
+			stream = connection.getInputStream();
+			if(stream == null) {
+				logger.warn("Failed to access data stream for " + uri.getScheme() + " resource [" + uri + "].");
+			}
 		}
+		
+		return stream;
 	}
 	
 	/**
