@@ -71,6 +71,9 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * {@link org.milyn.cdr.Parameter} param = {@link org.milyn.cdr.SmooksResourceConfiguration resourceConfig}.{@link org.milyn.cdr.SmooksResourceConfiguration#getParameter(String) getParameter("blockLevelElements")};
  * {@link java.util.HashSet} blockLevelElements = (HashSet)param.{@link org.milyn.cdr.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)}; 
  * </pre>
+ * <p/>
+ * Note, we will make this process easier in the next release.  You'll be able to call a method such
+ * as "getDecodedParameter" on the {@link SmooksResourceConfiguration}, returning a decoded parameter Object.
  * 
  * See {@link org.milyn.cdr.SmooksResourceConfiguration}.
  * @author tfennelly
