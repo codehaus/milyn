@@ -33,6 +33,9 @@ import org.milyn.resource.ContainerResourceLocator;
  * e.g. "classpath:/org/milyn/x/my-resource.xml" references a "/org/milyn/x/my-resource.xml" resource on the classpath.
  * "classpath" is in fact the default scheme for this class i.e. if no scheme is specified in the supplied URI,
  * this class defaults to treating the URI as a reference to a classpath based resource.
+ * <p/>
+ * All resource URIs are {@link URI#resolve(String) resolved} against a "base URI" which can be set through the 
+ * System by the "org.milyn.resource.baseuri" System property.
  * 
  * @author tfennelly
  */
@@ -42,8 +45,12 @@ public class URIResourceLocator implements ContainerResourceLocator {
 	 * Scheme name for classpath based resources.
 	 */
 	public static String SCHEME_CLASSPATH = "classpath";
+	/**
+	 * System property key for the base URI.  Defaults to "./".
+	 */
+	public static final String BASE_URI_SYSKEY = "org.milyn.resource.baseuri";
 	
-	private URI baseURI = URI.create("./");
+	private URI baseURI = URI.create(System.getProperty(BASE_URI_SYSKEY, "./"));
 
 	public InputStream getResource(String configName, String defaultUri) throws IllegalArgumentException, IOException {
 		return getResource(defaultUri);
@@ -97,7 +104,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
         }
         uriObj = URI.create(uri);
         if(!uriObj.isAbsolute()) {
-        	// Resolve the supplied URI against the baseURI (derived from the baseDir!).
+        	// Resolve the supplied URI against the baseURI...
 			uriObj = baseURI.resolve(uriObj);
         }
         
