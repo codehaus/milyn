@@ -68,8 +68,23 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
 	}
 
 	protected void processTemplateAction(Element element, NodeList templatingResultNodeList) {
-		// REPLACE needs to be handled explicitly...
-		if(action == REPLACE) {
+		// If we're at the root element
+		if(element.getParentNode() instanceof Document) {
+			int count = templatingResultNodeList.getLength();
+
+			// Iterate over the NodeList and process the action using the 
+			// first element node we encounter as the transformation result...
+			for(int i = 0; i < count; i++) {
+				Node node = templatingResultNodeList.item(0);
+				if(node.getNodeType() == Node.ELEMENT_NODE) {
+					processTemplateAction(element, node);
+					break;
+				}
+			}
+		} else if(action == REPLACE) { 
+			// When we're not at the root element, REPLACE needs to be handled explicitly
+			// by performing a series of insert-befores, followed by a remove of the
+			// target element...
 			processTemplateAction(element, templatingResultNodeList, INSERT_BEFORE);
 			element.getParentNode().removeChild(element);
         } else {
