@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.milyn.cdr.ClasspathUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.util.ClassUtil;
 
 /**
  * Java ContentDeliveryUnit instance creator.
@@ -51,7 +52,7 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
 		
 		try {
             className = ClasspathUtils.toClassName(resourceConfig.getPath());
-			Class classRuntime = Class.forName(className);
+			Class classRuntime = ClassUtil.forName(className, getClass());
 			Constructor constructor;
 			try {
 				constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});

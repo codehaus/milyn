@@ -38,6 +38,7 @@ import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.io.StreamUtils;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
+import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Namespace;
 import org.w3c.dom.Document;
@@ -239,7 +240,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 			// If it's not a full XSL template, we need to make it so by wrapping it.
             isTemplatelet = resourceConfig.getBoolParameter("is-xslt-templatelet", true);
             if(isTemplatelet) {
-				String templateletWrapper = new String(StreamUtils.readStream(getClass().getResourceAsStream("doc-files/templatelet.xsl")));
+				String templateletWrapper = new String(StreamUtils.readStream(ClassUtil.getResourceAsStream("doc-files/templatelet.xsl", getClass())));
 				String templatelet = new String(xslBytes);
 				
 				templateletWrapper = StringUtils.replace(templateletWrapper, "@@@templatelet@@@", templatelet);

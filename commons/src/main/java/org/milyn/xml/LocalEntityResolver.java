@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
 
+import org.milyn.util.ClassUtil;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -100,7 +101,7 @@ public class LocalEntityResolver implements EntityResolver {
 			if(localDTDFolder != null && fileSysEntity.exists()) {
 				entityStream = new FileInputStream(fileSysEntity);
 			} else {
-				entityStream = getClass().getResourceAsStream(LocalEntityResolver.DTD_CP_PACKAGE + entityName);
+				entityStream = ClassUtil.getResourceAsStream(LocalEntityResolver.DTD_CP_PACKAGE + entityName, getClass());
 				if(entityStream == null) {
 					return null;
 				}
