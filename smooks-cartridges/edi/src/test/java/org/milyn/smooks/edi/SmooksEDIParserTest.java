@@ -127,6 +127,19 @@ public class SmooksEDIParserTest extends TestCase {
 		Document doc = parser.parse(new InputStreamReader(input));
 		
 		//System.out.println(XmlUtil.serialize(doc.getChildNodes()));
-		assertEquals(expected, XmlUtil.serialize(doc.getChildNodes()));
+		assertEquals(removeCRLF(expected), removeCRLF(XmlUtil.serialize(doc.getChildNodes())));
+	}
+	
+	private String removeCRLF(String string) {
+		StringBuffer buffer = new StringBuffer();
+		
+		for(int i = 0; i < string.length(); i++) {
+			char character = string.charAt(i);
+			if(character != '\r' && character != '\n') {
+				buffer.append(character);
+			}
+		}
+		
+		return buffer.toString();
 	}
 }

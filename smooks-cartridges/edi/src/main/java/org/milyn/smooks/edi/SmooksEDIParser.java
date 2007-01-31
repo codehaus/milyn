@@ -186,6 +186,9 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 		try {
 			new URI(modelConfigData);
 			configStream = uriMappingLocator.getResource(modelConfigData);
+			if(configStream == null) {
+				logger.error("Invalid " + MODEL_CONFIG_KEY + " config value '" + modelConfigData + "'. Failed to locate resource!");
+			}
 		} catch (URISyntaxException e) {
 			// It's not a URI based specification.  Return the contents under the assumption 
 			// that it's an inlined config...

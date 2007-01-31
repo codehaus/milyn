@@ -136,6 +136,15 @@ class BufferedSegmentReader {
     		currentSegmentFields = StringUtils.splitPreserveAllTokens(segmentBuffer.toString(), delimiters.getField());
     	}
     	
+    	// If the segment delimiter is a LF, strip off any preceeding CR characters...
+    	if(delimiters.getSegment().equals("\n")) {
+    		int endIndex = currentSegmentFields.length - 1;
+    		if(currentSegmentFields[endIndex].endsWith("\r")) {
+    			int stringLen = currentSegmentFields[endIndex].length();
+    			currentSegmentFields[endIndex] = currentSegmentFields[endIndex].substring(0, stringLen - 1);
+    		}
+    	}
+    	
         return currentSegmentFields;
     }
 

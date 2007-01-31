@@ -88,15 +88,9 @@ public class StandaloneContainerContext implements ContainerContext {
 		InputStream configStream;
 		try {
 			configStream = resLocator.getResource("device-profiles", DEVICE_PROFILE_XML);
-            if(configStream != null) {            
-                profileStore = profileDigester.parse(configStream);
-            } else {
-                logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container.");
-            }
+            profileStore = profileDigester.parse(configStream);
 		} catch (IOException e) {
-			IllegalStateException state = new IllegalStateException("Unable to read [" + DEVICE_PROFILE_XML + "] from container context.");
-			state.initCause(e);
-			throw state;
+            logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container. " + e.getMessage());
 		} catch (SAXException e) {
 			IllegalStateException state = new IllegalStateException("SAX excepting parsing [" + DEVICE_PROFILE_XML + "].");
 			state.initCause(e);

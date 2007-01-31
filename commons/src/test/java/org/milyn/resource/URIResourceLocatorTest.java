@@ -62,8 +62,12 @@ public class URIResourceLocatorTest extends TestCase {
 		InputStream stream;
 
 		// Resource doesn't exists...
-		stream = locator.getResource("classpath:/org/milyn/resource/someunknownfile.txt");
-		assertNull(stream);
+		try {
+			stream = locator.getResource("classpath:/org/milyn/resource/someunknownfile.txt");
+			fail("Expected IOException for bad resource path.");
+		} catch(IOException e) {
+			assertTrue(e.getMessage().startsWith("Failed to access data stream for"));
+		}
 
 		// Resource exists...
 		stream = locator.getResource("classpath:/org/milyn/resource/somefile.txt");
