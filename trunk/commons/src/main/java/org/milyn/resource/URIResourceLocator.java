@@ -83,7 +83,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
 			}
 			stream = getClass().getResourceAsStream(path);
 			if(stream == null) {
-				logger.warn("Failed to access data stream for classpath resource [" + path + "].");
+				throw new IOException("Failed to access data stream for classpath resource [" + path + "].");
 			}
 		} else {
 			url = uri.toURL();
@@ -91,7 +91,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
 		
 			stream = connection.getInputStream();
 			if(stream == null) {
-				logger.warn("Failed to access data stream for " + uri.getScheme() + " resource [" + uri + "].");
+				throw new IOException("Failed to access data stream for " + uri.getScheme() + " resource [" + uri + "].");
 			}
 		}
 		
