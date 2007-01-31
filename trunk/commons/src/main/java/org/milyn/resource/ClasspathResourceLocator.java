@@ -18,6 +18,8 @@ package org.milyn.resource;
 
 import java.io.InputStream;
 
+import org.milyn.util.ClassUtil;
+
 /**
  * Classpath Resource Locator.
  * <p/>
@@ -39,6 +41,6 @@ public class ClasspathResourceLocator implements ContainerResourceLocator {
 			throw new IllegalArgumentException("classpath 'uri' must be a valid classpath with a leading '/' char on the path i.e. specified relative to the root of the classpath.");
 		}
 		
-		return ClasspathResourceLocator.class.getResourceAsStream(uri);
+		return ClassUtil.getResourceAsStream(uri, getClass());
 	}
 }

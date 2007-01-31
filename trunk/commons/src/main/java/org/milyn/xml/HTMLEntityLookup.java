@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+import org.milyn.util.ClassUtil;
+
 /**
  *
  * @author Tom Fennelly
@@ -54,7 +56,7 @@ public abstract class HTMLEntityLookup {
         String          line;
 
         try {
-            is = HTMLEntityLookup.class.getResourceAsStream("HTML.ent");
+            is = ClassUtil.getResourceAsStream("HTML.ent", HTMLEntityLookup.class);
             try {
                 reader = new BufferedReader( new InputStreamReader( is ) );
             } catch(Exception except) {

@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.milyn.cdr.ClasspathUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
+import org.milyn.util.ClassUtil;
 
 /**
  * ServletResponseWrapper Factory (GoF) class.
@@ -64,7 +65,7 @@ public abstract class ServletResponseWrapperFactory {
 		
 		try {
             String className = ClasspathUtils.toClassName(resourceConfig.getPath());
-			runtime = Class.forName(className);
+			runtime = ClassUtil.forName(className, ServletResponseWrapperFactory.class);
 		} catch (ClassNotFoundException e) {
 			IllegalStateException state = new IllegalStateException("Unable to load " + resourceConfig.getPath());
 			state.initCause(e);

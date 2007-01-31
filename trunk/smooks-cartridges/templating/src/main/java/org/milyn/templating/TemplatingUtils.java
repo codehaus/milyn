@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ContainerContext;
+import org.milyn.util.ClassUtil;
 
 /**
  * Utility class for the templating Cartridge.
@@ -48,7 +49,7 @@ public class TemplatingUtils {
      * are to be registered.
      */
     public static void registerCDUCreators(ContainerContext context) {
-        InputStream stream = TemplatingUtils.class.getResourceAsStream(TEMPLATING_CDU_CREATORS_CDRL);
+        InputStream stream = ClassUtil.getResourceAsStream(TEMPLATING_CDU_CREATORS_CDRL, TemplatingUtils.class);
         try {
             context.getStore().registerResources(TEMPLATING_CDU_CREATORS_CDRL, stream);
         } catch (Exception e) {

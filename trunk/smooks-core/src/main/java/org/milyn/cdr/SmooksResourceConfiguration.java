@@ -33,6 +33,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -676,7 +677,7 @@ public class SmooksResourceConfiguration {
         
         className = ClasspathUtils.toClassName(path);
         try {
-            return Class.forName(className);
+            return ClassUtil.forName(className, getClass());
         } catch (ClassNotFoundException e) {
             if(path.equals(className)) {
                 logger.warn("Resource path [" + path + "] looks as though it may be a Java resource reference.  If so, this class is not available on the classpath.");

@@ -88,6 +88,11 @@ public class StandaloneContainerContext implements ContainerContext {
 		InputStream configStream;
 		try {
 			configStream = resLocator.getResource("device-profiles", DEVICE_PROFILE_XML);
+		} catch (IOException e) {
+            logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container.");
+            return ;
+        }
+		try {
             profileStore = profileDigester.parse(configStream);
 		} catch (IOException e) {
             logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container. " + e.getMessage());

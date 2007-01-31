@@ -32,6 +32,7 @@ import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
 import org.milyn.device.UAContext;
 import org.milyn.resource.ContainerResourceLocator;
+import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
 
@@ -85,7 +86,7 @@ public class SmooksResourceConfigurationStore {
      */
     private void registerInstalledResources(String resourceFile) {
         try {
-            registerResources(resourceFile, getClass().getResourceAsStream(resourceFile));
+            registerResources(resourceFile, ClassUtil.getResourceAsStream(resourceFile, getClass()));
         } catch (Exception e) {
             IllegalStateException state = new IllegalStateException("Failed to load " + resourceFile + ".  Expected to be in the same package as " + getClass().getName());
             state.initCause(e);
@@ -200,7 +201,7 @@ public class SmooksResourceConfigurationStore {
         // Load the runtime class... 
 		Class classRuntime;
 		try {
-			classRuntime = Class.forName(className);
+			classRuntime = ClassUtil.forName(className, getClass());
 		} catch (ClassNotFoundException e) {
 			IllegalStateException state = new IllegalStateException("Error loading Java class: " + className);
 			state.initCause(e);

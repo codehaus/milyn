@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
-import org.milyn.delivery.AbstractContentDeliveryUnit;
 import org.milyn.delivery.ElementVisitor;
+import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -223,7 +223,7 @@ public abstract class AbstractBeanPopulator implements ElementVisitor {
         Class clazz;
 
         try {
-            clazz = Class.forName(beanClass);
+            clazz = ClassUtil.forName(beanClass, getClass());
         } catch (ClassNotFoundException e) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " not in classpath.");
         }

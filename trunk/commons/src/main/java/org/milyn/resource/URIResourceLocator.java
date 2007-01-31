@@ -25,6 +25,7 @@ import java.net.URLConnection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.resource.ContainerResourceLocator;
+import org.milyn.util.ClassUtil;
 
 /**
  * {@link java.net.URI} resource locator.
@@ -81,7 +82,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
 			if(!uri.isAbsolute()) {
 				path = "/" + path;
 			}
-			stream = getClass().getResourceAsStream(path);
+			stream = ClassUtil.getResourceAsStream(path, getClass());
 			if(stream == null) {
 				throw new IOException("Failed to access data stream for classpath resource [" + path + "].");
 			}
