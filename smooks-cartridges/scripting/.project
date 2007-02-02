@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<projectDescription>
+  <name>milyn-smooks-scripting</name>
+  <comment>Milyn Smooks Scripting Cartridge. &lt;p/&gt; This Cartridge contains resources for scripting in Smooks, providing alternatives to raw Java for DOM manipulation such as Groovy.</comment>
+  <projects>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+      <arguments>
+      </arguments>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
