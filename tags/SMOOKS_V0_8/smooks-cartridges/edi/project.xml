@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-smooks-edi</artifactId>
+	<name>Milyn Smooks EDI Stream Handling Cartridge</name>
+	
+	<!-- Version from parent project.properties file. -->
+	<currentVersion>${milyn.version.smooks.edi}</currentVersion>
+	
+	<description>
+		<![CDATA[
+	  Milyn Smooks EDI Stream Handling Cartridge.
+      <p/>
+      This Cartridge contains resources for handling (parsing etc) EDI data streams using Smooks.
+      ]]>
+	</description>
+	<shortDescription>Milyn EDI Stream Handling Cartridge</shortDescription>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>milyn-edisax</artifactId>
+			<version>${milyn.version.edisax}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>xmlbeans</groupId>
+			<artifactId>xbean</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>jsr173</artifactId>
+		</dependency>
+		
+	</dependencies>
+	
+</project>

@@ -1,0 +1,66 @@
+<project xmlns:j="jelly:core" xmlns:ant="jelly:ant" xmlns:artifact="artifact"
+  xmlns:maven="jelly:maven" default="build">
+	
+	<goal name="clean">
+		<ant:delete file="cobertura.ser" />
+		<ant:delete file="velocity.log" />
+		<ant:delete dir="target" />
+	</goal>
+
+	<goal name="milyn:format">
+		<j:set var="goal" value="jalopy"/>
+		<attainGoal name="multiproject:goal"/>
+	</goal>
+	
+	<goal name="milyn:create-cvspass">
+		<j:set var="password" value="${password}"/>
+		<attainGoal name="changelog:create-cvspass"/>
+	</goal>
+	
+	<!-- ==================================================== -->
+	<!-- Publish artifacts to Anthill intranet directory      -->
+	<!-- ==================================================== -->
+	<goal name="anthill:publish">
+		<ant:copy todir="${anthill.artifacts.dir}" failonerror="false">
+			<ant:fileset dir="${maven.build.dir}/">
+				<ant:include name="*.ear"/>
+				<ant:include name="*.jar"/>
+				<ant:include name="*.war"/>
+			</ant:fileset>
+		</ant:copy>
+		<ant:delete dir="${anthill.deployDir}/docs"/>
+		<ant:copy todir="${anthill.deployDir}" failonerror="false">
+			<ant:fileset dir="${maven.build.dir}">
+				<ant:include name="*.ear"/>
+				<ant:include name="*.jar"/>
+				<ant:include name="*.war"/>
+				<ant:include name="docs/**"/>
+			</ant:fileset>
+			<ant:fileset dir="${maven.build.dir}/..">
+				<ant:include name="testdata.log"/>
+				<ant:include name="StringTestResult.html"/>
+			</ant:fileset>
+		</ant:copy>
+	</goal>
+
+	<!-- ==================================================== -->
+	<!-- Set the build number in properties files             -->
+	<!-- ==================================================== -->
+	<goal name="milyn:setbuildnumber">
+		<attainGoal name="java:jar-resources"/>
+		<condition property="build.number" value="NOT_SPECIFIED">
+			<and>
+				<not><isset property="build.number" /></not>
+				<not><isset property="anthill.version" /></not>
+			</and>
+		</condition>
+		<condition property="build.number" value="${anthill.version}">
+			<and>
+				<not><isset property="build.number" /></not>
+				<isset property="anthill.version" />
+			</and>
+		</condition>
+		<replace dir="${maven.build.dir}/classes" includes="*.properties" token="@BUILD.NUMBER@" value="${build.number}"/>
+	</goal>
+
+</project>

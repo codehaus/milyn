@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-edisax</artifactId>
+	<name>Milyn EdiSax</name>
+	
+	<!-- Version from root project.properties file - need to check out from the milyn cvs root. -->
+	<currentVersion>${milyn.version.edisax}</currentVersion>
+	
+	<description>
+		<![CDATA[Milyn Edisax.]]>
+	</description>
+	<shortDescription>Milyn Edisax</shortDescription>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>milyn-commons</artifactId>
+			<version>${milyn.version.commons}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>xmlbeans</groupId>
+			<artifactId>xbean</artifactId>
+			<version>2.2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>jsr173</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>milyn-edisax-mappingmodel</artifactId>
+		</dependency>
+		
+	</dependencies>
+	
+</project>

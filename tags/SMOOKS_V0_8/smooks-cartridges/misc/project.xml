@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-smooks-misc</artifactId>
+	<name>Milyn Smooks Miscelaneous Resource Cartridge</name>
+	
+	<!-- Version from parent project.properties file. -->
+	<currentVersion>${milyn.version.smooks.misc}</currentVersion>
+	
+	<description>
+		<![CDATA[
+	  Milyn Smooks Miscelaneous Delivery Resource Cartridge.
+      <p/>
+      This Cartridge contains miscelaneous Smooks resource for performing fairly "standard"
+      XML transformations e.g. for removing or renaming document elements or element attributes.
+      ]]>
+	</description>
+	<shortDescription>Milyn Smooks Miscelaneous Resource Cartridge</shortDescription>
+	
+</project>

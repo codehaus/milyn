@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+	<extend>${basedir}/../project.xml</extend>
+	
+	<artifactId>milyn-smooks-x12n</artifactId>
+	<name>Milyn Smooks X12N Cartridge</name>
+	
+	<!-- Version from parent project.properties file. -->
+	<currentVersion>0.1</currentVersion>
+	
+	<description>
+		<![CDATA[
+	  Milyn Smooks Templating Cartridge.
+      <p/>
+      This Cartridge contains resources for parsing and processing X12N messages.
+      ]]>
+	</description>
+	<shortDescription>Milyn Smooks X12N Cartridge</shortDescription>
+
+	<dependencies>
+		
+		
+	</dependencies>
+	
+</project>

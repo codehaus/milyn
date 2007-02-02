@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
+
+<!--
+	This cdrl config defines the Content Delivery Unit Creators
+	for this cartridge.
+-->
+
+<smooks-resource-list default-selector="cdu-creator"> 
+
+	<!-- 
+		Groovy Scripting Support.
+	-->
+	<smooks-resource selector="cdu-creator" useragent="*" path="org.milyn.smooks.scripting.GroovyContentDeliveryUnitCreator" >
+		<param name="restype">groovy</param>
+	</smooks-resource>
+	
+</smooks-resource-list>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<projectDescription>
+  <name>milyn-smooks-css</name>
+  <comment>Milyn Smooks CSS Resource Cartridge. &lt;p/&gt; This Cartridge contains resources for processing Cascading Style Sheet data on a web page - inline or linked.</comment>
+  <projects>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+      <arguments>
+      </arguments>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

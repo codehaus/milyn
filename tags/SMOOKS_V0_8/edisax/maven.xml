@@ -1,0 +1,28 @@
+<project default="milyn:build" xmlns:j="jelly:core" xmlns:ant="jelly:ant">	
+
+	<goal name="milyn:build">
+		<attainGoal name="add-mapping-model"/>
+		<attainGoal name="jar:install"/>
+		<attainGoal name="eclipse" />
+	</goal>
+
+	<goal name="add-mapping-model">
+    	<unjar src="src/main/lib/milyn-edisax-mappingmodel.jar" dest="target/classes" overwrite="true" />
+	</goal>
+
+	<goal name="gen-mapping-model">
+		<echo message="Generating EDI Mapping Configuration Model..." />
+		<taskdef name="xmlbean" classname="org.apache.xmlbeans.impl.tool.XMLBean" classpathref="classpath" />
+		
+		<xmlbean schema="src/main/resources/schema/edi-message-mapping-1.0.xsd" classgendir="target/classes" srcgendir="target/mapping-model/java"
+			destfile="src/main/lib/milyn-edisax-mappingmodel.jar" classpathref="classpath"/>
+    
+	</goal>
+
+	<ant:path id="classpath">
+		<ant:fileset dir="src/main/lib">
+			<ant:include name="*.jar"/>
+		</ant:fileset>
+	</ant:path>
+
+</project>
