@@ -21,9 +21,9 @@ import java.util.Hashtable;
 import org.milyn.container.ContainerSession;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigImpl;
-import org.milyn.device.UAContext;
-import org.milyn.device.ident.UnknownDeviceException;
-import org.milyn.device.profile.ProfileSet;
+import org.milyn.useragent.UAContext;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.profile.ProfileSet;
 
 /**
  * Standalone Container Session.
@@ -42,10 +42,10 @@ public class StandaloneContainerSession implements ContainerSession {
 	 * The session is constructed within the scope of the container context.
 	 * @param useragent The name of the useragent being emulated for this session.
 	 * @param context Container Context instance.
-	 * @throws UnknownDeviceException Thrown when the named device/useragent is not known i.e. typically means
+	 * @throws UnknownUseragentException Thrown when the named device/useragent is not known i.e. typically means
 	 * the deviceName is not mapped into any profiles in device-profiles.xml.
 	 */
-	public StandaloneContainerSession(String useragent, StandaloneContainerContext context) throws UnknownDeviceException {
+	public StandaloneContainerSession(String useragent, StandaloneContainerContext context) throws UnknownUseragentException {
 		if(useragent == null) {
 			throw new IllegalArgumentException("null 'useragent' arg in constructor call.");
 		}
@@ -121,7 +121,7 @@ public class StandaloneContainerSession implements ContainerSession {
 		private String commonName;
 		private ProfileSet profileSet;
 		
-		public StandaloneUAContext(String commonName) throws UnknownDeviceException {
+		public StandaloneUAContext(String commonName) throws UnknownUseragentException {
 			this.commonName = commonName;
 			profileSet = context.getProfileStore().getProfileSet(commonName);
 		}

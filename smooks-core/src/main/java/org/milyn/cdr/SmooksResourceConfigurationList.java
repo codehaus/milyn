@@ -21,7 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.device.UAContext;
+import org.milyn.useragent.UAContext;
 
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} list.
@@ -106,7 +106,7 @@ public class SmooksResourceConfigurationList {
      * @return All SmooksResourceConfiguration entries for the specified useragent.
      */
     public SmooksResourceConfiguration[] getUseragentConfigurations(UAContext useragentContext) {
-        Vector matchingSmooksResourceConfigurationsColl = new Vector();
+        Vector<SmooksResourceConfiguration> matchingSmooksResourceConfigurationsColl = new Vector<SmooksResourceConfiguration>();
         SmooksResourceConfiguration[] matchingSmooksResourceConfigurations = null;
         
         // Iterate over the SmooksResourceConfigurations defined on this list.

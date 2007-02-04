@@ -16,6 +16,7 @@
 
 package org.milyn.container.standalone;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -26,7 +27,7 @@ import org.milyn.container.ContainerRequest;
 import org.milyn.container.ContainerSession;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ElementList;
-import org.milyn.device.UAContext;
+import org.milyn.useragent.UAContext;
 import org.milyn.util.IteratorEnumeration;
 
 /**
@@ -40,6 +41,7 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	private Hashtable elementListTable = new Hashtable();
 	private URI requestURI;
 	private LinkedHashMap parameters;
+	private String contentEncoding;
     
     /**
      * Public Constructor.
@@ -63,6 +65,22 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	 * @param session The container session within which this request is to be processed.
 	 */
 	public StandaloneContainerRequest(URI requestURI, LinkedHashMap parameters, StandaloneContainerSession session) {
+		this(requestURI, parameters, session, "UTF-8");
+	}
+    
+	/**
+	 * Public Constructor.
+	 * <p/>
+	 * The request is constructed witin the scope of a container session.  The
+	 * session is associated with a specific useragent name.
+	 * @param requestURI The requestURI to be processed.
+	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
+	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
+	 * @param session The container session within which this request is to be processed.
+	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
+	 * defaults to "UTF-8".
+	 */
+	public StandaloneContainerRequest(URI requestURI, LinkedHashMap parameters, StandaloneContainerSession session, String contentEncoding) {
 		if(session == null) {
 			throw new IllegalArgumentException("null 'session' arg in constructor call.");
 		}
@@ -73,6 +91,7 @@ public class StandaloneContainerRequest implements ContainerRequest {
             this.parameters = new LinkedHashMap();
         }
 		this.session = session;
+		setContentEncoding(contentEncoding);
 	}
 
 	public String getContextPath() {
@@ -142,6 +161,33 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	 */
 	public String getHeader(String name) {
 		throw new UnsupportedOperationException("Not implemented yet!");
+	}
+
+	/**
+	 * Set the content encoding to be used when parsing content on this standalone request instance. 
+	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
+	 * defaults to "UTF-8".
+	 * @throws IllegalArgumentException Invalid encoding.
+	 */
+	public void setContentEncoding(String contentEncoding) throws IllegalArgumentException {
+		contentEncoding = (contentEncoding == null)?"UTF-8":contentEncoding;
+		try {
+			// Make sure the encoding is supported....
+			"".getBytes(contentEncoding);
+		} catch (UnsupportedEncodingException e) {
+			IllegalArgumentException argE = new IllegalArgumentException("Invalid 'contentEncoding' arg [" + contentEncoding + "].  This encoding is not supported.");
+			argE.initCause(e);
+			throw argE;
+		}
+		this.contentEncoding = contentEncoding;
+	}
+
+	/**
+	 * Get the content encoding to be used when parsing content on this standalone request instance. 
+	 * @return Character encoding to be used when parsing content.  Defaults to "UTF-8".
+	 */
+	public String getContentEncoding() {
+		return (contentEncoding == null)?"UTF-8":contentEncoding;
 	}
 
 	public String getParameter(String name) {

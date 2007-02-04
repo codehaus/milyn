@@ -19,7 +19,7 @@ package org.milyn.dtd;
 import java.util.Arrays;
 import java.util.List;
 
-import org.milyn.device.MockUAContext;
+import org.milyn.useragent.MockUAContext;
 
 import junit.framework.TestCase;
 

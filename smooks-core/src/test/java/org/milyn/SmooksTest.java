@@ -38,7 +38,7 @@ public class SmooksTest extends TestCase {
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception {
-        SmooksStandalone smooks = new SmooksStandalone("ISO-8859-1");
+        SmooksStandalone smooks = new SmooksStandalone();
         smooks.registerUseragent("device1", new String[] {"profile1"});
         request = new StandaloneContainerRequest(smooks.getSession("device1"));
     }

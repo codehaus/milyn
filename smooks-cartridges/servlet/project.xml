@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <project>
 	<extend>${basedir}/../project.xml</extend>
@@ -19,6 +19,12 @@
 	<shortDescription>Milyn Smooks Servlet Integration Cartridge</shortDescription>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>milyn</groupId>
+			<artifactId>milyn-tinak</artifactId>
+			<version>${milyn.version.tinak}</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>nekohtml</groupId>

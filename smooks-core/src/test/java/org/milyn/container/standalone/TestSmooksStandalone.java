@@ -20,7 +20,6 @@ package org.milyn.container.standalone;
 import java.io.IOException;
 
 import org.milyn.SmooksStandalone;
-import org.milyn.device.ident.UnknownDeviceException;
 import org.xml.sax.SAXException;
 
 public class TestSmooksStandalone extends SmooksStandalone {
@@ -32,7 +31,6 @@ public class TestSmooksStandalone extends SmooksStandalone {
 	 * @throws UnknownDeviceException Unknown useragent.
 	 */
 	public TestSmooksStandalone() throws SAXException, IOException {
-		super("ISO-8859-1");
         registerUseragent("msie6w", new String[] {"msie6", "html4", "html"});
         registerUseragent("msie6m", new String[] {"msie6", "html4", "html"});
         registerUseragent("msie6", new String[] {"html4", "html"});

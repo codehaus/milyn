@@ -21,8 +21,8 @@ import java.util.Enumeration;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ElementList;
-import org.milyn.device.UAContext;
-import org.milyn.device.request.HttpRequest;
+import org.milyn.useragent.UAContext;
+import org.milyn.useragent.request.HttpRequest;
 
 /**
  * Smooks container request interface definition.

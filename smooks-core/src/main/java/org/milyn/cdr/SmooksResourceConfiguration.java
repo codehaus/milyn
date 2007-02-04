@@ -236,7 +236,7 @@ public class SmooksResourceConfiguration {
 	/**
 	 * SmooksResourceConfiguration parameters - String name and String value.
 	 */
-	private HashMap parameters;
+	private HashMap<String, Object> parameters;
 	private int parameterCount;
 	/**
 	 * The XML namespace of the tag to which this config 
@@ -461,15 +461,15 @@ public class SmooksResourceConfiguration {
 
 	public void setParameter(Parameter parameter) {
 		if(parameters == null) {
-			parameters = new LinkedHashMap();
+			parameters = new LinkedHashMap<String, Object>();
 		}
 		Object exists = parameters.get(parameter.getName());
 		
 		if(exists == null) {
 			parameters.put(parameter.getName(), parameter);
 		} else if(exists instanceof Parameter) {
-			Vector paramList = new Vector();			
-			paramList.add(exists);
+			Vector<Parameter> paramList = new Vector<Parameter>();			
+			paramList.add((Parameter)exists);
 			paramList.add(parameter);
 			parameters.put(parameter.getName(), paramList);
 		} else if(exists instanceof List) {

@@ -38,7 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
-import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.servlet.container.HttpServletContainerRequest;
 import org.milyn.servlet.container.ServletContainerContext;
@@ -191,7 +191,7 @@ public class SmooksServletFilter implements Filter {
 			if(logger.isDebugEnabled()) {
 				logger.debug("[doFilter] " + (System.currentTimeMillis() - startTime) + "ms");
 			}
-		} catch (UnknownDeviceException e) {
+		} catch (UnknownUseragentException e) {
 			logger.error("Unknown Device.  Smooks not being used to deliver content.", e);
 			filterChain.doFilter(request, response);
 		} catch (Exception e) {

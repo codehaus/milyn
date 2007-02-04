@@ -17,7 +17,7 @@
 package org.milyn.container.standalone;
 
 import org.milyn.container.MockContainerResourceLocator;
-import org.milyn.device.profile.DefaultProfileStore;
+import org.milyn.profile.DefaultProfileStore;
 
 import junit.framework.TestCase;
 

@@ -24,8 +24,8 @@ import java.util.LinkedHashMap;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ElementList;
 import org.milyn.delivery.MockContentDeliveryConfig;
-import org.milyn.device.MockUAContext;
-import org.milyn.device.UAContext;
+import org.milyn.useragent.MockUAContext;
+import org.milyn.useragent.UAContext;
 import org.milyn.util.IteratorEnumeration;
 
 /**

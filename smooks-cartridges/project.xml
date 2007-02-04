@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
 <project>
 	<extend>${basedir}/../project.xml</extend>
@@ -9,12 +9,6 @@
 			<groupId>milyn</groupId>
 			<artifactId>milyn-commons</artifactId>
 			<version>${milyn.version.commons}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>milyn</groupId>
-			<artifactId>milyn-tinak</artifactId>
-			<version>${milyn.version.tinak}</version>
 		</dependency>
 
 		<dependency>

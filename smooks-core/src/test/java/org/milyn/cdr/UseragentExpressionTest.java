@@ -16,7 +16,7 @@
 
 package org.milyn.cdr;
 
-import org.milyn.device.MockUAContext;
+import org.milyn.useragent.MockUAContext;
 
 import junit.framework.TestCase;
 
