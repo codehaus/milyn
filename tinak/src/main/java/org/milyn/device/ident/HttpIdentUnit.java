@@ -19,8 +19,8 @@ package org.milyn.device.ident;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.milyn.device.request.HttpRequest;
-import org.milyn.device.request.Request;
+import org.milyn.useragent.request.HttpRequest;
+import org.milyn.useragent.request.Request;
 
 /**
  * HTTP Identification unit.
@@ -175,7 +175,7 @@ public class HttpIdentUnit extends IdentUnit {
 
         //----------------------------------------------------------------------
 
-        public boolean isMatch(org.milyn.device.request.Request param0) {
+        public boolean isMatch(org.milyn.useragent.request.Request param0) {
             return testTargetInst.isMatch(param0);
         }
     }

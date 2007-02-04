@@ -18,7 +18,7 @@ package org.milyn.servlet;
 
 import java.io.InputStream;
 
-import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.useragent.UnknownUseragentException;
 
 import com.mockobjects.servlet.MockHttpServletRequest;
 import com.mockobjects.servlet.MockServletConfig;
@@ -75,15 +75,15 @@ public class DeviceIdentifierTest extends TestCase {
 			request.setupAddHeader("User-Agent", "Nokia3350.xxxxxx");
 			String device = DeviceIdentifier.matchDevice(config, request);
 			assertEquals("nokia3350", device);
-		} catch (UnknownDeviceException e) {
+		} catch (UnknownUseragentException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
 		try {
 			request.setupAddHeader("User-Agent", "xxxxxxxx.xxxxxx");
 			String device = DeviceIdentifier.matchDevice(config, request);
-			fail("expected UnknownDeviceException");
-		} catch (UnknownDeviceException e) {
+			fail("expected UnknownUseragentException");
+		} catch (UnknownUseragentException e) {
 			// expected
 		}
 	}

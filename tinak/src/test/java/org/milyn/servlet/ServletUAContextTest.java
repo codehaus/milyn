@@ -21,8 +21,8 @@ import java.util.Hashtable;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
-import org.milyn.device.UAContext;
-import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.UAContext;
 
 import com.mockobjects.servlet.MockHttpServletRequest;
 import com.mockobjects.servlet.MockHttpSession;
@@ -59,7 +59,7 @@ public class ServletUAContextTest extends TestCase {
 			ServletUAContext.getInstance(null, null);
 			fail("no exception on null 'request' arg");
 		} catch(IllegalArgumentException arg) {
-		} catch(UnknownDeviceException e) {
+		} catch(UnknownUseragentException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -67,7 +67,7 @@ public class ServletUAContextTest extends TestCase {
 			ServletUAContext.getInstance(new MockHttpServletRequest(), null);
 			fail("no exception on null 'config' arg");
 		} catch(IllegalArgumentException arg) {
-		} catch(UnknownDeviceException e) {
+		} catch(UnknownUseragentException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -108,7 +108,7 @@ public class ServletUAContextTest extends TestCase {
 			if(ServletUAContext.getInstance(request, config) != uaContext) {
 				fail("failed to retreive context from servlet session.");
 			}
-		} catch (UnknownDeviceException e) {
+		} catch (UnknownUseragentException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
@@ -122,7 +122,7 @@ public class ServletUAContextTest extends TestCase {
 			if(ServletUAContext.getInstance(request, config) != uaContext) {
 				fail("failed to retreive context from servlet request.");
 			}
-		} catch (UnknownDeviceException e) {
+		} catch (UnknownUseragentException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}

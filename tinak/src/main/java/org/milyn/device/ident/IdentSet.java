@@ -16,7 +16,7 @@
 
 package org.milyn.device.ident;
 
-import org.milyn.device.request.Request;
+import org.milyn.useragent.request.Request;
 
 import java.util.*;
 
@@ -476,7 +476,7 @@ public class IdentSet {
             testTargetInst.setMatch(param0);
         }
 
-        public boolean isMatch(org.milyn.device.request.Request param0) {
+        public boolean isMatch(org.milyn.useragent.request.Request param0) {
             return testTargetInst.isMatch(param0);
         }
 

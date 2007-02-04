@@ -8,8 +8,8 @@ import junit.framework.TestSuite;
 import java.io.InputStream;
 
 import org.milyn.device.ident.DeviceIdent;
-import org.milyn.device.ident.UnknownDeviceException;
-import org.milyn.device.request.MockHttpRequest;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.request.MockHttpRequest;
 
 /**
  * IdentConfigDigesterTest
@@ -92,7 +92,7 @@ public class IdentConfigDigesterTest extends TestCase {
 			try {
 				deviceIdent.matchDevice(request);
 				fail("Failed to throw UnknownDeviceException.");
-			} catch(UnknownDeviceException ude) {
+			} catch(UnknownUseragentException ude) {
 				// OK
 			}
 			request.setParameter("ua", "zzz");

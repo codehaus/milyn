@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import java.util.Arrays;
 
-import org.milyn.device.request.MockHttpRequest;
+import org.milyn.useragent.request.MockHttpRequest;
 
 /**
  * IdentSetTest

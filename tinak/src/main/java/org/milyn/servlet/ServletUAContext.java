@@ -16,10 +16,10 @@
 
 package org.milyn.servlet;
 
-import org.milyn.device.UAContext;
-import org.milyn.device.ident.UnknownDeviceException;
-import org.milyn.device.profile.Profile;
-import org.milyn.device.profile.ProfileSet;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.profile.Profile;
+import org.milyn.profile.ProfileSet;
+import org.milyn.useragent.UAContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -93,11 +93,11 @@ import java.util.Vector;
  * It's done using this class as follows:
  * <pre>
  * try {
- *     {@link org.milyn.device.UAContext} uaContext = ServletUAContext.{@link ServletUAContext#getInstance(HttpServletRequest, ServletConfig)};
+ *     {@link org.milyn.device.profile.UAContext} uaContext = ServletUAContext.{@link ServletUAContext#getInstance(HttpServletRequest, ServletConfig)};
  * } catch({@link org.milyn.device.ident.UnknownDeviceException} unknownDevice) {
  *     // Handle Exception...
  * }</pre>
- * The {@link org.milyn.device.UAContext} instance can then be used to:
+ * The {@link org.milyn.device.profile.UAContext} instance can then be used to:
  * <ul>
  * 	<li>get the browser (device) common name, and</li>
  * 	<li>check the browser for membership of a given profile.</li>
@@ -124,7 +124,7 @@ public final class ServletUAContext implements UAContext {
     /**
      * Table of preconstructed ServletUAContext instances keyed by their common name.
      */
-    private static Hashtable contexts = new Hashtable();
+    private static Hashtable<String, UAContext> contexts = new Hashtable<String, UAContext>();
 	/**
 	 * Profiles Servlet Context key.
 	 */
@@ -151,9 +151,9 @@ public final class ServletUAContext implements UAContext {
      * @param request The HttpServletRequest instance associated with the request.
      * @param config The Servet Configuration.
      * @return Useragent context.
-     * @throws UnknownDeviceException Device match failure.
+     * @throws UnknownUseragentException Device match failure.
      */
-    public static UAContext getInstance(HttpServletRequest request, ServletConfig config) throws UnknownDeviceException {
+    public static UAContext getInstance(HttpServletRequest request, ServletConfig config) throws UnknownUseragentException {
         ServletUAContext context;
         String deviceMatchCName;
         HttpSession session;

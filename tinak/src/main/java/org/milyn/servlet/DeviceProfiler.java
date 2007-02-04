@@ -22,11 +22,11 @@ import java.util.StringTokenizer;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
-import org.milyn.device.profile.DefaultProfileConfigDigester;
-import org.milyn.device.profile.HttpAcceptHeaderProfile;
-import org.milyn.device.profile.ProfileConfigDigester;
-import org.milyn.device.profile.ProfileSet;
-import org.milyn.device.profile.ProfileStore;
+import org.milyn.profile.DefaultProfileConfigDigester;
+import org.milyn.profile.HttpAcceptHeaderProfile;
+import org.milyn.profile.ProfileConfigDigester;
+import org.milyn.profile.ProfileSet;
+import org.milyn.profile.ProfileStore;
 import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
 
