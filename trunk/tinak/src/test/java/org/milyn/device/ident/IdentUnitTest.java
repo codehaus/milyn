@@ -4,7 +4,7 @@ package org.milyn.device.ident;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.milyn.device.request.Request;
+import org.milyn.useragent.request.Request;
 
 /**
  * IdentUnitTest

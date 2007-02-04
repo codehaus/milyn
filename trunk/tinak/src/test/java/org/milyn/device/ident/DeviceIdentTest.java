@@ -5,7 +5,8 @@ package org.milyn.device.ident;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.milyn.device.request.MockHttpRequest;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.request.MockHttpRequest;
 
 /**
  * DeviceIdentTest
@@ -126,7 +127,7 @@ public class DeviceIdentTest extends TestCase {
 
     /**
      * Test method: String matchDevice(Request)
-     * matchDevice throws org.milyn.device.ident.UnknownDeviceException
+     * matchDevice throws org.milyn.device.ident.UnknownUseragentException
      */
     public void testMatchDevice_1() {
         DeviceIdent deviceIdent = new DeviceIdent();
@@ -137,14 +138,14 @@ public class DeviceIdentTest extends TestCase {
             fail("failed to throw IllegalState Exception after calling matchDevice before DeviceIdent has been prepared.");
         } catch(IllegalStateException state) {
             //OK
-        } catch(UnknownDeviceException ude) {
-            fail("Unexpected UnknownDeviceException.");
+        } catch(UnknownUseragentException ude) {
+            fail("Unexpected UnknownUseragentException.");
         }
     }
 
     /**
      * Test method: String matchDevice(Request)
-     * matchDevice throws org.milyn.device.ident.UnknownDeviceException
+     * matchDevice throws org.milyn.device.ident.UnknownUseragentException
      */
     public void testMatchDevice_2() {
         DeviceIdent deviceIdent = new DeviceIdent();
@@ -160,15 +161,15 @@ public class DeviceIdentTest extends TestCase {
         deviceIdent.prepare();
         try {
             deviceIdent.matchDevice(request);
-            fail("Failed to throw UnknownDeviceException for unknown device.");
-        } catch(UnknownDeviceException ude) {
+            fail("Failed to throw UnknownUseragentException for unknown device.");
+        } catch(UnknownUseragentException ude) {
             //OK
         }
     }
 
     /**
      * Test method: String matchDevice(Request)
-     * matchDevice throws org.milyn.device.ident.UnknownDeviceException
+     * matchDevice throws org.milyn.device.ident.UnknownUseragentException
      */
     public void testMatchDevice_3() {
         DeviceIdent deviceIdent = new DeviceIdent();
@@ -184,14 +185,14 @@ public class DeviceIdentTest extends TestCase {
         deviceIdent.prepare();
         try {
             assertEquals("device1", deviceIdent.matchDevice(request));
-        } catch(UnknownDeviceException ude) {
-            fail("Unexpected UnknownDeviceException.");
+        } catch(UnknownUseragentException ude) {
+            fail("Unexpected UnknownUseragentException.");
         }
     }
 
     /**
      * Test method: String matchDevice(Request)
-     * matchDevice throws org.milyn.device.ident.UnknownDeviceException
+     * matchDevice throws org.milyn.device.ident.UnknownUseragentException
      */
     public void testMatchDevice_4() {
         DeviceIdent deviceIdent = new DeviceIdent();
@@ -207,15 +208,15 @@ public class DeviceIdentTest extends TestCase {
         deviceIdent.prepare();
         try {
             deviceIdent.matchDevice(request);
-            fail("Failed to throw UnknownDeviceException for unknown device.");
-        } catch(UnknownDeviceException ude) {
+            fail("Failed to throw UnknownUseragentException for unknown device.");
+        } catch(UnknownUseragentException ude) {
             //OK
         }
     }
 
     /**
      * Test method: String matchDevice(Request)
-     * matchDevice throws org.milyn.device.ident.UnknownDeviceException
+     * matchDevice throws org.milyn.device.ident.UnknownUseragentException
      */
     public void testMatchDevice_5() {
         DeviceIdent deviceIdent = new DeviceIdent();
@@ -240,8 +241,8 @@ public class DeviceIdentTest extends TestCase {
         deviceIdent.prepare();
         try {
             assertEquals("device2", deviceIdent.matchDevice(request));
-        } catch(UnknownDeviceException ude) {
-            fail("Unexpected UnknownDeviceException.");
+        } catch(UnknownUseragentException ude) {
+            fail("Unexpected UnknownUseragentException.");
         }
     }
 
@@ -288,7 +289,7 @@ public static class UnitTest {
    public void prepare ()  {
      testTargetInst.prepare();
    }
-   public java.lang.String matchDevice (org.milyn.device.request.Request param0)  throws org.milyn.device.ident.UnknownDeviceException {
+   public java.lang.String matchDevice (org.milyn.device.request.Request param0)  throws org.milyn.device.ident.UnknownUseragentException {
      return testTargetInst.matchDevice( param0);
    }
 }

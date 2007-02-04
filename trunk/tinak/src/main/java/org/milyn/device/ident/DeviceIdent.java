@@ -16,7 +16,8 @@
 
 package org.milyn.device.ident;
 
-import org.milyn.device.request.Request;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.request.Request;
 
 import java.util.Vector;
 
@@ -123,9 +124,9 @@ public final class DeviceIdent {
      * Match the device associated with the supplied request instance.
      * @param request The device request to be used to identify the requesting device.
      * @return The name of the requesting device.
-     * @throws UnknownDeviceException Device cannot be matched from the supplied request.
+     * @throws UnknownUseragentException Device cannot be matched from the supplied request.
      */
-    public String matchDevice(Request request) throws UnknownDeviceException {
+    public String matchDevice(Request request) throws UnknownUseragentException {
         if(devList == null) {
             throw new IllegalStateException("Call to matchDevice before object has been prepared.");
         }
@@ -137,7 +138,7 @@ public final class DeviceIdent {
             }
         }
 
-        throw new UnknownDeviceException();
+        throw new UnknownUseragentException();
     }
 
 	/**

@@ -20,8 +20,8 @@ import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.device.ident.DeviceIdent;
 import org.milyn.device.ident.IdentConfigDigester;
-import org.milyn.device.ident.UnknownDeviceException;
-import org.milyn.device.request.HttpRequest;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.request.HttpRequest;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -78,11 +78,10 @@ abstract class DeviceIdentifier {
      * @param request The HttpServletRequest instance on which to perform
      * the device matching.
      * @return The device name (AKA useragent common name).
-     * @throws UnknownDeviceException Device match failure.
+     * @throws UnknownUseragentException Device match failure.
      */
-    public static String matchDevice(ServletConfig config, HttpServletRequest request) throws UnknownDeviceException {
+    public static String matchDevice(ServletConfig config, HttpServletRequest request) throws UnknownUseragentException {
         DeviceIdent deviceIdent;
-        ServletContext context;
 
         if(config == null) {
         	throw new IllegalArgumentException("null 'config' param in mehtid call.");
@@ -91,7 +90,6 @@ abstract class DeviceIdentifier {
         	throw new IllegalArgumentException("null 'request' param in mehtid call.");
         }
         
-        context = config.getServletContext();        
         // Do we need to read the device identification config for the context.
         deviceIdent = DeviceIdent.getInstance();
         if(deviceIdent == null) {

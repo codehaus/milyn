@@ -26,9 +26,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.TestCase;
 
-import org.milyn.device.profile.HttpAcceptHeaderProfile;
-import org.milyn.device.profile.Profile;
-import org.milyn.device.profile.ProfileSet;
+import org.milyn.profile.HttpAcceptHeaderProfile;
+import org.milyn.profile.Profile;
+import org.milyn.profile.ProfileSet;
 
 import com.mockobjects.servlet.MockHttpServletRequest;
 import com.mockobjects.servlet.MockServletConfig;

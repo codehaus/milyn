@@ -17,8 +17,8 @@
 package org.milyn.tinak;
 
 import org.milyn.servlet.ServletUAContext;
-import org.milyn.device.UAContext;
-import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.UAContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.tagext.BodyContent;
@@ -75,7 +75,7 @@ public class UATag implements BodyTag {
         pageContext = context;
         try {
             uaContext = ServletUAContext.getInstance((HttpServletRequest)pageContext.getRequest(), pageContext.getServletConfig());
-        } catch(UnknownDeviceException unknownDevice) {
+        } catch(UnknownUseragentException unknownDevice) {
             uaContext = null;
         } catch(Throwable thrown) {
             thrown.printStackTrace();

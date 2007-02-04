@@ -16,7 +16,7 @@
 
 package org.milyn.device.ident;
 
-import org.milyn.device.request.Request;
+import org.milyn.useragent.request.Request;
 
 /**
  * Device identification data unit.
