@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 public class CSVParserTest extends TestCase {
 
 	public void test() throws SmooksException, UnsupportedEncodingException {
-		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksStandalone smooks = new SmooksStandalone();
 		SmooksResourceConfiguration config;
 		
 		config = new SmooksResourceConfiguration("org.xml.sax.driver", "type:Order-List and from:Acme", CSVParser.class.getName());

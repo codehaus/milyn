@@ -78,7 +78,7 @@ public class SmooksEDIParserTest extends TestCase {
 	
 	public void test_caching() throws IOException, SAXException {
 		byte[] input = StreamUtils.readStream(getClass().getResourceAsStream("edi-input.txt"));
-		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksStandalone smooks = new SmooksStandalone();
 		SmooksResourceConfiguration config = null;
 
 		// Register the useragent used to create the smooks request that will be passed to the parser...
@@ -111,7 +111,7 @@ public class SmooksEDIParserTest extends TestCase {
 	private void test(String mapping) throws IOException, SAXException {
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-input.txt")));
 		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("expected.xml")));
-		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksStandalone smooks = new SmooksStandalone();
 		SmooksResourceConfiguration config = null;
 
 		// Register the useragent used to create the smooks request that will be passed to the parser...

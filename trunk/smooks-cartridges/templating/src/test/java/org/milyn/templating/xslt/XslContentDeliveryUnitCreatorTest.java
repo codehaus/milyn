@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 public class XslContentDeliveryUnitCreatorTest extends TestCase {
 
 	public void testXslUnitTrans_filebased_replace() {
-		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksStandalone smooks = new SmooksStandalone();
 		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename", "org/milyn/templating/xslt/xsltransunit.xsl");
 		String transResult = null;
 
@@ -60,7 +60,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 	}
 	
 	public void testXslUnitTrans_parambased(String action, String expectedFileName) {
-		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksStandalone smooks = new SmooksStandalone();
 		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename");
 		String transResult = null;
 

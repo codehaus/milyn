@@ -40,7 +40,7 @@ public class CssAccessorTest extends TestCase {
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
-        smooks = new SmooksStandalone("ISO-8859-1");
+        smooks = new SmooksStandalone();
         smooks.registerUseragent("device1", new String[] {"screen", "audio"});
 
         request = new StandaloneContainerRequest(URI.create("http://x.com"), null, smooks.getSession("device1"));
