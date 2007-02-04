@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ContainerRequest;
 import org.milyn.delivery.assemble.AbstractAssemblyUnit;
-import org.milyn.device.profile.ProfileSet;
+import org.milyn.profile.ProfileSet;
 import org.milyn.magger.CSSParser;
 import org.milyn.magger.CSSStylesheet;
 import org.milyn.xml.DomUtils;

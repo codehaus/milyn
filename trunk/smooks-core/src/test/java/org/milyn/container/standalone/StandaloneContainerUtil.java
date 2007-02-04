@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import junit.framework.TestCase;
 
 import org.milyn.SmooksStandalone;
-import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.useragent.UnknownUseragentException;
 import org.xml.sax.SAXException;
 
 public class StandaloneContainerUtil {
@@ -34,7 +34,7 @@ public class StandaloneContainerUtil {
 		try {
 			SmooksStandalone smooksSA = new TestSmooksStandalone();
 			request = new StandaloneContainerRequest(new URI(requestURI), new LinkedHashMap(), smooksSA.getSession(useragent));
-		} catch (UnknownDeviceException e) {
+		} catch (UnknownUseragentException e) {
 			TestCase.fail(e.getMessage());
 		} catch (URISyntaxException e) {
 			TestCase.fail(e.getMessage());

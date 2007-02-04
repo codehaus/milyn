@@ -30,7 +30,7 @@ import org.milyn.container.ContainerContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
-import org.milyn.device.UAContext;
+import org.milyn.useragent.UAContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;

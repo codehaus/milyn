@@ -18,7 +18,7 @@ package org.milyn.cdr;
 
 import java.util.Comparator;
 
-import org.milyn.device.UAContext;
+import org.milyn.useragent.UAContext;
 
 
 /**

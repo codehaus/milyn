@@ -49,7 +49,7 @@ public class SmooksStandaloneTest extends TestCase {
 	}
 	
 	public void test_Standalone_CodeConfig_1() {
-		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksStandalone smooks = new SmooksStandalone();
 		
 		// Add 2 useragents and configure them with profiles...
 		smooks.registerUseragent("message-target1", new String[] {"profile1", "profile2"});
@@ -74,7 +74,7 @@ public class SmooksStandaloneTest extends TestCase {
 	}
 
 	public void test_Standalone_CodeConfig_2() throws SAXException, IOException {
-		SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+		SmooksStandalone smooks = new SmooksStandalone();
 		
 		// Add 2 useragents and configure them with profiles...
 		smooks.registerUseragent("message-target1", new String[] {"profile1", "profile2"});

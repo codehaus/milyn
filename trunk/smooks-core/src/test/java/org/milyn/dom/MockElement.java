@@ -21,6 +21,8 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.TypeInfo;
+import org.w3c.dom.UserDataHandler;
 
 public class MockElement extends MockNode implements Element {
 	
@@ -106,6 +108,134 @@ public class MockElement extends MockNode implements Element {
 	}
 
 	public NodeList getElementsByTagNameNS(String namespaceURI, String localName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Element#getSchemaTypeInfo()
+	 */
+	public TypeInfo getSchemaTypeInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Element#setIdAttribute(java.lang.String, boolean)
+	 */
+	public void setIdAttribute(String arg0, boolean arg1) throws DOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Element#setIdAttributeNS(java.lang.String, java.lang.String, boolean)
+	 */
+	public void setIdAttributeNS(String arg0, String arg1, boolean arg2) throws DOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Element#setIdAttributeNode(org.w3c.dom.Attr, boolean)
+	 */
+	public void setIdAttributeNode(Attr arg0, boolean arg1) throws DOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#compareDocumentPosition(org.w3c.dom.Node)
+	 */
+	public short compareDocumentPosition(Node arg0) throws DOMException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#getBaseURI()
+	 */
+	public String getBaseURI() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#getFeature(java.lang.String, java.lang.String)
+	 */
+	public Object getFeature(String arg0, String arg1) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#getTextContent()
+	 */
+	public String getTextContent() throws DOMException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#getUserData(java.lang.String)
+	 */
+	public Object getUserData(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#isDefaultNamespace(java.lang.String)
+	 */
+	public boolean isDefaultNamespace(String arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#isEqualNode(org.w3c.dom.Node)
+	 */
+	public boolean isEqualNode(Node arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#isSameNode(org.w3c.dom.Node)
+	 */
+	public boolean isSameNode(Node arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#lookupNamespaceURI(java.lang.String)
+	 */
+	public String lookupNamespaceURI(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#lookupPrefix(java.lang.String)
+	 */
+	public String lookupPrefix(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#setTextContent(java.lang.String)
+	 */
+	public void setTextContent(String arg0) throws DOMException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.w3c.dom.Node#setUserData(java.lang.String, java.lang.Object, org.w3c.dom.UserDataHandler)
+	 */
+	public Object setUserData(String arg0, Object arg1, UserDataHandler arg2) {
 		// TODO Auto-generated method stub
 		return null;
 	}

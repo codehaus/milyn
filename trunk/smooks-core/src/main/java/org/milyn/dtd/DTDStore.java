@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.milyn.device.UAContext;
+import org.milyn.useragent.UAContext;
 import com.wutka.dtd.DTD;
 import com.wutka.dtd.DTDAny;
 import com.wutka.dtd.DTDContainer;

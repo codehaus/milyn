@@ -36,7 +36,7 @@ import org.milyn.delivery.assemble.AssemblyUnit;
 import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
 import org.milyn.delivery.serialize.SerializationUnit;
-import org.milyn.device.UAContext;
+import org.milyn.useragent.UAContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 

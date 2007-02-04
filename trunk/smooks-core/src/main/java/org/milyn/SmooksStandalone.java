@@ -34,12 +34,12 @@ import org.milyn.container.standalone.StandaloneContainerContext;
 import org.milyn.container.standalone.StandaloneContainerRequest;
 import org.milyn.container.standalone.StandaloneContainerSession;
 import org.milyn.delivery.SmooksXML;
-import org.milyn.device.ident.UnknownDeviceException;
-import org.milyn.device.profile.BasicProfile;
-import org.milyn.device.profile.DefaultProfileSet;
-import org.milyn.device.profile.DefaultProfileStore;
-import org.milyn.device.profile.ProfileSet;
-import org.milyn.device.profile.ProfileStore;
+import org.milyn.profile.BasicProfile;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.profile.DefaultProfileStore;
+import org.milyn.profile.ProfileSet;
+import org.milyn.profile.ProfileStore;
+import org.milyn.profile.UnknownProfileMemberException;
 import org.milyn.resource.URIResourceLocator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -60,43 +60,20 @@ public class SmooksStandalone {
 
 	private static Log logger = LogFactory.getLog(SmooksStandalone.class);
 	private StandaloneContainerContext context;
-	private String contentEncoding;
 	
 	/**
 	 * Public Constructor.
 	 * <p/>
 	 * Allows a SmooksStandalone instance to be created and configured from
 	 * code i.e. not configured from config files etc.
-	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
-	 * defaults to "ISO-8859-1".
 	 * @see #registerUseragent(String, String[])
 	 * @see #registerResource(SmooksResourceConfiguration)
 	 */
-	public SmooksStandalone(String contentEncoding) {
+	public SmooksStandalone() {
 		URIResourceLocator resourceLocator = new URIResourceLocator();
 		
-		setEncoding(contentEncoding);        
 		resourceLocator.setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
 		context = new StandaloneContainerContext(new DefaultProfileStore(), resourceLocator);
-	}
-
-	/**
-	 * Set the content encoding to be used when parsing content on this standalone instance. 
-	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
-	 * defaults to "ISO-8859-1".
-	 * @throws IllegalArgumentException Invalid encoding.
-	 */
-	private void setEncoding(String contentEncoding) throws IllegalArgumentException {
-		contentEncoding = (contentEncoding == null)?"ISO-8859-1":contentEncoding;
-		try {
-			// Make sure the encoding is supported....
-			"".getBytes(contentEncoding);
-		} catch (UnsupportedEncodingException e) {
-			IllegalArgumentException argE = new IllegalArgumentException("Invalid 'contentEncoding' arg [" + contentEncoding + "].  This encoding is not supported.");
-			argE.initCause(e);
-			throw argE;
-		}
-		this.contentEncoding = contentEncoding;
 	}
 	
 	/**
@@ -116,7 +93,33 @@ public class SmooksStandalone {
 	 * used in subsequent {@link #filter(StandaloneContainerRequest, Document) filter(1)},
 	 * {@link #filter(StandaloneContainerRequest, InputStream) filter(2)}, or
 	 * {@link #serialize(StandaloneContainerRequest, Node, Writer)} calls call {@link org.milyn.container.ContainerRequest#getRequestURI()}.
-	 * @return
+	 * @param contentEncoding Character encoding to be used when parsing content.  Defaults to "UTF-8".
+	 * @return Request instance.
+	 */
+	public StandaloneContainerRequest createRequest(String useragent, URI requestURI, String contentEncoding) {
+		StandaloneContainerSession session = context.getSession(useragent);
+		
+		return new StandaloneContainerRequest(requestURI, new LinkedHashMap(), session, contentEncoding);
+	}
+	
+	/**
+	 * Create a {@link StandaloneContainerRequest} instance for use on this SmooksStandalone instance.
+	 * <p/>
+	 * This method is used in subsequent calls to {@link #filter(StandaloneContainerRequest, Document) filter(1)},
+	 * {@link #filter(StandaloneContainerRequest, InputStream) filter(2)} and
+	 * {@link #serialize(StandaloneContainerRequest, Node, Writer)}.  It allows access to the container request instance 
+	 * before and after calls on these methods.  This means the caller has an opportunity to set and get data 
+	 * {@link org.milyn.container.BoundAttributeStore bound} to the request (before and after the calls), providing the 
+	 * caller with a mechanism for interacting with the filtering and serialisation processes.  
+	 * <p/> 
+	 * @param useragent The useragent on behalf of whom the filtering/serialisation
+	 * process is to be executed.
+	 * @param requestURI The URI context of the content to be processed.  This arg needs to
+	 * be supplied if any of the {@link org.milyn.delivery.ElementVisitor} implementations
+	 * used in subsequent {@link #filter(StandaloneContainerRequest, Document) filter(1)},
+	 * {@link #filter(StandaloneContainerRequest, InputStream) filter(2)}, or
+	 * {@link #serialize(StandaloneContainerRequest, Node, Writer)} calls call {@link org.milyn.container.ContainerRequest#getRequestURI()}.
+	 * @return Request instance.
 	 */
 	public StandaloneContainerRequest createRequest(String useragent, URI requestURI) {
 		StandaloneContainerSession session = context.getSession(useragent);
@@ -218,17 +221,13 @@ public class SmooksStandalone {
 		
 		SmooksXML smooks = new SmooksXML(request);
         try {
-    		if(contentEncoding == null) {
-    			return smooks.filter(new InputStreamReader(stream));
-    		} else {
-    			try {
-    				return smooks.filter(new InputStreamReader(stream, contentEncoding));
-    			} catch (UnsupportedEncodingException e) {
-    				Error error = new Error("Unexpected exception.  Encoding has already been validated as being unsupported.");
-    				error.initCause(e);
-    				throw error;
-    			}
-    		}
+			try {
+				return smooks.filter(new InputStreamReader(stream, request.getContentEncoding()));
+			} catch (UnsupportedEncodingException e) {
+				Error error = new Error("Unexpected exception.  Encoding has already been validated as being unsupported.");
+				error.initCause(e);
+				throw error;
+			}
         } finally {
             try {
                 stream.close();
@@ -408,7 +407,7 @@ public class SmooksStandalone {
 		ProfileStore profileStore = context.getProfileStore();
 		try {
 			profileStore.getProfileSet(useragent);
-		} catch(UnknownDeviceException e) {
+		} catch(UnknownProfileMemberException e) {
 			profileStore.addProfileSet(useragent, new DefaultProfileSet());
 		}
 		

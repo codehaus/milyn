@@ -16,10 +16,10 @@
 
 package org.milyn.cdr;
 
-import org.milyn.device.UAContext;
-import org.milyn.device.UAContextUtil;
-import org.milyn.device.profile.HttpAcceptHeaderProfile;
-import org.milyn.device.profile.Profile;
+import org.milyn.useragent.UAContext;
+import org.milyn.useragent.UAContextUtil;
+import org.milyn.profile.HttpAcceptHeaderProfile;
+import org.milyn.profile.Profile;
 
 /**
  * Represents a single parsed useragent attribute value expression.

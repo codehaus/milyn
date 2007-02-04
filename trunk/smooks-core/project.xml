@@ -28,12 +28,6 @@
 
 		<dependency>
 			<groupId>milyn</groupId>
-			<artifactId>milyn-tinak</artifactId>
-			<version>${milyn.version.tinak}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>milyn</groupId>
 			<artifactId>milyn-smooks-dtd</artifactId>
 			<version>0.1</version>
 		</dependency>

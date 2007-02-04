@@ -29,8 +29,8 @@ import org.milyn.container.ContainerSession;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigImpl;
 import org.milyn.delivery.ElementList;
-import org.milyn.device.UAContext;
-import org.milyn.device.ident.UnknownDeviceException;
+import org.milyn.useragent.UAContext;
+import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.servlet.ServletUAContext;
 
 /**
@@ -72,9 +72,9 @@ public class HttpServletContainerRequest implements ContainerRequest {
 	 * Public Constructor.
 	 * @param servletRequest HttpServletRequest instance.
 	 * @param servletConfig ServletConfig instance.
-	 * @throws UnknownDeviceException Unable to match device.
+	 * @throws UnknownUseragentException Unable to match device.
 	 */
-	public HttpServletContainerRequest(HttpServletRequest servletRequest, ServletConfig servletConfig, ServletContainerContext containerContext) throws UnknownDeviceException {
+	public HttpServletContainerRequest(HttpServletRequest servletRequest, ServletConfig servletConfig, ServletContainerContext containerContext) throws UnknownUseragentException {
 		if(servletRequest == null) {
 			throw new IllegalArgumentException("null 'servletRequest' arg in constructor call.");
 		}
@@ -111,14 +111,14 @@ public class HttpServletContainerRequest implements ContainerRequest {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.milyn.device.request.HttpRequest#getHeader(java.lang.String)
+	 * @see org.milyn.useragent.request.HttpRequest#getHeader(java.lang.String)
 	 */
 	public String getHeader(String name) {
 		return servletRequest.getHeader(name);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.device.request.HttpRequest#getParameter(java.lang.String)
+	 * @see org.milyn.useragent.request.HttpRequest#getParameter(java.lang.String)
 	 */
 	public String getParameter(String name) {
 		return servletRequest.getParameter(name);
