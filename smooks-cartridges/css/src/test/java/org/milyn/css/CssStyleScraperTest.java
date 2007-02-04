@@ -42,7 +42,7 @@ public class CssStyleScraperTest extends TestCase {
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception {
-        smooks = new SmooksStandalone("ISO-8859-1");
+        smooks = new SmooksStandalone();
         smooks.registerUseragent("device1", new String[] {"blah"});
         request = new StandaloneContainerRequest(URI.create("http://milyn.codehaus.org/myapp/aaa/mypage.html"), null, smooks.getSession("device1"));
         context = smooks.getSession("device1").getContext();

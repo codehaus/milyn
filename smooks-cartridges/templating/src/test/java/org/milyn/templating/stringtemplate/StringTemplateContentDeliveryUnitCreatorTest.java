@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
     public void testStringTemplateTrans() throws SAXException, IOException {
-        SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+        SmooksStandalone smooks = new SmooksStandalone();
 
         // Configure Smooks
         smooks.registerUseragent("useragent", new String[] {"profile1"});

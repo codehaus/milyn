@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 public abstract class ShippingIntegTestBase extends TestCase {
 
     public void testTransform() throws SAXException, IOException {
-        SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+        SmooksStandalone smooks = new SmooksStandalone();
 
         // Configure Smooks
         smooks.registerUseragent("shipping-request");

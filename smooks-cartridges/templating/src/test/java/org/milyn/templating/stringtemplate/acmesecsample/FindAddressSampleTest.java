@@ -29,7 +29,7 @@ import junit.framework.TestCase;
 public class FindAddressSampleTest extends TestCase {
 
     public void testTransform() throws SAXException, IOException {
-        SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+        SmooksStandalone smooks = new SmooksStandalone();
 
         // Configure Smooks...
         smooks.registerUseragent("acme-findAddresses-request", new String[] {"acme-request"});
