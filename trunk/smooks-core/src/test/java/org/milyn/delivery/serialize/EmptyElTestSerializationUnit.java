@@ -32,14 +32,14 @@ import org.w3c.dom.Text;
  * 
  * @author tfennelly
  */
-public class TestSerializationUnit_EmptyEl extends DefaultSerializationUnit {
+public class EmptyElTestSerializationUnit extends DefaultSerializationUnit {
 
 	private boolean wellFormed = true;
 	
 	/**
 	 * @param unitDef
 	 */
-	public TestSerializationUnit_EmptyEl(SmooksResourceConfiguration unitDef) {
+	public EmptyElTestSerializationUnit(SmooksResourceConfiguration unitDef) {
 		super(unitDef);
 		wellFormed = unitDef.getBoolParameter("wellformed", true);
 	}

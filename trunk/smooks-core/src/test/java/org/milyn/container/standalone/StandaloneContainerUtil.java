@@ -32,7 +32,7 @@ public class StandaloneContainerUtil {
 	public static StandaloneContainerRequest getRequest(String requestURI, String useragent) {
 		StandaloneContainerRequest request = null;
 		try {
-			SmooksStandalone smooksSA = new TestSmooksStandalone();
+			SmooksStandalone smooksSA = new PreconfiguredSmooksStandalone();
 			request = new StandaloneContainerRequest(new URI(requestURI), new LinkedHashMap(), smooksSA.getSession(useragent));
 		} catch (UnknownUseragentException e) {
 			TestCase.fail(e.getMessage());

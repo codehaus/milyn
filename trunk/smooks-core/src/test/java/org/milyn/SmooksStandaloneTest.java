@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.standalone.StandaloneContainerRequest;
-import org.milyn.container.standalone.TestSmooksStandalone;
+import org.milyn.container.standalone.PreconfiguredSmooksStandalone;
 import org.milyn.util.DomUtil;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -35,7 +35,7 @@ public class SmooksStandaloneTest extends TestCase {
 	public void testProcess() {
 		SmooksStandalone smooksSA = null;
 		try {
-			smooksSA = new TestSmooksStandalone();
+			smooksSA = new PreconfiguredSmooksStandalone();
 			String response = smooksSA.filterAndSerialize("msie6", getClass().getResourceAsStream("html_2.html"));
 			System.out.println(response);
 			Document doc = DomUtil.parse(response);

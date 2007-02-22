@@ -20,23 +20,24 @@ import java.io.Serializable;
 
 import org.milyn.profile.ProfileSet;
 
-
 /**
- * Useragnet device context.
- * <p/>
- * Provides access to information such as the useragent name and 
- * the useragent ProfileSet.
+ * Useragnet device context. <p/> Provides access to information such as the
+ * useragent name and the useragent ProfileSet.
+ * 
  * @author tfennelly
  */
 public interface UAContext extends Serializable {
 
-    /**
+	/**
 	 * Get the useragent common name.
+	 * 
 	 * @return The useragent common name.
 	 */
 	public abstract String getCommonName();
+
 	/**
 	 * Get the ProfileSet for the device.
+	 * 
 	 * @return The ProfileSet
 	 */
 	public abstract ProfileSet getProfileSet();

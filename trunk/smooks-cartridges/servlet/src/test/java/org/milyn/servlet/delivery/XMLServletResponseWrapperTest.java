@@ -70,8 +70,8 @@ public class XMLServletResponseWrapperTest extends TestCase {
 	public void test_deliverResponse_OutputStream() {
 		addHeaderAction("add", "header-x", "value-x", (MockContentDeliveryConfig) mockCR.deliveryConfig);
 		addHeaderAction("remove", "header-y", "value-y", (MockContentDeliveryConfig) mockCR.deliveryConfig);
-		addTransUnit("W", new TestTU("x", true), (MockContentDeliveryConfig) mockCR.deliveryConfig);
-		addTransUnit("Y", new TestTU("z", false), (MockContentDeliveryConfig) mockCR.deliveryConfig);
+		addTransUnit("W", new MyTestTU("x", true), (MockContentDeliveryConfig) mockCR.deliveryConfig);
+		addTransUnit("Y", new MyTestTU("z", false), (MockContentDeliveryConfig) mockCR.deliveryConfig);
 
 		XMLServletResponseWrapper wrapper = new XMLServletResponseWrapper(mockCR, mockSR);
 		MockServletOutputStream mockOS = new MockServletOutputStream();
@@ -135,11 +135,11 @@ public class XMLServletResponseWrapperTest extends TestCase {
 		}
 	}
 	
-	private static class TestTU extends AbstractProcessingUnit {
+	private static class MyTestTU extends AbstractProcessingUnit {
 		private static SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("X", "X", "X");
 		private String newName;
 		private boolean visitBefore;
-		public TestTU(String newName, boolean visitBefore) {
+		public MyTestTU(String newName, boolean visitBefore) {
 			super(resourceConfig);
 			this.newName = newName;
 			this.visitBefore = visitBefore;

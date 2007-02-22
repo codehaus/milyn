@@ -22,9 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.milyn.container.ContainerRequest;
 
-public class TestServletResponseWrapper extends ServletResponseWrapper {
+public class MyMockServletResponseWrapper extends ServletResponseWrapper {
 
-	public TestServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
+	public MyMockServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
 		super(containerRequest, originalResponse);
 	}
 

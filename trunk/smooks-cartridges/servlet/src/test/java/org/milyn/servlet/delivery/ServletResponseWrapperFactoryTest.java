@@ -29,14 +29,14 @@ public class ServletResponseWrapperFactoryTest extends TestCase {
 	}
 
 	public void testCreateServletResponseWrapper() {
-		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("testrespwrapfactory", TestServletResponseWrapper.class.getName());
+		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("testrespwrapfactory", MyMockServletResponseWrapper.class.getName());
 		MockContainerRequest request = new MockContainerRequest();
 		MockHttpServletResponse mockServletResponse = new MockHttpServletResponse();
 
 		ServletResponseWrapper wrapper = ServletResponseWrapperFactory.createServletResponseWrapper(resourceConfig, request, mockServletResponse);
 		assertNotNull(wrapper);
-		if(!(wrapper instanceof TestServletResponseWrapper)) {
-			fail("Expected TestServletResponseWrapper, got " + wrapper.getClass());
+		if(!(wrapper instanceof MyMockServletResponseWrapper)) {
+			fail("Expected MyMockServletResponseWrapper, got " + wrapper.getClass());
 		}
 	}
 }
