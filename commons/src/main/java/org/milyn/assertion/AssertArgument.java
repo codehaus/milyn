@@ -18,17 +18,23 @@ package org.milyn.assertion;
 
 /**
  * Argument assertion utilities.
+ * 
  * @author tfennelly
  */
 public abstract class AssertArgument {
 
 	/**
 	 * Assert that the argument is not null.
-	 * @param arg Argument.
-	 * @param argName Argument name.
-	 * @throws IllegalArgumentException Argument is null.
+	 * 
+	 * @param arg
+	 *            Argument.
+	 * @param argName
+	 *            Argument name.
+	 * @throws IllegalArgumentException
+	 *             Argument is null.
 	 */
-	public static void isNotNull(Object arg, String argName) throws IllegalArgumentException {
+	public static void isNotNull(Object arg, String argName)
+			throws IllegalArgumentException {
 		if (arg == null) {
 			throw new IllegalArgumentException("null '" + argName
 					+ "' arg in method call.");
@@ -37,11 +43,16 @@ public abstract class AssertArgument {
 
 	/**
 	 * Assert that the argument is not empty.
-	 * @param arg Argument.
-	 * @param argName Argument name.
-	 * @throws IllegalArgumentException Argument is not null, but is empty.
+	 * 
+	 * @param arg
+	 *            Argument.
+	 * @param argName
+	 *            Argument name.
+	 * @throws IllegalArgumentException
+	 *             Argument is not null, but is empty.
 	 */
-	public static void isNotEmpty(String arg, String argName) throws IllegalArgumentException {
+	public static void isNotEmpty(String arg, String argName)
+			throws IllegalArgumentException {
 		if (arg != null && arg.trim().equals("")) {
 			throw new IllegalArgumentException("Not null, but empty '"
 					+ argName + "' arg in method call.");
@@ -50,11 +61,16 @@ public abstract class AssertArgument {
 
 	/**
 	 * Assert that the argument is neither null nor empty.
-	 * @param arg Argument.
-	 * @param argName Argument name.
-	 * @throws IllegalArgumentException Argument is null or empty.
+	 * 
+	 * @param arg
+	 *            Argument.
+	 * @param argName
+	 *            Argument name.
+	 * @throws IllegalArgumentException
+	 *             Argument is null or empty.
 	 */
-	public static void isNotNullAndNotEmpty(String arg, String argName) throws IllegalArgumentException {
+	public static void isNotNullAndNotEmpty(String arg, String argName)
+			throws IllegalArgumentException {
 		if (arg == null || arg.trim().equals("")) {
 			throw new IllegalArgumentException("null or empty '" + argName
 					+ "' arg in method call.");

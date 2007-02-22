@@ -1,18 +1,18 @@
 /*
-	Milyn - Copyright (C) 2006
+ Milyn - Copyright (C) 2006
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
-	Foundation.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License (version 2.1) as published by the Free Software 
+ Foundation.
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
-	http://www.gnu.org/licenses/lgpl.txt
-*/
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+ 
+ See the GNU Lesser General Public License for more details:    
+ http://www.gnu.org/licenses/lgpl.txt
+ */
 
 package org.milyn.profile;
 
@@ -32,7 +32,7 @@ import junit.framework.TestCase;
  * @author tfennelly
  */
 public class DefaultProfileConfigDigesterTest extends TestCase {
-	
+
 	/**
 	 * @param arg0
 	 */
@@ -42,135 +42,144 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 
 	public void testParse_exception_null_stream() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		
+
 		try {
 			digester.parse(null);
 			fail("failed to throw arg exception on null stream");
-		} catch(IllegalArgumentException e) {			
+		} catch (IllegalArgumentException e) {
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_fail_no_name() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_fail_no_name.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_fail_no_name.xml");
+
 		try {
 			digester.parse(stream);
 			fail("failed to throw SAXException on no name");
-		} catch(SAXException e) {			
+		} catch (SAXException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_fail_no_list() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_fail_no_list.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_fail_no_list.xml");
+
 		try {
 			digester.parse(stream);
 			fail("failed to throw SAXException on no list");
-		} catch(SAXException e) {			
+		} catch (SAXException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_fail_no_attribs() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_fail_no_attribs.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_fail_no_attribs.xml");
+
 		try {
 			digester.parse(stream);
 			fail("failed to throw SAXException on no attributes");
-		} catch(SAXException e) {			
+		} catch (SAXException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_fail_empty_list() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_fail_empty_list.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_fail_empty_list.xml");
+
 		try {
 			digester.parse(stream);
 			fail("failed to throw SAXException on empty list");
-		} catch(SAXException e) {			
+		} catch (SAXException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_fail_empty_name() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_fail_empty_name.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_fail_empty_name.xml");
+
 		try {
 			digester.parse(stream);
 			fail("failed to throw SAXException on empty name");
-		} catch(SAXException e) {			
+		} catch (SAXException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_fail_bad_list() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_fail_bad_list.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_fail_bad_list.xml");
+
 		try {
 			digester.parse(stream);
 			fail("failed to throw SAXException on bad list");
-		} catch(SAXException e) {			
+		} catch (SAXException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_fail_no_profile() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_fail_no_profile.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_fail_no_profile.xml");
+
 		try {
 			digester.parse(stream);
 			fail("failed to throw SAXException on no profile");
-		} catch(SAXException e) {			
+		} catch (SAXException e) {
 		} catch (IOException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_success_all_list_seperators() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_success_all_list_separators.xml");
-		
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_success_all_list_separators.xml");
+
 		try {
 			digester.parse(stream);
-		} catch(Exception e) {			
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
-		}		
+		}
 	}
 
 	public void testParse_success_two_profiles() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_success_two_profiles.xml");
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_success_two_profiles.xml");
 		DefaultProfileStore store = null;
-		
+
 		try {
-			store = (DefaultProfileStore)digester.parse(stream);			
-		} catch(Exception e) {			
+			store = (DefaultProfileStore) digester.parse(stream);
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
 		}
@@ -194,16 +203,17 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 
 	public void testParse_success_one_profile() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_success_one_profile.xml");
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_success_one_profile.xml");
 		DefaultProfileStore store = null;
-		
+
 		try {
-			store = (DefaultProfileStore)digester.parse(stream);			
-		} catch(Exception e) {			
+			store = (DefaultProfileStore) digester.parse(stream);
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
 		}
-		
+
 		try {
 			ProfileSet MSIE5 = store.getProfileSet("MSIE5");
 			assertTrue(MSIE5.isMember("html"));
@@ -216,16 +226,17 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 
 	public void testParse_success_many_profiles() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_success_many_profiles.xml");
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_success_many_profiles.xml");
 		DefaultProfileStore store = null;
-		
+
 		try {
-			store = (DefaultProfileStore)digester.parse(stream);			
-		} catch(Exception e) {			
+			store = (DefaultProfileStore) digester.parse(stream);
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
 		}
-		
+
 		try {
 			ProfileSet MSIE5 = store.getProfileSet("MSIE5");
 			assertTrue(MSIE5.isMember("html"));
@@ -244,12 +255,13 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 
 	public void testParse_success_many_profiles_nested() {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
-		InputStream stream = getClass().getResourceAsStream("profiles_success_many_profiles_nested.xml");
+		InputStream stream = getClass().getResourceAsStream(
+				"profiles_success_many_profiles_nested.xml");
 		DefaultProfileStore store = null;
-		
+
 		try {
-			store = (DefaultProfileStore)digester.parse(stream);			
-		} catch(Exception e) {			
+			store = (DefaultProfileStore) digester.parse(stream);
+		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
 		}

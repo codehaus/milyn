@@ -21,15 +21,22 @@ import java.io.InputStream;
 
 /**
  * Interface for locating stream resources external to the container..
+ * 
  * @author tfennelly
  */
 public interface ExternalResourceLocator {
 	/**
 	 * Get the stream specified by the 'uri' parameter.
-	 * @param uri The location of the resource to be located.
+	 * 
+	 * @param uri
+	 *            The location of the resource to be located.
 	 * @return The InputStream associated with the org.milyn.resource.
-	 * @throws IllegalArgumentException Illegal argument.  Check the cause exception for more information.
-	 * @throws IOException Unable to get the org.milyn.resource stream.
+	 * @throws IllegalArgumentException
+	 *             Illegal argument. Check the cause exception for more
+	 *             information.
+	 * @throws IOException
+	 *             Unable to get the org.milyn.resource stream.
 	 */
-	public InputStream getResource(String uri) throws IllegalArgumentException, IOException;
+	public InputStream getResource(String uri) throws IllegalArgumentException,
+			IOException;
 }

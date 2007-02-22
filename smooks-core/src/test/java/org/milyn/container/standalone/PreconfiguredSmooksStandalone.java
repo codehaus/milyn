@@ -22,15 +22,14 @@ import java.io.IOException;
 import org.milyn.SmooksStandalone;
 import org.xml.sax.SAXException;
 
-public class TestSmooksStandalone extends SmooksStandalone {
+public class PreconfiguredSmooksStandalone extends SmooksStandalone {
 
 	/**
 	 * Public Constructor.
 	 * @throws IOException 
 	 * @throws SAXException 
-	 * @throws UnknownDeviceException Unknown useragent.
 	 */
-	public TestSmooksStandalone() throws SAXException, IOException {
+	public PreconfiguredSmooksStandalone() throws SAXException, IOException {
         registerUseragent("msie6w", new String[] {"msie6", "html4", "html"});
         registerUseragent("msie6m", new String[] {"msie6", "html4", "html"});
         registerUseragent("msie6", new String[] {"html4", "html"});

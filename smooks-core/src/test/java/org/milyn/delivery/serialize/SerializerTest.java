@@ -50,20 +50,20 @@ public class SerializerTest extends TestCase {
 		// Don't write xxx but write its child elements
 		SmooksResourceConfiguration unitDef = new SmooksResourceConfiguration("xxx", "deviceX", "....");
 		Vector serUnits = new Vector();
-		serUnits.add(new ContentDeliveryUnitConfigMap(new TestSerializationUnit_Remove(unitDef), unitDef));
+		serUnits.add(new ContentDeliveryUnitConfigMap(new RemoveTestSerializationUnit(unitDef), unitDef));
 		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("xxx", serUnits);
 
 		// write yyyy as a badly-formed empty element
 		unitDef = new SmooksResourceConfiguration("yyyy", "deviceX", "....");
 		unitDef.setParameter("wellformed", "false");
 		serUnits = new Vector();
-		serUnits.add(new ContentDeliveryUnitConfigMap(new TestSerializationUnit_EmptyEl(unitDef), unitDef));
+		serUnits.add(new ContentDeliveryUnitConfigMap(new EmptyElTestSerializationUnit(unitDef), unitDef));
 		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("yyyy", serUnits);
 
 		/// write zzz as a well-formed empty element
 		unitDef = new SmooksResourceConfiguration("zzz", "deviceX", "....");
 		serUnits = new Vector();
-		serUnits.add(new ContentDeliveryUnitConfigMap(new TestSerializationUnit_EmptyEl(unitDef), unitDef));
+		serUnits.add(new ContentDeliveryUnitConfigMap(new EmptyElTestSerializationUnit(unitDef), unitDef));
 		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("zzz", serUnits);
 		
 		try {

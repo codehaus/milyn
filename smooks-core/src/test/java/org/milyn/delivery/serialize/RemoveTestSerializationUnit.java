@@ -28,12 +28,12 @@ import org.w3c.dom.Element;
  * by simply "not writing" the element to the output Writer.
  * @author tfennelly
  */
-public class TestSerializationUnit_Remove extends  DefaultSerializationUnit {
+public class RemoveTestSerializationUnit extends  DefaultSerializationUnit {
 
 	/**
 	 * @param unitDef
 	 */
-	public TestSerializationUnit_Remove(SmooksResourceConfiguration unitDef) {
+	public RemoveTestSerializationUnit(SmooksResourceConfiguration unitDef) {
 		super(unitDef);
 	}
 
