@@ -53,8 +53,7 @@ import org.w3c.dom.NodeList;
  * {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} and 
  * {@link org.milyn.delivery.serialize.SerializationUnit SerializationUnits}).
  * <p/>
- * This class doesn't get used directly.  See {@link org.milyn.SmooksServletFilter}
- * and {@link org.milyn.SmooksStandalone}.
+ * This class doesn't get used directly.  See {@link org.milyn.SmooksStandalone}.
  * 
  * <h3 id="phases">XML/XHTML/HTML Filtering and Serialisation</h3>
  * SmooksXML markup processing (XML/XHTML/HTML) is a 2 phase process, depending on what
