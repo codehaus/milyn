@@ -42,124 +42,37 @@ public class PerformanceComparisonTest extends TestCase {
 
     private Transformer xsltTransformer;
     private SmooksStandalone smooksTransformer;
-
-    private byte[] messageBytesIn;
-    private String messageOutExpected;
-    private int expectedOrderItemCount = 0;
+    private CharArrayWriter resultsWriter;
 
     protected void setUp() throws Exception {
-        messageBytesIn = StreamUtils.readStream(getClass().getResourceAsStream("order-message.xml"));
-        messageOutExpected = new String(StreamUtils.readStream(getClass().getResourceAsStream("order-expected.xml")));
-
-        Document message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
-        NodeList orderItems = XmlUtil.getNodeList(message, "/Order/order-item");
-
-        expectedOrderItemCount = orderItems.getLength();
-        System.out.println("Num order-items in message: " + expectedOrderItemCount);
-
         // Initialise the transformers...
         initialiseXsltTransformer();
         initialiseSmooksTransformer();
+        resultsWriter = new CharArrayWriter();
+    }
 
+
+    protected void tearDown() throws Exception {
+        resultsWriter.close();
     }
 
     public void test_comparePerformance() throws TransformerException, IOException, InterruptedException, SAXException {
-        int numIterations = 10;
-        int numTransPerIterations = 10;
-        long totalXsltTime = 0;
-        long totalSmooksTime = 0;
-
-        System.out.println("A few warm up runs of each engine... ");
-        performXSLTTransforms(10);
-        Thread.sleep(300);
-        performSmooksTransforms(10);
-        Thread.sleep(300);
-
-        System.out.println();
-        System.out.println("Timed runs of each engine... ");
-        for(int i = 0; i < numIterations; i++) {
-            totalXsltTime += performXSLTTransforms(numTransPerIterations);
-            Thread.sleep(300);
-            totalSmooksTime += performSmooksTransforms(numTransPerIterations);
-            Thread.sleep(300);
-        }
+        PerformancePack.runComparisons("perf-inputs-01", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-02", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-03", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-04", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-05", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-06", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-07", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-08", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-09", xsltTransformer, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-10", xsltTransformer, smooksTransformer, resultsWriter);
 
         System.out.println();
-        System.out.println("Total XSLT: " + totalXsltTime);
-        System.out.println("Total Smooks: " + totalSmooksTime);
+        System.out.println("===========================================================");
+        System.out.println(new String(resultsWriter.toCharArray()));
+        System.out.println("===========================================================");
         System.out.println();
-
-        // So what's the Smooks overhead ??...
-        double smooksOverheadMillis = totalSmooksTime - totalXsltTime;
-        double smooksOverheadPercentage = ((smooksOverheadMillis/totalXsltTime) * 100.0);
-        if(smooksOverheadMillis > 0) {
-            System.out.println("Smooks Overhead: " + smooksOverheadMillis + " (" + smooksOverheadPercentage + "%)");
-        } else {
-            System.out.println("Smooks Overhead: none!");
-        }
-        
-        // Ring a bell if the overhead is greater than 10%
-        assertTrue(smooksOverheadPercentage < 10.0);
-    }
-
-    private long performXSLTTransforms(int numIterations) throws TransformerException, IOException, SAXException {
-        // Test that what's produces is ok...
-        Element result = applyXslt();
-        assertMessageOk(result, "Order/OrderLines/order-item");
-
-        // Now test how fast it is...
-        long start = System.currentTimeMillis();
-        for(int i = 0; i < numIterations; i++) {
-            applyXslt();
-        }
-
-        long time = (System.currentTimeMillis() - start);
-        System.out.println("XSLT: " + time);
-
-        return time;
-    }
-
-    private long performSmooksTransforms(int numIterations) throws IOException, SAXException {
-        // Test that what't produces is ok...
-        Document message = applySmooks();
-        assertMessageOk(message, "/Order/OrderLines/order-item");
-
-        // Now test how fast it is...
-        long start = System.currentTimeMillis();
-        for(int i = 0; i < numIterations; i++) {
-            applySmooks();
-        }
-
-        long time = (System.currentTimeMillis() - start);
-        System.out.println("Smooks: " + time);
-
-        return time;
-    }
-
-    private Element applyXslt() throws SAXException, IOException, TransformerException {
-        Document message;
-        Element result;
-
-        message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
-        result = message.createElement("result");
-        xsltTransformer.transform(new DOMSource(message.getDocumentElement()), new DOMResult(result));
-
-        return result;
-    }
-
-    private Document applySmooks() throws SAXException, IOException {
-        Document message;
-
-        message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
-        smooksTransformer.filter("devicename", message);
-
-        return message;
-    }
-
-    private void assertMessageOk(Node result, String orderItemsXPath) {
-        NodeList orderItems = XmlUtil.getNodeList(result, orderItemsXPath);
-        assertEquals(expectedOrderItemCount, orderItems.getLength());
-        assertEquals(messageOutExpected, XmlUtil.serialize(result.getChildNodes()));
     }
 
     private void initialiseXsltTransformer() throws IOException, TransformerConfigurationException {
@@ -181,5 +94,138 @@ public class PerformanceComparisonTest extends TestCase {
         res.setParameter("is-xslt-templatelet", "false");
         smooksTransformer.registerResource(res);
         TemplatingUtils.registerCDUCreators(smooksTransformer.getContext());
+    }
+
+    private static class PerformancePack {
+
+        private Transformer xsltTransformer;
+        private SmooksStandalone smooksTransformer;
+        
+        private byte[] messageBytesIn;
+        private String messageOutExpected;
+        private int expectedOrderItemCount = 0;
+        private Writer resultsWriter;
+
+        private static void runComparisons(String packageName, Transformer xsltTransformer, SmooksStandalone smooksTransformer, Writer resultsWriter) throws IOException, SAXException, TransformerException, InterruptedException {
+            PerformancePack pack = new PerformancePack(packageName, xsltTransformer, smooksTransformer, resultsWriter);
+
+            pack.runComparisons();
+        }
+
+        private PerformancePack(String packageName, Transformer xsltTransformer, SmooksStandalone smooksTransformer, Writer resultsWriter) throws IOException, SAXException {
+            messageBytesIn = StreamUtils.readStream(getClass().getResourceAsStream(packageName + "/order-message.xml"));
+            messageOutExpected = new String(StreamUtils.readStream(getClass().getResourceAsStream(packageName + "/order-expected.xml")));
+
+            Document message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
+            NodeList orderItems = XmlUtil.getNodeList(message, "/Order/order-item");
+
+            expectedOrderItemCount = orderItems.getLength();
+
+            this.xsltTransformer = xsltTransformer;
+            this.smooksTransformer = smooksTransformer;
+            this.resultsWriter = resultsWriter;
+        }
+
+        public void runComparisons() throws TransformerException, IOException, InterruptedException, SAXException {
+            int numIterations = 10;
+            int numTransPerIterations = 10;
+            long totalXsltTime = 0;
+            long totalSmooksTime = 0;
+
+            System.out.println("A few warm up runs of each engine... ");
+            performXSLTTransforms(10);
+            Thread.sleep(300);
+            performSmooksTransforms(10);
+            Thread.sleep(300);
+
+            System.out.println();
+            System.out.println("Timed runs of each engine... ");
+            for(int i = 0; i < numIterations; i++) {
+                totalXsltTime += performXSLTTransforms(numTransPerIterations);
+                Thread.sleep(300);
+                totalSmooksTime += performSmooksTransforms(numTransPerIterations);
+                Thread.sleep(300);
+            }
+
+            System.out.println();
+            System.out.println("Total XSLT: " + totalXsltTime);
+            System.out.println("Total Smooks: " + totalSmooksTime);
+            System.out.println();
+
+            // So what's the Smooks overhead ??...
+            double smooksOverheadMillis = totalSmooksTime - totalXsltTime;
+            double smooksOverheadPercentage = ((smooksOverheadMillis/totalXsltTime) * 100.0);
+            if(smooksOverheadMillis > 0) {
+                System.out.println("Smooks Overhead: " + smooksOverheadMillis + " (" + smooksOverheadPercentage + "%)");
+            } else {
+                System.out.println("Smooks Overhead: none!");
+            }
+
+            // Ring a bell if the overhead is greater than 10%
+            //assertTrue(smooksOverheadPercentage < 10.0);
+
+            resultsWriter.write("" + messageBytesIn.length + "," + smooksOverheadMillis + "," + smooksOverheadPercentage);
+            resultsWriter.write("\n");
+        }
+
+        private long performXSLTTransforms(int numIterations) throws TransformerException, IOException, SAXException {
+            // Test that what's produces is ok...
+            Element result = applyXslt();
+            assertMessageOk(result, "Order/OrderLines/order-item");
+
+            // Now test how fast it is...
+            long start = System.currentTimeMillis();
+            for(int i = 0; i < numIterations; i++) {
+                applyXslt();
+            }
+
+            long time = (System.currentTimeMillis() - start);
+            System.out.println("XSLT: " + time);
+
+            return time;
+        }
+
+        private long performSmooksTransforms(int numIterations) throws IOException, SAXException {
+            // Test that what't produces is ok...
+            Document message = applySmooks();
+            assertMessageOk(message, "/Order/OrderLines/order-item");
+
+            // Now test how fast it is...
+            long start = System.currentTimeMillis();
+            for(int i = 0; i < numIterations; i++) {
+                applySmooks();
+            }
+
+            long time = (System.currentTimeMillis() - start);
+            System.out.println("Smooks: " + time);
+
+            return time;
+        }
+
+        private Element applyXslt() throws SAXException, IOException, TransformerException {
+            Document message;
+            Element result;
+
+            message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
+            result = message.createElement("result");
+            xsltTransformer.transform(new DOMSource(message.getDocumentElement()), new DOMResult(result));
+
+            return result;
+        }
+
+        private Document applySmooks() throws SAXException, IOException {
+            Document message;
+
+            message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
+            smooksTransformer.filter("devicename", message);
+
+            return message;
+        }
+
+        private void assertMessageOk(Node result, String orderItemsXPath) {
+            NodeList orderItems = XmlUtil.getNodeList(result, orderItemsXPath);
+            assertEquals(expectedOrderItemCount, orderItems.getLength());
+            assertEquals(messageOutExpected, XmlUtil.serialize(result.getChildNodes()));
+        }
     }
 }
