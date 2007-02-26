@@ -32,7 +32,10 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Compare performance of raw XSLT Vs XSLT via Smooks. 
@@ -40,38 +43,81 @@ import java.io.*;
  */
 public class PerformanceComparisonTest extends TestCase {
 
-    private Transformer xsltTransformer;
+    private Templates xslTemplate;
     private SmooksStandalone smooksTransformer;
-    private CharArrayWriter resultsWriter;
 
     protected void setUp() throws Exception {
         // Initialise the transformers...
         initialiseXsltTransformer();
         initialiseSmooksTransformer();
-        resultsWriter = new CharArrayWriter();
-    }
-
-
-    protected void tearDown() throws Exception {
-        resultsWriter.close();
     }
 
     public void test_comparePerformance() throws TransformerException, IOException, InterruptedException, SAXException {
-        PerformancePack.runComparisons("perf-inputs-01", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-02", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-03", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-04", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-05", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-06", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-07", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-08", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-09", xsltTransformer, smooksTransformer, resultsWriter);
-        PerformancePack.runComparisons("perf-inputs-10", xsltTransformer, smooksTransformer, resultsWriter);
+        /*
+        PerformancePack.runComparisons("perf-inputs-01", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-02", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-03", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-04", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-05", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-06", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-07", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-08", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-09", xslTemplate, smooksTransformer, resultsWriter);
+        PerformancePack.runComparisons("perf-inputs-10", xslTemplate, smooksTransformer, resultsWriter);
 
         System.out.println();
         System.out.println("===========================================================");
         System.out.println(new String(resultsWriter.toCharArray()));
         System.out.println("===========================================================");
+        System.out.println();
+        */
+    }
+
+    public void test_comparePerformance_multithreaded() throws TransformerException, IOException, InterruptedException, SAXException {
+        List<PerformanceThread> threadList = new ArrayList<PerformanceThread>();
+
+        threadList.add(new PerformanceThread("perf-inputs-01", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-02", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-03", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-04", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-05", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-06", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-07", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-08", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-09", xslTemplate, smooksTransformer));
+        threadList.add(new PerformanceThread("perf-inputs-10", xslTemplate, smooksTransformer));
+        /*
+        */
+
+        System.out.println();
+        System.out.println("Starting Threads...");
+        System.out.println();
+        for(PerformanceThread thread : threadList) {
+            thread.start();
+            Thread.sleep(100);
+        }
+
+        boolean finished = false;
+        while(!finished) {
+            Thread.sleep(1000);
+            finished = true;
+            for(PerformanceThread thread : threadList) {
+                if(!thread.isFinished()) {
+                    finished = false;
+                    break;
+                }
+            }
+        }
+
+        System.out.println();
+        System.out.println("All Threads complete");
+
+        System.out.println();
+        System.out.println("=====================================RESULTS===========================================");
+        for(PerformanceThread thread : threadList) {
+            System.out.println("" + thread.performancePack.processCount + "," + thread.performancePack.messageBytesIn.length + "," + thread.performancePack.totalXsltTime + "," + thread.performancePack.totalSmooksTime + "," + thread.performancePack.smooksOverheadMillis + "," + thread.performancePack.smooksOverheadPercentage);
+        }
+        System.out.println("=======================================================================================");
         System.out.println();
     }
 
@@ -81,38 +127,73 @@ public class PerformanceComparisonTest extends TestCase {
         byte[] xslt = StreamUtils.readStream(getClass().getResourceAsStream("transform-order.xsl"));
 
         xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslt), "UTF-8"));
-        Templates xslTemplate = transformerFactory.newTemplates(xslStreamSource);
-        xsltTransformer = xslTemplate.newTransformer();
+        xslTemplate = transformerFactory.newTemplates(xslStreamSource);
     }
 
     private void initialiseSmooksTransformer() {
         SmooksResourceConfiguration res = new SmooksResourceConfiguration("Order", "devicename", "org/milyn/templating/xslt/transform-order.xsl");
-        String transResult = null;
 
         smooksTransformer = new SmooksStandalone();
         smooksTransformer.registerUseragent("devicename");
         res.setParameter("is-xslt-templatelet", "false");
+        //res.setParameter("streamResult", "false");
         smooksTransformer.registerResource(res);
         TemplatingUtils.registerCDUCreators(smooksTransformer.getContext());
     }
 
+    private static class PerformanceThread extends Thread {
+
+        private boolean finished = false;
+        private String packageName;
+        private Templates xslTemplate;
+        private SmooksStandalone smooksTransformer;
+        private PerformancePack performancePack;
+
+        public PerformanceThread(String packageName, Templates xslTemplate, SmooksStandalone smooksTransformer) {
+            this.packageName = packageName;
+            this.xslTemplate = xslTemplate;
+            this.smooksTransformer = smooksTransformer;
+        }
+
+        public void run() {
+            try {
+                performancePack = PerformancePack.runComparisons(packageName, xslTemplate, smooksTransformer);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                TestCase.fail(t.getMessage());
+            } finally {
+                finished = true;
+            }
+        }
+
+        public boolean isFinished() {
+            return finished;
+        }
+    }
+
     private static class PerformancePack {
 
-        private Transformer xsltTransformer;
+        private Templates xslTemplate;
         private SmooksStandalone smooksTransformer;
         
         private byte[] messageBytesIn;
         private String messageOutExpected;
         private int expectedOrderItemCount = 0;
-        private Writer resultsWriter;
+        private long totalXsltTime;
+        private long totalSmooksTime;
+        private long smooksOverheadMillis;
+        private double smooksOverheadPercentage;
+        private int processCount;
 
-        private static void runComparisons(String packageName, Transformer xsltTransformer, SmooksStandalone smooksTransformer, Writer resultsWriter) throws IOException, SAXException, TransformerException, InterruptedException {
-            PerformancePack pack = new PerformancePack(packageName, xsltTransformer, smooksTransformer, resultsWriter);
+        private static PerformancePack runComparisons(String packageName, Templates xslTemplate, SmooksStandalone smooksTransformer) throws IOException, SAXException, TransformerException, InterruptedException {
+            PerformancePack pack = new PerformancePack(packageName, xslTemplate, smooksTransformer);
 
             pack.runComparisons();
+
+            return pack;
         }
 
-        private PerformancePack(String packageName, Transformer xsltTransformer, SmooksStandalone smooksTransformer, Writer resultsWriter) throws IOException, SAXException {
+        private PerformancePack(String packageName, Templates xslTemplate, SmooksStandalone smooksTransformer) throws IOException, SAXException, TransformerConfigurationException {
             messageBytesIn = StreamUtils.readStream(getClass().getResourceAsStream(packageName + "/order-message.xml"));
             messageOutExpected = new String(StreamUtils.readStream(getClass().getResourceAsStream(packageName + "/order-expected.xml")));
 
@@ -121,62 +202,38 @@ public class PerformanceComparisonTest extends TestCase {
 
             expectedOrderItemCount = orderItems.getLength();
 
-            this.xsltTransformer = xsltTransformer;
+            this.xslTemplate = xslTemplate;
             this.smooksTransformer = smooksTransformer;
-            this.resultsWriter = resultsWriter;
         }
 
         public void runComparisons() throws TransformerException, IOException, InterruptedException, SAXException {
-            int numIterations = 10;
+            int numIterations = 2000;
             int numTransPerIterations = 10;
-            long totalXsltTime = 0;
-            long totalSmooksTime = 0;
 
-            System.out.println("A few warm up runs of each engine... ");
-            performXSLTTransforms(10);
-            Thread.sleep(300);
-            performSmooksTransforms(10);
-            Thread.sleep(300);
-
-            System.out.println();
-            System.out.println("Timed runs of each engine... ");
             for(int i = 0; i < numIterations; i++) {
                 totalXsltTime += performXSLTTransforms(numTransPerIterations);
-                Thread.sleep(300);
+                Thread.sleep(200);
                 totalSmooksTime += performSmooksTransforms(numTransPerIterations);
-                Thread.sleep(300);
+                Thread.sleep(200);
             }
-
-            System.out.println();
-            System.out.println("Total XSLT: " + totalXsltTime);
-            System.out.println("Total Smooks: " + totalSmooksTime);
-            System.out.println();
 
             // So what's the Smooks overhead ??...
-            double smooksOverheadMillis = totalSmooksTime - totalXsltTime;
-            double smooksOverheadPercentage = ((smooksOverheadMillis/totalXsltTime) * 100.0);
-            if(smooksOverheadMillis > 0) {
-                System.out.println("Smooks Overhead: " + smooksOverheadMillis + " (" + smooksOverheadPercentage + "%)");
-            } else {
-                System.out.println("Smooks Overhead: none!");
-            }
+            smooksOverheadMillis = totalSmooksTime - totalXsltTime;
+            smooksOverheadPercentage = (((double)smooksOverheadMillis/(double)totalXsltTime) * 100.0);
 
             // Ring a bell if the overhead is greater than 10%
             //assertTrue(smooksOverheadPercentage < 10.0);
-
-            resultsWriter.write("" + messageBytesIn.length + "," + smooksOverheadMillis + "," + smooksOverheadPercentage);
-            resultsWriter.write("\n");
         }
 
         private long performXSLTTransforms(int numIterations) throws TransformerException, IOException, SAXException {
             // Test that what's produces is ok...
-            Element result = applyXslt();
+            Element result = (Element) applyXslt(false);
             assertMessageOk(result, "Order/OrderLines/order-item");
 
             // Now test how fast it is...
             long start = System.currentTimeMillis();
             for(int i = 0; i < numIterations; i++) {
-                applyXslt();
+                applyXslt(false);
             }
 
             long time = (System.currentTimeMillis() - start);
@@ -202,13 +259,26 @@ public class PerformanceComparisonTest extends TestCase {
             return time;
         }
 
-        private Element applyXslt() throws SAXException, IOException, TransformerException {
+        private Object applyXslt(boolean stream) throws SAXException, IOException, TransformerException {
             Document message;
-            Element result;
+            Object result = null;
 
             message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
-            result = message.createElement("result");
-            xsltTransformer.transform(new DOMSource(message.getDocumentElement()), new DOMResult(result));
+
+            if(stream) {
+                CharArrayWriter writer = new CharArrayWriter();
+                synchronized(xslTemplate) {
+                    xslTemplate.newTransformer().transform(new DOMSource(message.getDocumentElement()), new StreamResult(writer));
+                    writer.toString();
+                }
+            } else {
+                result = message.createElement("result");
+                synchronized(xslTemplate) {
+                    xslTemplate.newTransformer().transform(new DOMSource(message.getDocumentElement()), new DOMResult((Element)result));
+                }
+            }
+
+            processCount++;
 
             return result;
         }
@@ -219,13 +289,15 @@ public class PerformanceComparisonTest extends TestCase {
             message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
             smooksTransformer.filter("devicename", message);
 
+            processCount++;
+            
             return message;
         }
 
         private void assertMessageOk(Node result, String orderItemsXPath) {
-            NodeList orderItems = XmlUtil.getNodeList(result, orderItemsXPath);
-            assertEquals(expectedOrderItemCount, orderItems.getLength());
-            assertEquals(messageOutExpected, XmlUtil.serialize(result.getChildNodes()));
+            //NodeList orderItems = XmlUtil.getNodeList(result, orderItemsXPath);
+            //assertEquals("Invalid Message count.", expectedOrderItemCount, orderItems.getLength());
+            assertEquals("Message not as expected.", messageOutExpected, XmlUtil.serialize(result.getChildNodes()));
         }
     }
 }

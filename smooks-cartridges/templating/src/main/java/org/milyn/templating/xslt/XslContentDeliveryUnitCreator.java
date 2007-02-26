@@ -16,18 +16,18 @@
 
 package org.milyn.templating.xslt;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Templates;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -77,7 +77,7 @@ import org.w3c.dom.NodeList;
  * </pre>
  * <p/>
  * Registration of the {@link XslContentDeliveryUnitCreator} to handle "xsl" resources can also be done by calling 
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(ContainerContext)}.
+ * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.container.ContainerContext)}.
  * 
  * <h4>2. Targeting "xsl" Templates</h4>
  * XSLTs can be specified in a file or as a "resdata" parameter (i.e. inline in the resource configuration).
@@ -108,7 +108,16 @@ import org.w3c.dom.NodeList;
  *  &lt;!-- (Optional) Template encoding. 
  *          Default "UTF-8".--&gt;
  *  &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
- * 
+ *
+ *  &lt;!-- (Optional) Streamed the result back into the
+ *          DOM, or readed to the DOM as Elements.  Streaming the result
+ *          is more performant - but you can't perform further manipulations on the DOM.
+ *          Default "true".
+ *
+ *          NOTE: If "is-xslt-templatelet=true", this parameter is ignored and the
+ *          result is readded as DOM Elements. --&gt;
+ *  &lt;param name="<b>streamResult</b>"&gt;<i>true/false</i>&lt;/param&gt;
+ *
  * &lt;/smooks-resource&gt;
  * </pre>
  * <p/>
@@ -151,6 +160,15 @@ import org.w3c.dom.NodeList;
  *  &lt;!-- (Optional) Template encoding. 
  *          Default "UTF-8".--&gt;
  *  &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
+ *
+ *  &lt;!-- (Optional) Streamed the result back into the
+ *          DOM, or readed to the DOM as Elements.  Streaming the result
+ *          is more performant - but you can't perform further manipulations on the DOM.
+ *          Default "true".
+ *
+ *          NOTE: If "is-xslt-templatelet=true", this parameter is ignored and the
+ *          result is readded as DOM Elements. --&gt;
+ *  &lt;param name="<b>streamResult</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * 
  * &lt;/smooks-resource&gt;
  * </pre>
@@ -185,12 +203,12 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
     }
     
 	/**
-	 * Create an XSL based ContentDeliveryUnit instance ie from an XSL byte stream.
+	 * Create an XSL based ContentDeliveryUnit instance ie from an XSL byte streamResult.
      * @param resourceConfig The SmooksResourceConfiguration for the XSL {@link ContentDeliveryUnit}
      * to be created.
      * @return XSL {@link ContentDeliveryUnit} instance.
-	 * @see JavaContentDeliveryUnitCreator 
-	 */
+	 * @see org.milyn.delivery.JavaContentDeliveryUnitCreator
+     */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
 		try {
 			return new XslProcessingUnit(resourceConfig);
@@ -205,7 +223,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 	 * XSLT template application ProcessingUnit.
 	 * @author tfennelly
 	 */
-	private static class XslProcessingUnit extends AbstractTemplateProcessingUnit {
+	private class XslProcessingUnit extends AbstractTemplateProcessingUnit {
 
 		/**
 		 * XSL template to be applied to the visited element.
@@ -214,10 +232,18 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 		/**
 		 * Is this processor processing an XSLT <a href="#templatelets">Templatelet</a>.
 		 */
-		private boolean isTemplatelet = true;
-		
-		
-		/**
+		private boolean isTemplatelet;
+        /**
+         * Configuration flag indicating whether the result is to be streamed back into the
+         * output tree, or readed to the DOM as Elements.  Streaming the result
+         * is more performant - but you can't perform further manipulations on the DOM.
+         * <p/>
+         * Default is "true".
+         */
+        private boolean streamResult;
+
+
+        /**
 		 * Constructor.
 		 * <p/>
 		 * Create the XSL Template from the Content Delivery Resource bytes.
@@ -233,7 +259,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 
 		protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
 			byte[] xslBytes = resourceConfig.getBytes();
-			TransformerFactory transformer = TransformerFactory.newInstance();
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			StreamSource xslStreamSource;
             String encoding = resourceConfig.getStringParameter("encoding", "UTF-8");
 
@@ -247,38 +273,51 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 				xslBytes = templateletWrapper.getBytes();
 			}
 
-			xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), encoding));
-			xslTemplate = transformer.newTemplates(xslStreamSource);
-		}
+            xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), encoding));
+            xslTemplate = transformerFactory.newTemplates(xslStreamSource);
+            streamResult = resourceConfig.getBoolParameter("streamResult", true);
+        }
 
 		public void visit(Element element, ContainerRequest containerRequest) {
-			Document ownerDoc = element.getOwnerDocument();
-			Element transRes = ownerDoc.createElement("xsltrans");
-			NodeList children = null;
-			
-			try {
-				xslTemplate.newTransformer().transform(new DOMSource(element), new DOMResult(transRes));
-			} catch (Exception e) {
-				logger.error("Error applying XSLT to node [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "]", e);
-				return;
-			}
-			
-			if(isTemplatelet) {
-				// If the template in use on this resource is a templatelet, check for and remove the
-				// enclosing "root-do-not-remove" element i.e. the templatelet content is inside
-				// the "root-do-not-remove" element.
-				Element dontRemoveEl = DomUtils.getElement(transRes, "root-do-not-remove", 1, Namespace.SMOOKS_URI);
-				if(dontRemoveEl != null) {
-					children = dontRemoveEl.getChildNodes();
-				} else {
-					children = transRes.getChildNodes();
-				}
-			} else {
-				children = transRes.getChildNodes();
-			}
-            
-            // Process the templating action, supplying the templating result...
-            processTemplateAction(element, children);
-		}
+                Document ownerDoc = element.getOwnerDocument();
+                Element transRes = ownerDoc.createElement("xsltrans");
+                NodeList children = null;
+
+                try {
+                    Transformer transformer;
+
+                    synchronized(xslTemplate) {
+                        transformer = xslTemplate.newTransformer();
+
+                        if(false && !isTemplatelet && streamResult) {
+                            CharArrayWriter writer = new CharArrayWriter();
+                            transformer.transform(new DOMSource(element), new StreamResult(writer));
+                            transRes.appendChild(ownerDoc.createTextNode(writer.toString()));
+                        } else {
+                            transformer.transform(new DOMSource(element), new DOMResult(transRes));
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error("Error applying XSLT to node [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "]", e);
+                    return;
+                }
+
+                if(isTemplatelet) {
+                    // If the template in use on this resource is a templatelet, check for and remove the
+                    // enclosing "root-do-not-remove" element i.e. the templatelet content is inside
+                    // the "root-do-not-remove" element.
+                    Element dontRemoveEl = DomUtils.getElement(transRes, "root-do-not-remove", 1, Namespace.SMOOKS_URI);
+                    if(dontRemoveEl != null) {
+                        children = dontRemoveEl.getChildNodes();
+                    } else {
+                        children = transRes.getChildNodes();
+                    }
+                } else {
+                    children = transRes.getChildNodes();
+                }
+
+                // Process the templating action, supplying the templating result...
+                processTemplateAction(element, children);
+        }
 	}
 }
