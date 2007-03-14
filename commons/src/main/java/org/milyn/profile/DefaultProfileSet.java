@@ -27,8 +27,25 @@ import java.util.LinkedHashMap;
 public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 
 	private static final long serialVersionUID = 1L;
+    private String baseProfile;
 
-	/*
+    /**
+     * Public constructor.
+     * @param baseProfile The base profile for the profile set.
+     */
+    public DefaultProfileSet(String baseProfile) {
+        this.baseProfile = baseProfile;
+    }
+
+    /**
+     * Get the base profile for this profile set.
+     * @return Base profile name.
+     */
+    public String getBaseProfile() {
+        return baseProfile;
+    }
+
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.milyn.useragent.profile.ProfileSet#isMember(java.lang.String)
@@ -39,8 +56,12 @@ public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 					"null 'profile' arg in method call.");
 		}
 
-		return containsKey(profile.trim().toLowerCase());
-	}
+        if(profile.equalsIgnoreCase(baseProfile)) {
+            return true;
+        } else {
+            return containsKey(profile.trim().toLowerCase());
+        }
+    }
 
 	/**
 	 * Add profile to the ProfileSet.
@@ -106,6 +127,18 @@ public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 
 		putAll(profileSet);
 	}
+
+    /**
+     * Add a list of profiles to the ProfileSet.
+     *
+     * @param profiles
+     *            The array of profiles to add.
+     */
+    public void addProfiles(String[] profiles) {
+        for (int i = 0; i < profiles.length; i++) {
+            addProfile(new BasicProfile(profiles[i]));
+        }
+    }
 
 	/*
 	 * (non-Javadoc)

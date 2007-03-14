@@ -195,7 +195,7 @@ public class SmooksStandalone {
 	 * Filter the content at the specified {@link InputStream} for the useragent associated with the 
 	 * supplied request object.
 	 * <p/>
-	 * The difference between this method and {@link #process(URI)} is simply that this implementation
+	 * The difference between this method and {@link #filter(String, java.net.URI)} is simply that this implementation
 	 * uses the supplied stream rather than attempting to open another stream from the requestURI
 	 * parameter.
 	 * <p/>
@@ -293,7 +293,7 @@ public class SmooksStandalone {
 	
 	/**
 	 * Filter the content at the specified {@link InputStream} for the specified useragent
-	 * and serialise into a String buffer.  See {@link #process(URI, InputStream)}.
+	 * and serialise into a String buffer.  See {@link #filter(String, java.net.URI)}.
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
 	 * {@link org.milyn.delivery.process.ProcessingUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
@@ -311,7 +311,7 @@ public class SmooksStandalone {
 
 	/**
 	 * Filter the content at the specified {@link InputStream} for the specified useragent
-	 * and serialise into a String buffer.  See {@link #process(URI, InputStream)}.
+	 * and serialise into a String buffer.  See {@link #filter(String, java.net.URI)}.
 	 * <p/>
 	 * The content of the buffer returned is totally dependent on the configured
 	 * {@link org.milyn.delivery.process.ProcessingUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
@@ -408,7 +408,7 @@ public class SmooksStandalone {
 		try {
 			profileStore.getProfileSet(useragent);
 		} catch(UnknownProfileMemberException e) {
-			profileStore.addProfileSet(useragent, new DefaultProfileSet());
+			profileStore.addProfileSet(useragent, new DefaultProfileSet(useragent));
 		}
 		
 		// now register the profiles...

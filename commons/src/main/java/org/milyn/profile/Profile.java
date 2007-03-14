@@ -19,7 +19,7 @@ package org.milyn.profile;
 import java.io.Serializable;
 
 /**
- * Device profile.
+ * Profile.
  * 
  * @author tfennelly
  */

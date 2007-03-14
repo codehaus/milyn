@@ -93,11 +93,11 @@ import java.util.Vector;
  * It's done using this class as follows:
  * <pre>
  * try {
- *     {@link org.milyn.device.profile.UAContext} uaContext = ServletUAContext.{@link ServletUAContext#getInstance(HttpServletRequest, ServletConfig)};
+ *     {@link UAContext} uaContext = ServletUAContext.{@link ServletUAContext#getInstance(HttpServletRequest, ServletConfig)};
  * } catch({@link org.milyn.device.ident.UnknownDeviceException} unknownDevice) {
  *     // Handle Exception...
  * }</pre>
- * The {@link org.milyn.device.profile.UAContext} instance can then be used to:
+ * The {@link UAContext} instance can then be used to:
  * <ul>
  * 	<li>get the browser (device) common name, and</li>
  * 	<li>check the browser for membership of a given profile.</li>
@@ -155,7 +155,7 @@ public final class ServletUAContext implements UAContext {
      */
     public static UAContext getInstance(HttpServletRequest request, ServletConfig config) throws UnknownUseragentException {
         ServletUAContext context;
-        String deviceMatchCName;
+        final String deviceMatchCName;
         HttpSession session;
 		
         if(request == null) {
@@ -187,7 +187,10 @@ public final class ServletUAContext implements UAContext {
             context.profileSet = DeviceProfiler.getDeviceProfile(deviceMatchCName, request, config);
             if(context.profileSet == null) {
             	context.profileSet = new ProfileSet() {
-					public boolean isMember(String profile) {
+                    public String getBaseProfile() {
+                        return deviceMatchCName;
+                    }
+                    public boolean isMember(String profile) {
 						return false;
 					}
 					public void addProfile(Profile profile) {

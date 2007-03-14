@@ -19,6 +19,7 @@ package org.milyn.cdr;
 import java.util.Comparator;
 
 import org.milyn.useragent.UAContext;
+import org.milyn.profile.ProfileSet;
 
 
 /**
@@ -40,7 +41,7 @@ import org.milyn.useragent.UAContext;
 	// of all its useragent expressions.
 	{@link org.milyn.cdr.UseragentExpression}[] useragents = resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getUseragentExpressions() getUseragentExpressions()};
 	for(int i = 0; i < useragents.length; i++) {
-		specificity += useragents[i].{@link org.milyn.cdr.UseragentExpression#getSpecificity(UAContext) getSpecificity(useragentContext)};
+		specificity += useragents[i].{@link org.milyn.cdr.UseragentExpression#getSpecificity(org.milyn.profile.ProfileSet)} getSpecificity(profileSet)};
 	}
 	
 	// Check the 'selector' attribute value.
@@ -73,16 +74,16 @@ import org.milyn.useragent.UAContext;
 public class SmooksResourceConfigurationSortComparator implements Comparator {
 
 	/**
-	 * Useragent context.
+	 * Profile set.
 	 */
-	private UAContext useragentContext;
+	private ProfileSet profileSet;
 
 	/**
 	 * Private constructor.
-	 * @param useragentContext Device context.
+	 * @param profileSet Profile set used to evaluate specificity.
 	 */
-	public SmooksResourceConfigurationSortComparator(UAContext useragentContext) {
-		this.useragentContext = useragentContext;
+	public SmooksResourceConfigurationSortComparator(ProfileSet profileSet) {
+		this.profileSet = profileSet;
 	}
 	
 	/* (non-Javadoc)
@@ -114,8 +115,8 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 	 * <p/>
 	 * The "specificity" is evaluated based on the selector and useragent values.
 	 * Equal precedence is given to both attribute values.  
-	 * @param resourceConfig
-	 * @return
+	 * @param resourceConfig Resource configuration.
+	 * @return Configuration specificity.
 	 */
 	protected double getSpecificity(SmooksResourceConfiguration resourceConfig) {
 		double specificity = 0;
@@ -126,7 +127,7 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 		// of all its useragent expressions.
 		UseragentExpression[] useragents = resourceConfig.getUseragentExpressions();
 		for(int i = 0; i < useragents.length; i++) {
-			specificity += useragents[i].getSpecificity(useragentContext);
+			specificity += useragents[i].getSpecificity(profileSet);
 		}
 		
 		// Check the 'selector' attribute value.

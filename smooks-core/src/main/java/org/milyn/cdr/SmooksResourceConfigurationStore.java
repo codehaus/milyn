@@ -30,9 +30,9 @@ import org.milyn.container.ContainerContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
-import org.milyn.useragent.UAContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
+import org.milyn.profile.ProfileSet;
 import org.xml.sax.SAXException;
 
 
@@ -54,7 +54,7 @@ public class SmooksResourceConfigurationStore {
 	/**
 	 * Table of loaded SmooksResourceConfigurationList objects.
 	 */
-	private List configLists = new Vector();
+	private List<SmooksResourceConfigurationList> configLists = new Vector<SmooksResourceConfigurationList>();
     /**
      * Default configuration list.
      */
@@ -83,6 +83,7 @@ public class SmooksResourceConfigurationStore {
 
     /**
      * Register the pre-installed CDU Creator classes.
+     * @param resourceFile Installed (internal) resource config file.
      */
     private void registerInstalledResources(String resourceFile) {
         try {
@@ -102,6 +103,7 @@ public class SmooksResourceConfigurationStore {
 	 * ServletResourceLocator the lines in the BufferedReader param can contain
 	 * external URLs.
 	 * @param cdrlLoadList BufferedReader cdrl list - one cdrl def per line.
+     * @throws java.io.IOException Error reading list buffer.
 	 */
 	public void load(BufferedReader cdrlLoadList) throws IOException {
 		String cdrl;
@@ -168,17 +170,17 @@ public class SmooksResourceConfigurationStore {
 	/**
 	 * Get all the SmooksResourceConfiguration entries registered on this context store 
      * for the specified useragent. 
-	 * @param useragentContext The useragent.
+	 * @param profileSet Useragent profile set.
 	 * @return All SmooksResourceConfiguration entries for the specified useragent.
 	 */
-	public SmooksResourceConfiguration[] getSmooksResourceConfigurations(UAContext useragentContext) {
+	public SmooksResourceConfiguration[] getSmooksResourceConfigurations(ProfileSet profileSet) {
 		Vector allSmooksResourceConfigurationsColl = new Vector();
-		SmooksResourceConfiguration[] allSmooksResourceConfigurations = null;
+		SmooksResourceConfiguration[] allSmooksResourceConfigurations;
 		
-		// Iterate through each of the loaded CDRArchive files.
+		// Iterate through each of the loaded SmooksResourceConfigurationLists.
 		for(int i = 0; i < configLists.size(); i++) {
-            SmooksResourceConfigurationList list = (SmooksResourceConfigurationList) configLists.get(i);
-			SmooksResourceConfiguration[] resourceConfigs = list.getUseragentConfigurations(useragentContext);
+            SmooksResourceConfigurationList list = configLists.get(i);
+			SmooksResourceConfiguration[] resourceConfigs = list.getUseragentConfigurations(profileSet);
             
 			allSmooksResourceConfigurationsColl.addAll(Arrays.asList(resourceConfigs));
 		}
@@ -209,7 +211,7 @@ public class SmooksResourceConfigurationStore {
 		}
 		
 		// Try constructing via a SmooksResourceConfiguration constructor...
-		Constructor constructor = null;
+		Constructor constructor;
 		try {
 			constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});
 			object = constructor.newInstance(new Object[] {resourceConfig});
@@ -255,7 +257,7 @@ public class SmooksResourceConfigurationStore {
         }
         
         for(int i = 0; i < configLists.size(); i++) {
-            SmooksResourceConfigurationList list = (SmooksResourceConfigurationList) configLists.get(i);
+            SmooksResourceConfigurationList list = configLists.get(i);
             
             for(int ii = 0; ii < list.size(); ii++) {
                 SmooksResourceConfiguration config = list.get(ii);

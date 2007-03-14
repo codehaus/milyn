@@ -45,6 +45,7 @@ public class PerformanceComparisonTest extends TestCase {
 
     private Templates xslTemplate;
     private SmooksStandalone smooksTransformer;
+    private static final int NUM_ITERATIONS = 1;
 
     protected void setUp() throws Exception {
         // Initialise the transformers...
@@ -207,7 +208,7 @@ public class PerformanceComparisonTest extends TestCase {
         }
 
         public void runComparisons() throws TransformerException, IOException, InterruptedException, SAXException {
-            int numIterations = 2000;
+            int numIterations = NUM_ITERATIONS;
             int numTransPerIterations = 10;
 
             for(int i = 0; i < numIterations; i++) {

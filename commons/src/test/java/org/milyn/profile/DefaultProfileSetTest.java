@@ -32,7 +32,7 @@ public class DefaultProfileSetTest extends TestCase {
 	}
 
 	public void testAddProfile_exceptions() {
-		DefaultProfileSet set = new DefaultProfileSet();
+		DefaultProfileSet set = new DefaultProfileSet("baseProfile");
 
 		try {
 			set.addProfile((Profile) null);
@@ -52,7 +52,7 @@ public class DefaultProfileSetTest extends TestCase {
 	}
 
 	public void testIsMember_exceptions() {
-		DefaultProfileSet set = new DefaultProfileSet();
+		DefaultProfileSet set = new DefaultProfileSet("baseProfile");
 
 		try {
 			set.isMember(null);
@@ -62,7 +62,7 @@ public class DefaultProfileSetTest extends TestCase {
 	}
 
 	public void testIsMember() {
-		DefaultProfileSet set = new DefaultProfileSet();
+		DefaultProfileSet set = new DefaultProfileSet("baseProfile");
 
 		assertTrue(!set.isMember("xxx"));
 		set.addProfile("xxx");

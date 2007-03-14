@@ -55,7 +55,7 @@ public class StandaloneContainerSession implements ContainerSession {
 		this.useragent = useragent;
 		this.context = context;
 		uaContext = new StandaloneUAContext(useragent);
-		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext, context);
+		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext.getProfileSet(), context);
 	}
 
 	/* (non-Javadoc)

@@ -85,7 +85,7 @@ public class HttpServletContainerRequest implements ContainerRequest {
 		this.containerContext = containerContext;
 		uaContext = ServletUAContext.getInstance(servletRequest, servletConfig);
 		session = new HttpServletContainerSession(servletRequest.getSession());
-		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext, containerContext);
+		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext.getProfileSet(), containerContext);
 	}
 
 	/* (non-Javadoc)

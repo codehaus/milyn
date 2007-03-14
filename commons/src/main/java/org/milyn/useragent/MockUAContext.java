@@ -35,7 +35,7 @@ public class MockUAContext implements UAContext {
 
 	public MockUAContext(String commonName) {
 		this.commonName = commonName;
-		profileSet = new DefaultProfileSet();
+		profileSet = new DefaultProfileSet(commonName);
 	}
 
 	/**

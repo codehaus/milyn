@@ -34,8 +34,8 @@ public class DefaultProfileStoreTest extends TestCase {
 
 	public void testAddGetProfileSet() {
 		DefaultProfileStore store = new DefaultProfileStore();
-		DefaultProfileSet set1 = new DefaultProfileSet();
-		DefaultProfileSet set2 = new DefaultProfileSet();
+		DefaultProfileSet set1 = new DefaultProfileSet("baseProfile");
+		DefaultProfileSet set2 = new DefaultProfileSet("baseProfile");
 
 		try {
 			DefaultProfileStore.UnitTest.addProfileSet(store, null, null);
