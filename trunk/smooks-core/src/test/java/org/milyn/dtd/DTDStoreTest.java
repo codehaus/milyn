@@ -19,7 +19,7 @@ package org.milyn.dtd;
 import java.util.Arrays;
 import java.util.List;
 
-import org.milyn.useragent.MockUAContext;
+import org.milyn.profile.DefaultProfileSet;
 
 import junit.framework.TestCase;
 
@@ -43,11 +43,11 @@ public class DTDStoreTest extends TestCase {
 	}
 	
 	public void testGetEmptyAnyMixedEtcElements() {
-		MockUAContext uaContext = new MockUAContext("device3");
-		
-		uaContext.addProfiles(new String[] {"prof1", "prof2", "prof3"});
-		DTDStore.addDTD(uaContext, getClass().getResourceAsStream("xhtml1-transitional.dtd"));
-		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(uaContext);
+        DefaultProfileSet profileSet = new DefaultProfileSet("device3");
+
+        profileSet.addProfiles(new String[] {"prof1", "prof2", "prof3"});
+		DTDStore.addDTD(profileSet, getClass().getResourceAsStream("xhtml1-transitional.dtd"));
+		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(profileSet);
 		
 		String[] elements = dtdContainer.getEmptyElements();	
 		assertTrue(Arrays.equals(new String[] {"basefont", "area", "link", "isindex", "col", "base", "meta", "img", "br", "hr", "param", "input"}, elements));
@@ -60,11 +60,11 @@ public class DTDStoreTest extends TestCase {
 	}
 
 	public void testChildElements() {
-		MockUAContext uaContext = new MockUAContext("device3");
-		
-		uaContext.addProfiles(new String[] {"prof1", "prof2", "prof3"});
-		DTDStore.addDTD(uaContext, getClass().getResourceAsStream("xhtml1-transitional.dtd"));
-		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(uaContext);
+        DefaultProfileSet profileSet = new DefaultProfileSet("device3");
+
+        profileSet.addProfiles(new String[] {"prof1", "prof2", "prof3"});
+		DTDStore.addDTD(profileSet, getClass().getResourceAsStream("xhtml1-transitional.dtd"));
+		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(profileSet);
 		List l1 = dtdContainer.getChildElements("html");
 		List l2 = dtdContainer.getChildElements("html");
 		
@@ -77,11 +77,11 @@ public class DTDStoreTest extends TestCase {
 	}
 
 	public void testElementAttributes() {
-		MockUAContext uaContext = new MockUAContext("device3");
-		
-		uaContext.addProfiles(new String[] {"prof1", "prof2", "prof3"});
-		DTDStore.addDTD(uaContext, getClass().getResourceAsStream("xhtml1-transitional.dtd"));
-		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(uaContext);
+        DefaultProfileSet profileSet = new DefaultProfileSet("device3");
+
+        profileSet.addProfiles(new String[] {"prof1", "prof2", "prof3"});
+		DTDStore.addDTD(profileSet, getClass().getResourceAsStream("xhtml1-transitional.dtd"));
+		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(profileSet);
 		List l1 = null;
 		List l2 = null;
 		try {
@@ -109,11 +109,11 @@ public class DTDStoreTest extends TestCase {
 	}
 	
 	private void print(String name) {
-		MockUAContext uaContext = new MockUAContext("device3");
-		
-		uaContext.addProfiles(new String[] {"prof1", "prof2", "prof3"});
-		DTDStore.addDTD(uaContext, getClass().getResourceAsStream(name));
-		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(uaContext);
+        DefaultProfileSet profileSet = new DefaultProfileSet("device3");
+
+        profileSet.addProfiles(new String[] {"prof1", "prof2", "prof3"});
+		DTDStore.addDTD(profileSet, getClass().getResourceAsStream(name));
+		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(profileSet);
 		
 		System.out.println("-------- " + name + " ---------");
 		System.out.println(Arrays.asList(dtdContainer.getEmptyElements()));

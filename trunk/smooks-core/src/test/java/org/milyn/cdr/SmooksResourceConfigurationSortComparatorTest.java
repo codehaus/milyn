@@ -124,7 +124,7 @@ public class SmooksResourceConfigurationSortComparatorTest extends TestCase {
 	}
 	
 	public void test_compare() {
-		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(context);
+		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(context.getProfileSet());
 		SmooksResourceConfiguration config1;
 		SmooksResourceConfiguration config2;
 
@@ -149,7 +149,7 @@ public class SmooksResourceConfigurationSortComparatorTest extends TestCase {
 	}
 	
 	private void assertSpecificityOK(double expected, String selector, String namespaceURI, String useragents) {
-		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(context);
+		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(context.getProfileSet());
 		SmooksResourceConfiguration config;
 		double specificity;
 

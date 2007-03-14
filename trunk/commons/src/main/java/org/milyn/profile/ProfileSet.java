@@ -20,17 +20,26 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 /**
- * Device ProfileSet interface. <p/> The ProfileSet is associated with a
- * particular device. The implementation maintains a list of profiles for the
- * device.
+ * Profile Set.
+ * <p/>
+ * A profile set consists of a "base" profile and a set of sub-profiles.  The base
+ * profile fans out into a set of sub profiles.
  * 
  * @author tfennelly
  */
 public interface ProfileSet extends Serializable {
 
-	/**
-	 * Is the associated device a member of the specified profile. <p/>
-	 * Implementations must be case insensitive.
+    /**
+     * Get the name of the base profile for this profile set.
+     * @return The base profile name.
+     */
+    public String getBaseProfile();
+
+    /**
+	 * Is the specified profile a member of this profile set.
+     * <p/>
+     * A profile is said to be a member of a profile set if it is the base
+     * profile of the profile set, or one of its sub profiles.
 	 * 
 	 * @param profile
 	 *            The profile to check against.

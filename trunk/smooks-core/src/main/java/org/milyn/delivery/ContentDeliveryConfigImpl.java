@@ -36,9 +36,9 @@ import org.milyn.delivery.assemble.AssemblyUnit;
 import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
 import org.milyn.delivery.serialize.SerializationUnit;
-import org.milyn.useragent.UAContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
+import org.milyn.profile.ProfileSet;
 
 
 /**
@@ -56,9 +56,9 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 */
 	private static final String DELIVERY_CONFIG_TABLE_CTX_KEY = ContentDeliveryConfig.class.getName() + "#configTable";
 	/**
-	 * Associated device context.
+	 * Profile set.
 	 */
-	private UAContext deviceContext;
+	private ProfileSet profileSet;
 	/**
 	 * Container context.
 	 */
@@ -98,45 +98,46 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	private DTDObjectContainer dtd;
 	
 	/**
-	 * Private (hidden) constructor. 
-	 * @param containerContext
+	 * Private (hidden) constructor.
+     * @param profileSet Profile set.
+	 * @param containerContext Container context.
 	 */
-	private ContentDeliveryConfigImpl(UAContext deviceContext, ContainerContext containerContext) {
-		this.deviceContext = deviceContext;
+	private ContentDeliveryConfigImpl(ProfileSet profileSet, ContainerContext containerContext) {
+		this.profileSet = profileSet;
 		this.containerContext = containerContext;
 	}
 	
 	/**
 	 * Get the ContentDeliveryConfigImpl instance for the named table.
-	 * @param deviceContext The device context for the associated device.
+	 * @param profileSet The profile set for the associated useragent.
 	 * @param containerContext Container context.
 	 * @return The ContentDeliveryConfig instance for the named table.
 	 */
-	public static ContentDeliveryConfig getInstance(UAContext deviceContext, ContainerContext containerContext) {
-		ContentDeliveryConfigImpl table = null;
-		Hashtable configTable;
+	public static ContentDeliveryConfig getInstance(ProfileSet profileSet, ContainerContext containerContext) {
+		ContentDeliveryConfigImpl config;
+		Hashtable<ProfileSet, ContentDeliveryConfigImpl> configTable;
 		
-		if(deviceContext == null) {
-			throw new IllegalArgumentException("null 'deviceContext' arg passed in method call.");
+		if(profileSet == null) {
+			throw new IllegalArgumentException("null 'profileSet' arg passed in method call.");
 		} else if(containerContext == null) {
 			throw new IllegalArgumentException("null 'containerContext' arg passed in method call.");
 		}
 
-		// Get the delivery config table from container context.
+		// Get the delivery config config from container context.
 		configTable = (Hashtable)containerContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
 		if(configTable == null) {
-			configTable = new Hashtable();
+			configTable = new Hashtable<ProfileSet, ContentDeliveryConfigImpl>();
 			containerContext.setAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY, configTable);
 		}
 		// Get the delivery config instance for this UAContext
-		table = (ContentDeliveryConfigImpl)configTable.get(deviceContext);
-		if(table == null) {
-			table = new ContentDeliveryConfigImpl(deviceContext, containerContext);
-			table.load();
-			configTable.put(deviceContext, table);
+		config = configTable.get(profileSet);
+		if(config == null) {
+			config = new ContentDeliveryConfigImpl(profileSet, containerContext);
+			config.load();
+			configTable.put(profileSet, config);
 		}
 		
-		return table;
+		return config;
 	}
 
 	/**
@@ -144,10 +145,9 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * <p/>
 	 * Creates the buildTable instance and populates it with the ProcessingUnit matrix
 	 * for the specified device.
-	 * @param deviceContext The associated device context.
 	 */
 	private void load() {
-		List resourceConfigsList = Arrays.asList(containerContext.getStore().getSmooksResourceConfigurations(deviceContext));
+		List resourceConfigsList = Arrays.asList(containerContext.getStore().getSmooksResourceConfigurations(profileSet));
 
 		// Build and sort the resourceConfigTable table - non-transforming elements.
 		buildSmooksResourceConfigurationTable(resourceConfigsList);
@@ -161,9 +161,9 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				byte[] dtdDataBytes = dtdSmooksResourceConfiguration.getBytes();
                 
                 if(dtdDataBytes != null) {
-    				DTDStore.addDTD(deviceContext, new ByteArrayInputStream(dtdDataBytes));
+    				DTDStore.addDTD(profileSet, new ByteArrayInputStream(dtdDataBytes));
     				// Initialise the DTD reference for this config table.
-    				dtd = DTDStore.getDTDObject(deviceContext);
+    				dtd = DTDStore.getDTDObject(profileSet);
                 } else {
                 	logger.error("DTD resource [" + dtdSmooksResourceConfiguration.getPath() + "] not found in classpath.");
                 }
@@ -191,7 +191,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 */
 	private void logResourceConfig() {
 		logger.debug("==================================================================================================");
-		logger.debug("Resource configuration (sorted) for useragent [" + deviceContext.getCommonName() + "].  Profiles: [" + deviceContext.getProfileSet() + "]");
+		logger.debug("Resource configuration (sorted) for profile [" + profileSet.getBaseProfile() + "].  Sub Profiles: [" + profileSet + "]");
 		Iterator configurations = resourceConfigTable.entrySet().iterator();
 		int i = 0;
 		
@@ -272,7 +272,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				Map.Entry entry = (Map.Entry)tableEntrySet.next();
 				List markupElSmooksResourceConfigurations = (List)entry.getValue();
 				SmooksResourceConfiguration[] resourceConfigs = (SmooksResourceConfiguration[])markupElSmooksResourceConfigurations.toArray(new SmooksResourceConfiguration[markupElSmooksResourceConfigurations.size()]);
-				SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(deviceContext);
+				SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(profileSet);
 
 				Arrays.sort(resourceConfigs, sortComparator);
 				entry.setValue(new Vector(Arrays.asList(resourceConfigs)));
@@ -379,7 +379,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	/**
 	 * Get a list {@link Object}s from the supplied {@link SmooksResourceConfiguration} selector value.
 	 * <p/>
-	 * Uses {@link org.milyn.cdr.CDRStore#getObject(SmooksResourceConfiguration)} to construct the object.
+	 * Uses {@link org.milyn.cdr.SmooksResourceConfigurationStore#getObject(org.milyn.cdr.SmooksResourceConfiguration)} to construct the object.
 	 * @param selector selector attribute value from the .cdrl file in the .cdrar.
 	 * @return List of Object instances.  An empty list is returned where no 
 	 * selectors exist.
@@ -450,7 +450,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
         }
 
         public void applyStrategy(String elementName, SmooksResourceConfiguration resourceConfig) {
-			ContentDeliveryUnitCreator creator = null;;
+			ContentDeliveryUnitCreator creator;
 
 			// Try it as a Java class before trying anything else.  This is to
 			// accomodate specification of the class in the standard 
@@ -516,7 +516,8 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		 * @param elementName Element name against which to associate the CDU.
 		 * @param resourceConfig Configuration.
 		 * @param creator CDU Creator class.
-		 * @throws InstantiationException 
+		 * @throws InstantiationException Failed to instantia
+         * @return True if the CDU was added, otherwise false. 
 		 */
 		private boolean addCDU(String elementName, SmooksResourceConfiguration resourceConfig, ContentDeliveryUnitCreator creator) throws InstantiationException {
 			ContentDeliveryUnit contentDeliveryUnit;

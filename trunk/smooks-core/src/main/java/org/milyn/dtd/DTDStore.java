@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.milyn.useragent.UAContext;
+import org.milyn.profile.ProfileSet;
 import com.wutka.dtd.DTD;
 import com.wutka.dtd.DTDAny;
 import com.wutka.dtd.DTDContainer;
@@ -86,50 +86,50 @@ public class DTDStore {
 	/**
 	 * Loaded DTDs
 	 */
-	private static Hashtable dtds = new Hashtable();;	
+	private static Hashtable<ProfileSet, DTD> dtds = new Hashtable<ProfileSet, DTD>();	
 	
 	/**
-	 * Add the DTD for the deviceContext device
-	 * @param deviceContext Device Context
-	 * @param stream DTD data stream.
-	 */
-	public static void addDTD(UAContext deviceContext, InputStream stream) {
+	 * Add the DTD for the profileSet device
+	 * @param profileSet Device Context
+     * @param stream DTD data stream.
+     */
+	public static void addDTD(ProfileSet profileSet, InputStream stream) {
 		try {
 			com.wutka.dtd.DTDParser parser = new com.wutka.dtd.DTDParser(new InputStreamReader(stream));
 			DTD dtd = parser.parse();
-			dtds.put(deviceContext, dtd);
+			dtds.put(profileSet, dtd);
 		} catch(Exception excep) {
-            IllegalStateException state = new IllegalStateException("Error parsing device dtd for [" + deviceContext.getCommonName() + "].");
+            IllegalStateException state = new IllegalStateException("Error parsing dtd for [" + profileSet.getBaseProfile() + "].");
             state.initCause(excep);
             throw state;
         }
 	}
 	
 	/**
-	 * Get the DTD Object for the deviceContext device, wrapped in a {@link DTDObjectContainer} 
+	 * Get the DTD Object for the profile, wrapped in a {@link DTDObjectContainer} 
 	 * instance.
-	 * @param deviceContext Device Context
+	 * @param profileSet Profile set.
 	 * @return The DTD Object reference container for the deviceContext device.
 	 */
-	public static DTDObjectContainer getDTDObject(UAContext deviceContext) {
-		return new DTDObjectContainer(getDTD(deviceContext));
+	public static DTDObjectContainer getDTDObject(ProfileSet profileSet) {
+		return new DTDObjectContainer(getDTD(profileSet));
 	}
 	
 	/**
-	 * Get the DTD for the deviceContext device.
-	 * @param deviceContext Device Context
+	 * Get the DTD for the profile.
+	 * @param profileSet Profile set. 
 	 * @return The DTD for the deviceContext device.
 	 */
-	private static DTD getDTD(UAContext deviceContext) {
+	private static DTD getDTD(ProfileSet profileSet) {
 		DTD dtd;
 		
-		if(deviceContext == null) {
-			throw new IllegalArgumentException("null 'deviceContext' arg in method call.");
+		if(profileSet == null) {
+			throw new IllegalArgumentException("null 'profileSet' arg in method call.");
 		}
 
-		dtd = (DTD)dtds.get(deviceContext);
+		dtd = dtds.get(profileSet);
 		if(dtd == null) {
-            throw new IllegalStateException("Error loading device dtd for [" + deviceContext.getCommonName() + "].");
+            throw new IllegalStateException("Error loading device dtd for [" + profileSet.getBaseProfile() + "].");
 		}
 		
 		return dtd;

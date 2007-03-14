@@ -21,7 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.useragent.UAContext;
+import org.milyn.profile.ProfileSet;
 
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} list.
@@ -40,7 +40,7 @@ public class SmooksResourceConfigurationList {
     /**
      * {@link org.milyn.cdr.SmooksResourceConfiguration} list.
      */
-    private List list = new Vector();
+    private List<SmooksResourceConfiguration> list = new Vector<SmooksResourceConfiguration>();
     
     /**
      * Public constructor.
@@ -92,22 +92,22 @@ public class SmooksResourceConfigurationList {
 
     /**
      * Get the {@link SmooksResourceConfiguration} instance at the specified index.
-     * @param index
+     * @param index Resource index.
      * @return The {@link SmooksResourceConfiguration} instance at the specified index.
      * @throws ArrayIndexOutOfBoundsException The specified index is out of bounds.
      */
     public SmooksResourceConfiguration get(int index) throws ArrayIndexOutOfBoundsException {
-        return (SmooksResourceConfiguration) list.get(index);
+        return list.get(index);
     }
     
     /**
      * Get all SmooksResourceConfiguration entries for the specified useragent from list. 
-     * @param useragentContext The useragent recoginition context.
+     * @param profileSet The useragent profile set.
      * @return All SmooksResourceConfiguration entries for the specified useragent.
      */
-    public SmooksResourceConfiguration[] getUseragentConfigurations(UAContext useragentContext) {
+    public SmooksResourceConfiguration[] getUseragentConfigurations(ProfileSet profileSet) {
         Vector<SmooksResourceConfiguration> matchingSmooksResourceConfigurationsColl = new Vector<SmooksResourceConfiguration>();
-        SmooksResourceConfiguration[] matchingSmooksResourceConfigurations = null;
+        SmooksResourceConfiguration[] matchingSmooksResourceConfigurations;
         
         // Iterate over the SmooksResourceConfigurations defined on this list.
         for(int i = 0; i < size(); i++) {
@@ -116,12 +116,12 @@ public class SmooksResourceConfigurationList {
             
             for(int expIndex = 0; expIndex < useragentExpressions.length; expIndex++) {
                 UseragentExpression expression = useragentExpressions[expIndex];
-                
-                if(expression.isMatchingDevice(useragentContext)) {
+
+                if(expression.isMatch(profileSet)) {
                     matchingSmooksResourceConfigurationsColl.addElement(resourceConfig);
                     break;
                 } else {
-            		logger.debug("Resource [" + resourceConfig + "] not targeted at useragent [" + useragentContext.getCommonName() + "].  Profiles: [" + useragentContext.getProfileSet() + "]");
+            		logger.debug("Resource [" + resourceConfig + "] not targeted at profile [" + profileSet.getBaseProfile() + "].  Sub Profiles: [" + profileSet + "]");
                 }
             }
         }

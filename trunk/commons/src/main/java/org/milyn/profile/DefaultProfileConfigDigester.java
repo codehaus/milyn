@@ -101,7 +101,7 @@ public class DefaultProfileConfigDigester implements ProfileConfigDigester {
 					profileSet = (DefaultProfileSet) store
 							.getProfileSet(profileMember);
 				} catch (UnknownProfileMemberException unknown) {
-					profileSet = new DefaultProfileSet();
+					profileSet = new DefaultProfileSet(profileMember);
 					try {
 						store.addProfileSet(profileMember, profileSet);
 					} catch (IllegalArgumentException invalid) {
