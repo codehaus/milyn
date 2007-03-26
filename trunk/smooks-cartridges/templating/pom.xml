@@ -33,7 +33,7 @@
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
 			<version>${xalan.version}</version>
-		</dependency>
+        </dependency>
 
 		<dependency>
 			<groupId>ognl</groupId>

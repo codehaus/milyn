@@ -18,12 +18,8 @@ package org.milyn.delivery;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
@@ -81,7 +77,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * Table of ProcessingSet instances keyed by selector. Each table entry
 	 * contains a ProcessingSet instances.
 	 */
-	private Hashtable processingSetTable = new Hashtable();
+	private ProcessingSetTable processingSetTable = new ProcessingSetTable();
 	/**
 	 * Table of SerializationUnit instances keyed by selector. Each table entry
 	 * contains a single SerializationUnit instances.
@@ -105,7 +101,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	private ContentDeliveryConfigImpl(ProfileSet profileSet, ContainerContext containerContext) {
 		this.profileSet = profileSet;
 		this.containerContext = containerContext;
-	}
+    }
 	
 	/**
 	 * Get the ContentDeliveryConfigImpl instance for the named table.
@@ -348,7 +344,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * @return ProcessingSet for the specified tag name, or null if none is specified.  
 	 */
 	public ProcessingSet getProcessingSet(String tag) {
-		return (ProcessingSet)processingSetTable.get(tag.toLowerCase());
+        return processingSetTable.get(tag);
 	}
 	
 	/**
@@ -659,4 +655,42 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		 */
 		public void applyStrategy(String elementName, SmooksResourceConfiguration unitDef);
 	}
+
+    private class ProcessingSetTable {
+        ConcurrentHashMap<String, ProcessingSet> map = new ConcurrentHashMap<String, ProcessingSet>();
+        List<Entry<String, ProcessingSet>> entries = new ArrayList<Entry<String, ProcessingSet>>();
+
+        public ProcessingSet put(String key, ProcessingSet value) {
+            ProcessingSet prcessingSet = map.put(key, value);
+            entries.add(getEntry(key));            
+            return prcessingSet;
+        }
+
+        private Entry<String, ProcessingSet> getEntry(String key) {
+            Set<Entry<String, ProcessingSet>> superEntries = map.entrySet();
+
+            for (Iterator<Entry<String, ProcessingSet>> iterator = superEntries.iterator(); iterator.hasNext();) {
+                Entry<String, ProcessingSet> entry =  iterator.next();
+                if(entry.getKey().equals(key)) {
+                    return entry;
+                }
+            }
+
+            return null;
+        }
+
+        public ProcessingSet get(String key) {
+            int entryCount = entries.size();
+
+            for(int i = 0; i < entryCount; i++) {
+                Entry<String, ProcessingSet> entry =  entries.get(i);
+                String entryKey = entry.getKey();
+                if(entryKey.equalsIgnoreCase(key)) {
+                    return entry.getValue();
+                }
+            }
+
+            return map.get(key);
+        }
+    }
 }

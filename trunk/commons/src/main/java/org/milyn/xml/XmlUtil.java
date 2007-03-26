@@ -26,9 +26,12 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -361,8 +364,8 @@ public class XmlUtil {
 	/**
 	 * Get the String data associated with the XPath selection supplied.
 	 * 
-	 * @param document
-	 *            The document to be searched.
+	 * @param node
+	 *            The node to be searched.
 	 * @param xpath
 	 *            The XPath String to be used in the selection.
 	 * @return The string data located at the specified location in the
@@ -386,7 +389,9 @@ public class XmlUtil {
 		}
 	}
 
-	/**
+    private static TransformerFactory factory = TransformerFactory.newInstance();
+    
+    /**
 	 * Serialise the supplied W3C DOM subtree.
 	 * 
 	 * @param nodeList
@@ -402,27 +407,26 @@ public class XmlUtil {
 		}
 
 		try {
+            Transformer transformer;
+
+            transformer = factory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
 			StringWriter writer = new StringWriter();
 			int listLength = nodeList.getLength();
-			OutputFormat outFormat = new OutputFormat();
-			XMLSerializer serializer;
-
-			outFormat.setOmitXMLDeclaration(true);
-			serializer = new XMLSerializer(outFormat);
-			serializer.setOutputCharStream(writer);
 
 			// Iterate through the Node List.
 			for (int i = 0; i < listLength; i++) {
 				Node node = nodeList.item(i);
 
-				if (XmlUtil.isTextNode(node)) {
+                if (XmlUtil.isTextNode(node)) {
 					writer.write(node.getNodeValue());
 				} else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
 					writer.write(((Attr) node).getValue());
 				} else if (node.getNodeType() == Node.ELEMENT_NODE) {
-					serializer.serialize((Element) node);
-				}
-			}
+                    transformer.transform(new DOMSource(node), new StreamResult(writer));
+                }
+            }
 
 			return writer.toString();
 		} catch (Exception e) {
