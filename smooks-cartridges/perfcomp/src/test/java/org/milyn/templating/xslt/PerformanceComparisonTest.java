@@ -20,8 +20,8 @@ import junit.framework.TestCase;
 import junit.framework.ComparisonFailure;
 import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
-import org.milyn.SmooksStandalone;
 import org.milyn.templating.TemplatingUtils;
+import org.milyn.SmooksStandalone;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -35,6 +35,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Compare performance of raw XSLT Vs XSLT via Smooks.
@@ -47,7 +48,7 @@ public class PerformanceComparisonTest extends TestCase {
     private SmooksStandalone smooksTransformer_xsltonly;
     private SmooksStandalone smooksTransformer_xsltjava;
 
-    private static final int TEST_DURATION_MINS = 60;
+    private static final double TEST_DURATION_MINS = 5;
     private static final long SLEEP_DURATION = 10;
     private static final int NUM_TRANS_PER_ITERATION = 1;
     private static boolean compareResults = false;
@@ -71,7 +72,23 @@ public class PerformanceComparisonTest extends TestCase {
         smooksTransformer_xsltjava = initialiseSmooksTransformer(SMOOKS_TRANSFORM_XSL_JAVA_CONFIG);
     }
 
-    public void test_comparePerformance_multithreaded() throws TransformerException, IOException, InterruptedException, SAXException {
+    public void test_comparePerformance_multithreaded_XSLT() throws TransformerException, IOException, InterruptedException, SAXException {
+        runStandaloneXslt = true;
+        runSmooksXslt_nojava = false;
+        runSmooksXslt_withjava = false;
+
+        run_comparePerformance_multithreaded("XSLT Only");
+    }
+
+    public void test_comparePerformance_multithreaded_SmooksXSLT() throws TransformerException, IOException, InterruptedException, SAXException {
+        runStandaloneXslt = false;
+        runSmooksXslt_nojava = true;
+        runSmooksXslt_withjava = false;
+
+        run_comparePerformance_multithreaded("Smooks XSLT (01)");
+    }
+
+    public void run_comparePerformance_multithreaded(String title) throws TransformerException, IOException, InterruptedException, SAXException {
         List<PerformanceThread> threadList = new ArrayList<PerformanceThread>();
 
         threadList.add(new PerformanceThread("perf-inputs-01", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
@@ -108,11 +125,11 @@ public class PerformanceComparisonTest extends TestCase {
         System.out.println();
         System.out.println("All Threads complete");
 
-        System.out.println();
-        System.out.println("=====================================RESULTS===========================================");
-        System.out.println("**** " + xslTemplate.getClass().getName());
+        String resultsMessage = "\n=====================================RESULTS: " + title + "===========================================\n";
+        resultsMessage += "**** " + new Date() + "\n";
+        resultsMessage += "**** " + xslTemplate.getClass().getName() + "\n";
         for(PerformanceThread thread : threadList) {
-            System.out.println("" + thread.performancePack.processCount + ","
+            resultsMessage += "" + thread.performancePack.processCount + ","
                                   + thread.performancePack.messageBytesIn.length + ","
                                   + thread.performancePack.totalXsltTime + ","
                                   + thread.performancePack.totalSmooksXsltOnlyTime + ","
@@ -120,10 +137,25 @@ public class PerformanceComparisonTest extends TestCase {
                                   + thread.performancePack.smooksXsltOnlyOverheadPercentage + ","
                                   + thread.performancePack.totalSmooksXsltJavaTime + ","
                                   + thread.performancePack.smooksXsltJavaOverheadMillis + ","
-                                  + thread.performancePack.smooksXsltJavaOverheadPercentage);
+                                  + thread.performancePack.smooksXsltJavaOverheadPercentage + "\n";
         }
-        System.out.println("=======================================================================================");
-        System.out.println();
+        resultsMessage += "=======================================================================================\n\n";
+        System.out.println(resultsMessage);
+
+        logMessage(resultsMessage);
+    }
+
+    private void logMessage(String message) throws IOException {
+        File file = new File("./perfcomp.log");
+        FileWriter writer = new FileWriter(file, true);
+
+        try {
+            writer.write(message);
+        } finally {
+            writer.close();
+        }
+
+        System.out.println("Outputting performance comparison messages to " + file.getAbsolutePath());
     }
 
     private void initialiseXsltTransformer() throws IOException, TransformerConfigurationException {
@@ -133,6 +165,12 @@ public class PerformanceComparisonTest extends TestCase {
 
         xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslt), "UTF-8"));
         xslTemplate = transformerFactory.newTemplates(xslStreamSource);
+        System.out.println("\n\n***** TransformerFactory: " + transformerFactory.getClass().getName());
+        System.out.println("***** XSL Templates Impl: " + xslTemplate.getClass().getName());
+        if(!transformerFactory.getFeature(DOMSource.FEATURE)) {
+            fail("DOM Node XSL processing not supported");
+        }
+        System.out.println("\n");
     }
 
     private SmooksStandalone initialiseSmooksTransformer(String smooksConfig) throws IOException, SAXException {
@@ -216,7 +254,7 @@ public class PerformanceComparisonTest extends TestCase {
         }
 
         public void runComparisons() throws TransformerException, IOException, InterruptedException, SAXException {
-            long endTime = System.currentTimeMillis() + (1000 * 60 * TEST_DURATION_MINS);
+            long endTime = (long) (System.currentTimeMillis() + (1000 * 60 * TEST_DURATION_MINS));
 
             while(System.currentTimeMillis() <= endTime) {
                 if(runStandaloneXslt) {

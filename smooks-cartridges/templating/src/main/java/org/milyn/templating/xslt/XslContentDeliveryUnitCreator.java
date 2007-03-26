@@ -20,10 +20,7 @@ import java.io.*;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -51,6 +48,11 @@ import org.w3c.dom.NodeList;
  * <p/>
  * Creates {@link org.milyn.delivery.ContentDeliveryUnit} instances for performing node/element level
  * <a href="http://www.w3.org/Style/XSL/">XSL</a> templating (aka XSLT).
+ * <p/>
+ * Template application can be done in a synchonized or unsynchonized fashion by setting
+ * the system property "org.milyn.templating.xslt.synchronized".  According to the spec,
+ * this should not be necessary.  However, Xalan 2.7.0 (for one) has a bug which results in
+ * unsynchronized template application causing invalid transforms.
  * 
  * <h3>.cdrl Configuration</h3>
  * Two configurations are required in order to use <a href="http://www.w3.org/Style/XSL/">XSL</a>
@@ -109,15 +111,6 @@ import org.w3c.dom.NodeList;
  *          Default "UTF-8".--&gt;
  *  &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
  *
- *  &lt;!-- (Optional) Streamed the result back into the
- *          DOM, or readed to the DOM as Elements.  Streaming the result
- *          is more performant - but you can't perform further manipulations on the DOM.
- *          Default "true".
- *
- *          NOTE: If "is-xslt-templatelet=true", this parameter is ignored and the
- *          result is readded as DOM Elements. --&gt;
- *  &lt;param name="<b>streamResult</b>"&gt;<i>true/false</i>&lt;/param&gt;
- *
  * &lt;/smooks-resource&gt;
  * </pre>
  * <p/>
@@ -160,15 +153,6 @@ import org.w3c.dom.NodeList;
  *  &lt;!-- (Optional) Template encoding. 
  *          Default "UTF-8".--&gt;
  *  &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
- *
- *  &lt;!-- (Optional) Streamed the result back into the
- *          DOM, or readed to the DOM as Elements.  Streaming the result
- *          is more performant - but you can't perform further manipulations on the DOM.
- *          Default "true".
- *
- *          NOTE: If "is-xslt-templatelet=true", this parameter is ignored and the
- *          result is readded as DOM Elements. --&gt;
- *  &lt;param name="<b>streamResult</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * 
  * &lt;/smooks-resource&gt;
  * </pre>
@@ -194,7 +178,11 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 	 * Logger.
 	 */
 	private static Log logger = LogFactory.getLog(XslContentDeliveryUnitCreator.class);
-	
+    /**
+     * Synchonized template application system property key. 
+     */
+    public static final String ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED = "org.milyn.templating.xslt.synchronized";
+
     /**
      * Public constructor.
      * @param config Configuration details for this ContentDeliveryUnitCreator.
@@ -241,7 +229,13 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
          * Default is "true".
          */
         private boolean streamResult;
-
+        /**
+         * Is the template application synchronized or not.
+         * <p/>
+         * Xalan v2.7.0 has/had a threading issue - kick-on effect being that template application
+         * must be synchronized.
+         */
+        private final boolean isSynchronized = Boolean.getBoolean(ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED);
 
         /**
 		 * Constructor.
@@ -284,18 +278,12 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
                 NodeList children = null;
 
                 try {
-                    Transformer transformer;
-
-                    synchronized(xslTemplate) {
-                        transformer = xslTemplate.newTransformer();
-
-                        if(false && !isTemplatelet && streamResult) {
-                            CharArrayWriter writer = new CharArrayWriter();
-                            transformer.transform(new DOMSource(element), new StreamResult(writer));
-                            transRes.appendChild(ownerDoc.createTextNode(writer.toString()));
-                        } else {
-                            transformer.transform(new DOMSource(element), new DOMResult(transRes));
+                    if(isSynchronized) {
+                        synchronized(xslTemplate) {
+                            performTransform(element, transRes, ownerDoc);
                         }
+                    } else {
+                        performTransform(element, transRes, ownerDoc);
                     }
                 } catch (Exception e) {
                     logger.error("Error applying XSLT to node [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "]", e);
@@ -319,5 +307,18 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
                 // Process the templating action, supplying the templating result...
                 processTemplateAction(element, children);
         }
-	}
+
+        private void performTransform(Element element, Element transRes, Document ownerDoc) throws TransformerException {
+            Transformer transformer;
+            transformer = xslTemplate.newTransformer();
+
+            if(false && !isTemplatelet && streamResult) {
+                CharArrayWriter writer = new CharArrayWriter();
+                transformer.transform(new DOMSource(element), new StreamResult(writer));
+                transRes.appendChild(ownerDoc.createTextNode(writer.toString()));
+            } else {
+                transformer.transform(new DOMSource(element), new DOMResult(transRes));
+            }
+        }
+    }
 }

@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
  * Relations: XmlUtil extends java.lang.Object <br>
  * 
  * @author Tom Fennelly
- * @see org.milyn.util.XmlUtil
+ * @see org.milyn.xml.XmlUtil
  */
 
 public class XmlUtilTest extends TestCase {
