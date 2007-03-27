@@ -52,7 +52,8 @@ public class PerformanceComparisonTest extends TestCase {
     private static final long SLEEP_DURATION = 10;
     private static final int NUM_TRANS_PER_ITERATION = 1;
     private static boolean compareResults = false;
-    private static boolean runStandaloneXslt = true;
+    private static boolean runStandaloneXslt = false;
+    private static boolean streamXsltResult = true;
     private static boolean runSmooksXslt_nojava = false;
     private static boolean runSmooksXslt_withjava = false;
     public static boolean isSynchronized = false;
@@ -70,27 +71,31 @@ public class PerformanceComparisonTest extends TestCase {
         initialiseXsltTransformer();
         smooksTransformer_xsltonly = initialiseSmooksTransformer("xsl_only");
         smooksTransformer_xsltjava = initialiseSmooksTransformer(SMOOKS_TRANSFORM_XSL_JAVA_CONFIG);
+
+        compareResults = false;
+        runStandaloneXslt = false;
+        streamXsltResult = true;
+        runSmooksXslt_nojava = false;
+        runSmooksXslt_withjava = false;
+        isSynchronized = false;
     }
 
     public void test_comparePerformance_multithreaded_XSLT() throws TransformerException, IOException, InterruptedException, SAXException {
         runStandaloneXslt = true;
-        runSmooksXslt_nojava = false;
-        runSmooksXslt_withjava = false;
-
-        run_comparePerformance_multithreaded("XSLT Only");
+        run_comparePerformance_multithreaded("XSLT Standalone (DOM Result)");
+        streamXsltResult = true;
+        run_comparePerformance_multithreaded("XSLT Standalone (Streamed Result)");
     }
 
     public void test_comparePerformance_multithreaded_SmooksXSLT() throws TransformerException, IOException, InterruptedException, SAXException {
-        runStandaloneXslt = false;
         runSmooksXslt_nojava = true;
-        runSmooksXslt_withjava = false;
-
-        run_comparePerformance_multithreaded("Smooks XSLT (01)");
+        run_comparePerformance_multithreaded("Smooks XSLT (" + SMOOKS_TRANSFORM_XSL_JAVA_CONFIG + ")");
     }
 
     public void run_comparePerformance_multithreaded(String title) throws TransformerException, IOException, InterruptedException, SAXException {
         List<PerformanceThread> threadList = new ArrayList<PerformanceThread>();
 
+        /*
         threadList.add(new PerformanceThread("perf-inputs-01", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-02", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-03", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
@@ -99,8 +104,10 @@ public class PerformanceComparisonTest extends TestCase {
         threadList.add(new PerformanceThread("perf-inputs-06", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-07", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-08", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
+        */
         threadList.add(new PerformanceThread("perf-inputs-09", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-10", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
+        threadList.add(new PerformanceThread("perf-inputs-11", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
 
         System.out.println();
         System.out.println("Starting Threads...");
@@ -284,7 +291,7 @@ public class PerformanceComparisonTest extends TestCase {
             // Now test how fast it is...
             long start = System.currentTimeMillis();
             for(int i = 0; i < NUM_TRANS_PER_ITERATION; i++) {
-                Element result = (Element) applyXslt(false);
+                Element result = (Element) applyXslt(streamXsltResult);
                 assertMessageOk(result, "XSLT");
             }
 
