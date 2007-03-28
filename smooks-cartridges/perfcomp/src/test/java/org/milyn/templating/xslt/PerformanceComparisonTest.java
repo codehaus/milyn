@@ -22,6 +22,7 @@ import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
 import org.milyn.templating.TemplatingUtils;
 import org.milyn.SmooksStandalone;
+import org.milyn.container.standalone.StandaloneContainerRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,7 +54,8 @@ public class PerformanceComparisonTest extends TestCase {
     private static final int NUM_TRANS_PER_ITERATION = 1;
     private static boolean compareResults = false;
     private static boolean runStandaloneXslt = false;
-    private static boolean streamXsltResult = true;
+    private static boolean streamXslt = false;
+    private static boolean serializeSmooksRes = false;
     private static boolean runSmooksXslt_nojava = false;
     private static boolean runSmooksXslt_withjava = false;
     public static boolean isSynchronized = false;
@@ -74,28 +76,38 @@ public class PerformanceComparisonTest extends TestCase {
 
         compareResults = false;
         runStandaloneXslt = false;
-        streamXsltResult = true;
+        streamXslt = false;
+        serializeSmooksRes = false;
         runSmooksXslt_nojava = false;
         runSmooksXslt_withjava = false;
         isSynchronized = false;
     }
 
-    public void test_comparePerformance_multithreaded_XSLT() throws TransformerException, IOException, InterruptedException, SAXException {
+    public void test_comparePerformance_multithreaded_XSLT_DOM() throws TransformerException, IOException, InterruptedException, SAXException {
         runStandaloneXslt = true;
         run_comparePerformance_multithreaded("XSLT Standalone (DOM Result)");
-        streamXsltResult = true;
+    }
+
+    public void test_comparePerformance_multithreaded_SmooksXSLT_unserialized() throws TransformerException, IOException, InterruptedException, SAXException {
+        runSmooksXslt_nojava = true;
+        run_comparePerformance_multithreaded("Smooks XSLT - Result Unserialized (" + SMOOKS_TRANSFORM_XSL_JAVA_CONFIG + ")");
+    }
+
+    public void test_comparePerformance_multithreaded_XSLT_Streamed() throws TransformerException, IOException, InterruptedException, SAXException {
+        runStandaloneXslt = true;
+        streamXslt = true;
         run_comparePerformance_multithreaded("XSLT Standalone (Streamed Result)");
     }
 
-    public void test_comparePerformance_multithreaded_SmooksXSLT() throws TransformerException, IOException, InterruptedException, SAXException {
+    public void xtest_comparePerformance_multithreaded_SmooksXSLT_serialized() throws TransformerException, IOException, InterruptedException, SAXException {
         runSmooksXslt_nojava = true;
-        run_comparePerformance_multithreaded("Smooks XSLT (" + SMOOKS_TRANSFORM_XSL_JAVA_CONFIG + ")");
+        serializeSmooksRes = true;
+        run_comparePerformance_multithreaded("Smooks XSLT - Result Serialized (" + SMOOKS_TRANSFORM_XSL_JAVA_CONFIG + ")");
     }
 
     public void run_comparePerformance_multithreaded(String title) throws TransformerException, IOException, InterruptedException, SAXException {
         List<PerformanceThread> threadList = new ArrayList<PerformanceThread>();
 
-        /*
         threadList.add(new PerformanceThread("perf-inputs-01", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-02", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-03", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
@@ -104,10 +116,10 @@ public class PerformanceComparisonTest extends TestCase {
         threadList.add(new PerformanceThread("perf-inputs-06", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-07", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-08", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
-        */
+
         threadList.add(new PerformanceThread("perf-inputs-09", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
         threadList.add(new PerformanceThread("perf-inputs-10", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
-        threadList.add(new PerformanceThread("perf-inputs-11", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
+        //threadList.add(new PerformanceThread("perf-inputs-11", xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava));
 
         System.out.println();
         System.out.println("Starting Threads...");
@@ -291,7 +303,7 @@ public class PerformanceComparisonTest extends TestCase {
             // Now test how fast it is...
             long start = System.currentTimeMillis();
             for(int i = 0; i < NUM_TRANS_PER_ITERATION; i++) {
-                Element result = (Element) applyXslt(streamXsltResult);
+                Object result = applyXslt(streamXslt);
                 assertMessageOk(result, "XSLT");
             }
 
@@ -319,19 +331,18 @@ public class PerformanceComparisonTest extends TestCase {
             Document message;
             Object result = null;
 
-            message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
-
             if(stream) {
                 CharArrayWriter writer = new CharArrayWriter();
                 if(isSynchronized) {
                     synchronized(xslTemplate) {
-                        xslTemplate.newTransformer().transform(new DOMSource(message.getDocumentElement()), new StreamResult(writer));
+                        xslTemplate.newTransformer().transform(new StreamSource(new ByteArrayInputStream(messageBytesIn)), new StreamResult(writer));
                     }
                 } else {
-                    xslTemplate.newTransformer().transform(new DOMSource(message.getDocumentElement()), new StreamResult(writer));
+                    xslTemplate.newTransformer().transform(new StreamSource(new ByteArrayInputStream(messageBytesIn)), new StreamResult(writer));
                 }
-                writer.toString();
+                result = writer.toString();
             } else {
+                message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
                 result = message.createElement("result");
                 if(isSynchronized) {
                     synchronized(xslTemplate) {
@@ -350,17 +361,31 @@ public class PerformanceComparisonTest extends TestCase {
         private Document applySmooks(SmooksStandalone smooksTransformer) throws SAXException, IOException {
             Document message;
 
-            message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
-            smooksTransformer.filter("devicename", message);
+            if(serializeSmooksRes) {
+                StandaloneContainerRequest request = smooksTransformer.createRequest("devicename", null);
+                CharArrayWriter writer = new CharArrayWriter();
+
+                message = (Document)smooksTransformer.filter(request, new ByteArrayInputStream(messageBytesIn));
+                smooksTransformer.serialize(request, message, writer);
+            } else {
+                message = (Document)smooksTransformer.filter("devicename", new ByteArrayInputStream(messageBytesIn));
+            }
 
             processCount++;
             
             return message;
         }
 
-        private void assertMessageOk(Node result, String name) {
+        private void assertMessageOk(Object result, String name) {
             if(compareResults) {
-                String actual = XmlUtil.serialize(result.getChildNodes());
+                String actual = null;
+
+                if(result instanceof Node) {
+                    actual = XmlUtil.serialize(((Node)result).getChildNodes());
+                } else {
+                    actual = (String)result;
+                }
+
                 try {
                     assertEquals("Message not as expected.", messageOutExpected, actual.trim());
                 } catch(ComparisonFailure e) {
