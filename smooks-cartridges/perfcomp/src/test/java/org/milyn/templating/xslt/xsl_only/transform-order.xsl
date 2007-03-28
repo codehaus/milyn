@@ -13,10 +13,6 @@
 		</Order>
 	</xsl:template>
 
-	<xsl:template match="date">
-		<date><xsl:value-of select="month" />-<xsl:value-of select="day" />-<xsl:value-of select="year" /></date>
-	</xsl:template>
-
 	<xsl:template match="customer-details">
 		<Customer userName="{username}" firstName="{name/firstname}" lastName="{name/lastname}" state="{state}"/>
 	</xsl:template>
