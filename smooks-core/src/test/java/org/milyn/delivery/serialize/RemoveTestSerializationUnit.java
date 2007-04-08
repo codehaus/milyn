@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Element;
 
 /**
@@ -40,7 +40,7 @@ public class RemoveTestSerializationUnit extends  DefaultSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer, org.milyn.device.UAContext)
 	 */
-	public void writeElementStart(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
 		// Remove by not printing the start or end of the element.
 		// Leaves the child content.
 	}
@@ -48,7 +48,7 @@ public class RemoveTestSerializationUnit extends  DefaultSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer, org.milyn.device.UAContext)
 	 */
-	public void writeElementEnd(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementEnd(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
 		// Remove by not printing the start or end of the element.
 		// Leaves the child content.
 	}

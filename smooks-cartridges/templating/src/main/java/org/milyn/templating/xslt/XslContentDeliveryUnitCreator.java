@@ -30,7 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.io.StreamUtils;
@@ -79,7 +79,7 @@ import org.w3c.dom.NodeList;
  * </pre>
  * <p/>
  * Registration of the {@link XslContentDeliveryUnitCreator} to handle "xsl" resources can also be done by calling 
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.container.ContainerContext)}.
+ * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.container.ApplicationContext)}.
  * 
  * <h4>2. Targeting "xsl" Templates</h4>
  * XSLTs can be specified in a file or as a "resdata" parameter (i.e. inline in the resource configuration).
@@ -272,7 +272,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
             streamResult = resourceConfig.getBoolParameter("streamResult", true);
         }
 
-		public void visit(Element element, ContainerRequest containerRequest) {
+		public void visit(Element element, ExecutionContext executionContext) {
                 Document ownerDoc = element.getOwnerDocument();
                 Element transRes = ownerDoc.createElement("xsltrans");
                 NodeList children = null;
@@ -286,7 +286,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
                         performTransform(element, transRes, ownerDoc);
                     }
                 } catch (Exception e) {
-                    logger.error("Error applying XSLT to node [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "]", e);
+                    logger.error("Error applying XSLT to node [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "]", e);
                     return;
                 }
 

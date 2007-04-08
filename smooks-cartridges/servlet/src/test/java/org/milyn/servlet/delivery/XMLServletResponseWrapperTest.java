@@ -21,8 +21,8 @@ import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
-import org.milyn.container.MockContainerRequest;
+import org.milyn.container.ExecutionContext;
+import org.milyn.container.MockExecutionContext;
 import org.milyn.delivery.MockContentDeliveryConfig;
 import org.milyn.delivery.process.AbstractProcessingUnit;
 import org.milyn.delivery.process.ProcessingSet;
@@ -38,11 +38,11 @@ import junit.framework.TestCase;
 
 public class XMLServletResponseWrapperTest extends TestCase {
 
-	private MockContainerRequest mockCR;
+	private MockExecutionContext mockCR;
 	private MockHttpServletResponse mockSR;
 	
 	protected void setUp() throws Exception {
-		mockCR = new MockContainerRequest();
+		mockCR = new MockExecutionContext();
 		mockSR = new MockHttpServletResponse() {
 			public String getCharacterEncoding() {
 				return "UTF-8";
@@ -53,7 +53,7 @@ public class XMLServletResponseWrapperTest extends TestCase {
 	}
 
 	/*
-	 * Test method for 'org.milyn.delivery.response.XMLServletResponseWrapper.XMLServletResponseWrapper(ContainerRequest, HttpServletResponse)'
+	 * Test method for 'org.milyn.delivery.response.XMLServletResponseWrapper.XMLServletResponseWrapper(ExecutionContext, HttpServletResponse)'
 	 */
 	public void test_initHeaderActions() {
 		// Make sure it constructs without configured header actions
@@ -144,7 +144,7 @@ public class XMLServletResponseWrapperTest extends TestCase {
 			this.newName = newName;
 			this.visitBefore = visitBefore;
 		}
-		public void visit(Element element, ContainerRequest containerRequest) {
+		public void visit(Element element, ExecutionContext executionContext) {
 			DomUtils.renameElement(element, newName, true, true);
 		}
 		public boolean visitBefore() {

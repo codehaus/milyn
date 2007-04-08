@@ -18,12 +18,23 @@ package org.milyn.container;
 
 import java.util.Hashtable;
 
+import org.milyn.cdr.SmooksResourceConfigurationStore;
+import org.milyn.resource.ContainerResourceLocator;
+
 /**
  * 
  * @author tfennelly
  */
-public class MockContainerSession implements ContainerSession {
+public class MockApplicationContext implements ApplicationContext {
+	public MockContainerResourceLocator containerResourceLocator = new MockContainerResourceLocator();
 	private Hashtable attributes = new Hashtable();
+	
+	/* (non-Javadoc)
+	 * @see org.milyn.container.ApplicationContext#getResourceLocator()
+	 */
+	public ContainerResourceLocator getResourceLocator() {
+		return containerResourceLocator;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
@@ -45,4 +56,19 @@ public class MockContainerSession implements ContainerSession {
 	public void removeAttribute(String name) {
 		attributes.remove(name);
 	}
+
+	private static String STORE_KEY = MockApplicationContext.class.getName() + "#CDRStore";
+	/* (non-Javadoc)
+	 * @see org.milyn.container.ApplicationContext#getCdrarStore()
+	 */
+	public SmooksResourceConfigurationStore getStore() {
+        SmooksResourceConfigurationStore cdrarStore = (SmooksResourceConfigurationStore)getAttribute(STORE_KEY);
+		
+		if(cdrarStore == null) {
+			cdrarStore = new SmooksResourceConfigurationStore(this);
+			setAttribute(STORE_KEY, cdrarStore);
+		}
+		
+		return cdrarStore;
+	}	
 }

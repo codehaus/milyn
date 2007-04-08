@@ -19,7 +19,7 @@ package org.milyn.css;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.magger.CSSStylesheet;
 import org.w3c.dom.Element;
 
@@ -52,7 +52,7 @@ class StyleSheetStore {
 	 * @param request Container request.  The store is stored on the request.
 	 * @return The StyleSheetStore instance associate with this request.
 	 */
-	protected static StyleSheetStore getStore(ContainerRequest request) {
+	protected static StyleSheetStore getStore(ExecutionContext request) {
 		StyleSheetStore store = (StyleSheetStore)request.getAttribute(STORE_REQUEST_KEY);
 		
 		if(store == null) {

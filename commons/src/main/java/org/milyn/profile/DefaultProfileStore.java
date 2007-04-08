@@ -30,7 +30,7 @@ import org.milyn.assertion.AssertArgument;
  */
 public class DefaultProfileStore implements ProfileStore {
 
-	/**
+    /**
 	 * The store table.
 	 */
 	private Hashtable<String, ProfileSet> store = new Hashtable<String, ProfileSet>();

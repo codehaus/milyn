@@ -1,16 +1,18 @@
 package org.milyn.cdr;
 
 import org.milyn.useragent.MockUAContext;
+import org.milyn.profile.ProfileSet;
+import org.milyn.profile.DefaultProfileSet;
 
 import junit.framework.TestCase;
 
 public class SmooksResourceConfigurationSortComparatorTest extends TestCase {
 
-	private MockUAContext context = null;;	
-	
-	protected void setUp() throws Exception {
-		context = new MockUAContext("uaCommonName");
-		context.addProfiles(new String[] {"profile1", "profile2", "profile3"});
+    private DefaultProfileSet profileSet;
+
+    protected void setUp() throws Exception {
+        profileSet = new DefaultProfileSet("uaCommonName");
+        profileSet.addProfiles(new String[] {"profile1", "profile2", "profile3"});
 	}
 
 	public void test_getSpecificity_selector() {
@@ -124,7 +126,7 @@ public class SmooksResourceConfigurationSortComparatorTest extends TestCase {
 	}
 	
 	public void test_compare() {
-		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(context.getProfileSet());
+		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(profileSet);
 		SmooksResourceConfiguration config1;
 		SmooksResourceConfiguration config2;
 
@@ -149,7 +151,7 @@ public class SmooksResourceConfigurationSortComparatorTest extends TestCase {
 	}
 	
 	private void assertSpecificityOK(double expected, String selector, String namespaceURI, String useragents) {
-		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(context.getProfileSet());
+		SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(profileSet);
 		SmooksResourceConfiguration config;
 		double specificity;
 

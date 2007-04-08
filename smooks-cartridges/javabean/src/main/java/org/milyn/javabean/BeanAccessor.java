@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 
 /**
  * Bean Accessor.
@@ -43,7 +43,7 @@ public class BeanAccessor {
      * @return The bean instance, or null if no such bean instance exists on the supplied
      * request.
      */
-    public static Object getBean(String beanId, ContainerRequest request) {
+    public static Object getBean(String beanId, ExecutionContext request) {
         if(beanId == null) {
             throw new IllegalArgumentException("null 'beanId' arg in method call.");
         }
@@ -62,7 +62,7 @@ public class BeanAccessor {
      * @param request The request instance.
      * @return The bean map associated with the supplied request.
      */
-    public static HashMap getBeans(ContainerRequest request) {
+    public static HashMap getBeans(ExecutionContext request) {
         if(request == null) {
             throw new IllegalArgumentException("null 'request' arg in method call.");
         }
@@ -88,7 +88,7 @@ public class BeanAccessor {
      * @param request The request on which the bean is to be stored.
      * @param addToList Is the bean to be added to a bean list.
      */
-    public static void addBean(String beanId, Object bean, ContainerRequest request, boolean addToList) {
+    public static void addBean(String beanId, Object bean, ExecutionContext request, boolean addToList) {
         if(beanId == null) {
             throw new IllegalArgumentException("null 'beanId' arg in method call.");
         }

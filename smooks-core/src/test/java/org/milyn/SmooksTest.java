@@ -20,8 +20,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.milyn.container.standalone.StandaloneContainerRequest;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.SmooksXML;
+import org.milyn.profile.DefaultProfileSet;
 import org.w3c.dom.Node;
 
 import junit.framework.TestCase;
@@ -32,15 +33,15 @@ import junit.framework.TestCase;
  */
 public class SmooksTest extends TestCase {
 
-    private StandaloneContainerRequest request;
+    private StandaloneExecutionContext request;
     
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception {
-        SmooksStandalone smooks = new SmooksStandalone();
-        smooks.registerUseragent("device1", new String[] {"profile1"});
-        request = new StandaloneContainerRequest(smooks.getSession("device1"));
+        Smooks smooks = new Smooks();
+        smooks.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"profile1"}));
+        request = new StandaloneExecutionContext("device1", smooks.getApplicationContext());
     }
 	
 	public void test_applyTransform_bad_params() {

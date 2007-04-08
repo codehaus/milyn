@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.milyn.cdr.ClasspathUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.util.ClassUtil;
 
 /**
@@ -55,11 +55,11 @@ public abstract class ServletResponseWrapperFactory {
 	/**
 	 * ServletResponseWrapper factory method.
 	 * @param resourceConfig Content Delivery Resource definition for the ServletResponseWrapper.
-	 * @param containerRequest Container request.
+	 * @param executionContext Container request.
 	 * @param originalResponse Original Servlet Response.
 	 * @return ServletResponseWrapper instance.
 	 */
-	public static ServletResponseWrapper createServletResponseWrapper(SmooksResourceConfiguration resourceConfig, ContainerRequest containerRequest, HttpServletResponse originalResponse) {
+	public static ServletResponseWrapper createServletResponseWrapper(SmooksResourceConfiguration resourceConfig, ExecutionContext executionContext, HttpServletResponse originalResponse) {
 		Constructor constructor;
 		Class runtime = null;
 		
@@ -72,19 +72,19 @@ public abstract class ServletResponseWrapperFactory {
 			throw state;
 		}
 		try {
-			constructor = runtime.getConstructor(new Class[] {ContainerRequest.class, HttpServletResponse.class});
+			constructor = runtime.getConstructor(new Class[] {ExecutionContext.class, HttpServletResponse.class});
 		} catch (SecurityException e) {
 			IllegalStateException state = new IllegalStateException("Container doesn't have permissions to load class " + runtime);
 			state.initCause(e);
 			throw state;
 		} catch (NoSuchMethodException e) {
-			IllegalStateException state = new IllegalStateException(runtime + " must contain a constructor with an arg signature of (" + ContainerRequest.class + ", " + HttpServletResponse.class + ")");
+			IllegalStateException state = new IllegalStateException(runtime + " must contain a constructor with an arg signature of (" + ExecutionContext.class + ", " + HttpServletResponse.class + ")");
 			state.initCause(e);
 			throw state;
 			}
 
 		try {
-			return (ServletResponseWrapper)constructor.newInstance(new Object[] {containerRequest, originalResponse});
+			return (ServletResponseWrapper)constructor.newInstance(new Object[] {executionContext, originalResponse});
 		} catch (ClassCastException e) {
 			IllegalStateException state = new IllegalStateException("Failed to construct " + resourceConfig.getParameter("class") + ".  Must be an instance of " + ServletResponseWrapper.class);
 			state.initCause(e);

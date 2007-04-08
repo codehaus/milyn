@@ -17,7 +17,7 @@
 package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.process.AbstractProcessingUnit;
 import org.w3c.dom.Element;
 
@@ -65,7 +65,7 @@ public class SetAttributeTU extends AbstractProcessingUnit {
 		visitBefore = resourceConfig.getBoolParameter("visitBefore", false);
 	}
 
-	public void visit(Element element, ContainerRequest request) {
+	public void visit(Element element, ExecutionContext request) {
 		// If the element already has the new attribute and we're
 		// not overwriting, leave all as is and return.
 		if(!overwrite && element.hasAttribute(attributeName)) {

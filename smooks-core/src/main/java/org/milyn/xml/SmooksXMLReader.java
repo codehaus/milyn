@@ -17,7 +17,7 @@
 package org.milyn.xml;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.xml.sax.XMLReader;
 
 /**
@@ -41,5 +41,5 @@ public interface SmooksXMLReader extends XMLReader {
 	 * Set the Smooks container request on the implementing class.
 	 * @param request Container Request.
 	 */
-	public void setRequest(ContainerRequest request);
+	public void setRequest(ExecutionContext request);
 }

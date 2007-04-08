@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.xml.DomUtils;
@@ -61,7 +61,7 @@ public class Serializer {
 	/**
 	 * Target device context.
 	 */
-	private ContainerRequest containerRequest;
+	private ExecutionContext executionContext;
 	/**
 	 * Target content delivery config.
 	 */
@@ -78,18 +78,18 @@ public class Serializer {
 	/**
 	 * Public constructor.
 	 * @param node Node to be serialized.
-	 * @param containerRequest Target device context.
+	 * @param executionContext Target device context.
 	 */
-	public Serializer(Node node, ContainerRequest containerRequest) {
+	public Serializer(Node node, ExecutionContext executionContext) {
 		if(node == null) {
 			throw new IllegalArgumentException("null 'node' arg passed in method call.");
-		} else if(containerRequest == null) {
-			throw new IllegalArgumentException("null 'containerRequest' arg passed in method call.");
+		} else if(executionContext == null) {
+			throw new IllegalArgumentException("null 'executionContext' arg passed in method call.");
 		}
 		this.node = node;
-		this.containerRequest = containerRequest;
+		this.executionContext = executionContext;
 		// Get the delivery context for the device.
-		deliveryConfig = containerRequest.getDeliveryConfig();
+		deliveryConfig = executionContext.getDeliveryConfig();
 		// Initialise the serializationUnits member
 		serializationUnits = deliveryConfig.getSerailizationUnits();
 		// Set the default SerializationUnit
@@ -222,7 +222,7 @@ public class Serializer {
 
 		elementSU = getSerializationUnit(element);
 		try {
-			elementSU.writeElementStart(element, writer, containerRequest);
+			elementSU.writeElementStart(element, writer, executionContext);
 	
 			if(children != null && children.getLength() > 0) {
 				int childCount = children.getLength();
@@ -232,11 +232,11 @@ public class Serializer {
 					
 					switch(childNode.getNodeType()) {
 						case Node.CDATA_SECTION_NODE: {
-							elementSU.writeElementCDATA((CDATASection)childNode, writer, containerRequest);
+							elementSU.writeElementCDATA((CDATASection)childNode, writer, executionContext);
 							break;
 						}		
 						case Node.COMMENT_NODE: { 
-							elementSU.writeElementComment((Comment)childNode, writer, containerRequest);
+							elementSU.writeElementComment((Comment)childNode, writer, executionContext);
 							break;
 						}		
 						case Node.ELEMENT_NODE: { 
@@ -246,23 +246,23 @@ public class Serializer {
 							break;
 						}		
 						case Node.ENTITY_REFERENCE_NODE: { 
-							elementSU.writeElementEntityRef((EntityReference)childNode, writer, containerRequest);
+							elementSU.writeElementEntityRef((EntityReference)childNode, writer, executionContext);
 							break;
 						}		
 						case Node.TEXT_NODE: { 
-							elementSU.writeElementText((Text)childNode, writer, containerRequest);
+							elementSU.writeElementText((Text)childNode, writer, executionContext);
 							break;
 						}		
 						default: {
-							elementSU.writeElementNode(childNode, writer, containerRequest);
+							elementSU.writeElementNode(childNode, writer, executionContext);
 							break;
 						}
 					}
 				}
 			}
-			elementSU.writeElementEnd(element, writer, containerRequest);
+			elementSU.writeElementEnd(element, writer, executionContext);
 		} catch(Throwable thrown) {
-			logger.error("Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", thrown);
+			logger.error("Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", thrown);
 		}
 	}
 

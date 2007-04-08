@@ -17,7 +17,7 @@
 package org.milyn.cdres.assemble;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.assemble.AbstractAssemblyUnit;
 import org.w3c.dom.Element;
 
@@ -48,9 +48,9 @@ public class AssemblyPhaseRequestAttacher extends AbstractAssemblyUnit {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ElementVisitor#visit(org.w3c.dom.Element, org.milyn.container.ContainerRequest)
+	 * @see org.milyn.delivery.ElementVisitor#visit(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
-	public void visit(Element element, ContainerRequest request) {
+	public void visit(Element element, ExecutionContext request) {
 		request.getElementList(element.getTagName()).addElement(element);
 	}
 
@@ -65,6 +65,6 @@ public class AssemblyPhaseRequestAttacher extends AbstractAssemblyUnit {
 	 * @see org.milyn.delivery.ContentDeliveryUnit#getDetailDescription()
 	 */
 	public String getDetailDescription() {
-		return "Attaches the target element to its ElementList during the assembly phase.  ElementList is identified by the element tag name.  See ContainerRequest interface.";
+		return "Attaches the target element to its ElementList during the assembly phase.  ElementList is identified by the element tag name.  See ExecutionContext interface.";
 	}
 }

@@ -19,7 +19,7 @@ package org.milyn.css;
 import java.util.Iterator;
 
 import org.milyn.css.StyleSheetStore.StoreEntry;
-import org.milyn.container.MockContainerRequest;
+import org.milyn.container.MockExecutionContext;
 import org.milyn.magger.CSSStylesheet;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -29,13 +29,13 @@ import junit.framework.TestCase;
 
 public class StyleSheetStoreTest extends TestCase {
 
-	private MockContainerRequest request;
+	private MockExecutionContext request;
 	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
-        request = new MockContainerRequest();
+        request = new MockExecutionContext();
 	}
 
 	public void testGetStore() {

@@ -129,14 +129,19 @@ public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 	}
 
     /**
-     * Add a list of profiles to the ProfileSet.
+     * Add a list of subProfiles to the ProfileSet.
      *
-     * @param profiles
-     *            The array of profiles to add.
+     * @param subProfiles
+     *            The array of sub Profiles to add.
      */
-    public void addProfiles(String[] profiles) {
-        for (int i = 0; i < profiles.length; i++) {
-            addProfile(new BasicProfile(profiles[i]));
+    public void addProfiles(String[] subProfiles) {
+        if(subProfiles == null) {
+            // No sub profiles - that's OK
+            return;
+        }
+
+        for (int i = 0; i < subProfiles.length; i++) {
+            addProfile(new BasicProfile(subProfiles[i]));
         }
     }
 
@@ -160,4 +165,16 @@ public class DefaultProfileSet extends LinkedHashMap implements ProfileSet {
 
 		return setDescription.toString();
 	}
+
+    /**
+     * Utility method for creating a profile set.
+     * @param baseProfile The base profile.
+     * @param subProfiles The sub profiles.
+     * @return The profile set.
+     */
+    public static DefaultProfileSet create(String baseProfile, String[] subProfiles) {
+        DefaultProfileSet profileSet = new DefaultProfileSet(baseProfile);
+        profileSet.addProfiles(subProfiles);
+        return profileSet;
+    }
 }

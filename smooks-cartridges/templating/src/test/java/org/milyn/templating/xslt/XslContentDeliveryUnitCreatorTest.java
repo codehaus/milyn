@@ -19,7 +19,9 @@ package org.milyn.templating.xslt;
 import java.io.InputStream;
 
 import org.milyn.SmooksException;
-import org.milyn.SmooksStandalone;
+import org.milyn.Smooks;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.templating.TemplatingUtils;
 import org.milyn.templating.util.CharUtils;
@@ -33,18 +35,19 @@ import junit.framework.TestCase;
 public class XslContentDeliveryUnitCreatorTest extends TestCase {
 
 	public void testXslUnitTrans_filebased_replace() {
-		SmooksStandalone smooks = new SmooksStandalone();
+		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename", "org/milyn/templating/xslt/xsltransunit.xsl");
 		String transResult = null;
 
 		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
-		smooks.registerUseragent("devicename");
+		smooks.registerProfileSet(new DefaultProfileSet("devicename"));
 		smooks.registerResource(res);
-		TemplatingUtils.registerCDUCreators(smooks.getContext());
+		TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
-			transResult = smooks.filterAndSerialize("devicename", stream);
+            StandaloneExecutionContext context = smooks.createExecutionContext("devicename");
+			transResult = smooks.filterAndSerialize(context, stream);
 		} catch (SmooksException e) {
 			e.printStackTrace();
 			fail("unexpected exception: " + e.getMessage());
@@ -60,7 +63,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 	}
 	
 	public void testXslUnitTrans_parambased(String action, String expectedFileName) {
-		SmooksStandalone smooks = new SmooksStandalone();
+		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename");
 		String transResult = null;
 
@@ -69,13 +72,14 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		res.setParameter("restype", "xsl");
 		res.setParameter("resdata", "<z id=\"{@id}\">Content from template!!</z>");
 		res.setParameter("action", action);
-		smooks.registerUseragent("devicename");
+		smooks.registerProfileSet(new DefaultProfileSet("devicename"));
 		smooks.registerResource(res);
-		TemplatingUtils.registerCDUCreators(smooks.getContext());
+		TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
-			transResult = smooks.filterAndSerialize("devicename", stream);
+            StandaloneExecutionContext context = smooks.createExecutionContext("devicename");
+			transResult = smooks.filterAndSerialize(context, stream);
 		} catch (SmooksException e) {
 			e.printStackTrace();
 			fail("unexpected exception: " + e.getMessage());

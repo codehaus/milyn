@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.assemble.AbstractAssemblyUnit;
 import org.milyn.profile.ProfileSet;
 import org.milyn.magger.CSSParser;
@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  * CSS scraping Assembly Unit.
  * <p/>
  * Gathers CSS information during the Assembly phase.  This information is then
- * available to {@link org.milyn.delivery.process.ProcessUnit processing units} 
+ * available to {@link org.milyn.delivery.process.ProcessingUnit processing units} 
  * during the Processing phase.
  * <p/>
  * Triggered on &lt;style&gt; and &lt;link&gt; elements. Reads and parses the referenced CSS
@@ -104,18 +104,18 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 		return false;
 	}
 	
-	public void visit(Element element, ContainerRequest request) {
+	public void visit(Element element, ExecutionContext request) {
 		String media = DomUtils.getAttributeValue(element, "media");
 		String type = DomUtils.getAttributeValue(element, "type");
 		
-		if(checkMediaAttribute && media != null && !hasMediaProfile(media, request.getUseragentContext().getProfileSet())) {
-			logger.info("Bypassing style. [" + request.getRequestURI() + "]. Requesting device [" + request.getUseragentContext() + "] does not have required media profile [" + media + "].");
+		if(checkMediaAttribute && media != null && !hasMediaProfile(media, request.getTargetProfiles())) {
+			logger.info("Bypassing style. [" + request.getDocumentSource() + "]. Requesting device [" + request.getTargetProfiles() + "] does not have required media profile [" + media + "].");
 			return;
 		} else if(checkTypeAttribute && type != null) {
 			// Check the type attribute - contains "text/css".
 			type = type.trim().toLowerCase();
 			if(!type.equals("text/css")) {
-				logger.info("Bypassing style. [" + request.getRequestURI() + "]. 'type' attribute set but value not 'text/css'.");
+				logger.info("Bypassing style. [" + request.getDocumentSource() + "]. 'type' attribute set but value not 'text/css'.");
 				return;
 			}
 		}
@@ -139,7 +139,7 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 		return false;
 	}
 
-	private void visitStyle(Element element, ContainerRequest request, String media) {
+	private void visitStyle(Element element, ExecutionContext request, String media) {
 		// The style may be enclosed in comment or cdata section nodes.
 		// Extract all "character" data!
 		String style = DomUtils.getAllText(element, false);
@@ -151,12 +151,12 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 				reader = new CharArrayReader(style.toCharArray());
 				parseCSS(element, request, media, new InputSource(reader));
 			} catch(Throwable throwable) {
-				logger.warn("Unable to parse inline style element css. [" + request.getRequestURI() + "]", throwable);
+				logger.warn("Unable to parse inline style element css. [" + request.getDocumentSource() + "]", throwable);
 			}
 		}
 	}
 
-	private void visitLink(Element element, ContainerRequest request, String media) {
+	private void visitLink(Element element, ExecutionContext request, String media) {
 		String href = DomUtils.getAttributeValue(element, "href");
 		String rel = DomUtils.getAttributeValue(element, "rel");
 		URI cssURI;
@@ -169,19 +169,19 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 			// Check the rel attribute contains "stylesheet" and doesn't contain "alternate".
 			rel = rel.trim().toLowerCase();
 			if(checkRelAttributeForStylesheet && rel.indexOf("stylesheet") == -1) {
-				logger.info("Bypassing link element. [" + request.getRequestURI() + "]. 'rel' attribute set but 'stylesheet' not in value.");
+				logger.info("Bypassing link element. [" + request.getDocumentSource() + "]. 'rel' attribute set but 'stylesheet' not in value.");
 				return;
 			} else if(checkRelAttributeForAlternate && rel.indexOf("alternate") != -1) {
-				logger.info("Bypassing linked style element css. [" + request.getRequestURI() + "]. 'rel' attribute declares css as being 'alternate'.");
+				logger.info("Bypassing linked style element css. [" + request.getDocumentSource() + "]. 'rel' attribute declares css as being 'alternate'.");
 				return;
 			}
 		}
 
 		// Resolve the CSS href against the current request.
 		try {
-			cssURI = request.getRequestURI().resolve(new URI(href));
+			cssURI = request.getDocumentSource().resolve(new URI(href));
 		} catch (URISyntaxException e) {
-			logger.warn("Bypassing linked style element css. [" + request.getRequestURI() + "]. Invalid css link 'href' [" + href + "].");
+			logger.warn("Bypassing linked style element css. [" + request.getDocumentSource() + "]. Invalid css link 'href' [" + href + "].");
 			return;
 		}
 		
@@ -189,7 +189,7 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 		try {
 			cssStream = request.getContext().getResourceLocator().getResource(cssURI.toString());
 		} catch (IOException e) {
-			logger.warn("Bypassing linked style element css. [" + request.getRequestURI() + "]. CSS stream read failure.", e);
+			logger.warn("Bypassing linked style element css. [" + request.getDocumentSource() + "]. CSS stream read failure.", e);
 			return;
 		}
 
@@ -197,17 +197,17 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 		try {
 			parseCSS(element, request, media, new InputSource(new InputStreamReader(cssStream)));
 		} catch(Throwable throwable) {
-			logger.warn("Unable to parse linked css. [" + request.getRequestURI() + "]", throwable);
+			logger.warn("Unable to parse linked css. [" + request.getDocumentSource() + "]", throwable);
 		}
 	}
 	
-	private void parseCSS(Element element, ContainerRequest request, String media, InputSource inputSource) throws CSSException, IOException {
+	private void parseCSS(Element element, ExecutionContext request, String media, InputSource inputSource) throws CSSException, IOException {
 		CSSParser parser = new CSSParser(request.getContext().getResourceLocator());
 		CSSStylesheet styleSheet;
 		StyleSheetStore store;
 		
 		store = StyleSheetStore.getStore(request);
-		styleSheet = parser.parse(inputSource, request.getRequestURI(), null, null);
+		styleSheet = parser.parse(inputSource, request.getDocumentSource(), null, null);
 		store.add(styleSheet, element);
 	}
 }

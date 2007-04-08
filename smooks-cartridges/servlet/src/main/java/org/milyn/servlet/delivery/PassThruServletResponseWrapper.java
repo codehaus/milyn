@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 
 /**
  * Pass-through ServletResponseWrapper.
@@ -52,8 +52,8 @@ import org.milyn.container.ContainerRequest;
  */
 public class PassThruServletResponseWrapper extends ServletResponseWrapper {
 
-	public PassThruServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
-		super(containerRequest, originalResponse);
+	public PassThruServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
+		super(executionContext, originalResponse);
 	}
 
 	public void deliverResponse() throws IOException {

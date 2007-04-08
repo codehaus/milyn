@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
  * An element list is used to store a list of references to elements that
  * colaborate with each other during one of the phases of content delivery. 
  * ElementList instances are accessed via the 
- * {@link org.milyn.container.ContainerRequest#getElementList(String)} method.
+ * {@link org.milyn.container.ExecutionContext#getElementList(String)} method.
  * These lists are cleared at the end of the assembly and processing phases.
  * Therefore, they can't be used to attach element references for use between these
  * delivery phases.

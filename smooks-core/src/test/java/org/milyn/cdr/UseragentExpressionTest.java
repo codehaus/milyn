@@ -16,70 +16,70 @@
 
 package org.milyn.cdr;
 
-import org.milyn.useragent.MockUAContext;
+import org.milyn.profile.DefaultProfileSet;
 
 import junit.framework.TestCase;
 
 public class UseragentExpressionTest extends TestCase {
 
-	public void testUseragentExpression() {
-		MockUAContext mockContext1 = new MockUAContext("device1");
-		MockUAContext mockContext2 = new MockUAContext("device2");
+    public void testUseragentExpression() {
+        DefaultProfileSet profileSet1 = new DefaultProfileSet("device1");
+        DefaultProfileSet profileSet2 = new DefaultProfileSet("device2");
 		UseragentExpression expression;
 
 		// Add a few profiles
-		mockContext1.addProfile("profile1");
-		mockContext1.addProfile("profile2");
-		mockContext2.addProfile("profile2");
-		mockContext2.addProfile("accept:application/xhtml+xml");
+		profileSet1.addProfile("profile1");
+		profileSet1.addProfile("profile2");
+		profileSet2.addProfile("profile2");
+		profileSet2.addProfile("accept:application/xhtml+xml");
 		
 		// Match against exact device name
 		expression = new UseragentExpression("device1");
-		assertTrue(expression.isMatch(mockContext1.getProfileSet()));
-		assertTrue(!expression.isMatch(mockContext2.getProfileSet()));
-		assertEquals(new Double(100.0), new Double(expression.getSpecificity(mockContext1.getProfileSet())));
-		assertEquals(new Double(0), new Double(expression.getSpecificity(mockContext2.getProfileSet())));
+		assertTrue(expression.isMatch(profileSet1));
+		assertTrue(!expression.isMatch(profileSet2));
+		assertEquals(new Double(100.0), new Double(expression.getSpecificity(profileSet1)));
+		assertEquals(new Double(0), new Double(expression.getSpecificity(profileSet2)));
 		
 		// Match against wildcard
 		expression = new UseragentExpression("*");
-		assertTrue(expression.isMatch(mockContext1.getProfileSet()));
-		assertTrue(expression.isMatch(mockContext2.getProfileSet()));
-		assertEquals(new Double(5), new Double(expression.getSpecificity(mockContext1.getProfileSet())));
-		assertEquals(new Double(5), new Double(expression.getSpecificity(mockContext2.getProfileSet())));
+		assertTrue(expression.isMatch(profileSet1));
+		assertTrue(expression.isMatch(profileSet2));
+		assertEquals(new Double(5), new Double(expression.getSpecificity(profileSet1)));
+		assertEquals(new Double(5), new Double(expression.getSpecificity(profileSet2)));
 
 		// Match against a profile
 		expression = new UseragentExpression("profile1");
-		assertTrue(expression.isMatch(mockContext1.getProfileSet()));
-		assertTrue(!expression.isMatch(mockContext2.getProfileSet()));
-		assertEquals(new Double(10), new Double(expression.getSpecificity(mockContext1.getProfileSet())));
-		assertEquals(new Double(0), new Double(expression.getSpecificity(mockContext2.getProfileSet())));
+		assertTrue(expression.isMatch(profileSet1));
+		assertTrue(!expression.isMatch(profileSet2));
+		assertEquals(new Double(10), new Double(expression.getSpecificity(profileSet1)));
+		assertEquals(new Double(0), new Double(expression.getSpecificity(profileSet2)));
 
 		// Match against a profile and the device name
 		expression = new UseragentExpression("profile1 AND device1");
-		assertTrue(expression.isMatch(mockContext1.getProfileSet()));
-		assertTrue(!expression.isMatch(mockContext2.getProfileSet()));
-		assertEquals(new Double(110), new Double(expression.getSpecificity(mockContext1.getProfileSet())));
-		assertEquals(new Double(0), new Double(expression.getSpecificity(mockContext2.getProfileSet())));
+		assertTrue(expression.isMatch(profileSet1));
+		assertTrue(!expression.isMatch(profileSet2));
+		assertEquals(new Double(110), new Double(expression.getSpecificity(profileSet1)));
+		assertEquals(new Double(0), new Double(expression.getSpecificity(profileSet2)));
 
 		// Match against 2 profiles
 		expression = new UseragentExpression("profile1 AND profile2");
-		assertTrue(expression.isMatch(mockContext1.getProfileSet()));
-		assertTrue(!expression.isMatch(mockContext2.getProfileSet()));
-		assertEquals(new Double(20), new Double(expression.getSpecificity(mockContext1.getProfileSet())));
-		assertEquals(new Double(0), new Double(expression.getSpecificity(mockContext2.getProfileSet())));
+		assertTrue(expression.isMatch(profileSet1));
+		assertTrue(!expression.isMatch(profileSet2));
+		assertEquals(new Double(20), new Double(expression.getSpecificity(profileSet1)));
+		assertEquals(new Double(0), new Double(expression.getSpecificity(profileSet2)));
 
 		// Match against 1 profile and "not" a device.
 		expression = new UseragentExpression("profile2 AND not:device1");
-		assertTrue(!expression.isMatch(mockContext1.getProfileSet()));
-		assertTrue(expression.isMatch(mockContext2.getProfileSet()));
-		assertEquals(new Double(0), new Double(expression.getSpecificity(mockContext1.getProfileSet())));
-		assertEquals(new Double(11), new Double(expression.getSpecificity(mockContext2.getProfileSet())));
+		assertTrue(!expression.isMatch(profileSet1));
+		assertTrue(expression.isMatch(profileSet2));
+		assertEquals(new Double(0), new Double(expression.getSpecificity(profileSet1)));
+		assertEquals(new Double(11), new Double(expression.getSpecificity(profileSet2)));
 
 		// Match against 1 profile and "not" a profile.
 		expression = new UseragentExpression("accept:application/xhtml+xml AND not:profile1");
-		assertTrue(!expression.isMatch(mockContext1.getProfileSet()));
-		assertTrue(expression.isMatch(mockContext2.getProfileSet()));
-		assertEquals(new Double(0), new Double(expression.getSpecificity(mockContext1.getProfileSet())));
-		assertEquals(new Double(11), new Double(expression.getSpecificity(mockContext2.getProfileSet())));
+		assertTrue(!expression.isMatch(profileSet1));
+		assertTrue(expression.isMatch(profileSet2));
+		assertEquals(new Double(0), new Double(expression.getSpecificity(profileSet1)));
+		assertEquals(new Double(11), new Double(expression.getSpecificity(profileSet2)));
 	}
 }

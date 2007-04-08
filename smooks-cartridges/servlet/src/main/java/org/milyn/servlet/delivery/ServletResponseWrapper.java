@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 
 /**
@@ -41,24 +41,24 @@ public abstract class ServletResponseWrapper extends HttpServletResponseWrapper 
 	/**
 	 * Container request instance.
 	 */
-	private ContainerRequest containerRequest;
+	private ExecutionContext executionContext;
 	
 	/**
 	 * Constructor.
-	 * @param containerRequest Container request.
+	 * @param executionContext Container request.
 	 * @param originalResponse Original servlet response.
 	 */
-	public ServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
+	public ServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
 		super(originalResponse);
-		this.containerRequest = containerRequest;
+		this.executionContext = executionContext;
 	}
 	
 	/**
-	 * Get the {@link ContainerRequest} instance associated with this response wrapper. 
-	 * @return The {@link ContainerRequest}.
+	 * Get the {@link ExecutionContext} instance associated with this response wrapper.
+	 * @return The {@link ExecutionContext}.
 	 */
-	public ContainerRequest getContainerRequest() {
-		return containerRequest;
+	public ExecutionContext getContainerRequest() {
+		return executionContext;
 	}
 
 	/**

@@ -17,13 +17,10 @@
 package org.milyn.javabean;
 
 import java.io.IOException;
-import java.util.List;
 
-import org.milyn.SmooksStandalone;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.MockContainerRequest;
-import org.milyn.container.standalone.StandaloneContainerRequest;
+import org.milyn.container.MockExecutionContext;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -74,7 +71,7 @@ public class BeanPopulatorTest extends TestCase {
 
     public void test_visit_validateSetterName() throws SAXException, IOException {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
-        MockContainerRequest request = new MockContainerRequest();
+        MockExecutionContext request = new MockExecutionContext();
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), false, true);
         
         config.setParameter("beanId", "userBean");
@@ -94,7 +91,7 @@ public class BeanPopulatorTest extends TestCase {
     public void test_visit_1() throws SAXException, IOException {
         SmooksResourceConfiguration config = null;
         ProcessingPhaseBeanPopulator pppu;
-        MockContainerRequest request = new MockContainerRequest();
+        MockExecutionContext request = new MockExecutionContext();
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), false, true);
 
         // create the configuration for populating the "name" property
@@ -132,7 +129,7 @@ public class BeanPopulatorTest extends TestCase {
     /*
     public void test_visit_2() throws SAXException, IOException {
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml2.txt"), false, true);
-    	SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+    	Smooks smooks = new Smooks("UTF-8");
         SmooksResourceConfiguration config;
     	
     	smooks.registerUseragent("u");
@@ -147,7 +144,7 @@ public class BeanPopulatorTest extends TestCase {
         config.setParameter("attributeName", "productId");
         smooks.registerResource(config);
 
-        StandaloneContainerRequest request = smooks.createRequest("u", null);
+        StandaloneExecutionContext request = smooks.createExecutionContext("u", null);
         smooks.filter(request, doc);
         
         List beanList = (List)BeanAccessor.getBean("orderItemList", request);

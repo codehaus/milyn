@@ -20,7 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.milyn.SmooksStandalone;
+import org.milyn.Smooks;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.profile.DefaultProfileSet;
 import org.milyn.templating.TemplatingUtils;
 import org.xml.sax.SAXException;
 
@@ -33,16 +35,17 @@ import junit.framework.TestCase;
 public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
     public void testStringTemplateTrans() throws SAXException, IOException {
-        SmooksStandalone smooks = new SmooksStandalone();
+        Smooks smooks = new Smooks();
 
         // Configure Smooks
-        smooks.registerUseragent("useragent", new String[] {"profile1"});
-        TemplatingUtils.registerCDUCreators(smooks.getContext());
+        smooks.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}));
+        TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
         smooks.registerResources("test-configs", getClass().getResourceAsStream("test-configs.cdrl"));
 
         InputStream stream = 
             new ByteArrayInputStream("<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>".getBytes());
-        String result = smooks.filterAndSerialize("useragent", stream);
+        StandaloneExecutionContext context = smooks.createExecutionContext("useragent");
+        String result = smooks.filterAndSerialize(context, stream);
 
         assertEquals("<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>", result);
     }

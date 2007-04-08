@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
-import org.milyn.SmooksStandalone;
+import org.milyn.Smooks;
+import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.MockContainerResourceLocator;
-import org.milyn.container.standalone.StandaloneContainerContext;
-import org.milyn.container.standalone.StandaloneContainerRequest;
+import org.milyn.container.standalone.StandaloneApplicationContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.magger.CSSProperty;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -34,18 +35,19 @@ import junit.framework.TestCase;
 
 public class CssStyleScraperTest extends TestCase {
 
-    private SmooksStandalone smooks;
-    private StandaloneContainerRequest request;
-    private StandaloneContainerContext context;
+    private Smooks smooks;
+    private StandaloneExecutionContext execContext;
+    private StandaloneApplicationContext appContext;
     
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception {
-        smooks = new SmooksStandalone();
-        smooks.registerUseragent("device1", new String[] {"blah"});
-        request = new StandaloneContainerRequest(URI.create("http://milyn.codehaus.org/myapp/aaa/mypage.html"), null, smooks.getSession("device1"));
-        context = smooks.getSession("device1").getContext();
+        smooks = new Smooks();
+        smooks.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"blah"}));
+        execContext = new StandaloneExecutionContext("device1", null, smooks.getApplicationContext());
+        execContext.setDocumentSource(URI.create("http://milyn.codehaus.org/myapp/aaa/mypage.html"));
+        appContext = smooks.getApplicationContext();
     }
 		
 	public void testProcessPageCSS() {
@@ -58,10 +60,11 @@ public class CssStyleScraperTest extends TestCase {
 		assertTrue("Expected CSS to be processed - href + rel.", 
 				isCSSProcessed("href='mycss.css' rel='xxx stylesheet'"));
 
-        // register a new useragent and recreate the request.
-        smooks.registerUseragent("device1", new String[] {"screen"});
-        request = new StandaloneContainerRequest(URI.create("http://x.com"), null, smooks.getSession("device1"));
-		
+        // register a new profile set and recreate the request.
+        smooks.registerProfileSet(DefaultProfileSet.create("device2", new String[] {"screen"}));
+        execContext = new StandaloneExecutionContext("device2", smooks.getApplicationContext());
+        execContext.setDocumentSource(URI.create("http://x.com"));
+
         assertTrue("Expected CSS to be processed - href + media.", 
 				isCSSProcessed("href='mycss.css' media='screen'"));
 		
@@ -100,9 +103,9 @@ public class CssStyleScraperTest extends TestCase {
 		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
-        context.setResourceLocator(mockrl);
-		delivUnit.visit(style, request);
-		CSSAccessor accessor = CSSAccessor.getInstance(request);
+        appContext.setResourceLocator(mockrl);
+		delivUnit.visit(style, execContext);
+		CSSAccessor accessor = CSSAccessor.getInstance(execContext);
 		
 		CSSProperty property = accessor.getProperty(paragraph, "background-color");
 		assertNotNull("Expected CSS property.", property);
@@ -115,8 +118,8 @@ public class CssStyleScraperTest extends TestCase {
 		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
-        context.setResourceLocator(mockrl);
-		delivUnit.visit(link, request);
+        appContext.setResourceLocator(mockrl);
+		delivUnit.visit(link, execContext);
 		
 		return mockrl.uri;
 	}
@@ -129,8 +132,8 @@ public class CssStyleScraperTest extends TestCase {
 		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
-        context.setResourceLocator(mockrl);
-		delivUnit.visit(link, request);
+        appContext.setResourceLocator(mockrl);
+		delivUnit.visit(link, execContext);
 		
 		return (mockrl.uri != null);
 	}

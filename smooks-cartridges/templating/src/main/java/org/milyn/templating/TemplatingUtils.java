@@ -19,7 +19,7 @@ package org.milyn.templating;
 import java.io.InputStream;
 
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.container.ContainerContext;
+import org.milyn.container.ApplicationContext;
 import org.milyn.util.ClassUtil;
 
 /**
@@ -33,14 +33,14 @@ public class TemplatingUtils {
     /**
      * Register the Templating {@link org.milyn.delivery.ContentDeliveryUnitCreator}
      * implementations defined by this Cartrdge with the suppied Smooks
-     * {@link ContainerContext} store.
+     * {@link ApplicationContext} store.
      * <p/>
      * This method can be used as a convienient way of registering these resources
-     * when using e.g. {@link org.milyn.SmooksStandalone}. Example:
+     * when using e.g. {@link org.milyn.Smooks}. Example:
      * <pre>
-     * SmooksStandalone smooks = new SmooksStandalone("UTF-8");
+     * Smooks smooks = new Smooks("UTF-8");
      * 
-     * TemplatingUtils.registerCDUCreators(smooks.{@link org.milyn.SmooksStandalone#getContext() getContext()}); 
+     * TemplatingUtils.registerCDUCreators(smooks.{@link org.milyn.Smooks#getApplicationContext() getApplicationContext()});
      * </pre>
      * <p/>
      * See {@link org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator}
@@ -48,7 +48,7 @@ public class TemplatingUtils {
      * @param context The context on which the {@link org.milyn.delivery.ContentDeliveryUnitCreator}
      * are to be registered.
      */
-    public static void registerCDUCreators(ContainerContext context) {
+    public static void registerCDUCreators(ApplicationContext context) {
         InputStream stream = ClassUtil.getResourceAsStream(TEMPLATING_CDU_CREATORS_CDRL, TemplatingUtils.class);
         try {
             context.getStore().registerResources(TEMPLATING_CDU_CREATORS_CDRL, stream);

@@ -17,13 +17,12 @@
 package org.milyn.css;
 
 import java.net.URI;
-import java.util.LinkedHashMap;
 
 import junit.framework.TestCase;
 
-import org.milyn.SmooksStandalone;
-import org.milyn.container.MockContainerRequest;
-import org.milyn.container.standalone.StandaloneContainerRequest;
+import org.milyn.Smooks;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.magger.CSSProperty;
 import org.milyn.magger.CSSStylesheet;
 import org.milyn.xml.XmlUtil;
@@ -32,19 +31,20 @@ import org.w3c.dom.Element;
 
 public class CssAccessorTest extends TestCase {
 
-    private SmooksStandalone smooks;
-    private StandaloneContainerRequest request;
+    private Smooks smooks;
+    private StandaloneExecutionContext request;
 	private StyleSheetStore store;
 	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
-        smooks = new SmooksStandalone();
-        smooks.registerUseragent("device1", new String[] {"screen", "audio"});
+        smooks = new Smooks();
+        smooks.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"screen", "audio"}));
 
-        request = new StandaloneContainerRequest(URI.create("http://x.com"), null, smooks.getSession("device1"));
-		store = StyleSheetStore.getStore(request);
+        request = new StandaloneExecutionContext("device1", smooks.getApplicationContext());
+        request.setDocumentSource(URI.create("http://x.com"));
+        store = StyleSheetStore.getStore(request);
 	}
 
 	public void test_getProperty_1() {

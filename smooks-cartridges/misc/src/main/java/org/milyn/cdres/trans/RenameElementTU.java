@@ -17,7 +17,7 @@
 package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.process.AbstractProcessingUnit;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -69,7 +69,7 @@ public class RenameElementTU extends AbstractProcessingUnit {
 		return false;
 	}
 
-	public void visit(Element element, ContainerRequest request) {
+	public void visit(Element element, ExecutionContext request) {
 		DomUtils.renameElement(element, replacementElement, keepChildContent, keepAttributes);
 	}
 }
