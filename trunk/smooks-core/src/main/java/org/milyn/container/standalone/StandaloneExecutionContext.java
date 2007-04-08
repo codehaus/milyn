@@ -22,36 +22,40 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
-import org.milyn.container.ContainerContext;
-import org.milyn.container.ContainerRequest;
-import org.milyn.container.ContainerSession;
+import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ElementList;
-import org.milyn.useragent.UAContext;
+import org.milyn.delivery.ContentDeliveryConfigImpl;
 import org.milyn.util.IteratorEnumeration;
+import org.milyn.profile.ProfileSet;
+import org.milyn.profile.UnknownProfileMemberException;
 
 /**
  * Standalone Container Request implementation.
  * @author tfennelly
  */
-public class StandaloneContainerRequest implements ContainerRequest {
+public class StandaloneExecutionContext implements ExecutionContext {
 
-	private Hashtable attributes = new Hashtable();
-	private StandaloneContainerSession session;
+    private ProfileSet targetProfileSet;
+    private Hashtable attributes = new Hashtable();
 	private Hashtable elementListTable = new Hashtable();
-	private URI requestURI;
-	private LinkedHashMap parameters;
+    private ContentDeliveryConfig deliveryConfig;
+    private URI docSource;
+    private LinkedHashMap parameters;
 	private String contentEncoding;
-    
+    private StandaloneApplicationContext context;
+
     /**
      * Public Constructor.
      * <p/>
      * The request is constructed witin the scope of a container session.  The
      * session is associated with a specific useragent name.
-     * @param session The container session within which this request is to be processed.
+     * @param context The application context.
+     * @throws UnknownProfileMemberException Unknown target profile.
      */
-    public StandaloneContainerRequest(StandaloneContainerSession session) {
-        this(null, null, session);
+    public StandaloneExecutionContext(String targetProfile, StandaloneApplicationContext context) throws UnknownProfileMemberException {
+        this(targetProfile, null, context);
     }
     
 	/**
@@ -59,13 +63,14 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	 * <p/>
 	 * The request is constructed witin the scope of a container session.  The
 	 * session is associated with a specific useragent name.
-	 * @param requestURI The requestURI to be processed.
+	 * @param targetProfile The target base profile for the execution context.
 	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
-	 * @param session The container session within which this request is to be processed.
+     * @param context The application context.
+     * @throws UnknownProfileMemberException Unknown target profile.
 	 */
-	public StandaloneContainerRequest(URI requestURI, LinkedHashMap parameters, StandaloneContainerSession session) {
-		this(requestURI, parameters, session, "UTF-8");
+	public StandaloneExecutionContext(String targetProfile, LinkedHashMap parameters, StandaloneApplicationContext context) throws UnknownProfileMemberException {
+		this(targetProfile, parameters, context, "UTF-8");
 	}
     
 	/**
@@ -73,36 +78,41 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	 * <p/>
 	 * The request is constructed witin the scope of a container session.  The
 	 * session is associated with a specific useragent name.
-	 * @param requestURI The requestURI to be processed.
+	 * @param targetProfile The target profile (base profile) for this context.
 	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
-	 * @param session The container session within which this request is to be processed.
+     * @param context The application context.
 	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
 	 * defaults to "UTF-8".
+     * @throws UnknownProfileMemberException Unknown target profile.
 	 */
-	public StandaloneContainerRequest(URI requestURI, LinkedHashMap parameters, StandaloneContainerSession session, String contentEncoding) {
-		if(session == null) {
-			throw new IllegalArgumentException("null 'session' arg in constructor call.");
-		}
-		this.requestURI = requestURI;
+	public StandaloneExecutionContext(String targetProfile, LinkedHashMap parameters, StandaloneApplicationContext context, String contentEncoding) throws UnknownProfileMemberException {
+        if(targetProfile == null) {
+            throw new IllegalArgumentException("null 'targetProfile' arg in constructor call.");
+        }
+        if(context == null) {
+            throw new IllegalArgumentException("null 'context' arg in constructor call.");
+        }
         if(parameters != null) {
             this.parameters = parameters;
         } else {
             this.parameters = new LinkedHashMap();
         }
-		this.session = session;
+		this.context = context;
 		setContentEncoding(contentEncoding);
-	}
+        targetProfileSet = context.getProfileStore().getProfileSet(targetProfile);        
+        deliveryConfig = ContentDeliveryConfigImpl.getInstance(targetProfileSet, context);
+    }
 
-	public String getContextPath() {
-		return "/";
-	}
-	
-	public URI getRequestURI() {
-		if(requestURI == null) {
-			return URI.create("http://milyn.codehaus.org/request/uri/not/set");
+    public void setDocumentSource(URI docSource) {
+        this.docSource = docSource;
+    }
+
+    public URI getDocumentSource() {
+		if(docSource == null) {
+			return ExecutionContext.DOCUMENT_URI;
 		}
-		return requestURI;
+		return docSource;
 	}
 
 	public Enumeration getParameterNames() {
@@ -115,27 +125,23 @@ public class StandaloneContainerRequest implements ContainerRequest {
 		if(value instanceof String[]) {
 			return (String[])value;
 		}
-		throw new IllegalStateException("Request [" + requestURI + "] parameter [" + name + "] must be of type java.lang.String[] i.e. a String array.");
+		throw new IllegalStateException("Request [" + docSource + "] parameter [" + name + "] must be of type java.lang.String[] i.e. a String array.");
 	}
 
-	public ContainerContext getContext() {
-		return session.getContext();
+	public ApplicationContext getContext() {
+		return context;
 	}
 
-	public ContainerSession getSession() {
-		return session;
-	}
-
-	public UAContext getUseragentContext() {
-		return session.getUseragentContext();
+	public ProfileSet getTargetProfiles() {
+		return targetProfileSet;
 	}
 
 	public ContentDeliveryConfig getDeliveryConfig() {
-		return session.getDeliveryConfig();
+		return deliveryConfig;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getElementList(java.lang.String)
+	 * @see org.milyn.container.ExecutionContext#getElementList(java.lang.String)
 	 */
 	public ElementList getElementList(String name) {
 		String nameLower = name.toLowerCase();
@@ -150,7 +156,7 @@ public class StandaloneContainerRequest implements ContainerRequest {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#clearElementLists()
+	 * @see org.milyn.container.ExecutionContext#clearElementLists()
 	 */
 	public void clearElementLists() {
 		elementListTable.clear();

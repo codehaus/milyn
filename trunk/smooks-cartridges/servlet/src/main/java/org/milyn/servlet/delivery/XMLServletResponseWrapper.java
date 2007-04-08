@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.SmooksXML;
 import org.milyn.xml.Parser;
 import org.milyn.servlet.http.HeaderAction;
@@ -84,14 +84,14 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	
 	/**
 	 * Constructor.
-	 * @param containerRequest Container Request.
+	 * @param executionContext Container Request.
 	 * @param originalResponse Original servlet response.
 	 */
-	public XMLServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
-		super(containerRequest, originalResponse);
-		smooks = new SmooksXML(containerRequest);
-		requestSAXParserConfig = Parser.getSAXParserConfiguration(containerRequest.getDeliveryConfig());
-		initHeaderActions(containerRequest.getDeliveryConfig().getObjects("http-response-header"));
+	public XMLServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
+		super(executionContext, originalResponse);
+		smooks = new SmooksXML(executionContext);
+		requestSAXParserConfig = Parser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
+		initHeaderActions(executionContext.getDeliveryConfig().getObjects("http-response-header"));
 	}
 	
 	static {
@@ -234,7 +234,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
                 try {
                     sourceDoc = parser.parse(inputReader);
                 } catch (SAXException e) {
-                    throw new SmooksException("Unable to filter InputStream for target useragent [" + getContainerRequest().getUseragentContext().getCommonName() + "].", e);
+                    throw new SmooksException("Unable to filter InputStream for target useragent [" + getContainerRequest().getTargetProfiles().getBaseProfile() + "].", e);
                 } 
 
 				logger.info("Filtering content stream from down-stream Servlet/Filter.");

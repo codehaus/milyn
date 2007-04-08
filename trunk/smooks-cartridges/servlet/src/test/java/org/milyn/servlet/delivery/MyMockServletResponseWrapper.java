@@ -20,12 +20,12 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 
 public class MyMockServletResponseWrapper extends ServletResponseWrapper {
 
-	public MyMockServletResponseWrapper(ContainerRequest containerRequest, HttpServletResponse originalResponse) {
-		super(containerRequest, originalResponse);
+	public MyMockServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
+		super(executionContext, originalResponse);
 	}
 
 	public void deliverResponse() throws IOException {

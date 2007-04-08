@@ -17,7 +17,7 @@
 package org.milyn;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.process.AbstractProcessingUnit;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -33,7 +33,7 @@ public class RenameElementTrans extends AbstractProcessingUnit {
 		newElementName = resourceConfig.getStringParameter("new-name");
 	}
 
-	public void visit(Element element, ContainerRequest containerRequest) {
+	public void visit(Element element, ExecutionContext executionContext) {
 		// Rename the element to the configured new name.
 		DomUtils.renameElement(element, newElementName, true, true);
 	}

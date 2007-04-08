@@ -16,7 +16,7 @@
 
 package org.milyn.delivery;
 
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Element;
 
 /**
@@ -30,7 +30,7 @@ import org.w3c.dom.Element;
  * Implementations of this interface (via {@link org.milyn.delivery.assemble.AssemblyUnit}
  * and {@link org.milyn.delivery.process.ProcessingUnit}) provide a means of hooking analysis
  * and transformation logic into the {@link org.milyn.delivery.SmooksXML} filtering process
- * via implementation of the {@link #visit(Element, ContainerRequest)} method.
+ * via implementation of the {@link #visit(Element,ExecutionContext)} method.
  * @author tfennelly
  */
 public interface ElementVisitor extends ContentDeliveryUnit {
@@ -40,20 +40,20 @@ public interface ElementVisitor extends ContentDeliveryUnit {
 	 * Implementations of this method should contain logic to perform an 
 	 * operation on (transformation and/or analysis) the supplied DOM element.
 	 * @param element The DOM element being visited.
-	 * @param containerRequest Request relative instance.
+	 * @param executionContext Request relative instance.
 	 */
-	public abstract void visit(Element element, ContainerRequest containerRequest);
+	public abstract void visit(Element element, ExecutionContext executionContext);
 	
 	/**
-	 * Call the {@link #visit(Element, ContainerRequest)} method of this ElementVisitor 
+	 * Call the {@link #visit(Element,ExecutionContext)} method of this ElementVisitor
 	 * before iterating over the associated elements child content.
 	 * <p/>
-	 * This method simply controls when the {@link #visit(Element, ContainerRequest)} method is
+	 * This method simply controls when the {@link #visit(Element,ExecutionContext)} method is
 	 * called on the target element relative to Smooks iterating over the target elements child 
 	 * content i.e. before (true) or after (false).
-	 * @return <code>true</code> if the {@link #visit(Element, ContainerRequest)} method 
+	 * @return <code>true</code> if the {@link #visit(Element,ExecutionContext)} method
 	 * should be called before iterating over the target element's child content, <code>false</code> 
-	 * if the {@link #visit(Element, ContainerRequest)} method should be called after iterating 
+	 * if the {@link #visit(Element,ExecutionContext)} method should be called after iterating
 	 * over the target element's child content.
 	 */
 	public abstract boolean visitBefore();

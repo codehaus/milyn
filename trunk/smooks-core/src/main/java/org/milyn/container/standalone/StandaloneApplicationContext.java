@@ -24,9 +24,11 @@ import java.util.Hashtable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
-import org.milyn.container.ContainerContext;
+import org.milyn.container.ApplicationContext;
 import org.milyn.profile.DefaultProfileConfigDigester;
 import org.milyn.profile.ProfileStore;
+import org.milyn.profile.Profile;
+import org.milyn.profile.DefaultProfileSet;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
@@ -38,9 +40,15 @@ import org.xml.sax.SAXException;
  * Servlet Container.
  * @author tfennelly
  */
-public class StandaloneContainerContext implements ContainerContext {
+public class StandaloneApplicationContext implements ApplicationContext {
 
-    private static Log logger = LogFactory.getLog(StandaloneContainerContext.class);
+    /**
+     * The open profile is a special profile for {@link org.milyn.container.ExecutionContext}
+     * instances that are not interested in using profiles.
+     */
+    public static final String OPEN_PROFILE_NAME = Profile.class.getName() + "#OPEN_PROFILE_NAME";
+
+    private static Log logger = LogFactory.getLog(StandaloneApplicationContext.class);
 	private static final String DEVICE_PROFILE_XML = "/device-profile.xml";
 	private Hashtable attributes = new Hashtable();
 	private Hashtable sessions = new Hashtable();
@@ -53,7 +61,7 @@ public class StandaloneContainerContext implements ContainerContext {
      * <p/>
      * 
      */
-    public StandaloneContainerContext() {
+    public StandaloneApplicationContext() {
         resourceLocator = new URIResourceLocator();
         ((URIResourceLocator)resourceLocator).setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
         resStore = new SmooksResourceConfigurationStore(this);
@@ -64,12 +72,12 @@ public class StandaloneContainerContext implements ContainerContext {
 	 * Public constructor.
 	 * <p/>
 	 * Context instances constructed in this way can be populated manually with
-	 * {@link org.milyn.device.profile.Profile} and {@link org.milyn.cdr.SmooksResourceConfiguration}
+	 * {@link org.milyn.profile.Profile} and {@link org.milyn.cdr.SmooksResourceConfiguration}
 	 * info.  This supports non-XML type configuration.
 	 * @param profileStore The {@link ProfileStore} for tis context.
 	 * @param resourceLocator The {@link ContainerResourceLocator} for this context.
 	 */
-	public StandaloneContainerContext(ProfileStore profileStore, ContainerResourceLocator resourceLocator) {
+	public StandaloneApplicationContext(ProfileStore profileStore, ContainerResourceLocator resourceLocator) {
         this();
 		if(profileStore == null) {
 			throw new IllegalArgumentException("null 'profileStore' arg in constructor call.");
@@ -86,7 +94,8 @@ public class StandaloneContainerContext implements ContainerContext {
 		ContainerResourceLocator resLocator = getResourceLocator();
 		DefaultProfileConfigDigester profileDigester = new DefaultProfileConfigDigester();
 		InputStream configStream;
-		try {
+
+        try {
 			configStream = resLocator.getResource("device-profiles", DEVICE_PROFILE_XML);
 		} catch (IOException e) {
             logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container.");
@@ -101,7 +110,10 @@ public class StandaloneContainerContext implements ContainerContext {
 			state.initCause(e);
 			throw state;
 		}
-	}
+
+        // Add the open profile...
+        profileStore.addProfileSet(OPEN_PROFILE_NAME, new DefaultProfileSet(OPEN_PROFILE_NAME));
+    }
 
 	/* (non-Javadoc)
 	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
@@ -142,26 +154,4 @@ public class StandaloneContainerContext implements ContainerContext {
 	public ProfileStore getProfileStore() {
 		return profileStore;
 	}
-
-	/**
-	 * Get a session instance for the specified useragent.
-	 * @param useragent Useragent identification.
-	 * @return Standalone Session instance.
-	 */
-	public StandaloneContainerSession getSession(String useragent) {
-		StandaloneContainerSession session;
-		
-		if(useragent == null || useragent.trim().equals("")) {
-			throw new IllegalArgumentException("null or empty 'useragent' arg in method call.");
-		}
-		session = (StandaloneContainerSession) sessions.get(useragent);
-		if(session == null) {
-			// create a new session for the requesting useragent
-			session = new StandaloneContainerSession(useragent, this);
-			sessions.put(useragent, session);
-		}
-		
-		return session;
-	}
-
 }

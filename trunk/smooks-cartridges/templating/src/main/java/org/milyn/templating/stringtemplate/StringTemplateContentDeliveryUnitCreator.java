@@ -24,7 +24,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.javabean.BeanAccessor;
@@ -155,7 +155,7 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             template = templateGroup.getInstanceOf(path);
         }
 
-        public void visit(Element element, ContainerRequest request) {
+        public void visit(Element element, ExecutionContext request) {
             // First thing we do is clone the template for this transformation...
             StringTemplate thisTransTemplate = template.getInstanceOf();
             HashMap beans = BeanAccessor.getBeans(request);

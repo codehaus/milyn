@@ -17,26 +17,22 @@
 package org.milyn.container.standalone;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 
 import junit.framework.TestCase;
 
-import org.milyn.SmooksStandalone;
+import org.milyn.Smooks;
 import org.milyn.useragent.UnknownUseragentException;
 import org.xml.sax.SAXException;
 
 public class StandaloneContainerUtil {
 
-	public static StandaloneContainerRequest getRequest(String requestURI, String useragent) {
-		StandaloneContainerRequest request = null;
+	public static StandaloneExecutionContext getRequest(String requestURI, String useragent) {
+		StandaloneExecutionContext request = null;
 		try {
-			SmooksStandalone smooksSA = new PreconfiguredSmooksStandalone();
-			request = new StandaloneContainerRequest(new URI(requestURI), new LinkedHashMap(), smooksSA.getSession(useragent));
+			Smooks smooksSA = new PreconfiguredSmooks();
+			request = new StandaloneExecutionContext(useragent, new LinkedHashMap(), smooksSA.getApplicationContext());
 		} catch (UnknownUseragentException e) {
-			TestCase.fail(e.getMessage());
-		} catch (URISyntaxException e) {
 			TestCase.fail(e.getMessage());
 		} catch (SAXException e) {
             TestCase.fail(e.getMessage());

@@ -24,82 +24,66 @@ import java.util.LinkedHashMap;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ElementList;
 import org.milyn.delivery.MockContentDeliveryConfig;
-import org.milyn.useragent.MockUAContext;
-import org.milyn.useragent.UAContext;
 import org.milyn.util.IteratorEnumeration;
+import org.milyn.profile.ProfileSet;
 
 /**
  * 
  * @author tfennelly
  */
-public class MockContainerRequest implements ContainerRequest {
+public class MockExecutionContext implements ExecutionContext {
 
 	public String contextPath;
-	public URI requestURI;
-	public MockUAContext uaContext;
+	public URI docSource;
+	public ProfileSet profileSet;
 	public ContentDeliveryConfig deliveryConfig = new MockContentDeliveryConfig();
-	public MockContainerSession session = new MockContainerSession();
-	public MockContainerContext context = new MockContainerContext();
+	public MockApplicationContext context = new MockApplicationContext();
 	private Hashtable attributes = new Hashtable();
 	public LinkedHashMap parameters = new LinkedHashMap();
 	public Hashtable headers = new Hashtable();
 	public Hashtable elementListTable = new Hashtable();
 	
 
-	public String getContextPath() {
-		return contextPath;
-	}
-
-	public URI getRequestURI() {
-		return requestURI;
+	public URI getDocumentSource() {
+		return docSource;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getParameterNames()
+	 * @see org.milyn.container.ExecutionContext#getParameterNames()
 	 */
 	public Enumeration getParameterNames() {
 		return (new IteratorEnumeration(parameters.keySet().iterator()));
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getParameterValues(java.lang.String)
+	 * @see org.milyn.container.ExecutionContext#getParameterValues(java.lang.String)
 	 */
 	public String[] getParameterValues(String name) {
 		return (String[])parameters.get(name);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getContext()
+	 * @see org.milyn.container.ExecutionContext#getApplicationContext()
 	 */
-	public ContainerContext getContext() {
+	public ApplicationContext getContext() {
 		if(context == null) {
-			throw new IllegalStateException("Call to getContext before context member has been initialised.  Set the 'context' member variable.");
+			throw new IllegalStateException("Call to getApplicationContext before context member has been initialised.  Set the 'context' member variable.");
 		}
 		return context;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getSession()
+	 * @see org.milyn.container.ExecutionContext#getTargetProfiles()
 	 */
-	public ContainerSession getSession() {
-		if(session == null) {
-			throw new IllegalStateException("Call to getSession before session member has been initialised.  Set the 'session' member variable.");
+	public ProfileSet getTargetProfiles() {
+		if(profileSet == null) {
+			throw new IllegalStateException("Call to getTargetProfiles before uaContext member has been initialised.  Set the 'uaContext' member variable.");
 		}
-		return session;
+		return profileSet;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getUseragentContext()
-	 */
-	public UAContext getUseragentContext() {
-		if(uaContext == null) {
-			throw new IllegalStateException("Call to getUseragentContext before uaContext member has been initialised.  Set the 'uaContext' member variable.");
-		}
-		return uaContext;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getDeliveryConfig()
+	 * @see org.milyn.container.ExecutionContext#getDeliveryConfig()
 	 */
 	public ContentDeliveryConfig getDeliveryConfig() {
 		if(deliveryConfig == null) {
@@ -144,7 +128,7 @@ public class MockContainerRequest implements ContainerRequest {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getElementList(java.lang.String)
+	 * @see org.milyn.container.ExecutionContext#getElementList(java.lang.String)
 	 */
 	public ElementList getElementList(String name) {
 		String nameLower = name.toLowerCase();
@@ -159,7 +143,7 @@ public class MockContainerRequest implements ContainerRequest {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#clearElementLists()
+	 * @see org.milyn.container.ExecutionContext#clearElementLists()
 	 */
 	public void clearElementLists() {
 		elementListTable.clear();

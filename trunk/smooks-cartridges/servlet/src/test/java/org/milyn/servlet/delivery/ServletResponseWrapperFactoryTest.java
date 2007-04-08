@@ -17,7 +17,7 @@
 package org.milyn.servlet.delivery;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.MockContainerRequest;
+import org.milyn.container.MockExecutionContext;
 
 import com.mockobjects.servlet.MockHttpServletResponse;
 
@@ -30,7 +30,7 @@ public class ServletResponseWrapperFactoryTest extends TestCase {
 
 	public void testCreateServletResponseWrapper() {
 		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("testrespwrapfactory", MyMockServletResponseWrapper.class.getName());
-		MockContainerRequest request = new MockContainerRequest();
+		MockExecutionContext request = new MockExecutionContext();
 		MockHttpServletResponse mockServletResponse = new MockHttpServletResponse();
 
 		ServletResponseWrapper wrapper = ServletResponseWrapperFactory.createServletResponseWrapper(resourceConfig, request, mockServletResponse);

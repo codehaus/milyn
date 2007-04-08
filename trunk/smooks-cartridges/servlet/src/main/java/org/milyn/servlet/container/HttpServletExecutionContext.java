@@ -23,23 +23,23 @@ import java.util.Hashtable;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
-import org.milyn.container.ContainerContext;
-import org.milyn.container.ContainerRequest;
-import org.milyn.container.ContainerSession;
+import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigImpl;
 import org.milyn.delivery.ElementList;
 import org.milyn.useragent.UAContext;
 import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.servlet.ServletUAContext;
+import org.milyn.profile.ProfileSet;
 
 /**
- * Smooks ContainerRequest implementation for the HttpServlet container.
+ * Smooks ExecutionContext implementation for the HttpServlet container.
  * @author tfennelly
  */
-public class HttpServletContainerRequest implements ContainerRequest {
+public class HttpServletExecutionContext implements ExecutionContext {
 
-	/**
+    /**
 	 * HttpServletRequest instance.
 	 */
 	private HttpServletRequest servletRequest;
@@ -52,13 +52,9 @@ public class HttpServletContainerRequest implements ContainerRequest {
 	 */
 	private ContentDeliveryConfig deliveryConfig;
 	/**
-	 * Associated ContainerSession for the servlet environment.
+	 * Associated ApplicationContext for the servlet environment.
 	 */
-	private ContainerSession session;
-	/**
-	 * Associated ContainerContext for the servlet environment.
-	 */
-	private ContainerContext containerContext;
+	private ApplicationContext applicationContext;
 	/**
 	 * ElementList table for request.
 	 */
@@ -74,31 +70,23 @@ public class HttpServletContainerRequest implements ContainerRequest {
 	 * @param servletConfig ServletConfig instance.
 	 * @throws UnknownUseragentException Unable to match device.
 	 */
-	public HttpServletContainerRequest(HttpServletRequest servletRequest, ServletConfig servletConfig, ServletContainerContext containerContext) throws UnknownUseragentException {
+	public HttpServletExecutionContext(HttpServletRequest servletRequest, ServletConfig servletConfig, ServletApplicationContext containerContext) throws UnknownUseragentException {
 		if(servletRequest == null) {
 			throw new IllegalArgumentException("null 'servletRequest' arg in constructor call.");
 		}
 		if(containerContext == null) {
-			throw new IllegalArgumentException("null 'containerContext' arg in constructor call.");
+			throw new IllegalArgumentException("null 'applicationContext' arg in constructor call.");
 		}		
 		this.servletRequest = servletRequest;
-		this.containerContext = containerContext;
+		this.applicationContext = containerContext;
 		uaContext = ServletUAContext.getInstance(servletRequest, servletConfig);
-		session = new HttpServletContainerSession(servletRequest.getSession());
 		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext.getProfileSet(), containerContext);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getContextPath()
+	 * @see org.milyn.container.ExecutionContext#getDocumentSource()
 	 */
-	public String getContextPath() {
-		return servletRequest.getContextPath();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getRequestURI()
-	 */
-	public URI getRequestURI() {
+	public URI getDocumentSource() {
 		if(requestURI == null) {
 			String queryString = servletRequest.getQueryString();
 			if(queryString != null) {
@@ -125,42 +113,35 @@ public class HttpServletContainerRequest implements ContainerRequest {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getParameterNames()
+	 * @see org.milyn.container.ExecutionContext#getParameterNames()
 	 */
 	public Enumeration getParameterNames() {
 		return servletRequest.getParameterNames();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getParameterValues(java.lang.String)
+	 * @see org.milyn.container.ExecutionContext#getParameterValues(java.lang.String)
 	 */
 	public String[] getParameterValues(String name) {
 		return servletRequest.getParameterValues(name);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getContext()
+	 * @see org.milyn.container.ExecutionContext#getApplicationContext()
 	 */
-	public ContainerContext getContext() {
-		return containerContext;
+	public ApplicationContext getContext() {
+		return applicationContext;
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getSession()
+	 * @see org.milyn.container.ExecutionContext#getTargetProfiles()
 	 */
-	public ContainerSession getSession() {
-		return session;
+	public ProfileSet getTargetProfiles() {
+		return uaContext.getProfileSet();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getUseragentContext()
-	 */
-	public UAContext getUseragentContext() {
-		return uaContext;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getDeliveryConfig()
+	 * @see org.milyn.container.ExecutionContext#getDeliveryConfig()
 	 */
 	public ContentDeliveryConfig getDeliveryConfig() {
 		return deliveryConfig;
@@ -188,7 +169,7 @@ public class HttpServletContainerRequest implements ContainerRequest {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#getElementList(java.lang.String)
+	 * @see org.milyn.container.ExecutionContext#getElementList(java.lang.String)
 	 */
 	public ElementList getElementList(String name) {
 		String nameLower = name.toLowerCase();
@@ -203,14 +184,14 @@ public class HttpServletContainerRequest implements ContainerRequest {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerRequest#clearElementLists()
+	 * @see org.milyn.container.ExecutionContext#clearElementLists()
 	 */
 	public void clearElementLists() {
 		elementListTable.clear();
 	}
 	
 	/**
-	 * Get the HttpServletRequest instance associated with this ContainerRequest 
+	 * Get the HttpServletRequest instance associated with this ExecutionContext
 	 * implementation.
 	 * @return HttpServletRequest instance.
 	 */

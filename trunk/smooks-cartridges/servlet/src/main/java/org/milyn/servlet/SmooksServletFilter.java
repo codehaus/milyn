@@ -37,11 +37,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.resource.ContainerResourceLocator;
-import org.milyn.servlet.container.HttpServletContainerRequest;
-import org.milyn.servlet.container.ServletContainerContext;
+import org.milyn.servlet.container.HttpServletExecutionContext;
+import org.milyn.servlet.container.ServletApplicationContext;
 import org.milyn.servlet.delivery.ServletResponseWrapper;
 import org.milyn.servlet.delivery.ServletResponseWrapperFactory;
 import org.milyn.servlet.delivery.XMLServletResponseWrapper;
@@ -116,7 +116,7 @@ public class SmooksServletFilter implements Filter {
 	/**
 	 * Smooks view on the servlet context.
 	 */
-	private ServletContainerContext smooksContainerContext;
+	private ServletApplicationContext smooksContainerContext;
 	/**
 	 * FilterConfig adapter.
 	 */
@@ -132,7 +132,7 @@ public class SmooksServletFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 		try {
 			servletConfig = new FilterToServletConfigAdapter(config);
-			smooksContainerContext = new ServletContainerContext(config.getServletContext(), servletConfig);
+			smooksContainerContext = new ServletApplicationContext(config.getServletContext(), servletConfig);
 			loadCdrarStore();
 			logger.info("Smooks Servlet Filter initalised.");
 		} catch(Exception e) {
@@ -165,22 +165,22 @@ public class SmooksServletFilter implements Filter {
 
 		try {
 			long startTime = 0L;
-			ContainerRequest containerRequest = new HttpServletContainerRequest((HttpServletRequest)request, servletConfig, smooksContainerContext);
+			ExecutionContext executionContext = new HttpServletExecutionContext((HttpServletRequest)request, servletConfig, smooksContainerContext);
 
 			if(logger.isDebugEnabled()) {
 				startTime = System.currentTimeMillis();
 			}
 
 			// Check for a response wrapper configuration on the request.
-			responseWrapper = getResponseWrapper(request.getParameter("smooksrw"), response, containerRequest);
+			responseWrapper = getResponseWrapper(request.getParameter("smooksrw"), response, executionContext);
 			if(responseWrapper == null) {
 				// Check for a response wrapper configuration for HTML.  This allows
 				// overridding of the default (below).
-				responseWrapper = getResponseWrapper("html-smooksrw", response, containerRequest);
+				responseWrapper = getResponseWrapper("html-smooksrw", response, executionContext);
 			}
 			if(responseWrapper == null) {
 				// Default to the XMLServletResponseWrapper.
-				responseWrapper = new XMLServletResponseWrapper(containerRequest, (HttpServletResponse)response);
+				responseWrapper = new XMLServletResponseWrapper(executionContext, (HttpServletResponse)response);
 			}
 
 			if(logger.isDebugEnabled()) {
@@ -209,17 +209,17 @@ public class SmooksServletFilter implements Filter {
 	 * @param selector The smooks-resource selector id for the required ServletResponseWrapper
 	 * configuration.
 	 * @param response The original servlet response (to be wrapped).
-	 * @param containerRequest The Smooks ContainerRequest instance.
+	 * @param executionContext The Smooks ExecutionContext instance.
 	 * @return The ServletResponseWrapper instance, or null if no such response wrapper is
 	 * configured for the requesting device.
 	 */
-	private ServletResponseWrapper getResponseWrapper(String selector, ServletResponse response, ContainerRequest containerRequest) {
+	private ServletResponseWrapper getResponseWrapper(String selector, ServletResponse response, ExecutionContext executionContext) {
 		ServletResponseWrapper responseWrapper = null; 
 		
 		if(selector != null) {
-			List resourceConfigList = containerRequest.getDeliveryConfig().getSmooksResourceConfigurations(selector);
+			List resourceConfigList = executionContext.getDeliveryConfig().getSmooksResourceConfigurations(selector);
 			if(resourceConfigList != null && !resourceConfigList.isEmpty()) {
-				responseWrapper = ServletResponseWrapperFactory.createServletResponseWrapper((SmooksResourceConfiguration)resourceConfigList.get(0), containerRequest, (HttpServletResponse)response);
+				responseWrapper = ServletResponseWrapperFactory.createServletResponseWrapper((SmooksResourceConfiguration)resourceConfigList.get(0), executionContext, (HttpServletResponse)response);
 			}
 		}
 		

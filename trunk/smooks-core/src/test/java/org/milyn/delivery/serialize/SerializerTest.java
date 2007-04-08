@@ -22,7 +22,7 @@ import java.io.OutputStreamWriter;
 import java.util.Vector;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.MockContainerRequest;
+import org.milyn.container.MockExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.delivery.MockContentDeliveryConfig;
 import org.milyn.delivery.serialize.Serializer;
@@ -45,7 +45,7 @@ public class SerializerTest extends TestCase {
 	}
 
 	public void testSerailize() {
-		MockContainerRequest containerRequest = new MockContainerRequest();
+		MockExecutionContext containerRequest = new MockExecutionContext();
 		
 		// Don't write xxx but write its child elements
 		SmooksResourceConfiguration unitDef = new SmooksResourceConfiguration("xxx", "deviceX", "....");

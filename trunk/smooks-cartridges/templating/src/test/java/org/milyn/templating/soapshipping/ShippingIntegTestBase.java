@@ -19,7 +19,9 @@ package org.milyn.templating.soapshipping;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.milyn.SmooksStandalone;
+import org.milyn.Smooks;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.profile.DefaultProfileSet;
 import org.milyn.templating.TemplatingUtils;
 import org.milyn.templating.util.CharUtils;
 import org.xml.sax.SAXException;
@@ -29,21 +31,23 @@ import junit.framework.TestCase;
 public abstract class ShippingIntegTestBase extends TestCase {
 
     public void testTransform() throws SAXException, IOException {
-        SmooksStandalone smooks = new SmooksStandalone();
+        Smooks smooks = new Smooks();
 
         // Configure Smooks
-        smooks.registerUseragent("shipping-request");
-        smooks.registerUseragent("shipping-response");
-        TemplatingUtils.registerCDUCreators(smooks.getContext());
+        smooks.registerProfileSet(new DefaultProfileSet("shipping-request"));
+        smooks.registerProfileSet(new DefaultProfileSet("shipping-response"));
+        TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
         smooks.registerResources("trans-request", getClass().getResourceAsStream("trans-request.cdrl"));
         smooks.registerResources("trans-response", getClass().getResourceAsStream("trans-response.cdrl"));
                 
         InputStream requestStream = getClass().getResourceAsStream("../request.xml");
-        String requestResult = smooks.filterAndSerialize("shipping-request", requestStream);
+        StandaloneExecutionContext context = smooks.createExecutionContext("shipping-request");
+        String requestResult = smooks.filterAndSerialize(context, requestStream);
 		CharUtils.assertEquals("Template test failed.", "/org/milyn/templating/soapshipping/request.xml.tran.expected", requestResult);
 
         InputStream responseStream = getClass().getResourceAsStream("../response.xml");
-        String responseResult = smooks.filterAndSerialize("shipping-response", responseStream);
+        context = smooks.createExecutionContext("shipping-response");
+        String responseResult = smooks.filterAndSerialize(context, responseStream);
 		CharUtils.assertEquals("Template test failed.", "/org/milyn/templating/soapshipping/response.xml.tran.expected", responseResult);
     }
 }

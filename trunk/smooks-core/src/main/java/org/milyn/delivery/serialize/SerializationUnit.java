@@ -19,7 +19,7 @@ package org.milyn.delivery.serialize;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -60,10 +60,10 @@ public interface SerializationUnit extends ContentDeliveryUnit {
 	 * EG: &lt;a href="http://www.x.com"&gt;
 	 * @param element The element start to write.
 	 * @param writer The writer to be written to.
-	 * @param containerRequest ContainerRequest instance for the delivery context.
+	 * @param executionContext ExecutionContext instance for the delivery context.
 	 * @throws IOException Exception writing output.
 	 */
-	public abstract void writeElementStart(Element element, Writer writer, ContainerRequest containerRequest) throws IOException;
+	public abstract void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException;
 
 	/**
 	 * Write the element end portion; close the element.
@@ -71,46 +71,46 @@ public interface SerializationUnit extends ContentDeliveryUnit {
 	 * EG: &lt;/a&gt;
 	 * @param element The element end to write.
 	 * @param writer The writer to be written to.
-	 * @param containerRequest ContainerRequest instance for the delivery context.
+	 * @param executionContext ExecutionContext instance for the delivery context.
 	 * @throws IOException Exception writing output.
 	 */
-	public abstract void writeElementEnd(Element element, Writer writer, ContainerRequest containerRequest) throws IOException;
+	public abstract void writeElementEnd(Element element, Writer writer, ExecutionContext executionContext) throws IOException;
 
 	/**
 	 * Write element text.
 	 * @param text The Text object to write.
 	 * @param writer The writer to be written to.
-	 * @param containerRequest ContainerRequest instance for the delivery context.
+	 * @param executionContext ExecutionContext instance for the delivery context.
 	 * @throws IOException Exception writing output.
 	 */
-	public abstract void writeElementText(Text text, Writer writer, ContainerRequest containerRequest) throws IOException;
+	public abstract void writeElementText(Text text, Writer writer, ExecutionContext executionContext) throws IOException;
 	
 	/**
 	 * Write element comment.
 	 * @param comment The comment o write.
 	 * @param writer The writer to be written to.
-	 * @param containerRequest ContainerRequest instance for the delivery context.
+	 * @param executionContext ExecutionContext instance for the delivery context.
 	 * @throws IOException Exception writing output.
 	 */
-	public abstract void writeElementComment(Comment comment, Writer writer, ContainerRequest containerRequest) throws IOException;
+	public abstract void writeElementComment(Comment comment, Writer writer, ExecutionContext executionContext) throws IOException;
 
 	/**
 	 * Write element entity reference object.
 	 * @param entityRef The entity reference to write.
 	 * @param writer The writer to be written to.
-	 * @param containerRequest ContainerRequest instance for the delivery context.
+	 * @param executionContext ExecutionContext instance for the delivery context.
 	 * @throws IOException Exception writing output.
 	 */
-	public abstract void writeElementEntityRef(EntityReference entityRef, Writer writer, ContainerRequest containerRequest) throws IOException;
+	public abstract void writeElementEntityRef(EntityReference entityRef, Writer writer, ExecutionContext executionContext) throws IOException;
 	
 	/**
 	 * Write element CDATA section.
 	 * @param cdata The CDATA section to write.
 	 * @param writer The writer to be written to.
-	 * @param containerRequest ContainerRequest instance for the delivery context.
+	 * @param executionContext ExecutionContext instance for the delivery context.
 	 * @throws IOException Exception writing output.
 	 */
-	public abstract void writeElementCDATA(CDATASection cdata, Writer writer, ContainerRequest containerRequest) throws IOException;
+	public abstract void writeElementCDATA(CDATASection cdata, Writer writer, ExecutionContext executionContext) throws IOException;
 
 	/**
 	 * Write element Node object.
@@ -119,10 +119,10 @@ public interface SerializationUnit extends ContentDeliveryUnit {
 	 * this interface.
 	 * @param node The node to write.
 	 * @param writer The writer to be written to.
-	 * @param containerRequest ContainerRequest instance for the delivery context.
+	 * @param executionContext ExecutionContext instance for the delivery context.
 	 * @throws IOException Exception writing output.
 	 */
-	public abstract void writeElementNode(Node node, Writer writer, ContainerRequest containerRequest) throws IOException;
+	public abstract void writeElementNode(Node node, Writer writer, ExecutionContext executionContext) throws IOException;
 	
 	/**
 	 * Write the child elements of the element this SerializationUnit is being applied to.

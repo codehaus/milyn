@@ -46,8 +46,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
 	/**
 	 * Logger.
 	 */
-	private static final Log logger = LogFactory
-			.getLog(URIResourceLocator.class);
+	private static final Log logger = LogFactory.getLog(URIResourceLocator.class);
 
 	/**
 	 * Scheme name for classpath based resources.

@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ElementVisitor;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
@@ -131,7 +131,7 @@ public abstract class AbstractBeanPopulator implements ElementVisitor {
      * @param element Element being visited.
      * @param request Container request.
      */
-    public void visit(Element element, ContainerRequest request) {
+    public void visit(Element element, ExecutionContext request) {
         if(logger.isDebugEnabled()) {
         	logger.debug("Visiting bean populator for beanId [" + beanId + "] on element " + DomUtils.getXPath(element));
         }
@@ -169,7 +169,7 @@ public abstract class AbstractBeanPopulator implements ElementVisitor {
      * be bound.
      * @return The bean instance.
      */
-    private Object getBean(ContainerRequest request) {
+    private Object getBean(ExecutionContext request) {
         Object bean = null;
 
         // If the configuration associated with this populator instance has a beanClass

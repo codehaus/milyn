@@ -20,12 +20,12 @@ import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
 
 /**
- * Smooks container context interface definition.
+ * Smooks Application context interface definition.
  * @author tfennelly
  */
-public interface ContainerContext extends BoundAttributeStore {
+public interface ApplicationContext extends BoundAttributeStore {
 
-	/**
+    /**
 	 * Get the container resource locator for the context.
 	 * @return ContainerResourceLocator for the context.
 	 */

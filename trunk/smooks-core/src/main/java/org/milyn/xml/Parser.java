@@ -29,7 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.w3c.dom.CDATASection;
@@ -75,7 +75,7 @@ public class Parser {
 
 	private static Log logger = LogFactory.getLog(Parser.class);
 	private static DocumentBuilder documentBuilder;
-	private ContainerRequest request;
+	private ExecutionContext request;
 	private HashSet emptyElements = new HashSet();
     private SmooksResourceConfiguration saxDriverConfig;
     
@@ -102,7 +102,7 @@ public class Parser {
 	 * See <a href="#parserconfig">.cdrl Configuration</a>.
 	 * @param request The Smooks Container Request that the parser is being instantiated on behalf of.
 	 */
-	public Parser(ContainerRequest request) {
+	public Parser(ExecutionContext request) {
 		if(request == null) {
 			throw new IllegalArgumentException("null 'request' arg in method call.");
 		}
@@ -118,7 +118,7 @@ public class Parser {
 	 * @param request The Smooks Container Request that the parser is being instantiated on behalf of.
 	 * @param saxDriverConfig SAX Parser configuration. See <a href="#parserconfig">.cdrl Configuration</a>.
 	 */
-    public Parser(ContainerRequest request, SmooksResourceConfiguration saxDriverConfig) {
+    public Parser(ExecutionContext request, SmooksResourceConfiguration saxDriverConfig) {
         this(request);
         this.saxDriverConfig = saxDriverConfig;
         if(saxDriverConfig.getPath() == null) {
@@ -331,7 +331,7 @@ public class Parser {
 				if(index != -1) {
 					nodeStack.setSize(index);
 				} else {
-					logger.warn("Ignoring unexpected end [" + localName + "] element event. Request: [" + request.getRequestURI() + "] - document location: [" + getCurPath() + "]");
+					logger.warn("Ignoring unexpected end [" + localName + "] element event. Request: [" + request.getDocumentSource() + "] - document location: [" + getCurPath() + "]");
 				}
 			}
 		}

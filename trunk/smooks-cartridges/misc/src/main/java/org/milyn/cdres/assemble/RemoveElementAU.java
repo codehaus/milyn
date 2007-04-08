@@ -17,7 +17,7 @@
 package org.milyn.cdres.assemble;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.assemble.AbstractAssemblyUnit;
 import org.w3c.dom.Element;
 
@@ -44,9 +44,9 @@ public class RemoveElementAU extends AbstractAssemblyUnit {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ElementVisitor#visit(org.w3c.dom.Element, org.milyn.container.ContainerRequest)
+	 * @see org.milyn.delivery.ElementVisitor#visit(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
-	public void visit(Element element, ContainerRequest request) {
+	public void visit(Element element, ExecutionContext request) {
 		element.getParentNode().removeChild(element);
 	}
 

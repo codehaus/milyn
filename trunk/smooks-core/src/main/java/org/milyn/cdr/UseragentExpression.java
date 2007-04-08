@@ -16,7 +16,6 @@
 
 package org.milyn.cdr;
 
-import org.milyn.useragent.UAContext;
 import org.milyn.profile.HttpAcceptHeaderProfile;
 import org.milyn.profile.Profile;
 import org.milyn.profile.ProfileSet;

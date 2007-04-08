@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -49,7 +49,7 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)
 	 */
-	public void writeElementStart(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write((int)'<');
         writer.write(element.getTagName());
         writeAttributes(element.getAttributes(), writer);
@@ -85,7 +85,7 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer)
 	 */
-	public void writeElementEnd(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementEnd(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write("</");
 		writer.write(element.getTagName());
 		writer.write((int)'>');
@@ -94,14 +94,14 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementText(org.w3c.dom.Text, java.io.Writer)
 	 */
-	public void writeElementText(Text text, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementText(Text text, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write(text.getData());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementComment(org.w3c.dom.Comment, java.io.Writer)
 	 */
-	public void writeElementComment(Comment comment, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementComment(Comment comment, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write("<!--");
 		writer.write(comment.getData());
 		writer.write("-->");
@@ -110,7 +110,7 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEntityRef(org.w3c.dom.EntityReference, java.io.Writer)
 	 */
-	public void writeElementEntityRef(EntityReference entityRef, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementEntityRef(EntityReference entityRef, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write('&');
 		writer.write(entityRef.getNodeName());
 		writer.write(';');
@@ -119,7 +119,7 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementCDATA(org.w3c.dom.CDATASection, java.io.Writer)
 	 */
-	public void writeElementCDATA(CDATASection cdata, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementCDATA(CDATASection cdata, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write("<![CDATA[");
 		writer.write(cdata.getData());
 		writer.write("]]>");
@@ -128,7 +128,7 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementNode(org.w3c.dom.Node, java.io.Writer)
 	 */
-	public void writeElementNode(Node node, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementNode(Node node, Writer writer, ExecutionContext executionContext) throws IOException {
 		throw new IOException("writeElementNode not implemented yet. Node: " + node.getNodeValue() + ", node: [" + node + "]");
 	}
 

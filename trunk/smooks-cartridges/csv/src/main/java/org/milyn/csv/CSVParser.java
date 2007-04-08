@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -97,7 +97,7 @@ public class CSVParser implements SmooksXMLReader {
 
     private ContentHandler contentHandler;
 	private SmooksResourceConfiguration configuration;
-	private ContainerRequest request;
+	private ExecutionContext request;
 
 	/* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)
@@ -107,9 +107,9 @@ public class CSVParser implements SmooksXMLReader {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.xml.SmooksXMLReader#setRequest(org.milyn.container.ContainerRequest)
+	 * @see org.milyn.xml.SmooksXMLReader#setRequest(org.milyn.container.ExecutionContext)
 	 */
-	public void setRequest(ContainerRequest request) {
+	public void setRequest(ExecutionContext request) {
 		this.request = request;
 	}
 

@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksResourceConfigurationSortComparator;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
-import org.milyn.container.ContainerContext;
+import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.assemble.AssemblyUnit;
 import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
@@ -58,7 +58,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	/**
 	 * Container context.
 	 */
-	private ContainerContext containerContext;
+	private ApplicationContext applicationContext;
 	/**
 	 * XML selector content spec definition prefix
 	 */
@@ -96,41 +96,41 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	/**
 	 * Private (hidden) constructor.
      * @param profileSet Profile set.
-	 * @param containerContext Container context.
+	 * @param applicationContext Container context.
 	 */
-	private ContentDeliveryConfigImpl(ProfileSet profileSet, ContainerContext containerContext) {
+	private ContentDeliveryConfigImpl(ProfileSet profileSet, ApplicationContext applicationContext) {
 		this.profileSet = profileSet;
-		this.containerContext = containerContext;
+		this.applicationContext = applicationContext;
     }
 	
 	/**
 	 * Get the ContentDeliveryConfigImpl instance for the named table.
 	 * @param profileSet The profile set for the associated useragent.
-	 * @param containerContext Container context.
+	 * @param applicationContext Container context.
 	 * @return The ContentDeliveryConfig instance for the named table.
 	 */
-	public static ContentDeliveryConfig getInstance(ProfileSet profileSet, ContainerContext containerContext) {
+	public static ContentDeliveryConfig getInstance(ProfileSet profileSet, ApplicationContext applicationContext) {
 		ContentDeliveryConfigImpl config;
-		Hashtable<ProfileSet, ContentDeliveryConfigImpl> configTable;
+		Hashtable<String, ContentDeliveryConfigImpl> configTable;
 		
 		if(profileSet == null) {
 			throw new IllegalArgumentException("null 'profileSet' arg passed in method call.");
-		} else if(containerContext == null) {
-			throw new IllegalArgumentException("null 'containerContext' arg passed in method call.");
+		} else if(applicationContext == null) {
+			throw new IllegalArgumentException("null 'applicationContext' arg passed in method call.");
 		}
 
 		// Get the delivery config config from container context.
-		configTable = (Hashtable)containerContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
+		configTable = (Hashtable) applicationContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
 		if(configTable == null) {
-			configTable = new Hashtable<ProfileSet, ContentDeliveryConfigImpl>();
-			containerContext.setAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY, configTable);
+			configTable = new Hashtable<String, ContentDeliveryConfigImpl>();
+			applicationContext.setAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY, configTable);
 		}
 		// Get the delivery config instance for this UAContext
-		config = configTable.get(profileSet);
+		config = configTable.get(profileSet.getBaseProfile());
 		if(config == null) {
-			config = new ContentDeliveryConfigImpl(profileSet, containerContext);
+			config = new ContentDeliveryConfigImpl(profileSet, applicationContext);
 			config.load();
-			configTable.put(profileSet, config);
+			configTable.put(profileSet.getBaseProfile(), config);
 		}
 		
 		return config;
@@ -143,7 +143,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * for the specified device.
 	 */
 	private void load() {
-		List resourceConfigsList = Arrays.asList(containerContext.getStore().getSmooksResourceConfigurations(profileSet));
+		List resourceConfigsList = Arrays.asList(applicationContext.getStore().getSmooksResourceConfigurations(profileSet));
 
 		// Build and sort the resourceConfigTable table - non-transforming elements.
 		buildSmooksResourceConfigurationTable(resourceConfigsList);
@@ -281,7 +281,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * their respective tables.
 	 */
 	private void extractContentDeliveryUnits() {
-		SmooksResourceConfigurationStrategy cduStrategy = new ContentDeliveryExtractionStrategy(containerContext);
+		SmooksResourceConfigurationStrategy cduStrategy = new ContentDeliveryExtractionStrategy(applicationContext);
 		SmooksResourceConfigurationTableIterator tableIterator = new SmooksResourceConfigurationTableIterator(cduStrategy);
 		tableIterator.iterate();
 	}
@@ -392,7 +392,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				objects = new Vector(unitDefs.size());
 				for(int i = 0; i < unitDefs.size(); i++) {
 					SmooksResourceConfiguration resConfig = (SmooksResourceConfiguration)unitDefs.get(i);
-					objects.add(containerContext.getStore().getObject(resConfig));
+					objects.add(applicationContext.getStore().getObject(resConfig));
 				}
 			} else {
 				objects = EMPTY_LIST;
@@ -441,8 +441,8 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		
         private SmooksResourceConfigurationStore store;
 
-        public ContentDeliveryExtractionStrategy(ContainerContext containerContext) {
-            store = containerContext.getStore();
+        public ContentDeliveryExtractionStrategy(ApplicationContext applicationContext) {
+            store = applicationContext.getStore();
         }
 
         public void applyStrategy(String elementName, SmooksResourceConfiguration resourceConfig) {

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.serialize.DefaultSerializationUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -61,7 +61,7 @@ public class EmptyElementSU extends DefaultSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer, org.milyn.useraegnt.UAContext)
 	 */
-	public void writeElementStart(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write((int)'<');
 		writer.write(element.getTagName());
 		
@@ -71,7 +71,7 @@ public class EmptyElementSU extends DefaultSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer, org.milyn.useraegnt.UAContext)
 	 */
-	public void writeElementEnd(Element element, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementEnd(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
 		if(wellFormed) {
 			writer.write("/>");
 		} else {
@@ -82,31 +82,31 @@ public class EmptyElementSU extends DefaultSerializationUnit {
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementText(org.w3c.dom.Text, java.io.Writer, org.milyn.useraegnt.UAContext)
 	 */
-	public void writeElementText(Text text, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementText(Text text, Writer writer, ExecutionContext executionContext) throws IOException {
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementComment(org.w3c.dom.Comment, java.io.Writer, org.milyn.useraegnt.UAContext)
 	 */
-	public void writeElementComment(Comment comment, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementComment(Comment comment, Writer writer, ExecutionContext executionContext) throws IOException {
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEntityRef(org.w3c.dom.EntityReference, java.io.Writer, org.milyn.useraegnt.UAContext)
 	 */
-	public void writeElementEntityRef(EntityReference entityRef, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementEntityRef(EntityReference entityRef, Writer writer, ExecutionContext executionContext) throws IOException {
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementCDATA(org.w3c.dom.CDATASection, java.io.Writer, org.milyn.useraegnt.UAContext)
 	 */
-	public void writeElementCDATA(CDATASection cdata, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementCDATA(CDATASection cdata, Writer writer, ExecutionContext executionContext) throws IOException {
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementNode(org.w3c.dom.Node, java.io.Writer, org.milyn.useraegnt.UAContext)
 	 */
-	public void writeElementNode(Node node, Writer writer, ContainerRequest containerRequest) throws IOException {
+	public void writeElementNode(Node node, Writer writer, ExecutionContext executionContext) throws IOException {
 	}
 
 	/* (non-Javadoc)

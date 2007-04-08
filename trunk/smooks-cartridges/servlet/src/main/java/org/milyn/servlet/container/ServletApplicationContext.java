@@ -20,16 +20,16 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
-import org.milyn.container.ContainerContext;
+import org.milyn.container.ApplicationContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
 
 /**
- * ContainerContext adapter for the javax.servlet.ServletContext interface.
+ * ApplicationContext adapter for the javax.servlet.ServletContext interface.
  * @author tfennelly
  */
-public class ServletContainerContext implements ContainerContext {
+public class ServletApplicationContext implements ApplicationContext {
 
 	/**
      * Context stream resource locator for the Servlet environment.
@@ -49,7 +49,7 @@ public class ServletContainerContext implements ContainerContext {
 	 * @param servletContext ServletContext instance.
 	 * @param servletConfig ServletConfig instance.
 	 */
-	public ServletContainerContext(ServletContext servletContext, ServletConfig servletConfig) {
+	public ServletApplicationContext(ServletContext servletContext, ServletConfig servletConfig) {
 		if(servletContext == null) {
 			throw new IllegalArgumentException("null 'servletContext' arg in constructor call.");
 		}
@@ -62,7 +62,7 @@ public class ServletContainerContext implements ContainerContext {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerContext#getResourceLocator()
+	 * @see org.milyn.container.ApplicationContext#getResourceLocator()
 	 */
 	public ContainerResourceLocator getResourceLocator() {
 		return resourceLocator;
@@ -90,7 +90,7 @@ public class ServletContainerContext implements ContainerContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.ContainerContext#getCdrarStore()
+	 * @see org.milyn.container.ApplicationContext#getCdrarStore()
 	 */
 	public SmooksResourceConfigurationStore getStore() {
 		return resStore;
@@ -98,7 +98,7 @@ public class ServletContainerContext implements ContainerContext {
 
 	/**
 	 * Get the associated ServletContext instance.
-	 * @return ServletContext for this ServletContainerContext.
+	 * @return ServletContext for this ServletApplicationContext.
 	 */
 	public ServletContext getServletContext() {
 		return servletContext;

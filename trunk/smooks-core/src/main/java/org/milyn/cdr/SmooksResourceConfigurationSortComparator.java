@@ -18,7 +18,6 @@ package org.milyn.cdr;
 
 import java.util.Comparator;
 
-import org.milyn.useragent.UAContext;
 import org.milyn.profile.ProfileSet;
 
 

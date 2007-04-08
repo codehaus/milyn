@@ -17,7 +17,7 @@
 package org.milyn.smooks.scripting;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.process.ProcessingUnit;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -30,7 +30,7 @@ public class MyGroovyScript implements ProcessingUnit {
 		newName = config.getStringParameter("new-name", "zzz");
 	}
 
-	public void visit(Element fragment, ContainerRequest request) {
+	public void visit(Element fragment, ExecutionContext context) {
 		DomUtils.renameElement(fragment, newName, true, true);
 	}
 

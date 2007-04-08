@@ -65,13 +65,13 @@ public interface ContentDeliveryConfig {
 	 * Gets the {@link SmooksResourceConfiguration}s specified for the selector and attempts to instanciate
 	 * a Java class instance from the resource specified by each of the {@link SmooksResourceConfiguration}s.
 	 * <p/>
-	 * Implementations should use {@link org.milyn.cdr.CDRStore#getObject(SmooksResourceConfiguration)} to 
+	 * Implementations should use {@link org.milyn.cdr.SmooksResourceConfigurationStore#getObject(org.milyn.cdr.SmooksResourceConfiguration)} to 
 	 * construct each object.
 	 * @param selector selector attribute value from the .cdrl file in the .cdrar.  This 
 	 * parameter is treated case incensitively.
 	 * @return List of Object instances.  An empty list is returned where no 
 	 * selectors exist.
-	 * @see org.milyn.cdr.CDRStore#getObject(SmooksResourceConfiguration)
+	 * @see org.milyn.cdr.SmooksResourceConfigurationStore#getObject(org.milyn.cdr.SmooksResourceConfiguration)
 	 * @see #getSmooksResourceConfigurations(String)
 	 */
 	public abstract List getObjects(String selector);

@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerRequest;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.assemble.AssemblyUnit;
 import org.milyn.delivery.process.ProcessingSet;
 import org.milyn.delivery.process.ProcessingUnit;
@@ -53,7 +53,7 @@ import org.w3c.dom.NodeList;
  * {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} and 
  * {@link org.milyn.delivery.serialize.SerializationUnit SerializationUnits}).
  * <p/>
- * This class doesn't get used directly.  See {@link org.milyn.SmooksStandalone}.
+ * This class doesn't get used directly.  See {@link org.milyn.Smooks}.
  * 
  * <h3 id="phases">XML/XHTML/HTML Filtering and Serialisation</h3>
  * SmooksXML markup processing (XML/XHTML/HTML) is a 2 phase process, depending on what
@@ -122,19 +122,19 @@ import org.w3c.dom.NodeList;
  * vast majority of XML serialisation requirements.
  * 
  * <h3 id="threading">Threading Issues</h3>
- * This class processes the data associated with a single {@link org.milyn.container.ContainerRequest} instance.  This
- * {@link org.milyn.container.ContainerRequest} instance is bound to the current thread of execution for the lifetime of the 
+ * This class processes the data associated with a single {@link org.milyn.container.ExecutionContext} instance.  This
+ * {@link org.milyn.container.ExecutionContext} instance is bound to the current thread of execution for the lifetime of the
  * SmooksXML instance.  For this reason it is not recommended to execute more than one SmooksXML
  * instance concurrently within the scope of a single thread i.e. don't interleave them.  Of course it's perfectly fine to
  * create a SmooksXML instance, use it, "dump" it and create and use another instance all within a single thread of execution.
  * This also means that SmooksXML instances cannot be cached/pooled and reused.
  * <p/>
- * A {@link org.milyn.container.ContainerRequest} instance should only be bound to the thread for the lifetime of the SmooksXML instance
+ * A {@link org.milyn.container.ExecutionContext} instance should only be bound to the thread for the lifetime of the SmooksXML instance
  * it is associated with (i.e. used to instantiate).  See the {@link #finalize()} method.
  * 
  * <h3>Other Documents</h3>
  * <ul>
- * 	<li>{@link org.milyn.SmooksStandalone}</li>
+ * 	<li>{@link org.milyn.Smooks}</li>
  * 	<li>{@link org.milyn.cdr.SmooksResourceConfiguration}</li>
  * 	<li>{@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}</li>
  * </ul>
@@ -183,9 +183,9 @@ public class SmooksXML {
 	/**
 	 * Container request for this Smooks content delivery instance.
 	 */
-	private ContainerRequest containerRequest;
+	private ExecutionContext executionContext;
 	/**
-	 * Accessor to the ContainerRequest delivery config.
+	 * Accessor to the ExecutionContext delivery config.
 	 */
 	private ContentDeliveryConfig deliveryConfig;
 	/**
@@ -205,7 +205,7 @@ public class SmooksXML {
 	 */
 	public static final String DELIVERY_NODE_REQUEST_KEY = ContentDeliveryConfig.class.getName() + "#DELIVERY_NODE_REQUEST_KEY";
 	/**
-	 * The Threadlocal storage instance for the ContainerRequest associated with the "current" SmooksXML thread instance.
+	 * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksXML thread instance.
 	 */
 	private static ThreadLocal requestThreadLocal = new ThreadLocal();
 	
@@ -214,34 +214,34 @@ public class SmooksXML {
 	 * <p/>
 	 * Constructs a Smooks instance for delivering content to the target device
 	 * associated with the uaContext.
-	 * @param containerRequest Container request for this Smooks content delivery instance.  This instance 
+	 * @param executionContext Container request for this Smooks content delivery instance.  This instance
 	 * is bound to the current Thread of execution.  See <a href="#threading">Threading Issues</a>. 
 	 */
-	public SmooksXML(ContainerRequest containerRequest) {
-		if(containerRequest == null) {
-			throw new IllegalArgumentException("null 'containerRequest' arg passed in constructor call.");
+	public SmooksXML(ExecutionContext executionContext) {
+		if(executionContext == null) {
+			throw new IllegalArgumentException("null 'executionContext' arg passed in constructor call.");
 		}
-		this.containerRequest = containerRequest;
+		this.executionContext = executionContext;
 		synchronized (requestThreadLocal) {
 			// Bind the container request to the current thread.
-			requestThreadLocal.set(containerRequest);
+			requestThreadLocal.set(executionContext);
 
 		}
-		deliveryConfig = containerRequest.getDeliveryConfig();
+		deliveryConfig = executionContext.getDeliveryConfig();
 	}
 	
 	/**
 	 * Cleanup.
 	 * <p/>
-	 * Clears the current thread-bound {@link ContainerRequest} instance, but only if this SmooksXML instance
-	 * "owns" the {@link ContainerRequest} instance that's bound to the current thread.  
+	 * Clears the current thread-bound {@link ExecutionContext} instance, but only if this SmooksXML instance
+	 * "owns" the {@link ExecutionContext} instance that's bound to the current thread.
 	 * See <a href="#threading">Threading Issues</a>.
 	 */
 	protected void finalize() throws Throwable {
 		synchronized (requestThreadLocal) {
 			try {
-				ContainerRequest curContainerRequest = getContainerRequest();
-				if(containerRequest == curContainerRequest) {
+				ExecutionContext curExecutionContext = getContainerRequest();
+				if(executionContext == curExecutionContext) {
 					// Only reset if this instance "owns" the current thread bound instance.  It may not own
 					// the instance if finalization happens after the next SmooksXML instance is created on 
 					// this thread.
@@ -255,15 +255,15 @@ public class SmooksXML {
 	}
 
 	/**
-	 * Get the {@link ContainerRequest} instance bound to the current thread. 
+	 * Get the {@link ExecutionContext} instance bound to the current thread.
 	 * </p>
-	 * The {@link ContainerRequest} used to instantiate the SmooksXML class is bound to the current Thread of execution.
+	 * The {@link ExecutionContext} used to instantiate the SmooksXML class is bound to the current Thread of execution.
 	 * If should only be bound to the thread for the lifetime of the SmooksXML instance.
 	 * See <a href="#threading">Threading Issues</a>.
-	 * @return The thread-bound {@link ContainerRequest} instance.
+	 * @return The thread-bound {@link ExecutionContext} instance.
 	 */
-	public static ContainerRequest getContainerRequest() {
-		return (ContainerRequest)requestThreadLocal.get();
+	public static ExecutionContext getContainerRequest() {
+		return (ExecutionContext)requestThreadLocal.get();
 	}
 
 	/**
@@ -272,8 +272,8 @@ public class SmooksXML {
 	 * method (enter an aspect!!).
 	 */
 	private void assertNotInterleaved() {
-		ContainerRequest curContainerRequest = getContainerRequest();
-		if(containerRequest != curContainerRequest) {
+		ExecutionContext curExecutionContext = getContainerRequest();
+		if(executionContext != curExecutionContext) {
 			// Stall the ball here!! There's code in place which interleaves the use of this class.
 			throw new Error("Illegal interleaving of multiple instances of " + SmooksXML.class.getName() + ".  See class Javadocs.");
 		}
@@ -296,12 +296,12 @@ public class SmooksXML {
 			throw new IllegalArgumentException("null 'source' arg passed in method call.");
 		} 
 		try {
-			Parser parser = new Parser(containerRequest);
+			Parser parser = new Parser(executionContext);
 			Document document = parser.parse(source); 
 			
 			deliveryNode = filter(document);
 		} catch(Exception cause) {
-			throw new SmooksException("Unable to filter InputStream for target useragent [" + containerRequest.getUseragentContext().getCommonName() + "].", cause);
+			throw new SmooksException("Unable to filter InputStream for target useragent [" + executionContext.getTargetProfiles().getBaseProfile() + "].", cause);
 		}
 		
 		return deliveryNode;
@@ -324,7 +324,7 @@ public class SmooksXML {
 		Hashtable deviceAssemblyUnits = deliveryConfig.getAssemblyUnits();
 		
 		if(doc.getDocumentElement() == null) {
-			logger.warn("Empty Document [" + containerRequest.getRequestURI() + "].  Not performaing any processing.");
+			logger.warn("Empty Document [" + executionContext.getDocumentSource() + "].  Not performaing any processing.");
 			return doc;
 		}
 		
@@ -332,19 +332,19 @@ public class SmooksXML {
 		if(!deviceAssemblyUnits.isEmpty()) {
 			// Assemble
 			if(logger.isDebugEnabled()) {
-				logger.debug("Starting assembly phase [" + containerRequest.getUseragentContext().getCommonName() + "]");
+				logger.debug("Starting assembly phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 			}
 			assemble(doc.getDocumentElement());
-			containerRequest.clearElementLists();
+			executionContext.clearElementLists();
 		} else {
 			if(logger.isDebugEnabled()) {
-				logger.debug("No assembly units configured for device [" + containerRequest.getUseragentContext().getCommonName() + "]");
+				logger.debug("No assembly units configured for device [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 			}
 		}
 
 		// process
 		if(logger.isDebugEnabled()) {
-			logger.debug("Starting processing phase [" + containerRequest.getUseragentContext().getCommonName() + "]");
+			logger.debug("Starting processing phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 		}
 		globalProcessingSet = deliveryConfig.getProcessingSet("*");
 		if(globalProcessingSet != null) {
@@ -355,11 +355,11 @@ public class SmooksXML {
 		transListLength = transList.size();
 		for(int i = 0; i < transListLength; i++) {
 			ElementProcessor elementTrans = (ElementProcessor)transList.get(i);			
-			elementTrans.process(containerRequest);
+			elementTrans.process(executionContext);
 		}
-		containerRequest.clearElementLists();
+		executionContext.clearElementLists();
 		
-		deliveryNode = (Node)containerRequest.getAttribute(DELIVERY_NODE_REQUEST_KEY);
+		deliveryNode = (Node) executionContext.getAttribute(DELIVERY_NODE_REQUEST_KEY);
 		if(deliveryNode == null) {
 			deliveryNode = doc;
 		}
@@ -412,9 +412,9 @@ public class SmooksXML {
 						if(logger.isDebugEnabled()) {
 							logger.debug("Applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
 						}
-						assemblyUnit.visit(element, containerRequest);
+						assemblyUnit.visit(element, executionContext);
 					} catch(Throwable e) {
-						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);
+						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
 					}
 				}
 			}
@@ -437,7 +437,7 @@ public class SmooksXML {
                 
 				if(!assemblyUnit.visitBefore() && configMap.getResourceConfig().isTargetedAtElementContext(element)) {
 					try {
-						assemblyUnit.visit(element, containerRequest);
+						assemblyUnit.visit(element, executionContext);
 					} catch(Throwable e) {
 						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to element [" + element.getTagName() + "].", e);
 					}
@@ -516,9 +516,9 @@ public class SmooksXML {
 		}
 		
 		if(logger.isDebugEnabled()) {
-			logger.debug("Starting serialization phase [" + containerRequest.getUseragentContext().getCommonName() + "]");
+			logger.debug("Starting serialization phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 		}
-		serializer = new Serializer(node, containerRequest);
+		serializer = new Serializer(node, executionContext);
 		try {
 			serializer.serailize(writer);
 		} catch (ResourceConfigurationNotFoundException e) {
@@ -578,9 +578,9 @@ public class SmooksXML {
 		 * Apply the ProcessingUnits.
 		 * <p/>
 		 * Iterate over the ProcessingUnit instances calling the visit method.
-		 * @param containerRequest Container request instance.
+		 * @param executionContext Container request instance.
 		 */
-		private void process(ContainerRequest containerRequest) {
+		private void process(ExecutionContext executionContext) {
 			int loopLength = processingUnits.size();
 			
 			for(int i = 0; i < loopLength; i++) {
@@ -617,9 +617,9 @@ public class SmooksXML {
 					if(logger.isDebugEnabled()) {
 						logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
 					}
-					processingUnit.visit(element, containerRequest);
+					processingUnit.visit(element, executionContext);
 				} catch(Throwable e) {
-					logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + containerRequest.getRequestURI() + ":" + DomUtils.getXPath(element) + "].", e);
+					logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
 				}
 			}
 		}

@@ -23,13 +23,12 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.css.StyleSheetStore.StoreEntry;
-import org.milyn.container.ContainerRequest;
-import org.milyn.useragent.UAContext;
-import org.milyn.useragent.UAContextUtil;
+import org.milyn.container.ExecutionContext;
 import org.milyn.magger.CSSParser;
 import org.milyn.magger.CSSProperty;
 import org.milyn.magger.CSSRule;
 import org.milyn.magger.CSSStylesheet;
+import org.milyn.profile.ProfileSet;
 import org.w3c.css.sac.SACMediaList;
 import org.w3c.dom.Element;
 
@@ -40,7 +39,7 @@ import org.w3c.dom.Element;
  * current page.  The CSS info is "pre-gathered" by the {@link org.milyn.css.CSSStyleScraper}
  * Assembly Unit, if configured for the requesting device.
  * <p/>
- * This class is instanciated via the {@link #getInstance(ContainerRequest)} factory method.  
+ * This class is instanciated via the {@link #getInstance(ExecutionContext)} factory method.
  * @author tfennelly
  */
 public class CSSAccessor {
@@ -56,7 +55,7 @@ public class CSSAccessor {
 	/**
 	 * Associated container request.
 	 */
-	private ContainerRequest request;
+	private ExecutionContext request;
 	/**
 	 * CSSAccessor request key.
 	 */
@@ -71,7 +70,7 @@ public class CSSAccessor {
 	 * @param request The container request associated with the current page 
 	 * being delivered.
 	 */
-	private CSSAccessor(ContainerRequest request) {
+	private CSSAccessor(ExecutionContext request) {
 		if(request == null) {
 			throw new IllegalArgumentException("null 'request' arg in constructor call.");
 		}
@@ -85,7 +84,7 @@ public class CSSAccessor {
 	 * being delivered.
 	 * @return The CSSAccessor associated with the supplied request.
 	 */
-	public static CSSAccessor getInstance(ContainerRequest request) {
+	public static CSSAccessor getInstance(ExecutionContext request) {
 		CSSAccessor accessor = (CSSAccessor)request.getAttribute(REQUEST_REQUESTKEY);
 		
 		if(accessor == null) {
@@ -102,7 +101,7 @@ public class CSSAccessor {
 	 * Cross references the rules media list (if specified) against the
 	 * requesting browser/device name and profile.
 	 * @param domElement The DOM element.
-	 * @param inlinePropertyName The required CSS property.
+	 * @param propertyName The required CSS property.
 	 * @return The {@link CSSProperty} associated with the named CSS property for the supplied element,
 	 * if a value for this property is defined for this element, otherwise null. 
 	 */
@@ -173,11 +172,11 @@ public class CSSAccessor {
 			return true;
 		}
 		
-		UAContext uaContext = request.getUseragentContext();
+		ProfileSet profileSet = request.getTargetProfiles();
 		int listLen = targetMediaList.getLength();
 		for(int i = 0; i < listLen; i++) {
 			String media = targetMediaList.item(i);
-			if(UAContextUtil.isDeviceOrProfile(media, uaContext)) {
+			if(profileSet.isMember(media)) {
 				return true;
 			}
 		}
@@ -203,7 +202,7 @@ public class CSSAccessor {
 				
 				try {
 					String styleToParse = domElement.getTagName() + " {" + styleAttrib + "}";
-					CSSStylesheet styleSheet = cssParser.parse(styleToParse, request.getRequestURI(), null);
+					CSSStylesheet styleSheet = cssParser.parse(styleToParse, request.getDocumentSource(), null);
 					rules = styleSheet.getRules();
 					// and parsed rules to the cache
 					elementStyleDecls.put(domElement, rules);
@@ -215,7 +214,7 @@ public class CSSAccessor {
 		return rules;
 	}
 
-	private Hashtable getElementStyleDeclCache(ContainerRequest request2) {
+	private Hashtable getElementStyleDeclCache(ExecutionContext request2) {
 		Hashtable elementStyleDecls = (Hashtable)request.getAttribute(ELEMENT_STYLE_DECL_REQUESTKEY);
 		if(elementStyleDecls == null) {
 			elementStyleDecls = new Hashtable();

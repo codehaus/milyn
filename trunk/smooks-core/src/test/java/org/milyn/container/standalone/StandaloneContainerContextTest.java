@@ -25,13 +25,13 @@ public class StandaloneContainerContextTest extends TestCase {
 
 	public void testConstructor() {
 		try {
-			new StandaloneContainerContext(null, new MockContainerResourceLocator());
+			new StandaloneApplicationContext(null, new MockContainerResourceLocator());
 			fail("Expected IllegalArgumentException on null baseDir.");
 		} catch(IllegalArgumentException e) {
 			//OK
 		}
 		try {
-			new StandaloneContainerContext(new DefaultProfileStore(), null);
+			new StandaloneApplicationContext(new DefaultProfileStore(), null);
 			fail("Expected IllegalArgumentException on null baseDir.");
 		} catch(IllegalArgumentException e) {
 			//OK

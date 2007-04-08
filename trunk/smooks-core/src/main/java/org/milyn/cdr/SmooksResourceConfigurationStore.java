@@ -26,7 +26,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.container.ContainerContext;
+import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
@@ -62,17 +62,17 @@ public class SmooksResourceConfigurationStore {
 	/**
 	 * Container context in which this store lives.
 	 */
-	private ContainerContext containerContext;
+	private ApplicationContext applicationContext;
 	
 	/**
 	 * Public constructor.
-	 * @param containerContext Container context in which this store lives.
+	 * @param applicationContext Container context in which this store lives.
 	 */
-	public SmooksResourceConfigurationStore(ContainerContext containerContext) {
-		if(containerContext == null) {
-			throw new IllegalArgumentException("null 'containerContext' arg in constructor call.");
+	public SmooksResourceConfigurationStore(ApplicationContext applicationContext) {
+		if(applicationContext == null) {
+			throw new IllegalArgumentException("null 'applicationContext' arg in constructor call.");
 		}
-		this.containerContext = containerContext;
+		this.applicationContext = applicationContext;
         
 		// add the default list to the list.
         configLists.add(defaultList);
@@ -107,7 +107,7 @@ public class SmooksResourceConfigurationStore {
 	 */
 	public void load(BufferedReader cdrlLoadList) throws IOException {
 		String cdrl;
-		ContainerResourceLocator resLocator = containerContext.getResourceLocator();
+		ContainerResourceLocator resLocator = applicationContext.getResourceLocator();
 		
 		while((cdrl = cdrlLoadList.readLine()) != null) {
 			cdrl = cdrl.trim();

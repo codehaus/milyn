@@ -21,31 +21,30 @@ import java.util.Enumeration;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ElementList;
-import org.milyn.useragent.UAContext;
 import org.milyn.useragent.request.HttpRequest;
+import org.milyn.profile.ProfileSet;
 
 /**
  * Smooks container request interface definition.
  * @author tfennelly
  */
-public interface ContainerRequest extends HttpRequest, BoundAttributeStore {
+public interface ExecutionContext extends HttpRequest, BoundAttributeStore {
 
-	/**
-	 * Returns the portion of the request URI that indicates the context of 
-	 * the request. The context path always comes first in a request URI. 
-	 * The path starts with a "/" character but does not end with a "/" 
-	 * character.
-	 * @return String specifying the portion of the request URI that indicates 
-	 * the context of the request.
-	 */
-	public String getContextPath();
+    /**
+     * Sometimes the document being transformed/analysed has a URI associated with it.
+     * This can be bound to the execution context under this key.
+     */
+    public static final URI DOCUMENT_URI = URI.create("org:milyn:smooks:unknowndoc");
 	
 	/**
-	 * Returns the full request URI made by the requesting device (including the
-	 * query string).
-	 * @return The full request URI made by the requesting device.
+	 * Get the document source URI.
+     * <p/>
+     * If the document source URI is not set for the context, implementations should
+     * return the {@link #DOCUMENT_URI} constant.
+     *
+	 * @return The document URI.
 	 */
-	public URI getRequestURI();
+	public URI getDocumentSource();
 	
 	/**
 	 * Returns an Enumeration of String  objects containing the names of the 
@@ -70,21 +69,19 @@ public interface ContainerRequest extends HttpRequest, BoundAttributeStore {
 	
 	/**
 	 * Get the container context within which this request "lives".
-	 * @return The ContainerContext instance.
+	 * @return The ApplicationContext instance.
 	 */
-	public abstract ContainerContext getContext();
+	public abstract ApplicationContext getContext();
 	
 	/**
-	 * Get the container session within which this request "lives".
-	 * @return The ContainerSession instance.
+	 * Get the set of profiles at which this execution context is targeted.
+     * <p/>
+     * Basically, the set of profiles for which this execution context is to perform
+     * transformation/analysis.
+     *
+	 * @return The target {@link org.milyn.profile.ProfileSet}.
 	 */
-	public abstract ContainerSession getSession();
-	
-	/**
-	 * Get the UAContext instance for the useragent attached to this request.
-	 * @return UAContext instance.
-	 */
-	public abstract UAContext getUseragentContext();
+	public abstract ProfileSet getTargetProfiles();
 	
 	/**
 	 * Get the content delivery configuration for the useragent attached to
