@@ -31,7 +31,7 @@ public class StandaloneContainerUtil {
 		StandaloneExecutionContext request = null;
 		try {
 			Smooks smooksSA = new PreconfiguredSmooks();
-			request = new StandaloneExecutionContext(useragent, new LinkedHashMap(), smooksSA.getApplicationContext());
+			request = new StandaloneExecutionContext(useragent, new LinkedHashMap(), (StandaloneApplicationContext) smooksSA.getApplicationContext());
 		} catch (UnknownUseragentException e) {
 			TestCase.fail(e.getMessage());
 		} catch (SAXException e) {

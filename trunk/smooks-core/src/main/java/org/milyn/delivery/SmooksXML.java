@@ -47,7 +47,7 @@ import org.w3c.dom.NodeList;
  * Smooks XML/XHTML/HTML/etc content filtering class.
  * <p/>
  * This class is responsible for <b>Filtering</b> and <b>Serialising</b> XML streams
- * (XML/XHTML/HTML etc) through a process of iterating over the source XML DOM tree
+ * (XML/XHTML/HTML etc) through a filter of iterating over the source XML DOM tree
  * and applying the {@link org.milyn.cdr.SmooksResourceConfiguration configured} Content Delivery Units
  * ({@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}, 
  * {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} and 
@@ -56,12 +56,12 @@ import org.w3c.dom.NodeList;
  * This class doesn't get used directly.  See {@link org.milyn.Smooks}.
  * 
  * <h3 id="phases">XML/XHTML/HTML Filtering and Serialisation</h3>
- * SmooksXML markup processing (XML/XHTML/HTML) is a 2 phase process, depending on what
+ * SmooksXML markup processing (XML/XHTML/HTML) is a 2 phase filter, depending on what
  * needs to be done.  The first phase is called the "Filtering Phase", and the second 
  * phase is called the "Serialisation Phase".  SmooksXML can be used to execute either or both of these 
  * phases (depending on what needs to be done!).
  * <p/>
- * Through this process, Smooks can be used to analyse and/or transform markup, and then
+ * Through this filter, Smooks can be used to analyse and/or transform markup, and then
  * serialise it.
  * 
  * <p/>
@@ -73,11 +73,11 @@ import org.w3c.dom.NodeList;
  * 		This phase is really 2 "sub" phases.
  * 		<ul>
  * 			<li>
- * 				<b>Assembly</b>: Assembly is the process of <u>assembling/analysing 
+ * 				<b>Assembly</b>: Assembly is the filter of <u>assembling/analysing
  * 				the content</u>.  This is effectively a pre-processing phase.
  *              <p/>
- * 				This process involves iterating over the source XML DOM, 
- * 				{@link org.milyn.delivery.ElementVisitor visiting} all the
+ * 				This filter involves iterating over the source XML DOM,
+ * 				{@link org.milyn.delivery.DOMElementVisitor visiting} all the
  * 				DOM elements with {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}
  * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
  * 				(e.g. for the requesting useragent). 
@@ -90,7 +90,7 @@ import org.w3c.dom.NodeList;
  * 			</li>
  * 			<li>
  * 				<b>Processing</b>: Processing takes the assembled DOM and 
- * 				iterates over it again to "process" it (analyse/transform), {@link org.milyn.delivery.ElementVisitor visiting} all the
+ * 				iterates over it again to "filter" it (analyse/transform), {@link org.milyn.delivery.DOMElementVisitor visiting} all the
  * 				DOM elements with {@link org.milyn.delivery.process.ProcessingUnit}
  * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
  * 				(e.g. for the requesting useragent). 
@@ -140,7 +140,7 @@ import org.w3c.dom.NodeList;
  * </ul>
  * 
  * <!--
- * This whole process sounds like a lot of processing.  Well, it is.  Three iterations
+ * This whole filter sounds like a lot of processing.  Well, it is.  Three iterations
  * over the DOM.  However, the thinking on this is that:
  * <ul>
  * 	<li>
@@ -189,15 +189,10 @@ public class SmooksXML {
 	 */
 	private ContentDeliveryConfig deliveryConfig;
 	/**
-	 * Visit before ProcessingSet list to be applied to all elements in the document.  
+	 * Processing Units to be applied to all elements in the document.  
 	 * Only applied to element present in the original document.
 	 */
-	private List globalVisitBeforePUs;
-	/**
-	 * Visit after ProcessingSet list to be applied to all elements in the document.  
-	 * Only applied to element present in the original document.
-	 */
-	private List globalVisitAfterPUs;
+	private List globalProcessingUnits;
 	/**
 	 * Key under which a non-document content delivery node can be set in the 
 	 * request.  This is needed because Xerces doesn't allow "overwriting" of
@@ -207,14 +202,13 @@ public class SmooksXML {
 	/**
 	 * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksXML thread instance.
 	 */
-	private static ThreadLocal requestThreadLocal = new ThreadLocal();
+	private static ThreadLocal<ExecutionContext> requestThreadLocal = new ThreadLocal<ExecutionContext>();
 	
 	/**
 	 * Public constructor.
 	 * <p/>
-	 * Constructs a Smooks instance for delivering content to the target device
-	 * associated with the uaContext.
-	 * @param executionContext Container request for this Smooks content delivery instance.  This instance
+	 * Constructs a SmooksXML instance for delivering content for the supplied execution context.
+	 * @param executionContext Execution context.  This instance
 	 * is bound to the current Thread of execution.  See <a href="#threading">Threading Issues</a>. 
 	 */
 	public SmooksXML(ExecutionContext executionContext) {
@@ -245,7 +239,7 @@ public class SmooksXML {
 					// Only reset if this instance "owns" the current thread bound instance.  It may not own
 					// the instance if finalization happens after the next SmooksXML instance is created on 
 					// this thread.
-					requestThreadLocal.set(null);
+					requestThreadLocal.remove();
 				}
 			} finally {
 				// Make sure the super finalizer gets called!!
@@ -263,7 +257,7 @@ public class SmooksXML {
 	 * @return The thread-bound {@link ExecutionContext} instance.
 	 */
 	public static ExecutionContext getContainerRequest() {
-		return (ExecutionContext)requestThreadLocal.get();
+		return requestThreadLocal.get();
 	}
 
 	/**
@@ -335,21 +329,19 @@ public class SmooksXML {
 				logger.debug("Starting assembly phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 			}
 			assemble(doc.getDocumentElement());
-			executionContext.clearElementLists();
 		} else {
 			if(logger.isDebugEnabled()) {
 				logger.debug("No assembly units configured for device [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 			}
 		}
 
-		// process
+		// filter
 		if(logger.isDebugEnabled()) {
 			logger.debug("Starting processing phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 		}
 		globalProcessingSet = deliveryConfig.getProcessingSet("*");
 		if(globalProcessingSet != null) {
-			globalVisitBeforePUs = globalProcessingSet.getVisitBeforeProcessingUnits();
-			globalVisitAfterPUs = globalProcessingSet.getVisitAfterProcessingUnits();
+			globalProcessingUnits = globalProcessingSet.getProcessingUnits();
 		}
 		buildProcessingList(transList, doc.getDocumentElement());
 		transListLength = transList.size();
@@ -357,7 +349,6 @@ public class SmooksXML {
 			ElementProcessor elementTrans = (ElementProcessor)transList.get(i);			
 			elementTrans.process(executionContext);
 		}
-		executionContext.clearElementLists();
 		
 		deliveryNode = (Node) executionContext.getAttribute(DELIVERY_NODE_REQUEST_KEY);
 		if(deliveryNode == null) {
@@ -407,16 +398,14 @@ public class SmooksXML {
                 }            
                 
                 AssemblyUnit assemblyUnit = (AssemblyUnit)configMap.getContentDeliveryUnit();
-				if(assemblyUnit.visitBefore()) {
-					try {
-						if(logger.isDebugEnabled()) {
-							logger.debug("Applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
-						}
-						assemblyUnit.visit(element, executionContext);
-					} catch(Throwable e) {
-						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
-					}
-				}
+                try {
+                    if(logger.isDebugEnabled()) {
+                        logger.debug("Applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+                    }
+                    assemblyUnit.visitBefore(element, executionContext);
+                } catch(Throwable e) {
+                    logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
+                }
 			}
 		}
 		
@@ -435,9 +424,9 @@ public class SmooksXML {
                 ContentDeliveryUnitConfigMap configMap = (ContentDeliveryUnitConfigMap) elementAssemblyUnits.get(i);
                 AssemblyUnit assemblyUnit = (AssemblyUnit)configMap.getContentDeliveryUnit();
                 
-				if(!assemblyUnit.visitBefore() && configMap.getResourceConfig().isTargetedAtElementContext(element)) {
+				if(configMap.getResourceConfig().isTargetedAtElementContext(element)) {
 					try {
-						assemblyUnit.visit(element, executionContext);
+						assemblyUnit.visitAfter(element, executionContext);
 					} catch(Throwable e) {
 						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to element [" + element.getTagName() + "].", e);
 					}
@@ -455,23 +444,21 @@ public class SmooksXML {
 	private void buildProcessingList(List processingList, Element element) {
 		String elementName;
 		ProcessingSet processingSet;
-		List visitBeforeTUs = null;
-		List visitAfterTUs = null;
-		
+		List processingUnits = null;
+
 		elementName = DomUtils.getName(element);
 		processingSet = deliveryConfig.getProcessingSet(elementName);
 		
 		if(processingSet != null) {
-			visitBeforeTUs = processingSet.getVisitBeforeProcessingUnits();
-			visitAfterTUs = processingSet.getVisitAfterProcessingUnits();			
+			processingUnits = processingSet.getProcessingUnits();
 		}
 		
-		if(visitBeforeTUs != null) {
-			processingList.add(new ElementProcessor(element, visitBeforeTUs));
+		if(processingUnits != null) {
+			processingList.add(new ElementProcessor(element, processingUnits, true));
 		}
-		if(globalVisitBeforePUs != null) {
+		if(globalProcessingUnits != null) {
 			// TODO: Inefficient. Find a better way!
-			processingList.add(new ElementProcessor(element, globalVisitBeforePUs));
+			processingList.add(new ElementProcessor(element, globalProcessingUnits, true));
 		}
 		
 		// Iterate over the child elements, calling this method recurcively....
@@ -484,12 +471,12 @@ public class SmooksXML {
 			}
 		}
 		
-		if(visitAfterTUs != null) {
-			processingList.add(new ElementProcessor(element, visitAfterTUs));
+		if(processingUnits != null) {
+			processingList.add(new ElementProcessor(element, processingUnits, false));
 		}
-		if(globalVisitAfterPUs != null) {
+        if(globalProcessingUnits != null) {
 			// TODO: Inefficient. Find a better way!
-			processingList.add(new ElementProcessor(element, globalVisitAfterPUs));
+			processingList.add(new ElementProcessor(element, globalProcessingUnits, false));
 		}
 	}
 	
@@ -563,21 +550,27 @@ public class SmooksXML {
 		 * The processing list. 
 		 */
 		private List processingUnits;
-		
-		/**
+        /**
+         * Call visitBefore (or visitAfter).
+         */
+        private boolean visitBefore;
+
+        /**
 		 * Constructor.
 		 * @param element Element to be processed.
-		 * @param processingUnits ProcessingUnit instances to be applied.
-		 */
-		private ElementProcessor(Element element, List processingUnits) {
+         * @param processingUnits ProcessingUnit instances to be applied.
+         * @param visitBefore Call visitBefore (or visitAfter).
+         */
+		private ElementProcessor(Element element, List processingUnits, boolean visitBefore) {
 			this.element = element;
 			this.processingUnits = processingUnits;
-		}
+            this.visitBefore = visitBefore;
+        }
 		
 		/**
 		 * Apply the ProcessingUnits.
 		 * <p/>
-		 * Iterate over the ProcessingUnit instances calling the visit method.
+		 * Iterate over the ProcessingUnit instances calling the visitAfter method.
 		 * @param executionContext Container request instance.
 		 */
 		private void process(ExecutionContext executionContext) {
@@ -615,10 +608,14 @@ public class SmooksXML {
 				// costly.
 				try {
 					if(logger.isDebugEnabled()) {
-						logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+						logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "] " + (visitBefore?"before":"after") + " apply resources to its child elements.");
 					}
-					processingUnit.visit(element, executionContext);
-				} catch(Throwable e) {
+                    if(visitBefore) {
+                        processingUnit.visitBefore(element, executionContext);
+                    } else {
+                        processingUnit.visitAfter(element, executionContext);
+                    }
+                } catch(Throwable e) {
 					logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
 				}
 			}

@@ -16,7 +16,7 @@
 
 package org.milyn.delivery.assemble;
 
-import org.milyn.delivery.ElementVisitor;
+import org.milyn.delivery.DOMElementVisitor;
 
 /**
  * Assembly Unit interface definition.
@@ -32,9 +32,9 @@ import org.milyn.delivery.ElementVisitor;
  * same way as any other content delivery resource (Processing Units, Serialization Units, 
  * DTDs etc).
  * <p/>
- * Assembly units always visit target elements <b>after</b> Smooks iterates over the child
+ * Assembly units always visitAfter target elements <b>after</b> Smooks iterates over the child
  * content of the target element. See <a href="../package-summary.html">Delivery Overview</a>.
  * @author tfennelly
  */
-public interface AssemblyUnit extends ElementVisitor {
+public interface AssemblyUnit extends DOMElementVisitor {
 }

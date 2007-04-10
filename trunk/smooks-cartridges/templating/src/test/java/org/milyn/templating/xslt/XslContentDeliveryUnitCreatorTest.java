@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -40,14 +41,14 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		String transResult = null;
 
 		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
-		smooks.registerProfileSet(new DefaultProfileSet("devicename"));
-		smooks.registerResource(res);
+		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
+		SmooksUtil.registerResource(res, smooks);
 		TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
             StandaloneExecutionContext context = smooks.createExecutionContext("devicename");
-			transResult = smooks.filterAndSerialize(context, stream);
+			transResult = SmooksUtil.filterAndSerialize(context, stream, smooks);
 		} catch (SmooksException e) {
 			e.printStackTrace();
 			fail("unexpected exception: " + e.getMessage());
@@ -72,14 +73,14 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		res.setParameter("restype", "xsl");
 		res.setParameter("resdata", "<z id=\"{@id}\">Content from template!!</z>");
 		res.setParameter("action", action);
-		smooks.registerProfileSet(new DefaultProfileSet("devicename"));
-		smooks.registerResource(res);
+		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
+		SmooksUtil.registerResource(res, smooks);
 		TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
             StandaloneExecutionContext context = smooks.createExecutionContext("devicename");
-			transResult = smooks.filterAndSerialize(context, stream);
+			transResult = SmooksUtil.filterAndSerialize(context, stream, smooks);
 		} catch (SmooksException e) {
 			e.printStackTrace();
 			fail("unexpected exception: " + e.getMessage());

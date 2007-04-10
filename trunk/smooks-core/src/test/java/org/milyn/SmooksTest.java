@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.delivery.SmooksXML;
 import org.milyn.profile.DefaultProfileSet;
 import org.w3c.dom.Node;
@@ -40,8 +41,8 @@ public class SmooksTest extends TestCase {
      */
     protected void setUp() throws Exception {
         Smooks smooks = new Smooks();
-        smooks.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"profile1"}));
-        request = new StandaloneExecutionContext("device1", smooks.getApplicationContext());
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"profile1"}), smooks);
+        request = new StandaloneExecutionContext("device1", (StandaloneApplicationContext) smooks.getApplicationContext());
     }
 	
 	public void test_applyTransform_bad_params() {

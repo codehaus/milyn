@@ -1,6 +1,7 @@
 package org.milyn.useragent.request;
 
 import java.util.Hashtable;
+import java.util.Enumeration;
 
 /**
  * Mock object for a Http request.
@@ -9,9 +10,9 @@ import java.util.Hashtable;
  */
 
 public class MockHttpRequest implements HttpRequest {
-	Hashtable headers = new Hashtable();
+	Hashtable<String, String> headers = new Hashtable<String, String>();
 
-	Hashtable params = new Hashtable();
+	Hashtable<String, String> params = new Hashtable<String, String>();
 
 	public void setHeader(String header, String value) {
 		headers.put(header, value);
@@ -22,14 +23,29 @@ public class MockHttpRequest implements HttpRequest {
 	}
 
 	public String getHeader(String name) {
-		return (String) headers.get(name);
+		return headers.get(name);
 	}
 
 	public String getParameter(String name) {
-		return (String) params.get(name);
+		return params.get(name);
 	}
 
-	public void reset() {
+    public Enumeration getParameterNames() {
+        return params.keys();
+    }
+
+    public String[] getParameterValues(String name) {
+        String value = getParameter(name);
+
+        if(value != null) {
+            return new String[] {value};
+        } else {
+            return null;
+        }
+
+    }
+
+    public void reset() {
 		headers.clear();
 		params.clear();
 	}

@@ -65,16 +65,24 @@ public class SetAttributeTU extends AbstractProcessingUnit {
 		visitBefore = resourceConfig.getBoolParameter("visitBefore", false);
 	}
 
-	public void visit(Element element, ExecutionContext request) {
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+        if(visitBefore) {
+            visit(element, executionContext);
+        }
+    }
+
+    public void visitAfter(Element element, ExecutionContext executionContext) {
+        if(!visitBefore) {
+            visit(element, executionContext);
+        }
+    }
+
+    private void visit(Element element, ExecutionContext executionContext) {
 		// If the element already has the new attribute and we're
 		// not overwriting, leave all as is and return.
 		if(!overwrite && element.hasAttribute(attributeName)) {
 			return;
 		}
 		element.setAttribute(attributeName, attributeValue);
-	}
-
-	public boolean visitBefore() {
-		return visitBefore;
 	}
 }

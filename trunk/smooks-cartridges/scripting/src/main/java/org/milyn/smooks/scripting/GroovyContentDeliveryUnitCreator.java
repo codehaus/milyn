@@ -125,7 +125,7 @@ public class GroovyContentDeliveryUnitCreator implements ContentDeliveryUnitCrea
 				
 				return groovyResource;
 			} else {
-				throw new InstantiationException("Invalid Groovy script " + configuration.getPath() + ".  Must implement one of the following Smooks interfaces:\n\t\t1. org.milyn.delivery.assemble.AssemblyUnit, or\n\t\torg.milyn.delivery.process.ProcessingUnit, or\n\t\torg.milyn.delivery.serialize.SerializationUnit.");
+				throw new InstantiationException("Invalid Groovy script " + configuration.getPath() + ".  Must implement one of the following Smooks interfaces:\n\t\t1. org.milyn.delivery.assemble.AssemblyUnit, or\n\t\torg.milyn.delivery.filter.ProcessingUnit, or\n\t\torg.milyn.delivery.serialize.SerializationUnit.");
 			}
 		} catch (IOException e) {
 			InstantiationException initE = new InstantiationException("Error reading Groovy script " + configuration.getPath());

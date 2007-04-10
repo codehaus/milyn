@@ -51,17 +51,13 @@ public class RemoveElementTU extends AbstractProcessingUnit {
 		keepChildContent = resourceConfig.getBoolParameter("keepChildContent", true);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.process.TransUnit#visitBefore()
-	 */
-	public boolean visitBefore() {
-		return false;
-	}
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+    }
 
 	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ElementVisitor#visit(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
+	 * @see org.milyn.delivery.DOMElementVisitor#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
-	public void visit(Element element, ExecutionContext request) {
+	public void visitAfter(Element element, ExecutionContext request) {
 		DomUtils.removeElement(element, keepChildContent);
 	}
 }

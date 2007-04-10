@@ -21,13 +21,16 @@ import java.io.UnsupportedEncodingException;
 
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.xml.XmlUtil;
-import org.w3c.dom.Node;
 
 import junit.framework.TestCase;
+
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMResult;
 
 /**
  * @author tfennelly
@@ -41,30 +44,30 @@ public class CSVParserTest extends TestCase {
 
                 config = new SmooksResourceConfiguration("org.xml.sax.driver", "type:Order-List and from:Acme", CSVParser.class.getName());
 		config.setParameter("fields", "string-list", "name,address");		
-		smooks.registerResource(config);
-		smooks.registerProfileSet(DefaultProfileSet.create("Order-List-Acme-AcmePartner1", new String[] {"type:Order-List", "from:Acme", "to:AcmePartner1"}));
+		SmooksUtil.registerResource(config, smooks);
+		SmooksUtil.registerProfileSet(DefaultProfileSet.create("Order-List-Acme-AcmePartner1", new String[] {"type:Order-List", "from:Acme", "to:AcmePartner1"}), smooks);
 		
 		String csvMessage;
-		Node result;
-		
+        DOMResult domResult = new DOMResult();
+
 		csvMessage = "Tom Fennelly,Ireland";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        result = smooks.filter(context, new ByteArrayInputStream(csvMessage.getBytes("UTF-8")));
-		assertEquals("Tom Fennelly", XmlUtil.getString(result, "/csv-set/csv-record[1]/name/text()"));
-		assertEquals("Ireland", XmlUtil.getString(result, "/csv-set/csv-record[1]/address/text()"));
+        smooks.filter(new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult, context);
+        assertEquals("Tom Fennelly", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
+		assertEquals("Ireland", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
 
 		csvMessage = "Tom Fennelly,Ireland\nJoe Bloggs,England";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-		result = smooks.filter(context, new ByteArrayInputStream(csvMessage.getBytes("UTF-8")));
-		assertEquals("Tom Fennelly", XmlUtil.getString(result, "/csv-set/csv-record[1]/name/text()"));
-		assertEquals("Ireland", XmlUtil.getString(result, "/csv-set/csv-record[1]/address/text()"));
-		assertEquals("Joe Bloggs", XmlUtil.getString(result, "/csv-set/csv-record[2]/name/text()"));
-		assertEquals("England", XmlUtil.getString(result, "/csv-set/csv-record[2]/address/text()"));
+        smooks.filter(new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult, context);
+		assertEquals("Tom Fennelly", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
+		assertEquals("Ireland", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
+		assertEquals("Joe Bloggs", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[2]/name/text()"));
+		assertEquals("England", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[2]/address/text()"));
 		
 		csvMessage = "Tom Fennelly\nJoe Bloggs,England";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-		result = smooks.filter(context, new ByteArrayInputStream(csvMessage.getBytes("UTF-8")));
-		assertEquals("Joe Bloggs", XmlUtil.getString(result, "/csv-set/csv-record[1]/name/text()"));
-		assertEquals("England", XmlUtil.getString(result, "/csv-set/csv-record[1]/address/text()"));		
+        smooks.filter(new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult, context);
+		assertEquals("Joe Bloggs", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
+		assertEquals("England", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));		
 	}
 }

@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.process.AbstractProcessingUnit;
 import org.milyn.xml.DomUtils;
+import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -72,7 +73,7 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
 		if(element.getParentNode() instanceof Document) {
 			int count = templatingResultNodeList.getLength();
 
-			// Iterate over the NodeList and process the action using the 
+			// Iterate over the NodeList and filter the action using the
 			// first element node we encounter as the transformation result...
 			for(int i = 0; i < count; i++) {
 				Node node = templatingResultNodeList.item(0);
@@ -95,7 +96,7 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
 	private void processTemplateAction(Element element, NodeList templatingResultNodeList, int action) {
 		int count = templatingResultNodeList.getLength();
 		
-		// Iterate over the NodeList and process each Node against the action. 
+		// Iterate over the NodeList and filter each Node against the action.
 		for(int i = 0; i < count; i++) {
 			// We iterate over the list in this way because the nodes are auto removed from the
 			// the list as they are added/inserted elsewhere.
@@ -137,7 +138,17 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
         }
 	}
 
-    public boolean visitBefore() {
-        return visitBefore;
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+        if(visitBefore) {
+            visit(element, executionContext);
+        }
     }
+
+    public void visitAfter(Element element, ExecutionContext executionContext) {
+        if(!visitBefore) {
+            visit(element, executionContext);
+        }
+    }
+
+    protected abstract void visit(Element element, ExecutionContext executionContext);
 }

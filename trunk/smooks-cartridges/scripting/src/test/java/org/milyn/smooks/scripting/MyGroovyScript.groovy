@@ -30,11 +30,10 @@ public class MyGroovyScript implements ProcessingUnit {
 		newName = config.getStringParameter("new-name", "zzz");
 	}
 
-	public void visit(Element fragment, ExecutionContext context) {
-		DomUtils.renameElement(fragment, newName, true, true);
+	public void visitBefore(Element fragment, ExecutionContext context) {
 	}
 
-	public boolean visitBefore() {
-		return false;
+	public void visitAfter(Element fragment, ExecutionContext context) {
+		DomUtils.renameElement(fragment, newName, true, true);
 	}
 }

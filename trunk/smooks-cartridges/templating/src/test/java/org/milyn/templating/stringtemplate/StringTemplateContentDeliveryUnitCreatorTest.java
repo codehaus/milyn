@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.templating.TemplatingUtils;
@@ -38,14 +39,14 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
         Smooks smooks = new Smooks();
 
         // Configure Smooks
-        smooks.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}));
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
         TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
-        smooks.registerResources("test-configs", getClass().getResourceAsStream("test-configs.cdrl"));
+        SmooksUtil.registerResources("test-configs", getClass().getResourceAsStream("test-configs.cdrl"), smooks);
 
         InputStream stream = 
             new ByteArrayInputStream("<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>".getBytes());
         StandaloneExecutionContext context = smooks.createExecutionContext("useragent");
-        String result = smooks.filterAndSerialize(context, stream);
+        String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
 
         assertEquals("<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>", result);
     }

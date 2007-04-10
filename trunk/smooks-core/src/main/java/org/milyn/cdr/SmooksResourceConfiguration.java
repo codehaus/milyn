@@ -41,8 +41,8 @@ import org.w3c.dom.Node;
 /**
  * Smooks Resource Definition.
  * <p/>
- * A <b>Content Deliver Resource</b> is anything that can be used by Smooks in the process of analysing or
- * manipulating/transforming a data stream e.g. a J2EE Servlet Response.  They could be pieces
+ * A <b>Content Delivery Resource</b> is anything that can be used by Smooks in the filter of analysing or
+ * manipulating/transforming a data stream.  They could be pieces
  * of Java logic ({@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit}, 
  * {@link org.milyn.delivery.serialize.SerializationUnit}), some text or script resource, or perhaps
  * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).  One way Smooks allows 

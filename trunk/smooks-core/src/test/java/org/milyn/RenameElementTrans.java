@@ -33,14 +33,11 @@ public class RenameElementTrans extends AbstractProcessingUnit {
 		newElementName = resourceConfig.getStringParameter("new-name");
 	}
 
-	public void visit(Element element, ExecutionContext executionContext) {
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+    }
+
+	public void visitAfter(Element element, ExecutionContext executionContext) {
 		// Rename the element to the configured new name.
 		DomUtils.renameElement(element, newElementName, true, true);
-	}
-
-	public boolean visitBefore() {
-		// We want this transformation code to visit the target element after all
-		// child elements have been iterated over.
-		return false;
 	}
 }
