@@ -31,6 +31,9 @@ import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+
 public class SmooksStandaloneTest extends TestCase {
 
 	public void testProcess() {
@@ -38,7 +41,7 @@ public class SmooksStandaloneTest extends TestCase {
 		try {
 			smooks = new PreconfiguredSmooks();
             StandaloneExecutionContext context = smooks.createExecutionContext("msie6");
-            String response = smooks.filterAndSerialize(context, getClass().getResourceAsStream("html_2.html"));
+            String response = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("html_2.html"), smooks);
 			System.out.println(response);
 			Document doc = DomUtil.parse(response);
 			
@@ -54,25 +57,25 @@ public class SmooksStandaloneTest extends TestCase {
 		Smooks smooks = new Smooks();
 
         // Add profile sets...
-		smooks.registerProfileSet(DefaultProfileSet.create("message-target1", new String[] {"profile1", "profile2"}));
-		smooks.registerProfileSet(DefaultProfileSet.create("message-target2", new String[] {"profile2", "profile3"}));
+		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target1", new String[] {"profile1", "profile2"}), smooks);
+		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target2", new String[] {"profile2", "profile3"}), smooks);
 	
 		// Create CDU configs and target them at the profiles...
 		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
 		resourceConfig.setParameter("new-name", "xxx");
-		smooks.registerResource(resourceConfig);
+		SmooksUtil.registerResource(resourceConfig, smooks);
 		resourceConfig = new SmooksResourceConfiguration("aaa", "profile2", RenameElementTrans.class.getName());
 		resourceConfig.setParameter("new-name", "zzz");
-		smooks.registerResource(resourceConfig);
+		SmooksUtil.registerResource(resourceConfig, smooks);
 
 		// Transform the same message for each useragent...
 		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
         StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
-		String result = smooks.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()));
+		String result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
 		System.out.println(result);
 		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", result);
         context = smooks.createExecutionContext("message-target2");
-        result = smooks.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()));
+        result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
 		System.out.println(result);
 		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><ccc>999</ccc></zzz>", result);
 	}
@@ -81,25 +84,24 @@ public class SmooksStandaloneTest extends TestCase {
 		Smooks smooks = new Smooks();
 		
 		// Add 2 useragents and configure them with profiles...
-		smooks.registerProfileSet(DefaultProfileSet.create("message-target1", new String[] {"profile1", "profile2"}));
-		smooks.registerProfileSet(DefaultProfileSet.create("message-target2", new String[] {"profile2", "profile3"}));
+		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target1", new String[] {"profile1", "profile2"}), smooks);
+		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target2", new String[] {"profile2", "profile3"}), smooks);
 	
 		// Create CDU configs and target them at the profiles...
 		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
 		resourceConfig.setParameter("new-name", "xxx");
-		smooks.registerResource(resourceConfig);
+		SmooksUtil.registerResource(resourceConfig, smooks);
 		resourceConfig = new SmooksResourceConfiguration("aaa", "profile2", RenameElementTrans.class.getName());
 		resourceConfig.setParameter("new-name", "zzz");
-		smooks.registerResource(resourceConfig);
+		SmooksUtil.registerResource(resourceConfig, smooks);
 
 		// Transform the same message for each useragent...
 		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
 
-		StandaloneExecutionContext request = smooks.createExecutionContext("message-target1");
-		Document doc = (Document)smooks.filter(request, new ByteArrayInputStream(message.getBytes()));
+		StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
+        CharArrayWriter writer = new CharArrayWriter();
+        smooks.filter(new StreamSource(new ByteArrayInputStream(message.getBytes())), new StreamResult(writer), context);
 
-		CharArrayWriter writer = new CharArrayWriter();
-		smooks.serialize(request, doc, writer);
 		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
 	}
 }

@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ElementVisitor;
+import org.milyn.delivery.DOMElementVisitor;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -71,7 +71,7 @@ import org.w3c.dom.Element;
  * 
  * @author tfennelly
  */
-public abstract class AbstractBeanPopulator implements ElementVisitor {
+public abstract class AbstractBeanPopulator implements DOMElementVisitor {
 
 	private static Log logger = LogFactory.getLog(AbstractBeanPopulator.class); 
     private String beanId;
@@ -119,7 +119,7 @@ public abstract class AbstractBeanPopulator implements ElementVisitor {
             if(isAttribute) {
                 setterName = "set" + Character.toUpperCase(attributeName.charAt(0)) + attributeName.substring(1);
             } else {
-                // setterName and attributeName are not set - visit method should only
+                // setterName and attributeName are not set - visitAfter method should only
                 // create the bean!!
             }
         }
@@ -129,17 +129,17 @@ public abstract class AbstractBeanPopulator implements ElementVisitor {
     /**
      * Visit the element and extract data and set on the bean.
      * @param element Element being visited.
-     * @param request Container request.
+     * @param executionContext Execution context.
      */
-    public void visit(Element element, ExecutionContext request) {
+    public void visitBefore(Element element, ExecutionContext executionContext) {
         if(logger.isDebugEnabled()) {
         	logger.debug("Visiting bean populator for beanId [" + beanId + "] on element " + DomUtils.getXPath(element));
         }
     	    	
-    	Object bean = getBean(request);
+    	Object bean = getBean(executionContext);
         
         if(setterName == null && attributeName == null) {
-            // setterName and attributeName are not set - visit method should only
+            // setterName and attributeName are not set - visitAfter method should only
             // create the bean!!
             return;
         }
@@ -161,6 +161,14 @@ public abstract class AbstractBeanPopulator implements ElementVisitor {
         } catch (InvocationTargetException e) {
             throw new SmooksConfigurationException("Error invoking bean setter method [" + setterName + "] on bean instance class type [" + bean.getClass() + "].", e);
         }
+    }
+
+    /**
+     * Visit the element and extract data and set on the bean.
+     * @param element Element being visited.
+     * @param executionContext Container request.
+     */
+    public void visitAfter(Element element, ExecutionContext executionContext) {        
     }
 
     /**
@@ -253,9 +261,5 @@ public abstract class AbstractBeanPopulator implements ElementVisitor {
         }
 
         return beanSetterMethod;
-    }
-
-    public boolean visitBefore() {
-        return true;
     }
 }

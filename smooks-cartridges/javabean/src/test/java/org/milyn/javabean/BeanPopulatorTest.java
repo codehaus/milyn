@@ -81,7 +81,7 @@ public class BeanPopulatorTest extends TestCase {
         ProcessingPhaseBeanPopulator pppu = new ProcessingPhaseBeanPopulator();
         pppu.setConfiguration(config);
         try {
-            pppu.visit(doc.getDocumentElement(), request);
+            pppu.visitBefore(doc.getDocumentElement(), request);
             fail("Expected SmooksConfigurationException");
         } catch(SmooksConfigurationException e) {
             assertEquals("Bean [userBean] configuration invalid.  Bean setter method [setX] not found.  Bean: [userBean:org.milyn.javabean.MyGoodBean].", e.getMessage());
@@ -101,7 +101,7 @@ public class BeanPopulatorTest extends TestCase {
         config.setParameter("attributeName", "name");
         pppu = new ProcessingPhaseBeanPopulator();
         pppu.setConfiguration(config);
-        pppu.visit(doc.getDocumentElement(), request);
+        pppu.visitBefore(doc.getDocumentElement(), request);
 
         // create the configuration for populating the "phoneNumber" property
         config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
@@ -109,7 +109,7 @@ public class BeanPopulatorTest extends TestCase {
         config.setParameter("attributeName", "phoneNumber");
         pppu = new ProcessingPhaseBeanPopulator();
         pppu.setConfiguration(config);
-        pppu.visit(doc.getDocumentElement(), request);
+        pppu.visitBefore(doc.getDocumentElement(), request);
         
         // create the configuration for populating the "phoneNumber" property
         config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
@@ -117,7 +117,7 @@ public class BeanPopulatorTest extends TestCase {
         config.setParameter("setterName", "setAddress");
         pppu = new ProcessingPhaseBeanPopulator();
         pppu.setConfiguration(config);
-        pppu.visit(doc.getDocumentElement(), request);
+        pppu.visitBefore(doc.getDocumentElement(), request);
         
         // Check did we get the phoneNumber populated on the bean
         MyGoodBean bean = (MyGoodBean)BeanAccessor.getBean("userBean", request);

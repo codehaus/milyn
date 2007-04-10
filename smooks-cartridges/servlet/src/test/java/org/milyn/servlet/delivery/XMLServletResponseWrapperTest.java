@@ -144,12 +144,16 @@ public class XMLServletResponseWrapperTest extends TestCase {
 			this.newName = newName;
 			this.visitBefore = visitBefore;
 		}
-		public void visit(Element element, ExecutionContext executionContext) {
-			DomUtils.renameElement(element, newName, true, true);
-		}
-		public boolean visitBefore() {
-			return visitBefore;
-		}
+        public void visitBefore(Element element, ExecutionContext executionContext) {
+            if(visitBefore) {
+                DomUtils.renameElement(element, newName, true, true);
+            }
+        }
+		public void visitAfter(Element element, ExecutionContext executionContext) {
+            if(!visitBefore) {
+                DomUtils.renameElement(element, newName, true, true);
+            }
+        }
 	}
 
     private void addHeaderAction(String action, String headerName, String headerValue, MockContentDeliveryConfig deliveryConfig) {

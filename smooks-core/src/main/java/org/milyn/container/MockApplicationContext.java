@@ -37,24 +37,24 @@ public class MockApplicationContext implements ApplicationContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
+	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
 	 */
-	public void setAttribute(String name, Object value) {
-		attributes.put(name, value);
+	public void setAttribute(Object key, Object value) {
+		attributes.put(key, value);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.String)
+	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.Object)
 	 */
-	public Object getAttribute(String name) {
-		return attributes.get(name);
+	public Object getAttribute(Object key) {
+		return attributes.get(key);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.String)
+	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.Object)
 	 */
-	public void removeAttribute(String name) {
-		attributes.remove(name);
+	public void removeAttribute(Object key) {
+		attributes.remove(key);
 	}
 
 	private static String STORE_KEY = MockApplicationContext.class.getName() + "#CDRStore";

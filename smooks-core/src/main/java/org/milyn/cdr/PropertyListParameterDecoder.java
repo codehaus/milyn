@@ -44,7 +44,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * {@link java.util.Properties} properties = (Properties)param.{@link org.milyn.cdr.Parameter#getValue(ContentDeliveryConfig) getValue}; 
  * </pre>
  * <p/>
- * Note, we will make this process easier in the next release.  You'll be able to call a method such
+ * Note, we will make this filter easier in the next release.  You'll be able to call a method such
  * as "getDecodedParameter" on the {@link SmooksResourceConfiguration}, returning a decoded parameter Object.
  * 
  * @see org.milyn.cdr.SmooksResourceConfiguration

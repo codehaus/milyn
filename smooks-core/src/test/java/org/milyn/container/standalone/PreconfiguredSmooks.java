@@ -20,6 +20,7 @@ package org.milyn.container.standalone;
 import java.io.IOException;
 
 import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 import org.milyn.profile.DefaultProfileSet;
 import org.xml.sax.SAXException;
 
@@ -31,13 +32,13 @@ public class PreconfiguredSmooks extends Smooks {
 	 * @throws SAXException 
 	 */
 	public PreconfiguredSmooks() throws SAXException, IOException {
-        registerProfileSet(DefaultProfileSet.create("msie6w", new String[] {"msie6", "html4", "html"}));
-        registerProfileSet(DefaultProfileSet.create("msie6m", new String[] {"msie6", "html4", "html"}));
-        registerProfileSet(DefaultProfileSet.create("msie6", new String[] {"html4", "html"}));
-        registerProfileSet(DefaultProfileSet.create("firefox", new String[] {"html4", "html"}));
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("msie6w", new String[] {"msie6", "html4", "html"}), this);
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("msie6m", new String[] {"msie6", "html4", "html"}), this);
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("msie6", new String[] {"html4", "html"}), this);
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("firefox", new String[] {"html4", "html"}), this);
         
-        registerResources("parameters", getClass().getResourceAsStream("/cdr/parameters.cdrl"));
-        registerResources("parameters", getClass().getResourceAsStream("/cdr/test.cdrl"));
+        SmooksUtil.registerResources("parameters", getClass().getResourceAsStream("/cdr/parameters.cdrl"), this);
+        SmooksUtil.registerResources("parameters", getClass().getResourceAsStream("/cdr/test.cdrl"), this);
 	}
 
 }

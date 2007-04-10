@@ -22,7 +22,6 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ElementList;
 import org.milyn.delivery.MockContentDeliveryConfig;
 import org.milyn.util.IteratorEnumeration;
 import org.milyn.profile.ProfileSet;
@@ -93,60 +92,24 @@ public class MockExecutionContext implements ExecutionContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.device.request.HttpRequest#getHeader(java.lang.String)
-	 */
-	public String getHeader(String name) {
-		return (String)headers.get(name);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.device.request.HttpRequest#getParameter(java.lang.String)
-	 */
-	public String getParameter(String name) {
-		return (String)parameters.get(name);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
 	 */
-	public void setAttribute(String name, Object value) {
-		attributes.put(name, value);
+	public void setAttribute(Object key, Object value) {
+		attributes.put(key, value);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.String)
 	 */
-	public Object getAttribute(String name) {
-		return attributes.get(name);
+	public Object getAttribute(Object key) {
+		return attributes.get(key);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.String)
 	 */
-	public void removeAttribute(String name) {
-		attributes.remove(name);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ExecutionContext#getElementList(java.lang.String)
-	 */
-	public ElementList getElementList(String name) {
-		String nameLower = name.toLowerCase();
-		ElementList list = (ElementList)elementListTable.get(nameLower);
-		
-		if(list == null) {
-			list = new ElementList();
-			elementListTable.put(nameLower, list);
-		}
-		
-		return list;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ExecutionContext#clearElementLists()
-	 */
-	public void clearElementLists() {
-		elementListTable.clear();
+	public void removeAttribute(Object key) {
+		attributes.remove(key);
 	}
     
     public MockContentDeliveryConfig getMockDeliveryConfig() {

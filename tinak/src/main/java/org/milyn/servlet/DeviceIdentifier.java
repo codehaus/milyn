@@ -28,6 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.InputStream;
+import java.util.Enumeration;
 
 /**
  * HttpServletRequest Device Identifier class.
@@ -160,6 +161,14 @@ abstract class DeviceIdentifier {
          */
         public String getParameter(String name) {
             return request.getParameter(name);
+        }
+
+        public Enumeration getParameterNames() {
+            return request.getParameterNames();
+        }
+
+        public String[] getParameterValues(String name) {
+            return request.getParameterValues(name);
         }
     }
 }

@@ -21,6 +21,7 @@ import java.net.URI;
 import junit.framework.TestCase;
 
 import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.magger.CSSProperty;
@@ -40,9 +41,9 @@ public class CssAccessorTest extends TestCase {
 	 */
 	protected void setUp() throws Exception {
         smooks = new Smooks();
-        smooks.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"screen", "audio"}));
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"screen", "audio"}), smooks);
 
-        request = new StandaloneExecutionContext("device1", smooks.getApplicationContext());
+        request = smooks.createExecutionContext("device1");
         request.setDocumentSource(URI.create("http://x.com"));
         store = StyleSheetStore.getStore(request);
 	}

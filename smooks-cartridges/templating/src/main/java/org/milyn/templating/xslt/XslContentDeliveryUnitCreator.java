@@ -272,7 +272,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
             streamResult = resourceConfig.getBoolParameter("streamResult", true);
         }
 
-		public void visit(Element element, ExecutionContext executionContext) {
+		protected void visit(Element element, ExecutionContext executionContext) {
                 Document ownerDoc = element.getOwnerDocument();
                 Element transRes = ownerDoc.createElement("xsltrans");
                 NodeList children = null;

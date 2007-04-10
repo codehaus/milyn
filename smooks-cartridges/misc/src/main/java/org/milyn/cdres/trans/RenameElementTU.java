@@ -65,11 +65,10 @@ public class RenameElementTU extends AbstractProcessingUnit {
 		keepAttributes = resourceConfig.getBoolParameter("keepAttributes", true);
 	}
 
-	public boolean visitBefore() {
-		return false;
-	}
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+    }
 
-	public void visit(Element element, ExecutionContext request) {
+	public void visitAfter(Element element, ExecutionContext request) {
 		DomUtils.renameElement(element, replacementElement, keepChildContent, keepAttributes);
 	}
 }

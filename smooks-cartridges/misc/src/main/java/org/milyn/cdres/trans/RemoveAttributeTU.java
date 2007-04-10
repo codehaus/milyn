@@ -52,11 +52,15 @@ public class RemoveAttributeTU extends AbstractProcessingUnit {
 		visitBefore = resourceConfig.getBoolParameter("visitBefore", false);
 	}
 
-	public void visit(Element element, ExecutionContext request) {
-		element.removeAttribute(attributeName);
-	}
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+        if(visitBefore) {
+            element.removeAttribute(attributeName);
+        }
+    }
 
-	public boolean visitBefore() {
-		return visitBefore;
+	public void visitAfter(Element element, ExecutionContext request) {
+        if(!visitBefore) {
+            element.removeAttribute(attributeName);
+        }
 	}
 }

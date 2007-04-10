@@ -27,9 +27,9 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigImpl;
-import org.milyn.delivery.ElementList;
 import org.milyn.useragent.UAContext;
 import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.request.HttpRequest;
 import org.milyn.servlet.ServletUAContext;
 import org.milyn.profile.ProfileSet;
 
@@ -37,7 +37,7 @@ import org.milyn.profile.ProfileSet;
  * Smooks ExecutionContext implementation for the HttpServlet container.
  * @author tfennelly
  */
-public class HttpServletExecutionContext implements ExecutionContext {
+public class HttpServletExecutionContext implements ExecutionContext, HttpRequest {
 
     /**
 	 * HttpServletRequest instance.
@@ -55,10 +55,6 @@ public class HttpServletExecutionContext implements ExecutionContext {
 	 * Associated ApplicationContext for the servlet environment.
 	 */
 	private ApplicationContext applicationContext;
-	/**
-	 * ElementList table for request.
-	 */
-	private Hashtable elementListTable = new Hashtable();
 	/**
 	 * Request URI.
 	 */
@@ -148,46 +144,24 @@ public class HttpServletExecutionContext implements ExecutionContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
+	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
 	 */
-	public void setAttribute(String name, Object value) {
-		servletRequest.setAttribute(name, value);
+	public void setAttribute(Object key, Object value) {
+		servletRequest.setAttribute(key.toString(), value);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.String)
+	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.Object)
 	 */
-	public Object getAttribute(String name) {
-		return servletRequest.getAttribute(name);
+	public Object getAttribute(Object key) {
+		return servletRequest.getAttribute(key.toString());
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.String)
+	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.Object)
 	 */
-	public void removeAttribute(String name) {
-		servletRequest.removeAttribute(name);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ExecutionContext#getElementList(java.lang.String)
-	 */
-	public ElementList getElementList(String name) {
-		String nameLower = name.toLowerCase();
-		ElementList list = (ElementList)elementListTable.get(nameLower);
-		
-		if(list == null) {
-			list = new ElementList();
-			elementListTable.put(nameLower, list);
-		}
-		
-		return list;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ExecutionContext#clearElementLists()
-	 */
-	public void clearElementLists() {
-		elementListTable.clear();
+	public void removeAttribute(Object key) {
+		servletRequest.removeAttribute(key.toString());
 	}
 	
 	/**

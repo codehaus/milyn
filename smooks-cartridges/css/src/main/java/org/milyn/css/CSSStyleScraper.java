@@ -52,11 +52,11 @@ import org.w3c.dom.Element;
  * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="style" 
  * 	path="org.milyn.cdres.css.CSSStyleScraper" &gt;
  * 
- * 	&lt;!-- (Optional) Only process the CSS if the 'media' attribute lists
+ * 	&lt;!-- (Optional) Only filter the CSS if the 'media' attribute lists
  * 		one of the requesting devices profiles. Default true. --&gt;
  * 	&lt;param name="<b>checkMediaAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * 
- * 	&lt;!-- (Optional) Only process the CSS if the 'type' attribute equals
+ * 	&lt;!-- (Optional) Only filter the CSS if the 'type' attribute equals
  * 		'text/css'. Default true. --&gt;
  * 	&lt;param name="<b>checkTypeAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * &lt;/smooks-resource&gt;
@@ -64,19 +64,19 @@ import org.w3c.dom.Element;
  * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="link" 
  * 	path="org.milyn.cdres.css.CssStyleScraper" &gt;
  * 
- * 	&lt;!-- (Optional) Only process the CSS if the 'media' attribute, if present, lists
+ * 	&lt;!-- (Optional) Only filter the CSS if the 'media' attribute, if present, lists
  * 		one of the requesting devices profiles. Default true. --&gt;
  * 	&lt;param name="<b>checkMediaAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * 
- * 	&lt;!-- (Optional) Only process the CSS if the 'type' attribute, if present, equals
+ * 	&lt;!-- (Optional) Only filter the CSS if the 'type' attribute, if present, equals
  * 		'text/css'. Default true. --&gt;
  * 	&lt;param name="<b>checkTypeAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * 
- * 	&lt;!-- (Optional) Only process the CSS if the 'rel' attribute, if present,
+ * 	&lt;!-- (Optional) Only filter the CSS if the 'rel' attribute, if present,
  * 		contains the keyword 'stylesheet'. Default true. --&gt;
  * 	&lt;param name="<b>checkRelAttributeForStylesheet</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * 
- * 	&lt;!-- (Optional) Only process the CSS if the 'rel' attribute, if present, 
+ * 	&lt;!-- (Optional) Only filter the CSS if the 'rel' attribute, if present,
  * 		<b>does not</b> contains the keyword 'alternate'. Default true. --&gt;
  * 	&lt;param name="<b>checkRelAttributeForAlternate</b>"&gt;<i>true/false</i>&lt;/param&gt;
  * &lt;/smooks-resource&gt;</pre>
@@ -100,11 +100,10 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 		checkRelAttributeForAlternate = resourceConfig.getBoolParameter("checkRelAttributeForAlternate", true);		
 	}
 
-	public boolean visitBefore() {
-		return false;
-	}
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+    }
 	
-	public void visit(Element element, ExecutionContext request) {
+	public void visitAfter(Element element, ExecutionContext request) {
 		String media = DomUtils.getAttributeValue(element, "media");
 		String type = DomUtils.getAttributeValue(element, "type");
 		

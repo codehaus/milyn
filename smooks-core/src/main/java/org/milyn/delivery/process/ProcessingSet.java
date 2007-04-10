@@ -25,32 +25,18 @@ import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 /**
  * Processing set.
  * <p/>
- * The set of ProcessingUnit to be applied to an Element.  The set maintains 2 lists,
- * one for the ProcessingUnits whose {@link org.milyn.delivery.process.ProcessingUnit#visitBefore()} 
- * method returns true and one for those that returned false.
- * <p/>
- * This class is really just a convienient placeholder for the list of ProcessingUnit
- * instances to be applied to an element, pre-broken-out into "before" and "after"
- * lists.
+ * The set of ProcessingUnit to be applied to an Element.
  * @author tfennelly
  */
 public class ProcessingSet {
-	
+
 	/**
-	 * ProcessingUnit instances whose visitBefore method returns true.
+	 * ProcessingUnit instances.
 	 */
-	private Vector visitBeforeProcessingUnits;
-	
-	/**
-	 * ProcessingUnit instances whose visitBefore method returns false.
-	 */
-	private Vector visitAfterProcessingUnits;
+	private Vector processingUnits;
 
 	/**
 	 * Add to the ProcessingSet.
-	 * <p/>
-	 * Adds to the "before" list if {@link org.milyn.delivery.process.ProcessingUnit#visitBefore()}
-	 * returns true, otherwise it adds to the "after" list.
 	 * @param processingUnit The ProcessingUnit to be added.
 	 * @param resourceConfig Corresponding resource config.
 	 */
@@ -58,36 +44,17 @@ public class ProcessingSet {
         ContentDeliveryUnitConfigMap mapInst = 
             new ContentDeliveryUnitConfigMap(processingUnit, resourceConfig);
 
-        if(processingUnit.visitBefore()) {
-			if(visitBeforeProcessingUnits == null) {
-				visitBeforeProcessingUnits = new Vector();
-			}
-			visitBeforeProcessingUnits.add(mapInst);
-		} else {
-			if(visitAfterProcessingUnits == null) {
-				visitAfterProcessingUnits = new Vector();
-			}
-			visitAfterProcessingUnits.add(mapInst);
-		}
+        if(processingUnits == null) {
+            processingUnits = new Vector();
+        }
+        processingUnits.add(mapInst);
 	}
 	
 	/**
-	 * Get the list of ProcessingUnit instances to be applied before.
-	 * <p/>
-	 * See {@link org.milyn.delivery.process.ProcessingUnit#visitBefore()}.
+	 * Get the list of ProcessingUnit instances to be applied.
 	 * @return List of ProcessingUnit instances.
 	 */
-	public List getVisitBeforeProcessingUnits() {
-		return visitBeforeProcessingUnits;
-	}
-	
-	/**
-	 * Get the list of ProcessingUnit instances to be applied after.
-	 * <p/>
-	 * See {@link org.milyn.delivery.process.ProcessingUnit#visitBefore()}.
-	 * @return List of ProcessingUnit instances.
-	 */
-	public List getVisitAfterProcessingUnits() {
-		return visitAfterProcessingUnits;
+	public List getProcessingUnits() {
+		return processingUnits;
 	}
 }

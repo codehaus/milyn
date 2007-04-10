@@ -16,7 +16,7 @@
 
 package org.milyn.delivery.process;
 
-import org.milyn.delivery.ElementVisitor;
+import org.milyn.delivery.DOMElementVisitor;
 
 /**
  * Processing unit interface.
@@ -33,7 +33,7 @@ import org.milyn.delivery.ElementVisitor;
  * See {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}.
  * <p/>
  * ProcessingUnit implementations should be stateless objects.  A single instance is created 
- * and used to visit all relevant Document objects.  Statefull ProcessingUnit implementations 
+ * and used to visitAfter all relevant Document objects.  Statefull ProcessingUnit implementations
  * should be implemented through the {@link org.milyn.delivery.process.ProcessingUnitPrototype} interface.
  * <p/>
  * See <a href="../package-summary.html">Delivery Overview</a>.
@@ -42,5 +42,5 @@ import org.milyn.delivery.ElementVisitor;
  * @see org.milyn.delivery.ContentDeliveryUnitCreator
  * @author tfennelly
  */
-public interface ProcessingUnit extends ElementVisitor {
+public interface ProcessingUnit extends DOMElementVisitor {
 }

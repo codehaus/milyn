@@ -20,7 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.delivery.ElementVisitor;
+import org.milyn.delivery.DOMElementVisitor;
 import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -41,7 +41,7 @@ public class GroovyContentDeliveryUnitCreatorTest extends TestCase {
 			creator.create(config);
 			fail("Expected InstantiationException");
 		} catch (InstantiationException e) {
-			assertEquals("Invalid Groovy script classpath:/org/milyn/smooks/scripting/MyGroovyScript_bad.groovy.  Must implement one of the following Smooks interfaces:\n\t\t1. org.milyn.delivery.assemble.AssemblyUnit, or\n\t\torg.milyn.delivery.process.ProcessingUnit, or\n\t\torg.milyn.delivery.serialize.SerializationUnit.", e.getMessage());
+			assertEquals("Invalid Groovy script classpath:/org/milyn/smooks/scripting/MyGroovyScript_bad.groovy.  Must implement one of the following Smooks interfaces:\n\t\t1. org.milyn.delivery.assemble.AssemblyUnit, or\n\t\torg.milyn.delivery.filter.ProcessingUnit, or\n\t\torg.milyn.delivery.serialize.SerializationUnit.", e.getMessage());
 		}
 	}
 
@@ -66,11 +66,11 @@ public class GroovyContentDeliveryUnitCreatorTest extends TestCase {
 		GroovyContentDeliveryUnitCreator creator = new GroovyContentDeliveryUnitCreator();
 		
 		config.setParameter("new-name", "yyy");
-		ElementVisitor resource = (ElementVisitor) creator.create(config);
+		DOMElementVisitor resource = (DOMElementVisitor) creator.create(config);
 		
 		Document doc = XmlUtil.parseStream(new ByteArrayInputStream("<xxx/>".getBytes()), false, false);
 		assertEquals("xxx", doc.getDocumentElement().getTagName());
-		resource.visit(doc.getDocumentElement(), null);
+		resource.visitAfter(doc.getDocumentElement(), null);
 		assertEquals("yyy", doc.getDocumentElement().getTagName());
 	}
 }

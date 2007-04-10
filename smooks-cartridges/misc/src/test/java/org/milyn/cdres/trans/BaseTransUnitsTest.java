@@ -34,12 +34,12 @@ public class BaseTransUnitsTest extends TestCase {
 		SmooksResourceConfiguration.setParameter("attributeName", "attrib1");
 		SmooksResourceConfiguration.setParameter("attributeNewName", "attrib2");
 		tu = new RenameAttributeTU(SmooksResourceConfiguration);
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertEquals("Default overwrite protection failed.", "value2", body.getAttribute("attrib2"));
 
 		SmooksResourceConfiguration.setParameter("overwrite", "true");
 		tu = new RenameAttributeTU(SmooksResourceConfiguration);
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertFalse("Rename failed to remove target attribute.", body.hasAttribute("attrib1"));
 		assertEquals("Overwrite failed.", "value1", body.getAttribute("attrib2"));
 	}
@@ -54,7 +54,7 @@ public class BaseTransUnitsTest extends TestCase {
 		tu = new RemoveAttributeTU(SmooksResourceConfiguration);
 
 		assertTrue("XPath failed - test corrupted.", body.hasAttribute("attrib1"));
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertFalse("Failed to remove target attribute.", body.hasAttribute("attrib1"));
 	}
 
@@ -67,7 +67,7 @@ public class BaseTransUnitsTest extends TestCase {
 		SmooksResourceConfiguration.setParameter("replacementElement", "head");
 		tu = new RenameElementTU(SmooksResourceConfiguration);
 
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/body"));
 		assertNotNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/head"));
 	}
@@ -81,7 +81,7 @@ public class BaseTransUnitsTest extends TestCase {
 		SmooksResourceConfiguration.setParameter("replacementElement", "head");
 		tu = new RenameElementTU(SmooksResourceConfiguration);
 
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/body"));
 		assertNotNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/head"));
 	}
@@ -94,7 +94,7 @@ public class BaseTransUnitsTest extends TestCase {
 
 		tu = new RemoveElementTU(SmooksResourceConfiguration);
 
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertNull("Failed to remove target element.", XmlUtil.getNode(doc, "/html/body"));
 	}
 
@@ -107,11 +107,11 @@ public class BaseTransUnitsTest extends TestCase {
 		tu = new RemoveElementTU(SmooksResourceConfiguration);
 
 		// So remove the root element...
-		tu.visit(doc.getDocumentElement(), null);
+		tu.visitAfter(doc.getDocumentElement(), null);
 		assertEquals("Failed to remove root element.", body, doc.getDocumentElement());
 
 		// Try removing the new root element - should fail because the body element has no child elements...
-		tu.visit(doc.getDocumentElement(), null);
+		tu.visitAfter(doc.getDocumentElement(), null);
 		assertEquals("Remove root element but shouldn't have.", body, doc.getDocumentElement());
 	}
 	
@@ -124,12 +124,12 @@ public class BaseTransUnitsTest extends TestCase {
 		SmooksResourceConfiguration.setParameter("attributeName", "attrib1");
 		SmooksResourceConfiguration.setParameter("attributeValue", "value3");
 		tu = new SetAttributeTU(SmooksResourceConfiguration);
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertEquals("Default overwrite protection failed.", "value1", body.getAttribute("attrib1"));
 
 		SmooksResourceConfiguration.setParameter("overwrite", "true");
 		tu = new SetAttributeTU(SmooksResourceConfiguration);
-		tu.visit(body, null);
+		tu.visitAfter(body, null);
 		assertEquals("Overwrite failed.", "value3", body.getAttribute("attrib1"));
 	}
 	

@@ -18,16 +18,13 @@ package org.milyn.container.standalone;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ElementList;
 import org.milyn.delivery.ContentDeliveryConfigImpl;
-import org.milyn.util.IteratorEnumeration;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
 
@@ -115,19 +112,6 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		return docSource;
 	}
 
-	public Enumeration getParameterNames() {
-		return new IteratorEnumeration(parameters.keySet().iterator());
-	}
-
-	public String[] getParameterValues(String name) {
-		Object value = parameters.get(name);
-		
-		if(value instanceof String[]) {
-			return (String[])value;
-		}
-		throw new IllegalStateException("Request [" + docSource + "] parameter [" + name + "] must be of type java.lang.String[] i.e. a String array.");
-	}
-
 	public ApplicationContext getContext() {
 		return context;
 	}
@@ -138,35 +122,6 @@ public class StandaloneExecutionContext implements ExecutionContext {
 
 	public ContentDeliveryConfig getDeliveryConfig() {
 		return deliveryConfig;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ExecutionContext#getElementList(java.lang.String)
-	 */
-	public ElementList getElementList(String name) {
-		String nameLower = name.toLowerCase();
-		ElementList list = (ElementList)elementListTable.get(nameLower);
-		
-		if(list == null) {
-			list = new ElementList();
-			elementListTable.put(nameLower, list);
-		}
-		
-		return list;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.ExecutionContext#clearElementLists()
-	 */
-	public void clearElementLists() {
-		elementListTable.clear();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.device.request.HttpRequest#getHeader(java.lang.String)
-	 */
-	public String getHeader(String name) {
-		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 
 	/**
@@ -196,28 +151,24 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		return (contentEncoding == null)?"UTF-8":contentEncoding;
 	}
 
-	public String getParameter(String name) {
-		return null;
+	/* (non-Javadoc)
+	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
+	 */
+	public void setAttribute(Object key, Object value) {
+		attributes.put(key, value);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
+	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.Object)
 	 */
-	public void setAttribute(String name, Object value) {
-		attributes.put(name, value);
+	public Object getAttribute(Object key) {
+		return attributes.get(key);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.String)
+	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.Object)
 	 */
-	public Object getAttribute(String name) {
-		return attributes.get(name);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.String)
-	 */
-	public void removeAttribute(String name) {
-		attributes.remove(name);
+	public void removeAttribute(Object key) {
+		attributes.remove(key);
 	}
 }

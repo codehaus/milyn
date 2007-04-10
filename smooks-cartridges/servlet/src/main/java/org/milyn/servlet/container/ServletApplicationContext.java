@@ -69,24 +69,24 @@ public class ServletApplicationContext implements ApplicationContext {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
+	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
 	 */
-	public void setAttribute(String name, Object value) {
-		servletContext.setAttribute(name, value);
+	public void setAttribute(Object key, Object value) {
+		servletContext.setAttribute(key.toString(), value);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.String)
+	 * @see org.milyn.container.BoundAttributeStore#getAttribute(java.lang.Object)
 	 */
-	public Object getAttribute(String name) {
-		return servletContext.getAttribute(name);
+	public Object getAttribute(Object key) {
+		return servletContext.getAttribute(key.toString());
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.String)
+	 * @see org.milyn.container.BoundAttributeStore#removeAttribute(java.lang.Object)
 	 */
-	public void removeAttribute(String name) {
-		servletContext.removeAttribute(name);
+	public void removeAttribute(Object key) {
+		servletContext.removeAttribute(key.toString());
 	}
 
 	/* (non-Javadoc)

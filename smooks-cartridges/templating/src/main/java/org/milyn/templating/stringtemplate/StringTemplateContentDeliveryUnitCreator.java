@@ -69,7 +69,7 @@ import org.w3c.dom.Text;
  * <p/>
  * Registration of the {@link StringTemplateContentDeliveryUnitCreator} to handle
  * ".st" files can also be done by calling 
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(ContainerContext)}.
+ * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.container.ApplicationContext)}.
  * 
  * <h4>2. Targeting ".st" Files for Transformation</h4>
  * <pre>
@@ -155,10 +155,10 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             template = templateGroup.getInstanceOf(path);
         }
 
-        public void visit(Element element, ExecutionContext request) {
+        protected void visit(Element element, ExecutionContext executionContext) {
             // First thing we do is clone the template for this transformation...
             StringTemplate thisTransTemplate = template.getInstanceOf();
-            HashMap beans = BeanAccessor.getBeans(request);
+            HashMap beans = BeanAccessor.getBeans(executionContext);
             String templatingResult;
 
             // Set the document data beans on the template and apply it...

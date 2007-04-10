@@ -30,25 +30,25 @@ public interface BoundAttributeStore {
 	 * specified. If an object of the same name is already bound, the object 
 	 * is replaced.
 	 * <p/>
-	 * @param name The name to which the object is bound; cannot be null.
+	 * @param key The key against which the object is bound; cannot be null.
 	 * @param value The object to be bound; cannot be null.
 	 */
-	public abstract void setAttribute(String name, Object value);
+	public abstract void setAttribute(Object key, Object value);
 	
 	/**
 	 * Returns the object bound with the specified name in this {@link org.milyn.container.BoundAttributeStore} 
 	 * implementation, or null if no object is bound under the name.
-	 * @param name The name to which the object is bound; cannot be null.
-	 * @return The object bound with the specified name in this {@link org.milyn.container.BoundAttributeStore} 
+     * @param key The key against which the object is bound; cannot be null.
+	 * @return The object bound with the specified name in this {@link org.milyn.container.BoundAttributeStore}
 	 * implementation, or null if no object is bound under the name.
 	 */
-	public abstract Object getAttribute(String name);
+	public abstract Object getAttribute(Object key);
 	
 	/**
 	 * Removes the object bound with the specified name from this {@link org.milyn.container.BoundAttributeStore} 
 	 * implementation. If the {@link org.milyn.container.BoundAttributeStore} implementation does 
 	 * not have an object bound with the specified name, this method does nothing.
-	 * @param name The name to which the object is bound; cannot be null.
+     * @param key The key against which the object is bound; cannot be null.
 	 */
-	public abstract void removeAttribute(String name);
+	public abstract void removeAttribute(Object key);
 }

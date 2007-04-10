@@ -43,11 +43,14 @@ public class RemoveElementAU extends AbstractAssemblyUnit {
 		super(resourceConfig);
 	}
 
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+        element.getParentNode().removeChild(element);
+    }
+
 	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ElementVisitor#visit(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
+	 * @see org.milyn.delivery.DOMElementVisitor#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
-	public void visit(Element element, ExecutionContext request) {
-		element.getParentNode().removeChild(element);
+	public void visitAfter(Element element, ExecutionContext request) {
 	}
 
 	/* (non-Javadoc)

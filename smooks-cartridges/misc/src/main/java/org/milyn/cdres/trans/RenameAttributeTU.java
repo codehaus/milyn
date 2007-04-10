@@ -65,7 +65,19 @@ public class RenameAttributeTU extends AbstractProcessingUnit {
 		visitBefore = resourceConfig.getBoolParameter("visitBefore", false);
 	}
 
-	public void visit(Element element, ExecutionContext request) {
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+        if(visitBefore) {
+            visit(element, executionContext);
+        }
+    }
+
+    public void visitAfter(Element element, ExecutionContext executionContext) {
+        if(!visitBefore) {
+            visit(element, executionContext);
+        }
+    }
+
+    private void visit(Element element, ExecutionContext executionContext) {
 		String attributeValue;
 		
 		// If the element already has the new attribute and we're
@@ -79,9 +91,5 @@ public class RenameAttributeTU extends AbstractProcessingUnit {
 			element.removeAttribute(attributeName);
 			element.setAttribute(attributeNewName, attributeValue);
 		}
-	}
-
-	public boolean visitBefore() {
-		return visitBefore;
 	}
 }

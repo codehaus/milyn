@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.MockContainerResourceLocator;
@@ -44,10 +45,10 @@ public class CssStyleScraperTest extends TestCase {
      */
     protected void setUp() throws Exception {
         smooks = new Smooks();
-        smooks.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"blah"}));
-        execContext = new StandaloneExecutionContext("device1", null, smooks.getApplicationContext());
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"blah"}), smooks);
+        execContext = smooks.createExecutionContext("device1");
         execContext.setDocumentSource(URI.create("http://milyn.codehaus.org/myapp/aaa/mypage.html"));
-        appContext = smooks.getApplicationContext();
+        appContext = (StandaloneApplicationContext) smooks.getApplicationContext();
     }
 		
 	public void testProcessPageCSS() {
@@ -61,8 +62,8 @@ public class CssStyleScraperTest extends TestCase {
 				isCSSProcessed("href='mycss.css' rel='xxx stylesheet'"));
 
         // register a new profile set and recreate the request.
-        smooks.registerProfileSet(DefaultProfileSet.create("device2", new String[] {"screen"}));
-        execContext = new StandaloneExecutionContext("device2", smooks.getApplicationContext());
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("device2", new String[] {"screen"}), smooks);
+        execContext = smooks.createExecutionContext("device2");
         execContext.setDocumentSource(URI.create("http://x.com"));
 
         assertTrue("Expected CSS to be processed - href + media.", 
@@ -104,7 +105,7 @@ public class CssStyleScraperTest extends TestCase {
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
         appContext.setResourceLocator(mockrl);
-		delivUnit.visit(style, execContext);
+		delivUnit.visitAfter(style, execContext);
 		CSSAccessor accessor = CSSAccessor.getInstance(execContext);
 		
 		CSSProperty property = accessor.getProperty(paragraph, "background-color");
@@ -119,7 +120,7 @@ public class CssStyleScraperTest extends TestCase {
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
         appContext.setResourceLocator(mockrl);
-		delivUnit.visit(link, execContext);
+		delivUnit.visitAfter(link, execContext);
 		
 		return mockrl.uri;
 	}
@@ -133,7 +134,7 @@ public class CssStyleScraperTest extends TestCase {
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
         appContext.setResourceLocator(mockrl);
-		delivUnit.visit(link, execContext);
+		delivUnit.visitAfter(link, execContext);
 		
 		return (mockrl.uri != null);
 	}

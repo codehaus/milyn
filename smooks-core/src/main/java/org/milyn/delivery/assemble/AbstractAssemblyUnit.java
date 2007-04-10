@@ -42,13 +42,4 @@ public abstract class AbstractAssemblyUnit extends AbstractContentDeliveryUnit i
 		// Empty implementation.
 		// Extenders of this class receive their configuration via constructor.
 	}
-
-	/**
-	 * By default we visit Assembly Units before Smooks
-	 * iterates over the elements child content.
-	 * @return True.  Override to change this default behaviour. 
-	 */
-	public boolean visitBefore() {
-		return true;
-	}
 }
