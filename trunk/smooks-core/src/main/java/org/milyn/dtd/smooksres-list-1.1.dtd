@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding="UTF-8"?>
+
+<!-- root element -->
+<!ELEMENT smooks-resource-list (smooks-resource+) >
+
+<!ATTLIST smooks-resource-list
+	default-profile	    CDATA 	#IMPLIED
+	default-selector	CDATA 	#IMPLIED
+	default-namespace	CDATA 	#IMPLIED
+>
+
+<!ELEMENT smooks-resource (resource?, param*) >
+<!ATTLIST smooks-resource
+	selector	CDATA 	#IMPLIED
+	namespace	CDATA 	#IMPLIED
+	profile	    CDATA 	#IMPLIED
+>
+
+<!ELEMENT resource (#PCDATA)>
+<!ATTLIST resource>
+
+<!ELEMENT param (#PCDATA)>
+<!ATTLIST param
+	name 		CDATA 	#REQUIRED
+	type 		CDATA 	#IMPLIED
+>
