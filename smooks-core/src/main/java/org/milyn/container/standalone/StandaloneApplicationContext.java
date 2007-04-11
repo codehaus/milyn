@@ -25,10 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
-import org.milyn.profile.DefaultProfileConfigDigester;
-import org.milyn.profile.ProfileStore;
-import org.milyn.profile.Profile;
-import org.milyn.profile.DefaultProfileSet;
+import org.milyn.profile.*;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
@@ -54,7 +51,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	private Hashtable sessions = new Hashtable();
 	private ContainerResourceLocator resourceLocator;	
 	private SmooksResourceConfigurationStore resStore;
-	private ProfileStore profileStore;
+	private ProfileStore profileStore = new DefaultProfileStore();
     
     /**
      * Public constructor.
@@ -68,28 +65,6 @@ public class StandaloneApplicationContext implements ApplicationContext {
         initProfileStore();
     }
 
-	/**
-	 * Public constructor.
-	 * <p/>
-	 * Context instances constructed in this way can be populated manually with
-	 * {@link org.milyn.profile.Profile} and {@link org.milyn.cdr.SmooksResourceConfiguration}
-	 * info.  This supports non-XML type configuration.
-	 * @param profileStore The {@link ProfileStore} for tis context.
-	 * @param resourceLocator The {@link ContainerResourceLocator} for this context.
-	 */
-	public StandaloneApplicationContext(ProfileStore profileStore, ContainerResourceLocator resourceLocator) {
-        this();
-		if(profileStore == null) {
-			throw new IllegalArgumentException("null 'profileStore' arg in constructor call.");
-		}
-		if(resourceLocator == null) {
-			throw new IllegalArgumentException("null 'resourceLocator' arg in constructor call.");
-		}
-		
-		this.profileStore = profileStore;
-		this.resourceLocator = resourceLocator;
-	}
-	
 	private void initProfileStore() {
 		ContainerResourceLocator resLocator = getResourceLocator();
 		DefaultProfileConfigDigester profileDigester = new DefaultProfileConfigDigester();

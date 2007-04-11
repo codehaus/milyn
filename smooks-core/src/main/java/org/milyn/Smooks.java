@@ -83,10 +83,7 @@ public class Smooks {
      * Public Default Constructor.
      */
     public Smooks() {
-        URIResourceLocator resourceLocator = new URIResourceLocator();
-
-        resourceLocator.setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
-        context = new StandaloneApplicationContext(new DefaultProfileStore(), resourceLocator);
+        context = new StandaloneApplicationContext();
     }
 
     /**
