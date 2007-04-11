@@ -102,7 +102,14 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <overview>${basedir}/src/main/java/overview.html</overview>
-                    <verbose>true</verbose>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+                        <link>http://milyn.codehaus.org/javadoc/commons</link>
+                        <link>http://milyn.codehaus.org/javadoc/tinak</link>
+                        <link>http://milyn.codehaus.org/javadoc/smooks</link>
+                        <link>http://milyn.codehaus.org/javadoc/magger</link>
+                        <link>http://milyn.codehaus.org/javadoc/edisax</link>
+                    </links>
                 </configuration>
             </plugin>
         </plugins>
