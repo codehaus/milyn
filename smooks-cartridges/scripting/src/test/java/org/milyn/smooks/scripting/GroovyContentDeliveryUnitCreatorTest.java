@@ -20,7 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.delivery.DOMElementVisitor;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
@@ -41,7 +42,7 @@ public class GroovyContentDeliveryUnitCreatorTest extends TestCase {
 			creator.create(config);
 			fail("Expected InstantiationException");
 		} catch (InstantiationException e) {
-			assertEquals("Invalid Groovy script classpath:/org/milyn/smooks/scripting/MyGroovyScript_bad.groovy.  Must implement one of the following Smooks interfaces:\n\t\t1. org.milyn.delivery.assemble.AssemblyUnit, or\n\t\torg.milyn.delivery.filter.ProcessingUnit, or\n\t\torg.milyn.delivery.serialize.SerializationUnit.", e.getMessage());
+			assertEquals("Invalid Groovy script classpath:/org/milyn/smooks/scripting/MyGroovyScript_bad.groovy.  Must implement one of the following Smooks interfaces:\n\t\t1. " + DOMElementVisitor.class.getName()  + ", or\n\t\t2. " + SerializationUnit.class.getName() + ".", e.getMessage());
 		}
 	}
 

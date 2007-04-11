@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryConfigImpl;
+import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
 

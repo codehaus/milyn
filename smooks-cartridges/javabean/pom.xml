@@ -6,6 +6,7 @@
 		<artifactId>smooks-cartridge-base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
+    <name>Milyn Smooks Javabean (Cartridge)</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-smooks-javabean</artifactId>
 	<version>${milyn.smooks.javabean.version}</version>

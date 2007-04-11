@@ -38,8 +38,8 @@ public interface SmooksXMLReader extends XMLReader {
 	public void setConfiguration(SmooksResourceConfiguration config);
 
 	/**
-	 * Set the Smooks container request on the implementing class.
-	 * @param request Container Request.
+	 * Set the Smooks {@link ExecutionContext} on the implementing class.
+	 * @param executionContext The Smooks {@link ExecutionContext}.
 	 */
-	public void setRequest(ExecutionContext request);
+	public void setExecutionContext(ExecutionContext executionContext);
 }

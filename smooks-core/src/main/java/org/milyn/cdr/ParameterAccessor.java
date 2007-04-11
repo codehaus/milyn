@@ -31,7 +31,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * elements targeted at the requesting useragent.  It looks for a definition of the named
  * parameter.  If the &lt;param&gt; has a type attribute the 
  * {@link org.milyn.cdr.ParameterDecoder} for that type can be applied to the attribute
- * value through the {@link #getParameterObject(String, ContentDeliveryConfig)} method, 
+ * value through the {@link #getParameterObject(String,org.milyn.delivery.ContentDeliveryConfig)} method,
  * returning whatever Java type defined by the {@link org.milyn.cdr.ParameterDecoder}
  * implementation.  As an example, see {@link org.milyn.cdr.TokenizedStringParameterDecoder}.
  * <p/>

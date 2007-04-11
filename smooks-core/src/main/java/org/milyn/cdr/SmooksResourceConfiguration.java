@@ -29,7 +29,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
@@ -41,26 +40,23 @@ import org.w3c.dom.Node;
 /**
  * Smooks Resource Definition.
  * <p/>
- * A <b>Content Delivery Resource</b> is anything that can be used by Smooks in the filter of analysing or
- * manipulating/transforming a data stream.  They could be pieces
- * of Java logic ({@link org.milyn.delivery.assemble.AssemblyUnit}, {@link org.milyn.delivery.process.ProcessingUnit}, 
- * {@link org.milyn.delivery.serialize.SerializationUnit}), some text or script resource, or perhaps
- * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).  One way Smooks allows 
- * definition of resource configurations is via <b>.cdrl</b> XML files.  An example of such a file is as 
+ * A <b>Content Delivery Resource</b> is anything that can be used by Smooks in the process of analysing or
+ * transforming a data stream.  They could be pieces
+ * of Java logic ({@link org.milyn.delivery.dom.DOMElementVisitor},
+ * {@link org.milyn.delivery.dom.serialize.SerializationUnit}), some text or script resource, or perhaps
+ * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).
+ * <p/>
+ * One way Smooks allows
+ * definition of resource configurations is via XML configuration.  An example of such a configuration is as 
  * follows (with an explanation below):
  * <pre>
  * &lt;?xml version='1.0'?&gt;
  * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd>
  * &lt;smooks-resource-list&gt;
- * 	&lt;!--	
- * 		Note: 
- * 		1. 	"wml11" is a useragent profile.
- * 	--&gt;
- * 	&lt;smooks-resource useragent="wml11" selector="dtd" path="www.wapforum.org/DTD/wml_1_1.dtd" /&gt;
- * 	&lt;smooks-resource useragent="wml11" selector="table" path="{@link org.milyn.delivery.process.ProcessingUnit com.acme.transform.TableWML11}" /&gt;
+ * 	&lt;smooks-resource selector="order-date" path="{@link org.milyn.delivery.dom.DOMElementVisitor com.acme.transform.DateField}" /&gt;
  * &lt;/smooks-resource-list&gt;</pre>
  * <p/>
- * The .cdrl DTD can be seen at <a href="http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd">
+ * The DTD for this XML can be seen at <a href="http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd">
  * http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd</a>
  * 
  * <h3 id="attribdefs">Attribute Definitions</h3>
@@ -88,13 +84,13 @@ import org.w3c.dom.Node;
  * 			have the "xforms" profile.
  * 			<p/>
  * 		</li>
- * 		<li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a .cdrl resource.
+ * 		<li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a resource configuration - it's basically the resource key.
  * 			<br/> 
  * 			Example values currently being used are:
  * 			<ol>
- * 				<li><u>Markup element names (e.g. table, tr, pre etc)</u>.  These selector types can be
+ * 				<li><u>Markup element names (e.g. for HTML - table, tr, pre etc)</u>.  This selector types can be
  *              be contextual in a similar way to contextual selectors in CSS e.g. "td ol li" will target the
- *              resource (e.g. a {@link org.milyn.delivery.process.ProcessingUnit}) at all "li" elements nested
+ *              resource (e.g. a {@link org.milyn.delivery.dom.DOMElementVisitor}) at all "li" elements nested
  *              inside an "ol" element, which is in turn nested inside a "td" element.
  * 				</li>
  * 				<li><u>The requesting useragent's markup definition i.e. DTD</u>.  Currently Smooks only support
@@ -140,7 +136,7 @@ import org.w3c.dom.Node;
  * Also note that there is a resource "typing" mechanism in place.  See {@link #getType()}.
  * 
  * <h3 id="res-targeting">Resource Targeting</h3>
- * Content Delivery Resources ({@link org.milyn.delivery.process.ProcessingUnit} etc) are targeted
+ * Content Delivery Resources ({@link org.milyn.delivery.dom.DOMElementVisitor} etc) are targeted
  * using a combination of the <a href="#useragent">useragent</a>, <a href="#selector">selector</a> 
  * and <a href="#namespace">namespace</a> attributes (see above).
  * <p/>
@@ -180,7 +176,7 @@ import org.w3c.dom.Node;
  * <p/>
  * Complex parameter values can be defined and decoded via configured 
  * {@link org.milyn.cdr.ParameterDecoder}s and the 
- * {@link #getParameter(String)}.{@link Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)} 
+ * {@link #getParameter(String)}.{@link Parameter#getValue(org.milyn.delivery.ContentDeliveryConfig) getValue(ContentDeliveryConfig)}
  * method (see {@link org.milyn.cdr.TokenizedStringParameterDecoder} as an example).
  *   
  * @see SmooksResourceConfigurationSortComparator 

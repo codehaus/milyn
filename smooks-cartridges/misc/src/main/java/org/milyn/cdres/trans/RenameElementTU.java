@@ -17,8 +17,9 @@
 package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.process.AbstractProcessingUnit;
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -49,14 +50,13 @@ import org.w3c.dom.Element;
  * 
  * @author tfennelly
  */
-public class RenameElementTU extends AbstractProcessingUnit {
+public class RenameElementTU implements DOMElementVisitor {
 
 	private String replacementElement;
 	private boolean keepChildContent;	
 	private boolean keepAttributes;	
 	
-	public RenameElementTU(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
 		replacementElement = resourceConfig.getStringParameter("replacementElement");
 		if(replacementElement == null) {
 			throw new IllegalStateException(RenameElementTU.class + " cdres must define a 'replacementElement' param.");

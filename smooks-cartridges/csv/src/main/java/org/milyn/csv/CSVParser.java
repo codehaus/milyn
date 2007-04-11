@@ -107,9 +107,9 @@ public class CSVParser implements SmooksXMLReader {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.xml.SmooksXMLReader#setRequest(org.milyn.container.ExecutionContext)
+	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
 	 */
-	public void setRequest(ExecutionContext request) {
+	public void setExecutionContext(ExecutionContext request) {
 		this.request = request;
 	}
 

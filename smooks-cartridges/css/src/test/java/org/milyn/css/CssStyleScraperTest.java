@@ -101,8 +101,9 @@ public class CssStyleScraperTest extends TestCase {
 		Element style = (Element)XmlUtil.getNode(doc, "/x/style");
 		Element paragraph = (Element)XmlUtil.getNode(doc, "/x/p");
 		SmooksResourceConfiguration cdrDef = new SmooksResourceConfiguration("link", "device", "xxx");
-		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
-		CssMockResLocator mockrl = new CssMockResLocator();
+		CSSStyleScraper delivUnit = new CSSStyleScraper();
+        delivUnit.setConfiguration(cdrDef);
+        CssMockResLocator mockrl = new CssMockResLocator();
 		
         appContext.setResourceLocator(mockrl);
 		delivUnit.visitAfter(style, execContext);
@@ -116,8 +117,9 @@ public class CssStyleScraperTest extends TestCase {
 		Document doc = CssTestUtil.parseXMLString("<x><link href='" + href + "' /></x>"); 
 		Element link = (Element)XmlUtil.getNode(doc, "/x/link");
 		SmooksResourceConfiguration cdrDef = new SmooksResourceConfiguration("link", "device", "xxx");
-		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
-		CssMockResLocator mockrl = new CssMockResLocator();
+		CSSStyleScraper delivUnit = new CSSStyleScraper();
+        delivUnit.setConfiguration(cdrDef);
+        CssMockResLocator mockrl = new CssMockResLocator();
 		
         appContext.setResourceLocator(mockrl);
 		delivUnit.visitAfter(link, execContext);
@@ -130,7 +132,8 @@ public class CssStyleScraperTest extends TestCase {
 		Document doc = CssTestUtil.parseXMLString("<x><link " + attribs + " /></x>"); 
 		Element link = (Element)XmlUtil.getNode(doc, "/x/link");
 		SmooksResourceConfiguration cdrDef = new SmooksResourceConfiguration("link", "device", "xxx");
-		CSSStyleScraper delivUnit = new CSSStyleScraper(cdrDef);
+        CSSStyleScraper delivUnit = new CSSStyleScraper();
+        delivUnit.setConfiguration(cdrDef);
 		CssMockResLocator mockrl = new CssMockResLocator();
 		
         appContext.setResourceLocator(mockrl);

@@ -27,7 +27,7 @@ import org.apache.xalan.extensions.XSLProcessorContext;
 import org.apache.xalan.templates.AVT;
 import org.apache.xalan.templates.ElemExtensionCall;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.SmooksXML;
+import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.javabean.BeanAccessor;
 
 /**
@@ -111,10 +111,10 @@ public class XalanJavabeanExtension {
 			throw new OgnlException("'ognl' expression not specified, or is blank.");
 		}
 		
-		ExecutionContext activeRequest = SmooksXML.getContainerRequest();
+		ExecutionContext activeRequest = SmooksDOMFilter.getContainerRequest();
 		
 		if(activeRequest == null) {
-			String message = getClass().getName() + " can only be used within the context of a SmooksXML operation..";
+			String message = getClass().getName() + " can only be used within the context of a SmooksDOMFilter operation..";
 			logger.error(message);
 			throw new IllegalStateException(message);
 		}

@@ -22,7 +22,7 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.MockContentDeliveryConfig;
+import org.milyn.delivery.dom.MockContentDeliveryConfig;
 import org.milyn.util.IteratorEnumeration;
 import org.milyn.profile.ProfileSet;
 

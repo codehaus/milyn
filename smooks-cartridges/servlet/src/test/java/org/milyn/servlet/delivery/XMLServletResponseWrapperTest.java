@@ -21,12 +21,12 @@ import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.delivery.MockContentDeliveryConfig;
-import org.milyn.delivery.process.AbstractProcessingUnit;
-import org.milyn.delivery.process.ProcessingSet;
-import org.milyn.delivery.process.ProcessingUnit;
+import org.milyn.delivery.dom.MockContentDeliveryConfig;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.ProcessingSet;
 import org.milyn.xml.DomUtils;
 import org.milyn.servlet.http.HeaderAction;
 import org.w3c.dom.Element;
@@ -101,7 +101,7 @@ public class XMLServletResponseWrapperTest extends TestCase {
 			wrapper.close();
 			
 			// expect "w" elements to be renamed to "x" and "y" elements to be renamed to "z". 
-			assertEquals("Wrong SmooksXML delivery response.", "<x>sometext 1 true c 1.1 10 <z></z></x>", mockOS.getContents());
+			assertEquals("Wrong SmooksDOMFilter delivery response.", "<x>sometext 1 true c 1.1 10 <z></z></x>", mockOS.getContents());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -129,18 +129,17 @@ public class XMLServletResponseWrapperTest extends TestCase {
 			wrapper.deliverResponse();
 			wrapper.close();
 			
-			assertEquals("Wrong SmooksXML delivery response.", "<X>sometext<A></A></X>", mockOS.getContents());
+			assertEquals("Wrong SmooksDOMFilter delivery response.", "<X>sometext<A></A></X>", mockOS.getContents());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static class MyTestTU extends AbstractProcessingUnit {
+	private static class MyTestTU implements DOMElementVisitor {
 		private static SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("X", "X", "X");
 		private String newName;
 		private boolean visitBefore;
 		public MyTestTU(String newName, boolean visitBefore) {
-			super(resourceConfig);
 			this.newName = newName;
 			this.visitBefore = visitBefore;
 		}
@@ -154,7 +153,9 @@ public class XMLServletResponseWrapperTest extends TestCase {
                 DomUtils.renameElement(element, newName, true, true);
             }
         }
-	}
+        public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
+        }
+    }
 
     private void addHeaderAction(String action, String headerName, String headerValue, MockContentDeliveryConfig deliveryConfig) {
         SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("X", "X", "X");
@@ -166,7 +167,7 @@ public class XMLServletResponseWrapperTest extends TestCase {
         deliveryConfig.addObject("http-response-header", new HeaderAction(resourceConfig));
     }
 
-    private void addTransUnit(String targetElement, ProcessingUnit processingUnit, MockContentDeliveryConfig deliveryConfig) {
+    private void addTransUnit(String targetElement, DOMElementVisitor processingUnit, MockContentDeliveryConfig deliveryConfig) {
         ProcessingSet processingSet = (ProcessingSet)deliveryConfig.processingSets.get(targetElement);
         
         if(processingSet == null) {

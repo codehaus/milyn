@@ -27,8 +27,11 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.assemble.AbstractAssemblyUnit;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.Phase;
+import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.profile.ProfileSet;
 import org.milyn.magger.CSSParser;
 import org.milyn.magger.CSSStylesheet;
@@ -41,8 +44,7 @@ import org.w3c.dom.Element;
  * CSS scraping Assembly Unit.
  * <p/>
  * Gathers CSS information during the Assembly phase.  This information is then
- * available to {@link org.milyn.delivery.process.ProcessingUnit processing units} 
- * during the Processing phase.
+ * available during the Processing phase.
  * <p/>
  * Triggered on &lt;style&gt; and &lt;link&gt; elements. Reads and parses the referenced CSS
  * using the {@link org.milyn.magger.CSSParser Magger CSSParser}.  Makes the gathered CSS data available to 
@@ -84,7 +86,8 @@ import org.w3c.dom.Element;
  * See {@link org.milyn.cdr.SmooksResourceConfiguration}.
  * @author tfennelly
  */
-public class CSSStyleScraper extends AbstractAssemblyUnit {
+@Phase(VisitPhase.ASSEMBLY)
+public class CSSStyleScraper implements DOMElementVisitor {
 
 	private static Log logger = LogFactory.getLog(CSSStyleScraper.class);
 	private boolean checkMediaAttribute = true;
@@ -92,8 +95,7 @@ public class CSSStyleScraper extends AbstractAssemblyUnit {
 	private boolean checkRelAttributeForStylesheet = true;
 	private boolean checkRelAttributeForAlternate = true;
 	
-	public CSSStyleScraper(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
 		checkMediaAttribute = resourceConfig.getBoolParameter("checkMediaAttribute", true);
 		checkTypeAttribute = resourceConfig.getBoolParameter("checkTypeAttribute", true);
 		checkRelAttributeForStylesheet = resourceConfig.getBoolParameter("checkRelAttributeForStylesheet", true);

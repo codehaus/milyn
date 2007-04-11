@@ -47,12 +47,12 @@ import org.milyn.servlet.delivery.ServletResponseWrapperFactory;
 import org.milyn.servlet.delivery.XMLServletResponseWrapper;
 
 /**
- * Smooks Servlet Filter.
+ * Smooks Servlet Phase.
  * <p/>
- * This Servlet Filter plugs {@link org.milyn.delivery.SmooksXML} into a Servlet Container via
+ * This Servlet Phase plugs {@link org.milyn.delivery.dom.SmooksDOMFilter} into a Servlet Container via
  * the {@link org.milyn.servlet.delivery.XMLServletResponseWrapper}.
  * <p/>
- * This Filter can also be configured to filter other response types in a useragent optimizable
+ * This Phase can also be configured to filter other response types in a useragent optimizable
  * fashion e.g. filter using a differnt image filter depending on the requesting browser.
  * See {@link org.milyn.servlet.delivery.ServletResponseWrapperFactory}.
  * <p/>
@@ -75,7 +75,7 @@ import org.milyn.servlet.delivery.XMLServletResponseWrapper;
  *      <a href="http://milyn.codehaus.org/downloads">Milyn Downloads</a>.</li>
  * 	<li>Install all jars in your webapps WEB-INF/lib folder</li>
  * </ol>
- * To enable this Filter in your Servlet container simply 
+ * To enable this Phase in your Servlet container simply
  * add the following to the application web.xml file.
  * <pre>
  * &lt;filter&gt;
@@ -127,14 +127,14 @@ public class SmooksServletFilter implements Filter {
 	private static Log logger = LogFactory.getLog(SmooksServletFilter.class);
 	
 	/* (non-Javadoc)
-	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 * @see javax.servlet.Phase#init(javax.servlet.FilterConfig)
 	 */
 	public void init(FilterConfig config) throws ServletException {
 		try {
 			servletConfig = new FilterToServletConfigAdapter(config);
 			smooksContainerContext = new ServletApplicationContext(config.getServletContext(), servletConfig);
 			loadCdrarStore();
-			logger.info("Smooks Servlet Filter initalised.");
+			logger.info("Smooks Servlet Phase initalised.");
 		} catch(Exception e) {
 			throw new ServletException("CDRArchive list load failure.", e);
 		}		
@@ -158,7 +158,7 @@ public class SmooksServletFilter implements Filter {
 	}
 
 	/* (non-Javadoc)
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 * @see javax.servlet.Phase#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 		ServletResponseWrapper responseWrapper = null;
@@ -227,18 +227,18 @@ public class SmooksServletFilter implements Filter {
 	}
 
 	/* (non-Javadoc)
-	 * @see javax.servlet.Filter#destroy()
+	 * @see javax.servlet.Phase#destroy()
 	 */
 	public void destroy() {
 	}
 
 	/**
-	 * Adaptorfor Filter to Servlet config.
+	 * Adaptorfor Phase to Servlet config.
 	 * @author tfennelly
 	 */
 	private class FilterToServletConfigAdapter implements ServletConfig {		
 		/**
-		 * Filter configuration.
+		 * Phase configuration.
 		 */
 		private FilterConfig config;
 		/**

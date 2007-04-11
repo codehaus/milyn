@@ -16,13 +16,11 @@
 
 package org.milyn.javabean;
 
-import org.milyn.delivery.process.ProcessingUnit;
-
 /**
- * Javabean populator for the {@link org.milyn.delivery.SmooksXML processing phase}.
+ * Javabean populator for the {@link org.milyn.delivery.dom.SmooksDOMFilter processing phase}.
  * <p/>
  * See the {@link org.milyn.javabean.AbstractBeanPopulator} class for configuration details.
  * @author tfennelly
  */
-public class ProcessingPhaseBeanPopulator extends AbstractBeanPopulator implements ProcessingUnit {
+public class ProcessingPhaseBeanPopulator extends AbstractBeanPopulator {
 }

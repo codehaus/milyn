@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.SmooksXML;
+import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.xml.Parser;
 import org.milyn.servlet.http.HeaderAction;
 import org.milyn.servlet.parse.HTMLSAXParser;
@@ -31,7 +31,7 @@ import org.xml.sax.SAXException;
 /**
  * XML/XHTML/HTML Servlet Response Wrapper.
  * <p/>
- * This class hooks the {@link org.milyn.delivery.SmooksXML} class into a
+ * This class hooks the {@link org.milyn.delivery.dom.SmooksDOMFilter} class into a
  * Servlet response filter chain via the {@link org.milyn.servlet.SmooksServletFilter}.  
  * <p/>
  * <b style="color: red">This is the default ServletResponse wrapper.</b>
@@ -63,7 +63,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	/**
 	 * Smooks delivery instance.
 	 */
-	private SmooksXML smooks;
+	private SmooksDOMFilter smooks;
 	/**
 	 * The CharArrayWriter capturing the content.
 	 */
@@ -78,7 +78,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	private List removeHeaderActions = new Vector();
 	/**
 	 * Key for access a request bound DOM passed from a down-stream
-	 * Servlet or Filter.
+	 * Servlet or Phase.
 	 */
 	public static final String SOURCE_DOCUMENT = XMLServletResponseWrapper.class.toString();
 	
@@ -89,7 +89,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	 */
 	public XMLServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
 		super(executionContext, originalResponse);
-		smooks = new SmooksXML(executionContext);
+		smooks = new SmooksDOMFilter(executionContext);
 		requestSAXParserConfig = Parser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
 		initHeaderActions(executionContext.getDeliveryConfig().getObjects("http-response-header"));
 	}
@@ -237,10 +237,10 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
                     throw new SmooksException("Unable to filter InputStream for target useragent [" + getContainerRequest().getTargetProfiles().getBaseProfile() + "].", e);
                 } 
 
-				logger.info("Filtering content stream from down-stream Servlet/Filter.");
+				logger.info("Filtering content stream from down-stream Servlet/Phase.");
                 deliveryNode = smooks.filter(sourceDoc);
 			} else {
-				logger.info("Filtering W3C DOM from down-stream Servlet/Filter.");
+				logger.info("Filtering W3C DOM from down-stream Servlet/Phase.");
 				deliveryNode = smooks.filter(sourceDoc);
 			}
 			smooks.serialize(deliveryNode, writer);

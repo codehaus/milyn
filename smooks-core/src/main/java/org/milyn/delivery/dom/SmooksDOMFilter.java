@@ -14,14 +14,14 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery;
+package org.milyn.delivery.dom;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,11 +29,10 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.assemble.AssemblyUnit;
-import org.milyn.delivery.process.ProcessingSet;
-import org.milyn.delivery.process.ProcessingUnit;
-import org.milyn.delivery.process.ProcessingUnitPrototype;
-import org.milyn.delivery.serialize.Serializer;
+import org.milyn.delivery.dom.ProcessingSet;
+import org.milyn.delivery.dom.serialize.Serializer;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Parser;
 
@@ -42,23 +41,21 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
 /**
- * Smooks XML/XHTML/HTML/etc content filtering class.
+ * Smooks DOM based content filtering class.
  * <p/>
- * This class is responsible for <b>Filtering</b> and <b>Serialising</b> XML streams
- * (XML/XHTML/HTML etc) through a filter of iterating over the source XML DOM tree
+ * This class is responsible for <b>Filtering</b> XML DOM streams
+ * (XML/XHTML/HTML etc) through a process of iterating over the source XML DOM tree
  * and applying the {@link org.milyn.cdr.SmooksResourceConfiguration configured} Content Delivery Units
- * ({@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}, 
- * {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} and 
- * {@link org.milyn.delivery.serialize.SerializationUnit SerializationUnits}).
+ * ({@link DOMElementVisitor DOMElementVisitors} and
+ * {@link org.milyn.delivery.dom.serialize.SerializationUnit SerializationUnits}).
  * <p/>
- * This class doesn't get used directly.  See {@link org.milyn.Smooks}.
+ * This class doesn't get used directly.  See the {@link org.milyn.Smooks} class.
  * 
- * <h3 id="phases">XML/XHTML/HTML Filtering and Serialisation</h3>
- * SmooksXML markup processing (XML/XHTML/HTML) is a 2 phase filter, depending on what
- * needs to be done.  The first phase is called the "Filtering Phase", and the second 
- * phase is called the "Serialisation Phase".  SmooksXML can be used to execute either or both of these 
+ * <h3 id="phases">XML/XHTML/HTML Filtering Process</h3>
+ * SmooksDOMFilter markup processing (XML/XHTML/HTML) is a 2 phase filter, depending on what
+ * needs to be done.  The first phase is called the "Visit Phase", and the second 
+ * phase is called the "Serialisation Phase".  SmooksDOMFilter can be used to execute either or both of these
  * phases (depending on what needs to be done!).
  * <p/>
  * Through this filter, Smooks can be used to analyse and/or transform markup, and then
@@ -68,43 +65,44 @@ import org.w3c.dom.NodeList;
  * So, in a little more detail, the 2 phases are:
  * <ol>
  * 	<li>
- * 		<b><u>Filtering</u></b>: This phase is executed via either of the
+ * 		<b><u>Visit</u></b>: This phase is executed via either of the
  * 		{@link #filter(Document)} or {@link #filter(Reader)} methods. 
  * 		This phase is really 2 "sub" phases.
  * 		<ul>
  * 			<li>
- * 				<b>Assembly</b>: Assembly is the filter of <u>assembling/analysing
- * 				the content</u>.  This is effectively a pre-processing phase.
+ * 				<b>Assembly</b>: This is effectively a pre-processing phase.
  *              <p/>
- * 				This filter involves iterating over the source XML DOM,
- * 				{@link org.milyn.delivery.DOMElementVisitor visiting} all the
- * 				DOM elements with {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}
- * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
- * 				(e.g. for the requesting useragent). 
- * 				This phase can result in DOM elements getting added to, or trimmed from, the DOM.  
- * 				This phase is also very usefull for gathering information about the DOM, 
+ * 				This sub-phase involves iterating over the source XML DOM,
+ * 				visiting all DOM elements that have {@link org.milyn.delivery.dom.VisitPhase ASSEMBLY} phase
+ *              {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}
+ *              {@link org.milyn.cdr.SmooksResourceConfiguration targeted} at them for the profile
+ *              associated with the {@link org.milyn.container.ExecutionContext}. 
+ * 				This phase can result in DOM elements being added to, or trimmed from, the DOM.
+ * 				This phase is also very usefull for gathering data from the message in the DOM
+ *              (and storing it in the {@link org.milyn.container.ExecutionContext}), 
  * 				which can be used during the processing phase (see below).  This phase is only
- * 				executed if there are {@link org.milyn.cdr.SmooksResourceConfiguration configured}
- * 				{@link org.milyn.delivery.assemble.AssemblyUnit} for the SmooksXML processing context
- * 				(e.g. for the requesting useragent).
+ * 				executed if there are 
+ * 				{@link DOMElementVisitor DOMElementVisitors} targeted at this phase.
  * 			</li>
  * 			<li>
  * 				<b>Processing</b>: Processing takes the assembled DOM and 
- * 				iterates over it again to "filter" it (analyse/transform), {@link org.milyn.delivery.DOMElementVisitor visiting} all the
- * 				DOM elements with {@link org.milyn.delivery.process.ProcessingUnit}
- * 				that are {@link org.milyn.cdr.SmooksResourceConfiguration configured} for the SmooksXML processing context
- * 				(e.g. for the requesting useragent). 
+ * 				iterates over it again, so as to perform transformation/analysis.
+ *              <p/>
+ * 				This sub-phase involves iterating over the source XML DOM again,
+ * 				visiting all DOM elements that have {@link org.milyn.delivery.dom.VisitPhase PROCESSING} phase
+ *              {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}
+ *              {@link org.milyn.cdr.SmooksResourceConfiguration targeted} at them for the profile
+ *              associated with the {@link org.milyn.container.ExecutionContext}.
  * 				This phase will only operate on DOM elements that were present in the assembled
- * 				document; {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} will not be applied
+ * 				document; {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} will not be applied
  * 				to elements that are introduced to the DOM during this phase.
- * 				class.
  * 			</li>
  * 		</ul>
  * 	</li>
  * 	<li>
  * 		<b><u>Serialisation</u></b>: This phase is executed by the {@link #serialize(Node, Writer)} method (which uses the 
- * 		{@link org.milyn.delivery.serialize.Serializer} class).  The serialisation phase takes the processed DOM and 
- * 		iterates over it to apply all {@link org.milyn.delivery.serialize.SerializationUnit SerializationUnits},
+ * 		{@link org.milyn.delivery.dom.serialize.Serializer} class).  The serialisation phase takes the processed DOM and
+ * 		iterates over it to apply all {@link org.milyn.delivery.dom.serialize.SerializationUnit SerializationUnits},
  * 		which write the document to the target output stream.
  * 		<p/>
  * 		Instead of using this serialisation mechanism, you may wish to perform
@@ -112,24 +110,15 @@ import org.w3c.dom.NodeList;
  * 	</li>
  * </ol>
  * 
- * It is expected that the vast majority of Smooks usecases will involve implementing the
- * {@link org.milyn.delivery.process.ProcessingUnit ProcessingUnit} interface (most likely via
- * {@link org.milyn.delivery.process.AbstractProcessingUnit}).  It is not expected that many usecases will
- * require implementation of the {@link org.milyn.delivery.assemble.AssemblyUnit} interface,
- * and even less will require implementation of the
- * {@link org.milyn.delivery.serialize.SerializationUnit} interface. 
- * A {@link org.milyn.delivery.serialize.DefaultSerializationUnit} exists and this should solve the
- * vast majority of XML serialisation requirements.
- * 
  * <h3 id="threading">Threading Issues</h3>
  * This class processes the data associated with a single {@link org.milyn.container.ExecutionContext} instance.  This
  * {@link org.milyn.container.ExecutionContext} instance is bound to the current thread of execution for the lifetime of the
- * SmooksXML instance.  For this reason it is not recommended to execute more than one SmooksXML
+ * SmooksDOMFilter instance.  For this reason it is not recommended to execute more than one SmooksDOMFilter
  * instance concurrently within the scope of a single thread i.e. don't interleave them.  Of course it's perfectly fine to
- * create a SmooksXML instance, use it, "dump" it and create and use another instance all within a single thread of execution.
- * This also means that SmooksXML instances cannot be cached/pooled and reused.
+ * create a SmooksDOMFilter instance, use it, "dump" it and create and use another instance all within a single thread of execution.
+ * This also means that SmooksDOMFilter instances cannot be cached/pooled and reused.
  * <p/>
- * A {@link org.milyn.container.ExecutionContext} instance should only be bound to the thread for the lifetime of the SmooksXML instance
+ * A {@link org.milyn.container.ExecutionContext} instance should only be bound to the thread for the lifetime of the SmooksDOMFilter instance
  * it is associated with (i.e. used to instantiate).  See the {@link #finalize()} method.
  * 
  * <h3>Other Documents</h3>
@@ -144,11 +133,10 @@ import org.w3c.dom.NodeList;
  * over the DOM.  However, the thinking on this is that:
  * <ul>
  * 	<li>
- * 		The assembly phase is bypassed if there are no {@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits}
- * 		configured for the requesting device.
+ * 		The assembly phase is bypassed if there are no assembly units configured for the target profile.
  * 	</li>
  * 	<li>
- * 		{@link org.milyn.delivery.assemble.AssemblyUnit AssemblyUnits} are stateless, which means
+ * 		{@link DOMElementVisitor Assembly Units} are stateless, which means
  * 		that only a single instance needs to be created.
  * 	</li>
  * 	<li>
@@ -161,25 +149,25 @@ import org.w3c.dom.NodeList;
  * 		at the start of that phase.
  * 	</li>
  * 	<li>
- * 		{@link org.milyn.delivery.process.ProcessingUnit ProcessingUnits} are normally stateless (see {@link org.milyn.delivery.process.ProcessingUnitPrototype}) 
- * 		which means that multiple instances shouldn't need to be instanciated.
+ * 		{@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} must be stateless, which means that
+ *      multiple instances will not be instantiated.
  * 	</li>
  * 	<li>
- * 		A single instance of the {@link org.milyn.delivery.serialize.DefaultSerializationUnit}
+ * 		A single instance of the {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit}
  * 		performs the vast majority of the work in the serialisation phase.  Only elements that require
- * 		special attention require a specialised {@link org.milyn.delivery.serialize.SerializationUnit}.
+ * 		special attention require a specialised {@link org.milyn.delivery.dom.serialize.SerializationUnit}.
  * 	</li>
  * </ul>
  * -->
  * 
  * @author tfennelly
  */
-public class SmooksXML {
+public class SmooksDOMFilter {
 
 	/**
 	 * Logger.
 	 */
-	private Log logger = LogFactory.getLog(SmooksXML.class);
+	private Log logger = LogFactory.getLog(SmooksDOMFilter.class);
 	/**
 	 * Container request for this Smooks content delivery instance.
 	 */
@@ -187,12 +175,12 @@ public class SmooksXML {
 	/**
 	 * Accessor to the ExecutionContext delivery config.
 	 */
-	private ContentDeliveryConfig deliveryConfig;
+	private DOMContentDeliveryConfig deliveryConfig;
 	/**
 	 * Processing Units to be applied to all elements in the document.  
 	 * Only applied to element present in the original document.
 	 */
-	private List globalProcessingUnits;
+	private List<ContentDeliveryUnitConfigMap> globalProcessingUnits;
 	/**
 	 * Key under which a non-document content delivery node can be set in the 
 	 * request.  This is needed because Xerces doesn't allow "overwriting" of
@@ -200,18 +188,18 @@ public class SmooksXML {
 	 */
 	public static final String DELIVERY_NODE_REQUEST_KEY = ContentDeliveryConfig.class.getName() + "#DELIVERY_NODE_REQUEST_KEY";
 	/**
-	 * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksXML thread instance.
+	 * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
 	 */
 	private static ThreadLocal<ExecutionContext> requestThreadLocal = new ThreadLocal<ExecutionContext>();
 	
 	/**
 	 * Public constructor.
 	 * <p/>
-	 * Constructs a SmooksXML instance for delivering content for the supplied execution context.
+	 * Constructs a SmooksDOMFilter instance for delivering content for the supplied execution context.
 	 * @param executionContext Execution context.  This instance
 	 * is bound to the current Thread of execution.  See <a href="#threading">Threading Issues</a>. 
 	 */
-	public SmooksXML(ExecutionContext executionContext) {
+	public SmooksDOMFilter(ExecutionContext executionContext) {
 		if(executionContext == null) {
 			throw new IllegalArgumentException("null 'executionContext' arg passed in constructor call.");
 		}
@@ -221,13 +209,13 @@ public class SmooksXML {
 			requestThreadLocal.set(executionContext);
 
 		}
-		deliveryConfig = executionContext.getDeliveryConfig();
+		deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 	}
 	
 	/**
 	 * Cleanup.
 	 * <p/>
-	 * Clears the current thread-bound {@link ExecutionContext} instance, but only if this SmooksXML instance
+	 * Clears the current thread-bound {@link ExecutionContext} instance, but only if this SmooksDOMFilter instance
 	 * "owns" the {@link ExecutionContext} instance that's bound to the current thread.
 	 * See <a href="#threading">Threading Issues</a>.
 	 */
@@ -237,7 +225,7 @@ public class SmooksXML {
 				ExecutionContext curExecutionContext = getContainerRequest();
 				if(executionContext == curExecutionContext) {
 					// Only reset if this instance "owns" the current thread bound instance.  It may not own
-					// the instance if finalization happens after the next SmooksXML instance is created on 
+					// the instance if finalization happens after the next SmooksDOMFilter instance is created on
 					// this thread.
 					requestThreadLocal.remove();
 				}
@@ -251,8 +239,8 @@ public class SmooksXML {
 	/**
 	 * Get the {@link ExecutionContext} instance bound to the current thread.
 	 * </p>
-	 * The {@link ExecutionContext} used to instantiate the SmooksXML class is bound to the current Thread of execution.
-	 * If should only be bound to the thread for the lifetime of the SmooksXML instance.
+	 * The {@link ExecutionContext} used to instantiate the SmooksDOMFilter class is bound to the current Thread of execution.
+	 * If should only be bound to the thread for the lifetime of the SmooksDOMFilter instance.
 	 * See <a href="#threading">Threading Issues</a>.
 	 * @return The thread-bound {@link ExecutionContext} instance.
 	 */
@@ -269,12 +257,12 @@ public class SmooksXML {
 		ExecutionContext curExecutionContext = getContainerRequest();
 		if(executionContext != curExecutionContext) {
 			// Stall the ball here!! There's code in place which interleaves the use of this class.
-			throw new Error("Illegal interleaving of multiple instances of " + SmooksXML.class.getName() + ".  See class Javadocs.");
+			throw new Error("Illegal interleaving of multiple instances of " + SmooksDOMFilter.class.getName() + ".  See class Javadocs.");
 		}
 	}
 	
 	/**
-	 * Filter the supplied input reader.
+	 * Phase the supplied input reader.
 	 * <p/>
 	 * Simply parses the input reader into a W3C DOM and calls {@link #filter(Document)}.
 	 * @param source The source of markup to be filtered.
@@ -302,7 +290,7 @@ public class SmooksXML {
 	}
 
 	/**
-	 * Filter the supplied W3C Document.
+	 * Phase the supplied W3C Document.
 	 * <p/>
 	 * Executes the <a href="#phases">Assembly &amp Processing phases</a>.
 	 * @param doc The W3C Document to be filtered.
@@ -315,7 +303,7 @@ public class SmooksXML {
 		int transListLength;
 		ProcessingSet globalProcessingSet;
 		Node deliveryNode;
-		Hashtable deviceAssemblyUnits = deliveryConfig.getAssemblyUnits();
+		Map<String, List<ContentDeliveryUnitConfigMap>> assemblyUnits = deliveryConfig.getAssemblyUnits();
 		
 		if(doc.getDocumentElement() == null) {
 			logger.warn("Empty Document [" + executionContext.getDocumentSource() + "].  Not performaing any processing.");
@@ -323,7 +311,7 @@ public class SmooksXML {
 		}
 		
 		// Skip the assembly phase if there are no configured assembly units.
-		if(!deviceAssemblyUnits.isEmpty()) {
+		if(!assemblyUnits.isEmpty()) {
 			// Assemble
 			if(logger.isDebugEnabled()) {
 				logger.debug("Starting assembly phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
@@ -367,17 +355,17 @@ public class SmooksXML {
 	private void assemble(Element element) {
 		List nodeListCopy = copyList(element.getChildNodes());
 		int childCount = nodeListCopy.size();
-		Hashtable deviceAssemblyUnits = deliveryConfig.getAssemblyUnits();
+		Map<String, List<ContentDeliveryUnitConfigMap>> assemblyUnits = deliveryConfig.getAssemblyUnits();
 		String elementName = DomUtils.getName(element);
-		List elementAssemblyUnits;
+		List<ContentDeliveryUnitConfigMap> elementAssemblyUnits;
 		
-		elementAssemblyUnits = (List)deviceAssemblyUnits.get(elementName.toLowerCase());
+		elementAssemblyUnits = assemblyUnits.get(elementName.toLowerCase());
 
 		// Visit elements with assembly units to be applied before iterating the
 		// elements child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
-                ContentDeliveryUnitConfigMap configMap = (ContentDeliveryUnitConfigMap) elementAssemblyUnits.get(i);;
+                ContentDeliveryUnitConfigMap configMap = elementAssemblyUnits.get(i);;
                 SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
                 // Make sure the assembly unit is targeted at this element.
@@ -397,7 +385,7 @@ public class SmooksXML {
                     continue;
                 }            
                 
-                AssemblyUnit assemblyUnit = (AssemblyUnit)configMap.getContentDeliveryUnit();
+                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
                 try {
                     if(logger.isDebugEnabled()) {
                         logger.debug("Applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
@@ -421,8 +409,8 @@ public class SmooksXML {
 		// elements child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
-                ContentDeliveryUnitConfigMap configMap = (ContentDeliveryUnitConfigMap) elementAssemblyUnits.get(i);
-                AssemblyUnit assemblyUnit = (AssemblyUnit)configMap.getContentDeliveryUnit();
+                ContentDeliveryUnitConfigMap configMap = elementAssemblyUnits.get(i);
+                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
                 
 				if(configMap.getResourceConfig().isTargetedAtElementContext(element)) {
 					try {
@@ -444,7 +432,7 @@ public class SmooksXML {
 	private void buildProcessingList(List processingList, Element element) {
 		String elementName;
 		ProcessingSet processingSet;
-		List processingUnits = null;
+		List<ContentDeliveryUnitConfigMap> processingUnits = null;
 
 		elementName = DomUtils.getName(element);
 		processingSet = deliveryConfig.getProcessingSet(elementName);
@@ -549,7 +537,7 @@ public class SmooksXML {
 		/**
 		 * The processing list. 
 		 */
-		private List processingUnits;
+		private List<ContentDeliveryUnitConfigMap> processingUnits;
         /**
          * Call visitBefore (or visitAfter).
          */
@@ -561,7 +549,7 @@ public class SmooksXML {
          * @param processingUnits ProcessingUnit instances to be applied.
          * @param visitBefore Call visitBefore (or visitAfter).
          */
-		private ElementProcessor(Element element, List processingUnits, boolean visitBefore) {
+		private ElementProcessor(Element element, List<ContentDeliveryUnitConfigMap> processingUnits, boolean visitBefore) {
 			this.element = element;
 			this.processingUnits = processingUnits;
             this.visitBefore = visitBefore;
@@ -577,7 +565,7 @@ public class SmooksXML {
 			int loopLength = processingUnits.size();
 			
 			for(int i = 0; i < loopLength; i++) {
-                ContentDeliveryUnitConfigMap configMap = (ContentDeliveryUnitConfigMap)processingUnits.get(i);
+                ContentDeliveryUnitConfigMap configMap = processingUnits.get(i);
                 SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
                 // Make sure the processing unit is targeted at this element.
@@ -597,10 +585,7 @@ public class SmooksXML {
                     continue;
                 }            
 
-                ProcessingUnit processingUnit = (ProcessingUnit)configMap.getContentDeliveryUnit();
-				if(processingUnit instanceof ProcessingUnitPrototype) {
-					processingUnit = ((ProcessingUnitPrototype)processingUnit).cloneProcessingUnit();
-				}
+                DOMElementVisitor processingUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
 				// Could add an "is-element-in-document-tree" check here
 				// but might not be valid.  Also, this check
 				// would need to iterate back up to the document root

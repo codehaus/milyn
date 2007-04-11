@@ -31,8 +31,6 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * 		<li><b>ConcreteProduct</b>: Implementations of {@link ContentDeliveryUnit}</li>
  * </ul> 
  * The <b>ConcreteCreator</b> implemtations are loaded using the {@link org.milyn.cdr.SmooksResourceConfigurationStore#getContentDeliveryUnitCreator(String)} method. 
- * @see org.milyn.delivery.process.ProcessingUnit
- * @see org.milyn.delivery.process.ProcessingUnitPrototype
  * @author tfennelly
  */
 public interface ContentDeliveryUnitCreator {

@@ -22,7 +22,7 @@ import java.io.Reader;
 
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
-import org.milyn.delivery.SmooksXML;
+import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.profile.DefaultProfileSet;
 import org.w3c.dom.Node;
 
@@ -46,7 +46,7 @@ public class SmooksTest extends TestCase {
     }
 	
 	public void test_applyTransform_bad_params() {
-		SmooksXML smooks = new SmooksXML(request);
+		SmooksDOMFilter smooks = new SmooksDOMFilter(request);
 		
 		try {
 			smooks.filter((Reader)null);
@@ -60,12 +60,12 @@ public class SmooksTest extends TestCase {
 	}
 	
 	public void test_applyTransform_DocumentCheck() {
-		SmooksXML smooks;
+		SmooksDOMFilter smooks;
 		InputStream stream = null;
 		Node deliveryNode = null;
 		
 		stream = getClass().getResourceAsStream("html_1.html");
-		smooks = new SmooksXML(request);
+		smooks = new SmooksDOMFilter(request);
 		try {
 			deliveryNode = smooks.filter(new InputStreamReader(stream));
 		} catch (SmooksException e) {

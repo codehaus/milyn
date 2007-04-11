@@ -25,7 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.delivery.SmooksXML;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.profile.DefaultProfileStore;
 import org.milyn.profile.ProfileSet;
 import org.milyn.resource.URIResourceLocator;
@@ -46,7 +47,30 @@ import javax.xml.transform.stream.StreamResult;
  * Additional configurations can be carried out on the {@link org.milyn.Smooks} instance
  * through the {@link org.milyn.SmooksUtil} class.
  * <p/>
- * See <a href="http://milyn.codehaus.org/Tutorials">Smooks Tutorials</a>.
+ * The basic useage scenario for this class might be as follows:
+ * <ol>
+ *  <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor} to
+ *      perform some transformation/analysis operation on a message.  There are a number of prebuilt
+ *      and reuseable implemntations available as
+ *      "<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">Smooks Cartridges</a>".</li>
+ *  <li>Write a {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration} to target the {@link org.milyn.delivery.dom.DOMElementVisitor}
+ *      implementation at the target fragment of the message being processed.</li>
+ *  <li>Apply the logic as follows:
+ * <pre>
+     Smooks smooks = new Smooks(getClass().getResourceAsStream("{@link org.milyn.cdr.SmooksResourceConfiguration smooks-config.xml}"));
+     {@link ExecutionContext} execContext;
+
+     execContext = smooks.{@link #createExecutionContext createExecutionContext}();
+     smooks.{@link #filter filter}(new {@link StreamSource}(...), new {@link StreamResult}(...), execContext);
+ * </pre>
+ *  </li>
+ * </ol>
+ * Remember, you can implement and apply multiple {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}
+ * within the context of a single filtering operation.  You can also target
+ * {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} based on target profiles, and so use a single
+ * configuration to process multiple messages by sharing profiles across your message set.
+ * <p/>
+ * See <a target="new" href="http://milyn.codehaus.org/Tutorials">Smooks Tutorials</a>.
  *
  * @author tfennelly
  */
@@ -92,7 +116,7 @@ public class Smooks {
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
-     * caller with a mechanism for interacting with the filtering and serialisation processes.
+     * caller with a mechanism for interacting with the content {@link SmooksDOMFilter filtering} phases.
      *
      * @return Execution context instance.
      */
@@ -111,7 +135,7 @@ public class Smooks {
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
-     * caller with a mechanism for interacting with the filtering and serialisation processes.
+     * caller with a mechanism for interacting with the content {@link SmooksDOMFilter filtering} phases.
      *
      * @param targetProfile The target profile ({@link ProfileSet base profile}) on behalf of whom the filtering/serialisation
      *                      filter is to be executed.
@@ -125,8 +149,8 @@ public class Smooks {
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
      * to the supplied {@link javax.xml.transform.Result} instance.
      * <p/>
-     * This method always executes the filtering {@link SmooksXML phases} of content
-     * processing (Assembly and Processing) and will also execute the serialization phase if the
+     * This method always executes the {@link SmooksDOMFilter visit phases} of content
+     * processing.  It will also execute the serialization phase if the
      * supplied result is a {@link javax.xml.transform.stream.StreamResult}.
      * <p/>
      * SAX based Source and Result are not yet supported.
@@ -150,7 +174,7 @@ public class Smooks {
             throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported.");
         }
 
-        SmooksXML smooks = new SmooksXML(executionContext);
+        SmooksDOMFilter smooks = new SmooksDOMFilter(executionContext);
         try {
             Node resultNode;
 

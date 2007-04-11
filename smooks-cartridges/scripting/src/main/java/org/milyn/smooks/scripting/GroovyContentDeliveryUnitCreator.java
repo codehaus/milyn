@@ -23,18 +23,16 @@ import groovy.lang.GroovyClassLoader;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
-import org.milyn.delivery.assemble.AssemblyUnit;
-import org.milyn.delivery.process.ProcessingUnit;
-import org.milyn.delivery.serialize.SerializationUnit;
+import org.milyn.delivery.dom.serialize.SerializationUnit;
+import org.milyn.delivery.dom.DOMElementVisitor;
 
 /**
  * {@link org.milyn.delivery.ContentDeliveryUnit} for the <a href="http://groovy.codehaus.org/">Groovy</a> scripting language.
  * <p/>
  * The Groovy script must implement one (and only one) of the following interfaces:
  * <ol>
- * 	<li>{@link org.milyn.delivery.assemble.AssemblyUnit}, or</li>
- * 	<li>{@link org.milyn.delivery.process.ProcessingUnit}, or</li>
- * 	<li>{@link org.milyn.delivery.serialize.SerializationUnit}.</li>
+ * 	<li>{@link org.milyn.delivery.dom.DOMElementVisitor}, or</li>
+ * 	<li>{@link org.milyn.delivery.dom.serialize.SerializationUnit}.</li>
  * </ol>
  * 
  * <h3>.cdrl Configuration</h3>
@@ -119,13 +117,13 @@ public class GroovyContentDeliveryUnitCreator implements ContentDeliveryUnitCrea
 			Class groovyClass = groovyClassLoader.parseClass(new String(groovyScriptData, "UTF-8"));
 			Object groovyObject = groovyClass.newInstance();
 			
-			if(groovyObject instanceof AssemblyUnit || groovyObject instanceof ProcessingUnit || groovyObject instanceof SerializationUnit) {
+			if(groovyObject instanceof DOMElementVisitor || groovyObject instanceof SerializationUnit) {
 				ContentDeliveryUnit groovyResource = (ContentDeliveryUnit)groovyObject;
 				groovyResource.setConfiguration(configuration);
 				
 				return groovyResource;
 			} else {
-				throw new InstantiationException("Invalid Groovy script " + configuration.getPath() + ".  Must implement one of the following Smooks interfaces:\n\t\t1. org.milyn.delivery.assemble.AssemblyUnit, or\n\t\torg.milyn.delivery.filter.ProcessingUnit, or\n\t\torg.milyn.delivery.serialize.SerializationUnit.");
+				throw new InstantiationException("Invalid Groovy script " + configuration.getPath() + ".  Must implement one of the following Smooks interfaces:\n\t\t1. " + DOMElementVisitor.class.getName() + ", or\n\t\t2. " + SerializationUnit.class.getName() + ".");
 			}
 		} catch (IOException e) {
 			InstantiationException initE = new InstantiationException("Error reading Groovy script " + configuration.getPath());
