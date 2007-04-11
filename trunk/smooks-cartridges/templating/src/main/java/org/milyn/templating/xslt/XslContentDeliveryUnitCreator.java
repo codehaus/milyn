@@ -44,7 +44,7 @@ import org.w3c.dom.NodeList;
 
 
 /**
- * XSL {@link org.milyn.delivery.process.ProcessingUnit} Creator class.
+ * XSL {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
  * <p/>
  * Creates {@link org.milyn.delivery.ContentDeliveryUnit} instances for performing node/element level
  * <a href="http://www.w3.org/Style/XSL/">XSL</a> templating (aka XSLT).
@@ -71,7 +71,7 @@ import org.w3c.dom.NodeList;
  * 
  *  &lt;!-- 
  *      (Mandatory) Specifying the resource type.  This param basically tells Smooks to use the {@link XslContentDeliveryUnitCreator} to
- *      create {@link org.milyn.delivery.process.ProcessingUnit} instances for handling "xsl" resources.
+ *      create {@link org.milyn.delivery.dom.DOMElementVisitor} instances for handling "xsl" resources.
  *  --&gt;
  *  &lt;param name="<b>restype</b>"&gt;xsl&lt;/param&gt;
  * 
@@ -199,7 +199,9 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
      */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
 		try {
-			return new XslProcessingUnit(resourceConfig);
+            XslProcessingUnit xslProcessingUnit = new XslProcessingUnit();
+            xslProcessingUnit.setConfiguration(resourceConfig);
+            return xslProcessingUnit;
 		} catch (Exception e) {
 			InstantiationException instanceException = new InstantiationException("XSL ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.");
 			instanceException.initCause(e);
@@ -236,20 +238,6 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
          * must be synchronized.
          */
         private final boolean isSynchronized = Boolean.getBoolean(ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED);
-
-        /**
-		 * Constructor.
-		 * <p/>
-		 * Create the XSL Template from the Content Delivery Resource bytes.
-		 * @param resourceConfig Config. 
-		 * @throws TransformerConfigurationException Unable to parse XSL.
-		 * @throws IOException Failed to read resource data.
-		 * @throws FactoryConfigurationError 
-		 * @throws ParserConfigurationException 
-		 */
-		private XslProcessingUnit(SmooksResourceConfiguration resourceConfig) throws TransformerConfigurationException, IOException, ParserConfigurationException, FactoryConfigurationError {
-			super(resourceConfig);
-		}
 
 		protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
 			byte[] xslBytes = resourceConfig.getBytes();

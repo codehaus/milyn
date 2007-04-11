@@ -14,24 +14,25 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery.assemble;
+package org.milyn.delivery.dom.serialize;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.AbstractContentDeliveryUnit;
 
 /**
- * Abstract AssemblyUnit implementation.
+ * Abstract SerializationUnit implementation.
  * <p/>
- * See {@link org.milyn.delivery.assemble.AssemblyUnit} docs.
+ * Really just defines the required public constructor that takes the
+ * SmooksResourceConfiguration param.
  * @author tfennelly
  */
-public abstract class AbstractAssemblyUnit extends AbstractContentDeliveryUnit implements AssemblyUnit {
+public abstract class AbstractSerializationUnit extends AbstractContentDeliveryUnit implements SerializationUnit {
 	
 	/**
 	 * Public constructor.
 	 * @param resourceConfig Unit SmooksResourceConfiguration.
 	 */
-	public AbstractAssemblyUnit(SmooksResourceConfiguration resourceConfig) {
+	public AbstractSerializationUnit(SmooksResourceConfiguration resourceConfig) {
 		super(resourceConfig);
 	}
 

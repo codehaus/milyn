@@ -43,7 +43,7 @@ import org.milyn.container.ExecutionContext;
  * 
  * &lt;smooks-resource-list default-useragent="*"&gt; 
  * 	&lt;!--
- * 		Pass-Thru response filter configuration - this basically turns off SmooksXML filtering.
+ * 		Pass-Thru response filter configuration - this basically turns off SmooksDOMFilter filtering.
  * 	--&gt;
  * 	&lt;smooks-resource selector="<b>passthru-smooksrw</b>" path="<b>org.milyn.delivery.response.PassThruServletResponseWrapper</b>" /&gt;
  * &lt;/smooks-resource-list&gt;</pre>

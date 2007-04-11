@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery;
+package org.milyn.delivery.dom;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,20 +28,19 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksResourceConfigurationSortComparator;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
-import org.milyn.delivery.assemble.AssemblyUnit;
-import org.milyn.delivery.process.ProcessingSet;
-import org.milyn.delivery.process.ProcessingUnit;
-import org.milyn.delivery.serialize.SerializationUnit;
+import org.milyn.delivery.dom.ProcessingSet;
+import org.milyn.delivery.dom.serialize.SerializationUnit;
+import org.milyn.delivery.*;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.milyn.profile.ProfileSet;
 
 
 /**
- * Useragent content delivery configuration.
+ * DOM content delivery configuration implementation.
  * @author tfennelly
  */
-public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
+public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	
 	/**
 	 * Logger.
@@ -72,7 +71,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * Table of AssemblyUnit instances keyed by selector. Each table entry
 	 * contains a single AssemblyUnit instances.
 	 */
-	private Hashtable assemblyUnitTable = new Hashtable();
+	private Map<String, List<ContentDeliveryUnitConfigMap>> assemblyUnitTable = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
 	/**
 	 * Table of ProcessingSet instances keyed by selector. Each table entry
 	 * contains a ProcessingSet instances.
@@ -82,7 +81,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * Table of SerializationUnit instances keyed by selector. Each table entry
 	 * contains a single SerializationUnit instances.
 	 */
-	private Hashtable serializationUnitTable = new Hashtable();
+	private Map<String, List<ContentDeliveryUnitConfigMap>> serializationUnitTable = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
 	/**
 	 * Table of Object instance lists keyed by selector. Each table entry
 	 * contains a List of Objects.
@@ -357,12 +356,12 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	}
 	
 	/**
-	 * Get the {@link SmooksResourceConfiguration} map for the requesting useragent.
+	 * Get the {@link SmooksResourceConfiguration} map for the target execution context.
 	 * <p/>
 	 * This Map will be {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator preordered} 
-	 * for the requesting useragent.
+	 * for the target execution context.
 	 * 
-	 * @return {@link SmooksResourceConfiguration} map for the requesting useragent, keyed by the configuration 
+	 * @return {@link SmooksResourceConfiguration} map for the target execution context, keyed by the configuration 
 	 * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
 	 * {@link List} of preordered {@link SmooksResourceConfiguration} instances.
 	 */
@@ -407,11 +406,9 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	/**
 	 * Get the AssemblyUnits table for this delivery context.
 	 * <p/>
-	 * The table is keyed by element name and the values are 
-	 * {@link AssemblyUnit} instances.
 	 * @return The AssemblyUnits table for this delivery context.
 	 */
-	public Hashtable getAssemblyUnits() {
+	public Map<String, List<ContentDeliveryUnitConfigMap>> getAssemblyUnits() {
 		return assemblyUnitTable;
 	}
 	
@@ -422,7 +419,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 	 * {@link SerializationUnit} instances.
 	 * @return The SerializationUnit table for this delivery context.
 	 */
-	public Hashtable getSerailizationUnits() {
+	public Map<String, List<ContentDeliveryUnitConfigMap>> getSerailizationUnits() {
 		return serializationUnitTable;
 	}
 
@@ -508,7 +505,7 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
         }
 
         /**
-		 * Add a {@link ContentDeliveryUnit} for the specified element and configuration.
+		 * Add a {@link org.milyn.delivery.ContentDeliveryUnit} for the specified element and configuration.
 		 * @param elementName Element name against which to associate the CDU.
 		 * @param resourceConfig Configuration.
 		 * @param creator CDU Creator class.
@@ -530,11 +527,15 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 				return false;
 			}
 			
-			if(contentDeliveryUnit instanceof AssemblyUnit) {
-				addAssemblyUnit(elementName, contentDeliveryUnit, resourceConfig);				
-			} else if(contentDeliveryUnit instanceof ProcessingUnit) {
-				addProcessingUnit(elementName, (ProcessingUnit)contentDeliveryUnit, resourceConfig);
-			} else if(contentDeliveryUnit instanceof SerializationUnit) {
+			if(contentDeliveryUnit instanceof DOMElementVisitor) {
+                Phase phaseAnnotation = contentDeliveryUnit.getClass().getAnnotation(Phase.class);
+
+                if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
+                    addAssemblyUnit(elementName, contentDeliveryUnit, resourceConfig);
+                } else {
+                    addProcessingUnit(elementName, (DOMElementVisitor)contentDeliveryUnit, resourceConfig);
+                }
+            } else if(contentDeliveryUnit instanceof SerializationUnit) {
 				addSerializationUnit(elementName, contentDeliveryUnit, resourceConfig);
 			} else {
 				// It's not a CDU type we know of!  Leave for now - whatever's using it
@@ -552,10 +553,10 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
          * @param resourceConfig Resource configuration.
 		 */
 		private void addAssemblyUnit(String elementName, ContentDeliveryUnit assemblyUnit, SmooksResourceConfiguration resourceConfig) {
-			Vector elAssemblyUnits = (Vector)assemblyUnitTable.get(elementName);
+			List<ContentDeliveryUnitConfigMap> elAssemblyUnits = assemblyUnitTable.get(elementName);
 			
 			if(elAssemblyUnits == null) {
-				elAssemblyUnits = new Vector();
+				elAssemblyUnits = new Vector<ContentDeliveryUnitConfigMap>();
 				assemblyUnitTable.put(elementName, elAssemblyUnits);
 			}
             ContentDeliveryUnitConfigMap mapInst = 
@@ -567,11 +568,11 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		/**
 		 * Add ProcessingUnit.
 		 * @param elementName Element to which the ProcessingUnit is to be applied.
-		 * @param processingUnit ProcessingUnit to be added.
+         * @param processingUnit ProcessingUnit to be added.
          * @param resourceConfig Resource configuration.
-		 */
-		private void addProcessingUnit(String elementName, ProcessingUnit processingUnit, SmooksResourceConfiguration resourceConfig) {
-			ProcessingSet processingSet = (ProcessingSet)processingSetTable.get(elementName);
+         */
+		private void addProcessingUnit(String elementName, DOMElementVisitor processingUnit, SmooksResourceConfiguration resourceConfig) {
+			ProcessingSet processingSet = processingSetTable.get(elementName);
 			
 			if(processingSet == null) {
 				processingSet = new ProcessingSet();
@@ -587,10 +588,10 @@ public class ContentDeliveryConfigImpl implements ContentDeliveryConfig {
 		 * @param resourceConfig Resource configuration.
 		 */
 		private void addSerializationUnit(String elementName, ContentDeliveryUnit serializationUnit, SmooksResourceConfiguration resourceConfig) {
-			List elementSerUnits = (List)serializationUnitTable.get(elementName);
-			
-			if(elementSerUnits == null) {
-				elementSerUnits = new Vector();
+			List<ContentDeliveryUnitConfigMap> elementSerUnits = serializationUnitTable.get(elementName);
+
+            if(elementSerUnits == null) {
+				elementSerUnits = new Vector<ContentDeliveryUnitConfigMap>();
 				serializationUnitTable.put(elementName, elementSerUnits);
 			}
             ContentDeliveryUnitConfigMap mapInst = 

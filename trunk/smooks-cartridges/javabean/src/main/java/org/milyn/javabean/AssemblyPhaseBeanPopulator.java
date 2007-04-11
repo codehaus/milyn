@@ -16,13 +16,15 @@
 
 package org.milyn.javabean;
 
-import org.milyn.delivery.assemble.AssemblyUnit;
+import org.milyn.delivery.dom.Phase;
+import org.milyn.delivery.dom.VisitPhase;
 
 /**
- * Javabean populator for the {@link org.milyn.delivery.SmooksXML assembly phase}.
+ * Javabean populator for the {@link org.milyn.delivery.dom.SmooksDOMFilter assembly phase}.
  * <p/>
  * See the {@link org.milyn.javabean.AbstractBeanPopulator} class for configuration details.
  * @author tfennelly
  */
-public class AssemblyPhaseBeanPopulator extends AbstractBeanPopulator implements AssemblyUnit {
+@Phase(VisitPhase.ASSEMBLY)
+public class AssemblyPhaseBeanPopulator extends AbstractBeanPopulator {
 }

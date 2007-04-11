@@ -17,8 +17,11 @@
 package org.milyn.cdres.assemble;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.assemble.AbstractAssemblyUnit;
+import org.milyn.delivery.dom.Phase;
+import org.milyn.delivery.dom.VisitPhase;
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.w3c.dom.Element;
 
 /**
@@ -33,14 +36,10 @@ import org.w3c.dom.Element;
  * See {@link org.milyn.cdr.SmooksResourceConfiguration}.
  * @author tfennelly
  */
-public class RemoveElementAU extends AbstractAssemblyUnit {
+@Phase(VisitPhase.ASSEMBLY)
+public class RemoveElementAU implements DOMElementVisitor {
 
-	/**
-	 * Public Constructor.
-	 * @param resourceConfig Resource Configuration.
-	 */
-	public RemoveElementAU(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
 	}
 
     public void visitBefore(Element element, ExecutionContext executionContext) {
@@ -48,7 +47,7 @@ public class RemoveElementAU extends AbstractAssemblyUnit {
     }
 
 	/* (non-Javadoc)
-	 * @see org.milyn.delivery.DOMElementVisitor#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
+	 * @see org.milyn.delivery.dom.DOMElementVisitor#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext request) {
 	}

@@ -17,8 +17,9 @@
 package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.process.AbstractProcessingUnit;
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.w3c.dom.Element;
 
 /**
@@ -44,15 +45,14 @@ import org.w3c.dom.Element;
  * See {@link org.milyn.cdr.SmooksResourceConfiguration}.
  * @author tfennelly
  */
-public class SetAttributeTU extends AbstractProcessingUnit {
+public class SetAttributeTU implements DOMElementVisitor {
 
 	private String attributeName;
 	private String attributeValue;
 	private boolean visitBefore;
 	private boolean overwrite;
 	
-	public SetAttributeTU(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
 		attributeName = resourceConfig.getStringParameter("attributeName");
 		if(attributeName == null) {
 			throw new IllegalStateException(SetAttributeTU.class + " cdres must define a 'attributeName' param.");

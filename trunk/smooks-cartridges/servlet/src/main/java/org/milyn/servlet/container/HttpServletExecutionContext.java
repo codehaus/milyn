@@ -18,7 +18,6 @@ package org.milyn.servlet.container;
 
 import java.net.URI;
 import java.util.Enumeration;
-import java.util.Hashtable;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryConfigImpl;
+import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
 import org.milyn.useragent.UAContext;
 import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.useragent.request.HttpRequest;

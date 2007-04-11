@@ -14,21 +14,26 @@
  http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.delivery;
+package org.milyn.delivery.dom;
 
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentDeliveryUnit;
 import org.w3c.dom.Element;
 
 /**
  * Element <b>Visitor</b> (GoF) interface for DOM.
  * <p/>
- * {@link org.milyn.delivery.SmooksXML} filters (analyses/transforms) XML/XHTML/HTML content
+ * {@link SmooksDOMFilter} filters (analyses/transforms) XML/XHTML/HTML content
  * by "visting" the DOM {@link org.w3c.dom.Element} nodes through a series of iterations over
  * the source XML DOM.
  * <p/>
  * This interface defines the methods for a "visiting" filter.
  * Implementations of this interface provide a means of hooking analysis
- * and transformation logic into the {@link org.milyn.delivery.SmooksXML} filtering filter.
+ * and transformation logic into the {@link SmooksDOMFilter} filtering process.
+ * <p/>
+ * Implementations should be annotated with the {@link org.milyn.delivery.dom.Phase}
+ * annotation, indicating in which of the {@link SmooksDOMFilter Visit Phases} the visitor should be applied. If not
+ * annotated, the visitor is applied during the Processing phase.
  * <p/>
  * Implementations must be stateless.  If state storage is required, attach the state to the
  * supplied {@link org.milyn.container.ExecutionContext}.
@@ -38,7 +43,7 @@ import org.w3c.dom.Element;
 public interface DOMElementVisitor extends ContentDeliveryUnit {
 
     /**
-     * Visit the supplied element <b>before</a> visiting its child elements.
+     * Visit the supplied element <b>before</b> visiting its child elements.
      *
      * @param element          The DOM element being visited.
      * @param executionContext Request relative instance.
@@ -46,7 +51,7 @@ public interface DOMElementVisitor extends ContentDeliveryUnit {
     public abstract void visitBefore(Element element, ExecutionContext executionContext);
 
     /**
-     * Visit the supplied element <b>after</a> visiting its child elements.
+     * Visit the supplied element <b>after</b> visiting its child elements.
      *
      * @param element          The DOM element being visited.
      * @param executionContext Request relative instance.

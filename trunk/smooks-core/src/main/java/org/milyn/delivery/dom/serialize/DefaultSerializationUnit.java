@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery.serialize;
+package org.milyn.delivery.dom.serialize;
 
 import java.io.IOException;
 import java.io.Writer;

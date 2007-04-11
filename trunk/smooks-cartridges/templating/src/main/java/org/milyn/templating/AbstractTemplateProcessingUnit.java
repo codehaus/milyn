@@ -7,7 +7,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.delivery.process.AbstractProcessingUnit;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.xml.DomUtils;
 import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Document;
@@ -24,7 +25,7 @@ import org.w3c.dom.NodeList;
  * See implementations.
  * @author tfennelly
  */
-public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingUnit {
+public abstract class AbstractTemplateProcessingUnit implements DOMElementVisitor {
 
     private static final int REPLACE = 0;
     private static final int ADDTO = 1;
@@ -35,13 +36,18 @@ public abstract class AbstractTemplateProcessingUnit extends AbstractProcessingU
     private boolean visitBefore = false;
     private int action = REPLACE;
 
-    public AbstractTemplateProcessingUnit(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException {
-		super(config);
+    public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         logger = LogFactory.getLog(getClass());
         visitBefore = config.getBoolParameter("visitBefore", false);
         setAction(config);
-        loadTemplate(config);
-	}
+        try {
+            loadTemplate(config);
+        } catch (IOException e) {
+            throw new SmooksConfigurationException("Unable to read template.", e);
+        } catch (TransformerConfigurationException e) {
+            throw new SmooksConfigurationException("Unable to configure template engine.", e);
+        }
+    }
 	
 	protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
 	

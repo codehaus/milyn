@@ -6,6 +6,7 @@
 		<artifactId>base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
+    <name>Milyn Magger</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-magger</artifactId>
 	<version>${milyn.magger.version}</version>

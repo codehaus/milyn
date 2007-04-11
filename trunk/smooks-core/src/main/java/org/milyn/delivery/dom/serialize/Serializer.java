@@ -14,21 +14,23 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery.serialize;
+package org.milyn.delivery.dom.serialize;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
+import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -43,8 +45,8 @@ import org.w3c.dom.Text;
 /**
  * Node serializer.
  * <p/>
- * This class uses the {@link org.milyn.delivery.ContentDeliveryConfig} and the 
- * {@link org.milyn.delivery.serialize.SerializationUnit} instances defined there on
+ * This class uses the {@link org.milyn.delivery.ContentDeliveryConfig} and the
+ * {@link org.milyn.delivery.dom.serialize.SerializationUnit} instances defined there on
  * to perform the serialization. 
  * @author tfennelly
  */
@@ -65,11 +67,11 @@ public class Serializer {
 	/**
 	 * Target content delivery config.
 	 */
-	private ContentDeliveryConfig deliveryConfig;
+	private DOMContentDeliveryConfig deliveryConfig;
 	/**
 	 * Target content delivery context SerializationUnit definitions.
 	 */
-	private Hashtable serializationUnits;
+	private Map<String, List<ContentDeliveryUnitConfigMap>> serializationUnits;
 	/**
 	 * Default SerializationUnit.
 	 */
@@ -89,7 +91,7 @@ public class Serializer {
 		this.node = node;
 		this.executionContext = executionContext;
 		// Get the delivery context for the device.
-		deliveryConfig = executionContext.getDeliveryConfig();
+		deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 		// Initialise the serializationUnits member
 		serializationUnits = deliveryConfig.getSerailizationUnits();
 		// Set the default SerializationUnit
@@ -178,18 +180,15 @@ public class Serializer {
 	 * Only called if a DOCTYPE was suppied in the original source and
 	 * no doctype overrides were configured (in .cdrl) for the requesting
 	 * device.
-	 * @param docType The DocumentType instance to serialize.
+	 * @param publicId Docytype public ID.
+     * @param systemId Docytype system ID.
 	 * @param rootElement The root element name.
 	 * @param writer The target writer.
 	 * @throws IOException Exception writing to the output writer.
 	 */
 	private void serializeDoctype(String publicId, String systemId, String rootElement, Writer writer) throws IOException {
 
-		//if(defaultSUs instanceof ReportSerializationUnit) {
-		//	writer.write("&lt;!DOCTYPE ");
-		//} else {
-			writer.write("<!DOCTYPE ");
-		//}
+        writer.write("<!DOCTYPE ");
 		writer.write(rootElement);
 		writer.write(' ');
 		if(publicId != null) {
@@ -202,11 +201,7 @@ public class Serializer {
 			writer.write(systemId);
 			writer.write('"');
 		}
-		//if(defaultSUs instanceof ReportSerializationUnit) {
-		//	writer.write("&gt;");
-		//} else {
-			writer.write('>');
-		//}
+        writer.write('>');
 		writer.write('\n');
 	}
 

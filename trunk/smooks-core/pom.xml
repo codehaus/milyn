@@ -6,7 +6,8 @@
 		<artifactId>base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
-	<groupId>milyn</groupId>
+    <name>Milyn Smooks Core</name>
+    <groupId>milyn</groupId>
 	<artifactId>milyn-smooks-core</artifactId>
 	<version>${milyn.smooks.core.version}</version>
 

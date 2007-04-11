@@ -210,7 +210,7 @@ public class Parser {
             reader = XMLReaderFactory.createXMLReader(saxDriverConfig.getPath());
             if(reader instanceof SmooksXMLReader) {
             	((SmooksXMLReader)reader).setConfiguration(saxDriverConfig);
-            	((SmooksXMLReader)reader).setRequest(request);
+            	((SmooksXMLReader)reader).setExecutionContext(request);
             }
         } else {
             reader = XMLReaderFactory.createXMLReader();

@@ -94,13 +94,13 @@ public abstract class SmooksUtil {
     }
 
     /**
-     * Utility method to filter and serialize the content in the specified {@link InputStream} for the specified {@link org.milyn.container.ExecutionContext}.
+     * Utility method to filter the content in the specified {@link InputStream} for the specified {@link org.milyn.container.ExecutionContext}.
      * <p/>
      * Useful for testing purposes.  In a real scenario, use
      * {@link Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.standalone.StandaloneExecutionContext)}.
      * <p/>
      * The content of the returned String is totally dependent on the configured
-     * {@link org.milyn.delivery.process.ProcessingUnit} and {@link org.milyn.delivery.serialize.SerializationUnit}
+     * {@link org.milyn.delivery.dom.DOMElementVisitor} and {@link org.milyn.delivery.dom.serialize.SerializationUnit}
      * implementations.
      *
      * @param executionContext Execution context for the filter.

@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery.serialize;
+package org.milyn.delivery.dom.serialize;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -32,7 +32,7 @@ import org.w3c.dom.Text;
  * W3C Node Serailization interface definition.
  * <p/>
  * Implementations of this interface are applied to the content during the
- * <a href="../SmooksXML.html#phases">Serialisation phase</a>.
+ * <a href="../SmooksDOMFilter.html#phases">Serialisation phase</a>.
  * <p/>
  * This interface allows element targeted (by device, profile, DTD info etc)
  * serialization code to be implemented.  It gives control over how an

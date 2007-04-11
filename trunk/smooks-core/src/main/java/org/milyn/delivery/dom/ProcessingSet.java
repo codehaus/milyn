@@ -14,13 +14,14 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery.process;
+package org.milyn.delivery.dom;
 
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.dom.DOMElementVisitor;
 
 /**
  * Processing set.
@@ -33,20 +34,17 @@ public class ProcessingSet {
 	/**
 	 * ProcessingUnit instances.
 	 */
-	private Vector processingUnits;
+	private List<ContentDeliveryUnitConfigMap> processingUnits = new ArrayList<ContentDeliveryUnitConfigMap>();
 
 	/**
 	 * Add to the ProcessingSet.
-	 * @param processingUnit The ProcessingUnit to be added.
+	 * @param processingUnit The Processing Unit to be added.
 	 * @param resourceConfig Corresponding resource config.
 	 */
-	public void addProcessingUnit(ProcessingUnit processingUnit, SmooksResourceConfiguration resourceConfig) {
+	public void addProcessingUnit(DOMElementVisitor processingUnit, SmooksResourceConfiguration resourceConfig) {
         ContentDeliveryUnitConfigMap mapInst = 
             new ContentDeliveryUnitConfigMap(processingUnit, resourceConfig);
 
-        if(processingUnits == null) {
-            processingUnits = new Vector();
-        }
         processingUnits.add(mapInst);
 	}
 	
@@ -54,7 +52,7 @@ public class ProcessingSet {
 	 * Get the list of ProcessingUnit instances to be applied.
 	 * @return List of ProcessingUnit instances.
 	 */
-	public List getProcessingUnits() {
+	public List<ContentDeliveryUnitConfigMap> getProcessingUnits() {
 		return processingUnits;
 	}
 }

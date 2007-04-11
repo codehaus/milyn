@@ -21,7 +21,7 @@ import java.io.Writer;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.serialize.DefaultSerializationUnit;
+import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;

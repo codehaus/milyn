@@ -14,26 +14,27 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery;
+package org.milyn.delivery.dom;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.milyn.delivery.process.ProcessingSet;
+import org.milyn.delivery.dom.ProcessingSet;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 
 /**
- * 
+ * Mock ContentDeliveryConfig for DOM. 
  * @author tfennelly
  */
-public class MockContentDeliveryConfig implements ContentDeliveryConfig {
+public class MockContentDeliveryConfig implements DOMContentDeliveryConfig {
 
 	public Hashtable processingSets = new Hashtable();
-	public Hashtable resourceConfigs = new Hashtable();
-	public Hashtable assemblyUnits = new Hashtable();
-	public Hashtable serializationUnits = new Hashtable();
+	public Map<String, List<ContentDeliveryUnitConfigMap>> resourceConfigs = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
+	public Map<String, List<ContentDeliveryUnitConfigMap>> assemblyUnits = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
+	public Map<String, List<ContentDeliveryUnitConfigMap>> serializationUnits = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
 	public Hashtable objectsHash = new Hashtable();
 	
 	/* (non-Javadoc)
@@ -43,18 +44,18 @@ public class MockContentDeliveryConfig implements ContentDeliveryConfig {
 		return (ProcessingSet)processingSets.get(tag);
 	}
 
-	public List getSmooksResourceConfigurations(String nodeDef) {
-		return (List)resourceConfigs.get(nodeDef);
+	public List<ContentDeliveryUnitConfigMap> getSmooksResourceConfigurations(String nodeDef) {
+		return resourceConfigs.get(nodeDef);
 	}
 	
-	public Map getSmooksResourceConfigurations() {
+	public Map<String, List<ContentDeliveryUnitConfigMap>> getSmooksResourceConfigurations() {
 		return resourceConfigs;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.ContentDeliveryConfig#getSerailizationUnits()
 	 */
-	public Hashtable getSerailizationUnits() {
+	public Map<String, List<ContentDeliveryUnitConfigMap>> getSerailizationUnits() {
 		return serializationUnits;
 	}
 
@@ -78,7 +79,7 @@ public class MockContentDeliveryConfig implements ContentDeliveryConfig {
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.ContentDeliveryConfig#getAssemblyUnits()
 	 */
-	public Hashtable getAssemblyUnits() {
+	public Map<String, List<ContentDeliveryUnitConfigMap>> getAssemblyUnits() {
 		return assemblyUnits;
 	}
 

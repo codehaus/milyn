@@ -24,6 +24,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
@@ -33,7 +34,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 /**
- * StringTemplate {@link org.milyn.delivery.process.ProcessingUnit} Creator class.
+ * StringTemplate {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
  * <p/>
  * Creates {@link org.milyn.delivery.ContentDeliveryUnit} instances for applying
  * <a href="http://www.stringtemplate.org/">StringTemplate</a> transformations (i.e. ".st" files).
@@ -59,7 +60,7 @@ import org.w3c.dom.Text;
  *  &lt;!-- 
  *      (Mandatory) Specifying the resource type.  This param bsaically 
  *      tells Smooks use the {@link StringTemplateContentDeliveryUnitCreator} to
- *      create {@link org.milyn.delivery.process.ProcessingUnit} instances for
+ *      create {@link org.milyn.delivery.dom.DOMElementVisitor} instances for
  *      applying ".st" files (<a href="http://www.stringtemplate.org/">StringTemplate</a> template files).
  *  --&gt;
  *  &lt;param name="<b>restype</b>"&gt;st&lt;/param&gt;
@@ -115,13 +116,11 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
 	 */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
         try {
-			return new StringTemplateProcessingUnit(resourceConfig);
-		} catch (TransformerConfigurationException e) {
+			StringTemplateProcessingUnit processingUnit = new StringTemplateProcessingUnit();
+            processingUnit.setConfiguration(resourceConfig);
+            return processingUnit;
+        } catch (SmooksConfigurationException e) {
 			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.  StringTemplate resource invalid.");
-			instanceException.initCause(e);
-			throw instanceException;
-		} catch (IOException e) {
-			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.  StringTemplate resource not found.");
 			instanceException.initCause(e);
 			throw instanceException;
 		}
@@ -135,10 +134,6 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
 
         private StringTemplate template;
         
-        public StringTemplateProcessingUnit(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException {
-            super(config);
-        }
-
         protected void loadTemplate(SmooksResourceConfiguration config) {
             String path = config.getPath();
             String encoding = config.getStringParameter("encoding", "UTF-8");

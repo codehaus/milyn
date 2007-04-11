@@ -17,8 +17,9 @@
 package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.process.AbstractProcessingUnit;
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -42,12 +43,11 @@ import org.w3c.dom.Element;
  * See {@link org.milyn.cdr.SmooksResourceConfiguration}.
  * @author tfennelly
  */
-public class RemoveElementTU extends AbstractProcessingUnit {
+public class RemoveElementTU implements DOMElementVisitor {
 
 	private boolean keepChildContent;	
 
-	public RemoveElementTU(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
 		keepChildContent = resourceConfig.getBoolParameter("keepChildContent", true);
 	}
 
@@ -55,7 +55,7 @@ public class RemoveElementTU extends AbstractProcessingUnit {
     }
 
 	/* (non-Javadoc)
-	 * @see org.milyn.delivery.DOMElementVisitor#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
+	 * @see org.milyn.delivery.dom.DOMElementVisitor#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext request) {
 		DomUtils.removeElement(element, keepChildContent);

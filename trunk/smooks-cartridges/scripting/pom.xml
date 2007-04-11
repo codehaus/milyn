@@ -6,6 +6,7 @@
 		<artifactId>smooks-cartridge-base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
+    <name>Milyn Smooks Scripting (Cartridge)</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-smooks-scripting</artifactId>
 	<version>${milyn.smooks.scripting.version}</version>
