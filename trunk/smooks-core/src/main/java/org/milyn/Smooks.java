@@ -47,7 +47,7 @@ import javax.xml.transform.stream.StreamResult;
  * Additional configurations can be carried out on the {@link org.milyn.Smooks} instance
  * through the {@link org.milyn.SmooksUtil} class.
  * <p/>
- * The basic useage scenario for this class might be as follows:
+ * The basic usage scenario for this class might be as follows:
  * <ol>
  *  <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor} to
  *      perform some transformation/analysis operation on a message.  There are a number of prebuilt
