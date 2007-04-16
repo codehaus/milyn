@@ -27,12 +27,14 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
+import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.profile.ProfileSet;
+import org.milyn.profile.DefaultProfileStore;
 import org.xml.sax.SAXException;
 
 
@@ -152,7 +154,28 @@ public class SmooksResourceConfigurationStore {
         
         configList = XMLConfigDigester.digestConfig(name, resourceConfigStream);
         configLists.add(configList);
-    }    
+
+        // DTD v2.0 added profiles to the resource config.  If there were any, add them to the
+        // profile store.
+        addProfileSets(configList.getProfiles());
+    }
+
+    private void addProfileSets(List<ProfileSet> profileSets) {
+        if(profileSets == null) {
+            return;
+        }
+
+        // TODO Sort out the other app context impls such that we can get the profile store from them too
+        if(applicationContext instanceof StandaloneApplicationContext) {
+            DefaultProfileStore profileStore = ((StandaloneApplicationContext)applicationContext).getProfileStore();
+
+            for(ProfileSet profileSet : profileSets) {
+                profileStore.addProfileSet(profileSet);
+            }
+            
+            profileStore.expandProfiles();
+        }
+    }
 
     /**
      * Register a {@link SmooksResourceConfiguration} on this context store.
@@ -198,7 +221,7 @@ public class SmooksResourceConfigurationStore {
 	 */
 	public Object getObject(SmooksResourceConfiguration resourceConfig) {
 		Object object = null;
-        String className = ClasspathUtils.toClassName(resourceConfig.getPath());
+        String className = ClasspathUtils.toClassName(resourceConfig.getResource());
 
         // Load the runtime class... 
 		Class classRuntime;

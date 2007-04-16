@@ -2,7 +2,6 @@
 
 <!-- root element -->
 <!ELEMENT smooks-resource-list (smooks-resource+) >
-
 <!ATTLIST smooks-resource-list
 	default-useragent	CDATA 	#IMPLIED
 	default-selector	CDATA 	#IMPLIED

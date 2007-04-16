@@ -121,7 +121,7 @@ public class Parser {
     public Parser(ExecutionContext request, SmooksResourceConfiguration saxDriverConfig) {
         this(request);
         this.saxDriverConfig = saxDriverConfig;
-        if(saxDriverConfig.getPath() == null) {
+        if(saxDriverConfig.getResource() == null) {
             throw new IllegalStateException("Invalid SAX Parser configuration.  Must specify 'path' attribute to contain the parser class name.");
         }
     }
@@ -142,7 +142,7 @@ public class Parser {
         
         if(saxConfigs != null && !saxConfigs.isEmpty()) {
             saxDriverConfig = (SmooksResourceConfiguration)saxConfigs.get(0);
-            if(saxDriverConfig.getPath() == null) {
+            if(saxDriverConfig.getResource() == null) {
                 throw new IllegalStateException("Invalid SAX Parser configuration.  Must specify 'path' attribute to contain the parser class name.");
             }
         }
@@ -207,7 +207,7 @@ public class Parser {
         XMLReader reader;
         
         if(saxDriverConfig != null) {
-            reader = XMLReaderFactory.createXMLReader(saxDriverConfig.getPath());
+            reader = XMLReaderFactory.createXMLReader(saxDriverConfig.getResource());
             if(reader instanceof SmooksXMLReader) {
             	((SmooksXMLReader)reader).setConfiguration(saxDriverConfig);
             	((SmooksXMLReader)reader).setExecutionContext(request);

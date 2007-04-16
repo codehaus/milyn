@@ -116,7 +116,7 @@ public final class ServletUAContext implements UAContext {
     /**
      * The ProfileSet.  Set of profiles of which the device has membership.
      */
-    private ProfileSet profileSet = null;
+    private ProfileSet      profileSet = null;
 	/**
      * ServletUAContext session key.
      */

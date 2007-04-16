@@ -18,7 +18,6 @@ package org.milyn.delivery.dom.serialize;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 import java.util.Map;
@@ -29,7 +28,6 @@ import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
-import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.CDATASection;
@@ -136,7 +134,7 @@ public class Serializer {
 			// Only use the cdrdef if the override flag is set.  The override flag will
 			// cause this DOCTYPE to override any DOCYTPE decl from the source doc.
 			if(docTypeSmooksResourceConfiguration != null && docTypeSmooksResourceConfiguration.getBoolParameter("override", true)) {
-				String path = docTypeSmooksResourceConfiguration.getPath();
+				String path = docTypeSmooksResourceConfiguration.getResource();
                 
 				if(path != null) {
 					writer.write(new String(docTypeSmooksResourceConfiguration.getBytes()));

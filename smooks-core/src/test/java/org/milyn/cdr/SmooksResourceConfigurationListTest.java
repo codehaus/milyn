@@ -48,11 +48,11 @@ public class SmooksResourceConfigurationListTest extends TestCase {
         list.add(new SmooksResourceConfiguration("*", "a/b.zap"));
         assertFalse(list.isEmpty());
         assertEquals(1, list.size());
-        assertEquals("a/b.zap", list.get(0).getPath());
+        assertEquals("a/b.zap", list.get(0).getResource());
         
         
         list.add(new SmooksResourceConfiguration("*", "c/d.zap"));
         assertEquals(2, list.size());        
-        assertEquals("c/d.zap", list.get(1).getPath());
+        assertEquals("c/d.zap", list.get(1).getResource());
     }
 }

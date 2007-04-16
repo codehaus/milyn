@@ -52,7 +52,13 @@ public class LocalEntityResolver implements EntityResolver {
 	 */
 	private static Hashtable dtdEntities = new Hashtable();
 
-	/**
+    /**
+     * Document DTD.  This is a bit of a hack.  There's a way of getting the DOM
+     * parser to populate the DocumentType.
+     */
+    private String docDTD;
+
+    /**
 	 * Public default Constructor
 	 */
 	public LocalEntityResolver() {
@@ -90,7 +96,11 @@ public class LocalEntityResolver implements EntityResolver {
 				.get(systemId);
 		InputSource entityInputSource = null;
 
-		if (cachedBytes == null) {
+        if(systemId.endsWith(".dtd")) {
+            docDTD = systemId;
+        }
+
+        if (cachedBytes == null) {
 			URL systemIdUrl = new URL(systemId);
 			String entityPath = systemIdUrl.getHost() + systemIdUrl.getFile();
 			String entityName = (new File(entityPath)).getName();
@@ -122,7 +132,7 @@ public class LocalEntityResolver implements EntityResolver {
 
 			// Read the entity stream and store it in the cache.
 			cachedBytes = readEntity(entityStream);
-			LocalEntityResolver.dtdEntities.put(systemId, cachedBytes);
+            LocalEntityResolver.dtdEntities.put(systemId, cachedBytes);
 		}
 
 		entityInputSource = new InputSource(new ByteArrayInputStream(
@@ -163,4 +173,16 @@ public class LocalEntityResolver implements EntityResolver {
 	public static void clearEntityCache() {
 		dtdEntities.clear();
 	}
+
+    /**
+     * Get the document DTD.
+     * <p/>
+     * This is a bit of a hack.  There's a way of getting the DOM
+     * parser to populate the DocumentType.
+     *
+     * @return The Document DTD (systemId).
+     */
+    public String getDocDTD() {
+        return docDTD;
+    }
 }

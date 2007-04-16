@@ -151,21 +151,15 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 		// If there's a DTD for this device, get it and add it to the DTDStore.
 		List dtdSmooksResourceConfigurations = (List)resourceConfigTable.get("dtd");
 		if(dtdSmooksResourceConfigurations != null && dtdSmooksResourceConfigurations.size() > 0) {
-			try {
-				SmooksResourceConfiguration dtdSmooksResourceConfiguration = (SmooksResourceConfiguration)dtdSmooksResourceConfigurations.get(0);
-				byte[] dtdDataBytes = dtdSmooksResourceConfiguration.getBytes();
-                
-                if(dtdDataBytes != null) {
-    				DTDStore.addDTD(profileSet, new ByteArrayInputStream(dtdDataBytes));
-    				// Initialise the DTD reference for this config table.
-    				dtd = DTDStore.getDTDObject(profileSet);
-                } else {
-                	logger.error("DTD resource [" + dtdSmooksResourceConfiguration.getPath() + "] not found in classpath.");
-                }
-			} catch (IOException e) {
-                IllegalStateException state = new IllegalStateException("Error reading DTD resource.");
-                state.initCause(e);
-                throw state;
+            SmooksResourceConfiguration dtdSmooksResourceConfiguration = (SmooksResourceConfiguration)dtdSmooksResourceConfigurations.get(0);
+            byte[] dtdDataBytes = dtdSmooksResourceConfiguration.getBytes();
+
+            if(dtdDataBytes != null) {
+                DTDStore.addDTD(profileSet, new ByteArrayInputStream(dtdDataBytes));
+                // Initialise the DTD reference for this config table.
+                dtd = DTDStore.getDTDObject(profileSet);
+            } else {
+                logger.error("DTD resource [" + dtdSmooksResourceConfiguration.getResource() + "] not found in classpath.");
             }
 		}
 
@@ -464,7 +458,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 
             // Get the resource type and "try" creating a ContentDeliveryUnitCreator for that resource
             // type.
-            String restype = resourceConfig.getType();
+            String restype = resourceConfig.getResourceType();
             creator = tryCreateCreator(restype);
 			
             // If we have a creator but it's the JavaContentDeliveryUnitCreator we ignore it because

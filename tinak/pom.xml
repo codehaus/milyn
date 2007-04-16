@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>milyn</groupId>
-		<artifactId>base-pom</artifactId>
+		<artifactId>milyn</artifactId>
 		<version>1.0</version>
 	</parent>
     <name>Milyn Tinak</name>

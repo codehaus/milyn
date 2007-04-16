@@ -25,6 +25,8 @@ import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.dom.MockContentDeliveryConfig;
 import org.milyn.util.IteratorEnumeration;
 import org.milyn.profile.ProfileSet;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.container.standalone.StandaloneApplicationContext;
 
 /**
  * 
@@ -34,7 +36,7 @@ public class MockExecutionContext implements ExecutionContext {
 
 	public String contextPath;
 	public URI docSource;
-	public ProfileSet profileSet;
+	public ProfileSet profileSet = new DefaultProfileSet(StandaloneApplicationContext.OPEN_PROFILE_NAME);
 	public ContentDeliveryConfig deliveryConfig = new MockContentDeliveryConfig();
 	public MockApplicationContext context = new MockApplicationContext();
 	private Hashtable attributes = new Hashtable();
@@ -76,7 +78,7 @@ public class MockExecutionContext implements ExecutionContext {
 	 */
 	public ProfileSet getTargetProfiles() {
 		if(profileSet == null) {
-			throw new IllegalStateException("Call to getTargetProfiles before uaContext member has been initialised.  Set the 'uaContext' member variable.");
+			throw new IllegalStateException("Call to getTargetProfiles before profileSet member has been initialised.  Set the 'profileSet' member variable.");
 		}
 		return profileSet;
 	}

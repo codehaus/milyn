@@ -59,13 +59,13 @@ public class DefaultProfileStore implements ProfileStore {
 	/**
 	 * Add a ProfileSet for the named profile member.
 	 * 
-	 * @param profileMember
-	 *            The profile member name.
 	 * @param profileSet
 	 *            The ProfileSet.
 	 */
-	public void addProfileSet(String profileMember, ProfileSet profileSet) {
-		assertProfileMemberNameOK(profileMember);
+	public void addProfileSet(ProfileSet profileSet) {
+        AssertArgument.isNotNull(profileSet, "profileSet");
+
+        assertProfileMemberNameOK(profileSet.getBaseProfile());
 		if (profileSet == null) {
 			throw new IllegalArgumentException(
 					"null 'profileSet' arg in method call.");
@@ -75,10 +75,16 @@ public class DefaultProfileStore implements ProfileStore {
 					"'profileSet' arg must be an instanceof DefaultProfileSet.");
 		}
 
-		store.put(profileMember.trim().toLowerCase(), profileSet);
+		store.put(profileSet.getBaseProfile().trim().toLowerCase(), profileSet);
 	}
 
-	protected void expandProfiles() {
+    /**
+     * Expand out the profile sets in this profile store.
+     * <p/>
+     * Expanding means taking sub-profiles that are in themselves the base profile
+     * of another profile set, and inserting the sub-profiles into the profile set.
+     */
+    public void expandProfiles() {
 		Iterator storeIterator = store.entrySet().iterator();
 
 		while (storeIterator.hasNext()) {
@@ -145,13 +151,12 @@ public class DefaultProfileStore implements ProfileStore {
 
 	/**
 	 * Unit testing static inner to provide access.
-	 * 
+	 *
 	 * @author tfennelly
 	 */
 	static class UnitTest {
-		public static void addProfileSet(DefaultProfileStore store,
-				String deviceName, ProfileSet profileSet) {
-			store.addProfileSet(deviceName, profileSet);
+		public static void addProfileSet(DefaultProfileStore store, ProfileSet profileSet) {
+			store.addProfileSet(profileSet);
 		}
 	}
 }

@@ -51,7 +51,7 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
         String className = null;
 		
 		try {
-            className = ClasspathUtils.toClassName(resourceConfig.getPath());
+            className = ClasspathUtils.toClassName(resourceConfig.getResource());
 			Class classRuntime = ClassUtil.forName(className, getClass());
 			Constructor constructor;
 			try {
@@ -72,7 +72,7 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
         } finally {
             // One of the above exception.
             if(exception != null) {
-                IllegalStateException state = new IllegalStateException("Failed to create an instance of Java ContentDeliveryUnit [" + resourceConfig.getPath() + "].  See exception cause...");
+                IllegalStateException state = new IllegalStateException("Failed to create an instance of Java ContentDeliveryUnit [" + resourceConfig.getResource() + "].  See exception cause...");
                 state.initCause(exception);
                 throw state;
             }
