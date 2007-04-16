@@ -34,32 +34,17 @@ public class DefaultProfileStoreTest extends TestCase {
 
 	public void testAddGetProfileSet() {
 		DefaultProfileStore store = new DefaultProfileStore();
-		DefaultProfileSet set1 = new DefaultProfileSet("baseProfile");
-		DefaultProfileSet set2 = new DefaultProfileSet("baseProfile");
+		DefaultProfileSet set1 = new DefaultProfileSet("device1");
+		DefaultProfileSet set2 = new DefaultProfileSet("device2");
 
 		try {
-			DefaultProfileStore.UnitTest.addProfileSet(store, null, null);
+			DefaultProfileStore.UnitTest.addProfileSet(store, null);
 			fail("no IllegalArgumentException on null devicename");
 		} catch (IllegalArgumentException e) {
 		}
-		try {
-			DefaultProfileStore.UnitTest.addProfileSet(store, "", null);
-			fail("no IllegalArgumentException on empty devicename");
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			DefaultProfileStore.UnitTest.addProfileSet(store, " ", null);
-			fail("no IllegalArgumentException on whitespace devicename");
-		} catch (IllegalArgumentException e) {
-		}
-		try {
-			DefaultProfileStore.UnitTest.addProfileSet(store, "device", null);
-			fail("no IllegalArgumentException on null set");
-		} catch (IllegalArgumentException e) {
-		}
 
-		DefaultProfileStore.UnitTest.addProfileSet(store, "device1", set1);
-		DefaultProfileStore.UnitTest.addProfileSet(store, "device2", set2);
+		DefaultProfileStore.UnitTest.addProfileSet(store, set1);
+		DefaultProfileStore.UnitTest.addProfileSet(store, set2);
 		try {
 			store.getProfileSet("device3");
 			fail("no UnknownProfileMemberException");
@@ -78,7 +63,7 @@ public class DefaultProfileStoreTest extends TestCase {
 			fail("failed to get set");
 		}
 		try {
-			DefaultProfileStore.UnitTest.addProfileSet(store, "device2", set1);
+			DefaultProfileStore.UnitTest.addProfileSet(store, set1);
 			assertEquals(set1, store.getProfileSet("device2"));
 		} catch (UnknownProfileMemberException e1) {
 			fail("failed to get set");

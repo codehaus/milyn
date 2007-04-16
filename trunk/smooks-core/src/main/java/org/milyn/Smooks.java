@@ -78,6 +78,7 @@ public class Smooks {
 
     private static Log logger = LogFactory.getLog(Smooks.class);
     private StandaloneApplicationContext context;
+    private boolean initialised = false;
 
     /**
      * Public Default Constructor.

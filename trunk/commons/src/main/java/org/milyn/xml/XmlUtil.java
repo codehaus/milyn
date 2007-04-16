@@ -283,11 +283,11 @@ public class XmlUtil {
 
 			factory.setValidating(validate);
 			factory.setExpandEntityReferences(expandEntityRefs);
-			docBuilder = factory.newDocumentBuilder();
+            docBuilder = factory.newDocumentBuilder();
 			docBuilder.setEntityResolver(entityResolver);
 			docBuilder.setErrorHandler(XMLParseErrorHandler.getInstance());
 
-			return docBuilder.parse(stream);
+            return docBuilder.parse(stream);
 		} catch (ParserConfigurationException e) {
 			IllegalStateException state = new IllegalStateException(
 					"Unable to parse XML stream - XML Parser not configured correctly.");

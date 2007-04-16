@@ -46,12 +46,11 @@ public class StandaloneApplicationContext implements ApplicationContext {
     public static final String OPEN_PROFILE_NAME = Profile.class.getName() + "#OPEN_PROFILE_NAME";
 
     private static Log logger = LogFactory.getLog(StandaloneApplicationContext.class);
-	private static final String DEVICE_PROFILE_XML = "/device-profile.xml";
 	private Hashtable attributes = new Hashtable();
 	private Hashtable sessions = new Hashtable();
 	private ContainerResourceLocator resourceLocator;	
 	private SmooksResourceConfigurationStore resStore;
-	private ProfileStore profileStore = new DefaultProfileStore();
+	private DefaultProfileStore profileStore = new DefaultProfileStore();
     
     /**
      * Public constructor.
@@ -62,32 +61,8 @@ public class StandaloneApplicationContext implements ApplicationContext {
         resourceLocator = new URIResourceLocator();
         ((URIResourceLocator)resourceLocator).setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
         resStore = new SmooksResourceConfigurationStore(this);
-        initProfileStore();
-    }
-
-	private void initProfileStore() {
-		ContainerResourceLocator resLocator = getResourceLocator();
-		DefaultProfileConfigDigester profileDigester = new DefaultProfileConfigDigester();
-		InputStream configStream;
-
-        try {
-			configStream = resLocator.getResource("device-profiles", DEVICE_PROFILE_XML);
-		} catch (IOException e) {
-            logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container.");
-            return ;
-        }
-		try {
-            profileStore = profileDigester.parse(configStream);
-		} catch (IOException e) {
-            logger.warn("Device profile config file [" + DEVICE_PROFILE_XML + "] not available from container. " + e.getMessage());
-		} catch (SAXException e) {
-			IllegalStateException state = new IllegalStateException("SAX excepting parsing [" + DEVICE_PROFILE_XML + "].");
-			state.initCause(e);
-			throw state;
-		}
-
         // Add the open profile...
-        profileStore.addProfileSet(OPEN_PROFILE_NAME, new DefaultProfileSet(OPEN_PROFILE_NAME));
+        profileStore.addProfileSet(new DefaultProfileSet(OPEN_PROFILE_NAME));
     }
 
 	/* (non-Javadoc)
@@ -126,7 +101,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	 * Get the ProfileStore in use within the Standalone Context.
 	 * @return The ProfileStore.
 	 */
-	public ProfileStore getProfileStore() {
+	public DefaultProfileStore getProfileStore() {
 		return profileStore;
 	}
 }

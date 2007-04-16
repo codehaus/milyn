@@ -17,6 +17,7 @@
 package org.milyn.smooks.scripting;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import groovy.lang.GroovyClassLoader;
 
@@ -123,16 +124,16 @@ public class GroovyContentDeliveryUnitCreator implements ContentDeliveryUnitCrea
 				
 				return groovyResource;
 			} else {
-				throw new InstantiationException("Invalid Groovy script " + configuration.getPath() + ".  Must implement one of the following Smooks interfaces:\n\t\t1. " + DOMElementVisitor.class.getName() + ", or\n\t\t2. " + SerializationUnit.class.getName() + ".");
+				throw new InstantiationException("Invalid Groovy script " + configuration.getResource() + ".  Must implement one of the following Smooks interfaces:\n\t\t1. " + DOMElementVisitor.class.getName() + ", or\n\t\t2. " + SerializationUnit.class.getName() + ".");
 			}
-		} catch (IOException e) {
-			InstantiationException initE = new InstantiationException("Error reading Groovy script " + configuration.getPath());
-			initE.initCause(e);
-			throw initE;
 		} catch (IllegalAccessException e) {
-			InstantiationException initE = new InstantiationException("Error constructing class from Groovy script " + configuration.getPath());
+			InstantiationException initE = new InstantiationException("Error constructing class from Groovy script " + configuration.getResource());
 			initE.initCause(e);
 			throw initE;
-		}
-	}
+		} catch (UnsupportedEncodingException e) {
+            InstantiationException initE = new InstantiationException("Error decoding Groovy script " + configuration.getResource());
+            initE.initCause(e);
+            throw initE;
+        }
+    }
 }

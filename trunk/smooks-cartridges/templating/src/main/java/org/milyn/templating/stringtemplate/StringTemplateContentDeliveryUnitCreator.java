@@ -16,10 +16,7 @@
 
 package org.milyn.templating.stringtemplate;
 
-import java.io.IOException;
 import java.util.HashMap;
-
-import javax.xml.transform.TransformerConfigurationException;
 
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
@@ -120,7 +117,7 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             processingUnit.setConfiguration(resourceConfig);
             return processingUnit;
         } catch (SmooksConfigurationException e) {
-			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.  StringTemplate resource invalid.");
+			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getResource() + "] not loadable.  StringTemplate resource invalid.");
 			instanceException.initCause(e);
 			throw instanceException;
 		}
@@ -135,7 +132,7 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
         private StringTemplate template;
         
         protected void loadTemplate(SmooksResourceConfiguration config) {
-            String path = config.getPath();
+            String path = config.getResource();
             String encoding = config.getStringParameter("encoding", "UTF-8");
             
             if(path.charAt(0) == '/') {

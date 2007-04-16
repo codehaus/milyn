@@ -18,6 +18,7 @@ package org.milyn;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.ProfileStore;
 import org.milyn.profile.UnknownProfileMemberException;
+import org.milyn.profile.DefaultProfileStore;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.standalone.StandaloneExecutionContext;
@@ -55,13 +56,14 @@ public abstract class SmooksUtil {
     public static void registerProfileSet(ProfileSet profileSet, Smooks smooks) {
         AssertArgument.isNotNull(profileSet, "profileSet");
 
-        ProfileStore profileStore = smooks.getApplicationContext().getProfileStore();
+        DefaultProfileStore profileStore = smooks.getApplicationContext().getProfileStore();
         try {
             profileStore.getProfileSet(profileSet.getBaseProfile());
             logger.warn("ProfileSet [" + profileSet.getBaseProfile() + "] already registered.  Not registering new profile set.");
         } catch (UnknownProfileMemberException e) {
             // It's an unregistered profileset...
-            profileStore.addProfileSet(profileSet.getBaseProfile(), profileSet);
+            profileStore.addProfileSet(profileSet);
+            profileStore.expandProfiles();
         }
     }
 

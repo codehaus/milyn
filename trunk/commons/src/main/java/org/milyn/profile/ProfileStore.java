@@ -30,12 +30,11 @@ package org.milyn.profile;
 public interface ProfileStore {
 
     /**
-     * Add a ProfileSet for the named profile member.
+     * Add a ProfileSet to the store.
      *
-     * @param baseProfile The base profile name.
      * @param profileSet  The ProfileSet.
      */
-    public void addProfileSet(String baseProfile, ProfileSet profileSet);
+    public void addProfileSet(ProfileSet profileSet);
 
     /**
      * Get the ProfileSet associated with the specified profile member. <p/> A

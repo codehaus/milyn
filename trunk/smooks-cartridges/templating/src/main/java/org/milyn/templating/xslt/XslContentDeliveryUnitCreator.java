@@ -18,8 +18,6 @@ package org.milyn.templating.xslt;
 
 import java.io.*;
 
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -121,7 +119,7 @@ import org.w3c.dom.NodeList;
  *  &lt;!-- (Mandatory) This parameter tells Smooks how to handle this resource i.e. to use
  *  		 {@link XslContentDeliveryUnitCreator}.  This is required because there's no "path" attribute
  *  		available on this configuration for Smooks to use to determine the resource type. 
- *  		See {@link org.milyn.cdr.SmooksResourceConfiguration#getType()} --&gt;
+ *  		See {@link org.milyn.cdr.SmooksResourceConfiguration#getResourceType()} --&gt;
  *  &lt;param name="<b>restype</b>"&gt;xsl&lt;/param&gt;
  * 
  *  &lt;!-- (Mandatory) This parameter tells Smooks how to handle this resource i.e. to use
@@ -203,7 +201,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
             xslProcessingUnit.setConfiguration(resourceConfig);
             return xslProcessingUnit;
 		} catch (Exception e) {
-			InstantiationException instanceException = new InstantiationException("XSL ProcessingUnit resource [" + resourceConfig.getPath() + "] not loadable.");
+			InstantiationException instanceException = new InstantiationException("XSL ProcessingUnit resource [" + resourceConfig.getResource() + "] not loadable.");
 			instanceException.initCause(e);
 			throw instanceException;
 		}

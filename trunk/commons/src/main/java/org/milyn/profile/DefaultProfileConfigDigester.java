@@ -103,7 +103,7 @@ public class DefaultProfileConfigDigester implements ProfileConfigDigester {
 				} catch (UnknownProfileMemberException unknown) {
 					profileSet = new DefaultProfileSet(profileMember);
 					try {
-						store.addProfileSet(profileMember, profileSet);
+						store.addProfileSet(profileSet);
 					} catch (IllegalArgumentException invalid) {
 						SAXException saxE = new SAXException(
 								"<device-profile> attribute 'list' contains invalid device-name token value ["

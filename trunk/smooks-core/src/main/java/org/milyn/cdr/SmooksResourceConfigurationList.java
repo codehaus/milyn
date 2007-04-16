@@ -22,6 +22,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.profile.ProfileSet;
+import org.milyn.assertion.AssertArgument;
 
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} list.
@@ -37,6 +38,10 @@ public class SmooksResourceConfigurationList {
      * List name.
      */
     private String name;
+    /**
+     * {@link ProfileSet} list.
+     */
+    private List<ProfileSet> profiles = new Vector<ProfileSet>();
     /**
      * {@link org.milyn.cdr.SmooksResourceConfiguration} list.
      */
@@ -59,11 +64,19 @@ public class SmooksResourceConfigurationList {
      * @param config {@link SmooksResourceConfiguration} instance to add.
      */
     public void add(SmooksResourceConfiguration config) {
-        if(config == null) {
-            throw new IllegalArgumentException("null 'config' arg in method call.");
-        }
+        AssertArgument.isNotNull(config, "config");
         list.add(config);
         logger.debug("Smooks ResourceConfiguration [" + config + "] added to list [" + name + "].");
+    }
+
+    /**
+     * Add a {@link ProfileSet} instance to this list.
+     * @param profileSet {@link ProfileSet} instance to add.
+     */
+    public void add(ProfileSet profileSet) {
+        AssertArgument.isNotNull(profileSet, "profileSet");
+        profiles.add(profileSet);
+        logger.debug("ProfileSet [" + profileSet.getBaseProfile() + "] added to list Smooks configuration [" + name + "].");
     }
 
     /**
@@ -130,5 +143,13 @@ public class SmooksResourceConfigurationList {
         matchingSmooksResourceConfigurationsColl.toArray(matchingSmooksResourceConfigurations);
         
         return matchingSmooksResourceConfigurations;
+    }
+
+    /**
+     * Get the list of profiles configured on this resource configuration list.
+     * @return List of profiles.
+     */
+    public List<ProfileSet> getProfiles() {
+        return profiles;
     }
 }

@@ -64,10 +64,10 @@ public abstract class ServletResponseWrapperFactory {
 		Class runtime = null;
 		
 		try {
-            String className = ClasspathUtils.toClassName(resourceConfig.getPath());
+            String className = ClasspathUtils.toClassName(resourceConfig.getResource());
 			runtime = ClassUtil.forName(className, ServletResponseWrapperFactory.class);
 		} catch (ClassNotFoundException e) {
-			IllegalStateException state = new IllegalStateException("Unable to load " + resourceConfig.getPath());
+			IllegalStateException state = new IllegalStateException("Unable to load " + resourceConfig.getResource());
 			state.initCause(e);
 			throw state;
 		}
