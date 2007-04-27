@@ -21,21 +21,18 @@ import java.util.List;
 import org.milyn.delivery.ContentDeliveryConfig;
 
 /**
- * Utility class for requesting useragent attributes defined in the Content
- * Delivery Resource List files (.cdrl).
+ * Accessor class for looking up profile specific attributes.
  * <p id="decode"/>
- * Useragent parameters are looked up using the "device-parameters" string
- * as the selector (see {@link org.milyn.cdr.SmooksResourceConfiguration}).  The parameter values are
+ * Profile specific parameters are stored under the "device-parameters" selector
+ * (see {@link org.milyn.cdr.SmooksResourceConfiguration}).  The parameter values are
  * stored in the &lt;param&gt; elements within this Content Delivery Resource definition.
- * This class iterates over the list of {@link org.milyn.cdr.SmooksResourceConfiguration} (&lt;smooks-resource&gt;) 
- * elements targeted at the requesting useragent.  It looks for a definition of the named
+ * This class iterates over the list of {@link org.milyn.cdr.SmooksResourceConfiguration} 
+ * elements targeted at the {@link org.milyn.container.ExecutionContext} profile.  It looks for a definition of the named
  * parameter.  If the &lt;param&gt; has a type attribute the 
  * {@link org.milyn.cdr.ParameterDecoder} for that type can be applied to the attribute
  * value through the {@link #getParameterObject(String,org.milyn.delivery.ContentDeliveryConfig)} method,
  * returning whatever Java type defined by the {@link org.milyn.cdr.ParameterDecoder}
  * implementation.  As an example, see {@link org.milyn.cdr.TokenizedStringParameterDecoder}.
- * <p/>
- * Sample Parameters .cdrl configuration:
  * 
  * @author tfennelly
  */

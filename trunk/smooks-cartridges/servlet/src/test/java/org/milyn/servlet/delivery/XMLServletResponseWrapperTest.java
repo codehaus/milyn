@@ -17,6 +17,8 @@
 package org.milyn.servlet.delivery;
 
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.servlet.ServletOutputStream;
 
@@ -27,6 +29,7 @@ import org.milyn.container.MockExecutionContext;
 import org.milyn.delivery.dom.MockContentDeliveryConfig;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.ProcessingSet;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.xml.DomUtils;
 import org.milyn.servlet.http.HeaderAction;
 import org.w3c.dom.Element;
@@ -168,12 +171,6 @@ public class XMLServletResponseWrapperTest extends TestCase {
     }
 
     private void addTransUnit(String targetElement, DOMElementVisitor processingUnit, MockContentDeliveryConfig deliveryConfig) {
-        ProcessingSet processingSet = (ProcessingSet)deliveryConfig.processingSets.get(targetElement);
-        
-        if(processingSet == null) {
-            processingSet = new ProcessingSet();
-            deliveryConfig.processingSets.put(targetElement, processingSet);
-        }
-        processingSet.addProcessingUnit(processingUnit, new SmooksResourceConfiguration(targetElement, processingUnit.getClass().getName()));
+        deliveryConfig.processingSets.addMapping(targetElement, new SmooksResourceConfiguration(targetElement, processingUnit.getClass().getName()), processingUnit);
     }
 }

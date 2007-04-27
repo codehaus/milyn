@@ -13,7 +13,6 @@
 	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
-
 package org.milyn.cdr;
 
 import org.milyn.profile.HttpAcceptHeaderProfile;
@@ -21,33 +20,32 @@ import org.milyn.profile.Profile;
 import org.milyn.profile.ProfileSet;
 
 /**
- * Represents a single parsed useragent attribute value expression.
+ * Represents a single parsed profile targeting expression.
  * <p/>
- * The <a>useragent</a> attribute can contain multiple comma seperated "useragent expressions" i.e.
+ * The <b>target-profile</b> attribute can contain multiple comma seperated "profile targeting expressions" i.e.
  * a list of them.  See {@link org.milyn.cdr.SmooksResourceConfiguration} docs.  This class represents
- * a single expression within a list of useragent attribute expressions.
+ * a single expression within a list of expressions.
  * <p/>
- * So, an expression is composed of 1 or more "expression tokens" seperated by 
+ * So, a single expression is composed of 1 or more "expression tokens" seperated by 
  * "AND".  The expression arg to the constructor will be in one of 
  * the following forms:
  * <ol>
- * 	<li>"deviceX" (or "profileX") i.e. a single entity.</li>
- * 	<li>"deviceX AND profileY" i.e. a compound entity.</li>
+ * 	<li>"profileX" i.e. a single entity.</li>
  * 	<li>"profileX AND profileY" i.e. a compound entity.</li>
  * 	<li>"profileX AND not:profileY" i.e. a compound entity.</li>
  * </ol>
  * Note, we only supports "AND" operations between the tokens, but a token can be
  * negated by prefixing it with "not:".
  * <p/>
- * See {@link UseragentExpression.ExpressionToken}.
+ * See {@link ProfileTargetingExpression.ExpressionToken}.
  * @author tfennelly
  */
-public class UseragentExpression {
+public class ProfileTargetingExpression {
 	
 	private String expression;
 	private ExpressionToken[] expressionTokens;
 	
-	public UseragentExpression(String expression) {
+	public ProfileTargetingExpression(String expression) {
 		if(expression == null || expression.trim().equals("")) {
 			throw new IllegalArgumentException("null or empty 'expression' arg.");
 		}
@@ -56,8 +54,8 @@ public class UseragentExpression {
 		String[] tokens = expression.split(" and ");
 		expressionTokens = new ExpressionToken[tokens.length];
 		for(int i = 0; i < tokens.length; i++) {
-			String useragentToken = tokens[i].trim();
-			expressionTokens[i] = new ExpressionToken(useragentToken);
+			String token = tokens[i].trim();
+			expressionTokens[i] = new ExpressionToken(token);
 		}
 	}
 	
@@ -78,12 +76,12 @@ public class UseragentExpression {
 	}
 	
 	/**
-	 * Get the specificity of this useragent expression with respect to the supplied device.
+	 * Get the specificity of this expression with respect to the supplied profile set.
 	 * <p/>
 	 * Iterates over this expressions list of {@link ExpressionToken}s calling
 	 * {@link ExpressionToken#getSpecificity(org.milyn.profile.ProfileSet)} and adds up their specificities.
-	 * @param profileSet Device context.
-	 * @return Specificity value of the expression.
+	 * @param profileSet Evaluation Profile Set.
+	 * @return Specificity value of the expression for the supplied profile set.
 	 */
 	public double getSpecificity(ProfileSet profileSet) {
 		double specificity = 0;
@@ -101,15 +99,15 @@ public class UseragentExpression {
 	}
 
 	/**
-	 * Get the useragent expression used to construct this instance.
-	 * @return The useragent string for this instance.
+	 * Get the expression used to construct this instance.
+	 * @return The expression string for this instance.
 	 */
 	public String getExpression() {
 		return expression;
 	}
 
 	/**
-	 * Get the list of {@link ExpressionToken}s parsed out of the {@link #UseragentExpression(String) expression}
+	 * Get the list of {@link ExpressionToken}s parsed out of the {@link #ProfileTargetingExpression(String) expression}
 	 * used to construct this instance.
 	 * @return The list of {@link ExpressionToken}s.
 	 */
@@ -122,7 +120,7 @@ public class UseragentExpression {
 	}
 	
 	/**
-	 * useragent expression token.
+	 * Profile targeting expression token.
 	 * @author tfennelly
 	 */
 	public class ExpressionToken {
@@ -132,22 +130,22 @@ public class UseragentExpression {
 
 		/**
 		 * Private constructor.
-		 * @param useragentToken 
+		 * @param expressionToken
 		 */
-		private ExpressionToken(String useragentToken) {
-			negated = useragentToken.startsWith("not:");
+		private ExpressionToken(String expressionToken) {
+			negated = expressionToken.startsWith("not:");
 			if(negated) {
-				this.expressionToken = useragentToken.substring(4);
+				this.expressionToken = expressionToken.substring(4);
 			} else {
-				this.expressionToken = useragentToken;
+				this.expressionToken = expressionToken;
 			}
 		}
 
 		/**
-		 * Get the useragent specified in this token.
-		 * @return The useragent specified in this token.
+		 * Get the token value (profile).
+		 * @return The profile specified in this token.
 		 */
-		public String getUseragent() {
+		public String getToken() {
 			return expressionToken;
 		}
 
@@ -172,9 +170,10 @@ public class UseragentExpression {
 		}
 		
 		/**
-		 * Is the supplied device context a matching device for this useragent token.
+		 * Is the profile specified in this token is a member of the supplied profile set.
 		 * @param profileSet Profile set.
-		 * @return True if the device is a match, otherwise false.
+		 * @return True if the profile specified in this token is a member of the supplied
+         * profile set, otherwise false.
 		 */
 		public boolean isMatch(ProfileSet profileSet) {
 			if(isWildcard()) {

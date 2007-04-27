@@ -114,21 +114,21 @@ public class SmooksResourceConfigurationList {
     }
     
     /**
-     * Get all SmooksResourceConfiguration entries for the specified useragent from list. 
-     * @param profileSet The useragent profile set.
-     * @return All SmooksResourceConfiguration entries for the specified useragent.
+     * Get all SmooksResourceConfiguration entries targeted at the specified profile set. 
+     * @param profileSet The profile set to searh against.
+     * @return All SmooksResourceConfiguration entries targeted at the specified profile set.
      */
-    public SmooksResourceConfiguration[] getUseragentConfigurations(ProfileSet profileSet) {
+    public SmooksResourceConfiguration[] getTargetConfigurations(ProfileSet profileSet) {
         Vector<SmooksResourceConfiguration> matchingSmooksResourceConfigurationsColl = new Vector<SmooksResourceConfiguration>();
         SmooksResourceConfiguration[] matchingSmooksResourceConfigurations;
         
         // Iterate over the SmooksResourceConfigurations defined on this list.
         for(int i = 0; i < size(); i++) {
             SmooksResourceConfiguration resourceConfig = get(i);
-            UseragentExpression[] useragentExpressions = resourceConfig.getUseragentExpressions();
+            ProfileTargetingExpression[] profileTargetingExpressions = resourceConfig.getProfileTargetingExpressions();
             
-            for(int expIndex = 0; expIndex < useragentExpressions.length; expIndex++) {
-                UseragentExpression expression = useragentExpressions[expIndex];
+            for(int expIndex = 0; expIndex < profileTargetingExpressions.length; expIndex++) {
+                ProfileTargetingExpression expression = profileTargetingExpressions[expIndex];
 
                 if(expression.isMatch(profileSet)) {
                     matchingSmooksResourceConfigurationsColl.addElement(resourceConfig);

@@ -40,7 +40,7 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
     }
 
     /**
-	 * Create a Java based ContentDeliveryUnit instance ie from a Java Class byte stream.
+	 * Create a Java based ContentDeliveryUnit instance.
      * @param resourceConfig The SmooksResourceConfiguration for the Java {@link ContentDeliveryUnit}
      * to be created.
      * @return Java {@link ContentDeliveryUnit} instance.

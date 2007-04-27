@@ -41,7 +41,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * The code for accessing this parameter value:
  * <pre>
  * {@link org.milyn.cdr.Parameter} param = {@link org.milyn.cdr.SmooksResourceConfiguration resourceConfig}.{@link org.milyn.cdr.SmooksResourceConfiguration#getParameter(String) getParameter("magic-properties-param")};
- * {@link java.util.Properties} properties = (Properties)param.{@link org.milyn.cdr.Parameter#getValue(ContentDeliveryConfig) getValue}; 
+ * {@link java.util.Properties} properties = (Properties)param.{@link org.milyn.cdr.Parameter#getValue(ContentDeliveryConfig) getValue}(); 
  * </pre>
  * <p/>
  * Note, we will make this filter easier in the next release.  You'll be able to call a method such

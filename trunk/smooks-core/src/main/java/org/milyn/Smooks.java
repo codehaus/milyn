@@ -107,7 +107,7 @@ public class Smooks {
     /**
      * Create a {@link StandaloneExecutionContext} instance for use on this Smooks instance.
      * <p/>
-     * The created context is profile agnostic and should be used where target profiling is not in use.
+     * The created context is profile agnostic and should be used where profile based targeting is not in use.
      * <p/>
      * The context returned from this method is used in subsequent calls to
      * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.standalone.StandaloneExecutionContext)}.
@@ -125,7 +125,7 @@ public class Smooks {
     /**
      * Create a {@link StandaloneExecutionContext} instance for use on this Smooks instance.
      * <p/>
-     * The created context is profile aware and should be used where target profiling is in use. In this case,
+     * The created context is profile aware and should be used where profile based targeting is in use. In this case,
      * the transfromation/analysis resources must be configured with profile targeting information.
      * <p/>
      * The context returned from this method is used in subsequent calls to

@@ -20,21 +20,22 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 
 
 /**
- * ContentDeliveryUnit <b>Factory Method</b> (GoF) Creator interface.
- * <p/>
- * Implementations of this interface are responsible for creating ContentDeliveryUnit instances. 
- * This creation mechanism follows the Gang of Four "Factory Method" design pattern:
- * <ul>
- * 		<li><b>Creator</b>: {@link ContentDeliveryUnitCreator}</li>
- * 		<li><b>ConcreteCreator</b>: e.g. {@link org.milyn.delivery.JavaContentDeliveryUnitCreator}</li>
- * 		<li><b>Product</b>: {@link ContentDeliveryUnit}</li>
- * 		<li><b>ConcreteProduct</b>: Implementations of {@link ContentDeliveryUnit}</li>
- * </ul> 
- * The <b>ConcreteCreator</b> implemtations are loaded using the {@link org.milyn.cdr.SmooksResourceConfigurationStore#getContentDeliveryUnitCreator(String)} method. 
+ * ContentDeliveryUnit factory method Creator interface.
+ *
  * @author tfennelly
  */
 public interface ContentDeliveryUnitCreator {
-	
+
+    /**
+     * Name of the param used on a ContentDeliveryUnitCreator config that specifies
+     * the resource type that the creator is adding support for.  This is different
+     * from the type attribute on the resource element.  In the case of a ContentDeliveryUnitCreator
+     * configuration, the ContentDeliveryUnitCreator impl resource type is "class", but it's adding
+     * support for something else (e.g. "xsl").  This is why we can't use the type attribute for this
+     * purpose.
+     */
+    public static final String PARAM_RESTYPE = "restype";
+
 	/**
 	 * Create the {@link ContentDeliveryUnit} instance. 
 	 * @param resourceConfig The SmooksResourceConfiguration for the {@link ContentDeliveryUnit}

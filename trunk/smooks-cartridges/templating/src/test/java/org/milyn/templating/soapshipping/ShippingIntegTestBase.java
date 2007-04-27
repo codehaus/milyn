@@ -37,7 +37,7 @@ public abstract class ShippingIntegTestBase extends TestCase {
         // Configure Smooks
         SmooksUtil.registerProfileSet(new DefaultProfileSet("shipping-request"), smooks);
         SmooksUtil.registerProfileSet(new DefaultProfileSet("shipping-response"), smooks);
-        TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
+        TemplatingUtils.registerCDUCreators(smooks);
         SmooksUtil.registerResources("trans-request", getClass().getResourceAsStream("trans-request.cdrl"), smooks);
         SmooksUtil.registerResources("trans-response", getClass().getResourceAsStream("trans-response.cdrl"), smooks);
                 

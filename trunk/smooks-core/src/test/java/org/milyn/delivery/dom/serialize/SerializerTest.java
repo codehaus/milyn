@@ -45,30 +45,30 @@ public class SerializerTest extends TestCase {
 	}
 
 	public void testSerailize() {
-		MockExecutionContext containerRequest = new MockExecutionContext();
-		
-		// Don't write xxx but write its child elements
-		SmooksResourceConfiguration unitDef = new SmooksResourceConfiguration("xxx", "deviceX", "....");
-		Vector serUnits = new Vector();
-		serUnits.add(new ContentDeliveryUnitConfigMap(new RemoveTestSerializationUnit(unitDef), unitDef));
-		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("xxx", serUnits);
+		MockExecutionContext executionContext = new MockExecutionContext();
+
+        // Target a resource at the "document fragment" i.e. the root..
+
+        // Don't write xxx but write its child elements
+		SmooksResourceConfiguration configuration = new SmooksResourceConfiguration(SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, "deviceX", "....");
+		((MockContentDeliveryConfig)executionContext.deliveryConfig).serializationUnits.addMapping(SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, configuration, new AddAttributeSerializer(configuration));
+
+        // Don't write xxx but write its child elements
+		configuration = new SmooksResourceConfiguration("xxx", "deviceX", "....");
+		((MockContentDeliveryConfig)executionContext.deliveryConfig).serializationUnits.addMapping("xxx", configuration, new RemoveTestSerializationUnit(configuration));
 
 		// write yyyy as a badly-formed empty element
-		unitDef = new SmooksResourceConfiguration("yyyy", "deviceX", "....");
-		unitDef.setParameter("wellformed", "false");
-		serUnits = new Vector();
-		serUnits.add(new ContentDeliveryUnitConfigMap(new EmptyElTestSerializationUnit(unitDef), unitDef));
-		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("yyyy", serUnits);
+		configuration = new SmooksResourceConfiguration("yyyy", "deviceX", "....");
+		configuration.setParameter("wellformed", "false");
+        ((MockContentDeliveryConfig)executionContext.deliveryConfig).serializationUnits.addMapping("yyyy", configuration, new EmptyElTestSerializationUnit(configuration));
 
 		/// write zzz as a well-formed empty element
-		unitDef = new SmooksResourceConfiguration("zzz", "deviceX", "....");
-		serUnits = new Vector();
-		serUnits.add(new ContentDeliveryUnitConfigMap(new EmptyElTestSerializationUnit(unitDef), unitDef));
-		((MockContentDeliveryConfig)containerRequest.deliveryConfig).serializationUnits.put("zzz", serUnits);
-		
+		configuration = new SmooksResourceConfiguration("zzz", "deviceX", "....");
+        ((MockContentDeliveryConfig)executionContext.deliveryConfig).serializationUnits.addMapping("zzz", configuration, new EmptyElTestSerializationUnit(configuration));
+
 		try {
 			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testmarkup.xxml"), false, true);
-			Serializer serializer = new Serializer(doc, containerRequest);
+			Serializer serializer = new Serializer(doc, executionContext);
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
 			OutputStreamWriter writer = new OutputStreamWriter(output);
 
@@ -77,7 +77,7 @@ public class SerializerTest extends TestCase {
 			byte[] actualBytes = output.toByteArray();
 			System.out.print(new String(actualBytes));
 			boolean areEqual = CharUtils.compareCharStreams(getClass().getResourceAsStream("testmarkup.xxml.ser_1"), new ByteArrayInputStream(actualBytes));
-			assertTrue("Expected Serialization result failure.", areEqual);
+			assertTrue("Unexpected Serialization result failure.", areEqual);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

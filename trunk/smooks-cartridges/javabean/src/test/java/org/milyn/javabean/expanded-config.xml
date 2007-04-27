@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
+
+<smooks-resource-list>
+
+    <resource-config selector="user">
+        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <param name="beanId">userBean</param>
+        <param name="beanClass">org.milyn.javabean.MyGoodBean</param>
+    </resource-config>
+
+    <resource-config selector="user">
+        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <param name="beanId">userBean</param>
+        <param name="attributeName">name</param>
+    </resource-config>
+
+    <resource-config selector="user">
+        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <param name="beanId">userBean</param>
+        <param name="attributeName">phoneNumber</param>
+    </resource-config>
+
+    <resource-config selector="user">
+        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <param name="beanId">userBean</param>
+        <param name="setterName">setAddress</param>
+    </resource-config>
+
+</smooks-resource-list>

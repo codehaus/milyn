@@ -21,6 +21,8 @@ import java.io.InputStream;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ApplicationContext;
 import org.milyn.util.ClassUtil;
+import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 
 /**
  * Utility class for the templating Cartridge.
@@ -31,29 +33,15 @@ public class TemplatingUtils {
     private static final String TEMPLATING_CDU_CREATORS_CDRL = "templating-cdu-creators-0.1.cdrl";
 
     /**
-     * Register the Templating {@link org.milyn.delivery.ContentDeliveryUnitCreator}
-     * implementations defined by this Cartrdge with the suppied Smooks
-     * {@link ApplicationContext} store.
-     * <p/>
-     * This method can be used as a convienient way of registering these resources
-     * when using e.g. {@link org.milyn.Smooks}. Example:
-     * <pre>
-     * Smooks smooks = new Smooks("UTF-8");
-     * 
-     * TemplatingUtils.registerCDUCreators(smooks.{@link org.milyn.Smooks#getApplicationContext() getApplicationContext()});
-     * </pre>
-     * <p/>
-     * See {@link org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator}
-     * and {@link org.milyn.templating.xslt.XslContentDeliveryUnitCreator} as examples. 
-     * @param context The context on which the {@link org.milyn.delivery.ContentDeliveryUnitCreator}
-     * are to be registered.
+     * Register the Templating CDU creator configurations.
+     * @param smooks The Smooks instance with which the registrations are to be made.
      */
-    public static void registerCDUCreators(ApplicationContext context) {
-        InputStream stream = ClassUtil.getResourceAsStream(TEMPLATING_CDU_CREATORS_CDRL, TemplatingUtils.class);
+    public static void registerCDUCreators(Smooks smooks) {
+        InputStream stream = ClassUtil.getResourceAsStream(TemplatingUtils.TEMPLATING_CDU_CREATORS_CDRL, TemplatingUtils.class);
         try {
-            context.getStore().registerResources(TEMPLATING_CDU_CREATORS_CDRL, stream);
+            SmooksUtil.registerResources(TemplatingUtils.TEMPLATING_CDU_CREATORS_CDRL, stream, smooks);
         } catch (Exception e) {
-            throw new SmooksConfigurationException("Failed to load classpath resource file: " + TEMPLATING_CDU_CREATORS_CDRL + ".  Should be in package: " + TemplatingUtils.class.getPackage().getName(), e);
+            throw new SmooksConfigurationException("Failed to load classpath resource file: " + TemplatingUtils.TEMPLATING_CDU_CREATORS_CDRL + ".  Should be in package: " + TemplatingUtils.class.getPackage().getName(), e);
         }
     }
 }

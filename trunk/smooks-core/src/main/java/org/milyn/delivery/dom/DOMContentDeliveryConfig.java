@@ -17,6 +17,7 @@ package org.milyn.delivery.dom;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
 import org.milyn.delivery.dom.ProcessingSet;
 
 import java.util.List;
@@ -30,29 +31,19 @@ public interface DOMContentDeliveryConfig extends ContentDeliveryConfig {
 
     /**
      * Get the Assembly Unit table for this delivery context.
-     * <p/>
-     * The table is keyed by element name and the values are
-     * {@link org.milyn.delivery.ContentDeliveryUnitConfigMap} instances where the contained
-     * {@link org.milyn.delivery.ContentDeliveryUnit} is an {@link DOMElementVisitor}.
-     * @return The AssemblyUnit table for this delivery context.
+     * @return The Assembly Unit table for this delivery context.
      */
-    public abstract Map<String, List<ContentDeliveryUnitConfigMap>> getAssemblyUnits();
+    public abstract ContentDeliveryUnitConfigMapTable getAssemblyUnits();
 
     /**
-     * Get the ProcessingUnit configure instances, for the named tag, for the useragent
-     * associated with this table.
-     * @param tag The tag name for which the ProcessingUnits are being requested.
-     * @return ProcessingSet for the specified tag name, or null if none is specified.
+     * Get the Processing Unit table for this delivery context.
+     * @return The Processing Unit table for this delivery context.
      */
-    public abstract ProcessingSet getProcessingSet(String tag);
+    public abstract ContentDeliveryUnitConfigMapTable getProcessingUnits();
 
     /**
      * Get the SerializationUnit table for this delivery context.
-     * <p/>
-     * The table is keyed by element name and the values are
-     * {@link org.milyn.delivery.ContentDeliveryUnitConfigMap} instances where the contained
-     * {@link org.milyn.delivery.ContentDeliveryUnit} is a {@link org.milyn.delivery.dom.serialize.SerializationUnit}.
      * @return The SerializationUnit table for this delivery context.
      */
-    public abstract Map<String, List<ContentDeliveryUnitConfigMap>> getSerailizationUnits();
+    public abstract ContentDeliveryUnitConfigMapTable getSerailizationUnits();
 }

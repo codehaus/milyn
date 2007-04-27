@@ -109,7 +109,7 @@ public class Parser {
 		this.request = request;
 		initialiseEmptyElements();
         
-        // Allow the sax driver to be specified as a useragent config (under selector "org.xml.sax.driver").
+        // Allow the sax driver to be specified as a resourcec config (under selector "org.xml.sax.driver").
 		saxDriverConfig = getSAXParserConfiguration(request.getDeliveryConfig());
 	}
     
@@ -127,18 +127,18 @@ public class Parser {
     }
     
     /**
-     * Get the SAX Parser configuration for the useragent associated with the supplied delivery configuration.
-     * @param useragentConfig Useragent content delivery configuration.
-     * @return Returns the SAX Parser configuration for the useragent associated with the supplied delivery 
+     * Get the SAX Parser configuration for the profile associated with the supplied delivery configuration.
+     * @param deliveryConfig Content delivery configuration.
+     * @return Returns the SAX Parser configuration for the profile associated with the supplied delivery 
      * configuration, or null if no parser configuration is specified.
      */
-    public static SmooksResourceConfiguration getSAXParserConfiguration(ContentDeliveryConfig useragentConfig) {
-    	if(useragentConfig == null) {
-    		throw new IllegalArgumentException("null 'useragentConfig' arg in method call.");
+    public static SmooksResourceConfiguration getSAXParserConfiguration(ContentDeliveryConfig deliveryConfig) {
+    	if(deliveryConfig == null) {
+    		throw new IllegalArgumentException("null 'deliveryConfig' arg in method call.");
     	}
     	
     	SmooksResourceConfiguration saxDriverConfig = null;
-        List saxConfigs = useragentConfig.getSmooksResourceConfigurations("org.xml.sax.driver");
+        List saxConfigs = deliveryConfig.getSmooksResourceConfigurations("org.xml.sax.driver");
         
         if(saxConfigs != null && !saxConfigs.isEmpty()) {
             saxDriverConfig = (SmooksResourceConfiguration)saxConfigs.get(0);

@@ -67,7 +67,7 @@ import org.w3c.dom.Text;
  * <p/>
  * Registration of the {@link StringTemplateContentDeliveryUnitCreator} to handle
  * ".st" files can also be done by calling 
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.container.ApplicationContext)}.
+ * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.Smooks)}.
  * 
  * <h4>2. Targeting ".st" Files for Transformation</h4>
  * <pre>

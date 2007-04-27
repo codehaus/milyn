@@ -46,8 +46,8 @@ public class StandaloneExecutionContext implements ExecutionContext {
     /**
      * Public Constructor.
      * <p/>
-     * The request is constructed witin the scope of a container session.  The
-     * session is associated with a specific useragent name.
+     * The execution context is constructed within the context of a target profile and
+     * application context.
      * @param context The application context.
      * @throws UnknownProfileMemberException Unknown target profile.
      */
@@ -58,8 +58,8 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	/**
 	 * Public Constructor.
 	 * <p/>
-	 * The request is constructed witin the scope of a container session.  The
-	 * session is associated with a specific useragent name.
+     * The execution context is constructed within the context of a target profile and
+     * application context.
 	 * @param targetProfile The target base profile for the execution context.
 	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
@@ -73,8 +73,8 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	/**
 	 * Public Constructor.
 	 * <p/>
-	 * The request is constructed witin the scope of a container session.  The
-	 * session is associated with a specific useragent name.
+     * The execution context is constructed within the context of a target profile and
+     * application context.
 	 * @param targetProfile The target profile (base profile) for this context.
 	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.

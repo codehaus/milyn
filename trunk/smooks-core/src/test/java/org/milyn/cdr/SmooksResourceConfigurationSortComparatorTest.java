@@ -1,7 +1,5 @@
 package org.milyn.cdr;
 
-import org.milyn.useragent.MockUAContext;
-import org.milyn.profile.ProfileSet;
 import org.milyn.profile.DefaultProfileSet;
 
 import junit.framework.TestCase;

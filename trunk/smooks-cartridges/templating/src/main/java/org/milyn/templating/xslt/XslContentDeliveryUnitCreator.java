@@ -77,7 +77,7 @@ import org.w3c.dom.NodeList;
  * </pre>
  * <p/>
  * Registration of the {@link XslContentDeliveryUnitCreator} to handle "xsl" resources can also be done by calling 
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.container.ApplicationContext)}.
+ * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.Smooks)}.
  * 
  * <h4>2. Targeting "xsl" Templates</h4>
  * XSLTs can be specified in a file or as a "resdata" parameter (i.e. inline in the resource configuration).
