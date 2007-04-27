@@ -36,11 +36,10 @@ import org.milyn.profile.ProfileSet;
  * The following outlines how this specificity value is calculated at present.
  * <!-- Just cut-n-paste from the code -->
  * <pre>
-	// Check the 'useragent' attribute specificity by adding the specificity
-	// of all its useragent expressions.
-	{@link org.milyn.cdr.UseragentExpression}[] useragents = resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getUseragentExpressions() getUseragentExpressions()};
-	for(int i = 0; i < useragents.length; i++) {
-		specificity += useragents[i].{@link org.milyn.cdr.UseragentExpression#getSpecificity(org.milyn.profile.ProfileSet)} getSpecificity(profileSet)};
+    // Get the combined specificity of all the profile targeting expressions.
+	{@link org.milyn.cdr.ProfileTargetingExpression}[] profileTargetingExpressions = resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getProfileTargetingExpressions() getProfileTargetingExpressions()};
+	for(int i = 0; i < profileTargetingExpressions.length; i++) {
+		specificity += profileTargetingExpressions[i].{@link org.milyn.cdr.ProfileTargetingExpression#getSpecificity(org.milyn.profile.ProfileSet) getSpecificity(profileSet)};
 	}
 	
 	// Check the 'selector' attribute value.
@@ -52,7 +51,7 @@ import org.milyn.profile.ProfileSet;
 		// Explicit selector listed
 		specificity += 100;
             
-        // If the selector is contextual it's therefore more specific so
+        // If the selector is contextual it's, therefore more specific so
         // account for that.  Subtract 1 because that "1" is already accounted
         // for by the addition of 100 - it's the extra we're accounting for here...
         if(resourceConfig.isSelectorContextual()) {
@@ -112,8 +111,7 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 	/**
 	 * Get the specificity of the SmooksResourceConfiguration.
 	 * <p/>
-	 * The "specificity" is evaluated based on the selector and useragent values.
-	 * Equal precedence is given to both attribute values.  
+	 * The "specificity" is evaluated based on the selector and target-profile values.
 	 * @param resourceConfig Resource configuration.
 	 * @return Configuration specificity.
 	 */
@@ -122,11 +120,10 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 		
 		// If the following code is modified, please update the class Javadoc.
 
-		// Check the 'useragent' attribute specificity by adding the specificity
-		// of all its useragent expressions.
-		UseragentExpression[] useragents = resourceConfig.getUseragentExpressions();
-		for(int i = 0; i < useragents.length; i++) {
-			specificity += useragents[i].getSpecificity(profileSet);
+		// Get the combined specificity of all the profile targeting expressions.
+		ProfileTargetingExpression[] profileTargetingExpressions = resourceConfig.getProfileTargetingExpressions();
+		for(int i = 0; i < profileTargetingExpressions.length; i++) {
+			specificity += profileTargetingExpressions[i].getSpecificity(profileSet);
 		}
 		
 		// Check the 'selector' attribute value.
@@ -138,7 +135,7 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 			// Explicit selector listed
 			specificity += 100;
             
-			// If the selector is contextual it's therefore more specific so
+			// If the selector is contextual it's, therefore more specific so
 			// account for that.  Subtract 1 because that "1" is already accounted
 			// for by the addition of 100 - it's the extra we're accounting for here...
 			if(resourceConfig.isSelectorContextual()) {

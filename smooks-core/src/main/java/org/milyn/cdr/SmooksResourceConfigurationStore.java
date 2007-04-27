@@ -37,7 +37,6 @@ import org.milyn.profile.ProfileSet;
 import org.milyn.profile.DefaultProfileStore;
 import org.xml.sax.SAXException;
 
-
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} context store.
  * <p/>
@@ -192,9 +191,9 @@ public class SmooksResourceConfigurationStore {
 	
 	/**
 	 * Get all the SmooksResourceConfiguration entries registered on this context store 
-     * for the specified useragent. 
-	 * @param profileSet Useragent profile set.
-	 * @return All SmooksResourceConfiguration entries for the specified useragent.
+     * for the specified profile set.
+	 * @param profileSet The profile set against which to lookup.
+	 * @return All SmooksResourceConfiguration entries targeted at the specified useragent.
 	 */
 	public SmooksResourceConfiguration[] getSmooksResourceConfigurations(ProfileSet profileSet) {
 		Vector allSmooksResourceConfigurationsColl = new Vector();
@@ -203,7 +202,7 @@ public class SmooksResourceConfigurationStore {
 		// Iterate through each of the loaded SmooksResourceConfigurationLists.
 		for(int i = 0; i < configLists.size(); i++) {
             SmooksResourceConfigurationList list = configLists.get(i);
-			SmooksResourceConfiguration[] resourceConfigs = list.getUseragentConfigurations(profileSet);
+			SmooksResourceConfiguration[] resourceConfigs = list.getTargetConfigurations(profileSet);
             
 			allSmooksResourceConfigurationsColl.addAll(Arrays.asList(resourceConfigs));
 		}
@@ -286,8 +285,7 @@ public class SmooksResourceConfigurationStore {
                 SmooksResourceConfiguration config = list.get(ii);
                 String selector = config.getSelector();
                 
-                if("cdu-creator".equals(selector) && 
-                        type.equals(config.getStringParameter("restype"))) {
+                if("cdu-creator".equals(selector) && type.equalsIgnoreCase(config.getStringParameter(ContentDeliveryUnitCreator.PARAM_RESTYPE))) {
                     return (ContentDeliveryUnitCreator) getObject(config);
                 }
             }

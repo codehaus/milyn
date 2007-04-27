@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
+
+<smooks-resource-list>
+    <resource-config selector="$document">
+        <resource>org.milyn.delivery.TestExpandableContentDeliveryUnit</resource>
+    </resource-config>
+</smooks-resource-list>

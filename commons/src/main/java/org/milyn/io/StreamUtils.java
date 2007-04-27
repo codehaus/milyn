@@ -16,9 +16,7 @@
 
 package org.milyn.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * Stream Utilities.
@@ -52,4 +50,47 @@ public abstract class StreamUtils {
 
 		return bytesOut.toByteArray();
 	}
+
+    /**
+     * Compares the 2 streams.
+     * <p/>
+     * Calls {@link #trimLines(InputStream)} on each stream before comparing.
+     * @param s1 Stream 1.
+     * @param s2 Stream 2.
+     * @return True if the streams are equal not including leading and trailing
+     * whitespace on each line and blank lines, otherwise returns false.
+     */
+    public static boolean compareCharStreams(InputStream s1, InputStream s2) {
+        StringBuffer s1Buf, s2Buf;
+
+        try {
+            s1Buf = trimLines(s1);
+            s2Buf = trimLines(s2);
+
+            return s1Buf.toString().equals(s2Buf.toString());
+        } catch (IOException e) {
+            // fail the comparison
+        }
+
+        return false;
+    }
+
+    /**
+     * Read the lines lines of characters from the stream and trim each line
+     * i.e. remove all leading and trailing whitespace.
+     * @param charStream Character stream.
+     * @return StringBuffer containing the line trimmed stream.
+     * @throws IOException
+     */
+    public static StringBuffer trimLines(InputStream charStream) throws IOException {
+        StringBuffer stringBuf = new StringBuffer();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(charStream));
+        String line;
+
+        while((line = reader.readLine()) != null) {
+            stringBuf.append(line.trim());
+        }
+
+        return stringBuf;
+    }
 }

@@ -17,9 +17,7 @@
 package org.milyn.delivery.dom;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
@@ -28,7 +26,6 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksResourceConfigurationSortComparator;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
-import org.milyn.delivery.dom.ProcessingSet;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.delivery.*;
 import org.milyn.dtd.DTDStore;
@@ -66,22 +63,22 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	 * Table of SmooksResourceConfiguration instances keyed by selector value. Each table entry
 	 * contains a List of SmooksResourceConfiguration instances.
 	 */
-	private Hashtable resourceConfigTable = new Hashtable();
+	private Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable = new Hashtable<String, List<SmooksResourceConfiguration>>();
 	/**
 	 * Table of AssemblyUnit instances keyed by selector. Each table entry
-	 * contains a single AssemblyUnit instances.
+	 * contains a single {@link DOMElementVisitor} instances.
 	 */
-	private Map<String, List<ContentDeliveryUnitConfigMap>> assemblyUnitTable = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
+	private ContentDeliveryUnitConfigMapTable assemblyUnitTable = new ContentDeliveryUnitConfigMapTable();
 	/**
-	 * Table of ProcessingSet instances keyed by selector. Each table entry
-	 * contains a ProcessingSet instances.
+     * Table of Processing Unit instances keyed by selector. Each table entry
+     * contains a single {@link DOMElementVisitor} instances.
 	 */
-	private ProcessingSetTable processingSetTable = new ProcessingSetTable();
+	private ContentDeliveryUnitConfigMapTable processingUnitTable = new ContentDeliveryUnitConfigMapTable();
 	/**
 	 * Table of SerializationUnit instances keyed by selector. Each table entry
 	 * contains a single SerializationUnit instances.
 	 */
-	private Map<String, List<ContentDeliveryUnitConfigMap>> serializationUnitTable = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
+	private ContentDeliveryUnitConfigMapTable serializationUnitTable = new ContentDeliveryUnitConfigMapTable();
 	/**
 	 * Table of Object instance lists keyed by selector. Each table entry
 	 * contains a List of Objects.
@@ -104,8 +101,8 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	
 	/**
 	 * Get the ContentDeliveryConfigImpl instance for the named table.
-	 * @param profileSet The profile set for the associated useragent.
-	 * @param applicationContext Container context.
+	 * @param profileSet The profile set with which this delivery config is associated.
+	 * @param applicationContext Application context.
 	 * @return The ContentDeliveryConfig instance for the named table.
 	 */
 	public static ContentDeliveryConfig getInstance(ProfileSet profileSet, ApplicationContext applicationContext) {
@@ -176,7 +173,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	}
 
 	/**
-	 * Print a debug log of the resource configurations for the associated useragent.
+	 * Print a debug log of the resource configurations for the associated profile.
 	 */
 	private void logResourceConfig() {
 		logger.debug("==================================================================================================");
@@ -205,26 +202,35 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 		
 		while(iterator.hasNext()) {
 			SmooksResourceConfiguration config = (SmooksResourceConfiguration)iterator.next();
-            String target = config.getSelector();
-            
-            // If it's contextual, it's targeting an XML element...
-            if(config.isSelectorContextual()) {
-                target = config.getTargetElement();
-            }
-			
-			Vector selectorUnits = (Vector)resourceConfigTable.get(target);
-			
-			if(selectorUnits == null) {
-				selectorUnits = new Vector();
-				resourceConfigTable.put(target, selectorUnits);
-			}
-			
-			// Add to the smooks-resource on the resourceConfigTable
-			selectorUnits.addElement(config);
+            addResourceConfiguration(config);
 		}
 	}
-	
-	/**
+
+    /**
+     * Add the supplied resource configuration to this configuration's main
+     * resource configuration list.
+     * @param config The configuration to be added.
+     */
+    private void addResourceConfiguration(SmooksResourceConfiguration config) {
+        String target = config.getSelector();
+
+        // If it's contextual, it's targeting an XML element...
+        if(config.isSelectorContextual()) {
+            target = config.getTargetElement();
+        }
+
+        Vector selectorUnits = (Vector)resourceConfigTable.get(target);
+
+        if(selectorUnits == null) {
+            selectorUnits = new Vector();
+            resourceConfigTable.put(target, selectorUnits);
+        }
+
+        // Add to the smooks-resource on the resourceConfigTable
+        selectorUnits.addElement(config);
+    }
+
+    /**
 	 * Expand the SmooksResourceConfiguration table.
 	 * <p/>
 	 * Expand the XmlDef entries to the target elements etc.
@@ -253,7 +259,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	 * Iterate over the table smooks-resource instances and sort the SmooksResourceConfigurations
 	 * on each element.  Ordered by specificity.
 	 */
-	private void sortSmooksResourceConfigurations(Hashtable table) {
+	private void sortSmooksResourceConfigurations(Hashtable<String, List<SmooksResourceConfiguration>> table) {
 		if(!table.isEmpty()) {
 			Iterator tableEntrySet = table.entrySet().iterator();
 			
@@ -274,10 +280,13 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	 * their respective tables.
 	 */
 	private void extractContentDeliveryUnits() {
-		SmooksResourceConfigurationStrategy cduStrategy = new ContentDeliveryExtractionStrategy(applicationContext);
+		ContentDeliveryExtractionStrategy cduStrategy = new ContentDeliveryExtractionStrategy(applicationContext);
 		SmooksResourceConfigurationTableIterator tableIterator = new SmooksResourceConfigurationTableIterator(cduStrategy);
-		tableIterator.iterate();
-	}
+
+        tableIterator.iterate();
+        // Process any expansions that may have been added...
+        cduStrategy.processExpansionConfigurations();
+    }
 	
 	/**
 	 * Get the DTD elements for specific device context.
@@ -330,14 +339,16 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 		}
 	}
 
-	/**
-	 * Get the ProcessingUnit configure instances, for the named tag, for the useragent 
-	 * associated with this table.
-	 * @param tag The tag name for which the ProcessingUnits are being requested.
-	 * @return ProcessingSet for the specified tag name, or null if none is specified.  
-	 */
-	public ProcessingSet getProcessingSet(String tag) {
-        return processingSetTable.get(tag);
+    /**
+     * Get the Processing Unit table for this delivery context.
+     * <p/>
+     * The table is keyed by element name and the values are
+     * {@link org.milyn.delivery.ContentDeliveryUnitConfigMap} instances where the contained
+     * {@link org.milyn.delivery.ContentDeliveryUnit} is an {@link DOMElementVisitor}.
+     * @return The Processing Unit table for this delivery context.
+     */
+    public ContentDeliveryUnitConfigMapTable getProcessingUnits() {
+        return processingUnitTable;
 	}
 	
 	/**
@@ -402,7 +413,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	 * <p/>
 	 * @return The AssemblyUnits table for this delivery context.
 	 */
-	public Map<String, List<ContentDeliveryUnitConfigMap>> getAssemblyUnits() {
+	public ContentDeliveryUnitConfigMapTable getAssemblyUnits() {
 		return assemblyUnitTable;
 	}
 	
@@ -413,7 +424,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	 * {@link SerializationUnit} instances.
 	 * @return The SerializationUnit table for this delivery context.
 	 */
-	public Map<String, List<ContentDeliveryUnitConfigMap>> getSerailizationUnits() {
+	public ContentDeliveryUnitConfigMapTable getSerailizationUnits() {
 		return serializationUnitTable;
 	}
 
@@ -431,6 +442,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	private final class ContentDeliveryExtractionStrategy implements SmooksResourceConfigurationStrategy {
 		
         private SmooksResourceConfigurationStore store;
+        private List<SmooksResourceConfiguration> expansionConfigs = new ArrayList<SmooksResourceConfiguration>();
 
         public ContentDeliveryExtractionStrategy(ApplicationContext applicationContext) {
             store = applicationContext.getStore();
@@ -452,7 +464,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
     			} catch (UnsupportedContentDeliveryUnitTypeException e) {
     				throw new IllegalStateException("No ContentDeliveryUnitCreator configured (IoC) for type 'class' (Java).");
     			} catch (InstantiationException e) {
-                    // Ignore it again - not a CDU - continue on, may be a different type...
+                    // Ignore it again - not a proper Java CDU - continue on, may be a different type...
                 }
             }
 
@@ -462,8 +474,8 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
             creator = tryCreateCreator(restype);
 			
             // If we have a creator but it's the JavaContentDeliveryUnitCreator we ignore it because
-            // we know the class in question is not a ContentDeliveryUnit.  We know this because the 
-            // resourceConfig.isContentDeliveryUnit() call at the start of this method failed.
+            // we know the class in question does not implement ContentDeliveryUnit.  We know because
+            // we tried this above.
             if(creator != null && !(creator instanceof JavaContentDeliveryUnitCreator)) {
 				try {
 					addCDU(elementName, resourceConfig, creator);
@@ -471,7 +483,7 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 					logger.warn("ContentDeliveryUnit creation failure.", e);
 				}
             } else {
-				// Just ignore it - something else will use it            	
+				// Just ignore it - something else will use it (hopefully)            	
             }
 		}
         
@@ -525,75 +537,45 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
                 Phase phaseAnnotation = contentDeliveryUnit.getClass().getAnnotation(Phase.class);
 
                 if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
-                    addAssemblyUnit(elementName, contentDeliveryUnit, resourceConfig);
+                    // It's an assembly unit...
+                    assemblyUnitTable.addMapping(elementName, resourceConfig, contentDeliveryUnit);
                 } else {
-                    addProcessingUnit(elementName, (DOMElementVisitor)contentDeliveryUnit, resourceConfig);
+                    // It's a processing unit...
+                    processingUnitTable.addMapping(elementName, resourceConfig, contentDeliveryUnit);
                 }
             } else if(contentDeliveryUnit instanceof SerializationUnit) {
-				addSerializationUnit(elementName, contentDeliveryUnit, resourceConfig);
+                serializationUnitTable.addMapping(elementName, resourceConfig, contentDeliveryUnit);
 			} else {
 				// It's not a CDU type we know of!  Leave for now - whatever's using it
 				// can instantiate it itself.
 				return false;
 			}
-			
-			return true;
+
+            // Content delivery units are allowed to dynamically add new configurations...
+            if(contentDeliveryUnit instanceof ExpandableContentDeliveryUnit) {
+                List<SmooksResourceConfiguration> additionalConfigs = ((ExpandableContentDeliveryUnit)contentDeliveryUnit).getExpansionConfigurations();
+                if(additionalConfigs != null && !additionalConfigs.isEmpty()) {
+                    expansionConfigs.addAll(additionalConfigs);
+                }
+            }
+
+            return true;
 		}
 
-		/**
-		 * Add AssemblyUnit.
-		 * @param elementName Element to which the AssemblyUnit is to be applied.
-		 * @param assemblyUnit AssemblyUnit to be added.
-         * @param resourceConfig Resource configuration.
-		 */
-		private void addAssemblyUnit(String elementName, ContentDeliveryUnit assemblyUnit, SmooksResourceConfiguration resourceConfig) {
-			List<ContentDeliveryUnitConfigMap> elAssemblyUnits = assemblyUnitTable.get(elementName);
-			
-			if(elAssemblyUnits == null) {
-				elAssemblyUnits = new Vector<ContentDeliveryUnitConfigMap>();
-				assemblyUnitTable.put(elementName, elAssemblyUnits);
-			}
-            ContentDeliveryUnitConfigMap mapInst = 
-                new ContentDeliveryUnitConfigMap(assemblyUnit, resourceConfig);
-            
-			elAssemblyUnits.add(mapInst);
-		}
-
-		/**
-		 * Add ProcessingUnit.
-		 * @param elementName Element to which the ProcessingUnit is to be applied.
-         * @param processingUnit ProcessingUnit to be added.
-         * @param resourceConfig Resource configuration.
+        /**
+         * Process any expansion configurations on this ContentDeliveryExtractionStrategy instance.
          */
-		private void addProcessingUnit(String elementName, DOMElementVisitor processingUnit, SmooksResourceConfiguration resourceConfig) {
-			ProcessingSet processingSet = processingSetTable.get(elementName);
-			
-			if(processingSet == null) {
-				processingSet = new ProcessingSet();
-				processingSetTable.put(elementName, processingSet);
-			}
-            processingSet.addProcessingUnit(processingUnit, resourceConfig);
-		}
+        public void processExpansionConfigurations() {
+            for(SmooksResourceConfiguration config : expansionConfigs) {
+                String targetElement = config.getTargetElement();
 
-		/**
-		 * Add SerializationUnit.
-		 * @param elementName Element to which the SerializationUnit is to be applied.
-		 * @param serializationUnit SerializationUnit to be added.
-		 * @param resourceConfig Resource configuration.
-		 */
-		private void addSerializationUnit(String elementName, ContentDeliveryUnit serializationUnit, SmooksResourceConfiguration resourceConfig) {
-			List<ContentDeliveryUnitConfigMap> elementSerUnits = serializationUnitTable.get(elementName);
-
-            if(elementSerUnits == null) {
-				elementSerUnits = new Vector<ContentDeliveryUnitConfigMap>();
-				serializationUnitTable.put(elementName, elementSerUnits);
-			}
-            ContentDeliveryUnitConfigMap mapInst = 
-                new ContentDeliveryUnitConfigMap(serializationUnit, resourceConfig);
-
-            elementSerUnits.add(mapInst);
-		}
-	}
+                // Try adding it as a ContentDeliveryUnit instance...
+                applyStrategy(targetElement, config);
+                // Add the configuration itself to the main list...
+                addResourceConfiguration(config);
+            }
+        }
+    }
 
 	/**
 	 * Iterate over the SmooksResourceConfiguration table applying the constructor 
@@ -650,42 +632,4 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 		 */
 		public void applyStrategy(String elementName, SmooksResourceConfiguration unitDef);
 	}
-
-    private class ProcessingSetTable {
-        ConcurrentHashMap<String, ProcessingSet> map = new ConcurrentHashMap<String, ProcessingSet>();
-        List<Entry<String, ProcessingSet>> entries = new ArrayList<Entry<String, ProcessingSet>>();
-
-        public ProcessingSet put(String key, ProcessingSet value) {
-            ProcessingSet prcessingSet = map.put(key, value);
-            entries.add(getEntry(key));            
-            return prcessingSet;
-        }
-
-        private Entry<String, ProcessingSet> getEntry(String key) {
-            Set<Entry<String, ProcessingSet>> superEntries = map.entrySet();
-
-            for (Iterator<Entry<String, ProcessingSet>> iterator = superEntries.iterator(); iterator.hasNext();) {
-                Entry<String, ProcessingSet> entry =  iterator.next();
-                if(entry.getKey().equals(key)) {
-                    return entry;
-                }
-            }
-
-            return null;
-        }
-
-        public ProcessingSet get(String key) {
-            int entryCount = entries.size();
-
-            for(int i = 0; i < entryCount; i++) {
-                Entry<String, ProcessingSet> entry =  entries.get(i);
-                String entryKey = entry.getKey();
-                if(entryKey.equalsIgnoreCase(key)) {
-                    return entry.getValue();
-                }
-            }
-
-            return map.get(key);
-        }
-    }
 }

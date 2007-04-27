@@ -32,7 +32,7 @@ import junit.framework.TestCase;
 /**
  *
  * @author tfennelly
- */;
+ */
 public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
     public void testStringTemplateTrans() throws SAXException, IOException {
@@ -40,7 +40,7 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
         // Configure Smooks
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
-        TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
+        TemplatingUtils.registerCDUCreators(smooks);
         SmooksUtil.registerResources("test-configs", getClass().getResourceAsStream("test-configs.cdrl"), smooks);
 
         InputStream stream = 

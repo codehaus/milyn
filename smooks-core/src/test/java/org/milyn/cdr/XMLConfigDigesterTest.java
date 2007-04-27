@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.xml.sax.SAXException;
 import org.milyn.profile.ProfileSet;
-import org.milyn.profile.DefaultProfileStore;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 import org.milyn.container.ExecutionContext;
@@ -94,13 +93,13 @@ public class XMLConfigDigesterTest extends TestCase {
 
         // Test the overridden attribute values from the 1st config entry.
         assertEquals("a", resList.get(0).getSelector());
-        assertEquals("xxx", resList.get(0).getUseragentExpressions()[0].getExpression());
+        assertEquals("xxx", resList.get(0).getProfileTargetingExpressions()[0].getExpression());
         assertEquals("x.txt", resList.get(0).getResource());
         assertEquals("http://milyn.codehaus.org/smooks", resList.get(0).getNamespaceURI());
 
         // Test the default inherited attribute values from the 2nd config entry.
         assertEquals("b", resList.get(1).getSelector());
-        assertEquals("yyy", resList.get(1).getUseragentExpressions()[0].getExpression());
+        assertEquals("yyy", resList.get(1).getProfileTargetingExpressions()[0].getExpression());
         assertEquals("/org/milyn/cdr/test-resource.txt", resList.get(1).getResource());
         assertEquals("Hi there :-)", new String(resList.get(1).getBytes()));
         assertEquals("http://milyn.codehaus.org/smooks-default", resList.get(1).getNamespaceURI());

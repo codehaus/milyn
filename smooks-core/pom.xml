@@ -21,6 +21,7 @@
 			<groupId>dtdparser</groupId>
 			<artifactId>dtdparser</artifactId>
 			<version>${dtdparser.version}</version>
-		</dependency>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 </project>

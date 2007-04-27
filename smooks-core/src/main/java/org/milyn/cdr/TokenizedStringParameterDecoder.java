@@ -28,45 +28,26 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * {@link ParameterDecoder} used to tokenize a parameter values into a {@link java.util.List}
  * or {@link java.util.HashSet}.
  * <p/>
- * Tokenizes the parameter value into a {@link java.util.List} (param-type="string-list")
+ * Tokenizes parameter values into a {@link java.util.List} (param-type="string-list")
  * or {@link java.util.HashSet} (param-type="string-hashset") using {@link java.util.StringTokenizer}.
- * <h3>.cdrl Configuration</h3>
- * The following configurations (installed by default, with defaults) show how this {@link ParameterDecoder} is configured into
- * Smooks such that it can be used by {@link org.milyn.delivery.ContentDeliveryUnit}s
- * for accessing tokenised param values.  See the <a href="#exampleusage">example usage</a>
- * below for an example on how this decoder can be used once configured.
- * <pre>
- * &lt;smooks-resource useragent="*" selector="param-type:string-collection-X" path="org.milyn.cdr.TokenizedStringParameterDecoder"&gt;
- * 
- * 	&lt;!-- (Optional) Tokenizer Delimiters. Default is "string-list". --&gt;
- * 	&lt;param name="<b>param-type</b>"&gt;<i>string-list/string-hashset</i>&lt;/param&gt;
- * 
- * 	&lt;!-- (Optional) Tokenizer Delimiters. Default is ",". --&gt;
- * 	&lt;param name="<b>delims</b>"&gt;<i>delim-chars</i>&lt;/param&gt;
- * 
- * 	&lt;!-- (Optional) Return Delimiters. Default false. --&gt;
- * 	&lt;param name="<b>returnDelims</b>"&gt;<i>true/false</i>&lt;/param&gt;
- * 
- * 	&lt;!-- (Optional) Trim token values. Default true. --&gt;
- * 	&lt;param name="<b>trimTokens</b>"&gt;<i>true/false</i>&lt;/param&gt;
- * &lt;/smooks-resource&gt;</pre>
- * 
  * <p/>
- * Two default configurations of this decoder are pre-installed for all useragents.  They're named
+ * Two default configurations of this decoder are pre-installed for all profiles.  They're named
  * "string-list" and "string-hashset".
  * 
  * <h3 id="exampleusage">Example Usage</h3>
  * The following example illustrates use of the pre-installed "string-hashset" decoder:
  * <p/>
- * .cdrl param:
+ * <b>Configuration</b>:
  * <pre>
- * &lt;smooks-resource useragent="html4" path="com.acme.XXXContentDeliveryUnit"&gt;
- * 	&lt;param name="blockLevelElements" type="<b>string-hashset</b>"&gt;
- * 		p,h1,h2,h3,h4,h5,h6,div,ul,ol,dl,menu,dir,pre,hr,blockquote,address,center,noframes,isindex,fieldset,table
- * 	&lt;/param&gt;
- * &lt;/smooks-resource&gt;</pre>
+ * &lt;resource-config target-profile="html4" selector="XXX"&gt;
+ *      &lt;resource&gt;com.acme.XXXContentDeliveryUnit&lt;/resource&gt;
+ *      &lt;param name="blockLevelElements" type="<b>string-hashset</b>"&gt;
+ *          p,h1,h2,h3,h4,h5,h6,div,ul,ol,dl,menu,dir,pre,hr,blockquote,address,center,noframes,isindex,fieldset,table
+ *      &lt;/param&gt;
+ * &lt;/resource-config&gt;</pre>
  * <p/>
- * ... and the "com.acme.XXXContentDeliveryUnit" {@link org.milyn.delivery.ContentDeliveryUnit} accessing this parameter value:
+ * <b>Usage</b>:<br/>
+ * ... and "com.acme.XXXContentDeliveryUnit" accesses this parameter value as follows:
  * <pre>
  * {@link org.milyn.cdr.Parameter} param = {@link org.milyn.cdr.SmooksResourceConfiguration resourceConfig}.{@link org.milyn.cdr.SmooksResourceConfiguration#getParameter(String) getParameter("blockLevelElements")};
  * {@link java.util.HashSet} blockLevelElements = (HashSet)param.{@link org.milyn.cdr.Parameter#getValue(ContentDeliveryConfig) getValue(ContentDeliveryConfig)}; 

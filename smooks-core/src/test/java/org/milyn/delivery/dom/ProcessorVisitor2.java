@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
  */
 public class ProcessorVisitor2 implements DOMElementVisitor {
     public void visitBefore(Element element, ExecutionContext executionContext) {
+        element.setAttribute("visitedby-" + getClass().getSimpleName(), "true");
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) {

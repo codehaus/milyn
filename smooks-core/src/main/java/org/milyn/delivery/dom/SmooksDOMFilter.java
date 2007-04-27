@@ -21,7 +21,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Vector;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +32,7 @@ import org.milyn.delivery.dom.ProcessingSet;
 import org.milyn.delivery.dom.serialize.Serializer;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Parser;
 
@@ -168,7 +168,7 @@ public class SmooksDOMFilter {
 	 * Logger.
 	 */
 	private Log logger = LogFactory.getLog(SmooksDOMFilter.class);
-	/**
+    /**
 	 * Container request for this Smooks content delivery instance.
 	 */
 	private ExecutionContext executionContext;
@@ -191,8 +191,8 @@ public class SmooksDOMFilter {
 	 * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
 	 */
 	private static ThreadLocal<ExecutionContext> requestThreadLocal = new ThreadLocal<ExecutionContext>();
-	
-	/**
+
+    /**
 	 * Public constructor.
 	 * <p/>
 	 * Constructs a SmooksDOMFilter instance for delivering content for the supplied execution context.
@@ -283,7 +283,7 @@ public class SmooksDOMFilter {
 			
 			deliveryNode = filter(document);
 		} catch(Exception cause) {
-			throw new SmooksException("Unable to filter InputStream for target useragent [" + executionContext.getTargetProfiles().getBaseProfile() + "].", cause);
+			throw new SmooksException("Unable to filter InputStream for target profile [" + executionContext.getTargetProfiles().getBaseProfile() + "].", cause);
 		}
 		
 		return deliveryNode;
@@ -303,35 +303,33 @@ public class SmooksDOMFilter {
 		int transListLength;
 		ProcessingSet globalProcessingSet;
 		Node deliveryNode;
-		Map<String, List<ContentDeliveryUnitConfigMap>> assemblyUnits = deliveryConfig.getAssemblyUnits();
-		
-		if(doc.getDocumentElement() == null) {
+
+        // Apply assembly phase...
+        if(doc.getDocumentElement() == null) {
 			logger.warn("Empty Document [" + executionContext.getDocumentSource() + "].  Not performaing any processing.");
 			return doc;
 		}
 		
-		// Skip the assembly phase if there are no configured assembly units.
+        // Apply assembly phase, skipping it if there are no configured assembly units...
+        ContentDeliveryUnitConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
 		if(!assemblyUnits.isEmpty()) {
 			// Assemble
 			if(logger.isDebugEnabled()) {
 				logger.debug("Starting assembly phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 			}
-			assemble(doc.getDocumentElement());
+			assemble(doc.getDocumentElement(), true);
 		} else {
 			if(logger.isDebugEnabled()) {
 				logger.debug("No assembly units configured for device [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 			}
 		}
 
-		// filter
+        // Apply processing phase...
 		if(logger.isDebugEnabled()) {
 			logger.debug("Starting processing phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
 		}
-		globalProcessingSet = deliveryConfig.getProcessingSet("*");
-		if(globalProcessingSet != null) {
-			globalProcessingUnits = globalProcessingSet.getProcessingUnits();
-		}
-		buildProcessingList(transList, doc.getDocumentElement());
+        globalProcessingUnits = deliveryConfig.getProcessingUnits().getMappings("*");
+		buildProcessingList(transList, doc.getDocumentElement(), true);
 		transListLength = transList.size();
 		for(int i = 0; i < transListLength; i++) {
 			ElementProcessor elementTrans = (ElementProcessor)transList.get(i);			
@@ -347,52 +345,45 @@ public class SmooksDOMFilter {
 	}
 	
 	/**
-	 * Assemble the document.
+	 * Assemble the supplied element.
 	 * <p/>
-	 * Recursively iterate over the document and apply all AssemblyUnits.
+	 * Recursively iterate down into the elements children.
 	 * @param element Next element to operate on and iterate over.
+     * @param isRoot Is the supplied element the document root element.
 	 */
-	private void assemble(Element element) {
+	private void assemble(Element element, boolean isRoot) {
 		List nodeListCopy = copyList(element.getChildNodes());
 		int childCount = nodeListCopy.size();
-		Map<String, List<ContentDeliveryUnitConfigMap>> assemblyUnits = deliveryConfig.getAssemblyUnits();
+		ContentDeliveryUnitConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
 		String elementName = DomUtils.getName(element);
 		List<ContentDeliveryUnitConfigMap> elementAssemblyUnits;
-		
-		elementAssemblyUnits = assemblyUnits.get(elementName.toLowerCase());
 
-		// Visit elements with assembly units to be applied before iterating the
-		// elements child content.
+        if(isRoot) {
+            // The document as a whole (root node) can also be targeted through the "$document" selector.
+            elementAssemblyUnits = assemblyUnits.getMappings(new String[] {elementName, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR});
+        } else {
+            elementAssemblyUnits = assemblyUnits.getMappings(elementName);
+        }
+
+        // Visit element with its assembly units before visiting its child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
-                ContentDeliveryUnitConfigMap configMap = elementAssemblyUnits.get(i);;
+                ContentDeliveryUnitConfigMap configMap = elementAssemblyUnits.get(i);
                 SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
-                // Make sure the assembly unit is targeted at this element.
-                // Check the namespace and context (if the selector is contextual)...
-                if(!config.isTargetedAtElementNamespace(element)) {
-					if(logger.isDebugEnabled()) {
-						logger.debug("Not applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
-					}
-                    continue;
-                } else if(config.isSelectorContextual() && !config.isTargetedAtElementContext(element)) {
-                    // Note: If the selector is not contextual, there's no need to perform the
-                    // isTargetedAtElementContext check because we already know the unit is targetd at the
-                    // element by name - because we looked it up by name in the 1st place.
-					if(logger.isDebugEnabled()) {
-						logger.debug("Not applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
-					}
+                // Make sure the assembly unit is targeted at this element...
+                if(!config.isTargetedAtElement(element)) {
                     continue;
                 }            
                 
                 DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
                 try {
                     if(logger.isDebugEnabled()) {
-                        logger.debug("Applying assembly resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+                        logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
                     }
                     assemblyUnit.visitBefore(element, executionContext);
                 } catch(Throwable e) {
-                    logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
+                    logger.error("(Assembly) visitBefore failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
                 }
 			}
 		}
@@ -401,47 +392,54 @@ public class SmooksDOMFilter {
 		for(int i = 0; i < childCount; i++) {
 			Node child = (Node)nodeListCopy.get(i);
 			if(child.getNodeType() == Node.ELEMENT_NODE) {
-				assemble((Element)child);
+				assemble((Element)child, false);
 			}
 		}
 
-		// Visit elements with assembly units to be applied after iterating the
-		// elements child content.
+        // Revisit the element with its assembly units after visiting its child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
                 ContentDeliveryUnitConfigMap configMap = elementAssemblyUnits.get(i);
-                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
+                SmooksResourceConfiguration config = configMap.getResourceConfig();
                 
-				if(configMap.getResourceConfig().isTargetedAtElementContext(element)) {
-					try {
-						assemblyUnit.visitAfter(element, executionContext);
-					} catch(Throwable e) {
-						logger.error("Failed to apply assembly unit [" + assemblyUnit.getClass().getName() + "] to element [" + element.getTagName() + "].", e);
-					}
-				}
+                // Make sure the assembly unit is targeted at this element...
+                if(!config.isTargetedAtElement(element)) {
+                    continue;
+                }
+
+                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
+                try {
+                    if(logger.isDebugEnabled()) {
+                        logger.debug("(Assembly) Calling visitAfter on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
+                    }
+                    assemblyUnit.visitAfter(element, executionContext);
+                } catch(Throwable e) {
+                    logger.error("(Assembly) visitAfter failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
+                }
 			}
 		}
 	}
 	
 	/**
-	 * Recurcively build the document processing list, iterating over the document 
-	 * elements. 
+	 * Recurcively build the processing list for the supplied element, iterating over the elements
+	 * child content. 
 	 * @param processingList List under construction.  List of ElementProcessor instances.
-	 * @param element Current element being tested.  Starts at the document root element.
-	 */
-	private void buildProcessingList(List processingList, Element element) {
+     * @param element Current element being tested.  Starts at the document root element.
+     * @param isRoot Is the supplied element the document root element.
+     */
+	private void buildProcessingList(List processingList, Element element, boolean isRoot) {
 		String elementName;
-		ProcessingSet processingSet;
 		List<ContentDeliveryUnitConfigMap> processingUnits = null;
 
 		elementName = DomUtils.getName(element);
-		processingSet = deliveryConfig.getProcessingSet(elementName);
+        if(isRoot) {
+            // The document as a whole (root node) can also be targeted through the "$document" selector.
+            processingUnits = deliveryConfig.getProcessingUnits().getMappings(new String[] {elementName, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR});
+        } else {
+            processingUnits = deliveryConfig.getProcessingUnits().getMappings(elementName);
+        }
 		
-		if(processingSet != null) {
-			processingUnits = processingSet.getProcessingUnits();
-		}
-		
-		if(processingUnits != null) {
+        if(processingUnits != null && !processingUnits.isEmpty()) {
 			processingList.add(new ElementProcessor(element, processingUnits, true));
 		}
 		if(globalProcessingUnits != null) {
@@ -455,7 +453,7 @@ public class SmooksDOMFilter {
 		for(int i = 0; i < childCount; i++) {
 			Node child = children.item(i);
 			if(child.getNodeType() == Node.ELEMENT_NODE) {
-				buildProcessingList(processingList, (Element)child);
+				buildProcessingList(processingList, (Element)child, false);
 			}
 		}
 		
@@ -568,20 +566,8 @@ public class SmooksDOMFilter {
                 ContentDeliveryUnitConfigMap configMap = processingUnits.get(i);
                 SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
-                // Make sure the processing unit is targeted at this element.
-                // Check the namespace and context (if the selector is contextual)...
-                if(!config.isTargetedAtElementNamespace(element)) {
-					if(logger.isDebugEnabled()) {
-						logger.debug("Not applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
-					}
-                    continue;
-                } else if(config.isSelectorContextual() && !config.isTargetedAtElementContext(element)) {
-                    // Note: If the selector is not contextual, there's no need to perform the
-                    // isTargetedAtElementContext check because we already know the unit is targetd at the
-                    // element by name - because we looked it up by name in the 1st place.
-					if(logger.isDebugEnabled()) {
-						logger.debug("Not applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Not targeted at elemeent in namespace [" + config.getNamespaceURI() + "].  Contextual selector check failed.");
-					}
+                // Make sure the processing unit is targeted at this element...
+                if(!config.isTargetedAtElement(element)) {
                     continue;
                 }            
 

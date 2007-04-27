@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
+
+<smooks-resource-list> 
+
+    <!--
+    Break out the <date> field into separate "time", "day", "month" and "year" fields using Groovy.
+    Tis makes the complex date field value consumable by something like XSLT.
+    -->
+    <resource-config selector="header date">
+	    <resource>/example/DateFormatter.groovy</resource>
+        <param name="input-format">EEE MMM dd HH:mm:ss z yyyy</param>
+        <param name="output-format">
+            time=HH:mm
+            day=dd
+            month=MM
+            year=yy
+        </param>
+    </resource-config>
+
+    <!--
+    Transform the document (as a whole) using XSLT.  The complex date field has already been preprocessed into
+    separate fields using Groovy (see above config) - XSLT can handle it easily now :-)
+    -->
+    <resource-config selector="$document">
+        <resource>/example/order.xsl</resource>
+        <param name="is-xslt-templatelet">false</param>
+    </resource-config>
+
+</smooks-resource-list>

@@ -36,7 +36,7 @@ public class FindAddressSampleTest extends TestCase {
 
         // Configure Smooks...
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("acme-findAddresses-request", new String[] {"acme-request"}), smooks);
-        TemplatingUtils.registerCDUCreators(smooks.getApplicationContext());
+        TemplatingUtils.registerCDUCreators(smooks);
         SmooksUtil.registerResources("acme-creds", getClass().getResourceAsStream("acme-creds.cdrl"), smooks);
 
         // Perform the transformation...

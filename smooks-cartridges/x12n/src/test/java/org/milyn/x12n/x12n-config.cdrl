@@ -5,7 +5,7 @@
 
 	<!--
 		Set the SAX parser for all requests coming from X12N client
-		useragents to be X12nToSaxXMLReader.
+		profileTargetings to be X12nToSaxXMLReader.
 	-->
 	<smooks-resource selector="org.xml.sax.driver" path="org.milyn.x12n.X12nToSaxEventParser" />
 	

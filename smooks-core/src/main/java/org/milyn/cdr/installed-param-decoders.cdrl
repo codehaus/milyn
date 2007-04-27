@@ -1,20 +1,23 @@
 <?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
 
 <!--
 	This cdrl config defines some parameter decoder resources.
 -->
 
-<smooks-resource-list default-selector="cdu-creator"> 
+<smooks-resource-list> 
 
-	<smooks-resource useragent="*" selector="param-type:string-list" path="org.milyn.cdr.TokenizedStringParameterDecoder">
+	<resource-config selector="param-type:string-list">
+	    <resource>org.milyn.cdr.TokenizedStringParameterDecoder</resource>
 		<param name="param-type">string-list</param>
-	</smooks-resource>
-	<smooks-resource useragent="*" selector="param-type:string-hashset" path="org.milyn.cdr.TokenizedStringParameterDecoder">
+	</resource-config>
+	<resource-config selector="param-type:string-hashset">
+	    <resource>org.milyn.cdr.TokenizedStringParameterDecoder</resource>
 		<param name="param-type">string-hashset</param>
-	</smooks-resource>
-	<smooks-resource useragent="*" selector="param-type:properties" path="org.milyn.cdr.PropertyListParameterDecoder">
+	</resource-config>
+	<resource-config selector="param-type:properties">
+	    <resource>org.milyn.cdr.PropertyListParameterDecoder</resource>
 		<param name="param-type">properties</param>
-	</smooks-resource>
+	</resource-config>
 	
 </smooks-resource-list>

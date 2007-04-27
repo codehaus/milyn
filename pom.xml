@@ -29,6 +29,7 @@
         <module>magger</module>
         <module>tinak</module>
         <module>smooks-cartridges</module>
+        <module>smooks-examples</module>
     </modules>
 
     <dependencies>
@@ -119,6 +120,10 @@
         <repository>
             <id>milyn</id>
             <url>http://dist.codehaus.org</url>
+        </repository>
+        <repository>
+            <id>org.codehaus.mojo</id>
+            <url>http://repository.codehaus.org/</url>
         </repository>
     </repositories>
 </project>

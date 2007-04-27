@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
 
 <!--
 	This cdrl config defines the Content Delivery Unit Creators
@@ -12,16 +12,18 @@
 		All .st (*.st) resources will be treated as StringTemplate templates and
 		will be handled by the StringTemplateContentDeliveryUnitCreator.
 	-->
-	<smooks-resource path="org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator">
+	<resource-config>
+	    <resource type="class">org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator</resource>
 		<param name="restype">st</param>
-	</smooks-resource>	
+	</resource-config>
 		
 	<!-- 
 		All .xsl (*.xsl) resources will be treated as XSL templates and
 		will be handled by the XslContentDeliveryUnitCreator.
 	-->
-	<smooks-resource path="org.milyn.templating.xslt.XslContentDeliveryUnitCreator">
+	<resource-config>
+	    <resource type="class">org.milyn.templating.xslt.XslContentDeliveryUnitCreator</resource>
 		<param name="restype">xsl</param>
-	</smooks-resource>	
+	</resource-config>	
 	
 </smooks-resource-list>

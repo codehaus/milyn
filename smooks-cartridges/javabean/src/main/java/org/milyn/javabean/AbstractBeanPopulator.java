@@ -18,6 +18,11 @@ package org.milyn.javabean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.*;
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.io.IOException;
+import java.io.ByteArrayInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,17 +30,18 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.ExpandableContentDeliveryUnit;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
  * Abstract Javabean populator.
- * <h3>.cdrl Configuration</h3>
+ * <h3>XML Configuration</h3>
  * <pre>
- * &lt;smooks-resource  useragent="<i>device/profile</i>" selector="<i>target-element</i>" 
- *  path="<b>org.milyn.javabean.AssemblyPhaseBeanPopulator</b> OR <b>org.milyn.javabean.ProcessingPhaseBeanPopulator</b>" &gt;
- * 
+ * &lt;resource-config target-profile="<i>profile</i>" selector="<i>target-element</i>"&gt;
+ *  &lt;resource&gt;<b>org.milyn.javabean.AssemblyPhaseBeanPopulator</b> OR <b>org.milyn.javabean.ProcessingPhaseBeanPopulator</b>&lt;/resource&gt;
+ *
  *  &lt;!-- (Mandatory) The bean identifier. --&gt;
  *  &lt;param name="<b>beanId</b>"&gt;<i>bean class name</i>&lt;/param&gt;
  * 
@@ -66,14 +72,15 @@ import org.w3c.dom.Element;
  *          specified by the setterName param. --&gt;
  *  &lt;param name="<b>attributeName</b>"&gt;<i>the name of the element attribute</i>&lt;/param&gt;
  * 
- * &lt;/smooks-resource&gt;
+ * &lt;/resource-config&gt;
  * </pre>
  * 
  * @author tfennelly
  */
-public abstract class AbstractBeanPopulator implements DOMElementVisitor {
+public abstract class AbstractBeanPopulator implements DOMElementVisitor, ExpandableContentDeliveryUnit {
 
-	private static Log logger = LogFactory.getLog(AbstractBeanPopulator.class); 
+    private static Log logger = LogFactory.getLog(AbstractBeanPopulator.class);
+    private SmooksResourceConfiguration config;
     private String beanId;
     private Class beanClass;
     private boolean addToList = false;
@@ -81,11 +88,13 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor {
     private Method beanSetterMethod;
     private boolean isAttribute = true;
     private String attributeName;
-    
+
     /**
      * Set the resource configuration on the bean populator.
      */
 	public void setConfiguration(SmooksResourceConfiguration config) {
+        this.config = config;
+
         // Bean ID...
         beanId = config.getStringParameter("beanId");
         if(beanId == null || (beanId = beanId.trim()).equals("")) {
@@ -123,7 +132,57 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor {
                 // create the bean!!
             }
         }
+
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].  Add to list=" + addToList + ", attributeName=" + attributeName + ", setterName" + setterName);
+    }
+
+    public List<SmooksResourceConfiguration> getExpansionConfigurations() {
+        List<SmooksResourceConfiguration> resources = new ArrayList<SmooksResourceConfiguration>();
+        String bindings = config.getStringParameter("bindings");
+
+        if(bindings != null) {
+            BufferedReader bufferedReader = new BufferedReader(new StringReader(bindings));
+            String bindingConfig;
+
+            try {
+                while((bindingConfig = bufferedReader.readLine()) != null) {
+                    bindingConfig = bindingConfig.trim();
+                    if(!bindingConfig.equals("")) {
+                        resources.add(buildConfig(bindingConfig));
+                    }
+                }
+            } catch (IOException e) {
+                logger.error("Failed to read binding configuration for " + config);
+            }
+        }
+
+        return resources;
+    }
+
+    private SmooksResourceConfiguration buildConfig(String bindingConfig) throws IOException {
+        SmooksResourceConfiguration resourceConfig = null;
+        Properties bindingProperties = new Properties();
+
+        // Read in the bindings as a set of properties...
+        bindingConfig = bindingConfig.replace(',', '\n');
+        bindingProperties.load(new ByteArrayInputStream(bindingConfig.getBytes("UTF-8")));
+
+        // Make sure there's a selector...
+        if(!bindingProperties.containsKey("selector")) {
+            logger.error("Binding configuration must contain a 'selector' key: " + config);
+        }
+
+        // Construct the configuraton...
+        resourceConfig = new SmooksResourceConfiguration(bindingProperties.getProperty("selector", config.getSelector()), getClass().getName());
+        resourceConfig.setParameter("beanId", beanId);
+        bindingProperties.remove("selector");
+        Iterator bindingPropertyIterator = bindingProperties.entrySet().iterator();
+        while(bindingPropertyIterator.hasNext()) {
+            Map.Entry property = (Map.Entry) bindingPropertyIterator.next();
+            resourceConfig.setParameter((String)property.getKey(), (String)property.getValue());
+        }
+
+        return resourceConfig;
     }
 
     /**

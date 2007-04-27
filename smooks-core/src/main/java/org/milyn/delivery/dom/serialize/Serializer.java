@@ -28,6 +28,7 @@ import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.CDATASection;
@@ -69,7 +70,7 @@ public class Serializer {
 	/**
 	 * Target content delivery context SerializationUnit definitions.
 	 */
-	private Map<String, List<ContentDeliveryUnitConfigMap>> serializationUnits;
+	private ContentDeliveryUnitConfigMapTable serializationUnits;
 	/**
 	 * Default SerializationUnit.
 	 */
@@ -93,7 +94,7 @@ public class Serializer {
 		// Initialise the serializationUnits member
 		serializationUnits = deliveryConfig.getSerailizationUnits();
 		// Set the default SerializationUnit
-		defaultSUs = (List)serializationUnits.get("*");
+		defaultSUs = (List)serializationUnits.getMappings("*");
 		if(defaultSUs == null) {
 			SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
 			defaultSUs = new Vector();
@@ -159,18 +160,20 @@ public class Serializer {
 					serializeDoctype(docType.getPublicId(), docType.getSystemId(), rootElementName, writer);
 				}
 			}
-		}
-		
-		// Write the DOM, the child elements of the node
-		NodeList deliveryNodes = node.getChildNodes();
-		int nodeCount = deliveryNodes.getLength();
-		for(int i = 0; i < nodeCount; i++) {
-			Node childNode = deliveryNodes.item(i);
-			if(childNode.getNodeType() == Node.ELEMENT_NODE) {
-				recursiveDOMWrite((Element)childNode, writer);
-			}
-		}
-	}
+            recursiveDOMWrite(rootElement, writer, true);
+		} else {
+            // Write the DOM, the child elements of the node
+            NodeList deliveryNodes = node.getChildNodes();
+            int nodeCount = deliveryNodes.getLength();
+            boolean isRoot = (node == node.getOwnerDocument().getDocumentElement());
+            for(int i = 0; i < nodeCount; i++) {
+                Node childNode = deliveryNodes.item(i);
+                if(childNode.getNodeType() == Node.ELEMENT_NODE) {
+                    recursiveDOMWrite((Element)childNode, writer, isRoot);
+                }
+            }
+        }
+    }
 
 	/**
 	 * Serialize the DocumentType.
@@ -207,13 +210,14 @@ public class Serializer {
 	 * Recursively write the DOM tree to the supplied writer.
 	 * @param element Element to write.
 	 * @param writer Writer to use.
-	 * @throws IOException Exception writing to Writer. 
+     * @param isRoot Is the supplied element the document root element.
+     * @throws IOException Exception writing to Writer.
 	 */
-	private void recursiveDOMWrite(Element element, Writer writer) throws IOException {
+	private void recursiveDOMWrite(Element element, Writer writer, boolean isRoot) throws IOException {
 		SerializationUnit elementSU;
 		NodeList children = element.getChildNodes();
 
-		elementSU = getSerializationUnit(element);
+		elementSU = getSerializationUnit(element, isRoot);
 		try {
 			elementSU.writeElementStart(element, writer, executionContext);
 	
@@ -234,7 +238,7 @@ public class Serializer {
 						}		
 						case Node.ELEMENT_NODE: { 
 							if(elementSU.writeChildElements()) {
-								recursiveDOMWrite((Element)childNode, writer);
+								recursiveDOMWrite((Element)childNode, writer, false);
 							}
 							break;
 						}		
@@ -262,35 +266,31 @@ public class Serializer {
 	/**
 	 * Get the first matching serialisation unit for the supplied element.
 	 * @param element Element to be serialized.
-	 * @return SerializationUnit.
+     * @param isRoot Is the supplied element the document root element.
+     * @return SerializationUnit.
 	 */
-	private SerializationUnit getSerializationUnit(Element element) {
+	private SerializationUnit getSerializationUnit(Element element, boolean isRoot) {
 		String elementName = DomUtils.getName(element);
-        List elementSUs = (List)serializationUnits.get(elementName.toLowerCase());
+        List<ContentDeliveryUnitConfigMap> elementSUs;
+
+        if(isRoot) {
+            // The document as a whole (root node) can also be targeted through the "$document" selector.
+            elementSUs = serializationUnits.getMappings(new String[] {elementName, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR});
+        } else {
+            elementSUs = serializationUnits.getMappings(elementName);
+        }
         
-		if(elementSUs == null) {
+        if(elementSUs == null || elementSUs.isEmpty()) {
 			elementSUs = defaultSUs;
 		}
 		int numSUs = elementSUs.size();
 		
 		for(int i = 0; i < numSUs; i++) {
-            ContentDeliveryUnitConfigMap configMap = (ContentDeliveryUnitConfigMap) elementSUs.get(i);
+            ContentDeliveryUnitConfigMap configMap = elementSUs.get(i);
             SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
             // Make sure the serialization unit is targeted at this element.
-            // Check the namespace and context (if the selector is contextual)...
-            if(!config.isTargetedAtElementNamespace(element)) {
-				if(logger.isDebugEnabled()) {
-					logger.debug("Not applying serailisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
-				}
-                continue;
-            } else if(config.isSelectorContextual() && !config.isTargetedAtElementContext(element)) {
-                // Note: If the selector is not contextual, there's no need to perform the
-                // isTargetedAtElementContext check because we already know the unit is targetd at the
-                // element by name - because we looked it up by name in the 1st place.
-				if(logger.isDebugEnabled()) {
-					logger.debug("Not applying serailisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].  Elemeent not in namespace [" + config.getNamespaceURI() + "].");
-				}
+            if(!config.isTargetedAtElement(element)) {
                 continue;
             }            
 

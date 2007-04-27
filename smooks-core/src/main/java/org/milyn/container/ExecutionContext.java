@@ -45,7 +45,7 @@ public interface ExecutionContext extends BoundAttributeStore {
     public URI getDocumentSource();
 
     /**
-     * Get the application context within which this request "lives".
+     * Get the application context within which this execution context "lives".
      *
      * @return The ApplicationContext instance.
      */

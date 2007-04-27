@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import junit.framework.TestCase;
 
 import org.milyn.Smooks;
-import org.milyn.useragent.UnknownUseragentException;
 import org.xml.sax.SAXException;
 
 public class StandaloneContainerUtil {
@@ -31,9 +30,7 @@ public class StandaloneContainerUtil {
 		StandaloneExecutionContext request = null;
 		try {
 			Smooks smooksSA = new PreconfiguredSmooks();
-			request = new StandaloneExecutionContext(useragent, new LinkedHashMap(), (StandaloneApplicationContext) smooksSA.getApplicationContext());
-		} catch (UnknownUseragentException e) {
-			TestCase.fail(e.getMessage());
+			request = new StandaloneExecutionContext(useragent, new LinkedHashMap(), smooksSA.getApplicationContext());
 		} catch (SAXException e) {
             TestCase.fail(e.getMessage());
         } catch (IOException e) {

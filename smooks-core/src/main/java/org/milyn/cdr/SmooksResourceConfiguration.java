@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Smooks Resource Definition.
+ * Smooks Resource Targeting Configuration.
  * <p/>
  * A <b>Content Delivery Resource</b> is anything that can be used by Smooks in the process of analysing or
  * transforming a data stream.  They could be pieces
@@ -47,138 +47,103 @@ import org.w3c.dom.Node;
  * {@link org.milyn.delivery.dom.serialize.SerializationUnit}), some text or script resource, or perhaps
  * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).
  * <p/>
- * One way Smooks allows
- * definition of resource configurations is via XML configuration.  An example of such a configuration is as
- * follows (with an explanation below):
+ *
+ * <h2 id="restargeting">What is Resource Targeting?</h2>
+ * Smooks works by "targeting" resources at message transformation/analysis processes.
+ * It targets resources at <b>message profiles</b>, and then <b>message fragments</b>
+ * (or other aspects of the transformation/analysis process) within that message profile.
+ * This typically means targeting a piece of tranformation logic (XSLT, Java, Groovy etc) at a specific
+ * type of message ("base profile"), and then at a specific fragment of that message.  The fragment may
+ * include as much or as little of the document as required.  Smooks also allows you to target multilpe
+ * resources at the same fragment (see {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}).
+ * <p/>
+ * Note you don't have to use message profiling.  You can simply create a set of configurations
+ * that are only targeted at message fragments (no profiling info), supply them to a
+ * {@link org.milyn.Smooks} instance and then use an {@link org.milyn.container.ExecutionContext}
+ * instance that's not based on a profile (see {@link org.milyn.Smooks#createExecutionContext()}).  This is
+ * definitely the easiest way to start using Smooks. 
+ * <p/>
+ *
+ * <h2 id="restargeting">Resource Targeting Configurations</h2>
+ * Smooks can be manually configured (through code), but the easiest way of working is through XML.  The follwoing
+ * are a few sample configurations.  Explanations follow the samples.
+ * <p/>
+ * <b>A basic sample</b>.  Note that it is not using any profiling.  The <b>resource-config</b> element maps directly to an instance of this class.
  * <pre>
- * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd>
+ * <i>&lt;?xml version='1.0'?&gt;
+ * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 2.0//EN' '<a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd</a>'>
  * &lt;smooks-resource-list&gt;
- * 	&lt;smooks-resource selector="order-date" path="{@link org.milyn.delivery.dom.DOMElementVisitor com.acme.transform.DateField}" /&gt;
- * &lt;/smooks-resource-list&gt;</pre>
+ *      <b>&lt;resource-config <a href="#selector">selector</a>="order order-header"&gt;
+ *          &lt;resource type="xsl"&gt;<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">/com/acme/transform/OrderHeaderTransformer.xsl</a>&lt;/resource&gt;
+ *      &lt;/resource-config&gt;</b>
+ *      <b>&lt;resource-config <a href="#selector">selector</a>="order-items order-item"&gt;
+ *          &lt;resource&gt;{@link org.milyn.delivery.dom.DOMElementVisitor com.acme.transform.MyJavaOrderItemTransformer}&lt;/resource&gt;
+ *      &lt;/resource-config&gt;</b>
+ * &lt;/smooks-resource-list&gt;</i></pre>
  * <p/>
- * The DTD for this XML can be seen at <a href="http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd">
- * http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd</a>
+ * <b>A more complex sample</b>, using profiling.  So resource 1 is targeted at both "message-exchange-1" and "message-exchange-2",
+ * whereas resource 2 is only targeted at "message-exchange-1" and resource 3 at "message-exchange-2" (see {@link org.milyn.Smooks#createExecutionContext(String)}).
+ * <pre>
+ * <i>&lt;?xml version='1.0'?&gt;
+ * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 2.0//EN' '<a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd</a>'>
+ * &lt;smooks-resource-list&gt;
+ *      <b>&lt;profiles&gt;
+ *          &lt;profile base-profile="message-exchange-1" sub-profiles="message-producer-A, message-consumer-B" /&gt;
+ *          &lt;profile base-profile="message-exchange-2" sub-profiles="message-producer-A, message-consumer-C" /&gt;
+ *      &lt;/profiles&gt;</b>
+ * (1)  &lt;resource-config selector="order order-header" <b>target-profile="message-producer-A"</b>&gt;
+ *          &lt;resource&gt;com.acme.transform.AddIdentityInfo&lt;/resource&gt;
+ *      &lt;/resource-config&gt;
+ * (2)  &lt;resource-config selector="order-items order-item" <b>target-profile="message-consumer-B"</b>&gt;
+ *          &lt;resource&gt;com.acme.transform.MyJavaOrderItemTransformer&lt;/resource&gt;
+ *          &lt;param name="execution-param-X"&gt;param-value-forB&lt;/param&gt;
+ *      &lt;/resource-config&gt;
+ * (3)  &lt;resource-config selector="order-items order-item" <b>target-profile="message-consumer-C"</b>&gt;
+ *          &lt;resource&gt;com.acme.transform.MyJavaOrderItemTransformer&lt;/resource&gt;
+ *          &lt;param name="execution-param-X"&gt;param-value-forC&lt;/param&gt;
+ *      &lt;/resource-config&gt;
+ * &lt;/smooks-resource-list&gt;</i></pre>
  * <p/>
+ * 
+ *
  * <h3 id="attribdefs">Attribute Definitions</h3>
  * <ul>
- * <li><b id="useragent">useragent</b>: A list of 1 or more useragent targets to which this
- * resource is to be applied.  Each entry ("useragent expression") in this list is seperated
- * by a comma.  Useragent expressions are represented by the {@link org.milyn.cdr.UseragentExpression}
- * class.
- * <br/>
- * Can be one of:
- * <ol>
- * <li>A useragent "Common Name" as defined in the device recognition configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
- * <li>A useragent profile as defined in the device profiling configuration (see <a href="http://milyn.org/Tinak">Milyn Tinak</a>).</li>
- * <li>Astrix ("*") indicating a match for all useragents.  This is the default value if this
- * attribute is not specified.</li>
+ * <li><b id="useragent">target-profile</b>: A list of 1 or more {@link ProfileTargetingExpression profile targeting expressions}.
+ * (supports wildcards "*").
  * </ol>
- * See <a href="#res-targeting">Resource Targeting</a>.
- * <p/>
- * <b>AND</b> and <b>NOT</b> expressions are supported on the useragent attribute.
- * NOT expressions are specified in the "not:&lt;<i>profile-name</i>&gt;"
- * format. AND expressions are supported simply - by seperating the device/profile
- * names using "AND".  An example of the use of these expressions
- * in one useragent attribute value could be <i>useragent="html4 AND not:xforms"</i> -
- * target the resource at useragents/devices that have the "html4" profile but don't
- * have the "xforms" profile.
  * <p/>
  * </li>
- * <li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a resource configuration - it's basically the resource key.
+ * <li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a resource configuration.
+ * This is typically the message fragment name, but as mentioned above, not all resources are
+ * transformation/analysis resources targeted at a message fragment - this is why we didn't call this attribute
+ * "target-fragment".
  * <br/>
- * Example values currently being used are:
+ * Example selectors:
  * <ol>
- * <li><u>Markup element names (e.g. for HTML - table, tr, pre etc)</u>.  This selector types can be
+ * <li><u>The target fragment name (e.g. for HTML - table, tr, pre etc)</u>.  This type of selector can
  * be contextual in a similar way to contextual selectors in CSS e.g. "td ol li" will target the
- * resource (e.g. a {@link org.milyn.delivery.dom.DOMElementVisitor}) at all "li" elements nested
- * inside an "ol" element, which is in turn nested inside a "td" element.
+ * resource at all "li" elements nested inside an "ol" element, which is in turn nested inside
+ * a "td" element.  See sample configurations above. Also supports wildcard based fragment selection ("*").
  * </li>
- * <li><u>The requesting useragent's markup definition i.e. DTD</u>.  Currently Smooks only support
+ * <li>"$document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
+ * or document root node fragment.</li>
+ * <li>Targeting a specific {@link org.milyn.xml.SmooksXMLReader} at a specific profile.</li>
+ * <!-- li><u>The requesting useragent's markup definition i.e. DTD</u>.  Currently Smooks only support
  * "Element Content Spec" based selectors, identified by the "xmldef:elcspec:" prefix.  Supported
  * values are "xmldef:elcspec:<b>empty</b>", "xmldef:elcspec:<b>not-empty</b>", "xmldef:elcspec:<b>any</b>",
  * "xmldef:elcspec:<b>not-any</b>", "xmldef:elcspec:<b>mixed</b>", "xmldef:elcspec:<b>not-mixed</b>",
  * "xmldef:elcspec:<b>pcdata</b>", "xmldef:elcspec:<b>not-pcdata</b>".
  * We hope to be able expand this to support more DTD based selection criteria.  See {@link org.milyn.dtd.DTDStore}.
- * </li>
- * <li><u>Astrix ("*") indicating a match for all markup elements</u>.  Note this doesn't mean match anything.  It's only
- * relevant to, and used by, markup element based selection. I hope this makes sense!
- * </li>
- * <li><u>Arbitrary strings</u>.  Examples of where selector is currently used in this mode are how Smooks
- * <a href="../delivery/doc-files/doctype.cdrl">applies DOCTYPE headers</a> and
- * <a href="../delivery/doc-files/dtds.cdrl">targets DTDs</a>.  Content Delivery Units
- * </li>
+ * </li -->
  * </ol>
- * The first 3 of these are used by Smooks to select {@link org.milyn.delivery.ContentDeliveryUnit}s.
- * <br/>
- * See <a href="#res-targeting">Resource Targeting</a>.
  * <p/>
  * </li>
- * <li><b>path</b>: The path to the resource file within the classpath.  The resource data can also be specified
- * on a resource parameter called "resdata".  XML based data (or data containing special XML characters)
- * should be enclosed in a CDATA section within the parameter.
- * <p/>
- * </li>
- * <li><b id="namespace">namespace</b>: The XML namespace of the target for this resource.  This is used
+ * <li><b id="namespace">selector-namespace</b>: The XML namespace of the selector target for this resource.  This is used
  * to target {@link org.milyn.delivery.ContentDeliveryUnit}s at XML elements from a
  * specific XML namespace e.g. "http://www.w3.org/2002/xforms".  If not defined, the resource
  * is targeted at all namespces.
  * </li>
  * </ul>
- * All of the &lt;smooks-resource&gt; attributes can be defaulted on the enclosing &lt;smooks-resource-list&gt; element.
- * Just prefix the attribute name with "default-".  Example:
- * <pre>
- * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd>
- * &lt;smooks-resource-list default-useragent="value" default-selector="value" default-namespace="http://www.w3.org/2002/xforms"&gt;
- * 	&lt;smooks-resource path="value"/&gt;
- * &lt;/smooks-resource-list&gt;</pre>
- * <p/>
- * Also note that there is a resource "typing" mechanism in place.  See {@link #getResourceType()}.
- * <p/>
- * <h3 id="res-targeting">Resource Targeting</h3>
- * Content Delivery Resources ({@link org.milyn.delivery.dom.DOMElementVisitor} etc) are targeted
- * using a combination of the <a href="#useragent">useragent</a>, <a href="#selector">selector</a>
- * and <a href="#namespace">namespace</a> attributes (see above).
- * <p/>
- * Smooks does this at runtime by building (and caching) a table of resources per useragent type (e.g. requesting useragent).
- * For example, when the <a href="http://milyn.codehaus.org/Tutorials">SmooksServletFilter</a> receives a request, it
- * <ol>
- * <li>
- * Uses the device recognition and profiling information provided by
- * <a href="http://milyn.codehaus.org/Tinak">Milyn Tinak</a> to iterate over the .cdrl configurations
- * and select the definitions that apply to that useragent type.
- * It evaluates this based on the <a href="#useragent">useragent</a> attribute value.  Once the table
- * is built it is cached so it doesn't need to be rebuilt for future requests from this useragent type.
- * </li>
- * <li>
- * Smooks can then "lookup" resources based on the <a href="#selector">selector</a> attribute value.
- * </li>
- * </ol>
- * As you'll probably notice, the types of configurations that the .cdrl file permits can/will result in
- * multiple resources being mapped to a useragent under the same "selector" value i.e. if you request the resource
- * by selector "x", there may be 1+ matches.  Because of this Smooks sorts these matches based on what we call
- * the definitions "specificity".
- * See {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}.
- * <p/>
- * <h3>&lt;param&gt; Elements</h3>
- * As can be seen from the <a href="http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd">DTD</a>, the &lt;smooks-resource&gt; element can
- * also define zero or more &lt;param&gt; elements. These elements allow runtime parameters to be passed to content delivery units.
- * This element defines a single mandatory attribute called "<b>name</b>".  The parameter value is inclosed in the
- * param element e.g.
- * <pre>
- * &lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://milyn.codehaus.org/dtd/smooksres-list-1.0.dtd>
- * &lt;smooks-resource-list default-useragent="value" default-selector="value" &gt;
- * 	&lt;smooks-resource path="value"&gt;
- * 		&lt;param name="paramname"&gt;paramval&lt;/param&gt;
- * 	&lt;/smooks-resource&gt;
- * &lt;/smooks-resource-list&gt;</pre>
- * <p/>
- * Complex parameter values can be defined and decoded via configured
- * {@link org.milyn.cdr.ParameterDecoder}s and the
- * {@link #getParameter(String)}.{@link Parameter#getValue(org.milyn.delivery.ContentDeliveryConfig) getValue(ContentDeliveryConfig)}
- * method (see {@link org.milyn.cdr.TokenizedStringParameterDecoder} as an example).
  *
  * @author tfennelly
  * @see SmooksResourceConfigurationSortComparator
@@ -203,11 +168,11 @@ public class SmooksResourceConfiguration {
      * List of device/profile names on which the Content Delivery Resource is to be applied
      * for instances of selector.
      */
-    private String[] useragents;
+    private String[] profileTargetingExpressionStrings;
     /**
-     * Useragent expresssions built from the useragents list.
+     * Targeting expresssions built from the target-profile list.
      */
-    private UseragentExpression[] useragentExpressions;
+    private ProfileTargetingExpression[] profileTargetingExpressions;
     /**
      * The resource.
      */
@@ -219,11 +184,15 @@ public class SmooksResourceConfiguration {
     /**
      * The resource type can be specified as a resource parameter.  This constant defines
      * that parameter name.
+     * @deprecated Resource type now specified on "type" attribute of &lt;resource&gt; element.
+     * Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
      */
     public static final String PARAM_RESTYPE = "restype";
     /**
      * The resource data can be specified as a resource parameter.  This constant defines
      * that parameter name.
+     * @deprecated Resource now specified on &lt;resource&gt; element.
+     * Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
      */
     public static final String PARAM_RESDATA = "resdata";
     /**
@@ -248,6 +217,10 @@ public class SmooksResourceConfiguration {
      * URI resource locator.
      */
     private static URIResourceLocator uriResourceLocator = new URIResourceLocator();
+    /**
+     * A special selector for resource targeted at the document as a whole (the roor element).
+     */
+    public static final String DOCUMENT_FRAGMENT_SELECTOR = "$document";
 
 
     /**
@@ -265,7 +238,7 @@ public class SmooksResourceConfiguration {
      *
      * @param selector      The selector definition.
      * @param targetProfile Target Profile(s).  Comma separated list of
-     *                      {@link UseragentExpression UseragentExpressions}.
+     *                      {@link ProfileTargetingExpression ProfileTargetingExpressions}.
      * @param resource      The resource.
      */
     public SmooksResourceConfiguration(String selector, String targetProfile, String resource) {
@@ -273,7 +246,7 @@ public class SmooksResourceConfiguration {
             throw new IllegalArgumentException("null or empty 'selector' arg in constructor call.");
         }
         if (targetProfile == null || targetProfile.trim().equals("")) {
-            // Default the useragent to everything if not specified.
+            // Default the target profile to everything if not specified.
             targetProfile = "*";
         }
         this.selector = selector.toLowerCase().intern();
@@ -283,7 +256,7 @@ public class SmooksResourceConfiguration {
         // Parse the selector in case it's a contextual selector of the CSS
         // form e.g. "TD UL LI"
         contextualSelector = this.selector.split(" +");
-        parseUseragentExpressions(targetProfile);
+        parseTargetingExpressions(targetProfile);
     }
 
     /**
@@ -293,7 +266,7 @@ public class SmooksResourceConfiguration {
      * @param namespaceURI  The XML namespace URI of the element to which this config
      *                      applies.
      * @param targetProfile Target Profile(s).  Comma separated list of
-     *                      {@link UseragentExpression UseragentExpressions}.
+     *                      {@link ProfileTargetingExpression ProfileTargetingExpressions}.
      * @param resource      The resource.
      */
     public SmooksResourceConfiguration(String selector, String namespaceURI, String targetProfile, String resource) {
@@ -308,22 +281,22 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * Parse the useragent expressions for this configuration.
+     * Parse the targeting expressions for this configuration.
      *
-     * @param useragents The useragent expression from the resource configuration.
+     * @param targetProfiles The <b>target-profile</b> expression from the resource configuration.
      */
-    private void parseUseragentExpressions(String useragents) {
-        // Parse the device/profile useragents.  Seperation tokens: ',' '|' and ';'
-        StringTokenizer tokenizer = new StringTokenizer(useragents.toLowerCase(), ",|;");
+    private void parseTargetingExpressions(String targetProfiles) {
+        // Parse the profiles.  Seperation tokens: ',' '|' and ';'
+        StringTokenizer tokenizer = new StringTokenizer(targetProfiles.toLowerCase(), ",|;");
         if (tokenizer.countTokens() == 0) {
-            throw new IllegalArgumentException("Empty device/profile useragents. [" + selector + "][" + resource + "]");
+            throw new IllegalArgumentException("Empty 'target-profile'. [" + selector + "][" + resource + "]");
         } else {
-            this.useragents = new String[tokenizer.countTokens()];
-            useragentExpressions = new UseragentExpression[tokenizer.countTokens()];
+            this.profileTargetingExpressionStrings = new String[tokenizer.countTokens()];
+            profileTargetingExpressions = new ProfileTargetingExpression[tokenizer.countTokens()];
             for (int i = 0; tokenizer.hasMoreTokens(); i++) {
                 String expression = tokenizer.nextToken();
-                this.useragents[i] = expression;
-                useragentExpressions[i] = new UseragentExpression(expression);
+                this.profileTargetingExpressionStrings[i] = expression;
+                profileTargetingExpressions[i] = new ProfileTargetingExpression(expression);
             }
         }
     }
@@ -381,12 +354,12 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * Get the device/profile useragents for this SmooksResourceConfiguration.
+     * Get the profile targeting expressions for this SmooksResourceConfiguration.
      *
-     * @return The device/profile useragents.
+     * @return The profile targeting expressions.
      */
-    public UseragentExpression[] getUseragentExpressions() {
-        return useragentExpressions;
+    public ProfileTargetingExpression[] getProfileTargetingExpressions() {
+        return profileTargetingExpressions;
     }
 
     /**
@@ -664,7 +637,7 @@ public class SmooksResourceConfiguration {
       * @see java.lang.Object#toString()
       */
     public String toString() {
-        return "Useragent: [" + Arrays.asList(useragents) + "], Selector: [" + selector + "], Target Namespace URI: [" + namespaceURI + "], Resource Path: [" + resource + "], Num Params: [" + getParameterCount() + "]";
+        return "Target Profile: [" + Arrays.asList(profileTargetingExpressionStrings) + "], Selector: [" + selector + "], Selector Namespace URI: [" + namespaceURI + "], Resource: [" + resource + "], Num Params: [" + getParameterCount() + "]";
     }
 
     /**
@@ -834,6 +807,35 @@ public class SmooksResourceConfiguration {
             if (i > 0) {
                 currentNode = currentNode.getParentNode();
             }
+        }
+
+        return true;
+    }
+
+    /**
+     * Is this configuration targeted at the supplied element.
+     * <p/>
+     * Checks that the element is in the correct namespace and is a contextual
+     * match for the configuration.
+     *
+     * @param element The element to be checked.
+     * @return True if this configuration is targeted at the supplied element, otherwise false.
+     */
+    public boolean isTargetedAtElement(Element element) {
+
+        if(!isTargetedAtElementNamespace(element)) {
+            if(logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getNamespaceURI() + "].");
+            }
+            return false;
+        } else if(isSelectorContextual() && !isTargetedAtElementContext(element)) {
+            // Note: If the selector is not contextual, there's no need to perform the
+            // isTargetedAtElementContext check because we already know the unit is targeted at the
+            // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
+            if(logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getNamespaceURI() + "].");
+            }
+            return false;
         }
 
         return true;

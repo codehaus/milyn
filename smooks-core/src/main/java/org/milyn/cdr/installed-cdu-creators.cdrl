@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
 
 <!--
 	This cdrl config defines the default Content Delivery Unit Creators
@@ -8,8 +8,9 @@
 
 <smooks-resource-list default-selector="cdu-creator"> 
 
-	<smooks-resource path="org.milyn.delivery.JavaContentDeliveryUnitCreator">
+	<resource-config>
+	    <resource type="class">org.milyn.delivery.JavaContentDeliveryUnitCreator</resource>
 		<param name="restype">class</param>
-	</smooks-resource>	
+	</resource-config>
 	
 </smooks-resource-list>
