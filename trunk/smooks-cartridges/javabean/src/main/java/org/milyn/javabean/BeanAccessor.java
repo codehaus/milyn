@@ -104,13 +104,13 @@ public class BeanAccessor {
         if(addToList) {
         	String beanListId = beanId + "List";
             Object beanList = beans.get(beanListId);
-            
+
             if(beanList == null) {
                 // Create the bean list and add it to the bean map...
                 beanList = new Vector();
                 beans.put(beanListId, beanList);
             } else if(!(beanList instanceof List)) {
-                throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and is not a List.  Arg 'addToList' set to true - this is inconsistent!!");
+                throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and IS NOT a List.  Arg 'addToList' set to true - this is inconsistent!!");
             }
             // add the bean to the list...
             ((List)beanList).add(bean);
@@ -118,7 +118,7 @@ public class BeanAccessor {
             Object currentBean = beans.get(beanId);
 
             if(currentBean instanceof List) {
-                throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and is a List.  Arg 'addToList' set to false - this is inconsistent!!");
+                throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and IS a List.  Arg 'addToList' set to false - this is inconsistent!!");
             }
         }
 

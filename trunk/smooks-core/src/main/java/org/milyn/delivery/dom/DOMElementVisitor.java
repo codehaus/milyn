@@ -18,6 +18,7 @@ package org.milyn.delivery.dom;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.SmooksException;
 import org.w3c.dom.Element;
 
 /**
@@ -47,14 +48,16 @@ public interface DOMElementVisitor extends ContentDeliveryUnit {
      *
      * @param element          The DOM element being visited.
      * @param executionContext Request relative instance.
+     * @throws SmooksException Element processing failure.
      */
-    public abstract void visitBefore(Element element, ExecutionContext executionContext);
+    public abstract void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException;
 
     /**
      * Visit the supplied element <b>after</b> visiting its child elements.
      *
      * @param element          The DOM element being visited.
      * @param executionContext Request relative instance.
+     * @throws SmooksException Element processing failure.
      */
-    public abstract void visitAfter(Element element, ExecutionContext executionContext);
+    public abstract void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException;
 }

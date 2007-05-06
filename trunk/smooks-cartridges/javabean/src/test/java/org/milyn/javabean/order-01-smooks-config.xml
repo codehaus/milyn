@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
+
+<smooks-resource-list>
+
+    <resource-config selector="order">
+        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <param name="beanId">order</param>
+        <param name="beanClass">org.milyn.javabean.Order</param>
+    </resource-config>
+
+    <resource-config selector="header">
+        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <param name="beanId">header</param>
+        <param name="beanClass">org.milyn.javabean.Header</param>
+        <param name="setOn">order</param>
+        <param name="bindings">
+            property=date, type=OrderDateLong, selector=header date
+            property=customerNumber, type=Long, selector=header customer @number
+            property=customerName, selector=header customer
+        </param>
+    </resource-config>
+
+    <resource-config selector="order-item">
+        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <param name="beanId">orderItem</param>
+        <param name="beanClass">org.milyn.javabean.OrderItem</param>
+        <param name="addToList">true</param>
+        <param name="setOn">order</param>
+        <param name="bindings">
+            property=productId, type=Long, selector=order-item product
+            property=quantity, type=Integer, selector=order-item quantity
+            property=price, type=Double, selector=order-item price
+        </param>
+    </resource-config>
+
+    <resource-config selector="decoder:OrderDateLong">
+        <resource>org.milyn.javabean.decoders.DateDecoder</resource>
+        <param name="format">EEE MMM dd HH:mm:ss z yyyy</param>
+    </resource-config>
+
+</smooks-resource-list>
