@@ -18,16 +18,21 @@ package org.milyn;
 
 /**
  * Smooks Exception.
- * <p/>
- * Thrown when Smooks is unable to transform the InputStream markup for the
- * target device.  Chained Exception added. 
  * @author tfennelly
  */
 public class SmooksException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
+    /**
+     * Public constructor.
+     * @param message Exception message.
+     */
+    public SmooksException(String message) {
+        super(message);
+    }
+
+    /**
 	 * Public constructor.
 	 * @param message Exception message.
 	 * @param cause Exception cause chain.

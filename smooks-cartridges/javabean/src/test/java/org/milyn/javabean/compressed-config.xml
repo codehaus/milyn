@@ -8,9 +8,9 @@
         <param name="beanId">userBean</param>
         <param name="beanClass">org.milyn.javabean.MyGoodBean</param>
         <param name="bindings">
-            selector=user, attributeName=name
-            selector=user, attributeName=phoneNumber
-            selector=user, setterName=setAddress
+            property=name,        selector=user @name
+            property=phoneNumber, selector=user @phoneNumber
+            property=address,     selector=user
         </param>
     </resource-config>
 

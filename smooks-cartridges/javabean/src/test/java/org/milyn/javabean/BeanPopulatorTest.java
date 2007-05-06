@@ -17,6 +17,7 @@
 package org.milyn.javabean;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -89,7 +90,7 @@ public class BeanPopulatorTest extends TestCase {
             pppu.visitBefore(doc.getDocumentElement(), request);
             fail("Expected SmooksConfigurationException");
         } catch(SmooksConfigurationException e) {
-            assertEquals("Bean [userBean] configuration invalid.  Bean setter method [setX] not found.  Bean: [userBean:org.milyn.javabean.MyGoodBean].", e.getMessage());
+            assertEquals("Bean [userBean] configuration invalid.  Bean setter method [setX(java.lang.String)] not found on type [org.milyn.javabean.MyGoodBean].  You may need to set a 'decoder' on the binding config.", e.getMessage());
         }
     }
 
@@ -99,6 +100,7 @@ public class BeanPopulatorTest extends TestCase {
     public void test_visit_2() throws SAXException, IOException {
         test_visit_userBean("compressed-config.xml");        
     }
+
     public void test_visit_userBean(String configName) throws SAXException, IOException {
 
         Smooks smooks = new Smooks(getClass().getResourceAsStream(configName));
@@ -111,5 +113,34 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals("Myself", bean.getName());
         assertEquals("0861070070", bean.getPhoneNumber());
         assertEquals("Skeagh Bridge...", bean.getAddress());
+    }
+
+    public void test_populate_Order() throws SAXException, IOException {
+
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("order-01-smooks-config.xml"));
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), new DOMResult(), executionContext);
+
+        Order order = (Order)BeanAccessor.getBean("order", executionContext);
+
+        assertNotNull(order);
+        assertNotNull(order.getHeader());
+        assertNotNull(order.getOrderItems());
+        assertEquals(2, order.getOrderItems().size());
+
+        assertEquals(1163616328000L, order.getHeader().getDate().getTime());
+        assertEquals("Joe", order.getHeader().getCustomerName());
+        assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
+
+        OrderItem orderItem = order.getOrderItems().get(0);
+        assertEquals(8.90d, orderItem.getPrice());
+        assertEquals(111, orderItem.getProductId());
+        assertEquals(new Integer(2), orderItem.getQuantity());
+
+        orderItem = order.getOrderItems().get(1);
+        assertEquals(5.20d, orderItem.getPrice());
+        assertEquals(222, orderItem.getProductId());
+        assertEquals(new Integer(7), orderItem.getQuantity());
     }
 }
