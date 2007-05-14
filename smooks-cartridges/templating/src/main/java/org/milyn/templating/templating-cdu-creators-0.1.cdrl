@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
 
 <!--
 	This cdrl config defines the Content Delivery Unit Creators
 	for this cartridge.
 -->
 
-<smooks-resource-list default-selector="cdu-creator"> 
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-selector="cdu-creator">
 
 	<!-- 
 		All .st (*.st) resources will be treated as StringTemplate templates and

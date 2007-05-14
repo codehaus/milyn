@@ -87,12 +87,15 @@ public class SmooksResourceConfigurationStore {
      * @param resourceFile Installed (internal) resource config file.
      */
     private void registerInstalledResources(String resourceFile) {
+        InputStream resource = ClassUtil.getResourceAsStream(resourceFile, getClass());
+
+        if(resource == null) {
+            throw new IllegalStateException("Failed to load " + resourceFile + ".  Expected to be in the same package as " + getClass().getName());
+        }
         try {
-            registerResources(resourceFile, ClassUtil.getResourceAsStream(resourceFile, getClass()));
+            registerResources(resourceFile, resource);
         } catch (Exception e) {
-            IllegalStateException state = new IllegalStateException("Failed to load " + resourceFile + ".  Expected to be in the same package as " + getClass().getName());
-            state.initCause(e);
-            throw state;
+            throw new IllegalStateException("Error processing resource file '" + resourceFile + "'.", e);
         }
     }
 

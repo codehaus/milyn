@@ -145,7 +145,7 @@ public class BaseTransUnitsTest extends TestCase {
 	
 	public Document parseCPResource(String classpath) {
 		try {
-			return XmlUtil.parseStream(getClass().getResourceAsStream(classpath), false, true);
+			return XmlUtil.parseStream(getClass().getResourceAsStream(classpath), XmlUtil.VALIDATION_TYPE.NONE, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			TestCase.fail(e.getMessage());

@@ -47,7 +47,7 @@ import org.w3c.dom.Node;
  * {@link org.milyn.delivery.dom.serialize.SerializationUnit}), some text or script resource, or perhaps
  * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).
  * <p/>
- *
+ * <p/>
  * <h2 id="restargeting">What is Resource Targeting?</h2>
  * Smooks works by "targeting" resources at message transformation/analysis processes.
  * It targets resources at <b>message profiles</b>, and then <b>message fragments</b>
@@ -61,9 +61,9 @@ import org.w3c.dom.Node;
  * that are only targeted at message fragments (no profiling info), supply them to a
  * {@link org.milyn.Smooks} instance and then use an {@link org.milyn.container.ExecutionContext}
  * instance that's not based on a profile (see {@link org.milyn.Smooks#createExecutionContext()}).  This is
- * definitely the easiest way to start using Smooks. 
+ * definitely the easiest way to start using Smooks.
  * <p/>
- *
+ * <p/>
  * <h2 id="restargeting">Resource Targeting Configurations</h2>
  * Smooks can be manually configured (through code), but the easiest way of working is through XML.  The follwoing
  * are a few sample configurations.  Explanations follow the samples.
@@ -71,8 +71,7 @@ import org.w3c.dom.Node;
  * <b>A basic sample</b>.  Note that it is not using any profiling.  The <b>resource-config</b> element maps directly to an instance of this class.
  * <pre>
  * <i>&lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 2.0//EN' '<a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd</a>'>
- * &lt;smooks-resource-list&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd"&gt;
  *      <b>&lt;resource-config <a href="#selector">selector</a>="order order-header"&gt;
  *          &lt;resource type="xsl"&gt;<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">/com/acme/transform/OrderHeaderTransformer.xsl</a>&lt;/resource&gt;
  *      &lt;/resource-config&gt;</b>
@@ -85,8 +84,7 @@ import org.w3c.dom.Node;
  * whereas resource 2 is only targeted at "message-exchange-1" and resource 3 at "message-exchange-2" (see {@link org.milyn.Smooks#createExecutionContext(String)}).
  * <pre>
  * <i>&lt;?xml version='1.0'?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 2.0//EN' '<a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd</a>'>
- * &lt;smooks-resource-list&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd"&gt;
  *      <b>&lt;profiles&gt;
  *          &lt;profile base-profile="message-exchange-1" sub-profiles="message-producer-A, message-consumer-B" /&gt;
  *          &lt;profile base-profile="message-exchange-2" sub-profiles="message-producer-A, message-consumer-C" /&gt;
@@ -104,8 +102,8 @@ import org.w3c.dom.Node;
  *      &lt;/resource-config&gt;
  * &lt;/smooks-resource-list&gt;</i></pre>
  * <p/>
- * 
- *
+ * <p/>
+ * <p/>
  * <h3 id="attribdefs">Attribute Definitions</h3>
  * <ul>
  * <li><b id="useragent">target-profile</b>: A list of 1 or more {@link ProfileTargetingExpression profile targeting expressions}.
@@ -184,15 +182,17 @@ public class SmooksResourceConfiguration {
     /**
      * The resource type can be specified as a resource parameter.  This constant defines
      * that parameter name.
+     *
      * @deprecated Resource type now specified on "type" attribute of &lt;resource&gt; element.
-     * Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
+     *             Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
      */
     public static final String PARAM_RESTYPE = "restype";
     /**
      * The resource data can be specified as a resource parameter.  This constant defines
      * that parameter name.
+     *
      * @deprecated Resource now specified on &lt;resource&gt; element.
-     * Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
+     *             Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
      */
     public static final String PARAM_RESDATA = "resdata";
     /**
@@ -222,12 +222,45 @@ public class SmooksResourceConfiguration {
      */
     public static final String DOCUMENT_FRAGMENT_SELECTOR = "$document";
 
+    /**
+     * Public default constructor.
+     *
+     * @see #setSelector(String)
+     * @see #setSelectorNamespaceURI(String)
+     * @see #setTargetProfile(String)
+     * @see #setResource(String)
+     * @see #setResourceType(String)
+     * @see #setParameter(String, String)
+     */
+    public SmooksResourceConfiguration() {
+        setSelector("none");
+    }
+
+    /**
+     * Public constructor.
+     *
+     * @param selector The selector definition.
+     *
+     * @see #setSelectorNamespaceURI(String)
+     * @see #setTargetProfile(String)
+     * @see #setResource(String)
+     * @see #setResourceType(String)
+     * @see #setParameter(String, String)
+     */
+    public SmooksResourceConfiguration(String selector) {
+        setSelector(selector);
+    }
 
     /**
      * Public constructor.
      *
      * @param selector The selector definition.
      * @param resource The resource.
+     *
+     * @see #setSelectorNamespaceURI(String)
+     * @see #setTargetProfile(String)
+     * @see #setResourceType(String)
+     * @see #setParameter(String, String)
      */
     public SmooksResourceConfiguration(String selector, String resource) {
         this(selector, "*", resource);
@@ -240,37 +273,58 @@ public class SmooksResourceConfiguration {
      * @param targetProfile Target Profile(s).  Comma separated list of
      *                      {@link ProfileTargetingExpression ProfileTargetingExpressions}.
      * @param resource      The resource.
+     *
+     * @see #setSelectorNamespaceURI(String)
+     * @see #setResourceType(String)
+     * @see #setParameter(String, String)
      */
     public SmooksResourceConfiguration(String selector, String targetProfile, String resource) {
-        if (selector == null || selector.trim().equals("")) {
-            throw new IllegalArgumentException("null or empty 'selector' arg in constructor call.");
-        }
-        if (targetProfile == null || targetProfile.trim().equals("")) {
-            // Default the target profile to everything if not specified.
-            targetProfile = "*";
-        }
-        this.selector = selector.toLowerCase().intern();
-        isXmlDef = selector.startsWith(XML_DEF_PREFIX);
-        this.resource = resource;
+        this(selector);
 
-        // Parse the selector in case it's a contextual selector of the CSS
-        // form e.g. "TD UL LI"
-        contextualSelector = this.selector.split(" +");
-        parseTargetingExpressions(targetProfile);
+        setTargetProfile(targetProfile);
+        setResource(resource);
     }
 
     /**
      * Public constructor.
      *
      * @param selector      The selector definition.
-     * @param namespaceURI  The XML namespace URI of the element to which this config
-     *                      applies.
+     * @param selectorNamespaceURI  The selector namespace URI.
      * @param targetProfile Target Profile(s).  Comma separated list of
      *                      {@link ProfileTargetingExpression ProfileTargetingExpressions}.
      * @param resource      The resource.
+     *
+     * @see #setResourceType(String)
+     * @see #setParameter(String, String)
      */
-    public SmooksResourceConfiguration(String selector, String namespaceURI, String targetProfile, String resource) {
+    public SmooksResourceConfiguration(String selector, String selectorNamespaceURI, String targetProfile, String resource) {
         this(selector, targetProfile, resource);
+        setSelectorNamespaceURI(selectorNamespaceURI);
+    }
+
+    /**
+     * Set the config selector.
+     *
+     * @param selector The selector definition.
+     */
+    public void setSelector(String selector) {
+        if (selector == null || selector.trim().equals("")) {
+            throw new IllegalArgumentException("null or empty 'selector' arg in constructor call.");
+        }
+        this.selector = selector.toLowerCase().intern();
+        isXmlDef = selector.startsWith(XML_DEF_PREFIX);
+
+        // Parse the selector in case it's a contextual selector of the CSS
+        // form e.g. "TD UL LI"
+        contextualSelector = this.selector.split(" +");
+    }
+
+    /**
+     * Set the namespace URI to which the selector is associated.
+     * 
+     * @param namespaceURI Selector namespace.
+     */
+    public void setSelectorNamespaceURI(String namespaceURI) {
         if (namespaceURI != null) {
             if (namespaceURI.equals("*")) {
                 this.namespaceURI = null;
@@ -281,24 +335,37 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * Parse the targeting expressions for this configuration.
+     * Set the configs "resource".
      *
-     * @param targetProfiles The <b>target-profile</b> expression from the resource configuration.
+     * @param resource The resource.
      */
-    private void parseTargetingExpressions(String targetProfiles) {
-        // Parse the profiles.  Seperation tokens: ',' '|' and ';'
-        StringTokenizer tokenizer = new StringTokenizer(targetProfiles.toLowerCase(), ",|;");
-        if (tokenizer.countTokens() == 0) {
-            throw new IllegalArgumentException("Empty 'target-profile'. [" + selector + "][" + resource + "]");
-        } else {
-            this.profileTargetingExpressionStrings = new String[tokenizer.countTokens()];
-            profileTargetingExpressions = new ProfileTargetingExpression[tokenizer.countTokens()];
-            for (int i = 0; tokenizer.hasMoreTokens(); i++) {
-                String expression = tokenizer.nextToken();
-                this.profileTargetingExpressionStrings[i] = expression;
-                profileTargetingExpressions[i] = new ProfileTargetingExpression(expression);
-            }
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+
+    /**
+     * Set the configs "target profile".
+     *
+     * @param targetProfile Target Profile(s).  Comma separated list of
+     *                      {@link ProfileTargetingExpression ProfileTargetingExpressions}.
+     */
+    public void setTargetProfile(String targetProfile) {
+        if (targetProfile == null || targetProfile.trim().equals("")) {
+            // Default the target profile to everything if not specified.
+            targetProfile = "*";
         }
+        parseTargetingExpressions(targetProfile);
+    }
+
+    /**
+     * Explicitly set the resource type.
+     * <p/>
+     * E.g. "class", "xsl", "groovy" etc.
+     *
+     * @param resourceType The resource type.
+     */
+    public void setResourceType(String resourceType) {
+        this.resourceType = resourceType;
     }
 
     /**
@@ -343,13 +410,12 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * The the XML namespace URI of the element to which this configuration
-     * applies.
+     * The the selector namespace URI.
      *
      * @return The XML namespace URI of the element to which this configuration
      *         applies, or null if not namespaced.
      */
-    public String getNamespaceURI() {
+    public String getSelectorNamespaceURI() {
         return namespaceURI;
     }
 
@@ -372,17 +438,6 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * Explicitly set the resource type.
-     * <p/>
-     * E.g. "class", "xsl", "groovy" etc.
-     *
-     * @param resourceType The resource type.
-     */
-    public void setResourceType(String resourceType) {
-        this.resourceType = resourceType;
-    }
-
-    /**
      * Get the resource "type" for this resource.
      * <p/>
      * Determines the type through the following checks (in order):
@@ -390,7 +445,7 @@ public class SmooksResourceConfiguration {
      * <li>Is it a Java resource. See {@link #isJavaResource()}.  If it is, return "class".</li>
      * <li>Is the "restype" resource paramater specified.  If it is, return it's value. Ala DTD v1.0</li>
      * <li>Is the resource type explicitly set on this configuration.  If it is, return it's
-     *     value. Ala the "type" attribute on the resource element on DTD v2.0</li>
+     * value. Ala the "type" attribute on the resource element on DTD v2.0</li>
      * <li>Return the resource path file extension e.g. "xsl".</li>
      * </ol>
      *
@@ -417,6 +472,27 @@ public class SmooksResourceConfiguration {
         }
 
         return restype;
+    }
+
+    /**
+     * Parse the targeting expressions for this configuration.
+     *
+     * @param targetProfiles The <b>target-profile</b> expression from the resource configuration.
+     */
+    private void parseTargetingExpressions(String targetProfiles) {
+        // Parse the profiles.  Seperation tokens: ',' '|' and ';'
+        StringTokenizer tokenizer = new StringTokenizer(targetProfiles.toLowerCase(), ",|;");
+        if (tokenizer.countTokens() == 0) {
+            throw new IllegalArgumentException("Empty 'target-profile'. [" + selector + "][" + resource + "]");
+        } else {
+            this.profileTargetingExpressionStrings = new String[tokenizer.countTokens()];
+            profileTargetingExpressions = new ProfileTargetingExpression[tokenizer.countTokens()];
+            for (int i = 0; tokenizer.hasMoreTokens(); i++) {
+                String expression = tokenizer.nextToken();
+                this.profileTargetingExpressionStrings[i] = expression;
+                profileTargetingExpressions[i] = new ProfileTargetingExpression(expression);
+            }
+        }
     }
 
     /**
@@ -448,9 +524,12 @@ public class SmooksResourceConfiguration {
      *
      * @param name  Parameter name.
      * @param value Parameter value.
+     * @return The parameter instance.
      */
-    public void setParameter(String name, String value) {
-        setParameter(new Parameter(name, value));
+    public Parameter setParameter(String name, String value) {
+        Parameter param = new Parameter(name, value);
+        setParameter(param);
+        return param;
     }
 
     /**
@@ -461,9 +540,12 @@ public class SmooksResourceConfiguration {
      * @param name  Parameter name.
      * @param type  Parameter type.
      * @param value Parameter value.
+     * @return The parameter instance.
      */
-    public void setParameter(String name, String type, String value) {
-        setParameter(new Parameter(name, value, type));
+    public Parameter setParameter(String name, String type, String value) {
+        Parameter param = new Parameter(name, value, type);
+        setParameter(param);
+        return param;
     }
 
     public void setParameter(Parameter parameter) {
@@ -823,17 +905,17 @@ public class SmooksResourceConfiguration {
      */
     public boolean isTargetedAtElement(Element element) {
 
-        if(!isTargetedAtElementNamespace(element)) {
-            if(logger.isDebugEnabled()) {
-                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getNamespaceURI() + "].");
+        if (!isTargetedAtElementNamespace(element)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
             }
             return false;
-        } else if(isSelectorContextual() && !isTargetedAtElementContext(element)) {
+        } else if (isSelectorContextual() && !isTargetedAtElementContext(element)) {
             // Note: If the selector is not contextual, there's no need to perform the
             // isTargetedAtElementContext check because we already know the unit is targeted at the
             // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
-            if(logger.isDebugEnabled()) {
-                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getNamespaceURI() + "].");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
             }
             return false;
         }

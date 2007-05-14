@@ -17,7 +17,7 @@ public class DoubleDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Double.parseDouble(data);
+            return Double.parseDouble(data.trim());
         } catch(NumberFormatException e) {
             throw new DataDecodeException("Failed to decode Double value '" + data + "'.", e);
         }

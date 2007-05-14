@@ -19,11 +19,13 @@ package org.milyn;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
 import java.io.IOException;
+import java.io.File;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.container.standalone.PreconfiguredSmooks;
 import org.milyn.util.DomUtil;
+import org.milyn.util.ClassUtil;
 import org.milyn.xml.XmlUtil;
 import org.milyn.profile.DefaultProfileSet;
 import org.w3c.dom.Document;
@@ -33,75 +35,82 @@ import junit.framework.TestCase;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Source;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
 
 public class SmooksStandaloneTest extends TestCase {
 
-	public void testProcess() {
-		Smooks smooks = null;
-		try {
-			smooks = new PreconfiguredSmooks();
+    public void testProcess() {
+        Smooks smooks = null;
+        try {
+            smooks = new PreconfiguredSmooks();
             StandaloneExecutionContext context = smooks.createExecutionContext("msie6");
             String response = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("html_2.html"), smooks);
-			System.out.println(response);
-			Document doc = DomUtil.parse(response);
-			
-			assertNull(XmlUtil.getNode(doc, "html/body/xxx"));
-			assertNotNull(XmlUtil.getNode(doc, "html/body/yyy"));
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Unexpected exception: " + e.getMessage());
-		}
-	}
-	
-	public void test_Standalone_CodeConfig_1() {
-		Smooks smooks = new Smooks();
+            System.out.println(response);
+            Document doc = DomUtil.parse(response);
+
+            assertNull(XmlUtil.getNode(doc, "html/body/xxx"));
+            assertNotNull(XmlUtil.getNode(doc, "html/body/yyy"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Unexpected exception: " + e.getMessage());
+        }
+    }
+
+    public void test_Standalone_CodeConfig_1() {
+        Smooks smooks = new Smooks();
 
         // Add profile sets...
-		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target1", new String[] {"profile1", "profile2"}), smooks);
-		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target2", new String[] {"profile2", "profile3"}), smooks);
-	
-		// Create CDU configs and target them at the profiles...
-		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
-		resourceConfig.setParameter("new-name", "xxx");
-		SmooksUtil.registerResource(resourceConfig, smooks);
-		resourceConfig = new SmooksResourceConfiguration("aaa", "profile2", RenameElementTrans.class.getName());
-		resourceConfig.setParameter("new-name", "zzz");
-		SmooksUtil.registerResource(resourceConfig, smooks);
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target1", new String[]{"profile1", "profile2"}), smooks);
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target2", new String[]{"profile2", "profile3"}), smooks);
 
-		// Transform the same message for each useragent...
-		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
+        // Create CDU configs and target them at the profiles...
+        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
+        resourceConfig.setParameter("new-name", "xxx");
+        SmooksUtil.registerResource(resourceConfig, smooks);
+        resourceConfig = new SmooksResourceConfiguration("aaa", "profile2", RenameElementTrans.class.getName());
+        resourceConfig.setParameter("new-name", "zzz");
+        SmooksUtil.registerResource(resourceConfig, smooks);
+
+        // Transform the same message for each useragent...
+        String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
         StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
-		String result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
-		System.out.println(result);
-		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", result);
+        String result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
+        System.out.println(result);
+        assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", result);
         context = smooks.createExecutionContext("message-target2");
         result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
-		System.out.println(result);
-		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><ccc>999</ccc></zzz>", result);
-	}
+        System.out.println(result);
+        assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><ccc>999</ccc></zzz>", result);
+    }
 
-	public void test_Standalone_CodeConfig_2() throws SAXException, IOException {
-		Smooks smooks = new Smooks();
-		
-		// Add 2 useragents and configure them with profiles...
-		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target1", new String[] {"profile1", "profile2"}), smooks);
-		SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target2", new String[] {"profile2", "profile3"}), smooks);
-	
-		// Create CDU configs and target them at the profiles...
-		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
-		resourceConfig.setParameter("new-name", "xxx");
-		SmooksUtil.registerResource(resourceConfig, smooks);
-		resourceConfig = new SmooksResourceConfiguration("aaa", "profile2", RenameElementTrans.class.getName());
-		resourceConfig.setParameter("new-name", "zzz");
-		SmooksUtil.registerResource(resourceConfig, smooks);
+    public void test_Standalone_CodeConfig_2() throws SAXException, IOException {
+        Smooks smooks = new Smooks();
 
-		// Transform the same message for each useragent...
-		String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
+        // Add 2 useragents and configure them with profiles...
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target1", new String[]{"profile1", "profile2"}), smooks);
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("message-target2", new String[]{"profile2", "profile3"}), smooks);
 
-		StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
+        // Create CDU configs and target them at the profiles...
+        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("ccc", "profile1 AND not:profile3", RenameElementTrans.class.getName());
+        resourceConfig.setParameter("new-name", "xxx");
+        SmooksUtil.registerResource(resourceConfig, smooks);
+        resourceConfig = new SmooksResourceConfiguration("aaa", "profile2", RenameElementTrans.class.getName());
+        resourceConfig.setParameter("new-name", "zzz");
+        SmooksUtil.registerResource(resourceConfig, smooks);
+
+        // Transform the same message for each useragent...
+        String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
+
+        StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
         CharArrayWriter writer = new CharArrayWriter();
         smooks.filter(new StreamSource(new ByteArrayInputStream(message.getBytes())), new StreamResult(writer), context);
 
-		assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
-	}
+        assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
+    }
 }

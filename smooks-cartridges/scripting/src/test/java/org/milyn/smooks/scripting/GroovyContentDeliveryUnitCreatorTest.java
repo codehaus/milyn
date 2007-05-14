@@ -69,7 +69,7 @@ public class GroovyContentDeliveryUnitCreatorTest extends TestCase {
 		config.setParameter("new-name", "yyy");
 		DOMElementVisitor resource = (DOMElementVisitor) creator.create(config);
 		
-		Document doc = XmlUtil.parseStream(new ByteArrayInputStream("<xxx/>".getBytes()), false, false);
+		Document doc = XmlUtil.parseStream(new ByteArrayInputStream("<xxx/>".getBytes()), XmlUtil.VALIDATION_TYPE.NONE, false);
 		assertEquals("xxx", doc.getDocumentElement().getTagName());
 		resource.visitAfter(doc.getDocumentElement(), null);
 		assertEquals("yyy", doc.getDocumentElement().getTagName());
