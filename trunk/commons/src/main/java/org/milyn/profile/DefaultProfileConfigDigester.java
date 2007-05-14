@@ -55,7 +55,7 @@ public class DefaultProfileConfigDigester implements ProfileConfigDigester {
 			throw new IllegalArgumentException(
 					"null 'stream' exception in method call.");
 		}
-		profileDoc = XmlUtil.parseStream(input, true, true);
+		profileDoc = XmlUtil.parseStream(input, XmlUtil.VALIDATION_TYPE.DTD, true);
 
 		// While there are device profile definitions.
 		profileSelector = "/device-profiles/device-profile[" + profileIndex

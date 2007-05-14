@@ -18,16 +18,22 @@ package org.milyn.cdr;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.xml.DomUtils;
-import org.milyn.xml.XmlUtil;
-import org.milyn.xml.LocalEntityResolver;
+import org.milyn.xml.*;
 import org.milyn.profile.DefaultProfileSet;
+import org.milyn.io.StreamUtils;
+import org.milyn.util.ClassUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.Source;
 
 /**
  * Digester class for an XML {@link org.milyn.cdr.SmooksResourceConfiguration} file (.cdrl).
@@ -37,7 +43,7 @@ import org.xml.sax.SAXException;
 public final class XMLConfigDigester {
 
     private static final String DTD_V10 = "http://www.milyn.org/dtd/smooksres-list-1.0.dtd";
-    private static final String DTD_V20 = "http://www.milyn.org/dtd/smooksres-list-2.0.dtd";
+    private static final String XSD_V10 = "http://www.milyn.org/xsd/smooks-1.0.xsd";
 
     private static Log logger = LogFactory.getLog(XMLConfigDigester.class);
 
@@ -53,19 +59,30 @@ public final class XMLConfigDigester {
      * @throws IOException  Error reading the XML stream.
      */
     public static SmooksResourceConfigurationList digestConfig(String name, InputStream stream) throws SAXException, IOException {
-        LocalEntityResolver entityResolver = new LocalEntityResolver();
-        Document archiveDefDoc = XmlUtil.parseStream(stream, entityResolver, true, true);
-        String docDTD = entityResolver.getDocDTD();
-        SmooksResourceConfigurationList list = new SmooksResourceConfigurationList(name);
+        byte[] streamBuffer = StreamUtils.readStream(stream);
+        LocalEntityResolver entityResolver = null;
+        Document archiveDefDoc = null;
+        String docType = null;
+        SmooksResourceConfigurationList list = null;
 
-        if (DTD_V10.equals(docDTD)) {
-            logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use DTD '" + DTD_V20 + "'.");
-            digestV10Config(archiveDefDoc, list);
-            logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use DTD '" + DTD_V20 + "'.");
-        } else if (DTD_V20.equals(docDTD)) {
-            digestV20Config(archiveDefDoc, list);
+        try {
+            entityResolver = getDTDEntityResolver();
+            archiveDefDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.DTD, true);
+        } catch(Exception e) {
+            entityResolver = getXSDEntityResolver();
+            archiveDefDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.XSD, true);
+        }
+        docType = entityResolver.getDocType();
+        list = new SmooksResourceConfigurationList(name);
+
+        if (DTD_V10.equals(docType)) {
+            logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use DTD '" + XSD_V10 + "'.");
+            digestV10DTDValidatedConfig(archiveDefDoc, list);
+            logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use DTD '" + XSD_V10 + "'.");
+        } else if (XSD_V10.equals(docType)) {
+            digestV10XSDValidatedConfig(archiveDefDoc, list);
         } else {
-            throw new SAXException("Invalid Content Delivery Resource archive definition file: Must be validated against a valid DTD - '" + DTD_V10 + "' or '" + DTD_V20 + "'.");
+            throw new SAXException("Invalid Content Delivery Resource archive definition file: Must be validated against one of - '" + DTD_V10 + "' or '" + XSD_V10 + "'.");
         }
 
         if (list.isEmpty()) {
@@ -75,7 +92,16 @@ public final class XMLConfigDigester {
         return list;
     }
 
-    private static void digestV10Config(Document archiveDefDoc, SmooksResourceConfigurationList list) throws SAXException {
+    private static LocalEntityResolver getDTDEntityResolver() {
+        return new LocalDTDEntityResolver();
+    }
+
+    private static LocalEntityResolver getXSDEntityResolver() {
+        Source schemaSource = new StreamSource(ClassUtil.getResourceAsStream("/org/milyn/xsd/smooks-1.0.xsd", XMLConfigDigester.class), XSD_V10);
+        return new LocalXSDEntityResolver(new Source[] {schemaSource});
+    }
+
+    private static void digestV10DTDValidatedConfig(Document archiveDefDoc, SmooksResourceConfigurationList list) throws SAXException {
         int cdrIndex = 1;
         Element currentElement;
         String resourceSelector = null;
@@ -116,7 +142,7 @@ public final class XMLConfigDigester {
         }
     }
 
-    private static void digestV20Config(Document archiveDefDoc, SmooksResourceConfigurationList list) throws SAXException {
+    private static void digestV10XSDValidatedConfig(Document archiveDefDoc, SmooksResourceConfigurationList list) throws SAXException {
         int cdrIndex = 1;
         Element currentElement;
         String resourceSelector = null;
@@ -199,30 +225,12 @@ public final class XMLConfigDigester {
             String paramName = DomUtils.getAttributeValue(paramNode, "name");
             String paramType = DomUtils.getAttributeValue(paramNode, "type");
             String paramValue = DomUtils.getAllText(paramNode, true);
+            Parameter paramInstance;
 
-            resourceConfig.setParameter(paramName, paramType, paramValue);
+            paramInstance = resourceConfig.setParameter(paramName, paramType, paramValue);
+            paramInstance.setXML(paramNode);
             paramIndex++;
             paramSelector = "param[" + paramIndex + "]";
         }
-    }
-
-    /**
-     * Trim the String, setting to null if empty.
-     *
-     * @param string String to trim.
-     * @return String, null if empty.
-     */
-    private static String trimToNull(String string) {
-        if (string == null) {
-            return null;
-        }
-
-        String retString = string.trim();
-
-        if (retString.equals("")) {
-            retString = null;
-        }
-
-        return retString;
     }
 }

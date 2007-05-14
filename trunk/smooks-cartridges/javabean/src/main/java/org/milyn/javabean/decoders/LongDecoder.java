@@ -32,7 +32,7 @@ public class LongDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Long.parseLong(data);
+            return Long.parseLong(data.trim());
         } catch(NumberFormatException e) {
             throw new DataDecodeException("Failed to decode Long value '" + data + "'.", e);
         }

@@ -48,7 +48,7 @@ public abstract class CssTestUtil {
 
 	public static Document parseXMLString(String xmlString) {
 		try {
-			return XmlUtil.parseStream(new ByteArrayInputStream(xmlString.getBytes()), false, true);
+			return XmlUtil.parseStream(new ByteArrayInputStream(xmlString.getBytes()), XmlUtil.VALIDATION_TYPE.NONE, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			TestCase.fail(e.getMessage());
@@ -58,7 +58,7 @@ public abstract class CssTestUtil {
 
 	public static Document parseCPResource(String classpath) {
 		try {
-			return XmlUtil.parseStream(CssTestUtil.class.getResourceAsStream(classpath), false, true);
+			return XmlUtil.parseStream(CssTestUtil.class.getResourceAsStream(classpath), XmlUtil.VALIDATION_TYPE.NONE, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			TestCase.fail(e.getMessage());

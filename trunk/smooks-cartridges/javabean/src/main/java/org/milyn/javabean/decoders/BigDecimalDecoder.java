@@ -20,21 +20,23 @@ import org.milyn.javabean.DataDecodeException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
+import java.math.BigDecimal;
+
 /**
- * Boolean decoder.
+ * {@link BigDecimal} Decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class BooleanDecoder implements DataDecoder {
+public class BigDecimalDecoder implements DataDecoder {
 
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
     }
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Boolean.parseBoolean(data.trim());
+            return new BigDecimal(data.trim());
         } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode Boolean value '" + data + "'.", e);
+            throw new DataDecodeException("Failed to decode BigDecimal value '" + data + "'.", e);
         }
     }
 }

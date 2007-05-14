@@ -32,7 +32,7 @@ public class IntegerDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Integer.parseInt(data);
+            return Integer.parseInt(data.trim());
         } catch(NumberFormatException e) {
             throw new DataDecodeException("Failed to decode Integer value '" + data + "'.", e);
         }

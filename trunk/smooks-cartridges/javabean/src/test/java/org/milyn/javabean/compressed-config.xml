@@ -1,16 +1,14 @@
-<?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
-
-<smooks-resource-list>
+<?xml version='1.0'?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
     <resource-config selector="user">
         <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
         <param name="beanId">userBean</param>
         <param name="beanClass">org.milyn.javabean.MyGoodBean</param>
         <param name="bindings">
-            property=name,        selector=user @name
-            property=phoneNumber, selector=user @phoneNumber
-            property=address,     selector=user
+            <binding property="name" selector="user @name" />
+            <binding property="phoneNumber" selector="user @phoneNumber" />
+            <binding property="address" selector="user" />
         </param>
     </resource-config>
 

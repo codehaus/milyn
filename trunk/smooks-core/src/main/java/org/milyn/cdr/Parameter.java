@@ -3,6 +3,7 @@ package org.milyn.cdr;
 import java.util.List;
 
 import org.milyn.delivery.ContentDeliveryConfig;
+import org.w3c.dom.Element;
 
 /**
  * SmooksResourceConfiguration Parameter.
@@ -17,7 +18,9 @@ public class Parameter {
 	private String type;
 	private Object objValue;
 
-	/**
+    private Element xml;
+
+    /**
 	 * Public constructor.
 	 * @param name Parameter name.
 	 * @param value Parameter value.
@@ -113,4 +116,26 @@ public class Parameter {
 	public String toString() {
 		return value;
 	}
+
+    /**
+     * Set the DOM element node associated with the parameter definition.
+     * <p/>
+     * Only relevant for XML based configs.
+     *
+     * @param xml Parameter configuration xml.
+     */
+    protected void setXML(Element xml) {
+        this.xml = xml;
+    }
+
+    /**
+     * Get the DOM element node associated with the parameter definition.
+     * <p/>
+     * Only relevant for XML based configs.
+     *
+     * @return Parameter configuration xml.
+     */
+    public Element getXml() {
+        return xml;
+    }
 }

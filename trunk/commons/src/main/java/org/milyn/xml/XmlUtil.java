@@ -31,474 +31,498 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.milyn.io.StreamUtils;
 
 /**
  * XMl utility methods.
- * 
+ *
  * @author Tom Fennelly
  */
 
 public class XmlUtil {
 
-	/**
-	 * Remove all entities from the supplied <code>Reader</code> stream
-	 * replacing them with their actual character values. <p/> Both the read and
-	 * write streams are returned unclosed.
-	 * 
-	 * @param reader
-	 *            The read stream.
-	 * @param writer
-	 *            The write stream.
-	 */
-	public static void removeEntities(Reader reader, Writer writer)
-			throws IOException {
-		int curChar = -1;
-		StringBuffer ent = null;
+    /**
+     * Document validation types.
+     */
+    public static enum VALIDATION_TYPE {
+        /**
+         * No validation.
+         */
+        NONE,
+        /**
+         * DTD based validation.
+         */
+        DTD,
+        /**
+         * XSD based validation.
+         */
+        XSD,
+    }
 
-		if (reader == null) {
-			throw new IllegalArgumentException("null reader arg");
-		} else if (writer == null) {
-			throw new IllegalArgumentException("null writer arg");
-		}
+    private static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 
-		ent = new StringBuffer(50);
-		while ((curChar = reader.read()) != -1) {
-			if (curChar == '&') {
-				if (ent.length() > 0) {
-					writer.write(ent.toString());
-					ent.setLength(0);
-				}
-				ent.append((char) curChar);
-			} else if (curChar == ';' && ent.length() > 0) {
-				int entLen = ent.length();
+    private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
-				if (entLen > 1) {
-					if (ent.charAt(1) == '#') {
-						if (entLen > 2) {
-							char char2 = ent.charAt(2);
+    /**
+     * Remove all entities from the supplied <code>Reader</code> stream
+     * replacing them with their actual character values. <p/> Both the read and
+     * write streams are returned unclosed.
+     *
+     * @param reader The read stream.
+     * @param writer The write stream.
+     */
+    public static void removeEntities(Reader reader, Writer writer)
+            throws IOException {
+        int curChar = -1;
+        StringBuffer ent = null;
 
-							try {
-								if (char2 == 'x' || char2 == 'X') {
-									if (entLen > 3) {
-										writer.write(Integer.parseInt(ent
-												.substring(3), 16));
-									} else {
-										writer.write(ent.toString());
-										writer.write(curChar);
-									}
-								} else {
-									writer.write(Integer.parseInt(ent
-											.substring(2)));
-								}
-							} catch (NumberFormatException nfe) {
-								// bogus character ref - leave as is.
-								writer.write(ent.toString());
-								writer.write(curChar);
-							}
-						} else {
-							writer.write("&#;");
-						}
-					} else {
-						Character character = HTMLEntityLookup
-								.getCharacterCode(ent.substring(1));
+        if (reader == null) {
+            throw new IllegalArgumentException("null reader arg");
+        } else if (writer == null) {
+            throw new IllegalArgumentException("null writer arg");
+        }
 
-						if (character != null) {
-							writer.write(character.charValue());
-						} else {
-							// bogus entity ref - leave as is.
-							writer.write(ent.toString());
-							writer.write(curChar);
-						}
-					}
-				} else {
-					writer.write("&;");
-				}
+        ent = new StringBuffer(50);
+        while ((curChar = reader.read()) != -1) {
+            if (curChar == '&') {
+                if (ent.length() > 0) {
+                    writer.write(ent.toString());
+                    ent.setLength(0);
+                }
+                ent.append((char) curChar);
+            } else if (curChar == ';' && ent.length() > 0) {
+                int entLen = ent.length();
 
-				ent.setLength(0);
-			} else if (ent.length() > 0) {
-				ent.append((char) curChar);
-			} else {
-				writer.write(curChar);
-			}
-		}
+                if (entLen > 1) {
+                    if (ent.charAt(1) == '#') {
+                        if (entLen > 2) {
+                            char char2 = ent.charAt(2);
 
-		if (ent.length() > 0) {
-			writer.write(ent.toString());
-		}
-	}
+                            try {
+                                if (char2 == 'x' || char2 == 'X') {
+                                    if (entLen > 3) {
+                                        writer.write(Integer.parseInt(ent
+                                                .substring(3), 16));
+                                    } else {
+                                        writer.write(ent.toString());
+                                        writer.write(curChar);
+                                    }
+                                } else {
+                                    writer.write(Integer.parseInt(ent
+                                            .substring(2)));
+                                }
+                            } catch (NumberFormatException nfe) {
+                                // bogus character ref - leave as is.
+                                writer.write(ent.toString());
+                                writer.write(curChar);
+                            }
+                        } else {
+                            writer.write("&#;");
+                        }
+                    } else {
+                        Character character = HTMLEntityLookup
+                                .getCharacterCode(ent.substring(1));
 
-	/**
-	 * Remove all entities from the supplied <code>String</code> stream
-	 * replacing them with there actual character values.
-	 * 
-	 * @param string
-	 *            The string on which the operation is to be carried out.
-	 * @return The string with its entities rewriten.
-	 */
-	public static String removeEntities(String string) {
-		if (string == null) {
-			throw new IllegalArgumentException("null string arg");
-		}
+                        if (character != null) {
+                            writer.write(character.charValue());
+                        } else {
+                            // bogus entity ref - leave as is.
+                            writer.write(ent.toString());
+                            writer.write(curChar);
+                        }
+                    }
+                } else {
+                    writer.write("&;");
+                }
 
-		try {
-			StringReader reader = new StringReader(string);
-			StringWriter writer = new StringWriter();
+                ent.setLength(0);
+            } else if (ent.length() > 0) {
+                ent.append((char) curChar);
+            } else {
+                writer.write(curChar);
+            }
+        }
 
-			XmlUtil.removeEntities(reader, writer);
+        if (ent.length() > 0) {
+            writer.write(ent.toString());
+        }
+    }
 
-			return writer.toString();
-		} catch (Exception excep) {
-			excep.printStackTrace();
-			return string;
-		}
-	}
+    /**
+     * Remove all entities from the supplied <code>String</code> stream
+     * replacing them with there actual character values.
+     *
+     * @param string The string on which the operation is to be carried out.
+     * @return The string with its entities rewriten.
+     */
+    public static String removeEntities(String string) {
+        if (string == null) {
+            throw new IllegalArgumentException("null string arg");
+        }
 
-	/**
-	 * Rewrite all entities from the supplied <code>Reader</code> stream
-	 * replacing them with their character reference equivalents. <p/> Example:
-	 * <b>&ampnbsp;</b> is rewriten as <b>&amp#160;</b> <p/> Both the read and
-	 * write streams are returned unclosed.
-	 * 
-	 * @param reader
-	 *            The read stream.
-	 * @param writer
-	 *            The write stream.
-	 */
-	public static void rewriteEntities(Reader reader, Writer writer)
-			throws IOException {
-		int curChar = -1;
-		StringBuffer ent;
-		char[] entBuf;
+        try {
+            StringReader reader = new StringReader(string);
+            StringWriter writer = new StringWriter();
 
-		if (reader == null) {
-			throw new IllegalArgumentException("null reader arg");
-		} else if (writer == null) {
-			throw new IllegalArgumentException("null writer arg");
-		}
+            XmlUtil.removeEntities(reader, writer);
 
-		ent = new StringBuffer(50);
-		entBuf = new char[50];
-		while ((curChar = reader.read()) != -1) {
-			if (curChar == '&') {
-				if (ent.length() > 0) {
-					writer.write(ent.toString());
-					ent.setLength(0);
-				}
-				ent.append((char) curChar);
-			} else if (curChar == ';' && ent.length() > 0) {
-				int entLen = ent.length();
+            return writer.toString();
+        } catch (Exception excep) {
+            excep.printStackTrace();
+            return string;
+        }
+    }
 
-				if (entLen > 1) {
-					if (ent.charAt(1) == '#') {
-						// Already a character ref.
-						ent.getChars(0, ent.length(), entBuf, 0);
-						writer.write(entBuf, 0, ent.length());
-						writer.write(';');
-					} else {
-						Character character = HTMLEntityLookup
-								.getCharacterCode(ent.substring(1));
+    /**
+     * Rewrite all entities from the supplied <code>Reader</code> stream
+     * replacing them with their character reference equivalents. <p/> Example:
+     * <b>&ampnbsp;</b> is rewriten as <b>&amp#160;</b> <p/> Both the read and
+     * write streams are returned unclosed.
+     *
+     * @param reader The read stream.
+     * @param writer The write stream.
+     */
+    public static void rewriteEntities(Reader reader, Writer writer)
+            throws IOException {
+        int curChar = -1;
+        StringBuffer ent;
+        char[] entBuf;
 
-						if (character != null) {
-							writer.write("&#");
-							writer.write(String.valueOf((int) character
-									.charValue()));
-							writer.write(";");
-						} else {
-							// bogus entity ref - leave as is.
-							writer.write(ent.toString());
-							writer.write(curChar);
-						}
-					}
-				} else {
-					writer.write("&;");
-				}
+        if (reader == null) {
+            throw new IllegalArgumentException("null reader arg");
+        } else if (writer == null) {
+            throw new IllegalArgumentException("null writer arg");
+        }
 
-				ent.setLength(0);
-			} else if (ent.length() > 0) {
-				ent.append((char) curChar);
-			} else {
-				writer.write(curChar);
-			}
-		}
+        ent = new StringBuffer(50);
+        entBuf = new char[50];
+        while ((curChar = reader.read()) != -1) {
+            if (curChar == '&') {
+                if (ent.length() > 0) {
+                    writer.write(ent.toString());
+                    ent.setLength(0);
+                }
+                ent.append((char) curChar);
+            } else if (curChar == ';' && ent.length() > 0) {
+                int entLen = ent.length();
 
-		if (ent.length() > 0) {
-			writer.write(ent.toString());
-		}
-	}
+                if (entLen > 1) {
+                    if (ent.charAt(1) == '#') {
+                        // Already a character ref.
+                        ent.getChars(0, ent.length(), entBuf, 0);
+                        writer.write(entBuf, 0, ent.length());
+                        writer.write(';');
+                    } else {
+                        Character character = HTMLEntityLookup
+                                .getCharacterCode(ent.substring(1));
 
-	/**
-	 * Parse the XML stream and return the associated W3C Document object.
-	 * 
-	 * @param stream
-	 *            The stream to be parsed.
-	 * @param validate
-	 *            True if the document is to be validated, otherwise false.
-	 * @param expandEntityRefs
-	 *            Expand entity References as per
-	 *            {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
-	 * @return The W3C Document object associated with the input stream.
-	 */
-	public static Document parseStream(InputStream stream, boolean validate,
-			boolean expandEntityRefs) throws SAXException, IOException {
-		return parseStream(stream, new LocalEntityResolver(), validate,
-				expandEntityRefs);
-	}
+                        if (character != null) {
+                            writer.write("&#");
+                            writer.write(String.valueOf((int) character
+                                    .charValue()));
+                            writer.write(";");
+                        } else {
+                            // bogus entity ref - leave as is.
+                            writer.write(ent.toString());
+                            writer.write(curChar);
+                        }
+                    }
+                } else {
+                    writer.write("&;");
+                }
 
-	/**
-	 * Parse the XML stream and return the associated W3C Document object.
-	 * 
-	 * @param stream
-	 *            The stream to be parsed.
-	 * @param entityResolver
-	 *            Entity resolver to be used during the parse.
-	 * @param validate
-	 *            True if the document is to be validated, otherwise false.
-	 * @param expandEntityRefs
-	 *            Expand entity References as per
-	 *            {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
-	 * @return The W3C Document object associated with the input stream.
-	 */
-	public static Document parseStream(InputStream stream,
-			EntityResolver entityResolver, boolean validate,
-			boolean expandEntityRefs) throws SAXException, IOException {
-		if (stream == null) {
-			throw new IllegalArgumentException(
-					"null 'stream' arg in method call.");
-		}
-		try {
-			DocumentBuilderFactory factory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder docBuilder = null;
+                ent.setLength(0);
+            } else if (ent.length() > 0) {
+                ent.append((char) curChar);
+            } else {
+                writer.write(curChar);
+            }
+        }
 
-			factory.setValidating(validate);
-			factory.setExpandEntityReferences(expandEntityRefs);
+        if (ent.length() > 0) {
+            writer.write(ent.toString());
+        }
+    }
+
+    /**
+     * Parse the XML stream and return the associated W3C Document object.
+     *
+     * @param stream           The stream to be parsed.
+     * @param validation       Validation type to be carried out on the document.
+     * @param expandEntityRefs Expand entity References as per
+     *                         {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
+     * @return The W3C Document object associated with the input stream.
+     */
+    public static Document parseStream(InputStream stream, VALIDATION_TYPE validation,
+                                       boolean expandEntityRefs) throws SAXException, IOException {
+        return parseStream(stream, new LocalDTDEntityResolver(), validation,
+                expandEntityRefs);
+    }
+
+    /**
+     * Parse the XML stream and return the associated W3C Document object.
+     *
+     * @param stream           The stream to be parsed.
+     * @param entityResolver   Entity resolver to be used during the parse.
+     * @param validation       Validation type to be carried out on the document.
+     * @param expandEntityRefs Expand entity References as per
+     *                         {@link javax.xml.parsers.DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
+     * @return The W3C Document object associated with the input stream.
+     */
+    public static Document parseStream(InputStream stream,
+                                       EntityResolver entityResolver, VALIDATION_TYPE validation,
+                                       boolean expandEntityRefs) throws SAXException, IOException {
+        if (stream == null) {
+            throw new IllegalArgumentException(
+                    "null 'stream' arg in method call.");
+        }
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = null;
+
+            // Setup validation...
+            if (validation == VALIDATION_TYPE.DTD) {
+                factory.setValidating(true);
+            } else if (validation == VALIDATION_TYPE.XSD) {
+                try {
+                    Schema schema = getSchema(entityResolver);
+
+                    stream = new ByteArrayInputStream(StreamUtils.readStream(stream));
+                    schema.newValidator().validate(new StreamSource(stream));
+                    stream.reset();
+                } catch (IllegalArgumentException e) {
+                    throw new SAXException("Unable to validate document.  Installed parser '" + factory.getClass().getName() + "' doesn't support JAXP 1.2", e);
+                }
+            }
+
+            factory.setExpandEntityReferences(expandEntityRefs);
             docBuilder = factory.newDocumentBuilder();
-			docBuilder.setEntityResolver(entityResolver);
-			docBuilder.setErrorHandler(XMLParseErrorHandler.getInstance());
+            if (validation == VALIDATION_TYPE.DTD) {
+                docBuilder.setEntityResolver(entityResolver);
+            }
+            docBuilder.setErrorHandler(XMLParseErrorHandler.getInstance());
 
             return docBuilder.parse(stream);
-		} catch (ParserConfigurationException e) {
-			IllegalStateException state = new IllegalStateException(
-					"Unable to parse XML stream - XML Parser not configured correctly.");
-			state.initCause(e);
-			throw state;
-		} catch (FactoryConfigurationError e) {
-			IllegalStateException state = new IllegalStateException(
-					"Unable to parse XML stream - DocumentBuilderFactory not configured correctly.");
-			state.initCause(e);
-			throw state;
-		}
-	}
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("Unable to parse XML stream - XML Parser not configured correctly.", e);
+        } catch (FactoryConfigurationError e) {
+            throw new IllegalStateException("Unable to parse XML stream - DocumentBuilderFactory not configured correctly.", e);
+        }
+    }
 
-	private static String ELEMENT_NAME_FUNC = "/name()";
+    private static Schema getSchema(EntityResolver entityResolver) throws SAXException, IOException {
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-	private static XPathFactory xPathFactory = XPathFactory.newInstance();
+        if(entityResolver instanceof LocalXSDEntityResolver) {
+            return schemaFactory.newSchema(((LocalXSDEntityResolver)entityResolver).getSchemaSources());
+        }
 
-	/**
-	 * Get the W3C NodeList instance associated with the XPath selection
-	 * supplied.
-	 * 
-	 * @param node
-	 *            The document node to be searched.
-	 * @param xpath
-	 *            The XPath String to be used in the selection.
-	 * @return The W3C NodeList instance at the specified location in the
-	 *         document, or null.
-	 */
-	public static NodeList getNodeList(Node node, String xpath) {
-		if (node == null) {
-			throw new IllegalArgumentException(
-					"null 'document' arg in method call.");
-		} else if (xpath == null) {
-			throw new IllegalArgumentException(
-					"null 'xpath' arg in method call.");
-		}
-		try {
-			XPath xpathEvaluater = xPathFactory.newXPath();
+        return schemaFactory.newSchema(new StreamSource(entityResolver.resolveEntity("default", "default").getByteStream()));
+    }
 
-			if (xpath.endsWith(ELEMENT_NAME_FUNC)) {
-				return (NodeList) xpathEvaluater.evaluate(xpath.substring(0,
-						xpath.length() - ELEMENT_NAME_FUNC.length()), node,
-						XPathConstants.NODESET);
-			} else {
-				return (NodeList) xpathEvaluater.evaluate(xpath, node,
-						XPathConstants.NODESET);
-			}
-		} catch (XPathExpressionException e) {
-			throw new IllegalArgumentException("bad 'xpath' expression ["
-					+ xpath + "].");
-		}
-	}
+    private static String ELEMENT_NAME_FUNC = "/name()";
 
-	/**
-	 * Get the W3C Node instance associated with the XPath selection supplied.
-	 * 
-	 * @param node
-	 *            The document node to be searched.
-	 * @param xpath
-	 *            The XPath String to be used in the selection.
-	 * @return The W3C Node instance at the specified location in the document,
-	 *         or null.
-	 */
-	public static Node getNode(Node node, String xpath) {
-		NodeList nodeList = getNodeList(node, xpath);
+    private static XPathFactory xPathFactory = XPathFactory.newInstance();
 
-		if (nodeList == null || nodeList.getLength() == 0) {
-			return null;
-		} else {
-			return nodeList.item(0);
-		}
-	}
+    /**
+     * Get the W3C NodeList instance associated with the XPath selection
+     * supplied.
+     *
+     * @param node  The document node to be searched.
+     * @param xpath The XPath String to be used in the selection.
+     * @return The W3C NodeList instance at the specified location in the
+     *         document, or null.
+     */
+    public static NodeList getNodeList(Node node, String xpath) {
+        if (node == null) {
+            throw new IllegalArgumentException(
+                    "null 'document' arg in method call.");
+        } else if (xpath == null) {
+            throw new IllegalArgumentException(
+                    "null 'xpath' arg in method call.");
+        }
+        try {
+            XPath xpathEvaluater = xPathFactory.newXPath();
 
-	/**
-	 * Get the String data associated with the XPath selection supplied.
-	 * 
-	 * @param node
-	 *            The node to be searched.
-	 * @param xpath
-	 *            The XPath String to be used in the selection.
-	 * @return The string data located at the specified location in the
-	 *         document, or an empty string for an empty resultset query.
-	 */
-	public static String getString(Node node, String xpath) {
-		NodeList nodeList = getNodeList(node, xpath);
+            if (xpath.endsWith(ELEMENT_NAME_FUNC)) {
+                return (NodeList) xpathEvaluater.evaluate(xpath.substring(0,
+                        xpath.length() - ELEMENT_NAME_FUNC.length()), node,
+                        XPathConstants.NODESET);
+            } else {
+                return (NodeList) xpathEvaluater.evaluate(xpath, node,
+                        XPathConstants.NODESET);
+            }
+        } catch (XPathExpressionException e) {
+            throw new IllegalArgumentException("bad 'xpath' expression ["
+                    + xpath + "].");
+        }
+    }
 
-		if (nodeList == null || nodeList.getLength() == 0) {
-			return "";
-		}
+    /**
+     * Get the W3C Node instance associated with the XPath selection supplied.
+     *
+     * @param node  The document node to be searched.
+     * @param xpath The XPath String to be used in the selection.
+     * @return The W3C Node instance at the specified location in the document,
+     *         or null.
+     */
+    public static Node getNode(Node node, String xpath) {
+        NodeList nodeList = getNodeList(node, xpath);
 
-		if (xpath.endsWith(ELEMENT_NAME_FUNC)) {
-			if (nodeList.getLength() > 0) {
-				return nodeList.item(0).getNodeName();
-			} else {
-				return "";
-			}
-		} else {
-			return serialize(nodeList);
-		}
-	}
+        if (nodeList == null || nodeList.getLength() == 0) {
+            return null;
+        } else {
+            return nodeList.item(0);
+        }
+    }
+
+    /**
+     * Get the String data associated with the XPath selection supplied.
+     *
+     * @param node  The node to be searched.
+     * @param xpath The XPath String to be used in the selection.
+     * @return The string data located at the specified location in the
+     *         document, or an empty string for an empty resultset query.
+     */
+    public static String getString(Node node, String xpath) {
+        NodeList nodeList = getNodeList(node, xpath);
+
+        if (nodeList == null || nodeList.getLength() == 0) {
+            return "";
+        }
+
+        if (xpath.endsWith(ELEMENT_NAME_FUNC)) {
+            if (nodeList.getLength() > 0) {
+                return nodeList.item(0).getNodeName();
+            } else {
+                return "";
+            }
+        } else {
+            return serialize(nodeList);
+        }
+    }
 
     private static TransformerFactory factory = TransformerFactory.newInstance();
-    
-    /**
-	 * Serialise the supplied W3C DOM subtree.
-	 * 
-	 * @param nodeList
-	 *            The DOM subtree as a NodeList.
-	 * @return The subtree in serailised form.
-	 * @throws DOMException
-	 *             Unable to serialise the DOM.
-	 */
-	public static String serialize(NodeList nodeList) throws DOMException {
-		if (nodeList == null) {
-			throw new IllegalArgumentException(
-					"null 'subtree' NodeIterator arg in method call.");
-		}
 
-		try {
+    /**
+     * Serialise the supplied W3C DOM subtree.
+     *
+     * @param nodeList The DOM subtree as a NodeList.
+     * @return The subtree in serailised form.
+     * @throws DOMException Unable to serialise the DOM.
+     */
+    public static String serialize(NodeList nodeList) throws DOMException {
+        if (nodeList == null) {
+            throw new IllegalArgumentException(
+                    "null 'subtree' NodeIterator arg in method call.");
+        }
+
+        try {
             Transformer transformer;
 
             transformer = factory.newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
 
-			StringWriter writer = new StringWriter();
-			int listLength = nodeList.getLength();
+            StringWriter writer = new StringWriter();
+            int listLength = nodeList.getLength();
 
-			// Iterate through the Node List.
-			for (int i = 0; i < listLength; i++) {
-				Node node = nodeList.item(i);
+            // Iterate through the Node List.
+            for (int i = 0; i < listLength; i++) {
+                Node node = nodeList.item(i);
 
                 if (XmlUtil.isTextNode(node)) {
-					writer.write(node.getNodeValue());
-				} else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
-					writer.write(((Attr) node).getValue());
-				} else if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    writer.write(node.getNodeValue());
+                } else if (node.getNodeType() == Node.ATTRIBUTE_NODE) {
+                    writer.write(((Attr) node).getValue());
+                } else if (node.getNodeType() == Node.ELEMENT_NODE) {
                     transformer.transform(new DOMSource(node), new StreamResult(writer));
                 }
             }
 
-			return writer.toString();
-		} catch (Exception e) {
-			DOMException domExcep = new DOMException(
-					DOMException.INVALID_ACCESS_ERR,
-					"Unable to serailise DOM subtree.");
-			domExcep.initCause(e);
-			throw domExcep;
-		}
-	}
+            return writer.toString();
+        } catch (Exception e) {
+            DOMException domExcep = new DOMException(
+                    DOMException.INVALID_ACCESS_ERR,
+                    "Unable to serailise DOM subtree.");
+            domExcep.initCause(e);
+            throw domExcep;
+        }
+    }
 
-	/**
-	 * Is the supplied W3C DOM Node a text node.
-	 * 
-	 * @param node
-	 *            The node to be tested.
-	 * @return True if the node is a text node, otherwise false.
-	 */
-	public static boolean isTextNode(Node node) {
-		short nodeType;
+    /**
+     * Is the supplied W3C DOM Node a text node.
+     *
+     * @param node The node to be tested.
+     * @return True if the node is a text node, otherwise false.
+     */
+    public static boolean isTextNode(Node node) {
+        short nodeType;
 
-		if (node == null) {
-			return false;
-		}
-		nodeType = node.getNodeType();
+        if (node == null) {
+            return false;
+        }
+        nodeType = node.getNodeType();
 
-		return nodeType == Node.CDATA_SECTION_NODE
-				|| nodeType == Node.TEXT_NODE;
-	}
+        return nodeType == Node.CDATA_SECTION_NODE
+                || nodeType == Node.TEXT_NODE;
+    }
 
-	/**
-	 * XML Parse error handler.
-	 * 
-	 * @author tfennelly
-	 */
-	static class XMLParseErrorHandler implements ErrorHandler {
+    /**
+     * XML Parse error handler.
+     *
+     * @author tfennelly
+     */
+    static class XMLParseErrorHandler implements ErrorHandler {
 
-		/**
-		 * Singleton instance reference of this class.
-		 */
-		private static XMLParseErrorHandler singleton = new XMLParseErrorHandler();
+        /**
+         * Singleton instance reference of this class.
+         */
+        private static XMLParseErrorHandler singleton = new XMLParseErrorHandler();
 
-		/**
-		 * Private constructor.
-		 */
-		private XMLParseErrorHandler() {
-		}
+        /**
+         * Private constructor.
+         */
+        private XMLParseErrorHandler() {
+        }
 
-		/**
-		 * Get this classes singleton reference.
-		 * 
-		 * @return This classes singleton reference.
-		 */
-		private static XMLParseErrorHandler getInstance() {
-			return singleton;
-		}
+        /**
+         * Get this classes singleton reference.
+         *
+         * @return This classes singleton reference.
+         */
+        private static XMLParseErrorHandler getInstance() {
+            return singleton;
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.xml.sax.ErrorHandler#warning(org.xml.sax.SAXParseException)
-		 */
-		public void warning(SAXParseException arg0) throws SAXException {
-			throw arg0;
-		}
+        /*
+           * (non-Javadoc)
+           *
+           * @see org.xml.sax.ErrorHandler#warning(org.xml.sax.SAXParseException)
+           */
+        public void warning(SAXParseException arg0) throws SAXException {
+            throw arg0;
+        }
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
-		 */
-		public void error(SAXParseException arg0) throws SAXException {
+        /*
+           * (non-Javadoc)
+           *
+           * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
+           */
+        public void error(SAXParseException arg0) throws SAXException {
 			throw arg0;
 		}
 

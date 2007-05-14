@@ -20,21 +20,26 @@ import org.milyn.javabean.DataDecodeException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.MalformedURLException;
+
 /**
- * Boolean decoder.
+ * {@link java.net.URL} Decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class BooleanDecoder implements DataDecoder {
+public class URLDecoder implements DataDecoder {
 
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
     }
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Boolean.parseBoolean(data.trim());
-        } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode Boolean value '" + data + "'.", e);
+            return new URL(data.trim());
+        } catch (MalformedURLException e) {
+            throw new DataDecodeException("Failed to decode URL value '" + data + "'.", e);
         }
     }
 }

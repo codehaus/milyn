@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<!DOCTYPE smooks-resource-list PUBLIC '-//MILYN//DTD SMOOKS 1.0//EN' 'http://www.milyn.org/dtd/smooksres-list-1.0.dtd'>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
 
 <smooks-resource-list default-selector='b' default-useragent='yyy' default-path='/org/milyn/cdr/test-resource.txt' default-namespace='http://milyn.codehaus.org/smooks-default'>
 

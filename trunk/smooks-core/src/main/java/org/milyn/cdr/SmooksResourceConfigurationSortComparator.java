@@ -61,7 +61,7 @@ import org.milyn.profile.ProfileSet;
 	}
 		
 	// Check the 'namespace' attribute.
-	if(resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getNamespaceURI() getNamespaceURI()} != null) {
+	if(resourceConfig.{@link org.milyn.cdr.SmooksResourceConfiguration#getSelectorNamespaceURI() getSelectorNamespaceURI()} != null) {
 		specificity += 10;
 	}</pre>  
  * For more details on this please refer to the code in this class.
@@ -145,7 +145,7 @@ public class SmooksResourceConfigurationSortComparator implements Comparator {
 		}
 		
 		// Check the 'namespace' attribute.
-		if(resourceConfig.getNamespaceURI() != null) {
+		if(resourceConfig.getSelectorNamespaceURI() != null) {
 			specificity += 10;
 		}
 		

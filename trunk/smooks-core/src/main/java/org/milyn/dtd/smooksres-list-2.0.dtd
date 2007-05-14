@@ -27,8 +27,8 @@
 	type	CDATA 	#IMPLIED
 >
 
-<!ELEMENT param (#PCDATA)>
+<!ELEMENT param ANY>
 <!ATTLIST param
-	name 		CDATA 	#REQUIRED
-	type 		CDATA 	#IMPLIED
+	name 	CDATA 	#REQUIRED
+	type 	CDATA 	#IMPLIED
 >

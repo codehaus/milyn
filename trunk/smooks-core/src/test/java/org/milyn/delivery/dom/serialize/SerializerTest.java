@@ -67,7 +67,7 @@ public class SerializerTest extends TestCase {
         ((MockContentDeliveryConfig)executionContext.deliveryConfig).serializationUnits.addMapping("zzz", configuration, new EmptyElTestSerializationUnit(configuration));
 
 		try {
-			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testmarkup.xxml"), false, true);
+			Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testmarkup.xxml"), XmlUtil.VALIDATION_TYPE.NONE, true);
 			Serializer serializer = new Serializer(doc, executionContext);
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
 			OutputStreamWriter writer = new OutputStreamWriter(output);

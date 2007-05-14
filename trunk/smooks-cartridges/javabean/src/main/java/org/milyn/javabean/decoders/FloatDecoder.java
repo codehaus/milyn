@@ -32,7 +32,7 @@ public class FloatDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Float.parseFloat(data);
+            return Float.parseFloat(data.trim());
         } catch(NumberFormatException e) {
             throw new DataDecodeException("Failed to decode float value '" + data + "'.", e);
         }

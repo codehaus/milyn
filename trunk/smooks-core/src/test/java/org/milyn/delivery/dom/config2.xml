@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd">
 
-<smooks-resource-list>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
     <resource-config selector="$document">
         <resource>org.milyn.delivery.dom.AssemblyVisitor1</resource>
     </resource-config>

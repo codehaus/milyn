@@ -24,4 +24,17 @@
             <scope>compile</scope>
         </dependency>
 	</dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <overview>${basedir}/src/main/java/overview.html</overview>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
 </project>

@@ -19,21 +19,20 @@ package org.milyn.javabean;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.Parameter;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.ExpandableContentDeliveryUnit;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Javabean Populator.
@@ -85,38 +84,36 @@ import org.w3c.dom.Element;
  * defined by the <a href="#targetbeans">Target Java Beans</a> using the data in the input XML.
  * <pre>
  * &lt;?xml version="1.0"?&gt;
- * &lt;!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 2.0//EN" "http://www.milyn.org/dtd/smooksres-list-2.0.dtd"&gt;
- *
- * &lt;smooks-resource-list&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd"&gt;
  *
  *     &lt;resource-config selector="order"&gt;
  *         &lt;resource&gt;org.milyn.javabean.ProcessingPhaseBeanPopulator&lt;/resource&gt;
- *         &lt;param name="beanId"&gt;order&lt;/param&gt;
+ *         &lt;param name="beanId"&gt;<b><u>order</u></b>&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Order</b>&lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
  *     &lt;resource-config selector="header"&gt;
  *         &lt;resource&gt;org.milyn.javabean.ProcessingPhaseBeanPopulator&lt;/resource&gt;
- *         &lt;param name="beanId"&gt;header&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Header</b>&lt;/param&gt;
- *         &lt;param name="setOn"&gt;order&lt;/param&gt; &lt;-- Set bean on Order --&gt;
+ *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
  *         &lt;param name="bindings"&gt;
- *             property=date, type=OrderDateLong, selector=header date &lt;-- See OrderDateLong decoder definition below... --&gt;
- *             property=customerNumber, type={@link org.milyn.javabean.decoders.LongDecoder Long}, selector=header customer @number
- *             property=customerName, selector=header customer &lt;-- Type defaults to String --&gt;
+ *             &lt;-- Header bindings... --&gt;
+ *             &lt;binding property="date" type="OrderDateLong" selector="header date" /&gt; &lt;-- See OrderDateLong decoder definition below... --&gt;
+ *             &lt;binding property="customerNumber" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="header customer @number" /&gt;
+ *             &lt;binding property="customerName" selector="header customer" /&gt; &lt;-- Type defaults to String --&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
  *     &lt;resource-config selector="order-item"&gt;
  *         &lt;resource&gt;org.milyn.javabean.ProcessingPhaseBeanPopulator&lt;/resource&gt;
- *         &lt;param name="beanId"&gt;orderItem&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.OrderItem</b>&lt;/param&gt;
- *         &lt;param name="addToList"&gt;true&lt;/param&gt;  &lt;-- Create a list of these bean instances --&gt;
- *         &lt;param name="setOn"&gt;order&lt;/param&gt; &lt;-- Set bean on Order --&gt;
+ *         &lt;param name="addToList"&gt;<b>true</b>&lt;/param&gt;  &lt;-- Create a list of these bean instances --&gt;
+ *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
  *         &lt;param name="bindings"&gt;
- *             property=productId, type={@link org.milyn.javabean.decoders.LongDecoder Long}, selector=order-item product
- *             property=quantity, type={@link org.milyn.javabean.decoders.IntegerDecoder Integer}, selector=order-item quantity
- *             property=price, type={@link org.milyn.javabean.decoders.DoubleDecoder Double}, selector=order-item price
+ *             &lt;-- OrderItem bindings... --&gt;
+ *             &lt;binding property="productId" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="order-item product" /&gt;
+ *             &lt;binding property="quantity" type="{@link org.milyn.javabean.decoders.IntegerDecoder Integer}" selector="order-item quantity" /&gt;
+ *             &lt;binding property="price" type="{@link org.milyn.javabean.decoders.DoubleDecoder Double}" selector="order-item price" /&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -156,19 +153,24 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor, Expand
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         this.config = config;
 
-        // Bean ID...
-        beanId = config.getStringParameter("beanId");
-        if (beanId == null || (beanId = beanId.trim()).equals("")) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'beanId' param not specified.");
+        String beanClassName = config.getStringParameter("beanClass", "").trim();
+        beanId = config.getStringParameter("beanId", "").trim();
+
+        // One of "beanId" or "beanClass" must be specified...
+        if (beanId.equals("") && beanClassName.equals("")) {
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
         }
 
-        // Bean runtime class...
-        String beanClassName = config.getStringParameter("beanClass");
-        if (beanClassName != null && (beanClassName = beanClassName.trim()).equals("")) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'beanClass' param empty.");
-        } else if (beanClassName != null) {
+        // Bean class...
+        if (!beanClassName.equals("")) {
             beanClass = createBeanRuntime(beanClassName);
             addToList = config.getBoolParameter("addToList", false);
+        }
+
+        // May need to default the "beanId"...
+        if (beanId.equals("")) {
+            beanId = toBeanId(beanClass);
+            logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'.  Defaulting beanId to '" + beanId + "'.");
         }
 
         // What data is to be extracted from the visited element and set on the bean...
@@ -214,43 +216,41 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor, Expand
 
     public List<SmooksResourceConfiguration> getExpansionConfigurations() throws SmooksConfigurationException {
         List<SmooksResourceConfiguration> resources = new ArrayList<SmooksResourceConfiguration>();
-        String bindings = config.getStringParameter("bindings");
+        Parameter bindingsParam = config.getParameter("bindings");
 
-        if (bindings != null) {
-            BufferedReader bufferedReader = new BufferedReader(new StringReader(bindings));
-            String bindingConfig;
+        if (bindingsParam != null) {
+            Element bindingsParamElement = bindingsParam.getXml();
 
-            try {
-                while ((bindingConfig = bufferedReader.readLine()) != null) {
-                    bindingConfig = bindingConfig.trim();
-                    if (!bindingConfig.equals("")) {
-                        resources.add(buildConfig(bindingConfig));
+            if(bindingsParamElement != null) {
+                NodeList bindings = bindingsParamElement.getElementsByTagName("binding");
+
+                try {
+                    for (int i = 0; bindings != null && i < bindings.getLength(); i++) {
+                        resources.add(buildConfig((Element)bindings.item(i)));
                     }
+                } catch (IOException e) {
+                    throw new SmooksConfigurationException("Failed to read binding configuration for " + config, e);
                 }
-            } catch (IOException e) {
-                throw new SmooksConfigurationException("Failed to read binding configuration for " + config, e);
+            } else {
+                logger.error("Sorry, the Javabean populator bindings must be available as XML DOM.  Please configure using XML.");
             }
         }
 
         return resources;
     }
 
-    private SmooksResourceConfiguration buildConfig(String bindingConfig) throws IOException, SmooksConfigurationException {
+    private SmooksResourceConfiguration buildConfig(Element bindingConfig) throws IOException, SmooksConfigurationException {
         SmooksResourceConfiguration resourceConfig = null;
-        Properties bindingProperties = new Properties();
         String selector;
         String property;
+        String type;
 
-        // Read in the bindings as a set of properties...
-        bindingConfig = bindingConfig.replace(',', '\n');
-        bindingProperties.load(new ByteArrayInputStream(bindingConfig.getBytes("UTF-8")));
-
-        // Make sure there's both 'selector' and 'propery' attributes...
-        selector = bindingProperties.getProperty("selector");
+        // Make sure there's both 'selector' and 'property' attributes...
+        selector = DomUtils.getAttributeValue(bindingConfig, "selector");
         if (selector == null) {
             throw new SmooksConfigurationException("Binding configuration must contain a 'selector' key: " + bindingConfig);
         }
-        property = bindingProperties.getProperty("property");
+        property = DomUtils.getAttributeValue(bindingConfig, "property");
         if (property == null) {
             throw new SmooksConfigurationException("Binding configuration must contain a 'property' key: " + bindingConfig);
         }
@@ -268,7 +268,8 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor, Expand
             // If this attribute is not defined, the value will be taken from the element text...
             resourceConfig.setParameter("attributeName", attributeNameProperty);
         }
-        resourceConfig.setParameter("type", bindingProperties.getProperty("type", "String"));
+        type = DomUtils.getAttributeValue(bindingConfig, "type");
+        resourceConfig.setParameter("type", (type != null?type:"String"));
 
         return resourceConfig;
     }
@@ -321,6 +322,12 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor, Expand
         }
 
         return propertyName.toString();
+    }
+
+    private String toBeanId(Class beanClass) {
+        StringBuffer simpleClassName = new StringBuffer(beanClass.getSimpleName());
+        simpleClassName.setCharAt(0, Character.toLowerCase(simpleClassName.charAt(0)));
+        return simpleClassName.toString();
     }
 
     /**

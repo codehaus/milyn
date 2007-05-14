@@ -18,6 +18,10 @@ package org.milyn.javabean;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -39,22 +43,32 @@ import javax.xml.transform.dom.DOMResult;
  */
 public class BeanPopulatorTest extends TestCase {
 
+    public void testX() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+
+        sdf.clone();
+        Date date = sdf.parse("Wed Nov 15 13:45:28 EST 2006");
+        Calendar cal = (Calendar) sdf.getCalendar().clone();
+        System.out.println(cal.getTime());
+        System.out.println(cal.getTimeZone());
+    }
+
     public void testConstructorConfigValidation() {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         
-        testConstructorConfigValidation(config, "'beanId' param not specified");
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
 
-        config.setParameter("beanId", "beanID");
-
-        config.setParameter("setterName", "setX");
+        config.setParameter("beanId", " ");
         config.setParameter("beanClass", " ");
 
-        testConstructorConfigValidation(config, "beanClass' param empty");
+        config.setParameter("setterName", "setX");
+
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
 
         config.removeParameter("beanClass");
         config.setParameter("beanClass", MyBadBean.class.getName());
 
-        testConstructorConfigValidation(config, "doesn't have a default constructor");
+        testConstructorConfigValidation(config, "doesn't have a public default constructor");
 
         config.removeParameter("beanClass");
         config.setParameter("beanClass", MyGoodBean.class.getName());
@@ -78,7 +92,7 @@ public class BeanPopulatorTest extends TestCase {
     public void test_visit_validateSetterName() throws SAXException, IOException {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         MockExecutionContext request = new MockExecutionContext();
-        Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), false, true);
+        Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), XmlUtil.VALIDATION_TYPE.NONE, true);
         
         config.setParameter("beanId", "userBean");
         config.setParameter("beanClass", MyGoodBean.class.getName());
