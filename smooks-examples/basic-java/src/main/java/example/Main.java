@@ -48,7 +48,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {
-        System.out.println("==============Message In==============");
+        System.out.println("\n\n==============Message In==============");
         System.out.println(new String(messageIn));
         System.out.println("======================================");
 
@@ -56,7 +56,7 @@ public class Main {
 
         System.out.println("==============Message Out=============");
         System.out.println(messageOut);
-        System.out.println("======================================");
+        System.out.println("======================================\n\n");
     }
 
     private static byte[] readInputMessage() {

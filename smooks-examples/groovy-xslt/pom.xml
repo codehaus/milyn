@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>milyn</groupId>
-		<artifactId>smooks-examples</artifactId>
-		<version>1.0</version>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>milyn</groupId>
+        <artifactId>smooks-examples</artifactId>
+        <version>1.0</version>
+    </parent>
     <name>Milyn Smooks Groovy-XSLT (Example)</name>
-	<groupId>milyn</groupId>
-	<artifactId>milyn-smooks-example-groovy-xslt</artifactId>
-	<version>1.0</version>
+    <groupId>milyn</groupId>
+    <artifactId>milyn-smooks-example-groovy-xslt</artifactId>
+    <version>1.0</version>
 
     <dependencies>
         <dependency>
@@ -21,6 +22,36 @@
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-templating</artifactId>
             <version>0.2.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xalan</groupId>
+                    <artifactId>xalan</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-	</dependencies>
+
+        <!--
+        To switch XSLT processors, simple include/exclude the following
+        dependencies.  When both Xalan and Saxon are excluded, the
+        installed JDK's processor will be used (Sun XSLTC Processor).
+        -->
+
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
+        <!-- dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon</artifactId>
+            <version>8.7</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>saxon-dom</artifactId>
+            <version>8.7</version>
+        </dependency -->
+
+    </dependencies>
 </project>

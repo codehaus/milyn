@@ -420,12 +420,26 @@ public class XmlUtil {
 
     /**
      * Serialise the supplied W3C DOM subtree.
+     * <p/>
+     * The output is unformatted.
      *
      * @param nodeList The DOM subtree as a NodeList.
      * @return The subtree in serailised form.
      * @throws DOMException Unable to serialise the DOM.
      */
     public static String serialize(NodeList nodeList) throws DOMException {
+        return serialize(nodeList, false);
+    }
+
+    /**
+     * Serialise the supplied W3C DOM subtree.
+     *
+     * @param nodeList The DOM subtree as a NodeList.
+     * @param format Format the output.
+     * @return The subtree in serailised form.
+     * @throws DOMException Unable to serialise the DOM.
+     */
+    public static String serialize(NodeList nodeList, boolean format) throws DOMException {
         if (nodeList == null) {
             throw new IllegalArgumentException(
                     "null 'subtree' NodeIterator arg in method call.");
@@ -436,6 +450,10 @@ public class XmlUtil {
 
             transformer = factory.newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            if(format) {
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "4");
+            }
 
             StringWriter writer = new StringWriter();
             int listLength = nodeList.getLength();

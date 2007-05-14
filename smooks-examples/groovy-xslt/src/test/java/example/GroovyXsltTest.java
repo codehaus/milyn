@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 
 import org.xml.sax.SAXException;
 import org.milyn.io.StreamUtils;
+import org.milyn.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -30,7 +31,7 @@ public class GroovyXsltTest extends TestCase {
 
     public void test() throws IOException, SAXException {
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("expected.xml"));
-        String result = Main.runSmooksTransform();
+        String result = XmlUtil.serialize(Main.runSmooksTransform().getChildNodes());
 
         assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(result.getBytes())));
     }
