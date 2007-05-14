@@ -17,14 +17,18 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.xml.XmlUtil;
 import org.milyn.smooks.scripting.ScriptingUtils;
 import org.milyn.templating.TemplatingUtils;
 import org.milyn.io.StreamUtils;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
+import org.w3c.dom.Node;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.TransformerFactory;
 import java.io.*;
 
 /**
@@ -35,7 +39,7 @@ public class Main {
 
     private static byte[] messageIn = readInputMessage();
 
-    protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
+    protected static Node runSmooksTransform() throws IOException, SAXException, SmooksException {
 
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks(new FileInputStream("smooks-config.xml"));
@@ -44,24 +48,29 @@ public class Main {
         TemplatingUtils.registerCDUCreators(smooks);
          // Create an exec context - no profiles....
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
-        CharArrayWriter outputWriter = new CharArrayWriter();
 
         // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
+        DOMResult domResult = new DOMResult();
+        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
 
-        return outputWriter.toString();
+        return domResult.getNode();
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {
-        System.out.println("==============Message In==============");
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+        System.out.println("\n\n==============Message In==============");
         System.out.println(new String(messageIn));
         System.out.println("======================================");
 
-        String messageOut = Main.runSmooksTransform();
+        Node messageOut = Main.runSmooksTransform();
 
         System.out.println("==============Message Out=============");
-        System.out.println(messageOut);
+        System.out.println(XmlUtil.serialize(messageOut.getChildNodes(), true));
         System.out.println("======================================");
+        System.out.println("\n**** Used XSLT Processor: " + transformerFactory.getClass().getName());
+        System.out.println("\n**** To switch XSLT Processor, update the <dependencies> in pom.xml.");
+        System.out.println("\n\n");
     }
 
     private static byte[] readInputMessage() {
