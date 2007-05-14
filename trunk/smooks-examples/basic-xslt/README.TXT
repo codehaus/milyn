@@ -4,8 +4,9 @@ About This Example:
     used to apply an XSLT based transform on a message fragment. 
 
     See:
-        1. The code in the src/main/java folder tree (.java, .xsl).
-        2. smooks-config.xml.
+        1. The input message in input-message.xml.
+        2. The code in the src/main/java folder tree (.java, .xsl).
+        3. smooks-config.xml.
 
 How to Run?
 ===========
