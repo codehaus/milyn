@@ -121,12 +121,14 @@
             <url>http://dist.codehaus.org</url>
         </repository>
         <repository>
-            <id>org.codehaus.mojo</id>
+            <id>codehaus</id>
             <url>http://repository.codehaus.org/</url>
         </repository>
-        <repository>
-            <id>org.codehaus.mojo.snapshoots</id>
-            <url>http://snapshots.repository.codehaus.org/</url>
-        </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codehaus</id>
+            <url>http://repository.codehaus.org</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
