@@ -6,7 +6,7 @@
 		<artifactId>smooks-cartridge-base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
-    <name>Milyn Smooks Servlet (Cartridge)</name>
+    <name>Milyn Smooks Cartridge - Servlet</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-smooks-servlet</artifactId>
 	<version>${milyn.smooks.servlet.version}</version>
@@ -48,4 +48,11 @@
 			<scope>test</scope>
 		</dependency>		
 	</dependencies>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
 </project>

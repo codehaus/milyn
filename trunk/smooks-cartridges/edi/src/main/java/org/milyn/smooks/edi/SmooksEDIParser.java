@@ -23,17 +23,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ContainerContext;
-import org.milyn.container.ContainerRequest;
+import org.milyn.cdr.ProfileTargetingExpression;
+import org.milyn.container.ExecutionContext;
+import org.milyn.container.ApplicationContext;
 import org.milyn.edisax.EDIParser;
 import org.milyn.resource.URIResourceLocator;
-import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
 import org.milyn.xml.SmooksXMLReader;
+import org.milyn.schema.ediMessageMapping10.EdimapDocument;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -83,7 +85,7 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	/**
 	 * The Smooks container request.
 	 */
-	private ContainerRequest request;
+	private ExecutionContext executionContext;
 	
 	/* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)
@@ -93,12 +95,9 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 		this.configuration = configuration;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.xml.SmooksXMLReader#setRequest(org.milyn.container.ContainerRequest)
-	 */
-	public void setRequest(ContainerRequest request) {
-		AssertArgument.isNotNull(request, "request");
-		this.request = request;
+	public void setExecutionContext(ExecutionContext executionContext) {
+		AssertArgument.isNotNull(executionContext, "executionContext");
+		this.executionContext = executionContext;
 	}
 
 	/**
@@ -107,7 +106,7 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * Overridden so as to set the EDI to XML mapping model on the parser.
 	 */
 	public void parse(InputSource ediSource) throws IOException, SAXException {
-		Edimap edi2xmlMappingModel = getMappingModel();
+		EdimapDocument.Edimap edi2xmlMappingModel = getMappingModel();
 		
 		setMappingModel(edi2xmlMappingModel);
 		super.parse(ediSource);
@@ -122,28 +121,28 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * @throws IOException Error reading resource configuration data (the mapping model).
 	 * @throws SAXException Error parsing mapping model.
 	 */
-	private Edimap getMappingModel() throws IOException, SAXException {
-		Edimap edi2xmlMappingModel;
-		Hashtable mappings = getMappingTable(request.getContext());
+	private EdimapDocument.Edimap getMappingModel() throws IOException, SAXException {
+		EdimapDocument.Edimap edi2xmlMappingModel;
+		Hashtable mappings = getMappingTable(executionContext.getContext());
 
 		synchronized (configuration) {
-			edi2xmlMappingModel = (Edimap) mappings.get(configuration);
+			edi2xmlMappingModel = (EdimapDocument.Edimap) mappings.get(configuration);
 			if(edi2xmlMappingModel == null) {
 				InputStream mappingConfigData = getMappingConfigData();
 				
 				try {
 					edi2xmlMappingModel = EDIParser.parseMappingModel(mappingConfigData);
 				} catch (IOException e) {
-					IOException newE = new IOException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Useragent(s) " + Arrays.asList(configuration.getUseragentExpressions()) + ".");
+					IOException newE = new IOException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".");
 					newE.initCause(e);
 					throw newE;
 				} catch (SAXException e) {
-					throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Useragent(s) " + Arrays.asList(configuration.getUseragentExpressions()) + ".", e);
+					throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
 				}
 				mappings.put(configuration, edi2xmlMappingModel);
-				logger.info("Parsed, validated and cached EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "].  Target Useragent(s) " + Arrays.asList(configuration.getUseragentExpressions()) + ".");
+				logger.info("Parsed, validated and cached EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
 			} else if(logger.isInfoEnabled()) {
-				logger.info("Found EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "] in the model cache.  Target Useragent(s) " + Arrays.asList(configuration.getUseragentExpressions()) + ".");
+				logger.info("Found EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
 			}
 		}
 		
@@ -155,7 +154,7 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * @param context The context from which to extract the mapping table.
 	 * @return The mapping model talbe.
 	 */
-	protected static Hashtable getMappingTable(ContainerContext context) {
+	protected static Hashtable getMappingTable(ApplicationContext context) {
 		Hashtable mappingModelTable = (Hashtable) context.getAttribute(MAPPING_TABLE_CTX_KEY);
 		
 		if(mappingModelTable == null) {
@@ -180,7 +179,7 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 		String modelConfigData = configuration.getStringParameter(MODEL_CONFIG_KEY);
 		
 		if(modelConfigData == null) {
-			throw new IllegalStateException("Mandatory resource configuration parameter [" + MODEL_CONFIG_KEY + "] not specified for [" + getClass().getName() + "] parser configuration.  Target Useragent(s) " + Arrays.asList(configuration.getUseragentExpressions()) + ".");
+			throw new IllegalStateException("Mandatory resource configuration parameter [" + MODEL_CONFIG_KEY + "] not specified for [" + getClass().getName() + "] parser configuration.  Target Profile(s) " + getTargetProfiles() + ".");
 		}
 		
 		try {
@@ -194,11 +193,15 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 			// that it's an inlined config...
 			configStream = new ByteArrayInputStream(modelConfigData.getBytes());
 		} catch (IOException e) {
-			IllegalStateException state = new IllegalStateException("Invalid EDI mapping model config specified for " + getClass().getName() + ".  Unable to access URI based mapping model [" + modelConfigData + "].  Target Useragent(s) " + Arrays.asList(configuration.getUseragentExpressions()) + ".");
+			IllegalStateException state = new IllegalStateException("Invalid EDI mapping model config specified for " + getClass().getName() + ".  Unable to access URI based mapping model [" + modelConfigData + "].  Target Profile(s) " + getTargetProfiles() + ".");
 			state.initCause(e);
 			throw state;
 		}
 		
 		return configStream;
 	}
+
+    private List<ProfileTargetingExpression> getTargetProfiles() {
+        return Arrays.asList(configuration.getProfileTargetingExpressions());
+    }
 }

@@ -6,7 +6,7 @@
 		<artifactId>smooks-cartridge-base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
-    <name>Milyn Smooks Templating (Cartridge)</name>
+    <name>Milyn Smooks Cartridge - Templating</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-smooks-templating</artifactId>
 	<version>${milyn.smooks.templating.version}</version>
@@ -52,4 +52,11 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
 </project>

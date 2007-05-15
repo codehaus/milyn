@@ -6,7 +6,7 @@
 		<artifactId>smooks-cartridge-base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
-    <name>Milyn Smooks CSV (Cartridge)</name>
+    <name>Milyn Smooks Cartridge - CSV</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-smooks-csv</artifactId>
 	<version>${milyn.smooks.csv.version}</version>
@@ -18,4 +18,12 @@
 			<version>1.6</version>
 		</dependency>
 	</dependencies>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
+
 </project>

@@ -6,9 +6,16 @@
 		<artifactId>smooks-cartridge-base-pom</artifactId>
 		<version>1.0</version>
 	</parent>
-    <name>Milyn Smooks Javabean (Cartridge)</name>
+    <name>Milyn Smooks Cartridge - Javabean</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-smooks-javabean</artifactId>
 	<version>${milyn.smooks.javabean.version}</version>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
 
 </project>
