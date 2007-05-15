@@ -234,6 +234,7 @@ public class SmooksResourceConfiguration {
      */
     public SmooksResourceConfiguration() {
         setSelector("none");
+        setTargetProfile("*");
     }
 
     /**

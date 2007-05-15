@@ -1,0 +1,19 @@
+<assembly>
+    <id>src</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <includes>
+                <include>README.TXT</include>
+                <include>input-message.xml</include>
+                <include>smooks-config.xml</include>
+                <include>pom.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src</directory>
+        </fileSet>
+    </fileSets>
+</assembly>

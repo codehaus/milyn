@@ -37,4 +37,11 @@
         </plugins>
     </reporting>
 
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
+
 </project>

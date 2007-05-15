@@ -3,13 +3,21 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>milyn</groupId>
-		<artifactId>smooks-cartridge-base-pom</artifactId>
+		<artifactId>smooks-examples</artifactId>
 		<version>1.0</version>
 	</parent>
-    <name>Milyn Smooks Cartridge - DTD</name>
+    <name>Milyn Smooks Example - Java-Basic</name>
 	<groupId>milyn</groupId>
-	<artifactId>milyn-smooks-dtd</artifactId>
-	<version>0.1</version>
+	<artifactId>milyn-smooks-example-java-basic</artifactId>
+	<version>1.0</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-core</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+        </dependency>
+	</dependencies>
 
     <repositories>
         <repository>
@@ -17,4 +25,5 @@
             <url>http://dist.codehaus.org</url>
         </repository>
     </repositories>
+
 </project>

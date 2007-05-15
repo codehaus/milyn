@@ -6,27 +6,29 @@
 		<artifactId>milyn</artifactId>
 		<version>1.0</version>
 	</parent>
+    <name>Milyn Smooks Cartridges (Base POM)</name>
 	<groupId>milyn</groupId>
 	<artifactId>smooks-cartridge-base-pom</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0</version>
 	
 	<properties>
-		<milyn.smooks.servlet.version>0.2.1</milyn.smooks.servlet.version>
-		<milyn.smooks.misc.version>0.2.1</milyn.smooks.misc.version>
+		<milyn.smooks.servlet.version>0.2.1</milyn.smooks.servlet.version> <!-- 0.2 -->
+		<milyn.smooks.misc.version>0.2.1</milyn.smooks.misc.version> <!-- 0.2 -->
 		<milyn.smooks.dtd.version>0.1</milyn.smooks.dtd.version>
-		<milyn.smooks.css.version>0.1.2</milyn.smooks.css.version>
-		<milyn.smooks.javabean.version>0.3-SNAPSHOT</milyn.smooks.javabean.version>
-		<milyn.smooks.templating.version>0.2.1</milyn.smooks.templating.version>
-		<milyn.smooks.csv.version>0.1.1</milyn.smooks.csv.version>
-		<milyn.smooks.edi.version>0.2-SNAPSHOT</milyn.smooks.edi.version>
-		<milyn.smooks.scripting.version>0.1</milyn.smooks.scripting.version>
+		<milyn.smooks.css.version>0.1.2</milyn.smooks.css.version> <!-- 0.1.1 -->
+		<milyn.smooks.javabean.version>0.3-SNAPSHOT</milyn.smooks.javabean.version> <!-- 0.2 -->
+		<milyn.smooks.templating.version>0.2.1</milyn.smooks.templating.version> <!-- 0.2 -->
+		<milyn.smooks.csv.version>0.1.1</milyn.smooks.csv.version> <!-- 0.1 -->
+		<milyn.smooks.edi.version>0.2-SNAPSHOT</milyn.smooks.edi.version> <!-- 0.1-SNAPSHOT -->
+		<milyn.smooks.scripting.version>0.1</milyn.smooks.scripting.version> <!-- 0.1-SNAPSHOT -->
 	</properties>
 	
 	<modules>
 		<module>css</module>
 		<module>csv</module>
 		<module>dtd</module>
+        <module>edi</module>
 		<module>javabean</module>
 		<module>misc</module>
 		<module>scripting</module>
@@ -47,5 +49,12 @@
 			<version>${milyn.smooks.core.version}</version>
 		</dependency>
 	</dependencies>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
 	
 </project>
