@@ -20,7 +20,22 @@
         <module>profiling</module>
         <module>javabean-populator</module>
         <module>javabean-templating</module>
+        <module>csv-to-xml</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-core</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>dtdparser</groupId>
+                    <artifactId>dtdparser</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

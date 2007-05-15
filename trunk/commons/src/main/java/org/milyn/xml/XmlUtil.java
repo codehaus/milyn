@@ -416,8 +416,6 @@ public class XmlUtil {
         }
     }
 
-    private static TransformerFactory factory = TransformerFactory.newInstance();
-
     /**
      * Serialise the supplied W3C DOM subtree.
      * <p/>
@@ -446,8 +444,17 @@ public class XmlUtil {
         }
 
         try {
+            TransformerFactory factory = TransformerFactory.newInstance();
             Transformer transformer;
 
+            if(format) {
+                try {
+                    factory.setAttribute("indent-number", new Integer(4));
+                } catch(Exception e) {
+                    // Ignore... Xalan may throw on this!!
+                    // We handle Xalan indentation below (yeuckkk) ...
+                }
+            }
             transformer = factory.newTransformer();
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             if(format) {

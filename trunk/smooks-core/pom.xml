@@ -16,6 +16,12 @@
 			<groupId>milyn</groupId>
 			<artifactId>milyn-commons</artifactId>
 			<version>${milyn.commons.version}</version>            
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 		<dependency>
 			<groupId>dtdparser</groupId>

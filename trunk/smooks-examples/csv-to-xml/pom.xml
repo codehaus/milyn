@@ -6,10 +6,20 @@
 		<artifactId>smooks-examples</artifactId>
 		<version>1.0</version>
 	</parent>
-    <name>Milyn Smooks Example - Java-Basic</name>
+    <name>Milyn Smooks Example - CSV-to-XML</name>
 	<groupId>milyn</groupId>
-	<artifactId>milyn-smooks-example-java-basic</artifactId>
+	<artifactId>milyn-smooks-example-csv-to-xml</artifactId>
 	<version>1.0</version>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-csv</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+
+	</dependencies>
 
     <repositories>
         <repository>
