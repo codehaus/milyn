@@ -1,26 +1,26 @@
 About This Example:
 ===================
-    This example illustrates how Smooks can be used to combine Groovy scripting
-    with XSLT to perform an Order message transform.
+    This example illustrates how to perform XSLT and StringTemplate templating
+    using Smooks.
 
-    In this example, Smooks applies a piece of Groovy script to a message "date"
-    fragment.  This script parses the date, re-adding it to the message as a
-    set of nodes containing the date's consituent parts.  The main transformation
-    is then carried out on the whole document ("$document") using XSLT.
+    The example takes an incoming Shipping request and transforms it using an
+    XSLT Templatelet.  This is a straightforward operation.
 
-    What this illustrates is how easy it is to combine the powers of different
-    technologies under a single Smooks transform.  We use Groovy to pre-process
-    a message fragment that is very difficult to process using XSLT
-    (i.e. a date string).  We then use XSLT to do what it's good at i.e. templating.
-
-    Of course you can get similar functionality to this using XSLT Extensions.
-    However, the difference is that this approach allows you to maintain portability
-    across XSLT Processors.  Note below how you can switch XSLT Processors.
+    The more tasks relate to the resonse transformation, where the tracking
+    history records need to be broken up.  These records are all supplied in
+    a single Text node, separated by newlines (see "response-message.xml").
+    To perform this part of the transform we use the Javabean Cartridge
+    (see the DataDecoder for the tracking number history).  To perform the
+    templating on the response, we chose StringTemplates.
 
     See:
-        1. The input message in input-message.xml.
-        2. The code in the src/main/java folder tree (.java, .groovy, .xsl).
-        3. smooks-config.xml.
+        1. The "request" and "response" messages in message in
+           request-message.xml and response-message.xml.
+        2. The code in the src/main/java folder tree (.java, .st).
+           This contains the bea classes, as well as the StringTemplate
+           templates.
+        3. The "request" and "response" transformations configs in
+           smooks-request-config.xml and smooks-response-config.xml.
 
 How to Run?
 ===========

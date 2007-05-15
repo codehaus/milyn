@@ -2,22 +2,8 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-target-profile="request">
 
     <profiles>
-        <profile base-profile="request" sub-profiles="x" />
+        <profile base-profile="request" />
     </profiles>
-
-    <!--
-    Configure the TrackingNumber bean creation and population. This is used by
-    the XSLT templatelet configured below...
-    -->
-    <resource-config selector="trackingNumber">
-        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
-        <param name="beanId">trackingNumber</param>
-        <param name="beanClass">example.beans.TrackingNumber</param>
-        <param name="bindings">
-            <binding property="shipperID" type="String" selector="trackingNumber shipperID" />
-            <binding property="shipmentNumber" type="String" selector="trackingNumber shipmentNumber" />
-        </param>
-    </resource-config>
 
     <!--
     Use an XSLT templatelet to perform the request "trackingNumber" transformation...
@@ -26,7 +12,7 @@
         <resource type="xsl">
             <!--
             <trackingNumber>
-                <xsl:value-of select="smooks-bean:select('trackingNumber')" />
+                <xsl:value-of select="shipperID" />:<xsl:value-of select="shipmentNumber" />
             </trackingNumber>
             -->
         </resource>

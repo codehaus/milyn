@@ -750,8 +750,14 @@ public class SmooksResourceConfiguration {
             return paramBasedData.getBytes();
         }
         if (resource != null) {
+            InputStream resStream = null;
             try {
-                InputStream resStream = uriResourceLocator.getResource(resource);
+                resStream = uriResourceLocator.getResource(resource);
+            } catch(Exception e) {
+                return getInlineResourceBytes();
+            }
+
+            try {
                 byte[] resourceBytes = null;
 
                 if (resStream == null) {
@@ -766,16 +772,20 @@ public class SmooksResourceConfiguration {
 
                 return resourceBytes;
             } catch (IOException e) {
-                try {
-                    // Ala DTD v2.0, where the <resource> element can carry the inlined resource data.
-                    return resource.getBytes("UTF-8");
-                } catch (UnsupportedEncodingException e1) {
-                    return resource.getBytes();
-                }
+                return getInlineResourceBytes();
             }
         }
 
         return null;
+    }
+
+    private byte[] getInlineResourceBytes() {
+        try {
+            // Ala DTD v2.0, where the <resource> element can carry the inlined resource data.
+            return resource.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e1) {
+            return resource.getBytes();
+        }
     }
 
     /**
