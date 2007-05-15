@@ -118,7 +118,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
 	 *            The URI against which the 'uri' parameter is to be resolved.
 	 * @return The resolved URI.
 	 */
-	public static URI resolveURI(String uri, URI baseURI) {
+	private static URI resolveURI(String uri, URI baseURI) {
 		URI uriObj;
 
 		if (uri == null || uri.trim().equals("")) {

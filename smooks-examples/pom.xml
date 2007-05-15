@@ -17,8 +17,9 @@
         <module>java-basic</module>
         <module>xslt-basic</module>
         <module>xslt-groovy</module>
-        <module>javabean-populator</module>
         <module>profiling</module>
+        <module>javabean-populator</module>
+        <module>javabean-templating</module>
     </modules>
 
     <build>
