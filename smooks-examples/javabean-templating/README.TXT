@@ -6,18 +6,19 @@ About This Example:
     The example takes an incoming Shipping request and transforms it using an
     XSLT Templatelet.  This is a straightforward operation.
 
-    The more tasks relate to the resonse transformation, where the tracking
+    The more interesting tasks relate to the resonse transformation, where the tracking
     history records need to be broken up.  These records are all supplied in
     a single Text node, separated by newlines (see "response-message.xml").
     To perform this part of the transform we use the Javabean Cartridge
-    (see the DataDecoder for the tracking number history).  To perform the
-    templating on the response, we chose StringTemplates.
+    (see the TrackingNumberHistoryDecoder and how it's used in smooks-response-config.xml).
+    To perform the templating on the response, we chose StringTemplate (see the templates
+    package in the src).
 
     See:
-        1. The "request" and "response" messages in message in
+        1. The "request" and "response" messages in
            request-message.xml and response-message.xml.
         2. The code in the src/main/java folder tree (.java, .st).
-           This contains the bea classes, as well as the StringTemplate
+           This contains the bean classes, as well as the StringTemplate
            templates.
         3. The "request" and "response" transformations configs in
            smooks-request-config.xml and smooks-response-config.xml.
