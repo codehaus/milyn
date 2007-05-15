@@ -42,7 +42,7 @@ public class CSVParserTest extends TestCase {
 		SmooksResourceConfiguration config;
         StandaloneExecutionContext context;
 
-                config = new SmooksResourceConfiguration("org.xml.sax.driver", "type:Order-List and from:Acme", CSVParser.class.getName());
+        config = new SmooksResourceConfiguration("org.xml.sax.driver", "type:Order-List and from:Acme", CSVParser.class.getName());
 		config.setParameter("fields", "string-list", "name,address");		
 		SmooksUtil.registerResource(config, smooks);
 		SmooksUtil.registerProfileSet(DefaultProfileSet.create("Order-List-Acme-AcmePartner1", new String[] {"type:Order-List", "from:Acme", "to:AcmePartner1"}), smooks);

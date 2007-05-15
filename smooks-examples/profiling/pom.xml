@@ -11,14 +11,6 @@
 	<artifactId>milyn-smooks-example-profiling</artifactId>
 	<version>1.0</version>
 
-    <dependencies>
-        <dependency>
-            <groupId>milyn</groupId>
-            <artifactId>milyn-smooks-core</artifactId>
-            <version>${milyn.smooks.core.version}</version>
-        </dependency>
-	</dependencies>
-
     <repositories>
         <repository>
             <id>milyn</id>
