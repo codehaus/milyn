@@ -873,7 +873,7 @@ public class SmooksResourceConfiguration {
 
         // Check the element name(s).
         for (int i = contextualSelector.length - 1; i >= 0; i--) {
-            if (currentNode.getNodeType() != Node.ELEMENT_NODE) {
+            if (currentNode == null || currentNode.getNodeType() != Node.ELEMENT_NODE) {
                 return false;
             }
 

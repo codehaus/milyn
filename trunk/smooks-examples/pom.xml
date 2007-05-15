@@ -18,6 +18,7 @@
         <module>xslt-basic</module>
         <module>xslt-groovy</module>
         <module>javabean-populator</module>
+        <module>profiling</module>
     </modules>
 
     <build>
