@@ -10,11 +10,12 @@ About This Example:
     transform, see the "edi-to-java" example.
 
     See:
-        1. The input message in input-message.edi.
-        2. smooks-config.xml.
-        3. The EdiSax parser configuration in
+        1. The "Main" class in src/main/java/example/Main.java.
+        2. The input message in input-message.edi.
+        3. smooks-config.xml.
+        4. The EdiSax parser configuration in
            src/main/java/example/edi-to-xml-order-mapping.xml
-        4. http://milyn.codehaus.org/EdiSax
+        5. http://milyn.codehaus.org/EdiSax
 
 How to Run?
 ===========

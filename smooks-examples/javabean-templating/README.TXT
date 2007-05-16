@@ -15,12 +15,13 @@ About This Example:
     package in the src).
 
     See:
-        1. The "request" and "response" messages in
+        1. The "Main" class in src/main/java/example/Main.java.
+        2. The "request" and "response" messages in
            request-message.xml and response-message.xml.
-        2. The code in the src/main/java folder tree (.java, .st).
+        3. The code in the src/main/java folder tree (.java, .st).
            This contains the bean classes, as well as the StringTemplate
            templates.
-        3. The "request" and "response" transformations configs in
+        4. The "request" and "response" transformations configs in
            smooks-request-config.xml and smooks-response-config.xml.
 
 How to Run?
