@@ -21,6 +21,7 @@
         <module>javabean-populator</module>
         <module>javabean-templating</module>
         <module>csv-to-xml</module>
+        <module>edi-to-xml</module>
     </modules>
 
     <dependencies>
