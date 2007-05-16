@@ -7,8 +7,9 @@ About This Example:
     across all messages that share the same profiles.
 
     See:
-        1. The input message in input-message.xml.
-        2. smooks-config.xml.  Pay specific attention to the "profile"
+        1. The "Main" class in src/main/java/example/Main.java.
+        2. The input message in input-message.xml.
+        3. smooks-config.xml.  Pay specific attention to the "profile"
            info in the config.
 
 How to Run?

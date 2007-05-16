@@ -9,9 +9,10 @@ About This Example:
     Transforms.
 
     See:
-        1. The input message in input-message.xml.
-        2. The code in the src/main/java folder tree (.java).
-        3. smooks-config.xml.
+        1. The "Main" class in src/main/java/example/Main.java.
+        2. The input message in input-message.xml.
+        3. The code in the src/main/java folder tree (.java).
+        4. smooks-config.xml.
 
 How to Run?
 ===========

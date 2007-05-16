@@ -15,12 +15,13 @@ About This Example:
     be interested in looking at that before looking at this example.
 
     See:
-        1. The input message in input-message.edi.
-        2. smooks-config.xml.
-        3. The EdiSax parser configuration in
+        1. The "Main" class in src/main/java/example/Main.java.
+        2. The input message in input-message.edi.
+        3. smooks-config.xml.
+        4. The EdiSax parser configuration in
            src/main/java/example/edi-to-xml-order-mapping.xml
-        4. http://milyn.codehaus.org/EdiSax
-        5. The Javabean classes in src/main/java/example/beans.
+        5. http://milyn.codehaus.org/EdiSax
+        6. The Javabean classes in src/main/java/example/beans.
 
 How to Run?
 ===========

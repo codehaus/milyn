@@ -10,8 +10,9 @@ About This Example:
     capability, but for an EDI message stream. 
 
     See:
-        1. The input message in input-message.csv.
-        2. smooks-config.xml.
+        1. The "Main" class in src/main/java/example/Main.java.
+        2. The input message in input-message.csv.
+        3. smooks-config.xml.
 
 How to Run?
 ===========
