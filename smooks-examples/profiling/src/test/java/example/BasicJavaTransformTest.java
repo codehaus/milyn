@@ -33,7 +33,6 @@ public class BasicJavaTransformTest extends TestCase {
         Main mainInst = new Main();
         String result = mainInst.runSmooksTransform("message-exchange-2");
 
-        System.out.println(result);
         assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(result.getBytes())));
     }
 }
