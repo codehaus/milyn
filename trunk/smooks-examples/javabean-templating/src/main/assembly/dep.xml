@@ -8,7 +8,6 @@
             <includes>
                 <include>README.TXT</include>
                 <include>*.xml</include>
-                <include>pom.xml</include>
             </includes>
         </fileSet>
         <fileSet>
