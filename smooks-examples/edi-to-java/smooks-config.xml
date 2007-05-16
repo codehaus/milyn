@@ -6,7 +6,7 @@
     -->
     <resource-config selector="org.xml.sax.driver">
 	    <resource>org.milyn.smooks.edi.SmooksEDIParser</resource>
-		<param name="mapping-model" type="string-list">/example/edi-to-xml-order-mapping.xml</param>
+		<param name="mapping-model">/example/edi-to-xml-order-mapping.xml</param>
 	</resource-config>
 
 
