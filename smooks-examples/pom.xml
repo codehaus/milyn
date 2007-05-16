@@ -17,11 +17,12 @@
         <module>java-basic</module>
         <module>xslt-basic</module>
         <module>xslt-groovy</module>
-        <module>profiling</module>
         <module>javabean-populator</module>
         <module>javabean-templating</module>
         <module>csv-to-xml</module>
         <module>edi-to-xml</module>
+        <module>edi-to-java</module>
+        <module>profiling</module>
     </modules>
 
     <dependencies>
