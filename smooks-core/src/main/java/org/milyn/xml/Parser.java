@@ -300,7 +300,7 @@ public class Parser {
                     if(attNamespace != null && attQName != null) {
                     	attNamespace = attNamespace.intern();
                     	if(attNamespace.equals("")) {
-                    		if(attQName.startsWith("xmlns:")) {
+                            if(attQName.startsWith("xmlns")) {
                     			attNamespace = Namespace.XMLNS_URI;
                     		} else if(attQName.startsWith("xml:")) {
                     			attNamespace = Namespace.XML_URI;
