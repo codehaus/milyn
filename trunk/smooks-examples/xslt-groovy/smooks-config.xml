@@ -3,7 +3,7 @@
 
     <!--
     Break out the <date> field into separate "time", "day", "month" and "year" fields using Groovy.
-    Tis makes the complex date field value consumable by something like XSLT.
+    This makes the complex date field value consumable by something like XSLT.
     -->
     <resource-config selector="header date">
 	    <resource>/example/DateFormatter.groovy</resource>
