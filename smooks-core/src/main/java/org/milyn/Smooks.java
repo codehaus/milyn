@@ -29,6 +29,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.profile.DefaultProfileStore;
 import org.milyn.profile.ProfileSet;
+import org.milyn.profile.UnknownProfileMemberException;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.assertion.AssertArgument;
 import org.w3c.dom.Node;
@@ -138,8 +139,9 @@ public class Smooks {
      * @param targetProfile The target profile ({@link ProfileSet base profile}) on behalf of whom the filtering/serialisation
      *                      filter is to be executed.
      * @return Execution context instance.
+     * @throws UnknownProfileMemberException Unknown target profile.
      */
-    public StandaloneExecutionContext createExecutionContext(String targetProfile) {
+    public StandaloneExecutionContext createExecutionContext(String targetProfile)  throws UnknownProfileMemberException {
         return new StandaloneExecutionContext(targetProfile, new LinkedHashMap(), context);
     }
 
