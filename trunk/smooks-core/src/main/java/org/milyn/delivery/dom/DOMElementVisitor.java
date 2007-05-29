@@ -34,7 +34,9 @@ import org.w3c.dom.Element;
  * <p/>
  * Implementations should be annotated with the {@link org.milyn.delivery.dom.Phase}
  * annotation, indicating in which of the {@link SmooksDOMFilter Visit Phases} the visitor should be applied. If not
- * annotated, the visitor is applied during the Processing phase.
+ * annotated, the visitor is applied during the Processing phase.  The phase may also be specified via the
+ * "VisitPhase" property on the {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration}.  Valid values
+ * in this case are "ASSEMBLY" and "PROCESSING".
  * <p/>
  * Implementations must be stateless.  If state storage is required, attach the state to the
  * supplied {@link org.milyn.container.ExecutionContext}.

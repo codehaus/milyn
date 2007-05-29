@@ -535,8 +535,12 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 			
 			if(contentDeliveryUnit instanceof DOMElementVisitor) {
                 Phase phaseAnnotation = contentDeliveryUnit.getClass().getAnnotation(Phase.class);
+                String visitPhase = resourceConfig.getStringParameter("VisitPhase", VisitPhase.PROCESSING.toString());
 
                 if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
+                    // It's an assembly unit...
+                    assemblyUnitTable.addMapping(elementName, resourceConfig, contentDeliveryUnit);
+                } else if (visitPhase.equalsIgnoreCase(VisitPhase.ASSEMBLY.toString())) {
                     // It's an assembly unit...
                     assemblyUnitTable.addMapping(elementName, resourceConfig, contentDeliveryUnit);
                 } else {
