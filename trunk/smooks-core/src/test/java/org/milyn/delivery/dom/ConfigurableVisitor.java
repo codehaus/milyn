@@ -11,7 +11,7 @@ import org.w3c.dom.Element;
 /**
  * @author
  */
-public class ProcessorVisitor2 implements DOMElementVisitor {
+public class ConfigurableVisitor implements DOMElementVisitor {
     public void visitBefore(Element element, ExecutionContext executionContext) {
         element.setAttribute("visitedby-" + getClass().getSimpleName(), "true");
     }
