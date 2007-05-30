@@ -47,13 +47,14 @@ public class SmooksVisitorPhaseTest extends TestCase {
 
         // Check the assembly units...
         List<ContentDeliveryUnitConfigMap> assemblyUnits = config.getAssemblyUnits().getMappings("a");
-        assertEquals(1, assemblyUnits.size());
+        assertEquals(2, assemblyUnits.size());
         assertTrue(assemblyUnits.get(0).getContentDeliveryUnit() instanceof AssemblyVisitor1);
+        assertTrue(assemblyUnits.get(1).getContentDeliveryUnit() instanceof ConfigurableVisitor);
 
         List<ContentDeliveryUnitConfigMap> processingUnits = config.getProcessingUnits().getMappings("a");
         assertEquals(2, processingUnits.size());
         assertTrue(processingUnits.get(0).getContentDeliveryUnit() instanceof ProcessorVisitor1);
-        assertTrue(processingUnits.get(1).getContentDeliveryUnit() instanceof ProcessorVisitor2);
+        assertTrue(processingUnits.get(1).getContentDeliveryUnit() instanceof ConfigurableVisitor);
     }
 
 
