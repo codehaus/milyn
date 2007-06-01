@@ -562,10 +562,16 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor, Expand
     }
 
     private Method getMethod(Class type, Object bean, String setterName) {
-        try {
-            beanSetterMethod = bean.getClass().getMethod(setterName, new Class[]{type});
-        } catch (NoSuchMethodException e1) {
-            return null;
+        Method[] methods = bean.getClass().getMethods();
+
+        for(Method method : methods) {
+            if(method.getName().equals(setterName)) {
+                Class[] params = method.getParameterTypes();
+                if(params != null && params.length == 1 && params[0].isAssignableFrom(type)) {
+                    beanSetterMethod = method;
+                    break;
+                }
+            }
         }
 
         return beanSetterMethod;
