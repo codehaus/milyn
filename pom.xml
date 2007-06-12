@@ -111,6 +111,7 @@
                         <link>http://milyn.codehaus.org/javadoc/smooks</link>
                         <link>http://milyn.codehaus.org/javadoc/magger</link>
                         <link>http://milyn.codehaus.org/javadoc/edisax</link>
+                        <link>http://www.w3.org/Style/CSS/SAC/doc/</link>
                     </links>
                 </configuration>
             </plugin>
