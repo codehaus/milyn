@@ -50,25 +50,32 @@ import org.w3c.flute.parser.Parser;
  * 
  * <h3>Sample Code</h3>
  * <pre>
-	{@link org.milyn.resource.URIResourceLocator} resLocator = new URIResourceLocator();
-	CSSParser parser = new CSSParser(resLocator);
-	{@link org.milyn.magger.CSSStylesheet} styleSheet;
-	Iterator rules;
-	
-	try {
-		styleSheet = {@link #parse(URI, SACMediaList) parser.parse}(URI.create("http://www.acme.com/style.css"), null);
-	} catch (CSSException e) {
-		// Do something...
-	} catch (IOException e) {
-		// Do something...
-	}
-	
-	rules = {@link org.milyn.magger.CSSStylesheet#getRules() styleSheet.getRules()}.iterator();
-	while(rules.hasNext()) {
-		{@link org.milyn.magger.CSSRule} rule = (CSSRule)rules.next();
-		
-		// Use the rules for whatever...
-	}
+    {@link org.milyn.resource.ExternalResourceLocator} resLocator;
+    CSSParser parser;
+    {@link org.milyn.magger.CSSStylesheet} styleSheet;
+    Iterator rules;
+
+    // Create the {@link org.milyn.resource.ExternalResourceLocator} instance for accessing the CSS
+    // resource stream.  In this case we use a {@link org.milyn.resource.URIResourceLocator}, but you
+    // can use any of the {@link org.milyn.resource.ExternalResourceLocator} implementations...
+    resLocator = new URIResourceLocator();
+    // Create the CSSParser instance using the resource locator...
+    parser = new CSSParser(resLocator);
+
+    try {
+        styleSheet = {@link #parse(URI, SACMediaList) parser.parse}(URI.create("http://www.acme.com/style.css"), null);
+    } catch (CSSException e) {
+        // Do something...
+    } catch (IOException e) {
+        // Do something...
+    }
+
+    rules = {@link org.milyn.magger.CSSStylesheet#getRules() styleSheet.getRules()}.iterator();
+    while(rules.hasNext()) {
+        {@link org.milyn.magger.CSSRule} rule = (CSSRule)rules.next();
+
+        // Use the rules for whatever...
+    }
  * </pre>
  * 
  * @author tfennelly
