@@ -50,7 +50,7 @@ import org.w3c.flute.parser.Parser;
  * 
  * <h3>Sample Code</h3>
  * <pre>
-	{@link org.milyn.resource.URLResourceLocator} resLocator = new URLResourceLocator();
+	{@link org.milyn.resource.URIResourceLocator} resLocator = new URIResourceLocator();
 	CSSParser parser = new CSSParser(resLocator);
 	{@link org.milyn.magger.CSSStylesheet} styleSheet;
 	Iterator rules;
@@ -98,8 +98,8 @@ public class CSSParser {
 	 * the CSS stream. <code>Null</code> if the rules are to be associated with 
 	 * any media.
 	 * @return A CSS Stylesheet.
-	 * @throws CSSException
-	 * @throws IOException
+     * @throws IOException Unable to read SCC stream.
+	 * @throws CSSException Invalid CSS stream.
 	 */
 	public CSSStylesheet parse(URI cssURI, SACMediaList media) throws CSSException, IOException {
 		return parse(cssURI, media, new CSSStylesheet());
@@ -113,8 +113,8 @@ public class CSSParser {
 	 * any media.
 	 * @param styleSheet The {@link CSSStylesheet} to which the style rules are added. 
 	 * @return A CSS Stylesheet.
-	 * @throws CSSException
-	 * @throws IOException
+     * @throws IOException Unable to read SCC stream.
+	 * @throws CSSException Invalid CSS stream.
 	 */
 	public CSSStylesheet parse(URI cssURI, SACMediaList media, CSSStylesheet styleSheet) throws CSSException, IOException {
 		if(cssURI == null) {
@@ -144,8 +144,8 @@ public class CSSParser {
 	 * the CSS stream. <code>Null</code> if the rules are to be associated with 
 	 * any media.
 	 * @return A CSS Stylesheet.
-	 * @throws IOException 
-	 * @throws CSSException 
+     * @throws IOException Unable to read SCC stream.
+	 * @throws CSSException Invalid CSS stream.
 	 */
 	public CSSStylesheet parse(String cssString, URI baseURI, SACMediaList media) throws CSSException, IOException {
 		if(cssString == null) {
@@ -174,8 +174,8 @@ public class CSSParser {
 	 * @param styleSheet The {@link CSSStylesheet} to which the style rules are added.  <code>null</code>
 	 * you want the method to construct a new {@link CSSStylesheet} instance;
 	 * @return A CSS Stylesheet.
-	 * @throws IOException 
-	 * @throws CSSException 
+     * @throws IOException Unable to read SCC stream.
+	 * @throws CSSException Invalid CSS stream.
 	 */
 	public CSSStylesheet parse(InputSource cssSrc, URI baseURI, SACMediaList media, CSSStylesheet styleSheet) throws CSSException, IOException {
 		if(cssSrc == null) {
