@@ -22,12 +22,9 @@
 <div id="container">
 <div id="main">
 <div id="intro">
-     #if ($leftHeaderFragment)
-       <p>${leftHeaderFragment}</p>
-     #else
-       <p>Create a page called <a href="http://docs.codehaus.org/pages/createpage.action?spaceKey=${space.spaceKey}&title=LeftHeader">LeftHeader</a> in Confluence for this content!</p>
-     #end
-</div><div class="clear"></div>
+            <p><div class="imageHolder"><a href="http://milyn.codehaus.org"><img src="/milyn.gif" align="absmiddle" border="0"/></a></div></p>
+
+     </div><div class="clear"></div>
 
 
 <div class="shortheaderstyle" style="font-size: 1.0em">
@@ -35,7 +32,7 @@
  <tr>
   <td align="left" valign="middle">
    <div id="ubreadcrumbs">
-    <a href="/"><img src="home.gif" /></a>
+    <a href="/"><img src="/home.gif" /></a>
     <!--
     #if ($page.pageKey != "Home")
      #foreach($breadcrumb in $breadcrumbs)
