@@ -21,59 +21,59 @@ import org.w3c.dom.Node;
  */
 public class DateFormatter implements DOMElementVisitor {
 
-	private SimpleDateFormat dateDecodeFormat;
-	private Properties outputFields;
+    private SimpleDateFormat dateDecodeFormat;
+    private Properties outputFields;
 
-	public void setConfiguration(SmooksResourceConfiguration configuration) {
-		String inputFormat = configuration.getStringParameter("input-format");
-		String outputFormats = configuration.getStringParameter("output-format", "time=HH:mm\nday=dd\nmonth=MM\nyear=yy");
+    public void setConfiguration(SmooksResourceConfiguration configuration) {
+        String inputFormat = configuration.getStringParameter("input-format");
+        String outputFormats = configuration.getStringParameter("output-format", "time=HH:mm\nday=dd\nmonth=MM\nyear=yy");
 
-		assert inputFormat != null;
-		assert inputFormat != '';
-		dateDecodeFormat = new SimpleDateFormat(inputFormat);
-		outputFields = parseOutputFields(outputFormats);
-	}
+        assert inputFormat != null;
+        assert inputFormat != '';
+        dateDecodeFormat = new SimpleDateFormat(inputFormat);
+        outputFields = parseOutputFields(outputFormats);
+    }
 
     public void visitBefore(Element element, ExecutionContext executionContext) {
         // Doing nothing on this visit - leave it until after
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) {
-		String dateString = null;
-		Date date = null;
+        String dateString = null;
+        Date date = null;
 
-		// Decode the date string...
-		dateString = element.getTextContent();
-		try {
-			date = dateDecodeFormat.parse(dateString);
-		} catch (ParseException e) {
-			date = new Date(0);
-		}
+        // Decode the date string...
+        dateString = element.getTextContent();
+        try {
+            date = dateDecodeFormat.parse(dateString);
+        } catch (ParseException e) {
+            date = new Date(0);
+        }
 
-		// Clear the child contents of the element...
-		DomUtils.removeChildren(element);
-		
-		// Define a closure that we'll use for adding formatted date fields
-		// from the decoded date...
-		def addDateField = { fieldName, fieldFormat ->
-			Document doc = element.getOwnerDocument();
-			Element newElement = doc.createElement(fieldName);
-			SimpleDateFormat dateFormatter = new SimpleDateFormat(fieldFormat);
-			
-			element.appendChild(newElement);
-			newElement.appendChild(doc.createTextNode(dateFormatter.format(date)));
-		}
+        // Clear the child contents of the element...
+        DomUtils.removeChildren(element);
 
-		// Apply the "addDateField" closure to the entries of the outputFields specified as
-		// a Smooks resource parameter...
-		for (entry in outputFields) {
-			addDateField(entry.key, entry.value);
-		}
-	}
-	
-	private Properties parseOutputFields(String outputFormats) {
-		Properties properties = new Properties();
-		properties.load(new ByteArrayInputStream(outputFormats.getBytes()));
-		return properties;
-	}
+        // Define a closure that we'll use for adding formatted date fields
+        // from the decoded date...
+        def addDateField = { fieldName, fieldFormat ->
+            Document doc = element.getOwnerDocument();
+            Element newElement = doc.createElement(fieldName);
+            SimpleDateFormat dateFormatter = new SimpleDateFormat(fieldFormat);
+
+            element.appendChild(newElement);
+            newElement.appendChild(doc.createTextNode(dateFormatter.format(date)));
+        }
+
+        // Apply the "addDateField" closure to the entries of the outputFields specified as
+        // a Smooks resource parameter...
+        for (entry in outputFields) {
+            addDateField(entry.key, entry.value);
+        }
+    }
+
+    private Properties parseOutputFields(String outputFormats) {
+        Properties properties = new Properties();
+        properties.load(new ByteArrayInputStream(outputFormats.getBytes()));
+        return properties;
+    }
 }
