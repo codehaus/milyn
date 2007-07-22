@@ -35,6 +35,7 @@
 			</trackingNumber>
 			-->
 		</param>
+		<param name="is-xslt-templatelet">true</param>
 	</smooks-resource>
 	
 </smooks-resource-list>
