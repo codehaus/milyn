@@ -16,11 +16,9 @@
 	</smooks-resource>	
 		
 	<!--
-		Use a StringTemplate template to perform the transformation.
+		Use a XSL template to perform the transformation.
 		We're transforming the "history" element...
 	-->
-	<smooks-resource selector="history" path="/org/milyn/templating/soapshipping/xslt/HistoryTrans.xsl">
-		<param name="is-xslt-templatelet">false</param>
-	</smooks-resource>
-	
+	<smooks-resource selector="history" path="/org/milyn/templating/soapshipping/xslt/HistoryTrans.xsl" />
+
 </smooks-resource-list>

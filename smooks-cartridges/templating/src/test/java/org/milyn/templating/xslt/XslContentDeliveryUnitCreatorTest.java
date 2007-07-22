@@ -40,7 +40,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename", "org/milyn/templating/xslt/xsltransunit.xsl");
 		String transResult = null;
 
-		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
+        System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
 		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
 		SmooksUtil.registerResource(res, smooks);
 		TemplatingUtils.registerCDUCreators(smooks);
@@ -65,13 +65,13 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 	
 	public void testXslUnitTrans_parambased(String action, String expectedFileName) {
 		Smooks smooks = new Smooks();
-		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename");
+		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename", "<z id=\"{@id}\">Content from template!!</z>");
 		String transResult = null;
 
 		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
 		
-		res.setParameter("restype", "xsl");
-		res.setParameter("resdata", "<z id=\"{@id}\">Content from template!!</z>");
+		res.setResourceType("xsl");
+        res.setParameter(XslContentDeliveryUnitCreator.IS_XSLT_TEMPLATELET, "true");
 		res.setParameter("action", action);
 		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
 		SmooksUtil.registerResource(res, smooks);

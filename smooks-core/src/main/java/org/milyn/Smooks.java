@@ -33,6 +33,7 @@ import org.milyn.profile.UnknownProfileMemberException;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.assertion.AssertArgument;
 import org.w3c.dom.Node;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.Source;
@@ -182,7 +183,11 @@ public class Smooks {
             if (source instanceof StreamSource) {
                 resultNode = smooks.filter(new InputStreamReader(((StreamSource) source).getInputStream(), executionContext.getContentEncoding()));
             } else {
-                resultNode = smooks.filter(((DOMSource) source).getNode().getOwnerDocument());
+                Node node = ((DOMSource) source).getNode();
+                if(!(node instanceof Document)) {
+                    throw new IllegalArgumentException("DOMSource Source types must contain a Document node.");
+                }
+                resultNode = smooks.filter((Document)node);
             }
 
             // Populate the Result

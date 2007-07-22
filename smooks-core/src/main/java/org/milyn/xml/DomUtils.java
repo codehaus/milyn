@@ -22,7 +22,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;

@@ -28,15 +28,19 @@ import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.delivery.dom.DOMElementVisitor;
 
 /**
- * {@link org.milyn.delivery.ContentDeliveryUnit} for the <a href="http://groovy.codehaus.org/">Groovy</a> scripting language.
+ * {@link DOMElementVisitor} for the <a href="http://groovy.codehaus.org/">Groovy</a> scripting language.
  * <p/>
  * The Groovy script must implement one (and only one) of the following interfaces:
  * <ol>
- * 	<li>{@link org.milyn.delivery.dom.DOMElementVisitor}, or</li>
+ * 	<li>{@link DOMElementVisitor}, or</li>
  * 	<li>{@link org.milyn.delivery.dom.serialize.SerializationUnit}.</li>
  * </ol>
+ * Since Groovy v1.0 doesn't support annotations, you'll need to set the "visit phase" for all
+ * {@link DOMElementVisitor} implementations via the "VisitPhase" parameter.  See
+ * the {@link DOMElementVisitor} javadoc.  Alternatively, you can try using Groovy 1.1, which is supposed
+ * to support annotations. 
  * 
- * <h3>.cdrl Configuration</h3>
+ * <h3>Resource Configuration</h3>
  * Two configurations are required in order to use <a href="http://groovy.codehaus.org/">Groovy</a>
  * based scripting in Smooks:
  * <ol>
@@ -54,14 +58,10 @@ import org.milyn.delivery.dom.DOMElementVisitor;
  * So this configuration tells Smooks how to handle "groovy" resource configuration types i.e. resources with
  * a restype of "groovy", or resources with a ".groovy" file extension in their path.
  * <pre>
- * &lt;smooks-resource selector="cdu-creator" path="<b>org.milyn.smooks.scripting.GroovyContentDeliveryUnitCreator</b>" &gt;
- * 
- *  &lt;!-- 
- *      (Mandatory) The resource "type" to be handled by this class.
- *  --&gt;
- *  &lt;param name="<b>restype</b>"&gt;groovy&lt;/param&gt;
- * 
- * &lt;/smooks-resource&gt;
+ * &lt;resource-config selector="cdu-creator"&gt;
+ *     &lt;resource&gt;<b>org.milyn.smooks.scripting.GroovyContentDeliveryUnitCreator</b>&lt;/resource&gt;
+ *     &lt;param name="<b>restype</b>"&gt;groovy&lt;/param&gt;
+ * &lt;/resource-config&gt;
  * </pre>
  * 
  * <h4>2. Targeting "groovy" Resources</h4>
@@ -75,9 +75,9 @@ import org.milyn.delivery.dom.DOMElementVisitor;
  * <u>URI based Groovy Scripting:</u><br/>
  * Note, the groovy resource specified in the path attribute must have a file extension of ".groovy".
  * <pre>
- * &lt;smooks-resource  useragent="<i>useragent/profile</i>" selector="<i>target-element</i>" path="<b>{@link org.milyn.resource.URIResourceLocator URI}</b>" &gt;
- *  
- *  &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
+ * &lt;smooks-resource  selector="<i>target-element</i>"&gt;
+ *     &lt;resource&gt;<b>{@link org.milyn.resource.URIResourceLocator URI}</b>&lt;/resource&gt;
+ *     &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
  *                      the {@link org.milyn.delivery.ContentDeliveryUnit#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)}
  *                      method. --&gt;
  * &lt;/smooks-resource&gt;
@@ -85,16 +85,13 @@ import org.milyn.delivery.dom.DOMElementVisitor;
  * <p/>
  * <u>Inlined Groovy Scripting:</u>
  * <pre>
- * &lt;smooks-resource  useragent="<i>useragent/profile</i>" selector="<i>target-element</i>"&gt;
- * 
- *  &lt;param name="<b>restype</b>"&gt;groovy&lt;/param&gt;
- * 
- *  &lt;param name="<b>resdata</b>"&gt;<i>inlined groovy script</i>&lt;/param&gt;
- *  
- *  &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
+ * &lt;smooks-resource  selector="<i>target-element</i>"&gt;
+ *     &lt;resource <b>type="groovy"</b>&gt;
+ *         <b><i>inlined groovy script, optionally wrapped in XML Comment or CDATA sections...</i></b>
+ *     &lt;/resource&gt;
+ *     &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
  *                      the {@link org.milyn.delivery.ContentDeliveryUnit#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)}
  *                      method. --&gt;
- * 
  * &lt;/smooks-resource&gt;
  * </pre>
  * 
