@@ -28,50 +28,17 @@ import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
 /**
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="daniel.bevenius@redpill.se">Daniel Bevenius</a>
  */
 public class BasicXslTransformTest extends TestCase {
 	private Logger log = Logger.getLogger( BasicXslTransformTest.class );
 
     public void test() throws IOException, SAXException {
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("expected.xml"));
-        String exp = getFileContent( "src/test/java/example/expected.xml" );
         String result = Main.runSmooksTransform();
+
         log.debug(  result );
-        log.debug(  exp );
+        log.debug(  new String(expected) );
         assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(result.getBytes())));
     }
-    
-    public static String getFileContent(String file)
-	{
-		if (file == null)
-			throw new IllegalArgumentException( "file cannot be null" );
-		BufferedReader bufr = null;
-		StringBuilder sb = new StringBuilder();
-		try
-		{
-			bufr = new BufferedReader( new FileReader( file ) );
-
-			String tmp = null;
-			while ((tmp = bufr.readLine()) != null)
-				sb.append( tmp ).append( File.separator );
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			if (bufr != null)
-				try
-				{
-					bufr.close();
-				}
-				catch (IOException e)
-				{ /* ignore */
-				}
-		}
-		return sb.toString();
-	}
-    
 }
