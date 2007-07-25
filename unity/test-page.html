@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+ <meta http-equiv="content-type" content="text/html" />
+ <meta name="description" content="_your description goes here_" />
+ <meta name="keywords" content="_your,keywords,goes,here_" />
+ <meta name="author" content="Codehaus  / Original design: Andreas Viklund - http://andreasviklund.com/" />
+ <link rel="stylesheet" href="style.css" type="text/css" />
+ <link rel="stylesheet" type="text/css" href="http://media.codehaus.org/themes/standard-green-experimental/andreas03.css" />
+ <title>Milyn - Smooks</title>
+</head>
+
+<body>
+<div id="thetop">
+<a id="top"></a>
+<p class="hide">Skip to: <a href="#sitemenu" accesskey="2">Site menu</a> | <a href="#maincontent" accesskey="3">Main content</a></p>
+</div>
+
+<div id="container">
+<div id="main">
+<div id="intro">
+            <p><div class="imageHolder"><a href="http://milyn.codehaus.org"><img src="/milyn.gif" align="absmiddle" border="0"/></a></div></p>
+
+     </div><div class="clear"></div>
+
+
+<div class="shortheaderstyle" style="font-size: 1.0em">
+<table id="utop_nav" style="width: 100%;padding-right: 2mm">
+ <tr>
+  <td align="left" valign="middle">
+   <div id="ubreadcrumbs">
+    <a href="/"><img src="/home.gif" /></a>
+    <!--
+                                 -> <a href="/Smooks">Smooks</a>
+                   -->
+   </div>
+  </td>
+  <td align="right" valign="middle" id="quicklinks">
+       <p><a href="/downloads" title="downloads">Downloads</a> | <span class="nobr"><a href="http://xircles.codehaus.org/projects/milyn/repo">SVN</a></span> | <span class="nobr"><a href="http://jira.codehaus.org/browse/MILYN">JIRA</a></span></p>
+     </td>
+ </tr>
+</table>
+</div>
+
+<h3 class="headerstyle" id="upage_title">
+ <table style="width: 100%; padding-right: 2mm">
+   <tr>
+     <td align="left" valign="middle">Smooks</td>
+     <td align="right" valign="middle"><a href="/Smooks?print=1"><img src="http://codehaus.org/print.gif" class="print" alt="Print" alt="Printable Version"/></a></td>
+   </tr>
+ </table>
+</h3>
+
+<div class="content" style="padding-top: 3mm;">
+          <p>Smooks is a Java Framework for performing <b><a href="/Fragment+based+Data+Processing+with+Smooks" title="Fragment based Data Processing with Smooks">Fragment based Data Transformation and Analysis</a></b> using existing data processing technologies (such as XSLT, raw Java, Groovy script and more).  </p>
+
+<p>Smooks allows you to <b>mix and match</b> different technologies within the context of a single message transform, but does so in a way that provides a degree of isolation between the different technologies.  This helps to maintain the portability of your transformation/analysis logic.</p>
+
+<table cellpadding="5" width="85%" cellspacing="8px" class="infoMacro" border="0" align="center"><colgroup><col width="24"></col><col></col></colgroup><tr><td valign="top"><img src="http://docs.codehaus.org/images/icons/emoticons/information.gif" width="16" height="16" align="absmiddle" alt="" border="0"></img></td><td><b class="strong">See...</b><br></br>
+<ul>
+	<li><b><a href="/Smooks+FAQs" title="Smooks FAQs">FAQs</a></b></li>
+	<li><b><a href="/Smooks+Features" title="Smooks Features">Features</a></b></li>
+	<li><b><a href="/Tutorials" title="Tutorials">Tutorials</a></b></li>
+</ul>
+</td></tr></table>
+
+<p>Smooks can also be used simply as an XML analysis tool (see <a href="/Smooks+Report+Generator" title="Smooks Report Generator">Smooks Report Generator</a>).</p>
+
+<p>Specialised analysis or transformation capabilities can be built on top of Smooks Core through the creation of a <b>Smooks Cartridge</b>.<br></br>
+<a name="Smooks-smookscartridges"></a></p>
+<div class="section_1"><h1><a name="Smooks-SmooksCartridges"></a>Smooks Cartridges</h1>
+<p>The basic functionality of Smooks Core can be extended through the creation of what we call a "Smooks Cartridge".  A Cartridge is simply a Java archive (jar) containing reusable <span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks/org/milyn/delivery/dom/DOMElementVisitor.html">Visitor</a></span> logic (Content Delivery Units).  A Smooks Cartridge should provide "ready to use" support for a specific type of XML analysis or transformation.</p>
+
+<p>There are a number of Smooks Cartridges already available for <a href="/downloads" title="downloads">download</a>:</p>
+<table class="confluenceTable"><tbody>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/javabean/">JavaBean</a></span></b> </td>
+<td class="confluenceTd"> Enables population of JavaBean instances from data embedded in an XML stream (XML attributes or text).  <b>See <a href="/Tutorials" title="Tutorials">Tutorials</a></b>. <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/templating/">Templating</a></span></b> </td>
+<td class="confluenceTd"> Enables DOM fragment-level templating using different templating solutions e.g. <span class="nobr"><a href="http://www.stringtemplate.org/">StringTemplate</a></span> and XSLT.  <b>See <a href="/Tutorials" title="Tutorials">Tutorials</a></b>. <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/scripting/">Scripting</a></span></b> </td>
+<td class="confluenceTd"> Enables DOM fragment-level Transformation/Analysis using different scripting languages.  Currenly supports <span class="nobr"><a href="http://groovy.codehaus.org/">Groovy</a></span>.  <b>See <a href="/Tutorials" title="Tutorials">Tutorials</a></b>. <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/edi/">EDI</a></span></b> </td>
+<td class="confluenceTd"> Smooks Cartridge that converts an EDI message data stream into a stream of SAX events. <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/csv/">CSV</a></span></b> </td>
+<td class="confluenceTd"> Smooks Cartridge that converts a Comma Separated Value (CSV) data stream into a stream of SAX events. <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/misc/">Misc</a></span></b> </td>
+<td class="confluenceTd"> Contains miscellaneous resources for performing common analysis/transformation tasks on an XML stream e.g. rename an element, delete an element, delete and attribute etc. <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/servlet/">Servlet</a></span></b> </td>
+<td class="confluenceTd"> Plugs Smooks into the J2EE Servlet Container.  This allows Smooks to be used for Servlet Response Analysis and Transformation e.g. to optimse the Servlet Response for the requesting browser make/model. <b>See <a href="/Tutorials" title="Tutorials">Tutorials</a></b>. <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+<tr>
+<td class="confluenceTd"> <b><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks-cartridges/css/">CSS</a></span></b> </td>
+<td class="confluenceTd"> Makes Cascading Style Sheet (CSS) information easily available to web content analysis or transformation logic.  Supports linked or inline CSS <a href="/downloads" title="downloads">Download</a>. </td>
+</tr>
+</tbody></table></div>
+</div>
+
+<p/>
+<hr/>
+<p/>
+<script type="text/javascript"><!--
+google_ad_client = "pub-3023399591478482";
+google_ad_width = 728;
+google_ad_height = 90;
+google_ad_format = "728x90_as";
+google_ad_channel = "7321085054"; //unity-top
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "2266cc";
+google_color_url = "2266cc";
+google_color_text = "000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+<div style="text-align: center; width: 100%; padding-top: 1cm;padding-bottom: 1cm">
+<script type="text/javascript"><!--
+google_ad_client = "pub-3023399591478482";
+google_ad_width = 300;
+google_ad_height = 250;
+google_ad_format = "300x250_as";
+google_ad_channel ="9744516269"; //unity-bottom
+google_color_border = "FFFFFF";
+google_color_bg = "FFFFFF";
+google_color_link = "009900";
+google_color_url = "009900";
+google_color_text = "000000";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+
+</div>
+
+<div id="sidebar">
+     <div style="width: 100%; text-align: center;">
+       <a href="http://codehaus.org/"><img src="http://media.codehaus.org/images/unity-codehaus-logo-only.png" style="border: medium none ;"></a>   
+     </div>
+       
+            <p></p>
+     
+<div class="navigation">
+   <div class="section_1"><h1><a name="Navigation-Overview"></a>Overview</h1>
+
+<ul>
+	<li><a href="/Home" title="Home">home</a></li>
+	<li><a href="/downloads" title="downloads">downloads</a></li>
+	<li><a href="/license" title="license">license</a></li>
+	<li><a href="/team" title="team">team</a></li>
+	<li><a href="/Mailing+Lists" title="Mailing Lists">mail lists</a></li>
+</ul>
+
+
+</div><div class="section_1"><h1><a name="Navigation-Smooks"></a>Smooks</h1>
+
+<ul>
+	<li><a href="/Smooks" title="Smooks">what is smooks?</a></li>
+	<li><a href="/Smooks+FAQs" title="Smooks FAQs">FAQs</a></li>
+	<li><a href="/Smooks+Features" title="Smooks Features">features</a></li>
+	<li><a href="/downloads" title="downloads">downloads</a></li>
+	<li><a href="/Tutorials" title="Tutorials">tutorials</a></li>
+	<li><span class="nobr"><a href="http://milyn.codehaus.org/javadoc/smooks/index.html">javadoc</a></span></li>
+</ul>
+</div>
+ </div>
+
+<h4 class="headerstyle">Feeds</h4>
+<ul>
+ <li><a class="rss" href="http://docs.codehaus.org/spaces/rss.action?key=MILYN&amp;newPages=false">Site</a></li>
+ <li><a class="rss" href="http://docs.codehaus.org/spaces/blogrss.action?key=MILYN">News</a></li>
+</ul>
+
+<h4 class="headerstyle">Operations</h4>
+<ul>
+ <li><a class="editPage" href="http://docs.codehaus.org/display/MILYN/Smooks?showComments=true&showCommentArea=true#addcomment">Comment</a></li>
+ <li><a class="editPage" href="http://docs.codehaus.org/display/MILYN/Smooks">View</a></li>
+ <li><a class="editPage" href="http://docs.codehaus.org/pages/editpage.action?spaceKey=MILYN&amp;title=Smooks">Edit</a></li>
+</ul>
+<h4 class="headerstyle">Links</h4>
+<ul>
+ <li><a href="http://atlassian.com/">Atlassian</a>&nbsp;<a href="http://atlassian.com/confluence/">Confluence</a></li>
+</ul>
+</div>
+<div class="clear">&nbsp;</div>
+</div>
+
+<div id="footer">&copy; 2006 Codehaus Foundation. Original design by <a href="http://andreasviklund.com" class="credit">Andreas Viklund</a></div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-150515-1";
+urchinTracker();
+</script>
+</body>
+</html>
+milyn
