@@ -8,10 +8,10 @@ About This Example:
         1.  A transformation of an xml representing an order format from
             an external system, to a different xml format:
         2.  How to inline an XSLT insdide the Smooks configuration:
-	            Order.xml -> CanonicalOrderFormat.xml
-	    3.  How to select values with namespaces.
-	    4.  It also shows how to exclude the orders namespace from the
-	        target namespace using the "exclude-result-prefixes" attribute.
+                Order.xml -> CanonicalOrderFormat.xml
+        3.  How to select values with namespaces.
+        4.  It also shows how to exclude the orders namespace from the
+            target namespace using the "exclude-result-prefixes" attribute.
 
     See:
         1.  The "Main" class in src/main/java/example/Main.java.
