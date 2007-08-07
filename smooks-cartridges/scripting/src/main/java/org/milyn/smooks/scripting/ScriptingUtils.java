@@ -1,3 +1,18 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
 package org.milyn.smooks.scripting;
 
 import org.milyn.util.ClassUtil;
@@ -22,7 +37,7 @@ public class ScriptingUtils {
     public static void registerCDUCreators(Smooks smooks) {
         InputStream stream = ClassUtil.getResourceAsStream(ScriptingUtils.SCRIPTING_CDU_CREATORS_CDRL, ScriptingUtils.class);
         try {
-            SmooksUtil.registerResources(ScriptingUtils.SCRIPTING_CDU_CREATORS_CDRL, stream, smooks);
+            smooks.addConfigurations(SCRIPTING_CDU_CREATORS_CDRL, stream);
         } catch (Exception e) {
             throw new SmooksConfigurationException("Failed to load classpath resource file: " + ScriptingUtils.SCRIPTING_CDU_CREATORS_CDRL + ".  Should be in package: " + ScriptingUtils.class.getPackage().getName(), e);
         }

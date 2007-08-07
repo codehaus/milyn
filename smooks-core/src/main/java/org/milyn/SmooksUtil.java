@@ -16,7 +16,6 @@
 package org.milyn;
 
 import org.milyn.profile.ProfileSet;
-import org.milyn.profile.ProfileStore;
 import org.milyn.profile.UnknownProfileMemberException;
 import org.milyn.profile.DefaultProfileStore;
 import org.milyn.assertion.AssertArgument;
@@ -78,21 +77,6 @@ public abstract class SmooksUtil {
             throw new IllegalArgumentException("null 'resourceConfig' arg in method call.");
         }
         smooks.getApplicationContext().getStore().registerResource(resourceConfig);
-    }
-
-    /**
-     * Register the set of resources specified in the supplied XML configuration
-     * stream.
-     *
-     * @param name                 The name of the resource set.
-     * @param resourceConfigStream XML resource configuration stream.
-     * @param smooks               The {@link org.milyn.Smooks} instance on which to perform the configuration operation.
-     * @throws org.xml.sax.SAXException Error parsing the resource stream.
-     * @throws java.io.IOException      Error reading resource stream.
-     * @see SmooksResourceConfiguration
-     */
-    public static void registerResources(String name, InputStream resourceConfigStream, Smooks smooks) throws SAXException, IOException {
-        smooks.getApplicationContext().getStore().registerResources(name, resourceConfigStream);
     }
 
     /**

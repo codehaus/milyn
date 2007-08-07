@@ -38,7 +38,7 @@ public class Main {
     protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
 
         // Instantiate Smooks with the config...
-        Smooks smooks = new Smooks(new FileInputStream("smooks-config.xml"));
+        Smooks smooks = new Smooks("smooks-config.xml");
          // Create an exec context - no profiles....
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 

@@ -41,7 +41,7 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
         // Configure Smooks
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
         TemplatingUtils.registerCDUCreators(smooks);
-        SmooksUtil.registerResources("test-configs", getClass().getResourceAsStream("test-configs.cdrl"), smooks);
+        smooks.addConfigurations("test-configs.cdrl", getClass().getResourceAsStream("test-configs.cdrl"));
 
         InputStream stream = 
             new ByteArrayInputStream("<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>".getBytes());

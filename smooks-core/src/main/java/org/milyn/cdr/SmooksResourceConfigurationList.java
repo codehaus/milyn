@@ -18,6 +18,8 @@ package org.milyn.cdr;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.ArrayList;
+import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,7 +48,11 @@ public class SmooksResourceConfigurationList {
      * {@link org.milyn.cdr.SmooksResourceConfiguration} list.
      */
     private List<SmooksResourceConfiguration> list = new Vector<SmooksResourceConfiguration>();
-    
+    /**
+     * List of loaded resource URIs.
+     */
+    private List<URI> loadedResources = new ArrayList<URI>();
+
     /**
      * Public constructor.
      * @param name The name of this instance.
@@ -151,5 +157,22 @@ public class SmooksResourceConfigurationList {
      */
     public List<ProfileSet> getProfiles() {
         return profiles;
+    }
+
+    protected boolean addSourceResourceURI(URI resource) {
+        AssertArgument.isNotNull(resource, "resource");
+
+        if(loadedResources.contains(resource)) {
+            URI lastLoaded = loadedResources.get(loadedResources.size() - 1);
+            URI originalLoader = loadedResources.get(Math.max(0, loadedResources.indexOf(resource) - 1));
+
+            logger.info("Not adding resource config import '" + resource + "' (specified in resource config '" + lastLoaded + "').  " +
+                    "'" + resource + "' is already loaded on this list (by '" + originalLoader + "').");
+
+            return false;
+        }
+        
+        loadedResources.add(resource);
+        return true;
     }
 }

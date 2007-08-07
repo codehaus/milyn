@@ -18,6 +18,7 @@
         <module>xslt-basic</module>
         <module>xslt-groovy</module>
         <module>xslt-namespaces</module>
+        <!-- module>xslt-complex</module -->
         <module>javabean-populator</module>
         <module>javabean-templating</module>
         <module>csv-to-xml</module>

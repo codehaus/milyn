@@ -117,7 +117,9 @@ public class BeanPopulatorTest extends TestCase {
 
     public void test_visit_userBean(String configName) throws SAXException, IOException {
 
-        Smooks smooks = new Smooks(getClass().getResourceAsStream(configName));
+        Smooks smooks = new Smooks();
+
+        smooks.addConfigurations(configName, getClass().getResourceAsStream(configName));
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult(), executionContext);
@@ -131,7 +133,9 @@ public class BeanPopulatorTest extends TestCase {
 
     public void test_populate_Order() throws SAXException, IOException {
 
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("order-01-smooks-config.xml"));
+        Smooks smooks = new Smooks();
+
+        smooks.addConfigurations("order-01-smooks-config.xml", getClass().getResourceAsStream("order-01-smooks-config.xml"));
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), new DOMResult(), executionContext);

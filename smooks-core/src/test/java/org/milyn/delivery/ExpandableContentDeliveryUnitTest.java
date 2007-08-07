@@ -32,7 +32,9 @@ import java.io.IOException;
 public class ExpandableContentDeliveryUnitTest extends TestCase {
 
     public void test() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("expansion-config.xml"));
+        Smooks smooks = new Smooks();
+
+        smooks.addConfigurations("expansion-config.xml", getClass().getResourceAsStream("expansion-config.xml"));
         ExecutionContext context = smooks.createExecutionContext();
 
         DOMContentDeliveryConfig config = (DOMContentDeliveryConfig) context.getDeliveryConfig();

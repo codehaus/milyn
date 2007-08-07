@@ -17,8 +17,9 @@
 package org.milyn;
 
 import java.io.*;
-import java.net.URI;
 import java.util.LinkedHashMap;
+import java.net.URISyntaxException;
+import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +28,11 @@ import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.SmooksDOMFilter;
-import org.milyn.profile.DefaultProfileStore;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
-import org.milyn.resource.URIResourceLocator;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.resource.URIResourceLocator;
+import org.milyn.net.URIUtil;
 import org.w3c.dom.Node;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -51,21 +52,21 @@ import javax.xml.transform.stream.StreamResult;
  * <p/>
  * The basic usage scenario for this class might be as follows:
  * <ol>
- *  <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor} to
- *      perform some transformation/analysis operation on a message.  There are a number of prebuilt
- *      and reuseable implemntations available as
- *      "<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">Smooks Cartridges</a>".</li>
- *  <li>Write a {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration} to target the {@link org.milyn.delivery.dom.DOMElementVisitor}
- *      implementation at the target fragment of the message being processed.</li>
- *  <li>Apply the logic as follows:
+ * <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor} to
+ * perform some transformation/analysis operation on a message.  There are a number of prebuilt
+ * and reuseable implemntations available as
+ * "<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">Smooks Cartridges</a>".</li>
+ * <li>Write a {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration} to target the {@link org.milyn.delivery.dom.DOMElementVisitor}
+ * implementation at the target fragment of the message being processed.</li>
+ * <li>Apply the logic as follows:
  * <pre>
-     Smooks smooks = new Smooks(getClass().getResourceAsStream("{@link org.milyn.cdr.SmooksResourceConfiguration smooks-config.xml}"));
-     {@link ExecutionContext} execContext;
-
-     execContext = smooks.{@link #createExecutionContext createExecutionContext}();
-     smooks.{@link #filter filter}(new {@link StreamSource}(...), new {@link StreamResult}(...), execContext);
+ * Smooks smooks = {@link #Smooks(String) new Smooks}("smooks-config.xml");
+ * {@link ExecutionContext} execContext;
+ * 
+ * execContext = smooks.{@link #createExecutionContext createExecutionContext}();
+ * smooks.{@link #filter filter}(new {@link StreamSource}(...), new {@link StreamResult}(...), execContext);
  * </pre>
- *  </li>
+ * </li>
  * </ol>
  * Remember, you can implement and apply multiple {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}
  * within the context of a single filtering operation.  You can also target
@@ -74,7 +75,7 @@ import javax.xml.transform.stream.StreamResult;
  * <p/>
  * See <a target="new" href="http://milyn.codehaus.org/Tutorials">Smooks Tutorials</a>.
  *
- * @author tfennelly
+ * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class Smooks {
 
@@ -84,6 +85,9 @@ public class Smooks {
 
     /**
      * Public Default Constructor.
+     * <p/>
+     * Resource configurations can be added through calls to
+     * {@link #addConfigurations(String)} or {@link #addConfigurations(String,java.io.InputStream)}.
      */
     public Smooks() {
         context = new StandaloneApplicationContext();
@@ -92,18 +96,75 @@ public class Smooks {
     /**
      * Public constructor.
      * <p/>
-     * Register the set of resources specified in the supplied {@link SmooksResourceConfiguration XML configuration}
-     * stream.  Additional resource configurations can be registered through calls to
-     * {@link org.milyn.SmooksUtil#registerResources(String,java.io.InputStream,Smooks)}.
+     * Adds the set of {@link SmooksResourceConfiguration resources} via the {@link #addConfigurations(String)} method,
+     * which resolves the resourceURI parameter using a {@link org.milyn.resource.URIResourceLocator}.
+     * <p/>
+     * Additional resource configurations can be added through calls to
+     * {@link #addConfigurations(String)} or {@link #addConfigurations(String,java.io.InputStream)}.
      *
-     * @param resourceConfigStream XML resource configuration stream.
-     * @throws SAXException Error parsing the resource stream.
+     * @param resourceURI XML resource configuration stream URI.
      * @throws IOException  Error reading resource stream.
+     * @throws SAXException Error parsing the resource stream.
      * @see SmooksResourceConfiguration
      */
-    public Smooks(InputStream resourceConfigStream) throws IOException, SAXException {
+    public Smooks(String resourceURI) throws IOException, SAXException {
         this();
-        SmooksUtil.registerResources("via-constructor", resourceConfigStream, this);
+        addConfigurations(resourceURI);
+    }
+
+    /**
+     * Add a set of resource configurations to this Smooks instance.
+     * <p/>
+     * Uses the {@link org.milyn.resource.URIResourceLocator} class to load the resource.
+     * <p/>
+     * These configurations do not overwrite previously added configurations.
+     * They are added to the list of configurations on this Smooks instance.
+     *
+     * @param resourceURI The URI string for the resource configuration list. See
+     *                    {@link org.milyn.resource.URIResourceLocator}.
+     * @throws IOException  Error reading resource stream.
+     * @throws SAXException Error parsing the resource stream.
+     */
+    public void addConfigurations(String resourceURI) throws IOException, SAXException {
+        AssertArgument.isNotNullAndNotEmpty(resourceURI, "resourceURI");
+
+        InputStream resourceConfigStream;
+        URIResourceLocator resourceLocator = new URIResourceLocator();
+
+        resourceConfigStream = resourceLocator.getResource(resourceURI);
+        try {
+            URI resourceURIObj = new URI(resourceURI);
+            addConfigurations(URIUtil.getParent(resourceURIObj).toString(), resourceConfigStream);
+        } catch (URISyntaxException e) {
+            logger.error("Failed to load Smooks resource configuration '" + resourceURI + "'.", e);
+        } finally {
+            resourceConfigStream.close();
+        }
+    }
+
+    /**
+     * Add a set of resource configurations to this Smooks instance.
+     * <p/>
+     * These configurations do not overwrite previously added configurations.
+     * They are added to the list of configurations on this Smooks instance.
+     * <p/>
+     * The base URI is required for resolving resource imports.  Just specify
+     * the location of the resource file.
+     *
+     * @param baseURI The base URI string for the resource configuration list. See
+     *                    {@link org.milyn.resource.URIResourceLocator}.
+     * @param resourceConfigStream
+     * @throws IOException  Error reading resource stream.
+     * @throws SAXException Error parsing the resource stream.
+     */
+    public void addConfigurations(String baseURI, InputStream resourceConfigStream) throws SAXException, IOException {
+        AssertArgument.isNotNullAndNotEmpty(baseURI, "baseURI");
+        AssertArgument.isNotNull(resourceConfigStream, "resourceConfigStream");
+        try {
+            context.getStore().registerResources(baseURI, resourceConfigStream);
+        } catch (URISyntaxException e) {
+            throw new IOException("Failed to read resource configuration. Invalid 'baseURI'.");
+        }
     }
 
     /**
@@ -142,7 +203,7 @@ public class Smooks {
      * @return Execution context instance.
      * @throws UnknownProfileMemberException Unknown target profile.
      */
-    public StandaloneExecutionContext createExecutionContext(String targetProfile)  throws UnknownProfileMemberException {
+    public StandaloneExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
         return new StandaloneExecutionContext(targetProfile, new LinkedHashMap(), context);
     }
 
@@ -184,10 +245,10 @@ public class Smooks {
                 resultNode = smooks.filter(new InputStreamReader(((StreamSource) source).getInputStream(), executionContext.getContentEncoding()));
             } else {
                 Node node = ((DOMSource) source).getNode();
-                if(!(node instanceof Document)) {
+                if (!(node instanceof Document)) {
                     throw new IllegalArgumentException("DOMSource Source types must contain a Document node.");
                 }
-                resultNode = smooks.filter((Document)node);
+                resultNode = smooks.filter((Document) node);
             }
 
             // Populate the Result

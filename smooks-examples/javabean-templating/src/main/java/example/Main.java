@@ -19,15 +19,12 @@ import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
 import org.milyn.templating.TemplatingUtils;
-import org.milyn.xml.XmlUtil;
 import org.milyn.io.StreamUtils;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
-import org.w3c.dom.Node;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.TransformerFactory;
 import java.io.*;
 
 /**
@@ -43,8 +40,8 @@ public class Main {
     protected Main() throws IOException, SAXException {
         // Instantiate Smooks with the configs...
         smooks = new Smooks();
-        SmooksUtil.registerResources("Request-Res", new FileInputStream("smooks-request-config.xml"), smooks);
-        SmooksUtil.registerResources("Response-Res", new FileInputStream("smooks-response-config.xml"), smooks);
+        smooks.addConfigurations("smooks-request-config.xml");
+        smooks.addConfigurations("smooks-response-config.xml");
         TemplatingUtils.registerCDUCreators(smooks);
     }
 

@@ -42,7 +42,7 @@ public class Main {
     protected static Node runSmooksTransform() throws IOException, SAXException, SmooksException {
 
         // Instantiate Smooks with the config...
-        Smooks smooks = new Smooks(new FileInputStream("smooks-config.xml"));
+        Smooks smooks = new Smooks("smooks-config.xml");
         // Register the scripting and templating CDU creators - tell Smooks how to handle .groovy and .xsl resources...
         ScriptingUtils.registerCDUCreators(smooks);
         TemplatingUtils.registerCDUCreators(smooks);

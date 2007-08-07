@@ -24,5 +24,6 @@
 	<resource-config>
 	    <resource type="abc">Howya</resource>
 	</resource-config>
+
 </smooks-resource-list>
 
