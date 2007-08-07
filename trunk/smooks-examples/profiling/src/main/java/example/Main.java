@@ -38,7 +38,7 @@ public class Main {
 
     protected Main() throws IOException, SAXException {
         // Instantiate Smooks with the config...
-        smooks = new Smooks(new FileInputStream("smooks-config.xml"));
+        smooks = new Smooks("smooks-config.xml");
     }
 
     protected String runSmooksTransform(String targetProfile) {

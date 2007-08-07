@@ -19,7 +19,6 @@ package org.milyn.templating;
 import java.io.InputStream;
 
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.container.ApplicationContext;
 import org.milyn.util.ClassUtil;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
@@ -39,7 +38,7 @@ public class TemplatingUtils {
     public static void registerCDUCreators(Smooks smooks) {
         InputStream stream = ClassUtil.getResourceAsStream(TemplatingUtils.TEMPLATING_CDU_CREATORS_CDRL, TemplatingUtils.class);
         try {
-            SmooksUtil.registerResources(TemplatingUtils.TEMPLATING_CDU_CREATORS_CDRL, stream, smooks);
+            smooks.addConfigurations(TEMPLATING_CDU_CREATORS_CDRL, stream);
         } catch (Exception e) {
             throw new SmooksConfigurationException("Failed to load classpath resource file: " + TemplatingUtils.TEMPLATING_CDU_CREATORS_CDRL + ".  Should be in package: " + TemplatingUtils.class.getPackage().getName(), e);
         }

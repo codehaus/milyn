@@ -18,11 +18,12 @@ package org.milyn.cdr;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Iterator;
+import java.net.URISyntaxException;
 
 import org.xml.sax.SAXException;
 import org.milyn.profile.ProfileSet;
 import org.milyn.Smooks;
-import org.milyn.SmooksUtil;
 import org.milyn.container.ExecutionContext;
 
 import junit.framework.TestCase;
@@ -33,16 +34,16 @@ import junit.framework.TestCase;
  */
 public class XMLConfigDigesterTest extends TestCase {
 
-	public void test_digestConfig_v10() throws SAXException, IOException {
+	public void test_digestConfig_v10() throws SAXException, IOException, URISyntaxException {
 		// Valid doc
-        SmooksResourceConfigurationList resList = XMLConfigDigester.digestConfig("test", getClass().getResourceAsStream("testconfig1.cdrl"));
+        SmooksResourceConfigurationList resList = XMLConfigDigester.digestConfig(getClass().getResourceAsStream("testconfig1.cdrl"), "test");
         
         assertResourceConfigOK(resList);
 	}
 
-    public void test_digestConfig_v20() throws SAXException, IOException {
+    public void test_digestConfig_v20() throws SAXException, IOException, URISyntaxException {
         // Valid doc
-        SmooksResourceConfigurationList resList = XMLConfigDigester.digestConfig("test", getClass().getResourceAsStream("testconfig2.cdrl"));
+        SmooksResourceConfigurationList resList = XMLConfigDigester.digestConfig(getClass().getResourceAsStream("testconfig2.cdrl"), "test");
 
         assertResourceConfigOK(resList);
 
@@ -61,12 +62,25 @@ public class XMLConfigDigesterTest extends TestCase {
     }
 
     public void test_profile_expansion() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("testconfig2.cdrl"));
+        Smooks smooks = new Smooks();
 
+        smooks.addConfigurations("testconfig2.cdrl", getClass().getResourceAsStream("testconfig2.cdrl"));
         assertProfilesOK(smooks);
         // register the same resources again - including the same profiles...
-        SmooksUtil.registerResources("x", getClass().getResourceAsStream("testconfig2.cdrl"), smooks);
+        smooks.addConfigurations("testconfig2.cdrl", getClass().getResourceAsStream("testconfig2.cdrl"));
         assertProfilesOK(smooks);
+    }
+
+    public void test_import() throws IOException, SAXException, URISyntaxException {
+        Smooks smooks = new Smooks("src/test/java/org/milyn/cdr/testconfig3.cdrl");
+        Iterator<SmooksResourceConfigurationList> listIt = smooks.getApplicationContext().getStore().getSmooksResourceConfigurationLists();
+        SmooksResourceConfigurationList list = null;
+
+        while(listIt.hasNext()) {
+            list = listIt.next();
+        }
+
+        assertResourceConfigOK(list);
     }
 
     private void assertProfilesOK(Smooks smooks) {

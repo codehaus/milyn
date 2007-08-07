@@ -133,7 +133,7 @@ public class SmooksServletFilter implements Filter {
 		try {
 			servletConfig = new FilterToServletConfigAdapter(config);
 			smooksContainerContext = new ServletApplicationContext(config.getServletContext(), servletConfig);
-			loadCdrarStore();
+			loadConfigStore();
 			logger.info("Smooks Servlet Phase initalised.");
 		} catch(Exception e) {
 			throw new ServletException("CDRArchive list load failure.", e);
@@ -145,7 +145,7 @@ public class SmooksServletFilter implements Filter {
 	 * @throws IllegalArgumentException
 	 * @throws IOException
 	 */
-	private void loadCdrarStore() throws IllegalArgumentException, IOException {
+	private void loadConfigStore() throws IllegalArgumentException, IOException {
 		ContainerResourceLocator containerResLocator;
 		BufferedReader listBufferedReader;
 		InputStream cdrarListStream;
@@ -154,7 +154,7 @@ public class SmooksServletFilter implements Filter {
 		cdrarListStream = containerResLocator.getResource(SMOOKS_CDRAR_LIST_CONFIG_PARAM, DEFAULT_CONFIG);
 		listBufferedReader = new BufferedReader(new InputStreamReader(cdrarListStream));
 		smooksContainerContext.getStore().load(listBufferedReader);
-		logger.info("CDRStore load complete.");
+		logger.info("Config Store load complete.");
 	}
 
 	/* (non-Javadoc)

@@ -19,6 +19,9 @@ package org.milyn.cdr;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,11 +29,12 @@ import org.milyn.xml.*;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
+import org.milyn.resource.URIResourceLocator;
+import org.milyn.net.URIUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.Source;
@@ -50,37 +54,43 @@ public final class XMLConfigDigester {
     /**
      * Digest the XML Smooks configuration stream.
      *
-     * @param name   The name of the configuration stream.
-     * @param stream The stream.
+     * @param stream  The stream.
+     * @param baseURI The base URI to be associated with the configuration stream.
      * @return A {@link SmooksResourceConfigurationList} containing the list of
      *         {@link SmooksResourceConfiguration SmooksResourceConfigurations} defined in the
      *         XML configuration.
      * @throws SAXException Error parsing the XML stream.
      * @throws IOException  Error reading the XML stream.
      */
-    public static SmooksResourceConfigurationList digestConfig(String name, InputStream stream) throws SAXException, IOException {
+    public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI) throws SAXException, IOException, URISyntaxException {
+        SmooksResourceConfigurationList list = new SmooksResourceConfigurationList(baseURI);
+
+        digestConfig(stream, list, baseURI);
+
+        return list;
+    }
+
+    private static void digestConfig(InputStream stream, SmooksResourceConfigurationList list, String baseURI) throws IOException, SAXException, URISyntaxException {
+        LocalEntityResolver entityResolver;
+        Document archiveDefDoc;
+        String docType;
         byte[] streamBuffer = StreamUtils.readStream(stream);
-        LocalEntityResolver entityResolver = null;
-        Document archiveDefDoc = null;
-        String docType = null;
-        SmooksResourceConfigurationList list = null;
 
         try {
             entityResolver = getDTDEntityResolver();
             archiveDefDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.DTD, true);
-        } catch(Exception e) {
+        } catch (Exception e) {
             entityResolver = getXSDEntityResolver();
             archiveDefDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.XSD, true);
         }
         docType = entityResolver.getDocType();
-        list = new SmooksResourceConfigurationList(name);
 
         if (DTD_V10.equals(docType)) {
             logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use XSD '" + XSD_V10 + "'.");
             digestV10DTDValidatedConfig(archiveDefDoc, list);
             logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use XSD '" + XSD_V10 + "'.");
         } else if (XSD_V10.equals(docType)) {
-            digestV10XSDValidatedConfig(archiveDefDoc, list);
+            digestV10XSDValidatedConfig(baseURI, archiveDefDoc, list);
         } else {
             throw new SAXException("Invalid Content Delivery Resource archive definition file: Must be validated against one of - '" + DTD_V10 + "' or '" + XSD_V10 + "'.");
         }
@@ -88,8 +98,6 @@ public final class XMLConfigDigester {
         if (list.isEmpty()) {
             throw new SAXException("Invalid Content Delivery Resource archive definition file: 0 Content Delivery Resource definitions.");
         }
-
-        return list;
     }
 
     private static LocalEntityResolver getDTDEntityResolver() {
@@ -98,22 +106,22 @@ public final class XMLConfigDigester {
 
     private static LocalEntityResolver getXSDEntityResolver() {
         Source schemaSource = new StreamSource(ClassUtil.getResourceAsStream("/org/milyn/xsd/smooks-1.0.xsd", XMLConfigDigester.class), XSD_V10);
-        return new LocalXSDEntityResolver(new Source[] {schemaSource});
+        return new LocalXSDEntityResolver(new Source[]{schemaSource});
     }
 
-    private static void digestV10DTDValidatedConfig(Document archiveDefDoc, SmooksResourceConfigurationList list) throws SAXException {
+    private static void digestV10DTDValidatedConfig(Document configDoc, SmooksResourceConfigurationList list) throws SAXException {
         int cdrIndex = 1;
         Element currentElement;
-        String resourceSelector = null;
+        String resourceSelector;
 
-        currentElement = (Element) XmlUtil.getNode(archiveDefDoc, "/smooks-resource-list");
+        currentElement = (Element) XmlUtil.getNode(configDoc, "/smooks-resource-list");
         String defaultSelector = DomUtils.getAttributeValue(currentElement, "default-selector");
         String defaultNamespace = DomUtils.getAttributeValue(currentElement, "default-namespace");
         String defaultUseragent = DomUtils.getAttributeValue(currentElement, "default-useragent");
         String defaultPath = DomUtils.getAttributeValue(currentElement, "default-path");
 
         resourceSelector = "/smooks-resource-list/smooks-resource[" + cdrIndex + "]";
-        while ((currentElement = (Element) XmlUtil.getNode(archiveDefDoc, resourceSelector)) != null) {
+        while ((currentElement = (Element) XmlUtil.getNode(configDoc, resourceSelector)) != null) {
             String selector = DomUtils.getAttributeValue(currentElement, "selector");
             String namespace = DomUtils.getAttributeValue(currentElement, "namespace");
             String useragents = DomUtils.getAttributeValue(currentElement, "useragent");
@@ -142,62 +150,90 @@ public final class XMLConfigDigester {
         }
     }
 
-    private static void digestV10XSDValidatedConfig(Document archiveDefDoc, SmooksResourceConfigurationList list) throws SAXException {
-        int cdrIndex = 1;
+    private static void digestV10XSDValidatedConfig(String baseURI, Document configDoc, SmooksResourceConfigurationList list) throws SAXException, URISyntaxException {
         Element currentElement;
-        String resourceSelector = null;
 
-        currentElement = (Element) XmlUtil.getNode(archiveDefDoc, "/smooks-resource-list");
+        currentElement = (Element) XmlUtil.getNode(configDoc, "/smooks-resource-list");
         String defaultSelector = DomUtils.getAttributeValue(currentElement, "default-selector");
         String defaultNamespace = DomUtils.getAttributeValue(currentElement, "default-selector-namespace");
         String defaultProfile = DomUtils.getAttributeValue(currentElement, "default-target-profile");
 
-        currentElement = (Element) XmlUtil.getNode(archiveDefDoc, "/smooks-resource-list/profiles");
-        if(currentElement != null) {
-            digestProfiles(currentElement, list);
+        NodeList configElements = XmlUtil.getNodeList(currentElement, "*");
+
+        for (int i = 0; i < configElements.getLength(); i++) {
+            Element configElement = (Element) configElements.item(i);
+
+            if (DomUtils.getName(configElement).equals("profiles")) {
+                digestProfiles(configElement, list);
+            } else if (DomUtils.getName(configElement).equals("import")) {
+                digestImport(configElement, new URI(baseURI), list);
+            } else if (DomUtils.getName(configElement).equals("resource-config")) {
+                digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, list);
+            }
+        }
+    }
+
+    private static void digestImport(Element configElement, URI baseURI, SmooksResourceConfigurationList list) throws SAXException, URISyntaxException {
+        String file = DomUtils.getAttributeValue(configElement, "file");
+        URIResourceLocator resourceLocator;
+        InputStream resourceStream;
+
+        if (file == null) {
+            throw new IllegalStateException("Invalid resource import.  'file' attribute must be specified.");
         }
 
-        resourceSelector = "/smooks-resource-list/resource-config[" + cdrIndex + "]";
-        while ((currentElement = (Element) XmlUtil.getNode(archiveDefDoc, resourceSelector)) != null) {
-            String selector = DomUtils.getAttributeValue(currentElement, "selector");
-            String namespace = DomUtils.getAttributeValue(currentElement, "selector-namespace");
-            String profiles = DomUtils.getAttributeValue(currentElement, "target-profile");
-            Element resourceElement = (Element) XmlUtil.getNode(currentElement, "resource");
-            String resource = null;
-            SmooksResourceConfiguration resourceConfig;
+        resourceLocator = new URIResourceLocator();
+        resourceLocator.setBaseURI(baseURI);
 
-            try {
-                if (resourceElement != null) {
-                    resource = DomUtils.getAllText(resourceElement, true);
-                }
-                resourceConfig = new SmooksResourceConfiguration((selector != null ? selector : defaultSelector),
-                        (namespace != null ? namespace : defaultNamespace),
-                        (profiles != null ? profiles : defaultProfile),
-                        resource);
-                if (resourceElement != null) {
-                    resourceConfig.setResourceType(DomUtils.getAttributeValue(resourceElement, "type"));
-                }
-            } catch (IllegalArgumentException e) {
-                throw new SAXException("Invalid unit definition.", e);
+        try {
+            URI fileURI = resourceLocator.resolveURI(file);
+
+            // Add the resource URI to the list.  Will fail if it was already loaded
+            if(list.addSourceResourceURI(fileURI)) {
+                resourceStream = resourceLocator.getResource(file);
+                digestConfig(resourceStream, list, URIUtil.getParent(fileURI).toString()); // the file's parent URI becomes the new base URI.
             }
+        } catch (IOException e) {
+            logger.error("Failed to load Smooks configuration resource <import> '" + file + "': " + e.getMessage());
+        }
+    }
 
-            // Add the parameters...
-            digestParameters(currentElement, resourceConfig);
+    private static void digestResourceConfig(Element configElement, String defaultSelector, String defaultNamespace, String defaultProfile, SmooksResourceConfigurationList list) throws SAXException {
+        String selector = DomUtils.getAttributeValue(configElement, "selector");
+        String namespace = DomUtils.getAttributeValue(configElement, "selector-namespace");
+        String profiles = DomUtils.getAttributeValue(configElement, "target-profile");
+        Element resourceElement = (Element) XmlUtil.getNode(configElement, "resource");
+        String resource = null;
+        SmooksResourceConfiguration resourceConfig;
 
-            list.add(resourceConfig);
-            if(resource == null) {
-                if(resourceConfig.getParameters(SmooksResourceConfiguration.PARAM_RESDATA) != null) {
-                    logger.warn("Resource 'null' for resource config: " + resourceConfig + ".  This is probably an error because the configuration contains a 'resdata' param, which suggests it is following the old DTD based configuration model.  The new model requires the resource to be specified in the <resource> element.");
-                } else {
-                    logger.debug("Resource 'null' for resource config: " + resourceConfig + ". This is not invalid!");
-                }
+        try {
+            if (resourceElement != null) {
+                resource = DomUtils.getAllText(resourceElement, true);
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Adding smooks-resource config from [" + list.getName() + "]: " + resourceConfig);
+            resourceConfig = new SmooksResourceConfiguration((selector != null ? selector : defaultSelector),
+                    (namespace != null ? namespace : defaultNamespace),
+                    (profiles != null ? profiles : defaultProfile),
+                    resource);
+            if (resourceElement != null) {
+                resourceConfig.setResourceType(DomUtils.getAttributeValue(resourceElement, "type"));
             }
+        } catch (IllegalArgumentException e) {
+            throw new SAXException("Invalid unit definition.", e);
+        }
 
-            cdrIndex++;
-            resourceSelector = "/smooks-resource-list/resource-config[" + cdrIndex + "]";
+        // Add the parameters...
+        digestParameters(configElement, resourceConfig);
+
+        list.add(resourceConfig);
+        if (resource == null) {
+            if (resourceConfig.getParameters(SmooksResourceConfiguration.PARAM_RESDATA) != null) {
+                logger.warn("Resource 'null' for resource config: " + resourceConfig + ".  This is probably an error because the configuration contains a 'resdata' param, which suggests it is following the old DTD based configuration model.  The new model requires the resource to be specified in the <resource> element.");
+            } else {
+                logger.debug("Resource 'null' for resource config: " + resourceConfig + ". This is not invalid!");
+            }
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Adding smooks-resource config from [" + list.getName() + "]: " + resourceConfig);
         }
     }
 
@@ -212,7 +248,7 @@ public final class XMLConfigDigester {
             String subProfiles = DomUtils.getAttributeValue(profileNode, "sub-profiles");
             DefaultProfileSet profileSet = new DefaultProfileSet(baseProfile);
 
-            if(subProfiles != null) {
+            if (subProfiles != null) {
                 profileSet.addProfiles(subProfiles.split(","));
             }
 

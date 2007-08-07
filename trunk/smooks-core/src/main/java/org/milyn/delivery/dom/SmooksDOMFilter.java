@@ -110,7 +110,7 @@ import org.w3c.dom.NodeList;
  * 	</li>
  * </ol>
  *
- * See the <a href="http://milyn.codehaus.org/flash/DOMProcess.html">online flash demo</a> demonstrating this process.
+ * See the <a href="http://milyn.codehaus.org/flash/DOMProcess.html" target="DOMProcess">online flash demo</a> demonstrating this process.
  * 
  * <h3 id="threading">Threading Issues</h3>
  * This class processes the data associated with a single {@link org.milyn.container.ExecutionContext} instance.  This

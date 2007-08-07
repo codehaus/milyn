@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import junit.framework.TestCase;
 
@@ -59,15 +60,27 @@ public class URIResourceLocatorTest extends TestCase {
 		stream.close();
 	}
 
-	public void test_classpathBasedResource() throws IllegalArgumentException,
-			IOException {
+    public void test_fileBasedResource() throws IllegalArgumentException, IOException, URISyntaxException {
+        URIResourceLocator locator = new URIResourceLocator();
+        InputStream stream;
+
+        // Resource exists - no scheme - should get it from the filesystem ...
+        stream = locator.getResource("src/test/java/org/milyn/resource/somefile.txt");
+        assertNotNull(stream);
+
+        // Try it again now with a non-default base URI...
+        locator.setBaseURI(new URI("src/test"));
+        stream = locator.getResource("java/org/milyn/resource/somefile.txt");
+        assertNotNull(stream);
+    }
+
+	public void test_classpathBasedResource() throws IllegalArgumentException, IOException {
 		URIResourceLocator locator = new URIResourceLocator();
 		InputStream stream;
 
 		// Resource doesn't exists...
 		try {
-			stream = locator
-					.getResource("classpath:/org/milyn/resource/someunknownfile.txt");
+			stream = locator.getResource("classpath:/org/milyn/resource/someunknownfile.txt");
 			fail("Expected IOException for bad resource path.");
 		} catch (IOException e) {
 			assertTrue(e.getMessage().startsWith(
@@ -75,11 +88,10 @@ public class URIResourceLocatorTest extends TestCase {
 		}
 
 		// Resource exists...
-		stream = locator
-				.getResource("classpath:/org/milyn/resource/somefile.txt");
+		stream = locator.getResource("classpath:/org/milyn/resource/somefile.txt");
 		assertNotNull(stream);
 
-		// Resource exists - no scheme should default to classpath ...
+        // Resource exists - no scheme - should get it from the classpath ...
 		stream = locator.getResource("/org/milyn/resource/somefile.txt");
 		assertNotNull(stream);
 	}

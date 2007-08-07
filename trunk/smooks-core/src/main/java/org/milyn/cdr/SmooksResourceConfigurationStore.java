@@ -23,6 +23,8 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.Iterator;
+import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,51 +112,53 @@ public class SmooksResourceConfigurationStore {
      * @throws java.io.IOException Error reading list buffer.
 	 */
 	public void load(BufferedReader cdrlLoadList) throws IOException {
-		String cdrl;
+		String uri;
 		ContainerResourceLocator resLocator = applicationContext.getResourceLocator();
 		
-		while((cdrl = cdrlLoadList.readLine()) != null) {
-			cdrl = cdrl.trim();
-			if(cdrl.equals("") || cdrl.charAt(0) == '#') {
+		while((uri = cdrlLoadList.readLine()) != null) {
+			uri = uri.trim();
+			if(uri.equals("") || uri.charAt(0) == '#') {
 				continue;
 			}
 			
 			try {
-				InputStream resource = resLocator.getResource(cdrl);
+				InputStream resource = resLocator.getResource(uri);
 				
-				logger.info("Loading Smooks Resources from file [" + cdrl + "].");
-                registerResources(cdrl, resource);
-				logger.debug("[" + cdrl + "] Loaded.");
+				logger.info("Loading Smooks Resources from uri [" + uri + "].");
+                registerResources(uri, resource);
+				logger.debug("[" + uri + "] Loaded.");
 			} catch (IllegalArgumentException e) {
-				logger.error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
+				logger.error("[" + uri + "] Load failure. " + e.getMessage(), e);
 			} catch (IOException e) {
-				logger.error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
+				logger.error("[" + uri + "] Load failure. " + e.getMessage(), e);
 			} catch (SAXException e) {
-				logger.error("[" + cdrl + "] Load failure. " + e.getMessage(), e);
-			}
-		}
+				logger.error("[" + uri + "] Load failure. " + e.getMessage(), e);
+			} catch (URISyntaxException e) {
+                logger.error("[" + uri + "] Load failure. " + e.getMessage(), e);
+            }
+        }
 	}
 
     /**
      * Register the set of resources specified in the supplied XML configuration
      * stream.
-     * @param name The name of the resource set.
+     * @param baseURI The base URI to be associated with the configuration stream.
      * @param resourceConfigStream XML resource configuration stream.
      * @throws SAXException Error parsing the resource stream.
      * @throws IOException Error reading resource stream.
      * @see SmooksResourceConfiguration
      */
-    public void registerResources(String name, InputStream resourceConfigStream) throws SAXException, IOException {
+    public void registerResources(String baseURI, InputStream resourceConfigStream) throws SAXException, IOException, URISyntaxException {
         SmooksResourceConfigurationList configList;
         
-        if(name == null || name.trim().equals("")) {
+        if(baseURI == null || baseURI.trim().equals("")) {
             throw new IllegalArgumentException("null or empty 'name' arg in method call.");
         }
         if(resourceConfigStream == null) {
             throw new IllegalArgumentException("null 'resourceConfigStream' arg in method call.");
         }
         
-        configList = XMLConfigDigester.digestConfig(name, resourceConfigStream);
+        configList = XMLConfigDigester.digestConfig(resourceConfigStream, baseURI);
         configLists.add(configList);
 
         // DTD v2.0 added profiles to the resource config.  If there were any, add them to the
@@ -191,8 +195,18 @@ public class SmooksResourceConfigurationStore {
         }
         defaultList.add(resourceConfig);
     }
-	
-	/**
+
+
+    /**
+     * Get all the added SmooksResourceConfigurationList instances added on this store.
+     *
+     * @return All the SmooksResourceConfigurationList instances added on this store.
+     */
+    public Iterator<SmooksResourceConfigurationList> getSmooksResourceConfigurationLists() {
+        return configLists.iterator();
+    }
+
+    /**
 	 * Get all the SmooksResourceConfiguration entries registered on this context store 
      * for the specified profile set.
 	 * @param profileSet The profile set against which to lookup.
