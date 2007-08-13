@@ -18,6 +18,7 @@ package org.milyn.csv;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
@@ -26,6 +27,7 @@ import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.xml.XmlUtil;
+import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
@@ -37,7 +39,7 @@ import javax.xml.transform.dom.DOMResult;
  */
 public class CSVParserTest extends TestCase {
 
-	public void test() throws SmooksException, UnsupportedEncodingException {
+	public void test_01() throws SmooksException, UnsupportedEncodingException {
 		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration config;
         StandaloneExecutionContext context;
@@ -70,4 +72,24 @@ public class CSVParserTest extends TestCase {
 		assertEquals("Joe Bloggs", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
 		assertEquals("England", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));		
 	}
+
+    public void test_02() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+        StandaloneExecutionContext context;
+
+        smooks.addConfigurations("config", getClass().getResourceAsStream("smooks-config-01.xml"));
+        context = smooks.createExecutionContext();
+        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-01.csv"), smooks);
+        assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result);
+    }
+
+    public void test_03() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+        StandaloneExecutionContext context;
+
+        smooks.addConfigurations("config", getClass().getResourceAsStream("smooks-config-02.xml"));
+        context = smooks.createExecutionContext();
+        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-02.csv"), smooks);
+        assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result);
+    }
 }
