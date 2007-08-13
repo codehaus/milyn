@@ -28,6 +28,7 @@ import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.xml.SmooksXMLReader;
+import org.milyn.xml.XmlUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -55,7 +56,19 @@ import au.com.bytecode.opencsv.CSVReader;
  *      (Mandatory) Comma seperated list of CSV record field names.
  *  --&gt;
  *  &lt;param name="<b>fields</b>" type="string-list"&gt;<i>&lt;csv-record-fields&gt;</i>&lt;/param&gt;
- * 
+ *  &lt;!--
+ *      (Optional) Field seperator character.  Default of ','.
+ *  --&gt;
+ *  &lt;param name="<b>separator</b>"&gt;<i>&lt;separator-character&gt;</i>&lt;/param&gt;
+ *  &lt;!--
+ *      (Optional) Quote character.  Default of '"'.
+ *  --&gt;
+ *  &lt;param name="<b>quote-char</b>"&gt;<i>&lt;quote-character&gt;</i>&lt;/param&gt;
+ *  &lt;!--
+ *      (Optional) Number of lines to skip before processing starts.  Default of 0.
+ *  --&gt;
+ *  &lt;param name="<b>skip-line-count</b>"&gt;<i>&lt;skip-line-count&gt;</i>&lt;/param&gt;
+ *
  * &lt;/smooks-resource&gt;
  * </pre>
  * 
@@ -98,12 +111,30 @@ public class CSVParser implements SmooksXMLReader {
     private ContentHandler contentHandler;
 	private SmooksResourceConfiguration configuration;
 	private ExecutionContext request;
+    private char separator = ',';
+    private char quoteChar = '"';
+    private int skipLines = 0;
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)
 	 */
 	public void setConfiguration(SmooksResourceConfiguration configuration) {
 		this.configuration = configuration;
+        try {
+            separator = XmlUtil.removeEntities(configuration.getStringParameter("separator", ",")).charAt(0);
+        } catch(Exception e) {
+            logger.warn("Invalid 'separator' config value.");
+        }
+        try {
+            quoteChar = XmlUtil.removeEntities(configuration.getStringParameter("quote-char", "\"")).charAt(0);
+        } catch(Exception e) {
+            logger.warn("Invalid 'quote-char' config value.");
+        }
+        try {
+            skipLines = Integer.parseInt(configuration.getStringParameter("skip-line-count", "0"));
+        } catch(Exception e) {
+            logger.warn("Invalid 'skip-line-count' config value.");
+        }
 	}
 
 	/* (non-Javadoc)
@@ -144,7 +175,7 @@ public class CSVParser implements SmooksXMLReader {
         }
         
         // Create the CSV line reader...
-        csvLineReader = new CSVReader(csvStreamReader);
+        csvLineReader = new CSVReader(csvStreamReader, separator, quoteChar, skipLines);
         
         // Start the document and add the root "csv-set" element...
         contentHandler.startDocument();
