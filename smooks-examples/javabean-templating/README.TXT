@@ -1,25 +1,23 @@
 About This Example:
 ===================
-    This example illustrates how to perform XSLT and FreeMarker templating
-    using Smooks.
+    This example illustrates how to perform a model based transform using the
+    Smooks Javabean and Templating Cartridges.  FreeMarker is used to perform
+    the templating.
 
-    The example takes an incoming Shipping request and transforms it using an
-    XSLT Templatelet.  This is a straightforward operation.
+    The example takes a Shipping History message, generates a "model" of that message
+    using the Javabean BeanPopulator class and then generates the required output
+    from the model, using the FreeMarker templating engine.
 
-    The more interesting tasks relate to the resonse transformation, where the tracking
-    history records need to be broken up.  These records are all supplied in
-    a single Text node.  The records are separated by newlines (see "response-message.xml").
-    To execute this part of the transform, we perform a model driven transform in which we use
-    the Javabean Cartridge to create the model from the input message and then use a FreeMarker
-    template to convert that model into the required output message.
+    One of the more interesting parts of the transformation is where the <trackingNumbers>
+    need to be broken out into seperate <trackingNumber> records.  These records are all supplied in
+    a single Text node.  The records are separated by newlines (see "input-message.xml").
 
     See:
         1. The "Main" class in src/main/java/example/Main.java.
-        2. The "request" and "response" messages in request-message.xml and response-message.xml.
+        2. The input message in input-message.xml.
         3. The model code in the "example.model" package in the src/main/java folder.
         4. The FreeMarker template in the "example.templates" package in the src/main/java folder.
-        5. The "request" and "response" Smooks transformation configs in
-           smooks-request-config.xml and smooks-response-config.xml.
+        5. The Smooks configuration in smooks-config.xml.
 
 How to Run?
 ===========
@@ -30,5 +28,3 @@ How to Run?
     Running:
         1. "mvn clean install"
         2. "mvn exec:java"
-        3. Modify pom.xml to switch XSLT Processors.
-        4. Re-run "mvn exec:java".
