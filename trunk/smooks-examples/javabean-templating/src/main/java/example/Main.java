@@ -17,7 +17,6 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.SmooksUtil;
 import org.milyn.templating.TemplatingUtils;
 import org.milyn.io.StreamUtils;
 import org.milyn.container.standalone.StandaloneExecutionContext;
@@ -33,28 +32,23 @@ import java.io.*;
  */
 public class Main {
 
-    public static byte[] requestMessage = readInputMessage("request-message.xml");
-    public static byte[] responseMessage = readInputMessage("response-message.xml");
+    public static byte[] inputMessage = readInputMessage("input-message.xml");
     private Smooks smooks;
 
     protected Main() throws IOException, SAXException {
-        // Instantiate Smooks with the configs...
-        smooks = new Smooks();
-        smooks.addConfigurations("smooks-request-config.xml");
-        smooks.addConfigurations("smooks-response-config.xml");
+        smooks = new Smooks("smooks-config.xml");
         TemplatingUtils.registerCDUCreators(smooks);
     }
 
     /**
      * Run the transform for the request or response.
-     * @param targetProfile "request" or "response".
      * @param message The request/response input message.
      * @return The transformed request/response.
      */
-    protected String runSmooksTransform(String targetProfile, byte[] message) {
+    protected String runSmooksTransform(byte[] message) {
 
         // Create an exec context for the target profile....
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext(targetProfile);
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
         CharArrayWriter outputWriter = new CharArrayWriter();
 
         // Filter the message to the outputWriter, using the execution context...
@@ -67,28 +61,14 @@ public class Main {
         Main smooksMain = new Main();
         String transResult;
 
-        System.out.println("\n\n");
-        pause("Press 'enter' to display the incoming resuest message...");
+        pause("Press 'enter' to display the input message...");
         System.out.println("\n");
-        System.out.println(new String(requestMessage));
+        System.out.println(new String(inputMessage));
         System.out.println("\n\n");
 
         System.out.println("This needs to be transformed.");
-        pause("Press 'enter' to display the transformed request message...");
-        transResult = smooksMain.runSmooksTransform("request", requestMessage);
-        System.out.println("\n");
-        System.out.println(transResult);
-        System.out.println("\n\n");
-
-        System.out.println("Request message is processed and a response is returned...");
-        pause("Press 'enter' to display the outgoing response message...");
-        System.out.println("\n");
-        System.out.println(new String(responseMessage));
-        System.out.println("\n\n");
-
-        System.out.println("This needs to be transformed.");
-        pause("Press 'enter' to display the transformed response message...");
-        transResult = smooksMain.runSmooksTransform("response", responseMessage);
+        pause("Press 'enter' to display the transformed message...");
+        transResult = smooksMain.runSmooksTransform(inputMessage);
         System.out.println("\n");
         System.out.println(transResult);
         System.out.println("\n\n");

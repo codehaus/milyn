@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
+import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
@@ -48,7 +49,8 @@ public class ExpandableContentDeliveryUnitTest extends TestCase {
         assertEquals(2, processingUnits.getCount());
         assertTrue(processingUnits.getMappings("b").get(0).getContentDeliveryUnit() instanceof Processing1);
 
-        assertEquals(1, serializationUnits.getCount());
+        assertEquals(2, serializationUnits.getCount());
         assertTrue(serializationUnits.getMappings("c").get(0).getContentDeliveryUnit() instanceof DefaultSerializationUnit);
+        assertTrue(serializationUnits.getMappings("context-object").get(0).getContentDeliveryUnit() instanceof ContextObjectSerializationUnit);
     }
 }

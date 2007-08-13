@@ -6,9 +6,9 @@
     Assign the new bean instance to the beanId of "order".
     -->
     <resource-config selector="order">
-        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
+        <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">order</param>
-        <param name="beanClass">example.beans.Order</param>
+        <param name="beanClass">example.model.Order</param>
     </resource-config>
 
     <!--
@@ -16,8 +16,8 @@
     Set the new bean instance on the "order" bean.
     -->
     <resource-config selector="header">
-        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
-        <param name="beanClass">example.beans.Header</param>
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanClass">example.model.Header</param>
         <param name="setOn">order</param>
         <param name="bindings">
             <!-- Header bindings... -->
@@ -33,8 +33,8 @@
     Set the OrderItem list on the "order" bean.
     -->
     <resource-config selector="order-item">
-        <resource>org.milyn.javabean.ProcessingPhaseBeanPopulator</resource>
-        <param name="beanClass">example.beans.OrderItem</param>
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanClass">example.model.OrderItem</param>
         <param name="addToList">true</param>
         <param name="setOn">order</param>
         <param name="bindings">

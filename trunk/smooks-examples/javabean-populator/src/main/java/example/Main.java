@@ -27,8 +27,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.TransformerFactory;
 import java.io.*;
 
-import example.beans.Order;
-import example.beans.OrderItem;
+import example.model.Order;
+import example.model.OrderItem;
 
 /**
  * Simple example main class.

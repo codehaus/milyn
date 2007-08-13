@@ -82,6 +82,7 @@ public class SmooksResourceConfigurationStore {
         
         registerInstalledResources("installed-cdu-creators.cdrl");
         registerInstalledResources("installed-param-decoders.cdrl");
+        registerInstalledResources("installed-serializers.cdrl");
 	}
 
     /**

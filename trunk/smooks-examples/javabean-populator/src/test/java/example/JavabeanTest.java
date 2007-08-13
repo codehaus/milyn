@@ -16,8 +16,8 @@
 package example;
 
 import junit.framework.TestCase;
-import example.beans.Order;
-import example.beans.OrderItem;
+import example.model.Order;
+import example.model.OrderItem;
 
 import java.io.IOException;
 

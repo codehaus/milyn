@@ -28,6 +28,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.Parameter;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.delivery.ExpandableContentDeliveryUnit;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
@@ -87,13 +88,13 @@ import org.w3c.dom.NodeList;
  * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd"&gt;
  *
  *     &lt;resource-config selector="order"&gt;
- *         &lt;resource&gt;org.milyn.javabean.ProcessingPhaseBeanPopulator&lt;/resource&gt;
+ *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanId"&gt;<b><u>order</u></b>&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Order</b>&lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
  *     &lt;resource-config selector="header"&gt;
- *         &lt;resource&gt;org.milyn.javabean.ProcessingPhaseBeanPopulator&lt;/resource&gt;
+ *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Header</b>&lt;/param&gt;
  *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
  *         &lt;param name="bindings"&gt;
@@ -105,7 +106,7 @@ import org.w3c.dom.NodeList;
  *     &lt;/resource-config&gt;
  *
  *     &lt;resource-config selector="order-item"&gt;
- *         &lt;resource&gt;org.milyn.javabean.ProcessingPhaseBeanPopulator&lt;/resource&gt;
+ *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.OrderItem</b>&lt;/param&gt;
  *         &lt;param name="addToList"&gt;<b>true</b>&lt;/param&gt;  &lt;-- Create a list of these bean instances --&gt;
  *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
@@ -126,11 +127,14 @@ import org.w3c.dom.NodeList;
  * &lt;/smooks-resource-list&gt;
  * </pre>
  *
+ * <h4>Smooks Configuration</h4>
+ * To trigger this visitor during the Assembly Phase, simply set the "VisitPhase" param to "ASSEMBLY".
+ *
  * @author tfennelly
  */
-public abstract class AbstractBeanPopulator implements DOMElementVisitor, ExpandableContentDeliveryUnit {
+public class BeanPopulator implements DOMElementVisitor, ExpandableContentDeliveryUnit {
 
-    private static Log logger = LogFactory.getLog(AbstractBeanPopulator.class);
+    private static Log logger = LogFactory.getLog(BeanPopulator.class);
     private SmooksResourceConfiguration config;
     private String beanId;
     private Class beanClass;
@@ -261,6 +265,7 @@ public abstract class AbstractBeanPopulator implements DOMElementVisitor, Expand
 
         // Construct the configuraton...
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, getClass().getName());
+        resourceConfig.setParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.name());
         resourceConfig.setParameter("beanId", beanId);
         resourceConfig.setParameter("property", property);
         if (attributeNameProperty != null && !attributeNameProperty.trim().equals("")) {

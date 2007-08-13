@@ -13,37 +13,39 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package example.beans;
+package example.model;
+
+import java.util.Date;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class OrderItem {
-    private long productId;
-    private Integer quantity;
-    private double price;
+public class Header {
+    private Date date;
+    private Long customerNumber;
+    private String customerName;
 
-    public long getProductId() {
-        return productId;
+    public Date getDate() {
+        return date;
     }
 
-    public void setProductId(long productId) {
-        this.productId = productId;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public Long getCustomerNumber() {
+        return customerNumber;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setCustomerNumber(Long customerNumber) {
+        this.customerNumber = customerNumber;
     }
 
-    public double getPrice() {
-        return price;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 }
