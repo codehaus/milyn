@@ -20,7 +20,7 @@
         <module>xslt-namespaces</module>
         <!-- module>xslt-complex</module -->
         <module>javabean-populator</module>
-        <module>javabean-templating</module>
+        <module>model-driven-basic</module>
         <module>csv-to-xml</module>
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
