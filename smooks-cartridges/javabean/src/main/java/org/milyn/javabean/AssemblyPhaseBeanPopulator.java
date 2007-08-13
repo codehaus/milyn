@@ -22,9 +22,11 @@ import org.milyn.delivery.dom.VisitPhase;
 /**
  * Javabean populator for the {@link org.milyn.delivery.dom.SmooksDOMFilter assembly phase}.
  * <p/>
- * See the {@link org.milyn.javabean.AbstractBeanPopulator} class for configuration details.
+ * See the {@link org.milyn.javabean.BeanPopulator} class for configuration details.
  * @author tfennelly
+ * @deprecated Use {@link org.milyn.javabean.BeanPopulator} and set the "VisitPhase"
+ * &lt;param&gt; to "ASSEMBLY".
  */
 @Phase(VisitPhase.ASSEMBLY)
-public class AssemblyPhaseBeanPopulator extends AbstractBeanPopulator {
+public class AssemblyPhaseBeanPopulator extends BeanPopulator {
 }

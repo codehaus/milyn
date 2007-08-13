@@ -35,7 +35,7 @@ import junit.framework.TestCase;
  */
 public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
-    public void testStringTemplateTrans() throws SAXException, IOException {
+    public void testStringTemplateTrans_01() throws SAXException, IOException {
         Smooks smooks = new Smooks();
 
         // Configure Smooks
@@ -43,11 +43,16 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
         TemplatingUtils.registerCDUCreators(smooks);
         smooks.addConfigurations("test-configs.cdrl", getClass().getResourceAsStream("test-configs.cdrl"));
 
-        InputStream stream = 
-            new ByteArrayInputStream("<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>".getBytes());
+        test_st(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
+        // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
+        test_st(smooks, "<c x='xvalueonc1' />", "<mybean>xvalueonc1</mybean>");
+    }
+
+    private void test_st(Smooks smooks, String input, String expected) {
+        InputStream stream = new ByteArrayInputStream(input.getBytes());
         StandaloneExecutionContext context = smooks.createExecutionContext("useragent");
         String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
 
-        assertEquals("<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>", result);
+        assertEquals(expected, result);
     }
 }

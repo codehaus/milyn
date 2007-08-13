@@ -27,7 +27,11 @@ import java.text.ParseException;
  * {@link java.util.Date} data decoder.
  * <p/>
  * Decodes the supplied string into a {@link java.util.Date} value
- * based on the supplied "{@link java.text.SimpleDateFormat format}" parameter.
+ * based on the supplied "{@link java.text.SimpleDateFormat format}" parameter, or the default (see below).
+ * <p/>
+ * The default date format used is "<i>yyyy-MM-dd'T'HH:mm:ss</i>" (see {@link SimpleDateFormat}).
+ * This format is based on the <a href="http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/#isoformats">ISO 8601</a>
+ * standard as used by the XML Schema type "<a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a>".
  * <p/>
  * This decoder is synchronized on its underlying {@link SimpleDateFormat} instance.
  *
@@ -35,25 +39,18 @@ import java.text.ParseException;
  */
 public class DateDecoder implements DataDecoder {
 
-    /**
-     * Date format configuration key.
-     */
-    public static final String FORMAT = "format";
-    private String format;
-    private SimpleDateFormat decoder;
+    public static final String FORMAT_CONFIG_KEY = "format";
+    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+    private String format = DEFAULT_DATE_FORMAT;
+    private SimpleDateFormat decoder = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
 
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-        format = resourceConfig.getStringParameter(FORMAT);
-        if (format == null) {
-            throw new SmooksConfigurationException("Date Decoder must specify a 'format' parameter.");
-        }
+        format = resourceConfig.getStringParameter(FORMAT_CONFIG_KEY, DEFAULT_DATE_FORMAT);
         decoder = new SimpleDateFormat(format.trim());
     }
 
     public Object decode(String data) throws DataDecodeException {
-        if (decoder == null) {
-            throw new IllegalStateException("Date decoder not initialised.  A decoder for this type (" + getClass().getName() + ") must be explicitly configured (unlike the primitive type decoders) with a date 'format'. See Javadoc.");
-        }
         try {
             // Must be sync'd - DateFormat is not synchronized.
             synchronized(decoder) {

@@ -25,10 +25,13 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
+import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
+import org.w3c.dom.Node;
 
 /**
  * StringTemplate {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
@@ -146,16 +149,28 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             StringTemplate thisTransTemplate = template.getInstanceOf();
             HashMap beans = BeanAccessor.getBeans(executionContext);
             String templatingResult;
+            Node resultNode;
 
             // Set the document data beans on the template and apply it...
             thisTransTemplate.setAttributes(beans);
             templatingResult = thisTransTemplate.toString();
 
-            // Create the replacement DOM text node containing the applied template...            
-            Text transformationTextNode = element.getOwnerDocument().createTextNode(templatingResult);
+            if(getAction() != Action.ADDTO && element == element.getOwnerDocument().getDocumentElement()) {
+                // We can't replace the root node with a text node (or insert before/after), so we need
+                // to replace the root node with a <context-object key="xxx" /> element and bind the result to the
+                // execution context under the specified key. The ContextObjectSerializationUnit will take
+                // care of the rest.
+
+                String key = "StringTemplateObject:" + DomUtils.getXPath(element);
+                executionContext.setAttribute(key, templatingResult);
+                resultNode = ContextObjectSerializationUnit.createElement(element.getOwnerDocument(), key);
+            } else {
+                // Create the replacement DOM text node containing the applied template...
+                resultNode = element.getOwnerDocument().createTextNode(templatingResult);
+            }
 
             // Process the templating action, supplying the templating result...
-            processTemplateAction(element, transformationTextNode);
+            processTemplateAction(element, resultNode);
         }
 	}
 }

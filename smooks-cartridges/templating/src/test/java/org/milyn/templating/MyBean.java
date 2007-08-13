@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.templating.stringtemplate;
+package org.milyn.templating;
 
 /**
  *

@@ -1,20 +1,16 @@
 <?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
 
-<smooks-resource-list> 
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
-	<!--
-		Configure the bean creation and population...
-	-->
-	<smooks-resource selector="c" path="org.milyn.javabean.ProcessingPhaseBeanPopulator">
-		<param name="beanId">myBeanData</param>
-		<param name="beanClass">org.milyn.templating.stringtemplate.MyBean</param>
-		<param name="attributeName">x</param>
-	</smooks-resource>	
-		
-	<!--
-		Configure the application of the StringTemplate template...
-	-->
-	<smooks-resource selector="c" path="/org/milyn/templating/stringtemplate/test-template.st" />
-	
+    <resource-config selector="c">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">myBeanData</param>
+        <param name="beanClass">org.milyn.templating.MyBean</param>
+        <param name="attributeName">x</param>
+    </resource-config>
+
+    <resource-config selector="c">
+        <resource>/org/milyn/templating/stringtemplate/test-template.st</resource>
+    </resource-config>
+
 </smooks-resource-list>

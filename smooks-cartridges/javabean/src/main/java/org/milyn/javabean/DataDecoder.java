@@ -31,7 +31,7 @@ import org.milyn.util.ClassUtil;
  * the decoder from the {@link org.milyn.container.ExecutionContext context} configuration,
  * using a selector key of "decoder:<u>type</u>", where "type" is the type alias used on the
  * property binding configuration (see the "OrderDateLong" definition in the sample
- * in {@link org.milyn.javabean.AbstractBeanPopulator}).
+ * in {@link org.milyn.javabean.BeanPopulator}).
  * <p/>
  * If one of the decoders in {@link org.milyn.javabean.decoders} is not what's needed, simply
  * implement a new decoder using this interface.  If you want the decoder to be automatically
@@ -43,7 +43,7 @@ import org.milyn.util.ClassUtil;
  * Some type decoders will however need to be configured as a Smooks resource
  * because they will require configuration of one sort or another.  For an example of this,
  * look at the "OrderDateLong" decoder definition in the sample
- * in {@link org.milyn.javabean.AbstractBeanPopulator}.
+ * in {@link org.milyn.javabean.BeanPopulator}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */

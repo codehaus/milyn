@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package example.beans;
+package example.model;
 
 import java.util.Date;
 import java.math.BigDecimal;

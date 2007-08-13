@@ -27,14 +27,16 @@ import org.w3c.dom.NodeList;
  */
 public abstract class AbstractTemplateProcessingUnit implements DOMElementVisitor {
 
-    private static final int REPLACE = 0;
-    private static final int ADDTO = 1;
-    private static final int INSERT_BEFORE = 2;
-    private static final int INSERT_AFTER = 3;
+    protected enum Action {
+        REPLACE,
+        ADDTO,
+        INSERT_BEFORE,
+        INSERT_AFTER,
+    }
     
     private Log logger;
     private boolean visitBefore = false;
-    private int action = REPLACE;
+    private Action action = Action.REPLACE;
 
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         logger = LogFactory.getLog(getClass());
@@ -43,8 +45,10 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         try {
             loadTemplate(config);
         } catch (IOException e) {
+            logger.error("Error loading Templating resource: " + config, e);
             throw new SmooksConfigurationException("Unable to read template.", e);
         } catch (TransformerConfigurationException e) {
+            logger.error("Error loading Templating resource: " + config, e);
             throw new SmooksConfigurationException("Unable to configure template engine.", e);
         }
     }
@@ -55,19 +59,23 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         String actionParam = config.getStringParameter("action");
         
         if("addto".equals(actionParam)) {
-            action = ADDTO;
+            action = Action.ADDTO;
         } else if("insertbefore".equals(actionParam)) {
-            action = INSERT_BEFORE;
+            action = Action.INSERT_BEFORE;
         } else if("insertafter".equals(actionParam)) {
-            action = INSERT_AFTER;
+            action = Action.INSERT_AFTER;
         } else {
-            action = REPLACE;
+            action = Action.REPLACE;
         }
     }
 
-	protected void processTemplateAction(Element element, Node templatingResult) {
+    protected Action getAction() {
+        return action;
+    }
+
+    protected void processTemplateAction(Element element, Node templatingResult) {
 		// REPLACE needs to be handled explicitly...
-		if(action == REPLACE) {
+		if(action == Action.REPLACE) {
             DomUtils.replaceNode(templatingResult, element);
         } else {
     		_processTemplateAction(element, templatingResult, action);
@@ -88,18 +96,18 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
 					break;
 				}
 			}
-		} else if(action == REPLACE) { 
+		} else if(action == Action.REPLACE) {
 			// When we're not at the root element, REPLACE needs to be handled explicitly
 			// by performing a series of insert-befores, followed by a remove of the
 			// target element...
-			processTemplateAction(element, templatingResultNodeList, INSERT_BEFORE);
+			processTemplateAction(element, templatingResultNodeList, Action.INSERT_BEFORE);
 			element.getParentNode().removeChild(element);
         } else {
 			processTemplateAction(element, templatingResultNodeList, action);
         }
 	}
 
-	private void processTemplateAction(Element element, NodeList templatingResultNodeList, int action) {
+	private void processTemplateAction(Element element, NodeList templatingResultNodeList, Action action) {
 		int count = templatingResultNodeList.getLength();
 		
 		// Iterate over the NodeList and filter each Node against the action.
@@ -110,23 +118,20 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
 		}
 	}
 
-	private void _processTemplateAction(Element element, Node node, int action) {
+	private void _processTemplateAction(Element element, Node node, Action action) {
         Node parent = element.getParentNode();
 
         // Can't insert before or after the root element...
-        if(parent instanceof Document && (action == INSERT_BEFORE || action == INSERT_AFTER)) {
+        if(parent instanceof Document && (action == Action.INSERT_BEFORE || action == Action.INSERT_AFTER)) {
             logger.warn("Insert before/after root element not allowed.  Consider using the replace action!!");
             return;
         }
         
-        switch (action) {
-        case ADDTO:
+        if(action == Action.ADDTO) {
             element.appendChild(node);
-            break;
-        case INSERT_BEFORE:
+        } else if(action == Action.INSERT_BEFORE) {
             DomUtils.insertBefore(node, element);
-            break;
-        case INSERT_AFTER:
+        } else if(action == Action.INSERT_AFTER) {
             Node nextSibling = element.getNextSibling();
             
             if(nextSibling == null) {
@@ -136,11 +141,8 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
                 // insert before the "nextSibling" - Node doesn't have an "insertAfter" operation!
                 DomUtils.insertBefore(node, nextSibling);
             }
-            break;
-        case REPLACE:
-        default:
+        } else if(action == Action.REPLACE) {
             // Don't perform any "replace" actions here!
-            break;
         }
 	}
 

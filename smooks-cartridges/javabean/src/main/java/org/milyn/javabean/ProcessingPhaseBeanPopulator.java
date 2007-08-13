@@ -19,8 +19,9 @@ package org.milyn.javabean;
 /**
  * Javabean populator for the {@link org.milyn.delivery.dom.SmooksDOMFilter processing phase}.
  * <p/>
- * See the {@link org.milyn.javabean.AbstractBeanPopulator} class for configuration details.
+ * See the {@link org.milyn.javabean.BeanPopulator} class for configuration details.
  * @author tfennelly
+ * @deprecated Use {@link org.milyn.javabean.BeanPopulator}.
  */
-public class ProcessingPhaseBeanPopulator extends AbstractBeanPopulator {
+public class ProcessingPhaseBeanPopulator extends BeanPopulator {
 }

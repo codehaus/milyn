@@ -13,23 +13,30 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package example.beans;
+package example.model;
+
+import java.util.List;
 
 /**
- * Shipping History bean.
- * <p/>
- * This bean is populated by the Smooks JavaBean Cartridge.
- * @author tfennelly
+ * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class History {
+public class Order {
+    private Header header;
+    private List<OrderItem> orderItems;
 
-    private TrackingNumber[] trackingNumbers;
-
-    public void setTrackingNumbers(TrackingNumber[] trackingNumbers) {
-        this.trackingNumbers = trackingNumbers;
+    public Header getHeader() {
+        return header;
     }
 
-    public TrackingNumber[] getTrackingNumbers() {
-        return trackingNumbers;
+    public void setHeader(Header header) {
+        this.header = header;
+    }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 }
