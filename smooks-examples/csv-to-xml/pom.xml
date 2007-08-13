@@ -16,7 +16,7 @@
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-csv</artifactId>
-            <version>0.1.1</version>
+            <version>0.2</version>
         </dependency>
 
 	</dependencies>
