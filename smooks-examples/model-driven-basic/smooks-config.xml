@@ -9,10 +9,17 @@
         <param name="beanId">history</param>
         <param name="beanClass">example.model.ShippingHistory</param>
         <param name="bindings">
-            <!-- Bindings. Note the "special" decoder for the trackingNumbers - see end of config! -->
+            <!-- Bindings. Note the "special" decoder for the trackingNumbers - see next config! -->
             <binding property="creationDate" type="Date" selector="header date" />
             <binding property="trackingNumbers" type="TrackingNumberHistory" selector="history trackingNumbers" />
         </param>
+    </resource-config>
+
+    <!--
+    Configure a "special" decoder for trackingNumbers field.
+    -->
+    <resource-config selector="decoder:TrackingNumberHistory">
+        <resource>example.model.TrackingNumberDecoder</resource>
     </resource-config>
 
     <!--
@@ -36,13 +43,6 @@
     -->
     <resource-config selector="$document">
         <resource>/example/templates/HistoryTrans.ftl</resource>
-    </resource-config>
-
-    <!--
-    Configure a "special" decoder for trackingNumbers field.
-    -->
-    <resource-config selector="decoder:TrackingNumberHistory">
-        <resource>example.model.TrackingNumberDecoder</resource>
     </resource-config>
 
 </smooks-resource-list>
