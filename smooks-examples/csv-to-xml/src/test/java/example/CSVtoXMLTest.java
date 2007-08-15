@@ -32,6 +32,6 @@ public class CSVtoXMLTest extends TestCase {
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("expected.xml"));
         String result = Main.runSmooksTransform();
 
-        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(result.getBytes())));
+        assertTrue("Expected:\n" + new String(expected, "UTF-8") + "\nActual:\n" + result, StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(result.getBytes())));
     }
 }
