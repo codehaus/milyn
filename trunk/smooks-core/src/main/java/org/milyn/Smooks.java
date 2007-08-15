@@ -242,7 +242,15 @@ public class Smooks {
 
             // Filter the Source....
             if (source instanceof StreamSource) {
-                resultNode = smooks.filter(new InputStreamReader(((StreamSource) source).getInputStream(), executionContext.getContentEncoding()));
+                StreamSource streamSource = (StreamSource) source;
+
+                if(streamSource.getInputStream() != null) {
+                    resultNode = smooks.filter(new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding()));
+                } else if(streamSource.getReader() != null) {
+                    resultNode = smooks.filter(streamSource.getReader());
+                } else {
+                    throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
+                }
             } else {
                 Node node = ((DOMSource) source).getNode();
                 if (!(node instanceof Document)) {
@@ -253,10 +261,15 @@ public class Smooks {
 
             // Populate the Result
             if (result instanceof StreamResult) {
-                Writer writer = ((StreamResult) result).getWriter();
+                Writer writer;
+                StreamResult streamResult = ((StreamResult) result);
 
-                if (writer == null) {
-                    writer = new OutputStreamWriter(((StreamResult) result).getOutputStream(), executionContext.getContentEncoding());
+                if (streamResult.getOutputStream() != null) {
+                    writer = new OutputStreamWriter(streamResult.getOutputStream(), executionContext.getContentEncoding());
+                } else if (streamResult.getWriter() != null) {
+                    writer = streamResult.getWriter();
+                } else {
+                    throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
                 }
                 try {
                     smooks.serialize(resultNode, writer);
@@ -271,26 +284,28 @@ public class Smooks {
         } finally {
             if (source instanceof StreamSource) {
                 try {
-                    ((StreamSource) source).getInputStream().close();
+                    StreamSource streamSource = (StreamSource) source;
+
+                    if(streamSource.getInputStream() != null) {
+                        streamSource.getInputStream().close();
+                    } else if(streamSource.getReader() != null) {
+                        streamSource.getReader().close();
+                    }
                 } catch (IOException e) {
-                    logger.warn("Failed to close input stream.", e);
+                    logger.warn("Failed to close input stream/reader.", e);
                 }
             }
             if (result instanceof StreamResult) {
-                Writer writer = ((StreamResult) result).getWriter();
+                StreamResult streamResult = ((StreamResult) result);
 
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        logger.warn("Failed to close output writer.", e);
+                try {
+                    if (streamResult.getOutputStream() != null) {
+                        streamResult.getOutputStream().close();
+                    } else if (streamResult.getWriter() != null) {
+                        streamResult.getWriter().close();
                     }
-                } else {
-                    try {
-                        ((StreamResult) result).getOutputStream().close();
-                    } catch (IOException e) {
-                        logger.warn("Failed to close output stream.", e);
-                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to close output stream/writer.", e);
                 }
             }
         }
