@@ -37,16 +37,14 @@ public class Main {
 
     protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
 
-        // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
-         // Create an exec context - no profiles....
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        StringWriter writer = new StringWriter();
 
-        // Filter the input message to the outputWriter, using the execution context...
         DOMResult domResult = new DOMResult();
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
+        smooks.filter(new StreamSource(new InputStreamReader(new ByteArrayInputStream(messageIn), "UTF-8")), new StreamResult(writer), executionContext);
 
-        return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
+        return writer.toString();
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {
