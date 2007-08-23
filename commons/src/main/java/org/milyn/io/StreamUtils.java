@@ -84,7 +84,7 @@ public abstract class StreamUtils {
      */
     public static StringBuffer trimLines(InputStream charStream) throws IOException {
         StringBuffer stringBuf = new StringBuffer();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(charStream));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(charStream, "UTF-8"));
         String line;
 
         while((line = reader.readLine()) != null) {

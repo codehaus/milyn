@@ -38,13 +38,16 @@ import org.w3c.dom.Text;
  */
 public class DefaultSerializationUnit extends AbstractSerializationUnit {
 
-	/**
+    private boolean closeEmptyElements = false;
+
+    /**
 	 * Public constructor.
 	 * @param resourceConfig
 	 */
 	public DefaultSerializationUnit(SmooksResourceConfiguration resourceConfig) {
 		super(resourceConfig);
-	}
+        closeEmptyElements = resourceConfig.getBoolParameter("closeEmptyElements", false);
+    }
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)
@@ -53,8 +56,12 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 		writer.write((int)'<');
         writer.write(element.getTagName());
         writeAttributes(element.getAttributes(), writer);
-		writer.write((int)'>');
-	}
+        if(closeEmptyElements && !element.hasChildNodes()) {
+            // Do nothing.  We'll close it "short-hand" in writeElementEnd below...
+        } else {
+            writer.write((int)'>');
+        }
+    }
 
 	/**
 	 * Write the element attributes.
@@ -86,10 +93,14 @@ public class DefaultSerializationUnit extends AbstractSerializationUnit {
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer)
 	 */
 	public void writeElementEnd(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
-		writer.write("</");
-		writer.write(element.getTagName());
-		writer.write((int)'>');
-	}
+        if(closeEmptyElements && !element.hasChildNodes()) {
+            writer.write("/>");
+        } else {
+            writer.write("</");
+            writer.write(element.getTagName());
+            writer.write((int)'>');
+        }
+    }
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementText(org.w3c.dom.Text, java.io.Writer)

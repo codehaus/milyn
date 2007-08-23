@@ -41,7 +41,6 @@ public class Main {
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
         StringWriter writer = new StringWriter();
 
-        DOMResult domResult = new DOMResult();
         smooks.filter(new StreamSource(new InputStreamReader(new ByteArrayInputStream(messageIn), "UTF-8")), new StreamResult(writer), executionContext);
 
         return writer.toString();

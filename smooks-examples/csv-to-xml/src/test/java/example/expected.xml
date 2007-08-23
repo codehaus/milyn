@@ -2,14 +2,14 @@
     <csv-record>
         <firstname>Tom</firstname>
         <lastname>Fennelly</lastname>
-        <gender>Mäle</gender>
+        <gender>Male</gender>
         <age>4</age>
         <country>Ireland</country>
     </csv-record>
     <csv-record>
         <firstname>Mike</firstname>
         <lastname>Fennelly</lastname>
-        <gender>Mäle</gender>
+        <gender>Male</gender>
         <age>2</age>
         <country>Ireland</country>
     </csv-record>

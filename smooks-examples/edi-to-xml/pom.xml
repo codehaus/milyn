@@ -16,7 +16,7 @@
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-edi</artifactId>
-            <version>0.2</version>
+            <version>${milyn.smooks.edi.version}</version>
         </dependency>
 
 	</dependencies>
