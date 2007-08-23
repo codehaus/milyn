@@ -16,13 +16,13 @@
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-edi</artifactId>
-            <version>0.2</version>
+            <version>${milyn.smooks.edi.version}</version>
         </dependency>
 
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-javabean</artifactId>
-            <version>0.3</version>
+            <version>${milyn.smooks.javabean.version}</version>
         </dependency>
 
 	</dependencies>

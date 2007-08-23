@@ -16,7 +16,7 @@
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-templating</artifactId>
-            <version>0.3</version>
+            <version>${milyn.smooks.templating.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>xalan</groupId>

@@ -16,12 +16,12 @@
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-scripting</artifactId>
-            <version>0.1</version>
+            <version>${milyn.smooks.scripting.version}</version>
         </dependency>
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-templating</artifactId>
-            <version>0.3</version>
+            <version>${milyn.smooks.templating.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>xalan</groupId>

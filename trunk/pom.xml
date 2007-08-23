@@ -10,11 +10,11 @@
     <url>http://milyn.codehaus.org</url>
 
     <properties>
-        <milyn.commons.version>0.9-SNAPSHOT</milyn.commons.version> <!-- 0.8 -->
-        <milyn.smooks.core.version>0.9-SNAPSHOT</milyn.smooks.core.version> <!-- 0.8 -->
-        <milyn.magger.version>0.1.2</milyn.magger.version> <!-- 0.1.1 -->
-        <milyn.tinak.version>0.8</milyn.tinak.version> <!-- 0.7.1 -->
-        <milyn.edisax.version>0.2-SNAPSHOT</milyn.edisax.version> <!-- 0.1-SNAPSHOT -->
+        <milyn.commons.version>0.9</milyn.commons.version>
+        <milyn.smooks.core.version>0.9</milyn.smooks.core.version>
+        <milyn.magger.version>0.1.2</milyn.magger.version>
+        <milyn.tinak.version>0.8</milyn.tinak.version>
+        <milyn.edisax.version>0.2</milyn.edisax.version>
         
         <nekohtml.version>0.9.5</nekohtml.version>
         <dtdparser.version>1.21</dtdparser.version>

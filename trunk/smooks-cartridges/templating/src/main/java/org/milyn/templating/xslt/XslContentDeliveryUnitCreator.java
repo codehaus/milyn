@@ -37,6 +37,7 @@ import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Namespace;
+import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -236,7 +237,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
             }
 
             // If it's not a full XSL template, we need to make it so by wrapping it.
-            isTemplatelet = (isInlineXSL && resourceConfig.getBoolParameter(IS_XSLT_TEMPLATELET, false));
+            isTemplatelet = isTemplatelet(isInlineXSL, resourceConfig, new String(xslBytes));
             if(isTemplatelet) {
 				String templateletWrapper = new String(StreamUtils.readStream(ClassUtil.getResourceAsStream("doc-files/templatelet.xsl", getClass())));
 				String templatelet = new String(xslBytes);
@@ -250,7 +251,24 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
             streamResult = resourceConfig.getBoolParameter("streamResult", true);
         }
 
-		protected void visit(Element element, ExecutionContext executionContext) {
+        private boolean isTemplatelet(boolean inlineXSL, SmooksResourceConfiguration resourceConfig, String templateCode) {
+            boolean isTemplatelet = (inlineXSL && resourceConfig.getBoolParameter(IS_XSLT_TEMPLATELET, false));
+
+            // If it's configured as a templatelet, but the code looks like it's a
+            // full template, log a warning...
+            if(isTemplatelet && templateCode.indexOf(":stylesheet>") != -1) {
+                logger.warn("The following XSL resource is configured as a templatelet, but looks as though it may be a complete stylesheet i.e. not a templatelet. You may want to remove the 'is-xslt-templatelet' parameter. Resource:\n" + resourceConfig);
+            }
+            // If it's not configured as a templatelet, but the code looks like it's a not
+            // full template, log a warning...
+            if(!isTemplatelet && templateCode.indexOf(":stylesheet>") == -1) {
+                logger.warn("The following XSL resource is NOT configured as a templatelet, but looks as though it may be an incomplete stylesheet i.e. it may be templatelet.  If so, it must be explicitly configured as a templatelet. Resource:\n" + resourceConfig);
+            }
+
+            return isTemplatelet;
+        }
+
+        protected void visit(Element element, ExecutionContext executionContext) {
                 Document ownerDoc = element.getOwnerDocument();
                 Element transRes = ownerDoc.createElement("xsltrans");
                 NodeList children = null;
