@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>milyn</groupId>
+    <artifactId>milyn</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <name>Milyn (Base POM)</name>
+    <url>http://milyn.codehaus.org</url>
+
+    <properties>
+        <milyn.commons.version>0.9</milyn.commons.version>
+        <milyn.smooks.core.version>0.9</milyn.smooks.core.version>
+        <milyn.magger.version>0.1.2</milyn.magger.version>
+        <milyn.tinak.version>0.8</milyn.tinak.version>
+        <milyn.edisax.version>0.2</milyn.edisax.version>
+        
+        <nekohtml.version>0.9.5</nekohtml.version>
+        <dtdparser.version>1.21</dtdparser.version>
+        <xerces.version>2.7.1</xerces.version>
+        <xalan.version>2.7.0</xalan.version>
+        <xml_apis.version>1.3.02</xml_apis.version>
+        <commons_lang.version>2.1</commons_lang.version>
+    </properties>
+
+    <modules>
+        <module>commons</module>
+        <module>smooks-core</module>
+        <module>magger</module>
+        <module>tinak</module>
+        <module>edisax</module>
+        <module>smooks-cartridges</module>
+        <module>smooks-examples</module>
+    </modules>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${commons_lang.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+                        <link>http://milyn.codehaus.org/javadoc/commons</link>
+                        <link>http://milyn.codehaus.org/javadoc/tinak</link>
+                        <link>http://milyn.codehaus.org/javadoc/smooks</link>
+                        <link>http://milyn.codehaus.org/javadoc/magger</link>
+                        <link>http://milyn.codehaus.org/javadoc/edisax</link>
+                        <link>http://www.w3.org/Style/CSS/SAC/doc/</link>
+                    </links>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+        <repository>
+            <id>codehaus</id>
+            <url>http://repository.codehaus.org/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codehaus</id>
+            <url>http://repository.codehaus.org</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
+
+<smooks-resource-list default-useragent="shipping-response"> 
+
+	<!--
+		Configure the History bean creation and population...
+	-->
+	<smooks-resource selector="history" path="org.milyn.javabean.ProcessingPhaseBeanPopulator">
+		<!-- create and bind the bean instance -->
+		<param name="beanId">history</param>
+		<param name="beanClass">org.milyn.templating.soapshipping.History</param>		
+		
+		<!-- extract the tracking numbers text and set on the bean -->
+		<param name="setterName">setTrackingNumbers</param>
+	</smooks-resource>	
+		
+	<!--
+		Use a StringTemplate template to perform the transformation.
+		We're transforming the "history" element...
+	-->
+	<smooks-resource selector="history" path="/org/milyn/templating/soapshipping/st/HistoryTrans.st">
+		<param name="action">replace</param>
+	</smooks-resource>
+	
+</smooks-resource-list>
