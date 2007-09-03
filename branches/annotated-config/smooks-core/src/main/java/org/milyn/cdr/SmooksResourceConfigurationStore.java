@@ -37,6 +37,8 @@ import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.DefaultProfileStore;
+import org.milyn.cdr.annotation.Configurator;
+import org.milyn.classpath.ClasspathUtils;
 import org.xml.sax.SAXException;
 
 /**
@@ -275,7 +277,7 @@ public class SmooksResourceConfigurationStore {
 		}
 
 		if(object instanceof ContentDeliveryUnit) {
-			((ContentDeliveryUnit)object).setConfiguration(resourceConfig);
+			Configurator.configure((ContentDeliveryUnit)object, resourceConfig);
 		}
 		
 		return object;
