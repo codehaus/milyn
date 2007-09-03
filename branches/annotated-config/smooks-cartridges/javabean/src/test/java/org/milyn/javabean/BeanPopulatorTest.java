@@ -25,6 +25,7 @@ import java.text.ParseException;
 
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.xml.XmlUtil;
@@ -75,12 +76,12 @@ public class BeanPopulatorTest extends TestCase {
 
         config.setParameter("attributeName", "attributeX");
 
-        new ProcessingPhaseBeanPopulator().setConfiguration(config);
+        new BeanPopulator().setConfiguration(config);
     }
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
         try {
-            new ProcessingPhaseBeanPopulator().setConfiguration(config);
+            Configurator.configure(new BeanPopulator(), config);
             fail("Expected SmooksConfigurationException - " + expected);
         } catch(SmooksConfigurationException e) {
             if(e.getMessage().indexOf(expected) == -1) {
@@ -98,8 +99,8 @@ public class BeanPopulatorTest extends TestCase {
         config.setParameter("beanClass", MyGoodBean.class.getName());
         config.setParameter("attributeName", "phoneNumber");
         config.setParameter("setterName", "setX");
-        ProcessingPhaseBeanPopulator pppu = new ProcessingPhaseBeanPopulator();
-        pppu.setConfiguration(config);
+        BeanPopulator pppu = new BeanPopulator();
+        Configurator.configure(pppu, config);
         try {
             pppu.visitBefore(doc.getDocumentElement(), request);
             fail("Expected SmooksConfigurationException");

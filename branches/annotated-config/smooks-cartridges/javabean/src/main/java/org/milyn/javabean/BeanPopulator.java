@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.Parameter;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.VisitPhase;
@@ -135,18 +136,27 @@ import org.w3c.dom.NodeList;
 public class BeanPopulator implements DOMElementVisitor, ExpandableContentDeliveryUnit {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
-    private SmooksResourceConfiguration config;
+
+    @ConfigParam(defaultParamVal="", use=ConfigParam.Use.OPTIONAL)
     private String beanId;
+    @ConfigParam(name="beanClass", defaultParamVal="", use=ConfigParam.Use.OPTIONAL)
+    private String beanClassName;
+    @ConfigParam(defaultParamVal="false", use=ConfigParam.Use.OPTIONAL)
+    private boolean addToList;
+    @ConfigParam(use=ConfigParam.Use.OPTIONAL)
+    private String setOn; // The name of the bean on which to set this bean
+    @ConfigParam(name="type", defaultParamVal="String", use=ConfigParam.Use.OPTIONAL)
+    private String typeAlias;
+
+
+    private SmooksResourceConfiguration config;
+    private String attributeName;
     private Class beanClass;
-    private boolean addToList = false;
     private String property;
     private Method beanSetterMethod;
-    private String setOn; // The name of the bean on which to set this bean
     private String setOnProperty; // The name of the property on the bean on which this bean is being set (default to the name of this bean)
     private Method setOnBeanSetterMethod;
     private boolean isAttribute = true;
-    private String attributeName;
-    private String typeAlias;
     private DataDecoder decoder;
 
     /**
@@ -157,9 +167,6 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         this.config = config;
 
-        String beanClassName = config.getStringParameter("beanClass", "").trim();
-        beanId = config.getStringParameter("beanId", "").trim();
-
         // One of "beanId" or "beanClass" must be specified...
         if (beanId.equals("") && beanClassName.equals("")) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
@@ -168,7 +175,6 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
         // Bean class...
         if (!beanClassName.equals("")) {
             beanClass = createBeanRuntime(beanClassName);
-            addToList = config.getBoolParameter("addToList", false);
         }
 
         // May need to default the "beanId"...
@@ -206,14 +212,10 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
         }
 
         // Get the details of the bean on which instances of beans created by this class are to be set on.
-        setOn = config.getStringParameter("setOn");
         if (setOn != null) {
             // If 'setOnProperty' is not defined, default to the name of this bean...
             setOnProperty = config.getStringParameter("setOnProperty", beanId);
         }
-
-        // Get the data type alias...
-        typeAlias = config.getStringParameter("type", "String");
 
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].  Add to list=" + addToList + ", attributeName=" + attributeName + ", property=" + property);
     }
@@ -372,7 +374,6 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
 
     private Object getDataObject(Element element, ExecutionContext executionContext) throws DataDecodeException {
         String dataString;
-        Object dataObject;
 
         if (isAttribute) {
             dataString = element.getAttribute(attributeName);

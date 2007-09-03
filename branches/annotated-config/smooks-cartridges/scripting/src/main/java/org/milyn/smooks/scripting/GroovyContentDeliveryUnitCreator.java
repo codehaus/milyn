@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import groovy.lang.GroovyClassLoader;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
@@ -117,7 +118,7 @@ public class GroovyContentDeliveryUnitCreator implements ContentDeliveryUnitCrea
 			
 			if(groovyObject instanceof DOMElementVisitor || groovyObject instanceof SerializationUnit) {
 				ContentDeliveryUnit groovyResource = (ContentDeliveryUnit)groovyObject;
-				groovyResource.setConfiguration(configuration);
+                Configurator.configure(groovyResource, configuration);
 				
 				return groovyResource;
 			} else {
