@@ -55,7 +55,7 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void testConstructorConfigValidation() {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
         
         testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
 
@@ -76,7 +76,7 @@ public class BeanPopulatorTest extends TestCase {
 
         config.setParameter("attributeName", "attributeX");
 
-        new BeanPopulator().setConfiguration(config);
+        Configurator.configure(new BeanPopulator(), config);
     }
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
@@ -91,7 +91,7 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_visit_validateSetterName() throws SAXException, IOException {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
         MockExecutionContext request = new MockExecutionContext();
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), XmlUtil.VALIDATION_TYPE.NONE, true);
         

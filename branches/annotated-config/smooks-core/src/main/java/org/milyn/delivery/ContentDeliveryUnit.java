@@ -26,5 +26,5 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * 
  * @author tfennelly
  */
-public interface ContentDeliveryUnit {
+public interface ContentDeliveryUnit<T> {
 }

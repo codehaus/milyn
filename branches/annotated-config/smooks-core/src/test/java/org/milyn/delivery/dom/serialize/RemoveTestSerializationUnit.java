@@ -19,7 +19,6 @@ package org.milyn.delivery.dom.serialize;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Element;
 
@@ -29,13 +28,6 @@ import org.w3c.dom.Element;
  * @author tfennelly
  */
 public class RemoveTestSerializationUnit extends  DefaultSerializationUnit {
-
-	/**
-	 * @param unitDef
-	 */
-	public RemoveTestSerializationUnit(SmooksResourceConfiguration unitDef) {
-		super(unitDef);
-	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer, org.milyn.device.UAContext)

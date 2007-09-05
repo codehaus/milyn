@@ -16,7 +16,6 @@
 
 package org.milyn.smooks.scripting;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import groovy.lang.GroovyClassLoader;
@@ -79,7 +78,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
  * &lt;smooks-resource  selector="<i>target-element</i>"&gt;
  *     &lt;resource&gt;<b>{@link org.milyn.resource.URIResourceLocator URI}</b>&lt;/resource&gt;
  *     &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
- *                      the {@link org.milyn.delivery.ContentDeliveryUnit#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)}
+ *                      the setConfiguration()
  *                      method. --&gt;
  * &lt;/smooks-resource&gt;
  * </pre>
@@ -91,7 +90,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
  *         <b><i>inlined groovy script, optionally wrapped in XML Comment or CDATA sections...</i></b>
  *     &lt;/resource&gt;
  *     &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
- *                      the {@link org.milyn.delivery.ContentDeliveryUnit#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)}
+ *                      the setConfiguration()
  *                      method. --&gt;
  * &lt;/smooks-resource&gt;
  * </pre>

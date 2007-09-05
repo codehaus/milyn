@@ -70,7 +70,14 @@ public @interface ConfigParam {
      *
      * @return The default paramater value (un-decoded).
      */
-    public String defaultParamVal() default NULL;
+    public String defaultVal() default NULL;
+
+    /**
+     * Paramater choice values.
+     *
+     * @return List of valid choices (un-decoded).
+     */
+    public String[] choice() default NULL;
 
     /**
      * The {@link DataDecoder} class to use when decoding the paramater value.

@@ -17,7 +17,6 @@ package org.milyn.delivery.dom.serialize;
 
 import org.w3c.dom.*;
 import org.milyn.container.ExecutionContext;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.xml.DomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,18 +32,9 @@ import java.io.IOException;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ContextObjectSerializationUnit extends AbstractSerializationUnit {
+public class ContextObjectSerializationUnit implements SerializationUnit {
 
     private static Log logger = LogFactory.getLog(ContextObjectSerializationUnit.class);
-
-    /**
-     * Public constructor.
-     *
-     * @param resourceConfig Unit SmooksResourceConfiguration.
-     */
-    public ContextObjectSerializationUnit(SmooksResourceConfiguration resourceConfig) {
-        super(resourceConfig);
-    }
 
     public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
         String key = DomUtils.getAttributeValue(element, "key");

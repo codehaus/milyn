@@ -25,14 +25,6 @@ import java.io.IOException;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class AddAttributeSerializer extends DefaultSerializationUnit {
-    /**
-     * Public constructor.
-     *
-     * @param resourceConfig
-     */
-    public AddAttributeSerializer(SmooksResourceConfiguration resourceConfig) {
-        super(resourceConfig);
-    }
 
     protected void writeAttributes(NamedNodeMap attributes, Writer writer) throws IOException {
         super.writeAttributes(attributes, writer);

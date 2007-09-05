@@ -137,17 +137,20 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
-    @ConfigParam(defaultParamVal="", use=ConfigParam.Use.OPTIONAL)
+    @ConfigParam(defaultVal ="", use=ConfigParam.Use.OPTIONAL)
     private String beanId;
-    @ConfigParam(name="beanClass", defaultParamVal="", use=ConfigParam.Use.OPTIONAL)
+
+    @ConfigParam(name="beanClass", defaultVal ="", use=ConfigParam.Use.OPTIONAL)
     private String beanClassName;
-    @ConfigParam(defaultParamVal="false", use=ConfigParam.Use.OPTIONAL)
+
+    @ConfigParam(defaultVal ="false", use=ConfigParam.Use.OPTIONAL)
     private boolean addToList;
+
     @ConfigParam(use=ConfigParam.Use.OPTIONAL)
     private String setOn; // The name of the bean on which to set this bean
-    @ConfigParam(name="type", defaultParamVal="String", use=ConfigParam.Use.OPTIONAL)
-    private String typeAlias;
 
+    @ConfigParam(name="type", defaultVal ="String", use=ConfigParam.Use.OPTIONAL)
+    private String typeAlias;
 
     private SmooksResourceConfiguration config;
     private String attributeName;
@@ -166,6 +169,9 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
      */
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         this.config = config;
+
+        beanId = beanId.trim();
+        beanClassName = beanClassName.trim();
 
         // One of "beanId" or "beanClass" must be specified...
         if (beanId.equals("") && beanClassName.equals("")) {

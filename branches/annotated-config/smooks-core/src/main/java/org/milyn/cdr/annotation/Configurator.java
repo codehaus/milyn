@@ -24,6 +24,7 @@ import org.milyn.javabean.DataDecoder;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 /**
  * Utility class for processing configuration annotations on a
@@ -39,9 +40,10 @@ public class Configurator {
      * {@link SmooksResourceConfiguration}.
      * @param instance The instance to be configured.
      * @param config The configuration.
+     * @return The configured ContentDeliveryUnit instance.
      * @throws SmooksConfigurationException Invalid field annotations.
      */
-    public static void configure(ContentDeliveryUnit instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
+    public static <U extends ContentDeliveryUnit> U configure(U instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         AssertArgument.isNotNull(instance, "instance");
         AssertArgument.isNotNull(config, "config");
 
@@ -61,6 +63,8 @@ public class Configurator {
         }
 
         setConfiguration(instance, config);
+
+        return instance;
     }
 
     private static void applyConfigParam(ConfigParam configParam, Field field, ContentDeliveryUnit instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
@@ -74,22 +78,28 @@ public class Configurator {
         paramValue = config.getStringParameter(name);
 
         if(paramValue == null && configParam.use() == ConfigParam.Use.OPTIONAL) {
-            paramValue = configParam.defaultParamVal();
+            paramValue = configParam.defaultVal();
             if(ConfigParam.NULL.equals(paramValue)) {
                 paramValue = null;
             }
         }
 
         if(paramValue != null) {
-            Class<? extends DataDecoder> decoderClass = configParam.decoder();
+            String[] choices = configParam.choice();
+            Class<? extends DataDecoder> decoderClass;
             DataDecoder decoder;
 
+            assertValidChoice(choices, name, paramValue);
+
+            decoderClass = configParam.decoder();
             if(decoderClass.isAssignableFrom(DataDecoder.class)) {
+                // No decoder specified via annotation.  Infer from the field type...
                 decoder = DataDecoder.Factory.create(field.getType());
                 if(decoder == null) {
                     throw new SmooksConfigurationException("ContentDeliveryUnit class field '" + getLongFieldName(field) + "' must define a decoder through it's @ConfigParam annotation.  Unable to automatically determine DataDecoder from field type.");
                 }
             } else {
+                // Decoder specified on annotation...
                 try {
                     decoder = decoderClass.newInstance();
                 } catch (InstantiationException e) {
@@ -109,6 +119,24 @@ public class Configurator {
         }
     }
 
+    private static void assertValidChoice(String[] choices, String name, String paramValue) throws SmooksConfigurationException {
+        if(choices == null || choices.length == 0) {
+            throw new RuntimeException("Unexpected annotation default choice value.  Should not be null or empty.  Code may have changed incompatibly.");
+        } else if(choices.length == 1 && ConfigParam.NULL.equals(choices[0])) {
+            // A choice wasn't specified on the paramater config.
+            return;
+        } else {
+            // A choice was specified. Check it against the value...
+            for (String choice : choices) {
+                if(paramValue.equals(choice)) {
+                    return;
+                }
+            }
+        }
+
+        throw new SmooksConfigurationException("Value '" + paramValue + "' for paramater '" + name + "' is invalid.  Valid choices for this paramater are: " + Arrays.asList(choices));
+    }
+
     private static void applyConfig(Field field, ContentDeliveryUnit instance, SmooksResourceConfiguration config) {
         try {
             setField(field, instance, config);
@@ -119,7 +147,7 @@ public class Configurator {
 
     private static void setConfiguration(ContentDeliveryUnit instance, SmooksResourceConfiguration config) {
         try {
-            Method setConfigurationMethod = instance.getClass().getMethod("setConfiguration", new Class[] {SmooksResourceConfiguration.class});
+            Method setConfigurationMethod = instance.getClass().getMethod("setConfiguration", SmooksResourceConfiguration.class);
             
             setConfigurationMethod.invoke(instance, config);
         } catch (NoSuchMethodException e) {
@@ -130,7 +158,8 @@ public class Configurator {
             if(e.getTargetException() instanceof SmooksConfigurationException) {
                 throw (SmooksConfigurationException)e.getTargetException();
             } else {
-                throw new SmooksConfigurationException("Error invoking 'setConfiguration' method on class '" + instance.getClass().getName() + "'.", e.getTargetException());
+                Throwable cause = e.getTargetException();
+                throw new SmooksConfigurationException("Error invoking 'setConfiguration' method on class '" + instance.getClass().getName() + "'.", (cause != null?cause:e));
             }
         }
     }

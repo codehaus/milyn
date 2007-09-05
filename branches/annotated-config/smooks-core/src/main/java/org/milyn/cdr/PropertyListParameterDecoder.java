@@ -51,10 +51,6 @@ import org.milyn.delivery.ContentDeliveryConfig;
  * @author tfennelly
  */
 public class PropertyListParameterDecoder extends ParameterDecoder {
-	
-	public PropertyListParameterDecoder(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
-	}
 
 	public Object decodeValue(String value) throws ParameterDecodeException {
 		Properties properties = new Properties();

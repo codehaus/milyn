@@ -16,7 +16,7 @@
 
 package org.milyn.cdr;
 
-import org.milyn.delivery.AbstractContentDeliveryUnit;
+import org.milyn.delivery.ContentDeliveryUnit;
 
 /**
  * Abstract Parameter Decoder.
@@ -25,23 +25,7 @@ import org.milyn.delivery.AbstractContentDeliveryUnit;
  * The actual decoded {@link java.lang.Object} type depends on the implementation.
  * @author tfennelly
  */
-public abstract class ParameterDecoder extends AbstractContentDeliveryUnit {
-
-	/**
-	 * Parameter Decoder Constructor.
-	 * @param resourceConfig smooks-resource Configuration.
-	 */
-	public ParameterDecoder(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
-	}
-
-	/**
-	 * Set the resource configuration for the delivery unit.
-	 */
-	public void setConfiguration(SmooksResourceConfiguration resourceConfig) {
-		// Empty implementation.
-		// Extenders of this class receive their configuration via constructor.
-	}
+public abstract class ParameterDecoder<T> implements ContentDeliveryUnit {
 
 	/**
 	 * Decode the supplied parameter value.

@@ -19,7 +19,7 @@ package org.milyn.delivery.dom.serialize;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -36,18 +36,10 @@ import org.w3c.dom.Text;
  * Default SerialisationUnit where none defined.
  * @author tfennelly
  */
-public class DefaultSerializationUnit extends AbstractSerializationUnit {
+public class DefaultSerializationUnit implements SerializationUnit {
 
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
     private boolean closeEmptyElements = false;
-
-    /**
-	 * Public constructor.
-	 * @param resourceConfig
-	 */
-	public DefaultSerializationUnit(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
-        closeEmptyElements = resourceConfig.getBoolParameter("closeEmptyElements", false);
-    }
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)

@@ -18,6 +18,7 @@ package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.w3c.dom.Element;
@@ -47,24 +48,18 @@ import org.w3c.dom.Element;
  */
 public class RenameAttributeTU implements DOMElementVisitor {
 
-	private String attributeName;
-	private String attributeNewName;
-	private boolean overwrite;
+    @ConfigParam
+    private String attributeName;
+
+    @ConfigParam
+    private String attributeNewName;
+
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
+    private boolean overwrite;
+
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
 	private boolean visitBefore;
 	
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-		attributeName = resourceConfig.getStringParameter("attributeName");
-		if(attributeName == null) {
-			throw new IllegalStateException(RenameAttributeTU.class + " cdres must define a 'attributeName' param.");
-		}
-		attributeNewName = resourceConfig.getStringParameter("attributeNewName");
-		if(attributeNewName == null) {
-			throw new IllegalStateException(RenameAttributeTU.class + " cdres must define a 'attributeNewName' param.");
-		}
-		overwrite = resourceConfig.getBoolParameter("overwrite", false);
-		visitBefore = resourceConfig.getBoolParameter("visitBefore", false);
-	}
-
     public void visitBefore(Element element, ExecutionContext executionContext) {
         if(visitBefore) {
             visit(element, executionContext);

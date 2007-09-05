@@ -19,7 +19,7 @@ package org.milyn.cdres.serialize;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
 import org.w3c.dom.CDATASection;
@@ -46,17 +46,9 @@ import org.w3c.dom.Text;
  * @author tfennelly
  */
 public class EmptyElementSU extends DefaultSerializationUnit {
-	
-	private boolean wellFormed = true;
-	
-	/**
-	 * Public constructor.
-	 * @param resourceConfig Resource definition.
-	 */
-	public EmptyElementSU(SmooksResourceConfiguration resourceConfig) {
-		super(resourceConfig);
-		wellFormed = resourceConfig.getBoolParameter("wellFormed", true);
-	}
+
+    @ConfigParam(use=ConfigParam.Use.OPTIONAL, defaultVal ="true")
+    private boolean wellFormed;
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer, org.milyn.useraegnt.UAContext)

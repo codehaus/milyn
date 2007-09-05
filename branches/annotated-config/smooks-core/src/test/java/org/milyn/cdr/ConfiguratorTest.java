@@ -103,6 +103,34 @@ public class ConfiguratorTest extends TestCase {
         assertNotNull(cdu.config);
     }
 
+    public void test_paramaterSetting_Config_choice() {
+        SmooksResourceConfiguration config;
+        MyContentDeliveryUnit6 cdu = new MyContentDeliveryUnit6();
+
+        // Check that valid values are accepted....
+        config = new SmooksResourceConfiguration();
+        config.setParameter("paramA", "A");
+        Configurator.configure(cdu, config);
+
+        config = new SmooksResourceConfiguration();
+        config.setParameter("paramA", "B");
+        Configurator.configure(cdu, config);
+
+        config = new SmooksResourceConfiguration();
+        config.setParameter("paramA", "C");
+        Configurator.configure(cdu, config);
+
+        // Check that invalid values are accepted....
+        config = new SmooksResourceConfiguration();
+        config.setParameter("paramA", "X");
+        try {
+            Configurator.configure(cdu, config);
+            fail("Expected SmooksConfigurationException");
+        } catch(SmooksConfigurationException e) {
+            assertEquals("Value 'X' for paramater 'paramA' is invalid.  Valid choices for this paramater are: [A, B, C]", e.getMessage());
+        }
+    }
+
     private class MyContentDeliveryUnit1 implements ContentDeliveryUnit {
 
         @ConfigParam
@@ -123,7 +151,7 @@ public class ConfiguratorTest extends TestCase {
         @ConfigParam(name="param-b", decoder=StringDecoder.class)
         private String paramB;
 
-        @ConfigParam(decoder=IntegerDecoder.class, use=ConfigParam.Use.OPTIONAL, defaultParamVal="9")
+        @ConfigParam(decoder=IntegerDecoder.class, use=ConfigParam.Use.OPTIONAL, defaultVal ="9")
         private int paramC;
     }
 
@@ -142,4 +170,9 @@ public class ConfiguratorTest extends TestCase {
         }
     }
 
+    private class MyContentDeliveryUnit6 implements ContentDeliveryUnit {
+
+        @ConfigParam(choice = {"A", "B", "C"})
+        private String paramA;
+    }
 }
