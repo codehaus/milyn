@@ -30,6 +30,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.ProfileTargetingExpression;
+import org.milyn.cdr.annotation.Config;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.ApplicationContext;
 import org.milyn.edisax.EDIParser;
@@ -81,21 +83,17 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	/**
 	 * The parser configuration.
 	 */
-	private SmooksResourceConfiguration configuration;
+    @Config
+    private SmooksResourceConfiguration configuration;
 	/**
 	 * The Smooks container request.
 	 */
 	private ExecutionContext executionContext;
-	
-	/* (non-Javadoc)
-	 * @see org.milyn.xml.SmooksXMLReader#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)
-	 */
-	public void setConfiguration(SmooksResourceConfiguration configuration) {
-		AssertArgument.isNotNull(configuration, "configuration");
-		this.configuration = configuration;
-	}
 
-	public void setExecutionContext(ExecutionContext executionContext) {
+    @ConfigParam(name = MODEL_CONFIG_KEY)
+    private String modelConfigData;
+
+    public void setExecutionContext(ExecutionContext executionContext) {
 		AssertArgument.isNotNull(executionContext, "executionContext");
 		this.executionContext = executionContext;
 	}
@@ -176,12 +174,7 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 */
 	private InputStream getMappingConfigData() {
 		InputStream configStream = null;
-		String modelConfigData = configuration.getStringParameter(MODEL_CONFIG_KEY);
-		
-		if(modelConfigData == null) {
-			throw new IllegalStateException("Mandatory resource configuration parameter [" + MODEL_CONFIG_KEY + "] not specified for [" + getClass().getName() + "] parser configuration.  Target Profile(s) " + getTargetProfiles() + ".");
-		}
-		
+
 		try {
 			new URI(modelConfigData);
 			configStream = uriMappingLocator.getResource(modelConfigData);

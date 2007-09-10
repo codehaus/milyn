@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.util.Hashtable;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.io.StreamUtils;
 import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
 import org.milyn.xml.Parser;
@@ -54,9 +55,9 @@ public class SmooksEDIParserTest extends TestCase {
 		// Mandatory "mapping-model" config param not specified...
 		try {
 			test(null);
-			fail("Expected IllegalStateException.");
-		} catch(IllegalStateException e) {
-			assertEquals("Mandatory resource configuration parameter [mapping-model] not specified for [org.milyn.smooks.edi.SmooksEDIParser] parser configuration.  Target Profile(s) [*].", e.getMessage());
+			fail("Expected SmooksConfigurationException.");
+		} catch(SmooksConfigurationException e) {
+			assertTrue(e.getMessage().startsWith("<param> 'mapping-model' not specified on resource configuration"));
 		}
 
 		// Mandatory "mapping-model" config param is a valid URI, but doesn't point at anything that exists...

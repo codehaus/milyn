@@ -16,19 +16,15 @@
 
 package org.milyn.container.standalone;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Hashtable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
 import org.milyn.profile.*;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.URIResourceLocator;
-import org.xml.sax.SAXException;
+import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
 
 /**
  * Standalone container execution context for Smooks.
@@ -45,9 +41,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
      */
     public static final String OPEN_PROFILE_NAME = Profile.class.getName() + "#OPEN_PROFILE_NAME";
 
-    private static Log logger = LogFactory.getLog(StandaloneApplicationContext.class);
 	private Hashtable attributes = new Hashtable();
-	private Hashtable sessions = new Hashtable();
 	private ContainerResourceLocator resourceLocator;	
 	private SmooksResourceConfigurationStore resStore;
 	private DefaultProfileStore profileStore = new DefaultProfileStore();
@@ -97,7 +91,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
 		return resStore;
 	}
 
-	/**
+    /**
 	 * Get the ProfileStore in use within the Standalone Context.
 	 * @return The ProfileStore.
 	 */

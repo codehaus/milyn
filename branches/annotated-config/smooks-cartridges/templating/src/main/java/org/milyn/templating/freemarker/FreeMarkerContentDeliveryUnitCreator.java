@@ -5,6 +5,7 @@ import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.BeanAccessor;
@@ -106,22 +107,13 @@ import freemarker.template.TemplateException;
 public class FreeMarkerContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
 
     /**
-     * Public constructor.
-     * @param config Configuration details for this ContentDeliveryUnitCreator.
-     */
-    public FreeMarkerContentDeliveryUnitCreator(SmooksResourceConfiguration config) {
-    }
-
-	/**
 	 * Create a FreeMarker based ContentDeliveryUnit.
      * @param resourceConfig The SmooksResourceConfiguration for the FreeMarker.
      * @return The FreeMarker {@link org.milyn.delivery.ContentDeliveryUnit} instance.
 	 */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
         try {
-			FreeMarkerProcessingUnit processingUnit = new FreeMarkerProcessingUnit();
-            processingUnit.setConfiguration(resourceConfig);
-            return processingUnit;
+            return Configurator.configure(new FreeMarkerProcessingUnit(), resourceConfig);
         } catch (SmooksConfigurationException e) {
 			InstantiationException instanceException = new InstantiationException("FreeMarker resource [" + resourceConfig.getResource() + "] not loadable.  FreeMarker resource invalid.");
 			instanceException.initCause(e);
@@ -142,15 +134,14 @@ public class FreeMarkerContentDeliveryUnitCreator implements ContentDeliveryUnit
 
         protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {
             byte[] templateBytes = config.getBytes();
-            String encoding = config.getStringParameter("encoding", "UTF-8");
-            Reader templateReader = new InputStreamReader(new ByteArrayInputStream(templateBytes), encoding);
+            Reader templateReader = new InputStreamReader(new ByteArrayInputStream(templateBytes), getEncoding());
 
             try {
-                this.config = config;
                 template = new Template("free-marker-template", templateReader, new Configuration());
             } finally {
                 templateReader.close();
             }
+            this.config = config;
         }
 
         protected void visit(Element element, ExecutionContext executionContext) {

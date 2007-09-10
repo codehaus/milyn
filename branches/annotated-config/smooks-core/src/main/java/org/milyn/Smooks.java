@@ -319,4 +319,14 @@ public class Smooks {
     public StandaloneApplicationContext getApplicationContext() {
         return context;
     }
+
+    /**
+     * Close this Smooks instance and all associated resources.
+     * <p/>
+     * Should result in the {@link org.milyn.cdr.annotation.Uninitialize uninitialization}
+     * of all allocated {@link org.milyn.delivery.ContentDeliveryUnit} instances.
+     */
+    public void close() {
+        context.getStore().close();
+    }
 }

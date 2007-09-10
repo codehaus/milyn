@@ -1,6 +1,7 @@
 package org.milyn.templating;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -8,9 +9,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.xml.DomUtils;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DataDecodeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -27,21 +31,22 @@ import org.w3c.dom.NodeList;
  */
 public abstract class AbstractTemplateProcessingUnit implements DOMElementVisitor {
 
+    private Log logger = LogFactory.getLog(getClass());
+
     protected enum Action {
         REPLACE,
         ADDTO,
         INSERT_BEFORE,
         INSERT_AFTER,
     }
-    
-    private Log logger;
-    private boolean visitBefore = false;
-    private Action action = Action.REPLACE;
+
+    private boolean visitBefore;
+
+    private Action action;
+
+    private Charset encoding;
 
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
-        logger = LogFactory.getLog(getClass());
-        visitBefore = config.getBoolParameter("visitBefore", false);
-        setAction(config);
         try {
             loadTemplate(config);
         } catch (IOException e) {
@@ -54,23 +59,28 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
     }
 	
 	protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
-	
-    private void setAction(SmooksResourceConfiguration config) {
-        String actionParam = config.getStringParameter("action");
-        
-        if("addto".equals(actionParam)) {
-            action = Action.ADDTO;
-        } else if("insertbefore".equals(actionParam)) {
-            action = Action.INSERT_BEFORE;
-        } else if("insertafter".equals(actionParam)) {
-            action = Action.INSERT_AFTER;
-        } else {
-            action = Action.REPLACE;
-        }
+
+    @ConfigParam(defaultVal = "false")
+    public void setVisitBefore(boolean visitBefore) {
+        this.visitBefore = visitBefore;
+    }
+
+    @ConfigParam(name = "action", defaultVal = "replace", choice = {"replace", "addto", "insertbefore", "insertafter"}, decoder = ActionDecoder.class)
+    public void setAction(Action action) {
+        this.action = action;
     }
 
     protected Action getAction() {
         return action;
+    }
+
+    public Charset getEncoding() {
+        return encoding;
+    }
+
+    @ConfigParam(defaultVal = "UTF-8")
+    public void setEncoding(Charset encoding) {
+        this.encoding = encoding;
     }
 
     protected void processTemplateAction(Element element, Node templatingResult) {
@@ -159,4 +169,18 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
     }
 
     protected abstract void visit(Element element, ExecutionContext executionContext);
+
+    public static class ActionDecoder implements DataDecoder {
+        public Object decode(String data) throws DataDecodeException {
+            if("addto".equals(data)) {
+                return Action.ADDTO;
+            } else if("insertbefore".equals(data)) {
+                return Action.INSERT_BEFORE;
+            } else if("insertafter".equals(data)) {
+                return Action.INSERT_AFTER;
+            } else {
+                return Action.REPLACE;
+            }
+        }
+    }
 }

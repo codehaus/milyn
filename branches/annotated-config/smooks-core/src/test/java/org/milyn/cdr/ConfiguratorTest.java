@@ -17,11 +17,12 @@ package org.milyn.cdr;
 
 import junit.framework.TestCase;
 import org.milyn.delivery.ContentDeliveryUnit;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Configurator;
-import org.milyn.cdr.annotation.Config;
+import org.milyn.cdr.annotation.Initialize;
+import org.milyn.cdr.annotation.*;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.javabean.decoders.IntegerDecoder;
+
+import java.nio.charset.Charset;
 
 /**
  *
@@ -131,6 +132,83 @@ public class ConfiguratorTest extends TestCase {
         }
     }
 
+    public void test_paramaterSetting_decode_error() {
+        SmooksResourceConfiguration config;
+        MyContentDeliveryUnit7 cdu = new MyContentDeliveryUnit7();
+
+        config = new SmooksResourceConfiguration();
+        config.setParameter("encoding", "XXXX");
+        try {
+            Configurator.configure(cdu, config);
+            fail("Expected SmooksConfigurationException.");
+        } catch(SmooksConfigurationException e) {
+            assertEquals("Failed to set paramater configuration value on 'org.milyn.cdr.ConfiguratorTest$MyContentDeliveryUnit7#encoding'.", e.getMessage());
+            assertEquals("Unsupported character set 'XXXX'.", e.getCause().getMessage());
+        }
+    }
+
+    public void test_paramaterSetting_setterMethod() {
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+        MyContentDeliveryUnit8 cdu1 = new MyContentDeliveryUnit8();
+
+        config.setParameter("encoding", "UTF-8");
+        Configurator.configure(cdu1, config);
+        assertEquals("UTF-8", cdu1.getEncoding().displayName());
+
+        MyContentDeliveryUnit9 cdu2 = new MyContentDeliveryUnit9();
+        config.setParameter("encoding", "UTF-8");
+        try {
+            Configurator.configure(cdu2, config);
+            fail("Expected SmooksConfigurationException.");
+        } catch(SmooksConfigurationException e) {
+            assertEquals("Unable to determine the property name associated with 'org.milyn.cdr.ConfiguratorTest$MyContentDeliveryUnit9#encoding'. " +
+                    "Setter methods that specify the @ConfigParam annotation must either follow the Javabean naming convention ('setX' for propert 'x'), " +
+                    "or specify the propery name via the 'name' parameter on the @ConfigParam annotation.", e.getMessage());
+        }
+
+        MyContentDeliveryUnit10 cdu3 = new MyContentDeliveryUnit10();
+        config.setParameter("encoding", "UTF-8");
+        Configurator.configure(cdu3, config);
+        assertEquals("UTF-8", cdu3.getEncoding().displayName());
+    }
+
+
+    public void test_Initialize_Uninitialize() {
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+        MyContentDeliveryUnit11 cdu1 = new MyContentDeliveryUnit11();
+
+        // Initialize....
+        assertFalse(cdu1.initialised);
+        assertFalse(cdu1.uninitialised);
+        Configurator.configure(cdu1, config);
+
+        // Uninitialize....
+        assertTrue(cdu1.initialised);
+        assertFalse(cdu1.uninitialised);
+        Configurator.uninitialise(cdu1);
+        assertTrue(cdu1.initialised);
+        assertTrue(cdu1.uninitialised);
+
+        // Initialize - exception....
+        MyContentDeliveryUnit12 cdu2 = new MyContentDeliveryUnit12();
+        try {
+            Configurator.configure(cdu2, config);
+            fail("Expected SmooksConfigurationException.");
+        } catch(SmooksConfigurationException e) {
+            assertEquals("Error invoking @Initialize method 'init' on class 'org.milyn.cdr.ConfiguratorTest$MyContentDeliveryUnit12'.", e.getMessage());
+        }
+
+        // Uninitialize - exception....
+        try {
+            Configurator.uninitialise(cdu2);
+            fail("Expected SmooksConfigurationException.");
+        } catch(SmooksConfigurationException e) {
+            assertEquals("Error invoking @Uninitialize method 'uninit' on class 'org.milyn.cdr.ConfiguratorTest$MyContentDeliveryUnit12'.", e.getMessage());
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
     private class MyContentDeliveryUnit1 implements ContentDeliveryUnit {
 
         @ConfigParam
@@ -174,5 +252,82 @@ public class ConfiguratorTest extends TestCase {
 
         @ConfigParam(choice = {"A", "B", "C"})
         private String paramA;
+    }
+
+    private class MyContentDeliveryUnit7 implements ContentDeliveryUnit {
+
+        @ConfigParam
+        private Charset encoding;
+    }
+
+    public class MyContentDeliveryUnit8 implements ContentDeliveryUnit {
+
+        private Charset encoding;
+
+        public Charset getEncoding() {
+            return encoding;
+        }
+
+        @ConfigParam        
+        public void setEncoding(Charset encoding) {
+            this.encoding = encoding;
+        }
+    }
+
+    public class MyContentDeliveryUnit9 implements ContentDeliveryUnit {
+
+        private Charset encoding;
+
+        public Charset getEncoding() {
+            return encoding;
+        }
+
+        @ConfigParam
+        public void encoding(Charset encoding) {
+            this.encoding = encoding;
+        }
+    }
+
+    public class MyContentDeliveryUnit10 implements ContentDeliveryUnit {
+
+        private Charset encoding;
+
+        public Charset getEncoding() {
+            return encoding;
+        }
+
+        @ConfigParam(name = "encoding")
+        public void encoding(Charset encoding) {
+            this.encoding = encoding;
+        }
+    }
+
+    public class MyContentDeliveryUnit11 implements ContentDeliveryUnit {
+
+        private boolean initialised;
+        private boolean uninitialised;
+
+        @Initialize
+        public void init() {
+            initialised = true;
+        }
+
+        @Uninitialize
+        public void uninit() {
+            uninitialised = true;
+        }
+    }
+
+    public class MyContentDeliveryUnit12 implements ContentDeliveryUnit {
+
+        @Initialize
+        public void init() {
+            throw new RuntimeException("An initialise error....");
+        }
+
+        @Uninitialize
+        public void uninit() {
+            throw new RuntimeException("An uninitialise error....");
+        }
     }
 }

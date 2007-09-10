@@ -84,7 +84,7 @@ public class BeanPopulatorTest extends TestCase {
             Configurator.configure(new BeanPopulator(), config);
             fail("Expected SmooksConfigurationException - " + expected);
         } catch(SmooksConfigurationException e) {
-            if(e.getMessage().indexOf(expected) == -1) {
+            if(e.getCause().getMessage().indexOf(expected) == -1) {
                 fail("Expected message to contain [" + expected + "]. Actual [" + e.getMessage() + "]");
             }
         }

@@ -27,6 +27,8 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.Config;
+import org.milyn.cdr.annotation.Initialize;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.VisitPhase;
@@ -152,7 +154,9 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
     @ConfigParam(name="type", defaultVal ="String", use=ConfigParam.Use.OPTIONAL)
     private String typeAlias;
 
+    @Config
     private SmooksResourceConfiguration config;
+
     private String attributeName;
     private Class beanClass;
     private String property;
@@ -164,12 +168,10 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentDelive
 
     /**
      * Set the resource configuration on the bean populator.
-     *
-     * @param config Resource configuration.
+     * @throws SmooksConfigurationException Incorrectly configured resource.
      */
-    public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
-        this.config = config;
-
+    @Initialize
+    public void initialize() throws SmooksConfigurationException {
         beanId = beanId.trim();
         beanClassName = beanClassName.trim();
 

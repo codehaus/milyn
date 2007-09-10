@@ -17,10 +17,13 @@ package org.milyn.javabean.decoders;
 
 import junit.framework.TestCase;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DataDecodeException;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Arrays;
+import java.nio.charset.Charset;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -40,6 +43,25 @@ public class InstalledDecodersTest extends TestCase {
         assertTrue(DataDecoder.Factory.create(BigDecimal.class) instanceof BigDecimalDecoder);
         assertTrue(DataDecoder.Factory.create(Date.class) instanceof DateDecoder);
         assertTrue(DataDecoder.Factory.create(Calendar.class) instanceof CalendarDecoder);
+        assertTrue(DataDecoder.Factory.create(String[].class) instanceof CSVDecoder);
+        assertTrue(DataDecoder.Factory.create(Charset.class) instanceof CharsetDecoder);
         assertNull(DataDecoder.Factory.create(getClass()));
+    }
+
+    public void test_CSVDecoder() {
+        String[] csvArray = (String[]) new CSVDecoder().decode("a,b,c");
+        assertEquals(3, csvArray.length);
+        assertTrue(Arrays.equals(new String[] {"a", "b", "c"}, csvArray));
+    }
+
+    public void test_CharsetDecoder() {
+        // valid charset
+        new CharsetDecoder().decode("UTF-8");
+        try {
+            // invalid charset
+            new CharsetDecoder().decode("XXXXXX");
+        } catch(DataDecodeException e) {
+            assertEquals("Unsupported character set 'XXXXXX'.", e.getMessage());
+        }
     }
 }

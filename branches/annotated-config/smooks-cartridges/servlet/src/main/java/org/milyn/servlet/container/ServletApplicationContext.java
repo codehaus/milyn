@@ -24,6 +24,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
 
 /**
  * ApplicationContext adapter for the javax.servlet.ServletContext interface.
@@ -96,7 +97,7 @@ public class ServletApplicationContext implements ApplicationContext {
 		return resStore;
 	}
 
-	/**
+    /**
 	 * Get the associated ServletContext instance.
 	 * @return ServletContext for this ServletApplicationContext.
 	 */

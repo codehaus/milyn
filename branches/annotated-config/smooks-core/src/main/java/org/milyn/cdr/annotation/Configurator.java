@@ -16,14 +16,18 @@
 package org.milyn.cdr.annotation;
 
 import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.cdr.annotation.Initialize;
+import org.milyn.cdr.annotation.Uninitialize;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DataDecodeException;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.*;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
 /**
@@ -34,6 +38,8 @@ import java.util.Arrays;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class Configurator {
+
+    private static Log logger = LogFactory.getLog(Configurator.class);
 
     /**
      * Configure the supplied {@link ContentDeliveryUnit} instance using the supplied
@@ -47,37 +53,79 @@ public class Configurator {
         AssertArgument.isNotNull(instance, "instance");
         AssertArgument.isNotNull(config, "config");
 
-        Field[] fields = instance.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            ConfigParam configParamAnnotation = field.getAnnotation(ConfigParam.class);
-            if(configParamAnnotation != null) {
-                applyConfigParam(configParamAnnotation, field, instance, config);
-            }
-            Config configAnnotation = field.getAnnotation(Config.class);
-            if(configAnnotation != null) {
-                if(configParamAnnotation != null) {
-                    throw new SmooksConfigurationException("Invalid Smooks configuration annotations on Field '" + getLongFieldName(field) + "'.  Field should not specify both @ConfigParam and @Config annotations.");
-                }
-                applyConfig(field, instance, config);
-            }
-        }
+        // process the field annotations (@ConfigParam and @Config)...
+        processFieldAnnotations(instance, config);
 
+        // process the method annotations (@ConfigParam)...
+        processMethodAnnotations(instance, config);
+
+        // reflectively call the "setConfiguration" method, if defined...
         setConfiguration(instance, config);
+
+        // process the @Initialise annotations...
+        initialise(instance);
 
         return instance;
     }
 
-    private static void applyConfigParam(ConfigParam configParam, Field field, ContentDeliveryUnit instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
+    private static <U extends ContentDeliveryUnit> void processFieldAnnotations(U instance, SmooksResourceConfiguration config) {
+        Field[] fields = instance.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            ConfigParam configParamAnnotation = field.getAnnotation(ConfigParam.class);
+            if(configParamAnnotation != null) {
+                applyConfigParam(configParamAnnotation, field, field.getType(), instance, config);
+            }
+            Config configAnnotation = field.getAnnotation(Config.class);
+            if(configAnnotation != null) {
+                if(configParamAnnotation != null) {
+                    throw new SmooksConfigurationException("Invalid Smooks configuration annotations on Field '" + getLongMemberName(field) + "'.  Field should not specify both @ConfigParam and @Config annotations.");
+                }
+                applyConfig(field, instance, config);
+            }
+        }
+    }
+
+    private static <U extends ContentDeliveryUnit> void processMethodAnnotations(U instance, SmooksResourceConfiguration config) {
+        Method[] methods = instance.getClass().getMethods();
+
+        for (Method method : methods) {
+            ConfigParam configParamAnnotation = method.getAnnotation(ConfigParam.class);
+            if(configParamAnnotation != null) {
+                Class params[] = method.getParameterTypes();
+
+                if(params.length == 1) {
+                    applyConfigParam(configParamAnnotation, method, params[0], instance, config);
+                } else {
+                    throw new SmooksConfigurationException("Method '" + getLongMemberName(method) + "' defines a @ConfigParam, yet it specifies more than a single paramater.");
+                }
+            }
+        }
+    }
+
+    private static void applyConfigParam(ConfigParam configParam, Member member, Class type, ContentDeliveryUnit instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         String name = configParam.name();
         String paramValue;
 
+        // Work out the property name, if not specified via the annotation....
         if(ConfigParam.NULL.equals(name)) {
-            // "name" not defined.  Use the field name...
-            name = field.getName();
-        } 
+            // "name" not defined.  Use the field/method name...
+            if(member instanceof Method) {
+                name = getPropertyName((Method)member);
+                if(name == null) {
+                    throw new SmooksConfigurationException("Unable to determine the property name associated with '" +
+                            getLongMemberName(member)+ "'. " +
+                            "Setter methods that specify the @ConfigParam annotation " +
+                            "must either follow the Javabean naming convention ('setX' for propert 'x'), or specify the " +
+                            "propery name via the 'name' parameter on the @ConfigParam annotation.");
+                }
+            } else {
+                name = member.getName();
+            }
+        }
         paramValue = config.getStringParameter(name);
 
-        if(paramValue == null && configParam.use() == ConfigParam.Use.OPTIONAL) {
+        if(paramValue == null) {
             paramValue = configParam.defaultVal();
             if(ConfigParam.NULL.equals(paramValue)) {
                 paramValue = null;
@@ -94,9 +142,9 @@ public class Configurator {
             decoderClass = configParam.decoder();
             if(decoderClass.isAssignableFrom(DataDecoder.class)) {
                 // No decoder specified via annotation.  Infer from the field type...
-                decoder = DataDecoder.Factory.create(field.getType());
+                decoder = DataDecoder.Factory.create(type);
                 if(decoder == null) {
-                    throw new SmooksConfigurationException("ContentDeliveryUnit class field '" + getLongFieldName(field) + "' must define a decoder through it's @ConfigParam annotation.  Unable to automatically determine DataDecoder from field type.");
+                    throw new SmooksConfigurationException("ContentDeliveryUnit class member '" + getLongMemberName(member) + "' must define a decoder through it's @ConfigParam annotation.  Unable to automatically determine DataDecoder from member type.");
                 }
             } else {
                 // Decoder specified on annotation...
@@ -110,9 +158,19 @@ public class Configurator {
             }
 
             try {
-                setField(field, instance, decoder.decode(paramValue));
+                if(member instanceof Field) {
+                    setField((Field)member, instance, decoder.decode(paramValue));
+                } else {
+                    try {
+                        setMethod((Method)member, instance, decoder.decode(paramValue));
+                    } catch (InvocationTargetException e) {
+                        throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e.getTargetException());
+                    }
+                }
             } catch (IllegalAccessException e) {
-                throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongFieldName(field) + "'.", e);
+                throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e);
+            } catch (DataDecodeException e) {
+                throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e);
             }
         } else if(configParam.use() == ConfigParam.Use.REQUIRED) {
             throw new SmooksConfigurationException("<param> '" + name + "' not specified on resource configuration:\n" + config);
@@ -141,14 +199,14 @@ public class Configurator {
         try {
             setField(field, instance, config);
         } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongFieldName(field) + "'.", e);
+            throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(field) + "'.", e);
         }
     }
 
     private static void setConfiguration(ContentDeliveryUnit instance, SmooksResourceConfiguration config) {
         try {
             Method setConfigurationMethod = instance.getClass().getMethod("setConfiguration", SmooksResourceConfiguration.class);
-            
+
             setConfigurationMethod.invoke(instance, config);
         } catch (NoSuchMethodException e) {
             // That's fine
@@ -164,11 +222,11 @@ public class Configurator {
         }
     }
 
-    private static String getLongFieldName(Field field) {
+    private static String getLongMemberName(Member field) {
         return field.getDeclaringClass().getName() + "#" + field.getName();
     }
 
-    private static void setField(Field field, Object instance, Object value) throws IllegalAccessException {
+    private static void setField(Field field, ContentDeliveryUnit instance, Object value) throws IllegalAccessException {
         boolean isAccessible = field.isAccessible();
 
         if(!isAccessible) {
@@ -176,5 +234,54 @@ public class Configurator {
         }
         field.set(instance, value);
         field.setAccessible(isAccessible);
+    }
+
+    private static void setMethod(Method method, ContentDeliveryUnit instance, Object value) throws IllegalAccessException, InvocationTargetException {
+        method.invoke(instance, value);
+    }
+
+    private static <U extends ContentDeliveryUnit> void initialise(U instance) {
+        invoke(instance, Initialize.class);
+    }
+
+    public static <U extends ContentDeliveryUnit> void uninitialise(U instance) {
+        invoke(instance, Uninitialize.class);
+    }
+
+    private static <U extends ContentDeliveryUnit> void invoke(U instance, Class<? extends Annotation> annotation) {
+        Method[] methods = instance.getClass().getMethods();
+
+        for (Method method : methods) {
+            if(method.getAnnotation(annotation) != null) {
+                if(method.getParameterTypes().length == 0) {
+                    try {
+                        method.invoke(instance);
+                    } catch (IllegalAccessException e) {
+                        throw new SmooksConfigurationException("Error invoking @" + annotation.getSimpleName() + " method '" + method.getName() + "' on class '" + instance.getClass().getName() + "'.", e);
+                    } catch (InvocationTargetException e) {
+                        throw new SmooksConfigurationException("Error invoking @" + annotation.getSimpleName() + " method '" + method.getName() + "' on class '" + instance.getClass().getName() + "'.", e.getTargetException());
+                    }
+                } else {
+                    logger.warn("Method '" + getLongMemberName(method) + "' defines an @" + annotation.getSimpleName() + " annotation on a paramaterized method.  This is not allowed!");
+                }
+            }
+        }
+    }
+
+    private static String getPropertyName(Method method) {
+        if(!method.getName().startsWith("set")) {
+            return null;
+        }
+
+        StringBuffer methodName = new StringBuffer(method.getName());
+
+        if(methodName.length() < 4) {
+            return null;
+        }
+
+        methodName.delete(0, 3);
+        methodName.setCharAt(0, Character.toLowerCase(methodName.charAt(0)));
+
+        return methodName.toString();
     }
 }
