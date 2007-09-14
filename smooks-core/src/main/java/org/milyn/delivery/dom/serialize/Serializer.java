@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Vector;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
@@ -98,7 +98,7 @@ public class Serializer {
 		if(defaultSUs == null) {
 			SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
 			defaultSUs = new Vector();
-			defaultSUs.add(new ContentDeliveryUnitConfigMap(new DefaultSerializationUnit(resourceConfig), resourceConfig));
+			defaultSUs.add(new ContentDeliveryUnitConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
 		}
 	}
 	

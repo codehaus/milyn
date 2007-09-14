@@ -17,8 +17,7 @@ package example;
 
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.container.ExecutionContext;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -29,11 +28,8 @@ import org.w3c.dom.Element;
  */
 public class BasicJavaTransformer implements DOMElementVisitor {
 
+    @ConfigParam(name = "newName", defaultVal = "xxx")
     private String newElementName;
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-        newElementName = resourceConfig.getStringParameter("newName", "xxx");
-    }
     
     public void visitBefore(Element element, ExecutionContext executionContext) {
         // Not doing anything on this visit - wait untill after visiting the elements child content...

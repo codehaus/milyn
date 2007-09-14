@@ -35,6 +35,7 @@ import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
+import org.milyn.classpath.ClasspathUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 

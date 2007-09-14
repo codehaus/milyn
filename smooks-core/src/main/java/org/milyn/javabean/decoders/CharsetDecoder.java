@@ -15,10 +15,12 @@
 */
 package org.milyn.javabean.decoders;
 
+import org.milyn.javabean.DecodeType;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
+
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * String data decoder.
@@ -27,12 +29,13 @@ import org.milyn.cdr.SmooksConfigurationException;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class StringDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
-
+@DecodeType(Charset.class)
+public class CharsetDecoder implements DataDecoder {
     public Object decode(String data) throws DataDecodeException {
-        return data;
+        try {
+            return Charset.forName(data);
+        } catch(UnsupportedCharsetException e) {
+            throw new DataDecodeException("Unsupported character set '" + data + "'.");
+        }
     }
 }

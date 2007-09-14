@@ -19,9 +19,10 @@ package org.milyn.delivery;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.milyn.cdr.ClasspathUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.util.ClassUtil;
+import org.milyn.classpath.ClasspathUtils;
 
 /**
  * Java ContentDeliveryUnit instance creator.
@@ -60,7 +61,7 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
 			} catch (NoSuchMethodException e) {
 				deliveryUnit = (ContentDeliveryUnit) classRuntime.newInstance();
 			}
-			deliveryUnit.setConfiguration(resourceConfig);
+            Configurator.configure(deliveryUnit, resourceConfig);
         } catch (InstantiationException e) {
             exception = e;
         } catch (IllegalAccessException e) {

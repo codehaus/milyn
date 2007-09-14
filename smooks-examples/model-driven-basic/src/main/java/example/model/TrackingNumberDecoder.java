@@ -33,9 +33,6 @@ public class TrackingNumberDecoder implements DataDecoder {
     
     private static Pattern lineSplitter = Pattern.compile("$", Pattern.MULTILINE);
 
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
-
     public Object decode(String historyText) throws DataDecodeException {
         // break the history up line by line - 1 tracking-number per line
         String[] unparsedTrackingNumber = lineSplitter.split(historyText);

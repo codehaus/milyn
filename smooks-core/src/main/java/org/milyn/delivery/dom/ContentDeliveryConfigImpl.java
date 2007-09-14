@@ -106,8 +106,8 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	 * @return The ContentDeliveryConfig instance for the named table.
 	 */
 	public static ContentDeliveryConfig getInstance(ProfileSet profileSet, ApplicationContext applicationContext) {
-		ContentDeliveryConfigImpl config;
-		Hashtable<String, ContentDeliveryConfigImpl> configTable;
+		ContentDeliveryConfig config;
+		Hashtable<String, ContentDeliveryConfig> configTable;
 		
 		if(profileSet == null) {
 			throw new IllegalArgumentException("null 'profileSet' arg passed in method call.");
@@ -116,23 +116,27 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 		}
 
 		// Get the delivery config config from container context.
-		configTable = (Hashtable) applicationContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
-		if(configTable == null) {
-			configTable = new Hashtable<String, ContentDeliveryConfigImpl>();
+        configTable = getDeliveryConfigTable(applicationContext);
+        if(configTable == null) {
+			configTable = new Hashtable<String, ContentDeliveryConfig>();
 			applicationContext.setAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY, configTable);
 		}
 		// Get the delivery config instance for this UAContext
 		config = configTable.get(profileSet.getBaseProfile());
 		if(config == null) {
 			config = new ContentDeliveryConfigImpl(profileSet, applicationContext);
-			config.load();
+			((ContentDeliveryConfigImpl)config).load();
 			configTable.put(profileSet.getBaseProfile(), config);
 		}
 		
 		return config;
 	}
 
-	/**
+    private static Hashtable<String, ContentDeliveryConfig> getDeliveryConfigTable(ApplicationContext applicationContext) {
+        return (Hashtable) applicationContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
+    }
+
+    /**
 	 * Build the ContentDeliveryConfigImpl for the specified device.
 	 * <p/>
 	 * Creates the buildTable instance and populates it with the ProcessingUnit matrix

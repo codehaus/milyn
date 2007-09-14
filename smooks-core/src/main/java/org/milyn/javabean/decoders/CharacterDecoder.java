@@ -17,24 +17,23 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DecodeType;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
 /**
- * Boolean decoder.
+ * {@link Character} data decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class BooleanDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
+@DecodeType({Character.class, char.class})
+public class CharacterDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-        try {
-            return Boolean.parseBoolean(data.trim());
-        } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode Boolean value '" + data + "'.", e);
+        if(data != null && data.length() > 0) {
+            return data.charAt(0);
         }
+
+        return data;
     }
 }

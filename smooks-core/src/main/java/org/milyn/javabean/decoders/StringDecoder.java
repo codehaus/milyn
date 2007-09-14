@@ -17,26 +17,21 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DecodeType;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
-import java.math.BigDecimal;
-
 /**
- * {@link BigDecimal} Decoder.
+ * String data decoder.
+ * <p/>
+ * This decoded does nothing.  Simply returns the String data unmodified.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class BigDecimalDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
+@DecodeType(String.class)
+public class StringDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-        try {
-            return new BigDecimal(data.trim());
-        } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode BigDecimal value '" + data + "'.", e);
-        }
+        return data;
     }
 }

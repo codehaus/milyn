@@ -26,13 +26,5 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * 
  * @author tfennelly
  */
-public interface ContentDeliveryUnit {
-	
-	/**
-	 * Set the resource configuration for the delivery unit.
-	 * @param resourceConfig The configuration.
-	 * @since Version 0.8
-	 * @throws SmooksConfigurationException Invalid configuration.
-	 */
-	public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException;
+public interface ContentDeliveryUnit<T> {
 }

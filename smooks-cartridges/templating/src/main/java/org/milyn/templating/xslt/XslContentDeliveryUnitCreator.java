@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
@@ -37,7 +38,6 @@ import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Namespace;
-import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -164,13 +164,6 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
      * Synchonized template application system property key. 
      */
     public static final String ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED = "org.milyn.templating.xslt.synchronized";
-
-    /**
-     * Public constructor.
-     * @param config Configuration details for this ContentDeliveryUnitCreator.
-     */
-    public XslContentDeliveryUnitCreator(SmooksResourceConfiguration config) {        
-    }
     
 	/**
 	 * Create an XSL based ContentDeliveryUnit instance ie from an XSL byte streamResult.
@@ -181,9 +174,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
      */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
 		try {
-            XslProcessingUnit xslProcessingUnit = new XslProcessingUnit();
-            xslProcessingUnit.setConfiguration(resourceConfig);
-            return xslProcessingUnit;
+            return Configurator.configure(new XslProcessingUnit(), resourceConfig);
 		} catch (Exception e) {
 			InstantiationException instanceException = new InstantiationException("XSL ProcessingUnit resource [" + resourceConfig.getResource() + "] not loadable.");
 			instanceException.initCause(e);
@@ -225,7 +216,6 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 			byte[] xslBytes = resourceConfig.getBytes();
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			StreamSource xslStreamSource;
-            String encoding = resourceConfig.getStringParameter("encoding", "UTF-8");
             boolean isInlineXSL;
 
             try {
@@ -246,7 +236,7 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
 				xslBytes = templateletWrapper.getBytes();
 			}
 
-            xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), encoding));
+            xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), getEncoding()));
             xslTemplate = transformerFactory.newTemplates(xslStreamSource);
             streamResult = resourceConfig.getBoolParameter("streamResult", true);
         }

@@ -20,15 +20,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Arrays;
-import java.util.List;
+import java.nio.charset.Charset;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.Parameter;
-import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.xml.SmooksXMLReader;
-import org.milyn.xml.XmlUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -109,33 +107,22 @@ public class CSVParser implements SmooksXMLReader {
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
 
     private ContentHandler contentHandler;
-	private SmooksResourceConfiguration configuration;
 	private ExecutionContext request;
-    private char separator = ',';
-    private char quoteChar = '"';
-    private int skipLines = 0;
 
-    /* (non-Javadoc)
-	 * @see org.milyn.xml.SmooksXMLReader#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)
-	 */
-	public void setConfiguration(SmooksResourceConfiguration configuration) {
-		this.configuration = configuration;
-        try {
-            separator = XmlUtil.removeEntities(configuration.getStringParameter("separator", ",")).charAt(0);
-        } catch(Exception e) {
-            logger.warn("Invalid 'separator' config value.");
-        }
-        try {
-            quoteChar = XmlUtil.removeEntities(configuration.getStringParameter("quote-char", "\"")).charAt(0);
-        } catch(Exception e) {
-            logger.warn("Invalid 'quote-char' config value.");
-        }
-        try {
-            skipLines = Integer.parseInt(configuration.getStringParameter("skip-line-count", "0"));
-        } catch(Exception e) {
-            logger.warn("Invalid 'skip-line-count' config value.");
-        }
-	}
+    @ConfigParam(name = "fields")
+    private String[] csvFields;
+
+    @ConfigParam(defaultVal = ",")
+    private char separator;
+
+    @ConfigParam(name = "quote-char", defaultVal = "\"")
+    private char quoteChar;
+
+    @ConfigParam(name = "skip-line-count", defaultVal = "0")
+    private int skipLines;
+
+    @ConfigParam(defaultVal = "UTF-8")
+    private Charset encoding;
 
 	/* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
@@ -151,27 +138,18 @@ public class CSVParser implements SmooksXMLReader {
         if(contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse CSV stream.");
         }
-        if(configuration == null) {
-            throw new IllegalStateException("CSV to SAX Parser 'configuration' not set.  Cannot parse CSV stream.");
-        }
         if(request == null) {
             throw new IllegalStateException("Smooks container 'request' not set.  Cannot parse CSV stream.");
         }
 		
-		Parameter csvFieldsParam = configuration.getParameter("fields");
-		List csvFields = (List)csvFieldsParam.getValue(request.getDeliveryConfig());
 		Reader csvStreamReader;
 		CSVReader csvLineReader;
         String[] csvRecord;
-		
-		if(csvFields == null || csvFields.isEmpty()) {
-			throw new SAXException("Invalid configuration for the CSV to SAX Parser [" + configuration + "].  No comma separated CVS 'fields' param specified.  The 'fields' param specifies CVS field to XML element name mappings.");
-		}
-		
+
 		// Get a reader for the CSV source...
         csvStreamReader = csvInputSource.getCharacterStream();
         if(csvStreamReader == null) {
-            csvStreamReader = new InputStreamReader(csvInputSource.getByteStream());
+            csvStreamReader = new InputStreamReader(csvInputSource.getByteStream(), encoding);
         }
         
         // Create the CSV line reader...
@@ -186,14 +164,14 @@ public class CSVParser implements SmooksXMLReader {
         while ((csvRecord = csvLineReader.readNext()) != null) {
         	lineNumber++; // First line is line "1"
         	
-        	if(csvRecord.length != csvFields.size()) {
-        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain the following " + csvFields.size() + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
+        	if(csvRecord.length != csvFields.length) {
+        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain the following " + csvFields.length + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
         		continue;
         	}
         	
             contentHandler.startElement(null, CVS_RECORD_EL, "", EMPTY_ATTRIBS);
         	for(int i = 0; i < csvRecord.length; i++) {
-                String fieldName = (String)csvFields.get(i);
+                String fieldName = csvFields[i];
 
                 contentHandler.startElement(null, fieldName, "", EMPTY_ATTRIBS);
                 contentHandler.characters(csvRecord[i].toCharArray(), 0, csvRecord[i].length());

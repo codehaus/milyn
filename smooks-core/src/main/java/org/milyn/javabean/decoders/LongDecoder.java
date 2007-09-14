@@ -17,28 +17,23 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DecodeType;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
-import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
- * {@link URI} Decoder.
- *
+ * Long decoder.
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class URIDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
+@DecodeType({Long.class, long.class})
+public class LongDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return new URI(data.trim());
-        } catch (URISyntaxException e) {
-            throw new DataDecodeException("Failed to decode URI value '" + data + "'.", e);
+            return Long.parseLong(data.trim());
+        } catch(NumberFormatException e) {
+            throw new DataDecodeException("Failed to decode Long value '" + data + "'.", e);
         }
     }
 }

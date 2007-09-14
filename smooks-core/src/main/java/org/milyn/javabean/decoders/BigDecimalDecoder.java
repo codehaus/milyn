@@ -17,24 +17,23 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.javabean.DecodeType;
+
+import java.math.BigDecimal;
 
 /**
- * Float decoder.
+ * {@link BigDecimal} Decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class FloatDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
+@DecodeType(BigDecimal.class)
+public class BigDecimalDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Float.parseFloat(data.trim());
+            return new BigDecimal(data.trim());
         } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode float value '" + data + "'.", e);
+            throw new DataDecodeException("Failed to decode BigDecimal value '" + data + "'.", e);
         }
     }
 }

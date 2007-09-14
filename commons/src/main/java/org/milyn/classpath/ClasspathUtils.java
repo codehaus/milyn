@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.cdr;
+package org.milyn.classpath;
 
 /**
  * Classpath manipulation utility methods.
