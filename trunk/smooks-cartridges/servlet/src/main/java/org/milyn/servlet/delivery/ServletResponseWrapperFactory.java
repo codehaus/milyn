@@ -20,7 +20,7 @@ import java.lang.reflect.Constructor;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.milyn.cdr.ClasspathUtils;
+import org.milyn.classpath.ClasspathUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.util.ClassUtil;

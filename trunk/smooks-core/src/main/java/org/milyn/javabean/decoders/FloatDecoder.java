@@ -17,24 +17,23 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DecodeType;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
 /**
- * {@link Character} data decoder.
+ * Float decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class CharacterDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
+@DecodeType({Float.class, float.class})
+public class FloatDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-        if(data != null && data.length() > 0) {
-            return data.charAt(0);
+        try {
+            return Float.parseFloat(data.trim());
+        } catch(NumberFormatException e) {
+            throw new DataDecodeException("Failed to decode float value '" + data + "'.", e);
         }
-
-        return data;
     }
 }

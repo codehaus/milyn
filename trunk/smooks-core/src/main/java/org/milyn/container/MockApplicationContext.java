@@ -20,6 +20,7 @@ import java.util.Hashtable;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
+import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
 
 /**
  * 
@@ -70,5 +71,5 @@ public class MockApplicationContext implements ApplicationContext {
 		}
 		
 		return cdrarStore;
-	}	
+	}
 }

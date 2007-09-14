@@ -18,6 +18,12 @@ package org.milyn.javabean;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.util.ClassUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Data decoder.
@@ -31,7 +37,7 @@ import org.milyn.util.ClassUtil;
  * the decoder from the {@link org.milyn.container.ExecutionContext context} configuration,
  * using a selector key of "decoder:<u>type</u>", where "type" is the type alias used on the
  * property binding configuration (see the "OrderDateLong" definition in the sample
- * in {@link org.milyn.javabean.BeanPopulator}).
+ * in org.milyn.javabean.BeanPopulator in the Javabeans Cartridge.
  * <p/>
  * If one of the decoders in {@link org.milyn.javabean.decoders} is not what's needed, simply
  * implement a new decoder using this interface.  If you want the decoder to be automatically
@@ -43,12 +49,12 @@ import org.milyn.util.ClassUtil;
  * Some type decoders will however need to be configured as a Smooks resource
  * because they will require configuration of one sort or another.  For an example of this,
  * look at the "OrderDateLong" decoder definition in the sample
- * in {@link org.milyn.javabean.BeanPopulator}.
+ * in org.milyn.javabean.BeanPopulator in the Javabeans Cartridge.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public interface DataDecoder extends ContentDeliveryUnit {
-
+    
     /**
      * Decode the supplied String data into a new Object data instance.
      *
@@ -63,6 +69,50 @@ public interface DataDecoder extends ContentDeliveryUnit {
      */
     public static class Factory {
 
+        private static Log logger = LogFactory.getLog(DataDecoder.class);
+
+        private static volatile Map<Class, Class<? extends DataDecoder>> installedDecoders;
+
+        public static DataDecoder create(Class targetType) throws DataDecodeException {
+            if(installedDecoders == null) {
+                loadInstalledDecoders();
+            }
+
+            Class<? extends DataDecoder> decoderType = installedDecoders.get(targetType);
+            if(decoderType != null) {
+                return newInstance(decoderType);
+            }
+
+            return null;
+        }
+
+        private synchronized static void loadInstalledDecoders() throws DataDecodeException {
+            if(installedDecoders == null) {
+                List<Class> decoders = ClassUtil.findInstancesOf(DataDecoder.class);
+
+                if(decoders.isEmpty()) {
+                    throw new DataDecodeException("Failed to find installed DataDecoders on clasaspath.");
+                }
+
+                installedDecoders = new HashMap<Class, Class<? extends DataDecoder>>();
+                for (Class decoder : decoders) {
+                    DecodeType decoodeType = (DecodeType) decoder.getAnnotation(DecodeType.class);
+                    if(decoodeType != null) {
+                        Class[] types = decoodeType.value();
+
+                        for (Class type : types) {
+                            if(installedDecoders.containsKey(type)) {
+                                logger.warn("More than one DataDecoder for type '" + type.getName() + "' is installed on the classpath.  You must manually configure decoding of this type, where required.");
+                                installedDecoders.put(type, null); // We don't remove, because we need to maintain a record of this!
+                            } else {
+                                installedDecoders.put(type, decoder);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         /**
          * Attempt to construct a decoder instance from it's type alias based on the
          * packaging and naming convention used in the {@link org.milyn.javabean.decoders} package.
@@ -76,15 +126,22 @@ public interface DataDecoder extends ContentDeliveryUnit {
             String className = StringDecoder.class.getPackage().getName() + "." + typeAlias + "Decoder";
 
             try {
-                return (DataDecoder) ClassUtil.forName(className, DataDecoder.class).newInstance();
-            } catch (ClassCastException e) {
-                throw new DataDecodeException("Class '" + className + "' is not a valid DataDecoder.  It doesn't implement " + DataDecoder.class.getName());
+                Class decoderType = ClassUtil.forName(className, DataDecoder.class);
+                return newInstance(decoderType);
             } catch (ClassNotFoundException e) {
                 throw new DataDecodeException("DataDecoder Class '" + className + "' is not available on the classpath.");
+            }
+        }
+
+        private static DataDecoder newInstance(Class decoderType) throws DataDecodeException {
+            try {
+                return (DataDecoder) decoderType.newInstance();
+            } catch (ClassCastException e) {
+                throw new DataDecodeException("Class '" + decoderType.getName() + "' is not a valid DataDecoder.  It doesn't implement " + DataDecoder.class.getName());
             } catch (IllegalAccessException e) {
-                throw new DataDecodeException("Failed to load DataDecoder Class '" + className + "'.", e);
+                throw new DataDecodeException("Failed to load DataDecoder Class '" + decoderType.getName() + "'.", e);
             } catch (InstantiationException e) {
-                throw new DataDecodeException("Failed to load DataDecoder Class '" + className + "'.", e);
+                throw new DataDecodeException("Failed to load DataDecoder Class '" + decoderType.getName() + "'.", e);
             }
         }
     }

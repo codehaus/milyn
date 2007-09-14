@@ -20,10 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
+import java.util.*;
 import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
@@ -37,13 +34,15 @@ import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.DefaultProfileStore;
+import org.milyn.cdr.annotation.Configurator;
+import org.milyn.classpath.ClasspathUtils;
 import org.xml.sax.SAXException;
 
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} context store.
  * <p/>
  * Stores the {@link org.milyn.cdr.SmooksResourceConfiguration SmooksResourceConfigurations}
- * for a given container context in the for of 
+ * for a given container context in the form of 
  * {@link org.milyn.cdr.SmooksResourceConfigurationList} entries.  Also maintains
  * a "default" config list for the context.
  * @author tfennelly
@@ -57,7 +56,11 @@ public class SmooksResourceConfigurationStore {
 	/**
 	 * Table of loaded SmooksResourceConfigurationList objects.
 	 */
-	private List<SmooksResourceConfigurationList> configLists = new Vector<SmooksResourceConfigurationList>();
+	private List<SmooksResourceConfigurationList> configLists = new ArrayList<SmooksResourceConfigurationList>();
+    /**
+     * A complete list of all the content delivery units allocated by this store.
+     */
+    private List<ContentDeliveryUnit> allocatedUnits = new ArrayList<ContentDeliveryUnit>();
     /**
      * Default configuration list.
      */
@@ -66,8 +69,12 @@ public class SmooksResourceConfigurationStore {
 	 * Container context in which this store lives.
 	 */
 	private ApplicationContext applicationContext;
-	
-	/**
+    /**
+     * Store shutdown hook.
+     */
+    private Thread shutdownHook;
+
+    /**
 	 * Public constructor.
 	 * @param applicationContext Container context in which this store lives.
 	 */
@@ -83,7 +90,14 @@ public class SmooksResourceConfigurationStore {
         registerInstalledResources("installed-cdu-creators.cdrl");
         registerInstalledResources("installed-param-decoders.cdrl");
         registerInstalledResources("installed-serializers.cdrl");
-	}
+
+        shutdownHook = new Thread() {
+            public void run() {
+                _close();
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
 
     /**
      * Register the pre-installed CDU Creator classes.
@@ -275,8 +289,9 @@ public class SmooksResourceConfigurationStore {
 		}
 
 		if(object instanceof ContentDeliveryUnit) {
-			((ContentDeliveryUnit)object).setConfiguration(resourceConfig);
-		}
+			Configurator.configure((ContentDeliveryUnit)object, resourceConfig);
+            allocatedUnits.add((ContentDeliveryUnit)object);
+        }
 		
 		return object;
 	}
@@ -310,5 +325,29 @@ public class SmooksResourceConfigurationStore {
         }
         
         throw new UnsupportedContentDeliveryUnitTypeException(type);
+    }
+
+    /**
+     * Close this resource configuration store, {@link org.milyn.cdr.annotation.Uninitialize uninitializing}
+     * all {@link org.milyn.delivery.ContentDeliveryUnit ContentDeliveryUnits} allocated from this store instance. 
+     */
+    public void close() {
+        _close();
+        Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    }
+
+    private void _close() {
+        if(allocatedUnits != null) {
+            logger.info("Uninitializing all ContentDeliveryUnit instances allocated through this store.");
+            for(ContentDeliveryUnit deliveryUnit : allocatedUnits) {
+                try {
+                    logger.debug("Uninitializing ContentDeliveryUnit instance: " + deliveryUnit.getClass().getName());
+                    Configurator.uninitialise(deliveryUnit);
+                } catch (Throwable throwable) {
+                    logger.error("Error uninitializing " + deliveryUnit.getClass().getName() + ".", throwable);
+                }
+            }
+            allocatedUnits = null;
+        }
     }
 }

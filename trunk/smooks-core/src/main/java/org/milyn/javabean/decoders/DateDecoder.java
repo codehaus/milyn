@@ -17,11 +17,13 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DecodeType;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 /**
  * {@link java.util.Date} data decoder.
@@ -37,6 +39,7 @@ import java.text.ParseException;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
+@DecodeType(Date.class)
 public class DateDecoder implements DataDecoder {
 
     public static final String FORMAT_CONFIG_KEY = "format";

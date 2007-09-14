@@ -14,23 +14,26 @@
 	========================================================================== -->
 	<smooks-resource selector="acmeCreds"
 				namespace="http://schemas.acme.com/security/"
-				path="org.milyn.javabean.AssemblyPhaseBeanPopulator">
+				path="org.milyn.javabean.BeanPopulator">
 		<!-- create and bind the Credentials bean instance on encountering the acmecreds element. -->
 		<param name="beanId">credentials</param>
-		<param name="beanClass">org.milyn.templating.stringtemplate.acmesecsample.Credentials</param>
+        <param name="VisitPhase">ASSEMBLY</param>
+        <param name="beanClass">org.milyn.templating.stringtemplate.acmesecsample.Credentials</param>
 	</smooks-resource>	
 	<smooks-resource selector="acmeCreds usr"
 				namespace="http://schemas.acme.com/security/"
-				path="org.milyn.javabean.AssemblyPhaseBeanPopulator">
+				path="org.milyn.javabean.BeanPopulator">
 		<!-- extract the username and set it on the Credentials bean -->
 		<param name="beanId">credentials</param>
+        <param name="VisitPhase">ASSEMBLY</param>
 		<param name="setterName">setUsername</param>
 	</smooks-resource>	
 	<smooks-resource selector="acmeCreds pwd"
 				namespace="http://schemas.acme.com/security/"
-				path="org.milyn.javabean.AssemblyPhaseBeanPopulator">
+				path="org.milyn.javabean.BeanPopulator">
 		<!-- extract the password and set it on the Credentials bean -->
 		<param name="beanId">credentials</param>
+        <param name="VisitPhase">ASSEMBLY</param>
 		<param name="setterName">setPassword</param>
 	</smooks-resource>	
 

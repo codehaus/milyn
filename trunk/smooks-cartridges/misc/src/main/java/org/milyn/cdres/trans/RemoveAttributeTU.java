@@ -16,8 +16,7 @@
 
 package org.milyn.cdres.trans;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.w3c.dom.Element;
@@ -41,17 +40,12 @@ import org.w3c.dom.Element;
  */
 public class RemoveAttributeTU implements DOMElementVisitor {
 
-	private String attributeName;
-	private boolean visitBefore;
-	
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-		attributeName = resourceConfig.getStringParameter("attributeName");
-		if(attributeName == null) {
-			throw new IllegalStateException(RemoveAttributeTU.class + " resourceConfig must define a 'attributeName' param.");
-		}
-		visitBefore = resourceConfig.getBoolParameter("visitBefore", false);
-	}
+    @ConfigParam
+    private String attributeName;
 
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
+    private boolean visitBefore;
+	
     public void visitBefore(Element element, ExecutionContext executionContext) {
         if(visitBefore) {
             element.removeAttribute(attributeName);

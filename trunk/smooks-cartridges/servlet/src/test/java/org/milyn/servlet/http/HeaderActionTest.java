@@ -19,6 +19,8 @@ package org.milyn.servlet.http;
 import java.util.Vector;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.Configurator;
 
 import junit.framework.TestCase;
 
@@ -31,38 +33,31 @@ public class HeaderActionTest extends TestCase {
 	public void testConstructor() {
 		SmooksResourceConfiguration unitDef;
 		
-		try {
-			new HeaderAction(null);
-			fail("expected fail - null SmooksResourceConfiguration");
-		} catch(IllegalArgumentException a) {
-			//OK
-		}
-
 		unitDef = new SmooksResourceConfiguration("selector", "useragent", "xxx");
 		try {
-			new HeaderAction(unitDef);
+			Configurator.configure(new HeaderAction(), unitDef);
 			fail("expected fail - no params set");
-		} catch(IllegalStateException s) {
+		} catch(SmooksConfigurationException s) {
 			//OK
 		}
 		unitDef.setParameter("action", "add");
 		try {
-			new HeaderAction(unitDef);
+            Configurator.configure(new HeaderAction(), unitDef);
 			fail("expected fail - only 'action' set");
-		} catch(IllegalStateException s) {
+		} catch(SmooksConfigurationException s) {
 			//OK
 		}
 		unitDef.setParameter("header-name", "namex");
 		try {
-			new HeaderAction(unitDef);
+            Configurator.configure(new HeaderAction(), unitDef);
 			fail("expected fail - only 'action' anad 'header-name' set");
-		} catch(IllegalStateException s) {
+		} catch(SmooksConfigurationException s) {
 			//OK
 		}
 		unitDef.setParameter("header-value", "valuex");
 
 		// Should work now
-		new HeaderAction(unitDef);
+        Configurator.configure(new HeaderAction(), unitDef);
 	}
 	
 	/*
@@ -76,13 +71,13 @@ public class HeaderActionTest extends TestCase {
 		unitDef_01.setParameter("action", "add");
 		unitDef_01.setParameter("header-name", "namex");
 		unitDef_01.setParameter("header-value", "valuex");
-		HeaderAction headerAction1 = new HeaderAction(unitDef_01);
+		HeaderAction headerAction1 = Configurator.configure(new HeaderAction(), unitDef_01);
 
 		unitDef_02 = new SmooksResourceConfiguration("selector", "useragent", "xxx");
 		unitDef_02.setParameter("action", "add");
 		unitDef_02.setParameter("header-name", "namex");
 		unitDef_02.setParameter("header-value", "valuex");
-		HeaderAction headerAction2 = new HeaderAction(unitDef_02);
+		HeaderAction headerAction2 = Configurator.configure(new HeaderAction(), unitDef_02);
 		
 		assertTrue(headerAction1.equals(headerAction2));
 		assertTrue(headerAction1.equals("namex"));
@@ -92,7 +87,7 @@ public class HeaderActionTest extends TestCase {
 		unitDef_02.setParameter("action", "add");
 		unitDef_02.setParameter("header-name", "namey");
 		unitDef_02.setParameter("header-value", "valuex");
-		headerAction2 = new HeaderAction(unitDef_02);
+		headerAction2 = Configurator.configure(new HeaderAction(), unitDef_02);
 		
 		assertTrue(!headerAction1.equals(headerAction2));
 	}
@@ -109,12 +104,12 @@ public class HeaderActionTest extends TestCase {
 		unitDef_01 = new SmooksResourceConfiguration("selector", "useragent", "xxx");
 		unitDef_01.setParameter("action", "remove");
 		unitDef_01.setParameter("header-name", "namex");
-		HeaderAction headerAction1 = new HeaderAction(unitDef_01);
+		HeaderAction headerAction1 = Configurator.configure(new HeaderAction(), unitDef_01);
 
 		unitDef_02 = new SmooksResourceConfiguration("selector", "useragent", "xxx");
 		unitDef_02.setParameter("action", "remove");
 		unitDef_02.setParameter("header-name", "namey");
-		HeaderAction headerAction2 = new HeaderAction(unitDef_02);
+		HeaderAction headerAction2 = Configurator.configure(new HeaderAction(), unitDef_02);
 		
 		vec.add(headerAction1);
 		assertTrue(vec.contains(headerAction1));

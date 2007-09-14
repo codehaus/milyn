@@ -6,17 +6,17 @@
 	<!--
 		Configure the TrackingNumber bean creation and population...
 	-->
-	<smooks-resource selector="trackingNumber" path="org.milyn.javabean.ProcessingPhaseBeanPopulator">
+	<smooks-resource selector="trackingNumber" path="org.milyn.javabean.BeanPopulator">
 		<!-- create and bind the bean instance -->
 		<param name="beanId">trackingNumber</param>
 		<param name="beanClass">org.milyn.templating.soapshipping.TrackingNumber</param>
 	</smooks-resource>	
-	<smooks-resource selector="trackingNumber shipperID" path="org.milyn.javabean.ProcessingPhaseBeanPopulator">
+	<smooks-resource selector="trackingNumber shipperID" path="org.milyn.javabean.BeanPopulator">
 		<!-- extract shipperID text and set on the trackingNumber bean -->
 		<param name="beanId">trackingNumber</param>
 		<param name="setterName">setShipperID</param>
 	</smooks-resource>	
-	<smooks-resource selector="trackingNumber shipmentNumber" path="org.milyn.javabean.ProcessingPhaseBeanPopulator">
+	<smooks-resource selector="trackingNumber shipmentNumber" path="org.milyn.javabean.BeanPopulator">
 		<!-- extract shipmentNumber text and set on the trackingNumber bean -->
 		<param name="beanId">trackingNumber</param>
 		<param name="setterName">setShipmentNumber</param>

@@ -6,7 +6,7 @@
 	<!--
 		Configure the History bean creation and population...
 	-->
-	<smooks-resource selector="history" path="org.milyn.javabean.ProcessingPhaseBeanPopulator">
+	<smooks-resource selector="history" path="org.milyn.javabean.BeanPopulator">
 		<!-- create and bind the bean instance -->
 		<param name="beanId">history</param>
 		<param name="beanClass">org.milyn.templating.soapshipping.History</param>		

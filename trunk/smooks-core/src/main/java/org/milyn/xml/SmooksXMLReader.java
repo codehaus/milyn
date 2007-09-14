@@ -16,8 +16,8 @@
 
 package org.milyn.xml;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentDeliveryUnit;
 import org.xml.sax.XMLReader;
 
 /**
@@ -32,13 +32,7 @@ import org.xml.sax.XMLReader;
  *
  * @author tfennelly
  */
-public interface SmooksXMLReader extends XMLReader {
-
-	/**
-	 * Set the Parser configuration on the implementing class.
-	 * @param config Parser configuration.
-	 */
-	public void setConfiguration(SmooksResourceConfiguration config);
+public interface SmooksXMLReader extends XMLReader, ContentDeliveryUnit {
 
 	/**
 	 * Set the Smooks {@link ExecutionContext} on the implementing class.

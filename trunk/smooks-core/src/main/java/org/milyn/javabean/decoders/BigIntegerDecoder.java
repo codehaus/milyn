@@ -17,24 +17,23 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.javabean.DecodeType;
+
+import java.math.BigInteger;
 
 /**
- * Long decoder.
- * 
+ * {@link BigInteger} Decoder.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class LongDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }    
+@DecodeType(BigInteger.class)
+public class BigIntegerDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return Long.parseLong(data.trim());
+            return new BigInteger(data.trim());
         } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode Long value '" + data + "'.", e);
+            throw new DataDecodeException("Failed to decode BigInteger value '" + data + "'.", e);
         }
     }
 }

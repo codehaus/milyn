@@ -22,6 +22,7 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryUnit;
 import org.milyn.delivery.ContentDeliveryUnitCreator;
@@ -96,13 +97,6 @@ import org.w3c.dom.Node;
  */
 public class StringTemplateContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
 
-    /**
-     * Public constructor.
-     * @param config Configuration details for this ContentDeliveryUnitCreator.
-     */
-    public StringTemplateContentDeliveryUnitCreator(SmooksResourceConfiguration config) {
-    }
-
 	/**
 	 * Create a StringTemplate based ContentDeliveryUnit.
      * @param resourceConfig The SmooksResourceConfiguration for the StringTemplate.
@@ -110,9 +104,7 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
 	 */
 	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
         try {
-			StringTemplateProcessingUnit processingUnit = new StringTemplateProcessingUnit();
-            processingUnit.setConfiguration(resourceConfig);
-            return processingUnit;
+            return Configurator.configure(new StringTemplateProcessingUnit(), resourceConfig);
         } catch (SmooksConfigurationException e) {
 			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getResource() + "] not loadable.  StringTemplate resource invalid.");
 			instanceException.initCause(e);
@@ -130,7 +122,6 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
 
         protected void loadTemplate(SmooksResourceConfiguration config) {
             String path = config.getResource();
-            String encoding = config.getStringParameter("encoding", "UTF-8");
 
             if(path.charAt(0) == '/') {
                 path = path.substring(1);
@@ -140,7 +131,7 @@ public class StringTemplateContentDeliveryUnitCreator implements ContentDelivery
             }
 
             StringTemplateGroup templateGroup = new StringTemplateGroup(path);
-            templateGroup.setFileCharEncoding(encoding);
+            templateGroup.setFileCharEncoding(getEncoding().displayName());
             template = templateGroup.getInstanceOf(path);
         }
 

@@ -17,29 +17,27 @@ package org.milyn.javabean.decoders;
 
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DecodeType;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
- * {@link java.net.URL} Decoder.
+ * {@link URI} Decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class URLDecoder implements DataDecoder {
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-    }
+@DecodeType(URI.class)
+public class URIDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
-            return new URL(data.trim());
-        } catch (MalformedURLException e) {
-            throw new DataDecodeException("Failed to decode URL value '" + data + "'.", e);
+            return new URI(data.trim());
+        } catch (URISyntaxException e) {
+            throw new DataDecodeException("Failed to decode URI value '" + data + "'.", e);
         }
     }
 }

@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
@@ -56,8 +57,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * as an XML data stream, even when the stream is non-XML.
  * <p/>
  * If the configured parser implements the {@link org.milyn.xml.SmooksXMLReader}, the configuration will be
- * passed to the parser through the {@link org.milyn.xml.SmooksXMLReader#setConfiguration(SmooksResourceConfiguration)}
- * method.  This allows you to configure the parser. 
+ * passed to the parser via {@link org.milyn.cdr.annotation.ConfigParam} annotaions on config properties
+ * defined on the implementation.
  * 
  * <h3 id="parserconfig">.cdrl Configuration</h3>
  * <pre>
@@ -209,7 +210,7 @@ public class Parser {
         if(saxDriverConfig != null) {
             reader = XMLReaderFactory.createXMLReader(saxDriverConfig.getResource());
             if(reader instanceof SmooksXMLReader) {
-            	((SmooksXMLReader)reader).setConfiguration(saxDriverConfig);
+            	Configurator.configure((SmooksXMLReader)reader, saxDriverConfig);
             	((SmooksXMLReader)reader).setExecutionContext(request);
             }
         } else {
