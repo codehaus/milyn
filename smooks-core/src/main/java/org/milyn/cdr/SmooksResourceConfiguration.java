@@ -144,7 +144,7 @@ import org.w3c.dom.Node;
  * </li>
  * </ul>
  *
- * @author tfennelly
+ * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @see SmooksResourceConfigurationSortComparator
  */
 public class SmooksResourceConfiguration {
@@ -927,7 +927,7 @@ public class SmooksResourceConfiguration {
             // isTargetedAtElementContext check because we already know the unit is targeted at the
             // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
             if (logger.isDebugEnabled()) {
-                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
+                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  This resource is only targeted at '" + DomUtils.getName(element) + "' when in the following context '" + getSelector() + "'.");
             }
             return false;
         }
