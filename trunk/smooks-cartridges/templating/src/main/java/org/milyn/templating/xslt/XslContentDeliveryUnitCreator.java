@@ -298,10 +298,8 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
             Transformer transformer;
             transformer = xslTemplate.newTransformer();
 
-            if(false && !isTemplatelet && streamResult) {
-                CharArrayWriter writer = new CharArrayWriter();
-                transformer.transform(new DOMSource(element), new StreamResult(writer));
-                transRes.appendChild(ownerDoc.createTextNode(writer.toString()));
+            if(element == ownerDoc.getDocumentElement()) {
+                transformer.transform(new DOMSource(ownerDoc), new DOMResult(transRes));
             } else {
                 transformer.transform(new DOMSource(element), new DOMResult(transRes));
             }
