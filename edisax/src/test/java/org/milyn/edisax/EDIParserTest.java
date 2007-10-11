@@ -19,6 +19,7 @@ package org.milyn.edisax;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.milyn.io.StreamUtils;
 import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
@@ -37,11 +38,11 @@ public class EDIParserTest extends TestCase {
 
 	public void test_validation() throws IOException, SAXException {
 		// Valid doc...
-		EDIParser.assertMappingConfigValid(getClass().getResourceAsStream("edi-mapping_01.xml"));
+		EDIParser.assertMappingConfigValid(new InputStreamReader(getClass().getResourceAsStream("edi-mapping_01.xml")));
 		
 		// Invalid doc...
 		try {
-			EDIParser.assertMappingConfigValid(getClass().getResourceAsStream("edi-mapping_02.xml"));
+			EDIParser.assertMappingConfigValid(new InputStreamReader(getClass().getResourceAsStream("edi-mapping_02.xml")));
 			fail("Expected SAXException");
 		} catch (SAXException e) {
 			// OK

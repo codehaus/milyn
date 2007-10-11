@@ -19,11 +19,13 @@ package org.milyn.smooks.edi;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.nio.charset.Charset;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -93,6 +95,9 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
     @ConfigParam(name = MODEL_CONFIG_KEY)
     private String modelConfigData;
 
+    @ConfigParam(defaultVal = "UTF-8")
+    private Charset encoding;
+
     public void setExecutionContext(ExecutionContext executionContext) {
 		AssertArgument.isNotNull(executionContext, "executionContext");
 		this.executionContext = executionContext;
@@ -129,9 +134,9 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 				InputStream mappingConfigData = getMappingConfigData();
 				
 				try {
-					edi2xmlMappingModel = EDIParser.parseMappingModel(mappingConfigData);
+					edi2xmlMappingModel = EDIParser.parseMappingModel(new InputStreamReader(mappingConfigData, encoding));
 				} catch (IOException e) {
-					IOException newE = new IOException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".");
+                    IOException newE = new IOException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".");
 					newE.initCause(e);
 					throw newE;
 				} catch (SAXException e) {

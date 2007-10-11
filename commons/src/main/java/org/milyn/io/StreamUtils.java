@@ -16,6 +16,8 @@
 
 package org.milyn.io;
 
+import org.milyn.assertion.AssertArgument;
+
 import java.io.*;
 
 /**
@@ -35,12 +37,9 @@ public abstract class StreamUtils {
 	 *             Exception reading from the stream.
 	 */
 	public static byte[] readStream(InputStream stream) throws IOException {
-		if (stream == null) {
-			throw new IllegalArgumentException(
-					"null 'stream' arg in method call.");
-		}
+        AssertArgument.isNotNull(stream, "stream");
 
-		ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
 		byte[] byteBuf = new byte[1024];
 		int readCount = 0;
 
@@ -50,6 +49,20 @@ public abstract class StreamUtils {
 
 		return bytesOut.toByteArray();
 	}
+
+    public static String readStream(Reader stream) throws IOException {
+        AssertArgument.isNotNull(stream, "stream");
+
+        StringBuffer streamString = new StringBuffer();
+        char[] readBuffer = new char[256];
+        int readCount = 0;
+
+        while ((readCount = stream.read(readBuffer)) != -1) {
+            streamString.append(readBuffer, 0, readCount);
+        }
+
+        return streamString.toString();
+    }
 
     /**
      * Compares the 2 streams.
