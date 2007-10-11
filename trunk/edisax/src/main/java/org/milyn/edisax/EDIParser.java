@@ -16,9 +16,7 @@
 
 package org.milyn.edisax;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -126,20 +124,41 @@ public class EDIParser implements XMLReader {
      * @throws SAXException Invalid model.
      */
     public static Edimap parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException {
-    	AssertArgument.isNotNull(mappingConfigStream, "mapping");
+        AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
+        try {
+            return parseMappingModel(new InputStreamReader(mappingConfigStream));
+        } finally {
+            mappingConfigStream.close();
+        }
+    }
+
+    /**
+     * Parse the supplied mapping model config stream and return the generated EdiMap.
+     * <p/>
+     * Can be used to set the mapping model to be used during the parsing operation.
+     * See {@link #setMappingModel(Edimap)}.
+     * @param mappingConfigStream Config stream.  Must conform with the
+     * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
+     * schema.
+     * @return The Edimap for the mapping model.
+     * @throws IOException Error reading the model stream.
+     * @throws SAXException Invalid model.
+     */
+    public static Edimap parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
+    	AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
     	
     	Edimap mappingModel = null;
-    	byte[] mappingConfigByte;
+    	String mappingConfig;
     	
     	try {
-    		mappingConfigByte = StreamUtils.readStream(mappingConfigStream);
+    		mappingConfig = StreamUtils.readStream(mappingConfigStream);
     	} finally {
     		mappingConfigStream.close();
     	}
     	
-    	assertMappingConfigValid(new ByteArrayInputStream(mappingConfigByte));
+    	assertMappingConfigValid(new StringReader(mappingConfig));
     	try {
-			mappingModel = EdimapDocument.Factory.parse(new ByteArrayInputStream(mappingConfigByte)).getEdimap();
+			mappingModel = EdimapDocument.Factory.parse(new StringReader(mappingConfig)).getEdimap();
 		} catch (XmlException e) {
 			new SAXException("EDI Mapping Model parse failure.", e);
 		}
@@ -161,7 +180,7 @@ public class EDIParser implements XMLReader {
      * @throws IOException Failed to read the schema.
      * @throws SAXException Invalid configuration.
 	 */
-	protected static void assertMappingConfigValid(InputStream mappingConfigStream) throws IOException, SAXException {
+	protected static void assertMappingConfigValid(Reader mappingConfigStream) throws IOException, SAXException {
     	AssertArgument.isNotNull(mappingConfigStream, "mapping");
 		
    		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
