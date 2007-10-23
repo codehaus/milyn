@@ -65,7 +65,7 @@ public interface ExecutionContext extends BoundAttributeStore {
      * Get the content delivery configuration for the profile set at which this
      * context is targeted.
      *
-     * @return ContentDeliveryConfigImpl instance.
+     * @return ContentDeliveryConfig instance.
      */
 	public abstract ContentDeliveryConfig getDeliveryConfig();
 }

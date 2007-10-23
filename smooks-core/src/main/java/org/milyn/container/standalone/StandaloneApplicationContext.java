@@ -24,7 +24,6 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.profile.*;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.URIResourceLocator;
-import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
 
 /**
  * Standalone container execution context for Smooks.

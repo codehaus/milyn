@@ -18,46 +18,29 @@ package org.milyn.delivery.dom;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-import org.milyn.delivery.dom.ProcessingSet;
-import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
-import org.milyn.dtd.DTDStore.DTDObjectContainer;
+import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Mock ContentDeliveryConfig for DOM. 
  * @author tfennelly
  */
-public class MockContentDeliveryConfig implements DOMContentDeliveryConfig {
+public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
 
-	public Map<String, List<ContentDeliveryUnitConfigMap>> resourceConfigs = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
+    private Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable = new Hashtable<String, List<SmooksResourceConfiguration>>();
 	public ContentDeliveryUnitConfigMapTable assemblyUnits = new ContentDeliveryUnitConfigMapTable();
 	public ContentDeliveryUnitConfigMapTable processingSets = new ContentDeliveryUnitConfigMapTable();
     public ContentDeliveryUnitConfigMapTable serializationUnits = new ContentDeliveryUnitConfigMapTable();
 	public Hashtable objectsHash = new Hashtable();
-	
 
-    public ContentDeliveryUnitConfigMapTable getAssemblyUnits() {
-        return assemblyUnits;
+    public MockContentDeliveryConfig() {
+        setSmooksResourceConfigurations(resourceConfigTable);
+        setAssemblyUnits(assemblyUnits);
+        setProcessingUnits(processingSets);
+        setSerailizationUnits(serializationUnits);
     }
-
-	public ContentDeliveryUnitConfigMapTable getProcessingUnits() {
-		return processingSets;
-	}
-
-    public ContentDeliveryUnitConfigMapTable getSerailizationUnits() {
-        return serializationUnits;
-    }
-
-	public List<ContentDeliveryUnitConfigMap> getSmooksResourceConfigurations(String nodeDef) {
-		return resourceConfigs.get(nodeDef);
-	}
-	
-	public Map<String, List<ContentDeliveryUnitConfigMap>> getSmooksResourceConfigurations() {
-		return resourceConfigs;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.ContentDeliveryConfig#getObjects(java.lang.String)
@@ -75,13 +58,4 @@ public class MockContentDeliveryConfig implements DOMContentDeliveryConfig {
 		}
 		objects.add(object);
 	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryConfig#getDTD()
-	 */
-	public DTDObjectContainer getDTD() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
