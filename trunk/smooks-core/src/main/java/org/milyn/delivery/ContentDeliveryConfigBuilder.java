@@ -14,11 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.delivery.dom;
-
-import java.io.ByteArrayInputStream;
-import java.util.*;
-import java.util.Map.Entry;
+package org.milyn.delivery;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,23 +22,30 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksResourceConfigurationSortComparator;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
+import org.milyn.delivery.dom.DOMContentDeliveryConfig;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.Phase;
+import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
-import org.milyn.delivery.*;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.milyn.profile.ProfileSet;
 
+import java.io.ByteArrayInputStream;
+import java.util.*;
+import java.util.Map.Entry;
+
 
 /**
- * DOM content delivery configuration implementation.
+ * Content delivery configuration builder.
  * @author tfennelly
  */
-public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
+public class ContentDeliveryConfigBuilder {
 	
 	/**
 	 * Logger.
 	 */
-	private static Log logger = LogFactory.getLog(ContentDeliveryConfigImpl.class);
+	private static Log logger = LogFactory.getLog(ContentDeliveryConfigBuilder.class);
 	/**
 	 * Context key for the table of loaded ContentDeliveryConfig instances.
 	 */
@@ -66,12 +69,12 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	private Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable = new Hashtable<String, List<SmooksResourceConfiguration>>();
 	/**
 	 * Table of AssemblyUnit instances keyed by selector. Each table entry
-	 * contains a single {@link DOMElementVisitor} instances.
+	 * contains a single {@link org.milyn.delivery.dom.DOMElementVisitor} instances.
 	 */
 	private ContentDeliveryUnitConfigMapTable assemblyUnitTable = new ContentDeliveryUnitConfigMapTable();
 	/**
      * Table of Processing Unit instances keyed by selector. Each table entry
-     * contains a single {@link DOMElementVisitor} instances.
+     * contains a single {@link org.milyn.delivery.dom.DOMElementVisitor} instances.
 	 */
 	private ContentDeliveryUnitConfigMapTable processingUnitTable = new ContentDeliveryUnitConfigMapTable();
 	/**
@@ -79,11 +82,6 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 	 * contains a single SerializationUnit instances.
 	 */
 	private ContentDeliveryUnitConfigMapTable serializationUnitTable = new ContentDeliveryUnitConfigMapTable();
-	/**
-	 * Table of Object instance lists keyed by selector. Each table entry
-	 * contains a List of Objects.
-	 */
-	private Hashtable objectsTable = new Hashtable();
 	/**
 	 * DTD for the associated device.
 	 */
@@ -94,13 +92,13 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
      * @param profileSet Profile set.
 	 * @param applicationContext Container context.
 	 */
-	private ContentDeliveryConfigImpl(ProfileSet profileSet, ApplicationContext applicationContext) {
+	private ContentDeliveryConfigBuilder(ProfileSet profileSet, ApplicationContext applicationContext) {
 		this.profileSet = profileSet;
 		this.applicationContext = applicationContext;
     }
 	
 	/**
-	 * Get the ContentDeliveryConfigImpl instance for the named table.
+	 * Get the ContentDeliveryConfig instance for the specified profile set.
 	 * @param profileSet The profile set with which this delivery config is associated.
 	 * @param applicationContext Application context.
 	 * @return The ContentDeliveryConfig instance for the named table.
@@ -124,20 +122,34 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 		// Get the delivery config instance for this UAContext
 		config = configTable.get(profileSet.getBaseProfile());
 		if(config == null) {
-			config = new ContentDeliveryConfigImpl(profileSet, applicationContext);
-			((ContentDeliveryConfigImpl)config).load();
-			configTable.put(profileSet.getBaseProfile(), config);
+			ContentDeliveryConfigBuilder configBuilder = new ContentDeliveryConfigBuilder(profileSet, applicationContext);
+			configBuilder.load();
+            config = configBuilder.createConfig();
+            configTable.put(profileSet.getBaseProfile(), config);
 		}
 		
 		return config;
 	}
+
+    private ContentDeliveryConfig createConfig() {
+        DOMContentDeliveryConfig config = new DOMContentDeliveryConfig();
+
+        config.setApplicationContext(applicationContext);
+        config.setSmooksResourceConfigurations(resourceConfigTable);
+        config.setDtd(dtd);
+        config.setAssemblyUnits(assemblyUnitTable);
+        config.setProcessingUnits(processingUnitTable);
+        config.setSerailizationUnits(serializationUnitTable);
+
+        return config;
+    }
 
     private static Hashtable<String, ContentDeliveryConfig> getDeliveryConfigTable(ApplicationContext applicationContext) {
         return (Hashtable) applicationContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
     }
 
     /**
-	 * Build the ContentDeliveryConfigImpl for the specified device.
+	 * Build the ContentDeliveryConfigBuilder for the specified device.
 	 * <p/>
 	 * Creates the buildTable instance and populates it with the ProcessingUnit matrix
 	 * for the specified device.
@@ -341,102 +353,6 @@ public class ContentDeliveryConfigImpl implements DOMContentDeliveryConfig {
 		if(!markupElCDRs.contains(object)) {
 			markupElCDRs.add(object);
 		}
-	}
-
-    /**
-     * Get the Processing Unit table for this delivery context.
-     * <p/>
-     * The table is keyed by element name and the values are
-     * {@link org.milyn.delivery.ContentDeliveryUnitConfigMap} instances where the contained
-     * {@link org.milyn.delivery.ContentDeliveryUnit} is an {@link DOMElementVisitor}.
-     * @return The Processing Unit table for this delivery context.
-     */
-    public ContentDeliveryUnitConfigMapTable getProcessingUnits() {
-        return processingUnitTable;
-	}
-	
-	/**
-	 * Get the list of {@link SmooksResourceConfiguration}s for the specified selector definition.
-	 * @param selector The configuration "selector" attribute value from the .cdrl file in the .cdrar.
-	 * @return List of SmooksResourceConfiguration instances, or null.
-	 */
-	public List getSmooksResourceConfigurations(String selector) {
-		return (List)resourceConfigTable.get(selector.toLowerCase());
-	}
-	
-	/**
-	 * Get the {@link SmooksResourceConfiguration} map for the target execution context.
-	 * <p/>
-	 * This Map will be {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator preordered} 
-	 * for the target execution context.
-	 * 
-	 * @return {@link SmooksResourceConfiguration} map for the target execution context, keyed by the configuration 
-	 * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
-	 * {@link List} of preordered {@link SmooksResourceConfiguration} instances.
-	 */
-	public Map getSmooksResourceConfigurations() {
-		return resourceConfigTable;
-	}
-
-	private static final Vector EMPTY_LIST = new Vector();
-
-	/**
-	 * Get a list {@link Object}s from the supplied {@link SmooksResourceConfiguration} selector value.
-	 * <p/>
-	 * Uses {@link org.milyn.cdr.SmooksResourceConfigurationStore#getObject(org.milyn.cdr.SmooksResourceConfiguration)} to construct the object.
-	 * @param selector selector attribute value from the .cdrl file in the .cdrar.
-	 * @return List of Object instances.  An empty list is returned where no 
-	 * selectors exist.
-	 */
-	public List getObjects(String selector) {
-		Vector objects;
-		
-		selector = selector.toLowerCase();
-		objects = (Vector)objectsTable.get(selector);
-		if(objects == null) {
-			List unitDefs = (List)resourceConfigTable.get(selector);
-
-			if(unitDefs != null && unitDefs.size() > 0) {
-				objects = new Vector(unitDefs.size());
-				for(int i = 0; i < unitDefs.size(); i++) {
-					SmooksResourceConfiguration resConfig = (SmooksResourceConfiguration)unitDefs.get(i);
-					objects.add(applicationContext.getStore().getObject(resConfig));
-				}
-			} else {
-				objects = EMPTY_LIST;
-			}
-			
-			objectsTable.put(selector, objects);
-		}
-		
-		return objects;
-	}
-	
-	/**
-	 * Get the AssemblyUnits table for this delivery context.
-	 * <p/>
-	 * @return The AssemblyUnits table for this delivery context.
-	 */
-	public ContentDeliveryUnitConfigMapTable getAssemblyUnits() {
-		return assemblyUnitTable;
-	}
-	
-	/**
-	 * Get the SerializationUnit table for this delivery context.
-	 * <p/>
-	 * The table is keyed by element name and the values are 
-	 * {@link SerializationUnit} instances.
-	 * @return The SerializationUnit table for this delivery context.
-	 */
-	public ContentDeliveryUnitConfigMapTable getSerailizationUnits() {
-		return serializationUnitTable;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.ContentDeliveryConfig#getDTD()
-	 */
-	public DTDObjectContainer getDTD() {
-		return dtd;
 	}
 	
 	/**

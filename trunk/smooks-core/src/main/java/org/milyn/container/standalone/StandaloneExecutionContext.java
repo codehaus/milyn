@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
+import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
 
@@ -98,7 +98,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		this.context = context;
 		setContentEncoding(contentEncoding);
         targetProfileSet = context.getProfileStore().getProfileSet(targetProfile);        
-        deliveryConfig = ContentDeliveryConfigImpl.getInstance(targetProfileSet, context);
+        deliveryConfig = ContentDeliveryConfigBuilder.getInstance(targetProfileSet, context);
     }
 
     public void setDocumentSource(URI docSource) {

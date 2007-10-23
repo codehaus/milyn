@@ -15,35 +15,41 @@
 */
 package org.milyn.delivery.dom;
 
-import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.AbstractContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
-import org.milyn.delivery.dom.ProcessingSet;
-
-import java.util.List;
-import java.util.Map;
 
 /**
- * Content Delivery Configuration for DOM.
+ * DOM specific {@link org.milyn.delivery.ContentDeliveryConfig} implementation.
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface DOMContentDeliveryConfig extends ContentDeliveryConfig {
+public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
-    /**
-     * Get the Assembly Unit table for this delivery context.
-     * @return The Assembly Unit table for this delivery context.
-     */
-    public abstract ContentDeliveryUnitConfigMapTable getAssemblyUnits();
+    private ContentDeliveryUnitConfigMapTable assemblyUnits;
+    private ContentDeliveryUnitConfigMapTable processingUnits;
+    private ContentDeliveryUnitConfigMapTable serailizationUnits;
 
-    /**
-     * Get the Processing Unit table for this delivery context.
-     * @return The Processing Unit table for this delivery context.
-     */
-    public abstract ContentDeliveryUnitConfigMapTable getProcessingUnits();
+    public ContentDeliveryUnitConfigMapTable getAssemblyUnits() {
+        return assemblyUnits;
+    }
 
-    /**
-     * Get the SerializationUnit table for this delivery context.
-     * @return The SerializationUnit table for this delivery context.
-     */
-    public abstract ContentDeliveryUnitConfigMapTable getSerailizationUnits();
+    public void setAssemblyUnits(ContentDeliveryUnitConfigMapTable assemblyUnits) {
+        this.assemblyUnits = assemblyUnits;
+    }
+
+    public ContentDeliveryUnitConfigMapTable getProcessingUnits() {
+        return processingUnits;
+    }
+
+    public void setProcessingUnits(ContentDeliveryUnitConfigMapTable processingUnits) {
+        this.processingUnits = processingUnits;
+    }
+
+    public ContentDeliveryUnitConfigMapTable getSerailizationUnits() {
+        return serailizationUnits;
+    }
+
+    public void setSerailizationUnits(ContentDeliveryUnitConfigMapTable serailizationUnits) {
+        this.serailizationUnits = serailizationUnits;
+    }
 }

@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
+import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.useragent.UAContext;
 import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.useragent.request.HttpRequest;
@@ -47,7 +47,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	 */
 	private UAContext uaContext;
 	/**
-	 * Requesting device ContentDeliveryConfigImpl.
+	 * Requesting device ContentDeliveryConfigBuilder.
 	 */
 	private ContentDeliveryConfig deliveryConfig;
 	/**
@@ -75,7 +75,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		this.servletRequest = servletRequest;
 		this.applicationContext = containerContext;
 		uaContext = ServletUAContext.getInstance(servletRequest, servletConfig);
-		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext.getProfileSet(), containerContext);
+		deliveryConfig = ContentDeliveryConfigBuilder.getInstance(uaContext.getProfileSet(), containerContext);
 	}
 
 	/* (non-Javadoc)
