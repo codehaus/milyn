@@ -26,7 +26,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.io.StreamUtils;
 import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
-import org.milyn.xml.Parser;
+import org.milyn.delivery.dom.DOMParser;
 import org.milyn.xml.XmlUtil;
 import org.milyn.Smooks;
 import org.w3c.dom.Document;
@@ -88,10 +88,10 @@ public class SmooksEDIParserTest extends TestCase {
 		// Set the mapping config on the resource config...
         config.setParameter(SmooksEDIParser.MODEL_CONFIG_KEY, TEST_XML_MAPPING_XML_URI);
 
-		Parser parser;
+		DOMParser parser;
 
 		// Create 1st parser using the config, and run a parse through it...
-		parser = new Parser(smooks.createExecutionContext(), config);
+		parser = new DOMParser(smooks.createExecutionContext(), config);
 		parser.parse(new InputStreamReader(new ByteArrayInputStream(input)));
 		
 		// Check make sure the parsed and validated model was cached...
@@ -101,7 +101,7 @@ public class SmooksEDIParserTest extends TestCase {
 		assertNotNull("No mapping model in mapping table!", mappingModel_request1);
 
 		// Create 2nd parser using the same config, and run a parse through it...
-		parser = new Parser(smooks.createExecutionContext(), config);
+		parser = new DOMParser(smooks.createExecutionContext(), config);
 		parser.parse(new InputStreamReader(new ByteArrayInputStream(input)));
 		
 		// Make sure the cached model was used on the 2nd parse...
@@ -122,7 +122,7 @@ public class SmooksEDIParserTest extends TestCase {
 			config.setParameter(SmooksEDIParser.MODEL_CONFIG_KEY, mapping);
 		}
 
-		Parser parser = new Parser(smooks.createExecutionContext(), config);
+		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
 		Document doc = parser.parse(new InputStreamReader(input));
 		
 		//System.out.println(XmlUtil.serialize(doc.getChildNodes()));

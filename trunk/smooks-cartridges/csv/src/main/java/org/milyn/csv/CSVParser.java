@@ -43,8 +43,8 @@ import au.com.bytecode.opencsv.CSVReader;
 /**
  * CSV to SAX event parser.
  * <p/>
- * This SAX Parser can be plugged into the Smooks {@link org.milyn.xml.Parser} in order to convert a
- * CSV based message stream into a stream of SAX events.
+ * This SAX DOMParser can be plugged into the Smooks {@link org.milyn.delivery.dom.DOMParser} (for example) in order to convert a
+ * CSV based message stream into a stream of SAX events to be consumed by the DOMBuilder.
  * 
  * <h3>.cdrl Configuration</h3>
  * <pre>

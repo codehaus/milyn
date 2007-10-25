@@ -23,7 +23,7 @@ import org.xml.sax.XMLReader;
 /**
  * Smooks XMLReader.
  * <p/>
- * {@link org.milyn.xml.Parser} allows you to target a specific SAX Parser at a specific message type.
+ * {@link org.milyn.delivery.dom.DOMParser} allows you to target a specific SAX Parser at a specific message type.
  * This lets you parse a stream of any type, convert it to a stream of SAX event and so treat the stream
  * as an XML data stream, even when the stream is non-XML.
  * <p/>
