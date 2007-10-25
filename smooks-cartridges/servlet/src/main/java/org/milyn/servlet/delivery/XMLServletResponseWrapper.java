@@ -21,7 +21,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.SmooksDOMFilter;
-import org.milyn.xml.Parser;
+import org.milyn.delivery.dom.DOMParser;
 import org.milyn.servlet.http.HeaderAction;
 import org.milyn.servlet.parse.HTMLSAXParser;
 import org.w3c.dom.Document;
@@ -45,7 +45,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	private static SmooksResourceConfiguration defaultSAXParserConfig;
 	/**
 	 * Request specific SAX parser configuration.  If not specified
-	 * (See {@link Parser}), {@link #defaultSAXParserConfig} is used.
+	 * (See {@link org.milyn.delivery.dom.DOMParser}), {@link #defaultSAXParserConfig} is used.
 	 */
 	private SmooksResourceConfiguration requestSAXParserConfig;
 	/**
@@ -90,7 +90,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	public XMLServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
 		super(executionContext, originalResponse);
 		smooks = new SmooksDOMFilter(executionContext);
-		requestSAXParserConfig = Parser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
+		requestSAXParserConfig = DOMParser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
 		initHeaderActions(executionContext.getDeliveryConfig().getObjects("http-response-header"));
 	}
 	
@@ -223,12 +223,12 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 			
 			if(sourceDoc == null) {
 				Reader inputReader = new CharArrayReader(content);
-                Parser parser;
+                DOMParser parser;
                 
                 if(requestSAXParserConfig != null) {
-                	parser = new Parser(getContainerRequest(), requestSAXParserConfig);
+                	parser = new DOMParser(getContainerRequest(), requestSAXParserConfig);
                 } else {
-                	parser = new Parser(getContainerRequest(), defaultSAXParserConfig);
+                	parser = new DOMParser(getContainerRequest(), defaultSAXParserConfig);
                 }
 
                 try {

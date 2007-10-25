@@ -34,7 +34,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
 import org.milyn.xml.DomUtils;
-import org.milyn.xml.Parser;
+import org.milyn.delivery.dom.DOMParser;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -280,7 +280,7 @@ public class SmooksDOMFilter {
 			throw new IllegalArgumentException("null 'source' arg passed in method call.");
 		} 
 		try {
-			Parser parser = new Parser(executionContext);
+			DOMParser parser = new DOMParser(executionContext);
 			Document document = parser.parse(source); 
 			
 			deliveryNode = filter(document);
