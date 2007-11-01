@@ -56,16 +56,16 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * <h3>Usage</h3>
  * <pre>
- * 		InputStream ediInputStream = ....
- * 		InputStream <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a> = ....
- * 		{@link org.xml.sax.ContentHandler} contentHandler = ....
+ * 	InputStream ediInputStream = ....
+ * 	InputStream <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a> = ....
+ * 	{@link org.xml.sax.ContentHandler} contentHandler = ....
  * 		
- * 		EDIParser parser = new EDIParser();
+ * 	EDIParser parser = new EDIParser();
  * 		
- * 		parser.setContentHandler(contentHandler);
- * 		parser.{@link #setMappingModel(Edimap) setMappingModel}(EDIParser.{@link #parseMappingModel(InputStream) parseMappingModel}(<a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a>));
- * 		parser.parse(new InputSource(ediInputStream));
- * 		etc... 
+ * 	parser.setContentHandler(contentHandler);
+ * 	parser.{@link #setMappingModel(Edimap) setMappingModel}(EDIParser.{@link #parseMappingModel(InputStream) parseMappingModel}(<a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a>));
+ * 	parser.parse(new InputSource(ediInputStream));
+ * 	etc... 
  * </pre>
  *
  * <h3>Mapping Model</h3>
@@ -74,15 +74,13 @@ import org.xml.sax.helpers.AttributesImpl;
  * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
  * schema.
  * <p/>
- * <img src="doc-files/schema.png" />
- * <p/>
  * From this schema you can see that segment groups are supported (nested segments), including groups within groups,
  * repeating segments and repeating segment groups.  Be sure to review the 
  * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">schema</a>.
  *
  * <h3>Example (Input EDI, EDI to XML Mapping and Output SAX Events)</h3>
- * The following illustration attempts to create a visualisation of the mapping process.  The "edi-input.txt" file
- * specifies the EDI input, "edi-to-xml-mapping.xml" describes how to map that EDI message to SAX events and
+ * The following illustration attempts to create a visualisation of the mapping process.  The "input-message.edi" file
+ * specifies the EDI input, "edi-to-xml-order-mapping.xml" describes how to map that EDI message to SAX events and
  * "expected.xml" illustrates the XML that would result from applying the mapping.
  * <p/>
  * <img src="doc-files/edi-mapping.png" />
