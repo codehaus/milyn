@@ -9,6 +9,17 @@ About This Example:
         3. style.css.  Linked into input.html.
         4. smooks-config.xml.
 
+    After running, you should see the following output to the console:
+
+        ================== CSS Properties ==================
+
+        /html:            'padding':   50
+        /html/body/p:     'margin':    10
+        /html/body/p:     'font-size': 4em
+        /html/body/h1/p:  'font-size': 2em
+        
+        ====================================================
+
 How to Run?
 ===========
     Requirements:
