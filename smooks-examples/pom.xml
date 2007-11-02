@@ -14,6 +14,7 @@
     <version>1.0</version>
 
     <modules>
+        <module>css</module>
         <module>java-basic</module>
         <module>xslt-basic</module>
         <module>xslt-groovy</module>

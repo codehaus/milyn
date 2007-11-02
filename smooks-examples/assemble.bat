@@ -1,3 +1,7 @@
+pushd css
+call call mvn assembly:assembly
+popd
+
 pushd csv-to-xml
 call call mvn assembly:assembly
 popd

@@ -8,7 +8,8 @@
             <includes>
                 <include>README.TXT</include>
                 <include>*.xml</include>
-                <include>input-message.*</include>
+                <include>input.html</include>
+                <include>style.css</include>
             </includes>
         </fileSet>
         <fileSet>
