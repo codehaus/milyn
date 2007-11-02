@@ -1,7 +1,7 @@
 About This Example:
 ===================
     This example illustrates how to use the Smooks CSS Cartridge to
-    to analyse the CSS components of a HTML document.
+    analyse the CSS components of a HTML document.
 
     See:
         1. The "Main" class in src/main/java/example/Main.java.
