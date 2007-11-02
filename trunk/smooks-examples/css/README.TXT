@@ -1,12 +1,12 @@
 About This Example:
 ===================
-    This is a very basic example that illustrates how Smooks can be
-    used to apply an XSLT based transform on a message fragment. 
+    This example illustrates how to use the Smooks CSS Cartridge to
+    to analyse the CSS components of a HTML document.
 
     See:
         1. The "Main" class in src/main/java/example/Main.java.
-        2. The input message in input-message.xml.
-        3. The code in the src/main/java folder tree (.java, .xsl).
+        2. input.html.  Contains inlined and linked CSS.
+        3. style.css.  Linked into input.html.
         4. smooks-config.xml.
 
 How to Run?
