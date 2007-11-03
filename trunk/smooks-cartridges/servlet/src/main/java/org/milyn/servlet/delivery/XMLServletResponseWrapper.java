@@ -22,6 +22,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.delivery.dom.DOMParser;
+import org.milyn.delivery.AbstractParser;
 import org.milyn.servlet.http.HeaderAction;
 import org.milyn.servlet.parse.HTMLSAXParser;
 import org.w3c.dom.Document;
@@ -90,7 +91,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	public XMLServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
 		super(executionContext, originalResponse);
 		smooks = new SmooksDOMFilter(executionContext);
-		requestSAXParserConfig = DOMParser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
+		requestSAXParserConfig = AbstractParser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
 		initHeaderActions(executionContext.getDeliveryConfig().getObjects("http-response-header"));
 	}
 	

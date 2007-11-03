@@ -17,32 +17,29 @@ package org.milyn.delivery.dom;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.xml.Namespace;
-import org.milyn.dtd.DTDStore;
 import org.milyn.container.ExecutionContext;
+import org.milyn.dtd.DTDStore;
+import org.milyn.xml.Namespace;
 import org.w3c.dom.*;
 import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.ext.DefaultHandler2;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.util.Stack;
 import java.util.HashSet;
+import java.util.Stack;
 
 /**
  * DOM Document builder.
  * <p/>
- * Content and Lexical Handler class for DOM construction.
+ * Handler class for DOM construction.
  * 
- * @see org.xml.sax.ContentHandler
- * @see org.xml.sax.ext.LexicalHandler
- * @author tfennelly
+ * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DOMBuilder implements ContentHandler, LexicalHandler {
+public class DOMBuilder extends DefaultHandler2 {
 
     private static Log logger = LogFactory.getLog(DOMBuilder.class);
     private static DocumentBuilder documentBuilder;
@@ -145,10 +142,10 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
                 if(attNamespace != null && attQName != null) {
                     attNamespace = attNamespace.intern();
                     if(attNamespace.equals("")) {
-                        if(attQName.startsWith("xmlns")) {
-                            attNamespace = Namespace.XMLNS_URI;
+                        if(attQName.startsWith(XMLConstants.XMLNS_ATTRIBUTE)) {
+                            attNamespace = XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                         } else if(attQName.startsWith("xml:")) {
-                            attNamespace = Namespace.XML_URI;
+                            attNamespace = XMLConstants.XML_NS_URI;
                         }
                     }
                     newElement.setAttributeNS(attNamespace, attQName, attValue);
@@ -272,28 +269,9 @@ public class DOMBuilder implements ContentHandler, LexicalHandler {
         inEntity = false;
     }
 
-    public void processingInstruction(String target, String data) throws SAXException {
-    }
-
-    public void startPrefixMapping(String prefix, String uri) throws SAXException {
-    }
-
-    public void endPrefixMapping(String prefix) throws SAXException {
-    }
-
-    public void skippedEntity(String name) throws SAXException {
-    }
-
-    public void setDocumentLocator(Locator locator) {
-    }
-
     public void startDTD(String name, String publicId, String systemId) throws SAXException {
         DocumentType docType = documentBuilder.getDOMImplementation().createDocumentType(name, publicId, systemId);
 
         ownerDocument.appendChild(docType);
-    }
-
-    public void endDTD() throws SAXException {
-        //ownerDocument.
     }
 }
