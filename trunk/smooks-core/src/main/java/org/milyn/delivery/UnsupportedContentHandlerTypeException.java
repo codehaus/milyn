@@ -17,10 +17,10 @@
 package org.milyn.delivery;
 
 /**
- * Unsupported ProcessingUnit type exception.
+ * Unsupported {@link ContentHandler} type exception.
  * @author tfennelly
  */
-public class UnsupportedContentDeliveryUnitTypeException extends Exception {
+public class UnsupportedContentHandlerTypeException extends Exception {
 
 	/**
      * Serial UID.
@@ -29,9 +29,9 @@ public class UnsupportedContentDeliveryUnitTypeException extends Exception {
 
     /**
 	 * Public constructor.
-	 * @param type ProcessingUnit type..
+	 * @param type {@link ContentHandler} type.
 	 */
-	public UnsupportedContentDeliveryUnitTypeException(String type) {
-		super("ProcessingUnit type [" + type + "] not supported.");
+	public UnsupportedContentHandlerTypeException(String type) {
+		super("ContentHandler type [" + type + "] not supported.");
 	}
 }

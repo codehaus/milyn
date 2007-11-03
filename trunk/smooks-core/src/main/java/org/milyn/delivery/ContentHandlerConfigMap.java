@@ -23,12 +23,12 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * configuration.
  * <p/>
  * Obviously this class is only relevant when the resource configuration refers to
- * a {@link org.milyn.delivery.ContentDeliveryUnit}.
+ * a {@link ContentHandler}.
  * @author tfennelly
  */
-public class ContentDeliveryUnitConfigMap {
+public class ContentHandlerConfigMap {
 
-    private ContentDeliveryUnit contentDeliveryUnit;
+    private ContentHandler contentDeliveryUnit;
     private SmooksResourceConfiguration resourceConfig;
 
     /**
@@ -36,16 +36,16 @@ public class ContentDeliveryUnitConfigMap {
      * @param contentDeliveryUnit The content delivery unit instance.
      * @param resourceConfig The defining resource configuration.
      */
-    public ContentDeliveryUnitConfigMap(ContentDeliveryUnit contentDeliveryUnit, SmooksResourceConfiguration resourceConfig) {
+    public ContentHandlerConfigMap(ContentHandler contentDeliveryUnit, SmooksResourceConfiguration resourceConfig) {
         this.contentDeliveryUnit = contentDeliveryUnit;
         this.resourceConfig = resourceConfig;
     }
 
     /**
      * Get the content delivery unit.
-     * @return The {@link org.milyn.delivery.ContentDeliveryUnit}.
+     * @return The {@link ContentHandler}.
      */
-    public ContentDeliveryUnit getContentDeliveryUnit() {
+    public ContentHandler getContentDeliveryUnit() {
         return contentDeliveryUnit;
     }
 

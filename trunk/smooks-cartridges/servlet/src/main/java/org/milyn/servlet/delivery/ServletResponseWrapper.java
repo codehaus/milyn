@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 
 /**
  * Abstract Servlet Response Wrapper for the Smooks framework.
@@ -36,7 +36,7 @@ import org.milyn.delivery.ContentDeliveryUnit;
  * {@link org.milyn.servlet.delivery.PassThruServletResponseWrapper}.
  * @author tfennelly
  */
-public abstract class ServletResponseWrapper extends HttpServletResponseWrapper implements ContentDeliveryUnit {
+public abstract class ServletResponseWrapper extends HttpServletResponseWrapper implements ContentHandler {
 	
 	/**
 	 * Container request instance.

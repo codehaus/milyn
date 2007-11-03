@@ -30,7 +30,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.ClassUtil;
@@ -138,7 +138,7 @@ import org.w3c.dom.Node;
  * <p/>
  * </li>
  * <li><b id="namespace">selector-namespace</b>: The XML namespace of the selector target for this resource.  This is used
- * to target {@link org.milyn.delivery.ContentDeliveryUnit}s at XML elements from a
+ * to target {@link org.milyn.delivery.ContentHandler}s at XML elements from a
  * specific XML namespace e.g. "http://www.w3.org/2002/xforms".  If not defined, the resource
  * is targeted at all namespces.
  * </li>
@@ -824,15 +824,15 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * Is this resource a Java {@link org.milyn.delivery.ContentDeliveryUnit} resource.
+     * Is this resource a Java {@link org.milyn.delivery.ContentHandler} resource.
      *
      * @return True if this resource refers to an instance of the
-     *         {@link org.milyn.delivery.ContentDeliveryUnit} class, otherwise false.
+     *         {@link org.milyn.delivery.ContentHandler} class, otherwise false.
      */
     public boolean isJavaContentDeliveryUnit() {
         Class runtimeClass = toJavaResource();
 
-        return (runtimeClass != null && ContentDeliveryUnit.class.isAssignableFrom(runtimeClass));
+        return (runtimeClass != null && ContentHandler.class.isAssignableFrom(runtimeClass));
     }
 
     /**

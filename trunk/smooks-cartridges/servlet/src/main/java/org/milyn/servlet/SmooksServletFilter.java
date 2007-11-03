@@ -87,12 +87,12 @@ import org.milyn.servlet.delivery.XMLServletResponseWrapper;
  *	&lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
  * &lt;/filter-mapping&gt;</pre>
  * 
- * <h3 id="cdu-config">Content Delivery Unit Configuration</h3>
- * How does Smooks load Content Delivery Units in a Servlet container?  This section tries
+ * <h3 id="cdu-config">Content Handler Configuration</h3>
+ * How does Smooks load Content Handlers in a Servlet container?  This section tries
  * to explain how this works at present.  
  * <div class="indent">
  * <h4>Webapp WEB-INF Structure</h4>
- * The following illustration shows a sample Smooks Content Delivery Unit/Resource 
+ * The following illustration shows a sample Smooks Content Handler/Resource
  * configuration in a Servlet container.  Smooks uses the "smooks-cdr.lst" file to
  * load the {@link org.milyn.cdr.SmooksResourceConfiguration .cdrl} files from the cdr 
  * folder.  Make sure to read the docs on the {@link org.milyn.cdr.SmooksResourceConfiguration .cdrl configuration files}.

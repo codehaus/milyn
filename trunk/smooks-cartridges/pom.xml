@@ -25,7 +25,7 @@
         <milyn.smooks.css.version.base>0.1</milyn.smooks.css.version.base>
 		<milyn.smooks.css.version>${milyn.smooks.css.version.base}.2</milyn.smooks.css.version>
 		
-        <milyn.smooks.javabean.version.base>0.4</milyn.smooks.javabean.version.base>
+        <milyn.smooks.javabean.version.base>0.5</milyn.smooks.javabean.version.base>
 		<milyn.smooks.javabean.version>${milyn.smooks.javabean.version.base}-SNAPSHOT</milyn.smooks.javabean.version>
 		
 		<milyn.smooks.templating.version.base>0.3</milyn.smooks.templating.version.base>

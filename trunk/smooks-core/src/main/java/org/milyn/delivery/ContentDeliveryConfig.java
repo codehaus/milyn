@@ -26,7 +26,7 @@ import org.milyn.dtd.DTDStore;
  * Content delivery configuration.
  * <p/>
  * Provides access to Content Delivery Resources 
- * (e.g. {@link org.milyn.delivery.ContentDeliveryUnit Content Delivery Units})
+ * (e.g. {@link ContentHandler Content Delivery Units})
  * and other information for the targeted profile.
  * @author tfennelly
  */
@@ -43,7 +43,7 @@ public interface ContentDeliveryConfig {
 	 * defined under that selector (for the device).
 	 * @see #getObjects(String)
 	 */
-	public abstract List<ContentDeliveryUnitConfigMap> getSmooksResourceConfigurations(String selector);
+	public abstract List<ContentHandlerConfigMap> getSmooksResourceConfigurations(String selector);
 
 	/**
 	 * Get the {@link SmooksResourceConfiguration} map for the target execution context.
@@ -55,7 +55,7 @@ public interface ContentDeliveryConfig {
 	 * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
 	 * {@link List} of preordered {@link SmooksResourceConfiguration} instances.
 	 */
-	public abstract Map<String, List<ContentDeliveryUnitConfigMap>> getSmooksResourceConfigurations();
+	public abstract Map<String, List<ContentHandlerConfigMap>> getSmooksResourceConfigurations();
 	
 	/**
 	 * Get a list of {@link Object}s from the {@link SmooksResourceConfiguration}s specified by the selector.

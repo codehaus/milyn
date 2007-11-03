@@ -15,7 +15,7 @@
 */
 package org.milyn.cdr.annotation;
 
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 import org.milyn.cdr.annotation.Initialize;
 import org.milyn.cdr.annotation.Uninitialize;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 
 /**
  * Utility class for processing configuration annotations on a
- * {@link ContentDeliveryUnit} instance and applying resource configurations from the
+ * {@link org.milyn.delivery.ContentHandler} instance and applying resource configurations from the
  * supplied {@link SmooksResourceConfiguration}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -42,14 +42,14 @@ public class Configurator {
     private static Log logger = LogFactory.getLog(Configurator.class);
 
     /**
-     * Configure the supplied {@link ContentDeliveryUnit} instance using the supplied
+     * Configure the supplied {@link org.milyn.delivery.ContentHandler} instance using the supplied
      * {@link SmooksResourceConfiguration}.
      * @param instance The instance to be configured.
      * @param config The configuration.
-     * @return The configured ContentDeliveryUnit instance.
+     * @return The configured ContentHandler instance.
      * @throws SmooksConfigurationException Invalid field annotations.
      */
-    public static <U extends ContentDeliveryUnit> U configure(U instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
+    public static <U extends ContentHandler> U configure(U instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         AssertArgument.isNotNull(instance, "instance");
         AssertArgument.isNotNull(config, "config");
 
@@ -68,7 +68,7 @@ public class Configurator {
         return instance;
     }
 
-    private static <U extends ContentDeliveryUnit> void processFieldAnnotations(U instance, SmooksResourceConfiguration config) {
+    private static <U extends ContentHandler> void processFieldAnnotations(U instance, SmooksResourceConfiguration config) {
         Field[] fields = instance.getClass().getDeclaredFields();
 
         for (Field field : fields) {
@@ -86,7 +86,7 @@ public class Configurator {
         }
     }
 
-    private static <U extends ContentDeliveryUnit> void processMethodAnnotations(U instance, SmooksResourceConfiguration config) {
+    private static <U extends ContentHandler> void processMethodAnnotations(U instance, SmooksResourceConfiguration config) {
         Method[] methods = instance.getClass().getMethods();
 
         for (Method method : methods) {
@@ -103,7 +103,7 @@ public class Configurator {
         }
     }
 
-    private static void applyConfigParam(ConfigParam configParam, Member member, Class type, ContentDeliveryUnit instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
+    private static void applyConfigParam(ConfigParam configParam, Member member, Class type, ContentHandler instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         String name = configParam.name();
         String paramValue;
 
@@ -144,7 +144,7 @@ public class Configurator {
                 // No decoder specified via annotation.  Infer from the field type...
                 decoder = DataDecoder.Factory.create(type);
                 if(decoder == null) {
-                    throw new SmooksConfigurationException("ContentDeliveryUnit class member '" + getLongMemberName(member) + "' must define a decoder through it's @ConfigParam annotation.  Unable to automatically determine DataDecoder from member type.");
+                    throw new SmooksConfigurationException("ContentHandler class member '" + getLongMemberName(member) + "' must define a decoder through it's @ConfigParam annotation.  Unable to automatically determine DataDecoder from member type.");
                 }
             } else {
                 // Decoder specified on annotation...
@@ -195,7 +195,7 @@ public class Configurator {
         throw new SmooksConfigurationException("Value '" + paramValue + "' for paramater '" + name + "' is invalid.  Valid choices for this paramater are: " + Arrays.asList(choices));
     }
 
-    private static void applyConfig(Field field, ContentDeliveryUnit instance, SmooksResourceConfiguration config) {
+    private static void applyConfig(Field field, ContentHandler instance, SmooksResourceConfiguration config) {
         try {
             setField(field, instance, config);
         } catch (IllegalAccessException e) {
@@ -203,7 +203,7 @@ public class Configurator {
         }
     }
 
-    private static void setConfiguration(ContentDeliveryUnit instance, SmooksResourceConfiguration config) {
+    private static void setConfiguration(ContentHandler instance, SmooksResourceConfiguration config) {
         try {
             Method setConfigurationMethod = instance.getClass().getMethod("setConfiguration", SmooksResourceConfiguration.class);
 
@@ -226,7 +226,7 @@ public class Configurator {
         return field.getDeclaringClass().getName() + "#" + field.getName();
     }
 
-    private static void setField(Field field, ContentDeliveryUnit instance, Object value) throws IllegalAccessException {
+    private static void setField(Field field, ContentHandler instance, Object value) throws IllegalAccessException {
         boolean isAccessible = field.isAccessible();
 
         if(!isAccessible) {
@@ -236,19 +236,19 @@ public class Configurator {
         field.setAccessible(isAccessible);
     }
 
-    private static void setMethod(Method method, ContentDeliveryUnit instance, Object value) throws IllegalAccessException, InvocationTargetException {
+    private static void setMethod(Method method, ContentHandler instance, Object value) throws IllegalAccessException, InvocationTargetException {
         method.invoke(instance, value);
     }
 
-    private static <U extends ContentDeliveryUnit> void initialise(U instance) {
+    private static <U extends ContentHandler> void initialise(U instance) {
         invoke(instance, Initialize.class);
     }
 
-    public static <U extends ContentDeliveryUnit> void uninitialise(U instance) {
+    public static <U extends ContentHandler> void uninitialise(U instance) {
         invoke(instance, Uninitialize.class);
     }
 
-    private static <U extends ContentDeliveryUnit> void invoke(U instance, Class<? extends Annotation> annotation) {
+    private static <U extends ContentHandler> void invoke(U instance, Class<? extends Annotation> annotation) {
         Method[] methods = instance.getClass().getMethods();
 
         for (Method method : methods) {

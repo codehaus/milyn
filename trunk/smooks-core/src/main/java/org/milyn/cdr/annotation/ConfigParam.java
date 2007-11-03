@@ -22,7 +22,7 @@ import java.lang.annotation.*;
 /**
  * Configuration paramater field annotation.
  * <p/>
- * Helps supports reflective injection of {@link org.milyn.delivery.ContentDeliveryUnit} paramaters
+ * Helps supports reflective injection of {@link org.milyn.delivery.ContentHandler} paramaters
  * from its {@link org.milyn.cdr.SmooksResourceConfiguration} instance.  To inject the whole
  * {@link org.milyn.cdr.SmooksResourceConfiguration} instance, use the {@link @org.milyn.cdr.annotation.Config}
  * annotation.

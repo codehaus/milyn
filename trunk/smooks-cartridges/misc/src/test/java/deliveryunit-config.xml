@@ -2,6 +2,6 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-	<bean id="class" class="org.milyn.delivery.JavaContentDeliveryUnitCreator" singleton="true" /> 
+	<bean id="class" class="org.milyn.delivery.JavaContentHandlerFactory" singleton="true" />
 	<bean id="xsl" class="org.milyn.delivery.XslContentDeliveryUnitCreator" singleton="true" /> 
 </beans>

@@ -17,7 +17,7 @@
 package org.milyn.delivery.dom;
 
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 import org.milyn.SmooksException;
 import org.w3c.dom.Element;
 
@@ -43,7 +43,7 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface DOMElementVisitor extends ContentDeliveryUnit {
+public interface DOMElementVisitor extends ContentHandler {
 
     /**
      * Visit the supplied element <b>before</b> visiting its child elements.

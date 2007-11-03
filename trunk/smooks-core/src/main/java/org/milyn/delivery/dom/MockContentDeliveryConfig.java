@@ -20,7 +20,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
+import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
@@ -30,9 +30,9 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
 
     private Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable = new Hashtable<String, List<SmooksResourceConfiguration>>();
-	public ContentDeliveryUnitConfigMapTable assemblyUnits = new ContentDeliveryUnitConfigMapTable();
-	public ContentDeliveryUnitConfigMapTable processingSets = new ContentDeliveryUnitConfigMapTable();
-    public ContentDeliveryUnitConfigMapTable serializationUnits = new ContentDeliveryUnitConfigMapTable();
+	public ContentHandlerConfigMapTable assemblyUnits = new ContentHandlerConfigMapTable();
+	public ContentHandlerConfigMapTable processingSets = new ContentHandlerConfigMapTable();
+    public ContentHandlerConfigMapTable serializationUnits = new ContentHandlerConfigMapTable();
 	public Hashtable objectsHash = new Hashtable();
 
     public MockContentDeliveryConfig() {

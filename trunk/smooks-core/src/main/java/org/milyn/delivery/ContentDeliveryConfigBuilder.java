@@ -71,17 +71,17 @@ public class ContentDeliveryConfigBuilder {
 	 * Table of AssemblyUnit instances keyed by selector. Each table entry
 	 * contains a single {@link org.milyn.delivery.dom.DOMElementVisitor} instances.
 	 */
-	private ContentDeliveryUnitConfigMapTable assemblyUnitTable = new ContentDeliveryUnitConfigMapTable();
+	private ContentHandlerConfigMapTable assemblyUnitTable = new ContentHandlerConfigMapTable();
 	/**
      * Table of Processing Unit instances keyed by selector. Each table entry
      * contains a single {@link org.milyn.delivery.dom.DOMElementVisitor} instances.
 	 */
-	private ContentDeliveryUnitConfigMapTable processingUnitTable = new ContentDeliveryUnitConfigMapTable();
+	private ContentHandlerConfigMapTable processingUnitTable = new ContentHandlerConfigMapTable();
 	/**
 	 * Table of SerializationUnit instances keyed by selector. Each table entry
 	 * contains a single SerializationUnit instances.
 	 */
-	private ContentDeliveryUnitConfigMapTable serializationUnitTable = new ContentDeliveryUnitConfigMapTable();
+	private ContentHandlerConfigMapTable serializationUnitTable = new ContentHandlerConfigMapTable();
 	/**
 	 * DTD for the associated device.
 	 */
@@ -356,7 +356,7 @@ public class ContentDeliveryConfigBuilder {
 	}
 	
 	/**
-	 * ContentDeliveryUnit extraction strategy.
+	 * ContentHandler extraction strategy.
 	 * @author tfennelly
 	 */
 	private final class ContentDeliveryExtractionStrategy implements SmooksResourceConfigurationStrategy {
@@ -369,7 +369,7 @@ public class ContentDeliveryConfigBuilder {
         }
 
         public void applyStrategy(String elementName, SmooksResourceConfiguration resourceConfig) {
-			ContentDeliveryUnitCreator creator;
+			ContentHandlerFactory creator;
 
 			// Try it as a Java class before trying anything else.  This is to
 			// accomodate specification of the class in the standard 
@@ -381,26 +381,26 @@ public class ContentDeliveryConfigBuilder {
     					// Job done - it's a CDU and we've added it!
     					return;
     				}
-    			} catch (UnsupportedContentDeliveryUnitTypeException e) {
-    				throw new IllegalStateException("No ContentDeliveryUnitCreator configured (IoC) for type 'class' (Java).");
+    			} catch (UnsupportedContentHandlerTypeException e) {
+    				throw new IllegalStateException("No ContentHandlerFactory configured (IoC) for type 'class' (Java).");
     			} catch (InstantiationException e) {
                     // Ignore it again - not a proper Java CDU - continue on, may be a different type...
                 }
             }
 
-            // Get the resource type and "try" creating a ContentDeliveryUnitCreator for that resource
+            // Get the resource type and "try" creating a ContentHandlerFactory for that resource
             // type.
             String restype = resourceConfig.getResourceType();
             creator = tryCreateCreator(restype);
 			
-            // If we have a creator but it's the JavaContentDeliveryUnitCreator we ignore it because
-            // we know the class in question does not implement ContentDeliveryUnit.  We know because
+            // If we have a creator but it's the JavaContentHandlerFactory we ignore it because
+            // we know the class in question does not implement ContentHandler.  We know because
             // we tried this above.
-            if(creator != null && !(creator instanceof JavaContentDeliveryUnitCreator)) {
+            if(creator != null && !(creator instanceof JavaContentHandlerFactory)) {
 				try {
 					addCDU(elementName, resourceConfig, creator);
 				} catch (InstantiationException e) {
-					logger.warn("ContentDeliveryUnit creation failure.", e);
+					logger.warn("ContentHandler creation failure.", e);
 				}
             } else {
 				// Just ignore it - something else will use it (hopefully)            	
@@ -414,16 +414,16 @@ public class ContentDeliveryConfigBuilder {
          * @param restype The resource type.
          * @return The appropriate CDU creator instance, or null if there is none.
          */
-        private ContentDeliveryUnitCreator tryCreateCreator(String restype) {
-			ContentDeliveryUnitCreator creator;
+        private ContentHandlerFactory tryCreateCreator(String restype) {
+			ContentHandlerFactory creator;
 
 			try {
 				if(restype == null || restype.trim().equals("")) {
-					logger.warn("Request to attempt ContentDeliveryUnitCreator creation based on a null/empty resource type.");
+					logger.warn("Request to attempt ContentHandlerFactory creation based on a null/empty resource type.");
 					return null;
 				}
 				creator = store.getContentDeliveryUnitCreator(restype);
-			} catch (UnsupportedContentDeliveryUnitTypeException e) {
+			} catch (UnsupportedContentHandlerTypeException e) {
 				return null;
 			}
 			
@@ -431,24 +431,24 @@ public class ContentDeliveryConfigBuilder {
         }
 
         /**
-		 * Add a {@link org.milyn.delivery.ContentDeliveryUnit} for the specified element and configuration.
+		 * Add a {@link ContentHandler} for the specified element and configuration.
 		 * @param elementName Element name against which to associate the CDU.
 		 * @param resourceConfig Configuration.
 		 * @param creator CDU Creator class.
 		 * @throws InstantiationException Failed to instantia
          * @return True if the CDU was added, otherwise false. 
 		 */
-		private boolean addCDU(String elementName, SmooksResourceConfiguration resourceConfig, ContentDeliveryUnitCreator creator) throws InstantiationException {
-			ContentDeliveryUnit contentDeliveryUnit;
+		private boolean addCDU(String elementName, SmooksResourceConfiguration resourceConfig, ContentHandlerFactory creator) throws InstantiationException {
+			ContentHandler contentDeliveryUnit;
 
-			// Create the ContentDeliveryUnit.
+			// Create the ContentHandler.
 			try {
 				contentDeliveryUnit = creator.create(resourceConfig);
 			} catch(Throwable thrown) {
 				if(logger.isDebugEnabled()) {
-					logger.warn("ContentDeliveryUnitCreator [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
+					logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
 				} else {
-					logger.warn("ContentDeliveryUnitCreator [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
+					logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
 				}
 				return false;
 			}
@@ -476,8 +476,8 @@ public class ContentDeliveryConfigBuilder {
 			}
 
             // Content delivery units are allowed to dynamically add new configurations...
-            if(contentDeliveryUnit instanceof ExpandableContentDeliveryUnit) {
-                List<SmooksResourceConfiguration> additionalConfigs = ((ExpandableContentDeliveryUnit)contentDeliveryUnit).getExpansionConfigurations();
+            if(contentDeliveryUnit instanceof ExpandableContentHandler) {
+                List<SmooksResourceConfiguration> additionalConfigs = ((ExpandableContentHandler)contentDeliveryUnit).getExpansionConfigurations();
                 if(additionalConfigs != null && !additionalConfigs.isEmpty()) {
                     expansionConfigs.addAll(additionalConfigs);
                 }
@@ -493,7 +493,7 @@ public class ContentDeliveryConfigBuilder {
             for(SmooksResourceConfiguration config : expansionConfigs) {
                 String targetElement = config.getTargetElement();
 
-                // Try adding it as a ContentDeliveryUnit instance...
+                // Try adding it as a ContentHandler instance...
                 applyStrategy(targetElement, config);
                 // Add the configuration itself to the main list...
                 addResourceConfiguration(config);

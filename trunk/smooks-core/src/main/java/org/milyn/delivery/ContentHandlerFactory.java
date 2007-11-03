@@ -20,28 +20,28 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 
 
 /**
- * ContentDeliveryUnit factory method Creator interface.
+ * ContentHandler factory interface.
  *
  * @author tfennelly
  */
-public interface ContentDeliveryUnitCreator {
+public interface ContentHandlerFactory {
 
     /**
-     * Name of the param used on a ContentDeliveryUnitCreator config that specifies
+     * Name of the param used on a ContentHandlerFactory config that specifies
      * the resource type that the creator is adding support for.  This is different
-     * from the type attribute on the resource element.  In the case of a ContentDeliveryUnitCreator
-     * configuration, the ContentDeliveryUnitCreator impl resource type is "class", but it's adding
+     * from the type attribute on the resource element.  In the case of a ContentHandlerFactory
+     * configuration, the ContentHandlerFactory impl resource type is "class", but it's adding
      * support for something else (e.g. "xsl").  This is why we can't use the type attribute for this
      * purpose.
      */
     public static final String PARAM_RESTYPE = "restype";
 
 	/**
-	 * Create the {@link ContentDeliveryUnit} instance. 
-	 * @param resourceConfig The SmooksResourceConfiguration for the {@link ContentDeliveryUnit}
+	 * Create the {@link ContentHandler} instance.
+	 * @param resourceConfig The SmooksResourceConfiguration for the {@link ContentHandler}
      * to be created.
-	 * @return {@link ContentDeliveryUnit} instance.
-	 * @throws InstantiationException Unable to create ContentDeliveryUnit instance.
+	 * @return {@link ContentHandler} instance.
+	 * @throws InstantiationException Unable to create ContentHandler instance.
 	 */
-	public ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException;
+	public ContentHandler create(SmooksResourceConfiguration resourceConfig) throws InstantiationException;
 }

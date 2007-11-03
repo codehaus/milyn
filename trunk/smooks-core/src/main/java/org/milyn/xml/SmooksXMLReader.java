@@ -17,7 +17,7 @@
 package org.milyn.xml;
 
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 import org.xml.sax.XMLReader;
 
 /**
@@ -32,7 +32,7 @@ import org.xml.sax.XMLReader;
  *
  * @author tfennelly
  */
-public interface SmooksXMLReader extends XMLReader, ContentDeliveryUnit {
+public interface SmooksXMLReader extends XMLReader, ContentHandler {
 
 	/**
 	 * Set the Smooks {@link ExecutionContext} on the implementing class.

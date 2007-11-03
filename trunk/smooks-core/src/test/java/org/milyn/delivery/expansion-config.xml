@@ -2,6 +2,6 @@
 
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
     <resource-config selector="$document">
-        <resource>org.milyn.delivery.TestExpandableContentDeliveryUnit</resource>
+        <resource>org.milyn.delivery.TestExpandableContentHandler</resource>
     </resource-config>
 </smooks-resource-list>

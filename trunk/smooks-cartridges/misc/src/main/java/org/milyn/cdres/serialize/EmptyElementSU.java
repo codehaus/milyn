@@ -102,14 +102,14 @@ public class EmptyElementSU extends DefaultSerializationUnit {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getShortDescription()
+	 * @see org.milyn.ContentHandler#getShortDescription()
 	 */
 	public String getShortDescription() {
 		return "Write empty elements";
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.ContentDeliveryUnit#getDetailDescription()
+	 * @see org.milyn.ContentHandler#getDetailDescription()
 	 */
 	public String getDetailDescription() {
 		return "Writes empty elements well-formed (<xxx/>) or badly-formed (<xxx>).  Ensures that any child content is not writen.";

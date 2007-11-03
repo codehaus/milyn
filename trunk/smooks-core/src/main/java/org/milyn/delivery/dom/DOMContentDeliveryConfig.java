@@ -16,7 +16,7 @@
 package org.milyn.delivery.dom;
 
 import org.milyn.delivery.AbstractContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
+import org.milyn.delivery.ContentHandlerConfigMapTable;
 
 /**
  * DOM specific {@link org.milyn.delivery.ContentDeliveryConfig} implementation.
@@ -25,31 +25,31 @@ import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
  */
 public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
-    private ContentDeliveryUnitConfigMapTable assemblyUnits;
-    private ContentDeliveryUnitConfigMapTable processingUnits;
-    private ContentDeliveryUnitConfigMapTable serailizationUnits;
+    private ContentHandlerConfigMapTable assemblyUnits;
+    private ContentHandlerConfigMapTable processingUnits;
+    private ContentHandlerConfigMapTable serailizationUnits;
 
-    public ContentDeliveryUnitConfigMapTable getAssemblyUnits() {
+    public ContentHandlerConfigMapTable getAssemblyUnits() {
         return assemblyUnits;
     }
 
-    public void setAssemblyUnits(ContentDeliveryUnitConfigMapTable assemblyUnits) {
+    public void setAssemblyUnits(ContentHandlerConfigMapTable assemblyUnits) {
         this.assemblyUnits = assemblyUnits;
     }
 
-    public ContentDeliveryUnitConfigMapTable getProcessingUnits() {
+    public ContentHandlerConfigMapTable getProcessingUnits() {
         return processingUnits;
     }
 
-    public void setProcessingUnits(ContentDeliveryUnitConfigMapTable processingUnits) {
+    public void setProcessingUnits(ContentHandlerConfigMapTable processingUnits) {
         this.processingUnits = processingUnits;
     }
 
-    public ContentDeliveryUnitConfigMapTable getSerailizationUnits() {
+    public ContentHandlerConfigMapTable getSerailizationUnits() {
         return serailizationUnits;
     }
 
-    public void setSerailizationUnits(ContentDeliveryUnitConfigMapTable serailizationUnits) {
+    public void setSerailizationUnits(ContentHandlerConfigMapTable serailizationUnits) {
         this.serailizationUnits = serailizationUnits;
     }
 }

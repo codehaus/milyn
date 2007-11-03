@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-	This cdrl config defines the Content Delivery Unit Creators
+	This cdrl config defines the Content Handler Creators
 	for this cartridge.
 -->
 
@@ -12,7 +12,7 @@
 		will be handled by the StringTemplateContentDeliveryUnitCreator.
 	-->
 	<resource-config>
-	    <resource type="class">org.milyn.templating.stringtemplate.StringTemplateContentDeliveryUnitCreator</resource>
+	    <resource type="class">org.milyn.templating.stringtemplate.StringTemplateContentHandlerFactory</resource>
 		<param name="restype">st</param>
 	</resource-config>
 		
@@ -21,7 +21,7 @@
 		will be handled by the XslContentDeliveryUnitCreator.
 	-->
 	<resource-config>
-	    <resource type="class">org.milyn.templating.xslt.XslContentDeliveryUnitCreator</resource>
+	    <resource type="class">org.milyn.templating.xslt.XslContentHandlerFactory</resource>
 		<param name="restype">xsl</param>
 	</resource-config>	
 
@@ -30,7 +30,7 @@
         will be handled by the FreeMarkerContentDeliveryUnitCreator.
     -->
     <resource-config>
-        <resource type="class">org.milyn.templating.freemarker.FreeMarkerContentDeliveryUnitCreator</resource>
+        <resource type="class">org.milyn.templating.freemarker.FreeMarkerContentHandlerFactory</resource>
         <param name="restype">ftl</param>
     </resource-config>
 

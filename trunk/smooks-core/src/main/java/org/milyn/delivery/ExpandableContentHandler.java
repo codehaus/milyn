@@ -25,11 +25,11 @@ import java.util.List;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface ExpandableContentDeliveryUnit extends ContentDeliveryUnit {
+public interface ExpandableContentHandler extends ContentHandler {
 
     /**
      * Get the additional configurations to be added to the delivery config by
-     * this ContentDeliveryUnit.
+     * this ContentHandler.
      *
      * @return A list of additional configurations, or an empty list if no configutations
      *         are to be added for this instance.

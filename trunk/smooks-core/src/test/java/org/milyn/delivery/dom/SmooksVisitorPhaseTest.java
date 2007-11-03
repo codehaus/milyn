@@ -18,7 +18,7 @@ package org.milyn.delivery.dom;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.io.StreamUtils;
-import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
@@ -47,12 +47,12 @@ public class SmooksVisitorPhaseTest extends TestCase {
         config = (DOMContentDeliveryConfig) execContext.getDeliveryConfig();
 
         // Check the assembly units...
-        List<ContentDeliveryUnitConfigMap> assemblyUnits = config.getAssemblyUnits().getMappings("a");
+        List<ContentHandlerConfigMap> assemblyUnits = config.getAssemblyUnits().getMappings("a");
         assertEquals(2, assemblyUnits.size());
         assertTrue(assemblyUnits.get(0).getContentDeliveryUnit() instanceof AssemblyVisitor1);
         assertTrue(assemblyUnits.get(1).getContentDeliveryUnit() instanceof ConfigurableVisitor);
 
-        List<ContentDeliveryUnitConfigMap> processingUnits = config.getProcessingUnits().getMappings("a");
+        List<ContentHandlerConfigMap> processingUnits = config.getProcessingUnits().getMappings("a");
         assertEquals(2, processingUnits.size());
         assertTrue(processingUnits.get(0).getContentDeliveryUnit() instanceof ProcessorVisitor1);
         assertTrue(processingUnits.get(1).getContentDeliveryUnit() instanceof ConfigurableVisitor);

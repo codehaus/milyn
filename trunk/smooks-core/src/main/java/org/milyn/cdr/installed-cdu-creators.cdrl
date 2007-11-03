@@ -1,14 +1,14 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 
 <!--
-	This cdrl config defines the default Content Delivery Unit Creators
+	This cdrl config defines the default Content Handler Creators
 	installed in Smooks.
 -->
 
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-selector="cdu-creator"> 
 
 	<resource-config>
-	    <resource type="class">org.milyn.delivery.JavaContentDeliveryUnitCreator</resource>
+	    <resource type="class">org.milyn.delivery.JavaContentHandlerFactory</resource>
 		<param name="restype">class</param>
 	</resource-config>
 	
