@@ -44,13 +44,13 @@ public class ExpandableContentDeliveryUnitTest extends TestCase {
         ContentHandlerConfigMapTable serializationUnits = config.getSerailizationUnits();
 
         assertEquals(1, assemblyUnits.getCount());
-        assertTrue(assemblyUnits.getMappings("a").get(0).getContentDeliveryUnit() instanceof Assembly1);
+        assertTrue(assemblyUnits.getMappings("a").get(0).getContentHandler() instanceof Assembly1);
 
         assertEquals(2, processingUnits.getCount());
-        assertTrue(processingUnits.getMappings("b").get(0).getContentDeliveryUnit() instanceof Processing1);
+        assertTrue(processingUnits.getMappings("b").get(0).getContentHandler() instanceof Processing1);
 
         assertEquals(2, serializationUnits.getCount());
-        assertTrue(serializationUnits.getMappings("c").get(0).getContentDeliveryUnit() instanceof DefaultSerializationUnit);
-        assertTrue(serializationUnits.getMappings("context-object").get(0).getContentDeliveryUnit() instanceof ContextObjectSerializationUnit);
+        assertTrue(serializationUnits.getMappings("c").get(0).getContentHandler() instanceof DefaultSerializationUnit);
+        assertTrue(serializationUnits.getMappings("context-object").get(0).getContentHandler() instanceof ContextObjectSerializationUnit);
     }
 }

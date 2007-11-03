@@ -374,9 +374,9 @@ public class ContentDeliveryConfigBuilder {
 			// Try it as a Java class before trying anything else.  This is to
 			// accomodate specification of the class in the standard 
 			// Java form e.g. java.lang.String Vs java/lang/String.class
-            if(resourceConfig.isJavaContentDeliveryUnit()) {
+            if(resourceConfig.isJavaContentHandler()) {
     			try {                
-    				creator = store.getContentDeliveryUnitCreator("class");
+    				creator = store.getContentHandlerFactory("class");
     				if(addCDU(elementName, resourceConfig, creator)) {
     					// Job done - it's a CDU and we've added it!
     					return;
@@ -422,7 +422,7 @@ public class ContentDeliveryConfigBuilder {
 					logger.warn("Request to attempt ContentHandlerFactory creation based on a null/empty resource type.");
 					return null;
 				}
-				creator = store.getContentDeliveryUnitCreator(restype);
+				creator = store.getContentHandlerFactory(restype);
 			} catch (UnsupportedContentHandlerTypeException e) {
 				return null;
 			}

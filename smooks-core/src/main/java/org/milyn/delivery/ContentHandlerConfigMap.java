@@ -28,25 +28,25 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  */
 public class ContentHandlerConfigMap {
 
-    private ContentHandler contentDeliveryUnit;
+    private ContentHandler contentHandler;
     private SmooksResourceConfiguration resourceConfig;
 
     /**
      * Public constructor.
-     * @param contentDeliveryUnit The content delivery unit instance.
+     * @param contentHandler The content handler instance.
      * @param resourceConfig The defining resource configuration.
      */
-    public ContentHandlerConfigMap(ContentHandler contentDeliveryUnit, SmooksResourceConfiguration resourceConfig) {
-        this.contentDeliveryUnit = contentDeliveryUnit;
+    public ContentHandlerConfigMap(ContentHandler contentHandler, SmooksResourceConfiguration resourceConfig) {
+        this.contentHandler = contentHandler;
         this.resourceConfig = resourceConfig;
     }
 
     /**
-     * Get the content delivery unit.
+     * Get the content handler.
      * @return The {@link ContentHandler}.
      */
-    public ContentHandler getContentDeliveryUnit() {
-        return contentDeliveryUnit;
+    public ContentHandler getContentHandler() {
+        return contentHandler;
     }
 
     /**
