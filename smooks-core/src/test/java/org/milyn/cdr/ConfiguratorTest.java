@@ -16,7 +16,7 @@
 package org.milyn.cdr;
 
 import junit.framework.TestCase;
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 import org.milyn.cdr.annotation.Initialize;
 import org.milyn.cdr.annotation.*;
 import org.milyn.javabean.decoders.StringDecoder;
@@ -209,7 +209,7 @@ public class ConfiguratorTest extends TestCase {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    private class MyContentDeliveryUnit1 implements ContentDeliveryUnit {
+    private class MyContentDeliveryUnit1 implements ContentHandler {
 
         @ConfigParam
         private String paramA;
@@ -221,7 +221,7 @@ public class ConfiguratorTest extends TestCase {
         private int paramC;
     }
 
-    private class MyContentDeliveryUnit2 implements ContentDeliveryUnit {
+    private class MyContentDeliveryUnit2 implements ContentHandler {
 
         @ConfigParam(decoder=StringDecoder.class)
         private String paramA;
@@ -233,13 +233,13 @@ public class ConfiguratorTest extends TestCase {
         private int paramC;
     }
 
-    private class MyContentDeliveryUnit3 implements ContentDeliveryUnit {
+    private class MyContentDeliveryUnit3 implements ContentHandler {
 
         @Config
         private SmooksResourceConfiguration config;
     }
 
-    private class MyContentDeliveryUnit4 implements ContentDeliveryUnit {
+    private class MyContentDeliveryUnit4 implements ContentHandler {
 
         private SmooksResourceConfiguration config;
 
@@ -248,19 +248,19 @@ public class ConfiguratorTest extends TestCase {
         }
     }
 
-    private class MyContentDeliveryUnit6 implements ContentDeliveryUnit {
+    private class MyContentDeliveryUnit6 implements ContentHandler {
 
         @ConfigParam(choice = {"A", "B", "C"})
         private String paramA;
     }
 
-    private class MyContentDeliveryUnit7 implements ContentDeliveryUnit {
+    private class MyContentDeliveryUnit7 implements ContentHandler {
 
         @ConfigParam
         private Charset encoding;
     }
 
-    public class MyContentDeliveryUnit8 implements ContentDeliveryUnit {
+    public class MyContentDeliveryUnit8 implements ContentHandler {
 
         private Charset encoding;
 
@@ -274,7 +274,7 @@ public class ConfiguratorTest extends TestCase {
         }
     }
 
-    public class MyContentDeliveryUnit9 implements ContentDeliveryUnit {
+    public class MyContentDeliveryUnit9 implements ContentHandler {
 
         private Charset encoding;
 
@@ -288,7 +288,7 @@ public class ConfiguratorTest extends TestCase {
         }
     }
 
-    public class MyContentDeliveryUnit10 implements ContentDeliveryUnit {
+    public class MyContentDeliveryUnit10 implements ContentHandler {
 
         private Charset encoding;
 
@@ -302,7 +302,7 @@ public class ConfiguratorTest extends TestCase {
         }
     }
 
-    public class MyContentDeliveryUnit11 implements ContentDeliveryUnit {
+    public class MyContentDeliveryUnit11 implements ContentHandler {
 
         private boolean initialised;
         private boolean uninitialised;
@@ -318,7 +318,7 @@ public class ConfiguratorTest extends TestCase {
         }
     }
 
-    public class MyContentDeliveryUnit12 implements ContentDeliveryUnit {
+    public class MyContentDeliveryUnit12 implements ContentHandler {
 
         @Initialize
         public void init() {

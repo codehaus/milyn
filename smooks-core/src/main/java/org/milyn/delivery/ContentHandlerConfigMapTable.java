@@ -20,13 +20,13 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import java.util.*;
 
 /**
- * Simple table for storing {@link ContentDeliveryUnitConfigMap} lists against a selector string.
+ * Simple table for storing {@link ContentHandlerConfigMap} lists against a selector string.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ContentDeliveryUnitConfigMapTable {
+public class ContentHandlerConfigMapTable {
 
-    private Map<String, List<ContentDeliveryUnitConfigMap>> targetMapTable = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
+    private Map<String, List<ContentHandlerConfigMap>> targetMapTable = new Hashtable<String, List<ContentHandlerConfigMap>>();
     private int count = 0;
 
     /**
@@ -36,38 +36,38 @@ public class ContentDeliveryUnitConfigMapTable {
      * @param resourceConfig Resource configuration.
      * @param deliveryUnit The delivery unit.
      */
-    public void addMapping(String selector, SmooksResourceConfiguration resourceConfig, ContentDeliveryUnit deliveryUnit) {
-        List<ContentDeliveryUnitConfigMap> selectorMappings = targetMapTable.get(selector.toLowerCase());
+    public void addMapping(String selector, SmooksResourceConfiguration resourceConfig, ContentHandler deliveryUnit) {
+        List<ContentHandlerConfigMap> selectorMappings = targetMapTable.get(selector.toLowerCase());
 
         if(selectorMappings == null) {
-            selectorMappings = new Vector<ContentDeliveryUnitConfigMap>();
+            selectorMappings = new Vector<ContentHandlerConfigMap>();
             targetMapTable.put(selector.toLowerCase(), selectorMappings);
         }
-        ContentDeliveryUnitConfigMap mapInst = new ContentDeliveryUnitConfigMap(deliveryUnit, resourceConfig);
+        ContentHandlerConfigMap mapInst = new ContentHandlerConfigMap(deliveryUnit, resourceConfig);
         selectorMappings.add(mapInst);
         count++;
     }
 
     /**
-     * Get the {@link ContentDeliveryUnitConfigMap} list for the supplied selector string.
+     * Get the {@link ContentHandlerConfigMap} list for the supplied selector string.
      * @param selector The lookup selector.
-     * @return It's list of {@link ContentDeliveryUnitConfigMap} instances, or null if there are none.
+     * @return It's list of {@link ContentHandlerConfigMap} instances, or null if there are none.
      */
-    public List<ContentDeliveryUnitConfigMap> getMappings(String selector) {
+    public List<ContentHandlerConfigMap> getMappings(String selector) {
         return targetMapTable.get(selector.toLowerCase());
     }
 
     /**
-     * Get the combined {@link ContentDeliveryUnitConfigMap} list for the supplied list of selector strings.
+     * Get the combined {@link ContentHandlerConfigMap} list for the supplied list of selector strings.
      * @param selectors The lookup selectors.
-     * @return The combined {@link ContentDeliveryUnitConfigMap} list for the supplied list of selector strings,
+     * @return The combined {@link ContentHandlerConfigMap} list for the supplied list of selector strings,
      * or an empty list if there are none.
      */
-    public List<ContentDeliveryUnitConfigMap> getMappings(String[] selectors) {
-        List<ContentDeliveryUnitConfigMap> combinedList = new ArrayList<ContentDeliveryUnitConfigMap>();
+    public List<ContentHandlerConfigMap> getMappings(String[] selectors) {
+        List<ContentHandlerConfigMap> combinedList = new ArrayList<ContentHandlerConfigMap>();
 
         for(String selector : selectors) {
-            List<ContentDeliveryUnitConfigMap> selectorList = targetMapTable.get(selector.toLowerCase());
+            List<ContentHandlerConfigMap> selectorList = targetMapTable.get(selector.toLowerCase());
             if(selectorList != null) {
                 combinedList.addAll(selectorList);
             }

@@ -15,12 +15,12 @@
 */
 package org.milyn.delivery.sax;
 
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 
 /**
  * 
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface SAXElementVisitor extends ContentDeliveryUnit {
+public interface SAXElementVisitor extends ContentHandler {
 }

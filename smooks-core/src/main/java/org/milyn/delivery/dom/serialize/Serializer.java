@@ -27,8 +27,8 @@ import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentDeliveryUnitConfigMap;
-import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
+import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.CDATASection;
@@ -70,7 +70,7 @@ public class Serializer {
 	/**
 	 * Target content delivery context SerializationUnit definitions.
 	 */
-	private ContentDeliveryUnitConfigMapTable serializationUnits;
+	private ContentHandlerConfigMapTable serializationUnits;
 	/**
 	 * Default SerializationUnit.
 	 */
@@ -98,7 +98,7 @@ public class Serializer {
 		if(defaultSUs == null) {
 			SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
 			defaultSUs = new Vector();
-			defaultSUs.add(new ContentDeliveryUnitConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
+			defaultSUs.add(new ContentHandlerConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
 		}
 	}
 	
@@ -271,7 +271,7 @@ public class Serializer {
 	 */
 	private SerializationUnit getSerializationUnit(Element element, boolean isRoot) {
 		String elementName = DomUtils.getName(element);
-        List<ContentDeliveryUnitConfigMap> elementSUs;
+        List<ContentHandlerConfigMap> elementSUs;
 
         if(isRoot) {
             // The document as a whole (root node) can also be targeted through the "$document" selector.
@@ -286,7 +286,7 @@ public class Serializer {
 		int numSUs = elementSUs.size();
 		
 		for(int i = 0; i < numSUs; i++) {
-            ContentDeliveryUnitConfigMap configMap = elementSUs.get(i);
+            ContentHandlerConfigMap configMap = elementSUs.get(i);
             SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
             // Make sure the serialization unit is targeted at this element.

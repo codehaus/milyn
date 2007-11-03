@@ -324,7 +324,7 @@ public class Smooks {
      * Close this Smooks instance and all associated resources.
      * <p/>
      * Should result in the {@link org.milyn.cdr.annotation.Uninitialize uninitialization}
-     * of all allocated {@link org.milyn.delivery.ContentDeliveryUnit} instances.
+     * of all allocated {@link org.milyn.delivery.ContentHandler} instances.
      */
     public void close() {
         context.getStore().close();

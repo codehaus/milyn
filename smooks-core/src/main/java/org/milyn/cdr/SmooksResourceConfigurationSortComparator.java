@@ -26,9 +26,9 @@ import org.milyn.profile.ProfileSet;
  * <p/>
  * Before reading this be sure to read the {@link org.milyn.cdr.SmooksResourceConfiguration} class Javadoc.
  * <p/>
- * As Smooks applies {@link org.milyn.delivery.ContentDeliveryUnit}s ({@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} and
- * {@link org.milyn.delivery.dom.serialize.SerializationUnit SerializationUnits}) it may discover that in a given case more than 1 {@link org.milyn.delivery.ContentDeliveryUnit}
- * can be applied.  How does Smooks decide on the order in which these {@link org.milyn.delivery.ContentDeliveryUnit}s are to be applied to the content?
+ * As Smooks applies {@link org.milyn.delivery.ContentHandler}s ({@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} and
+ * {@link org.milyn.delivery.dom.serialize.SerializationUnit SerializationUnits}) it may discover that in a given case more than 1 {@link org.milyn.delivery.ContentHandler}
+ * can be applied.  How does Smooks decide on the order in which these {@link org.milyn.delivery.ContentHandler}s are to be applied to the content?
  * <p/>
  * At the moment, Smooks uses this class to calculate a "specificity" rating for each Content Delivery Resource based on its 
  * {@link org.milyn.cdr.SmooksResourceConfiguration &lt;smooks-resource&gt;} configuration, and sorts them in decreasing order of specificity.

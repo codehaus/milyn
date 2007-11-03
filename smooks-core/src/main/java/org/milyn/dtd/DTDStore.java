@@ -62,11 +62,11 @@ import com.wutka.dtd.DTDPCData;
  * &lt;!ENTITY % URI "CDATA"&gt;
  * 		&lt;!-- a Uniform Resource Identifier, see [RFC2396] --&gt;
  * </pre>
- * If this information was available we could target {@link org.milyn.delivery.ContentDeliveryUnit}s
+ * If this information was available we could target {@link org.milyn.delivery.ContentHandler}s
  * at elements containing "URI" attributes.  
  * <p/>
  * Another examples of this idea of using DTD ENTITY definitions to target
- * {@link org.milyn.delivery.ContentDeliveryUnit}s at specific elements (rather than using the element names) 
+ * {@link org.milyn.delivery.ContentHandler}s at specific elements (rather than using the element names)
  * might be using ENTITYs like the following (from http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd):
  * <pre> 
  * &lt;!ENTITY % heading "h1|h2|h3|h4|h5|h6"&gt;

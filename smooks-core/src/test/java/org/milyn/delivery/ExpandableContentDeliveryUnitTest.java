@@ -26,7 +26,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 /**
- * ExpandableContentDeliveryUnit tests.
+ * ExpandableContentHandler tests.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -39,9 +39,9 @@ public class ExpandableContentDeliveryUnitTest extends TestCase {
         ExecutionContext context = smooks.createExecutionContext();
 
         DOMContentDeliveryConfig config = (DOMContentDeliveryConfig) context.getDeliveryConfig();
-        ContentDeliveryUnitConfigMapTable assemblyUnits = config.getAssemblyUnits();
-        ContentDeliveryUnitConfigMapTable processingUnits = config.getProcessingUnits();
-        ContentDeliveryUnitConfigMapTable serializationUnits = config.getSerailizationUnits();
+        ContentHandlerConfigMapTable assemblyUnits = config.getAssemblyUnits();
+        ContentHandlerConfigMapTable processingUnits = config.getProcessingUnits();
+        ContentHandlerConfigMapTable serializationUnits = config.getSerailizationUnits();
 
         assertEquals(1, assemblyUnits.getCount());
         assertTrue(assemblyUnits.getMappings("a").get(0).getContentDeliveryUnit() instanceof Assembly1);

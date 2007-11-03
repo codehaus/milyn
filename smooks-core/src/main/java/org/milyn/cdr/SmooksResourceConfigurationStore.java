@@ -27,9 +27,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
-import org.milyn.delivery.ContentDeliveryUnit;
-import org.milyn.delivery.ContentDeliveryUnitCreator;
-import org.milyn.delivery.UnsupportedContentDeliveryUnitTypeException;
+import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.UnsupportedContentHandlerTypeException;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.profile.ProfileSet;
@@ -60,7 +60,7 @@ public class SmooksResourceConfigurationStore {
     /**
      * A complete list of all the content delivery units allocated by this store.
      */
-    private List<ContentDeliveryUnit> allocatedUnits = new ArrayList<ContentDeliveryUnit>();
+    private List<ContentHandler> allocatedUnits = new ArrayList<ContentHandler>();
     /**
      * Default configuration list.
      */
@@ -288,25 +288,25 @@ public class SmooksResourceConfigurationStore {
 			}
 		}
 
-		if(object instanceof ContentDeliveryUnit) {
-			Configurator.configure((ContentDeliveryUnit)object, resourceConfig);
-            allocatedUnits.add((ContentDeliveryUnit)object);
+		if(object instanceof ContentHandler) {
+			Configurator.configure((ContentHandler)object, resourceConfig);
+            allocatedUnits.add((ContentHandler)object);
         }
 		
 		return object;
 	}
 
     /**
-     * Get the {@link ContentDeliveryUnitCreator} for a resource based on the
+     * Get the {@link org.milyn.delivery.ContentHandlerFactory} for a resource based on the
      * supplied resource type.
      * <p/>
-     * Note that {@link ContentDeliveryUnitCreator} implementations must be  configured under a selector value of "cdu-creator". 
-     * @param type {@link ContentDeliveryUnitCreator} type e.g. "class", "xsl" etc.
-     * @return {@link ContentDeliveryUnitCreator} for the resource.
-     * @throws UnsupportedContentDeliveryUnitTypeException No {@link ContentDeliveryUnitCreator}
+     * Note that {@link org.milyn.delivery.ContentHandlerFactory} implementations must be  configured under a selector value of "cdu-creator".
+     * @param type {@link org.milyn.delivery.ContentHandlerFactory} type e.g. "class", "xsl" etc.
+     * @return {@link org.milyn.delivery.ContentHandlerFactory} for the resource.
+     * @throws org.milyn.delivery.UnsupportedContentHandlerTypeException No {@link org.milyn.delivery.ContentHandlerFactory}
      * registered for the specified resource type.
      */
-    public ContentDeliveryUnitCreator getContentDeliveryUnitCreator(String type) throws UnsupportedContentDeliveryUnitTypeException {
+    public ContentHandlerFactory getContentDeliveryUnitCreator(String type) throws UnsupportedContentHandlerTypeException {
         if(type == null) {
             throw new IllegalArgumentException("null 'resourceExtension' arg in method call.");
         }
@@ -318,18 +318,18 @@ public class SmooksResourceConfigurationStore {
                 SmooksResourceConfiguration config = list.get(ii);
                 String selector = config.getSelector();
                 
-                if("cdu-creator".equals(selector) && type.equalsIgnoreCase(config.getStringParameter(ContentDeliveryUnitCreator.PARAM_RESTYPE))) {
-                    return (ContentDeliveryUnitCreator) getObject(config);
+                if("cdu-creator".equals(selector) && type.equalsIgnoreCase(config.getStringParameter(ContentHandlerFactory.PARAM_RESTYPE))) {
+                    return (ContentHandlerFactory) getObject(config);
                 }
             }
         }
         
-        throw new UnsupportedContentDeliveryUnitTypeException(type);
+        throw new UnsupportedContentHandlerTypeException(type);
     }
 
     /**
      * Close this resource configuration store, {@link org.milyn.cdr.annotation.Uninitialize uninitializing}
-     * all {@link org.milyn.delivery.ContentDeliveryUnit ContentDeliveryUnits} allocated from this store instance. 
+     * all {@link org.milyn.delivery.ContentHandler ContentDeliveryUnits} allocated from this store instance.
      */
     public void close() {
         _close();
@@ -338,10 +338,10 @@ public class SmooksResourceConfigurationStore {
 
     private void _close() {
         if(allocatedUnits != null) {
-            logger.info("Uninitializing all ContentDeliveryUnit instances allocated through this store.");
-            for(ContentDeliveryUnit deliveryUnit : allocatedUnits) {
+            logger.info("Uninitializing all ContentHandler instances allocated through this store.");
+            for(ContentHandler deliveryUnit : allocatedUnits) {
                 try {
-                    logger.debug("Uninitializing ContentDeliveryUnit instance: " + deliveryUnit.getClass().getName());
+                    logger.debug("Uninitializing ContentHandler instance: " + deliveryUnit.getClass().getName());
                     Configurator.uninitialise(deliveryUnit);
                 } catch (Throwable throwable) {
                     logger.error("Error uninitializing " + deliveryUnit.getClass().getName() + ".", throwable);

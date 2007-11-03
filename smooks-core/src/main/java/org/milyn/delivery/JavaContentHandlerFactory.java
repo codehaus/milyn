@@ -25,29 +25,29 @@ import org.milyn.util.ClassUtil;
 import org.milyn.classpath.ClasspathUtils;
 
 /**
- * Java ContentDeliveryUnit instance creator.
+ * Java ContentHandler instance creator.
  * <p/>
- * Java-based ContentDeliveryUnit implementations should contain a public 
+ * Java-based ContentHandler implementations should contain a public
  * constructor that takes a SmooksResourceConfiguration instance as a parameter.
  * @author tfennelly
  */
-public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreator {
+public class JavaContentHandlerFactory implements ContentHandlerFactory {
 
     /**
      * Public constructor.
-     * @param config Configuration details for this ContentDeliveryUnitCreator.
+     * @param config Configuration details for this ContentHandlerFactory.
      */
-    public JavaContentDeliveryUnitCreator(SmooksResourceConfiguration config) {        
+    public JavaContentHandlerFactory(SmooksResourceConfiguration config) {
     }
 
     /**
-	 * Create a Java based ContentDeliveryUnit instance.
-     * @param resourceConfig The SmooksResourceConfiguration for the Java {@link ContentDeliveryUnit}
+	 * Create a Java based ContentHandler instance.
+     * @param resourceConfig The SmooksResourceConfiguration for the Java {@link ContentHandler}
      * to be created.
-     * @return Java {@link ContentDeliveryUnit} instance.
+     * @return Java {@link ContentHandler} instance.
 	 */
-	public synchronized ContentDeliveryUnit create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
-		ContentDeliveryUnit deliveryUnit = null;
+	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
+		ContentHandler deliveryUnit = null;
         Exception exception = null;
         String className = null;
 		
@@ -57,9 +57,9 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
 			Constructor constructor;
 			try {
 				constructor = classRuntime.getConstructor(new Class[] {SmooksResourceConfiguration.class});
-				deliveryUnit = (ContentDeliveryUnit) constructor.newInstance(new Object[] {resourceConfig});
+				deliveryUnit = (ContentHandler) constructor.newInstance(new Object[] {resourceConfig});
 			} catch (NoSuchMethodException e) {
-				deliveryUnit = (ContentDeliveryUnit) classRuntime.newInstance();
+				deliveryUnit = (ContentHandler) classRuntime.newInstance();
 			}
             Configurator.configure(deliveryUnit, resourceConfig);
         } catch (InstantiationException e) {
@@ -73,7 +73,7 @@ public class JavaContentDeliveryUnitCreator implements ContentDeliveryUnitCreato
         } finally {
             // One of the above exception.
             if(exception != null) {
-                IllegalStateException state = new IllegalStateException("Failed to create an instance of Java ContentDeliveryUnit [" + resourceConfig.getResource() + "].  See exception cause...");
+                IllegalStateException state = new IllegalStateException("Failed to create an instance of Java ContentHandler [" + resourceConfig.getResource() + "].  See exception cause...");
                 state.initCause(exception);
                 throw state;
             }

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * @author
  */
-public class TestExpandableContentDeliveryUnit implements DOMElementVisitor, ExpandableContentDeliveryUnit {
+public class TestExpandableContentHandler implements DOMElementVisitor, ExpandableContentHandler {
 
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
     }

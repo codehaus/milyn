@@ -15,12 +15,12 @@
 */
 package org.milyn.cdr;
 
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
 */
-public class MyContentDeliveryUnit5 implements ContentDeliveryUnit {
+public class MyContentDeliveryUnit5 implements ContentHandler {
 
     public SmooksResourceConfiguration config;
 

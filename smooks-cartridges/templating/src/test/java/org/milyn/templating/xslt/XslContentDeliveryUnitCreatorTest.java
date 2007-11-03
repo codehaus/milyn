@@ -71,7 +71,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
 		
 		res.setResourceType("xsl");
-        res.setParameter(XslContentDeliveryUnitCreator.IS_XSLT_TEMPLATELET, "true");
+        res.setParameter(XslContentHandlerFactory.IS_XSLT_TEMPLATELET, "true");
 		res.setParameter("action", action);
 		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
 		SmooksUtil.registerResource(res, smooks);

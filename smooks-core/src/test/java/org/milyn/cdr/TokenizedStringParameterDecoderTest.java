@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
-import org.milyn.delivery.ContentDeliveryUnit;
 
 import junit.framework.TestCase;
 

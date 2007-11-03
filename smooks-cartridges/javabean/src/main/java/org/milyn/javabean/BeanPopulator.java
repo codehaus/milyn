@@ -32,7 +32,7 @@ import org.milyn.cdr.annotation.Initialize;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.VisitPhase;
-import org.milyn.delivery.ExpandableContentDeliveryUnit;
+import org.milyn.delivery.ExpandableContentHandler;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -135,7 +135,7 @@ import org.w3c.dom.NodeList;
  *
  * @author tfennelly
  */
-public class BeanPopulator implements DOMElementVisitor, ExpandableContentDeliveryUnit {
+public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandler {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 

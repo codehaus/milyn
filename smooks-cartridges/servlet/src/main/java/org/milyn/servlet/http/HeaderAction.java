@@ -17,15 +17,14 @@
 package org.milyn.servlet.http;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.delivery.ContentHandler;
 
 /**
  * The HeaderAction class performs a HTTP header operation on the
  * content delivery response. 
  * @author tfennelly
  */
-public class HeaderAction implements ContentDeliveryUnit {
+public class HeaderAction implements ContentHandler {
 	/**
 	 * Add action param value def.
 	 */

@@ -31,8 +31,8 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.ProcessingSet;
 import org.milyn.delivery.dom.serialize.Serializer;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryUnitConfigMap;
-import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
+import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.xml.DomUtils;
 import org.milyn.delivery.dom.DOMParser;
 
@@ -182,7 +182,7 @@ public class SmooksDOMFilter {
 	 * Processing Units to be applied to all elements in the document.  
 	 * Only applied to element present in the original document.
 	 */
-	private List<ContentDeliveryUnitConfigMap> globalProcessingUnits;
+	private List<ContentHandlerConfigMap> globalProcessingUnits;
 	/**
 	 * Key under which a non-document content delivery node can be set in the 
 	 * request.  This is needed because Xerces doesn't allow "overwriting" of
@@ -313,7 +313,7 @@ public class SmooksDOMFilter {
 		}
 		
         // Apply assembly phase, skipping it if there are no configured assembly units...
-        ContentDeliveryUnitConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
+        ContentHandlerConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
 		if(!assemblyUnits.isEmpty()) {
 			// Assemble
 			if(logger.isDebugEnabled()) {
@@ -356,9 +356,9 @@ public class SmooksDOMFilter {
 	private void assemble(Element element, boolean isRoot) {
 		List nodeListCopy = copyList(element.getChildNodes());
 		int childCount = nodeListCopy.size();
-		ContentDeliveryUnitConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
+		ContentHandlerConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
 		String elementName = DomUtils.getName(element);
-		List<ContentDeliveryUnitConfigMap> elementAssemblyUnits;
+		List<ContentHandlerConfigMap> elementAssemblyUnits;
 
         if(isRoot) {
             // The document as a whole (root node) can also be targeted through the "$document" selector.
@@ -370,7 +370,7 @@ public class SmooksDOMFilter {
         // Visit element with its assembly units before visiting its child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
-                ContentDeliveryUnitConfigMap configMap = elementAssemblyUnits.get(i);
+                ContentHandlerConfigMap configMap = elementAssemblyUnits.get(i);
                 SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
                 // Make sure the assembly unit is targeted at this element...
@@ -401,7 +401,7 @@ public class SmooksDOMFilter {
         // Revisit the element with its assembly units after visiting its child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
-                ContentDeliveryUnitConfigMap configMap = elementAssemblyUnits.get(i);
+                ContentHandlerConfigMap configMap = elementAssemblyUnits.get(i);
                 SmooksResourceConfiguration config = configMap.getResourceConfig();
                 
                 // Make sure the assembly unit is targeted at this element...
@@ -431,7 +431,7 @@ public class SmooksDOMFilter {
      */
 	private void buildProcessingList(List processingList, Element element, boolean isRoot) {
 		String elementName;
-		List<ContentDeliveryUnitConfigMap> processingUnits = null;
+		List<ContentHandlerConfigMap> processingUnits = null;
 
 		elementName = DomUtils.getName(element);
         if(isRoot) {
@@ -537,7 +537,7 @@ public class SmooksDOMFilter {
 		/**
 		 * The processing list. 
 		 */
-		private List<ContentDeliveryUnitConfigMap> processingUnits;
+		private List<ContentHandlerConfigMap> processingUnits;
         /**
          * Call visitBefore (or visitAfter).
          */
@@ -549,7 +549,7 @@ public class SmooksDOMFilter {
          * @param processingUnits ProcessingUnit instances to be applied.
          * @param visitBefore Call visitBefore (or visitAfter).
          */
-		private ElementProcessor(Element element, List<ContentDeliveryUnitConfigMap> processingUnits, boolean visitBefore) {
+		private ElementProcessor(Element element, List<ContentHandlerConfigMap> processingUnits, boolean visitBefore) {
 			this.element = element;
 			this.processingUnits = processingUnits;
             this.visitBefore = visitBefore;
@@ -565,7 +565,7 @@ public class SmooksDOMFilter {
 			int loopLength = processingUnits.size();
 			
 			for(int i = 0; i < loopLength; i++) {
-                ContentDeliveryUnitConfigMap configMap = processingUnits.get(i);
+                ContentHandlerConfigMap configMap = processingUnits.get(i);
                 SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
                 // Make sure the processing unit is targeted at this element...
