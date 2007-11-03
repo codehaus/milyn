@@ -9,7 +9,7 @@
 
 	<!-- 
 		All "st" resource types will be treated as StringTemplate templates and
-		will be handled by the StringTemplateContentDeliveryUnitCreator.
+		will be handled by the StringTemplateContentHandlerFactory.
 	-->
 	<resource-config>
 	    <resource type="class">org.milyn.templating.stringtemplate.StringTemplateContentHandlerFactory</resource>
@@ -18,7 +18,7 @@
 		
 	<!-- 
 		All "xsl" resource types will be treated as XSL templates and
-		will be handled by the XslContentDeliveryUnitCreator.
+		will be handled by the XslContentHandlerFactory.
 	-->
 	<resource-config>
 	    <resource type="class">org.milyn.templating.xslt.XslContentHandlerFactory</resource>
@@ -27,7 +27,7 @@
 
     <!--
         All "ftl" resource types will be treated as FreeMarker templates and
-        will be handled by the FreeMarkerContentDeliveryUnitCreator.
+        will be handled by the FreeMarkerContentHandlerFactory.
     -->
     <resource-config>
         <resource type="class">org.milyn.templating.freemarker.FreeMarkerContentHandlerFactory</resource>

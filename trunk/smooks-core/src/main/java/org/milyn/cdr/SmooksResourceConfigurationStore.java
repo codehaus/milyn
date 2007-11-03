@@ -58,7 +58,7 @@ public class SmooksResourceConfigurationStore {
 	 */
 	private List<SmooksResourceConfigurationList> configLists = new ArrayList<SmooksResourceConfigurationList>();
     /**
-     * A complete list of all the content delivery units allocated by this store.
+     * A complete list of all the content handlers allocated by this store.
      */
     private List<ContentHandler> allocatedUnits = new ArrayList<ContentHandler>();
     /**
@@ -306,7 +306,7 @@ public class SmooksResourceConfigurationStore {
      * @throws org.milyn.delivery.UnsupportedContentHandlerTypeException No {@link org.milyn.delivery.ContentHandlerFactory}
      * registered for the specified resource type.
      */
-    public ContentHandlerFactory getContentDeliveryUnitCreator(String type) throws UnsupportedContentHandlerTypeException {
+    public ContentHandlerFactory getContentHandlerFactory(String type) throws UnsupportedContentHandlerTypeException {
         if(type == null) {
             throw new IllegalArgumentException("null 'resourceExtension' arg in method call.");
         }

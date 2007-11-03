@@ -299,7 +299,7 @@ public class Serializer {
     		}
             
             // This is the one, return it...
-            return (SerializationUnit)configMap.getContentDeliveryUnit();
+            return (SerializationUnit)configMap.getContentHandler();
 		}
 		
 		throw new IllegalStateException("At least 1 SerializationUnit needs to be configured for an element. " + element.getTagName() + " has no configured SerializationUnit.");

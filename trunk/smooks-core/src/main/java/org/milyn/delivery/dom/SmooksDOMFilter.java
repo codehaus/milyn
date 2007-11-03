@@ -378,7 +378,7 @@ public class SmooksDOMFilter {
                     continue;
                 }            
                 
-                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
+                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentHandler();
                 try {
                     if(logger.isDebugEnabled()) {
                         logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
@@ -409,7 +409,7 @@ public class SmooksDOMFilter {
                     continue;
                 }
 
-                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
+                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentHandler();
                 try {
                     if(logger.isDebugEnabled()) {
                         logger.debug("(Assembly) Calling visitAfter on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
@@ -573,7 +573,7 @@ public class SmooksDOMFilter {
                     continue;
                 }            
 
-                DOMElementVisitor processingUnit = (DOMElementVisitor)configMap.getContentDeliveryUnit();
+                DOMElementVisitor processingUnit = (DOMElementVisitor)configMap.getContentHandler();
 				// Could add an "is-element-in-document-tree" check here
 				// but might not be valid.  Also, this check
 				// would need to iterate back up to the document root

@@ -20,7 +20,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import java.util.List;
 
 /**
- * Interface to allow content delivery units expand the configuration by adding additional
+ * Interface to allow content handlers expand their configuration by adding additional
  * configurations.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

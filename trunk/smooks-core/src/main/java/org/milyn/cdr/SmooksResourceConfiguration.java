@@ -829,7 +829,7 @@ public class SmooksResourceConfiguration {
      * @return True if this resource refers to an instance of the
      *         {@link org.milyn.delivery.ContentHandler} class, otherwise false.
      */
-    public boolean isJavaContentDeliveryUnit() {
+    public boolean isJavaContentHandler() {
         Class runtimeClass = toJavaResource();
 
         return (runtimeClass != null && ContentHandler.class.isAssignableFrom(runtimeClass));
