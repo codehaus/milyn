@@ -64,7 +64,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	/**
 	 * Smooks delivery instance.
 	 */
-	private SmooksDOMFilter smooks;
+	private SmooksDOMFilter smooksFilter;
 	/**
 	 * The CharArrayWriter capturing the content.
 	 */
@@ -90,7 +90,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	 */
 	public XMLServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
 		super(executionContext, originalResponse);
-		smooks = new SmooksDOMFilter(executionContext);
+		smooksFilter = new SmooksDOMFilter(executionContext);
 		requestSAXParserConfig = AbstractParser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
 		initHeaderActions(executionContext.getDeliveryConfig().getObjects("http-response-header"));
 	}
@@ -239,12 +239,12 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
                 } 
 
 				logger.info("Filtering content stream from down-stream Servlet/Phase.");
-                deliveryNode = smooks.filter(sourceDoc);
+                deliveryNode = smooksFilter.filter(sourceDoc);
 			} else {
 				logger.info("Filtering W3C DOM from down-stream Servlet/Phase.");
-				deliveryNode = smooks.filter(sourceDoc);
+				deliveryNode = smooksFilter.filter(sourceDoc);
 			}
-			smooks.serialize(deliveryNode, writer);
+			smooksFilter.serialize(deliveryNode, writer);
 			writer.flush();
 			super.setIntHeader("Content-Length", outStream.size());
 			outStream.writeToTarget(targetOutputStream);

@@ -98,7 +98,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		this.context = context;
 		setContentEncoding(contentEncoding);
         targetProfileSet = context.getProfileStore().getProfileSet(targetProfile);        
-        deliveryConfig = ContentDeliveryConfigBuilder.getInstance(targetProfileSet, context);
+        deliveryConfig = ContentDeliveryConfigBuilder.getConfig(targetProfileSet, context);
     }
 
     public void setDocumentSource(URI docSource) {

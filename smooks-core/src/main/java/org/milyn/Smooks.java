@@ -16,33 +16,29 @@
 
 package org.milyn;
 
-import java.io.*;
-import java.util.LinkedHashMap;
-import java.net.URISyntaxException;
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.SmooksDOMFilter;
+import org.milyn.delivery.Filter;
+import org.milyn.net.URIUtil;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
-import org.milyn.assertion.AssertArgument;
 import org.milyn.resource.URIResourceLocator;
-import org.milyn.net.URIUtil;
-import org.w3c.dom.Node;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.transform.Source;
 import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.LinkedHashMap;
 
 /**
  * Smooks standalone execution class.
@@ -152,7 +148,7 @@ public class Smooks {
      *
      * @param baseURI The base URI string for the resource configuration list. See
      *                    {@link org.milyn.resource.URIResourceLocator}.
-     * @param resourceConfigStream
+     * @param resourceConfigStream The resource configuration stream.
      * @throws IOException  Error reading resource stream.
      * @throws SAXException Error parsing the resource stream.
      */
@@ -176,7 +172,7 @@ public class Smooks {
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
-     * caller with a mechanism for interacting with the content {@link SmooksDOMFilter filtering} phases.
+     * caller with a mechanism for interacting with the content {@link org.milyn.delivery.dom.SmooksDOMFilter filtering} phases.
      *
      * @return Execution context instance.
      */
@@ -195,7 +191,7 @@ public class Smooks {
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
-     * caller with a mechanism for interacting with the content {@link SmooksDOMFilter filtering} phases.
+     * caller with a mechanism for interacting with the content {@link org.milyn.delivery.dom.SmooksDOMFilter filtering} phases.
      *
      * @param targetProfile The target profile ({@link ProfileSet base profile}) on behalf of whom the filtering/serialisation
      *                      filter is to be executed.
@@ -210,7 +206,7 @@ public class Smooks {
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
      * to the supplied {@link javax.xml.transform.Result} instance.
      * <p/>
-     * This method always executes the {@link SmooksDOMFilter visit phases} of content
+     * This method always executes the {@link org.milyn.delivery.dom.SmooksDOMFilter visit phases} of content
      * processing.  It will also execute the serialization phase if the
      * supplied result is a {@link javax.xml.transform.stream.StreamResult}.
      * <p/>
@@ -228,85 +224,13 @@ public class Smooks {
         AssertArgument.isNotNull(result, "result");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
-        if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
-            throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported.");
-        }
-        if (!(result instanceof StreamResult) && !(result instanceof DOMResult)) {
-            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported.");
-        }
+        Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
 
-        SmooksDOMFilter smooks = new SmooksDOMFilter(executionContext);
+        Filter.setCurrentExecutionContext(executionContext);
         try {
-            Node resultNode;
-
-            // Filter the Source....
-            if (source instanceof StreamSource) {
-                StreamSource streamSource = (StreamSource) source;
-
-                if(streamSource.getInputStream() != null) {
-                    resultNode = smooks.filter(new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding()));
-                } else if(streamSource.getReader() != null) {
-                    resultNode = smooks.filter(streamSource.getReader());
-                } else {
-                    throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
-                }
-            } else {
-                Node node = ((DOMSource) source).getNode();
-                if (!(node instanceof Document)) {
-                    throw new IllegalArgumentException("DOMSource Source types must contain a Document node.");
-                }
-                resultNode = smooks.filter((Document) node);
-            }
-
-            // Populate the Result
-            if (result instanceof StreamResult) {
-                Writer writer;
-                StreamResult streamResult = ((StreamResult) result);
-
-                if (streamResult.getOutputStream() != null) {
-                    writer = new OutputStreamWriter(streamResult.getOutputStream(), executionContext.getContentEncoding());
-                } else if (streamResult.getWriter() != null) {
-                    writer = streamResult.getWriter();
-                } else {
-                    throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
-                }
-                try {
-                    smooks.serialize(resultNode, writer);
-                } catch (IOException e) {
-                    logger.error("Error writing result to output stream.", e);
-                }
-            } else {
-                ((DOMResult) result).setNode(resultNode);
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new Error("Unexpected exception.  Encoding has already been validated as being unsupported.", e);
+            contentFilter.filter(source, result);
         } finally {
-            if (source instanceof StreamSource) {
-                try {
-                    StreamSource streamSource = (StreamSource) source;
-
-                    if(streamSource.getInputStream() != null) {
-                        streamSource.getInputStream().close();
-                    } else if(streamSource.getReader() != null) {
-                        streamSource.getReader().close();
-                    }
-                } catch (IOException e) {
-                    logger.warn("Failed to close input stream/reader.", e);
-                }
-            }
-            if (result instanceof StreamResult) {
-                StreamResult streamResult = ((StreamResult) result);
-
-                try {
-                    if (streamResult.getOutputStream() != null) {
-                        streamResult.getOutputStream().close();
-                    } else if (streamResult.getWriter() != null) {
-                        streamResult.getWriter().close();
-                    }
-                } catch (IOException e) {
-                    logger.warn("Failed to close output stream/writer.", e);
-                }
-            }
+            Filter.removeCurrentExecutionContext();
         }
     }
 

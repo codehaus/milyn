@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.dtd.DTDStore;
+import org.milyn.container.ExecutionContext;
 
 /**
  * Content delivery configuration.
@@ -74,7 +75,14 @@ public interface ContentDeliveryConfig {
 	 */
 	public abstract List getObjects(String selector);
 
-	/**
+    /**
+     * Get a new stream filter for the content delivery configuration.
+     * @return The stream filter.
+     * @param executionContext Execution context.
+     */
+    public abstract Filter newFilter(ExecutionContext executionContext);
+
+    /**
 	 * Get the DTD ({@link org.milyn.dtd.DTDStore.DTDObjectContainer}) for this delivery context.
 	 * @return The DTD ({@link org.milyn.dtd.DTDStore.DTDObjectContainer}) for this delivery context.
 	 */
