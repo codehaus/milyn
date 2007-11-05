@@ -228,7 +228,7 @@ public class Smooks {
 
         Filter.setCurrentExecutionContext(executionContext);
         try {
-            contentFilter.filter(source, result);
+            contentFilter.doFilter(source, result);
         } finally {
             Filter.removeCurrentExecutionContext();
         }
