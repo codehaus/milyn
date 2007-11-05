@@ -16,9 +16,7 @@
 
 package org.milyn.delivery.dom;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,18 +26,25 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.ProcessingSet;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.dom.serialize.Serializer;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
+import org.milyn.delivery.Filter;
 import org.milyn.xml.DomUtils;
-import org.milyn.delivery.dom.DOMParser;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.Result;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  * Smooks DOM based content filtering class.
@@ -112,17 +117,6 @@ import org.w3c.dom.NodeList;
  *
  * See the <a href="http://milyn.codehaus.org/flash/DOMProcess.html" target="DOMProcess">online flash demo</a> demonstrating this process.
  * 
- * <h3 id="threading">Threading Issues</h3>
- * This class processes the data associated with a single {@link org.milyn.container.ExecutionContext} instance.  This
- * {@link org.milyn.container.ExecutionContext} instance is bound to the current thread of execution for the lifetime of the
- * SmooksDOMFilter instance.  For this reason it is not recommended to execute more than one SmooksDOMFilter
- * instance concurrently within the scope of a single thread i.e. don't interleave them.  Of course it's perfectly fine to
- * create a SmooksDOMFilter instance, use it, "dump" it and create and use another instance all within a single thread of execution.
- * This also means that SmooksDOMFilter instances cannot be cached/pooled and reused.
- * <p/>
- * A {@link org.milyn.container.ExecutionContext} instance should only be bound to the thread for the lifetime of the SmooksDOMFilter instance
- * it is associated with (i.e. used to instantiate).  See the {@link #finalize()} method.
- * 
  * <h3>Other Documents</h3>
  * <ul>
  * 	<li>{@link org.milyn.Smooks}</li>
@@ -130,41 +124,9 @@ import org.w3c.dom.NodeList;
  * 	<li>{@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}</li>
  * </ul>
  * 
- * <!--
- * This whole filter sounds like a lot of processing.  Well, it is.  Three iterations
- * over the DOM.  However, the thinking on this is that:
- * <ul>
- * 	<li>
- * 		The assembly phase is bypassed if there are no assembly units configured for the target profile.
- * 	</li>
- * 	<li>
- * 		{@link DOMElementVisitor Assembly Units} are stateless, which means
- * 		that only a single instance needs to be created.
- * 	</li>
- * 	<li>
- * 		The processing phase is likely to be the most processor intensive of the three 
- * 		phases but the DOM to be processed should have been reduced as much as possible by the
- * 		assembly phase.  Remember, assembly doesn't just mean "adding" to the DOM.
- * 	</li>
- * 	<li>
- * 		The processing phase is only applied to elements that were in the DOM 
- * 		at the start of that phase.
- * 	</li>
- * 	<li>
- * 		{@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} must be stateless, which means that
- *      multiple instances will not be instantiated.
- * 	</li>
- * 	<li>
- * 		A single instance of the {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit}
- * 		performs the vast majority of the work in the serialisation phase.  Only elements that require
- * 		special attention require a specialised {@link org.milyn.delivery.dom.serialize.SerializationUnit}.
- * 	</li>
- * </ul>
- * -->
- * 
- * @author tfennelly
+ * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SmooksDOMFilter {
+public class SmooksDOMFilter extends Filter {
 
 	/**
 	 * Logger.
@@ -189,10 +151,6 @@ public class SmooksDOMFilter {
 	 * the document root node.
 	 */
 	public static final String DELIVERY_NODE_REQUEST_KEY = ContentDeliveryConfig.class.getName() + "#DELIVERY_NODE_REQUEST_KEY";
-	/**
-	 * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
-	 */
-	private static ThreadLocal<ExecutionContext> requestThreadLocal = new ThreadLocal<ExecutionContext>();
 
     /**
 	 * Public constructor.
@@ -206,63 +164,105 @@ public class SmooksDOMFilter {
 			throw new IllegalArgumentException("null 'executionContext' arg passed in constructor call.");
 		}
 		this.executionContext = executionContext;
-		synchronized (requestThreadLocal) {
-			// Bind the container request to the current thread.
-			requestThreadLocal.set(executionContext);
-
-		}
-		deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
-	}
-	
-	/**
-	 * Cleanup.
-	 * <p/>
-	 * Clears the current thread-bound {@link ExecutionContext} instance, but only if this SmooksDOMFilter instance
-	 * "owns" the {@link ExecutionContext} instance that's bound to the current thread.
-	 * See <a href="#threading">Threading Issues</a>.
-	 */
-	protected void finalize() throws Throwable {
-		synchronized (requestThreadLocal) {
-			try {
-				ExecutionContext curExecutionContext = getContainerRequest();
-				if(executionContext == curExecutionContext) {
-					// Only reset if this instance "owns" the current thread bound instance.  It may not own
-					// the instance if finalization happens after the next SmooksDOMFilter instance is created on
-					// this thread.
-					requestThreadLocal.remove();
-				}
-			} finally {
-				// Make sure the super finalizer gets called!!
-				super.finalize();
-			}
-		}
+        deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 	}
 
-	/**
-	 * Get the {@link ExecutionContext} instance bound to the current thread.
-	 * </p>
-	 * The {@link ExecutionContext} used to instantiate the SmooksDOMFilter class is bound to the current Thread of execution.
-	 * If should only be bound to the thread for the lifetime of the SmooksDOMFilter instance.
-	 * See <a href="#threading">Threading Issues</a>.
-	 * @return The thread-bound {@link ExecutionContext} instance.
-	 */
-	public static ExecutionContext getContainerRequest() {
-		return requestThreadLocal.get();
-	}
+    public void filter(Source source, Result result) throws SmooksException {
 
-	/**
-	 * Assertion method that tries to catch instances where this class is used in an interleaved manner on a single
-	 * thread.  See <a href="#threading">Threading Issues</a>.  All public methods of this class should call this
-	 * method (enter an aspect!!).
-	 */
-	private void assertNotInterleaved() {
-		ExecutionContext curExecutionContext = getContainerRequest();
-		if(executionContext != curExecutionContext) {
-			// Stall the ball here!! There's code in place which interleaves the use of this class.
-			throw new Error("Illegal interleaving of multiple instances of " + SmooksDOMFilter.class.getName() + ".  See class Javadocs.");
-		}
-	}
-	
+        if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
+            throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported.");
+        }
+        if (!(result instanceof StreamResult) && !(result instanceof DOMResult)) {
+            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported.");
+        }
+
+        try {
+            Node resultNode;
+            StandaloneExecutionContext standaloneExecContext = null;
+
+            if(executionContext instanceof StandaloneExecutionContext) {
+                standaloneExecContext = (StandaloneExecutionContext) executionContext;
+            }
+
+            // Filter the Source....
+            if (source instanceof StreamSource) {
+                StreamSource streamSource = (StreamSource) source;
+
+                if(streamSource.getInputStream() != null) {
+                    if(standaloneExecContext != null) {
+                        resultNode = filter(new InputStreamReader(streamSource.getInputStream(), standaloneExecContext.getContentEncoding()));
+                    } else {
+                        resultNode = filter(new InputStreamReader(streamSource.getInputStream(), "UTF-8"));
+                    }
+                } else if(streamSource.getReader() != null) {
+                    resultNode = filter(streamSource.getReader());
+                } else {
+                    throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
+                }
+            } else {
+                Node node = ((DOMSource) source).getNode();
+                if (!(node instanceof Document)) {
+                    throw new IllegalArgumentException("DOMSource Source types must contain a Document node.");
+                }
+                resultNode = filter((Document) node);
+            }
+
+            // Populate the Result
+            if (result instanceof StreamResult) {
+                Writer writer;
+                StreamResult streamResult = ((StreamResult) result);
+
+                if (streamResult.getOutputStream() != null) {
+                    if(standaloneExecContext != null) {
+                        writer = new OutputStreamWriter(streamResult.getOutputStream(), standaloneExecContext.getContentEncoding());
+                    } else {
+                        writer = new OutputStreamWriter(streamResult.getOutputStream(), "UTF-8");
+                    }
+                } else if (streamResult.getWriter() != null) {
+                    writer = streamResult.getWriter();
+                } else {
+                    throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
+                }
+                try {
+                    serialize(resultNode, writer);
+                } catch (IOException e) {
+                    logger.error("Error writing result to output stream.", e);
+                }
+            } else {
+                ((DOMResult) result).setNode(resultNode);
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new Error("Unexpected exception.  Encoding has already been validated as being unsupported.", e);
+        } finally {
+            if (source instanceof StreamSource) {
+                try {
+                    StreamSource streamSource = (StreamSource) source;
+
+                    if(streamSource.getInputStream() != null) {
+                        streamSource.getInputStream().close();
+                    } else if(streamSource.getReader() != null) {
+                        streamSource.getReader().close();
+                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to close input stream/reader.", e);
+                }
+            }
+            if (result instanceof StreamResult) {
+                StreamResult streamResult = ((StreamResult) result);
+
+                try {
+                    if (streamResult.getOutputStream() != null) {
+                        streamResult.getOutputStream().close();
+                    } else if (streamResult.getWriter() != null) {
+                        streamResult.getWriter().close();
+                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to close output stream/writer.", e);
+                }
+            }
+        }
+    }
+
 	/**
 	 * Phase the supplied input reader.
 	 * <p/>
@@ -272,9 +272,7 @@ public class SmooksDOMFilter {
 	 * @throws SmooksException
 	 */
 	public Node filter(Reader source) throws SmooksException {
-		assertNotInterleaved();
-		
-		Node deliveryNode;		
+		Node deliveryNode;
 		
 		if(source == null) {
 			throw new IllegalArgumentException("null 'source' arg passed in method call.");
@@ -299,8 +297,6 @@ public class SmooksDOMFilter {
 	 * @return Node representing filtered document.
 	 */
 	public Node filter(Document doc) {
-		assertNotInterleaved();
-		
 		Vector transList = new Vector();
 		int transListLength;
 		ProcessingSet globalProcessingSet;
@@ -480,8 +476,6 @@ public class SmooksDOMFilter {
 	 * @throws SmooksException Unable to serialise due to bad Smooks environment.  Check cause.
 	 */
 	public void serialize(Node node, Writer writer) throws IOException, SmooksException {
-		assertNotInterleaved();
-		
 		Serializer serializer;
 		
 		if(node == null) {

@@ -17,6 +17,8 @@ package org.milyn.delivery.dom;
 
 import org.milyn.delivery.AbstractContentDeliveryConfig;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
+import org.milyn.delivery.Filter;
+import org.milyn.container.ExecutionContext;
 
 /**
  * DOM specific {@link org.milyn.delivery.ContentDeliveryConfig} implementation.
@@ -51,5 +53,9 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
     public void setSerailizationUnits(ContentHandlerConfigMapTable serailizationUnits) {
         this.serailizationUnits = serailizationUnits;
+    }
+
+    public Filter newFilter(ExecutionContext executionContext) {
+        return new SmooksDOMFilter(executionContext);
     }
 }

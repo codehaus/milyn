@@ -103,7 +103,7 @@ public class ContentDeliveryConfigBuilder {
 	 * @param applicationContext Application context.
 	 * @return The ContentDeliveryConfig instance for the named table.
 	 */
-	public static ContentDeliveryConfig getInstance(ProfileSet profileSet, ApplicationContext applicationContext) {
+	public static ContentDeliveryConfig getConfig(ProfileSet profileSet, ApplicationContext applicationContext) {
 		ContentDeliveryConfig config;
 		Hashtable<String, ContentDeliveryConfig> configTable;
 		
