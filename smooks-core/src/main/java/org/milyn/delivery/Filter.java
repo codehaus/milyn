@@ -42,7 +42,7 @@ public abstract class Filter {
      *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
      * @throws SmooksException Failed to filter.
      */
-    public abstract void filter(Source source, Result result) throws SmooksException;
+    public abstract void doFilter(Source source, Result result) throws SmooksException;
 
     /**
      * Get the {@link org.milyn.container.ExecutionContext} instance bound to the current thread.

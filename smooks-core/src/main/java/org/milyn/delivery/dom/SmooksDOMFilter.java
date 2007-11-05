@@ -167,7 +167,7 @@ public class SmooksDOMFilter extends Filter {
         deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 	}
 
-    public void filter(Source source, Result result) throws SmooksException {
+    public void doFilter(Source source, Result result) throws SmooksException {
 
         if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
             throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported.");
