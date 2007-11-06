@@ -1,13 +1,13 @@
 pushd csv-to-xml
-call call mvn assembly:assembly
+call mvn assembly:assembly
 popd
 
 pushd edi-to-java
-call call mvn assembly:assembly
+call mvn assembly:assembly
 popd
 
 pushd edi-to-xml
-call call mvn assembly:assembly
+call mvn assembly:assembly
 popd
 
 pushd java-basic
