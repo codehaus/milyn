@@ -5,13 +5,13 @@
     <parent>
         <groupId>milyn</groupId>
         <artifactId>milyn</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <groupId>milyn</groupId>
     <artifactId>smooks-examples</artifactId>
     <name>Milyn Smooks Examples (Base POM)</name>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <modules>
         <module>css</module>
@@ -29,15 +29,15 @@
     </modules>
 
     <properties>
-        <milyn.smooks.servlet.version>0.2.2</milyn.smooks.servlet.version>
-        <milyn.smooks.misc.version>0.2.1</milyn.smooks.misc.version>
-        <milyn.smooks.dtd.version>0.1</milyn.smooks.dtd.version>
-        <milyn.smooks.css.version>0.1.2</milyn.smooks.css.version>
-        <milyn.smooks.javabean.version>0.5-SNAPSHOT</milyn.smooks.javabean.version>
-        <milyn.smooks.templating.version>0.3</milyn.smooks.templating.version>
-        <milyn.smooks.csv.version>0.2</milyn.smooks.csv.version>
-        <milyn.smooks.edi.version>0.2</milyn.smooks.edi.version>
-        <milyn.smooks.scripting.version>0.1.1</milyn.smooks.scripting.version>
+        <milyn.smooks.servlet.version>${milyn.smooks.core.version}</milyn.smooks.servlet.version>
+        <milyn.smooks.misc.version>${milyn.smooks.core.version}</milyn.smooks.misc.version>
+        <milyn.smooks.dtd.version>${milyn.smooks.core.version}</milyn.smooks.dtd.version>
+        <milyn.smooks.css.version>${milyn.smooks.core.version}</milyn.smooks.css.version>
+        <milyn.smooks.javabean.version>${milyn.smooks.core.version}</milyn.smooks.javabean.version>
+        <milyn.smooks.templating.version>${milyn.smooks.core.version}</milyn.smooks.templating.version>
+        <milyn.smooks.csv.version>${milyn.smooks.core.version}</milyn.smooks.csv.version>
+        <milyn.smooks.edi.version>${milyn.smooks.core.version}</milyn.smooks.edi.version>
+        <milyn.smooks.scripting.version>${milyn.smooks.core.version}</milyn.smooks.scripting.version>
     </properties>
 
     <dependencies>
@@ -72,6 +72,25 @@
             </plugin>
         </plugins>
     </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version.base}/commons</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version.base}/tinak</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version.base}/smooks</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version.base}/magger</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version.base}/edisax</link>
+                        <link>http://www.w3.org/Style/CSS/SAC/doc/</link>
+                    </links>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <repositories>
         <repository>
