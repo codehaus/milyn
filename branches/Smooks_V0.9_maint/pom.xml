@@ -5,7 +5,7 @@
     <groupId>milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>${milyn.smooks.core.version}</version>
+    <version>1.0</version>
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
