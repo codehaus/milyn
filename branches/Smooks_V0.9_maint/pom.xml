@@ -5,7 +5,7 @@
     <groupId>milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>${milyn.smooks.core.version}</version>
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
@@ -73,6 +73,12 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptor>assemblies.xml</descriptor>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -104,13 +110,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <overview>${basedir}/src/main/java/overview.html</overview>
                     <links>
-                        <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
-                        <link>http://milyn.codehaus.org/javadoc/commons</link>
-                        <link>http://milyn.codehaus.org/javadoc/tinak</link>
-                        <link>http://milyn.codehaus.org/javadoc/smooks</link>
-                        <link>http://milyn.codehaus.org/javadoc/magger</link>
-                        <link>http://milyn.codehaus.org/javadoc/edisax</link>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version}/commons</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version}/tinak</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version}/smooks</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version}/magger</link>
+                        <link>http://milyn.codehaus.org/javadoc/v${milyn.smooks.core.version}/edisax</link>
                         <link>http://www.w3.org/Style/CSS/SAC/doc/</link>
                     </links>
                 </configuration>
