@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class ContentHandlerConfigMapTable<T extends ContentHandler> {
 
-    private Map<String, List<ContentHandlerConfigMap<T>>> targetMapTable = new Hashtable<String, List<ContentHandlerConfigMap<T>>>();
+    private Map<String, List<ContentHandlerConfigMap<T>>> table = new Hashtable<String, List<ContentHandlerConfigMap<T>>>();
     private int count = 0;
 
     /**
@@ -37,15 +37,19 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
      * @param deliveryUnit The delivery unit.
      */
     public void addMapping(String selector, SmooksResourceConfiguration resourceConfig, T deliveryUnit) {
-        List<ContentHandlerConfigMap<T>> selectorMappings = targetMapTable.get(selector.toLowerCase());
+        List<ContentHandlerConfigMap<T>> selectorMappings = table.get(selector.toLowerCase());
 
         if(selectorMappings == null) {
             selectorMappings = new Vector<ContentHandlerConfigMap<T>>();
-            targetMapTable.put(selector.toLowerCase(), selectorMappings);
+            table.put(selector.toLowerCase(), selectorMappings);
         }
         ContentHandlerConfigMap<T> mapInst = new ContentHandlerConfigMap<T>(deliveryUnit, resourceConfig);
         selectorMappings.add(mapInst);
         count++;
+    }
+
+    public Map<String, List<ContentHandlerConfigMap<T>>> getTable() {
+        return Collections.unmodifiableMap(table);
     }
 
     /**
@@ -54,7 +58,7 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
      * @return It's list of {@link ContentHandlerConfigMap} instances, or null if there are none.
      */
     public List<ContentHandlerConfigMap<T>> getMappings(String selector) {
-        return targetMapTable.get(selector.toLowerCase());
+        return table.get(selector.toLowerCase());
     }
 
     /**
@@ -67,7 +71,7 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
         List<ContentHandlerConfigMap<T>> combinedList = new ArrayList<ContentHandlerConfigMap<T>>();
 
         for(String selector : selectors) {
-            List<ContentHandlerConfigMap<T>> selectorList = targetMapTable.get(selector.toLowerCase());
+            List<ContentHandlerConfigMap<T>> selectorList = table.get(selector.toLowerCase());
             if(selectorList != null) {
                 combinedList.addAll(selectorList);
             }
@@ -81,7 +85,7 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
      * @return True if the table is empty, otherwise false.
      */
     public boolean isEmpty() {
-        return targetMapTable.isEmpty();
+        return table.isEmpty();
     }
 
     /**

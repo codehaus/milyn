@@ -15,11 +15,17 @@
 */
 package org.milyn.delivery;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 
 /**
  * Content filter.
@@ -27,6 +33,8 @@ import javax.xml.transform.Source;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public abstract class Filter {
+
+    private static Log logger = LogFactory.getLog(Filter.class);
 
     /**
      * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
@@ -67,5 +75,64 @@ public abstract class Filter {
      */
     public static void removeCurrentExecutionContext() {
         Filter.requestThreadLocal.remove();
+    }
+
+    protected Reader getReader(StreamSource streamSource, ExecutionContext executionContext) throws UnsupportedEncodingException {
+        if(streamSource.getReader() != null) {
+            return streamSource.getReader();
+        } else if(streamSource.getInputStream() != null) {
+            if(executionContext instanceof StandaloneExecutionContext) {
+                return new InputStreamReader(streamSource.getInputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
+            } else {
+                return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
+            }
+        } else {
+            throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
+        }
+    }
+
+    protected Writer getWriter(StreamResult streamResult, ExecutionContext executionContext) throws UnsupportedEncodingException {
+        if(streamResult.getWriter() != null) {
+            return streamResult.getWriter();
+        } else if(streamResult.getOutputStream() != null) {
+            if(executionContext instanceof StandaloneExecutionContext) {
+                return new OutputStreamWriter(streamResult.getOutputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
+            } else {
+                return new OutputStreamWriter(streamResult.getOutputStream(), "UTF-8");
+            }
+        } else {
+            throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
+        }
+    }
+
+    protected void close(Source source) {
+        if (source instanceof StreamSource) {
+            StreamSource streamSource = (StreamSource) source;
+            try {
+                if(streamSource.getReader() != null) {
+                    streamSource.getReader().close();
+                } else if(streamSource.getInputStream() != null) {
+                    streamSource.getInputStream().close();
+                }
+            } catch (IOException e) {
+                logger.warn("Failed to close input stream/reader.", e);
+            }
+        }
+    }
+
+    protected void close(Result result) {
+        if (result instanceof StreamResult) {
+            StreamResult streamResult = ((StreamResult) result);
+
+            try {
+                if (streamResult.getWriter() != null) {
+                    streamResult.getWriter().close();
+                } else if (streamResult.getOutputStream() != null) {
+                    streamResult.getOutputStream().close();
+                }
+            } catch (IOException e) {
+                logger.warn("Failed to close output stream/writer.", e);
+            }
+        }
     }
 }

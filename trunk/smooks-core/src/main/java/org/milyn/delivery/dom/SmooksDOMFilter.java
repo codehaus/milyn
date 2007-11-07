@@ -170,35 +170,19 @@ public class SmooksDOMFilter extends Filter {
     public void doFilter(Source source, Result result) throws SmooksException {
 
         if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
-            throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported.");
+            throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported by the DOM Filter.");
         }
         if (!(result instanceof StreamResult) && !(result instanceof DOMResult)) {
-            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported.");
+            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the DOM Filter.");
         }
 
         try {
             Node resultNode;
-            StandaloneExecutionContext standaloneExecContext = null;
-
-            if(executionContext instanceof StandaloneExecutionContext) {
-                standaloneExecContext = (StandaloneExecutionContext) executionContext;
-            }
 
             // Filter the Source....
             if (source instanceof StreamSource) {
                 StreamSource streamSource = (StreamSource) source;
-
-                if(streamSource.getInputStream() != null) {
-                    if(standaloneExecContext != null) {
-                        resultNode = filter(new InputStreamReader(streamSource.getInputStream(), standaloneExecContext.getContentEncoding()));
-                    } else {
-                        resultNode = filter(new InputStreamReader(streamSource.getInputStream(), "UTF-8"));
-                    }
-                } else if(streamSource.getReader() != null) {
-                    resultNode = filter(streamSource.getReader());
-                } else {
-                    throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
-                }
+                resultNode = filter(getReader(streamSource, executionContext));
             } else {
                 Node node = ((DOMSource) source).getNode();
                 if (!(node instanceof Document)) {
@@ -209,20 +193,10 @@ public class SmooksDOMFilter extends Filter {
 
             // Populate the Result
             if (result instanceof StreamResult) {
-                Writer writer;
                 StreamResult streamResult = ((StreamResult) result);
+                Writer writer;
 
-                if (streamResult.getOutputStream() != null) {
-                    if(standaloneExecContext != null) {
-                        writer = new OutputStreamWriter(streamResult.getOutputStream(), standaloneExecContext.getContentEncoding());
-                    } else {
-                        writer = new OutputStreamWriter(streamResult.getOutputStream(), "UTF-8");
-                    }
-                } else if (streamResult.getWriter() != null) {
-                    writer = streamResult.getWriter();
-                } else {
-                    throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
-                }
+                writer = getWriter(streamResult, executionContext);
                 try {
                     serialize(resultNode, writer);
                 } catch (IOException e) {
@@ -234,36 +208,12 @@ public class SmooksDOMFilter extends Filter {
         } catch (UnsupportedEncodingException e) {
             throw new Error("Unexpected exception.  Encoding has already been validated as being unsupported.", e);
         } finally {
-            if (source instanceof StreamSource) {
-                try {
-                    StreamSource streamSource = (StreamSource) source;
-
-                    if(streamSource.getInputStream() != null) {
-                        streamSource.getInputStream().close();
-                    } else if(streamSource.getReader() != null) {
-                        streamSource.getReader().close();
-                    }
-                } catch (IOException e) {
-                    logger.warn("Failed to close input stream/reader.", e);
-                }
-            }
-            if (result instanceof StreamResult) {
-                StreamResult streamResult = ((StreamResult) result);
-
-                try {
-                    if (streamResult.getOutputStream() != null) {
-                        streamResult.getOutputStream().close();
-                    } else if (streamResult.getWriter() != null) {
-                        streamResult.getWriter().close();
-                    }
-                } catch (IOException e) {
-                    logger.warn("Failed to close output stream/writer.", e);
-                }
-            }
+            close(source);
+            close(result);
         }
     }
 
-	/**
+    /**
 	 * Phase the supplied input reader.
 	 * <p/>
 	 * Simply parses the input reader into a W3C DOM and calls {@link #filter(Document)}.

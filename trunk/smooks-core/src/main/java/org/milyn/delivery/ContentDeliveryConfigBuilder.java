@@ -18,6 +18,7 @@ package org.milyn.delivery;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
 import org.milyn.cdr.*;
 import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
@@ -25,6 +26,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.Phase;
 import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
+import org.milyn.delivery.sax.SAXContentDeliveryConfig;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
@@ -100,6 +102,14 @@ public class ContentDeliveryConfigBuilder {
     public static final String STREAM_FILTER_TYPE = "stream.filter.type";
 
     /**
+     * Filter type enumeration.
+     */
+    private static enum StreamFilterType {
+        SAX,
+        DOM
+    }
+
+    /**
 	 * Private (hidden) constructor.
      * @param profileSet Profile set.
 	 * @param applicationContext Container context.
@@ -144,21 +154,109 @@ public class ContentDeliveryConfigBuilder {
 	}
 
     private ContentDeliveryConfig createConfig() {
-        if(saxElementHandlerCount == elementHandlerCount && domElementHandlerCount == elementHandlerCount) {
-            // All element handlers support SAX and DOM... must select one then...
-            Parameter filterType = ParameterAccessor.getParameter(STREAM_FILTER_TYPE, resourceConfigTable);
+        StreamFilterType filterType = getStreamFilterType();
+
+        if(filterType == StreamFilterType.DOM) {
+            DOMContentDeliveryConfig domConfig = new DOMContentDeliveryConfig();
+
+            logger.info("Using the DOM Stream Filter.");
+            domConfig.setAssemblyUnits(assemblyUnitTable);
+            domConfig.setProcessingUnits(processingUnitTable);
+            domConfig.setSerailizationUnits(serializationUnitTable);
+            domConfig.setApplicationContext(applicationContext);
+            domConfig.setSmooksResourceConfigurations(resourceConfigTable);
+            domConfig.setDtd(dtd);
+
+            return domConfig;
+        } else {
+            SAXContentDeliveryConfig saxConfig = new SAXContentDeliveryConfig();
+
+            logger.info("Using the SAX Stream Filter.");
+            saxConfig.setSaxVisitors(saxVisitors);
+            saxConfig.setApplicationContext(applicationContext);
+            saxConfig.setSmooksResourceConfigurations(resourceConfigTable);
+            saxConfig.setDtd(dtd);
+
+            return saxConfig;
+        }
+    }
+
+    private StreamFilterType getStreamFilterType() {
+        StreamFilterType filterType;
+
+        if(logger.isDebugEnabled()) {
+            logger.debug("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics());
         }
 
-        DOMContentDeliveryConfig config = new DOMContentDeliveryConfig();
+        if(saxElementHandlerCount == elementHandlerCount && domElementHandlerCount == elementHandlerCount) {
+            // All element handlers support SAX and DOM... must select one then...
+            Parameter filterTypeParam = ParameterAccessor.getParameter(STREAM_FILTER_TYPE, resourceConfigTable);
 
-        config.setApplicationContext(applicationContext);
-        config.setSmooksResourceConfigurations(resourceConfigTable);
-        config.setDtd(dtd);
-        config.setAssemblyUnits(assemblyUnitTable);
-        config.setProcessingUnits(processingUnitTable);
-        config.setSerailizationUnits(serializationUnitTable);
+            if(filterTypeParam == null) {
+                throw new SmooksException("All configured XML Element Content Handler resource configurations can be " +
+                        "applied using the SAX or DOM Stream Filter.  Please select the appropriate Filter type e.g.\n" +
+                        "\t\t<resource-config selector=\"" + ParameterAccessor.DEVICE_PARAMETERS + "\">\n" +
+                        "\t\t\t<param name=\"" + STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
+                        "\t\t</resource-config>");
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.DOM.name())) {
+                filterType = StreamFilterType.DOM;
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.SAX.name())) {
+                filterType = StreamFilterType.SAX;
+            } else {
+                throw new SmooksException("Invalid '" + STREAM_FILTER_TYPE + "' configuration parameter value of '" + filterTypeParam + "'.  Must be 'SAX' or 'DOM'.");
+            }
+        } else if(domElementHandlerCount == elementHandlerCount) {
+            filterType = StreamFilterType.DOM;
+        } else if(saxElementHandlerCount == elementHandlerCount) {
+            filterType = StreamFilterType.SAX;
+        } else {
+            throw new SmooksException("Ambiguous Resource Configuration set.  All Element Content Handlers must support processing on the SAX and/or DOM Filter:\n" + getResourceFilterCharacteristics());
+        }
+        
+        return filterType;
+    }
 
-        return config;
+    /**
+     * Logging support function.
+     * @return Verbose characteristics string.
+     */
+    private String getResourceFilterCharacteristics() {
+        StringBuffer stringBuf = new StringBuffer();
+        List<ContentHandler> printedHandlers = new ArrayList<ContentHandler>();
+
+        stringBuf.append("\t\tDOM   SAX    Resource  ('x' equals supported)\n");
+        stringBuf.append("\t\t---------------------------------------------------------------------\n");
+
+        printHandlerCharacteristics(assemblyUnitTable, stringBuf, printedHandlers);
+        printHandlerCharacteristics(processingUnitTable, stringBuf, printedHandlers);
+        printHandlerCharacteristics(serializationUnitTable, stringBuf, printedHandlers);
+        printHandlerCharacteristics(saxVisitors, stringBuf, printedHandlers);
+
+        stringBuf.append("\n\n");
+
+        return stringBuf.toString();
+    }
+
+    private <U extends ContentHandler> void printHandlerCharacteristics(ContentHandlerConfigMapTable<U> table, StringBuffer stringBuf, List<ContentHandler> printedHandlers) {
+        Collection<List<ContentHandlerConfigMap<U>>> map = table.getTable().values();
+
+        for (List<ContentHandlerConfigMap<U>> mapList : map) {
+            for (ContentHandlerConfigMap<U> configMap : mapList) {
+                ContentHandler handler = configMap.getContentHandler();
+                boolean domSupported = (handler instanceof DOMElementVisitor || handler instanceof SerializationUnit);
+                boolean saxSupported = handler instanceof SAXElementVisitor;
+
+                if(printedHandlers.contains(handler)) {
+                    continue;
+                } else {
+                    printedHandlers.add(handler);
+                }
+
+                stringBuf.append("\t\t " + (domSupported?"x":" ") +
+                        "     " + (saxSupported?"x":" ") +
+                        "     " + configMap.getResourceConfig() + "\n");
+            }
+        }
     }
 
     private static Hashtable<String, ContentDeliveryConfig> getDeliveryConfigTable(ApplicationContext applicationContext) {
