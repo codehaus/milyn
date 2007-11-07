@@ -15,23 +15,29 @@
 */
 package org.milyn.delivery.sax;
 
+import org.milyn.delivery.AbstractContentDeliveryConfig;
 import org.milyn.delivery.Filter;
-import org.milyn.SmooksException;
+import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.container.ExecutionContext;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.Result;
-
 /**
- * Smooks SAX Filter.
- *
+ * SAX specific {@link org.milyn.delivery.ContentDeliveryConfig} implementation.
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SmooksSAXFilter extends Filter {
+public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
+    
+    private ContentHandlerConfigMapTable<SAXElementVisitor> saxVisitors;
 
-    public SmooksSAXFilter(ExecutionContext executionContext) {
+    public ContentHandlerConfigMapTable<SAXElementVisitor> getSaxVisitors() {
+        return saxVisitors;
     }
 
-    public void doFilter(Source source, Result result) throws SmooksException {
+    public void setSaxVisitors(ContentHandlerConfigMapTable<SAXElementVisitor> saxVisitors) {
+        this.saxVisitors = saxVisitors;
+    }
+
+    public Filter newFilter(ExecutionContext executionContext) {
+        return new SmooksSAXFilter(executionContext);
     }
 }

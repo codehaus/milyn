@@ -70,7 +70,7 @@ public class Serializer {
 	/**
 	 * Target content delivery context SerializationUnit definitions.
 	 */
-	private ContentHandlerConfigMapTable serializationUnits;
+	private ContentHandlerConfigMapTable<SerializationUnit> serializationUnits;
 	/**
 	 * Default SerializationUnit.
 	 */
@@ -94,7 +94,7 @@ public class Serializer {
 		// Initialise the serializationUnits member
 		serializationUnits = deliveryConfig.getSerailizationUnits();
 		// Set the default SerializationUnit
-		defaultSUs = (List)serializationUnits.getMappings("*");
+		defaultSUs = serializationUnits.getMappings("*");
 		if(defaultSUs == null) {
 			SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
 			defaultSUs = new Vector();
@@ -271,7 +271,7 @@ public class Serializer {
 	 */
 	private SerializationUnit getSerializationUnit(Element element, boolean isRoot) {
 		String elementName = DomUtils.getName(element);
-        List<ContentHandlerConfigMap> elementSUs;
+        List<ContentHandlerConfigMap<SerializationUnit>> elementSUs;
 
         if(isRoot) {
             // The document as a whole (root node) can also be targeted through the "$document" selector.

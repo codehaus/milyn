@@ -56,7 +56,7 @@ public interface ContentDeliveryConfig {
 	 * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
 	 * {@link List} of preordered {@link SmooksResourceConfiguration} instances.
 	 */
-	public abstract Map<String, List<ContentHandlerConfigMap>> getSmooksResourceConfigurations();
+	public abstract Map<String, List<SmooksResourceConfiguration>> getSmooksResourceConfigurations();
 	
 	/**
 	 * Get a list of {@link Object}s from the {@link SmooksResourceConfiguration}s specified by the selector.

@@ -75,20 +75,32 @@ public class SAXElement {
      *                     Attributes object.
      */
     public SAXElement(String namespaceURI, String localName, String qName, Attributes attributes) {
-        if(namespaceURI != null && qName != null && !qName.equals("")) {
-            String[] qNameTokens = qName.split(":");
+        if(namespaceURI != null) {
+            int colonIndex = -1;
+            
+            if(qName != null && (colonIndex = qName.indexOf(':')) != -1) {
+                String prefix = qName.substring(0, colonIndex);
+                String qNameLocalName = qName.substring(colonIndex + 1);
 
-            if(qNameTokens.length == 2) {
-                name = new QName(namespaceURI.intern(), qNameTokens[1].intern(), qNameTokens[0].intern());
-            } else if(localName != null) {
-                name = new QName(localName.intern());
+                name = new QName(namespaceURI.intern(), qNameLocalName, prefix);
+            } else if(localName != null && !localName.equals("")) {
+                name = new QName(namespaceURI.intern(), localName.intern());
+            } else if(qName != null && !qName.equals("")) {
+                name = new QName(namespaceURI.intern(), qName.intern());
             } else {
-                name = new QName(qName.intern());
+                thowInvalidNameException(namespaceURI, localName, qName);
             }
-        } else {
+        } else if(localName != null && !localName.equals("")) {
             name = new QName(localName.intern());
+        } else {
+            thowInvalidNameException(namespaceURI, localName, qName);
         }
+        
         this.attributes = attributes;
+    }
+
+    private void thowInvalidNameException(String namespaceURI, String localName, String qName) {
+        throw new IllegalArgumentException("Invalid SAXELement name paramaters: namespaceURI='" + namespaceURI + "', localName='" + localName + "', qName='" + qName + "'.");
     }
 
     /**

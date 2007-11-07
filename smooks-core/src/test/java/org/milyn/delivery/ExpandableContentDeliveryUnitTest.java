@@ -18,8 +18,10 @@ package org.milyn.delivery;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
@@ -39,9 +41,9 @@ public class ExpandableContentDeliveryUnitTest extends TestCase {
         ExecutionContext context = smooks.createExecutionContext();
 
         DOMContentDeliveryConfig config = (DOMContentDeliveryConfig) context.getDeliveryConfig();
-        ContentHandlerConfigMapTable assemblyUnits = config.getAssemblyUnits();
-        ContentHandlerConfigMapTable processingUnits = config.getProcessingUnits();
-        ContentHandlerConfigMapTable serializationUnits = config.getSerailizationUnits();
+        ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits = config.getAssemblyUnits();
+        ContentHandlerConfigMapTable<DOMElementVisitor> processingUnits = config.getProcessingUnits();
+        ContentHandlerConfigMapTable<SerializationUnit> serializationUnits = config.getSerailizationUnits();
 
         assertEquals(1, assemblyUnits.getCount());
         assertTrue(assemblyUnits.getMappings("a").get(0).getContentHandler() instanceof Assembly1);
