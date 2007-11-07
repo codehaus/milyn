@@ -77,7 +77,7 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
      * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
      * {@link List} of preordered {@link org.milyn.cdr.SmooksResourceConfiguration} instances.
      */
-    public Map getSmooksResourceConfigurations() {
+    public Map<String, List<SmooksResourceConfiguration>> getSmooksResourceConfigurations() {
         return resourceConfigTable;
     }
 

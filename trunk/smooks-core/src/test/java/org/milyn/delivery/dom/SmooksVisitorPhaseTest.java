@@ -47,12 +47,12 @@ public class SmooksVisitorPhaseTest extends TestCase {
         config = (DOMContentDeliveryConfig) execContext.getDeliveryConfig();
 
         // Check the assembly units...
-        List<ContentHandlerConfigMap> assemblyUnits = config.getAssemblyUnits().getMappings("a");
+        List<ContentHandlerConfigMap<DOMElementVisitor>> assemblyUnits = config.getAssemblyUnits().getMappings("a");
         assertEquals(2, assemblyUnits.size());
         assertTrue(assemblyUnits.get(0).getContentHandler() instanceof AssemblyVisitor1);
         assertTrue(assemblyUnits.get(1).getContentHandler() instanceof ConfigurableVisitor);
 
-        List<ContentHandlerConfigMap> processingUnits = config.getProcessingUnits().getMappings("a");
+        List<ContentHandlerConfigMap<DOMElementVisitor>> processingUnits = config.getProcessingUnits().getMappings("a");
         assertEquals(2, processingUnits.size());
         assertTrue(processingUnits.get(0).getContentHandler() instanceof ProcessorVisitor1);
         assertTrue(processingUnits.get(1).getContentHandler() instanceof ConfigurableVisitor);

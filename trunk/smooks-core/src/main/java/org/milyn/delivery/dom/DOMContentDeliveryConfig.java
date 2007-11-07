@@ -18,6 +18,7 @@ package org.milyn.delivery.dom;
 import org.milyn.delivery.AbstractContentDeliveryConfig;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.container.ExecutionContext;
 
 /**
@@ -27,31 +28,31 @@ import org.milyn.container.ExecutionContext;
  */
 public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
-    private ContentHandlerConfigMapTable assemblyUnits;
-    private ContentHandlerConfigMapTable processingUnits;
-    private ContentHandlerConfigMapTable serailizationUnits;
+    private ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits;
+    private ContentHandlerConfigMapTable<DOMElementVisitor> processingUnits;
+    private ContentHandlerConfigMapTable<SerializationUnit> serailizationUnits;
 
-    public ContentHandlerConfigMapTable getAssemblyUnits() {
+    public ContentHandlerConfigMapTable<DOMElementVisitor> getAssemblyUnits() {
         return assemblyUnits;
     }
 
-    public void setAssemblyUnits(ContentHandlerConfigMapTable assemblyUnits) {
+    public void setAssemblyUnits(ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits) {
         this.assemblyUnits = assemblyUnits;
     }
 
-    public ContentHandlerConfigMapTable getProcessingUnits() {
+    public ContentHandlerConfigMapTable<DOMElementVisitor> getProcessingUnits() {
         return processingUnits;
     }
 
-    public void setProcessingUnits(ContentHandlerConfigMapTable processingUnits) {
+    public void setProcessingUnits(ContentHandlerConfigMapTable<DOMElementVisitor> processingUnits) {
         this.processingUnits = processingUnits;
     }
 
-    public ContentHandlerConfigMapTable getSerailizationUnits() {
+    public ContentHandlerConfigMapTable<SerializationUnit> getSerailizationUnits() {
         return serailizationUnits;
     }
 
-    public void setSerailizationUnits(ContentHandlerConfigMapTable serailizationUnits) {
+    public void setSerailizationUnits(ContentHandlerConfigMapTable<SerializationUnit> serailizationUnits) {
         this.serailizationUnits = serailizationUnits;
     }
 

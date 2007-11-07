@@ -144,7 +144,7 @@ public class SmooksDOMFilter extends Filter {
 	 * Processing Units to be applied to all elements in the document.  
 	 * Only applied to element present in the original document.
 	 */
-	private List<ContentHandlerConfigMap> globalProcessingUnits;
+	private List<ContentHandlerConfigMap<DOMElementVisitor>> globalProcessingUnits;
 	/**
 	 * Key under which a non-document content delivery node can be set in the 
 	 * request.  This is needed because Xerces doesn't allow "overwriting" of
@@ -309,7 +309,7 @@ public class SmooksDOMFilter extends Filter {
 		}
 		
         // Apply assembly phase, skipping it if there are no configured assembly units...
-        ContentHandlerConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
+        ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits = deliveryConfig.getAssemblyUnits();
 		if(!assemblyUnits.isEmpty()) {
 			// Assemble
 			if(logger.isDebugEnabled()) {
@@ -352,9 +352,9 @@ public class SmooksDOMFilter extends Filter {
 	private void assemble(Element element, boolean isRoot) {
 		List nodeListCopy = copyList(element.getChildNodes());
 		int childCount = nodeListCopy.size();
-		ContentHandlerConfigMapTable assemblyUnits = deliveryConfig.getAssemblyUnits();
+		ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits = deliveryConfig.getAssemblyUnits();
 		String elementName = DomUtils.getName(element);
-		List<ContentHandlerConfigMap> elementAssemblyUnits;
+		List<ContentHandlerConfigMap<DOMElementVisitor>> elementAssemblyUnits;
 
         if(isRoot) {
             // The document as a whole (root node) can also be targeted through the "$document" selector.
@@ -366,7 +366,7 @@ public class SmooksDOMFilter extends Filter {
         // Visit element with its assembly units before visiting its child content.
 		if(elementAssemblyUnits != null && !elementAssemblyUnits.isEmpty()) {
 			for(int i = 0; i < elementAssemblyUnits.size(); i++) {
-                ContentHandlerConfigMap configMap = elementAssemblyUnits.get(i);
+                ContentHandlerConfigMap<DOMElementVisitor> configMap = elementAssemblyUnits.get(i);
                 SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
                 // Make sure the assembly unit is targeted at this element...
@@ -374,7 +374,7 @@ public class SmooksDOMFilter extends Filter {
                     continue;
                 }            
                 
-                DOMElementVisitor assemblyUnit = (DOMElementVisitor)configMap.getContentHandler();
+                DOMElementVisitor assemblyUnit = configMap.getContentHandler();
                 try {
                     if(logger.isDebugEnabled()) {
                         logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
@@ -427,7 +427,7 @@ public class SmooksDOMFilter extends Filter {
      */
 	private void buildProcessingList(List processingList, Element element, boolean isRoot) {
 		String elementName;
-		List<ContentHandlerConfigMap> processingUnits = null;
+		List<ContentHandlerConfigMap<DOMElementVisitor>> processingUnits = null;
 
 		elementName = DomUtils.getName(element);
         if(isRoot) {
@@ -531,7 +531,7 @@ public class SmooksDOMFilter extends Filter {
 		/**
 		 * The processing list. 
 		 */
-		private List<ContentHandlerConfigMap> processingUnits;
+		private List<ContentHandlerConfigMap<DOMElementVisitor>> processingUnits;
         /**
          * Call visitBefore (or visitAfter).
          */
@@ -543,7 +543,7 @@ public class SmooksDOMFilter extends Filter {
          * @param processingUnits ProcessingUnit instances to be applied.
          * @param visitBefore Call visitBefore (or visitAfter).
          */
-		private ElementProcessor(Element element, List<ContentHandlerConfigMap> processingUnits, boolean visitBefore) {
+		private ElementProcessor(Element element, List<ContentHandlerConfigMap<DOMElementVisitor>> processingUnits, boolean visitBefore) {
 			this.element = element;
 			this.processingUnits = processingUnits;
             this.visitBefore = visitBefore;

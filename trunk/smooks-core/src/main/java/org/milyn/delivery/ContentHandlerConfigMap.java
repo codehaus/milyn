@@ -26,9 +26,9 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * a {@link ContentHandler}.
  * @author tfennelly
  */
-public class ContentHandlerConfigMap {
+public class ContentHandlerConfigMap<T extends ContentHandler> {
 
-    private ContentHandler contentHandler;
+    private T contentHandler;
     private SmooksResourceConfiguration resourceConfig;
 
     /**
@@ -36,7 +36,7 @@ public class ContentHandlerConfigMap {
      * @param contentHandler The content handler instance.
      * @param resourceConfig The defining resource configuration.
      */
-    public ContentHandlerConfigMap(ContentHandler contentHandler, SmooksResourceConfiguration resourceConfig) {
+    public ContentHandlerConfigMap(T contentHandler, SmooksResourceConfiguration resourceConfig) {
         this.contentHandler = contentHandler;
         this.resourceConfig = resourceConfig;
     }
@@ -45,7 +45,7 @@ public class ContentHandlerConfigMap {
      * Get the content handler.
      * @return The {@link ContentHandler}.
      */
-    public ContentHandler getContentHandler() {
+    public T getContentHandler() {
         return contentHandler;
     }
 
