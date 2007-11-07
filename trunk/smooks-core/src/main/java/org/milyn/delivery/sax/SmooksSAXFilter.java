@@ -15,16 +15,17 @@
 */
 package org.milyn.delivery.sax;
 
-import org.milyn.delivery.Filter;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Filter;
+import org.xml.sax.SAXException;
 
-import javax.xml.transform.Source;
 import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.Reader;
+import java.io.Writer;
 
 /**
  * Smooks SAX Filter.
@@ -32,8 +33,11 @@ import javax.xml.transform.stream.StreamResult;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class SmooksSAXFilter extends Filter {
+    
+    private ExecutionContext executionContext;
 
     public SmooksSAXFilter(ExecutionContext executionContext) {
+        this.executionContext = executionContext;
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
@@ -44,6 +48,17 @@ public class SmooksSAXFilter extends Filter {
             throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the SAX Filter. Only supports StreamResult at present.");
         }
 
-        
+        try {
+            Reader reader = getReader((StreamSource) source, executionContext);
+            Writer writer = getWriter((StreamResult) result, executionContext);
+            SAXParser parser = new SAXParser(executionContext);
+
+            parser.parse(reader, writer);
+        } catch (Exception e) {
+            throw new SmooksException("Failed to filter source.", e);
+        } finally {
+            close(source);
+            close(result);
+        }
     }
 }

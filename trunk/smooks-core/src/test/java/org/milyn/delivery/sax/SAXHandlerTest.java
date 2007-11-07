@@ -36,7 +36,7 @@ public class SAXHandlerTest extends TestCase {
 
     private XMLReader createReader() throws SAXException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
-        SAXHandler handler = new SAXHandler(null);
+        SAXHandler handler = new SAXHandler(null, null);
 
         reader.setContentHandler(handler);
         reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);

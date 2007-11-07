@@ -205,8 +205,6 @@ public class SmooksDOMFilter extends Filter {
             } else {
                 ((DOMResult) result).setNode(resultNode);
             }
-        } catch (UnsupportedEncodingException e) {
-            throw new Error("Unexpected exception.  Encoding has already been validated as being unsupported.", e);
         } finally {
             close(source);
             close(result);

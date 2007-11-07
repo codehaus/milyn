@@ -17,9 +17,15 @@ package org.milyn.delivery.sax;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
+import java.io.Reader;
+import java.io.Writer;
+import java.io.IOException;
 
 /**
  * Smooks SAX data stream parser.
@@ -34,9 +40,10 @@ public class SAXParser extends AbstractParser {
         super(execContext);
     }
 
-    public SAXParser(ExecutionContext execContext, SmooksResourceConfiguration saxDriverConfig) {
-        super(execContext, saxDriverConfig);
-    }
+    protected void parse(Reader reader, Writer writer) throws SAXException, IOException {
+        SAXHandler saxHandler = new SAXHandler(getExecContext(), writer);
+        XMLReader saxReader = createXMLReader(saxHandler);
 
-    
+        saxReader.parse(new InputSource(reader));
+    }                                                    
 }
