@@ -21,6 +21,10 @@ import org.milyn.container.ExecutionContext;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Result;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  * Smooks SAX Filter.
@@ -33,5 +37,13 @@ public class SmooksSAXFilter extends Filter {
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
+        if (!(source instanceof StreamSource)) {
+            throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported by the SAX Filter. Only supports StreamSource at present.");
+        }
+        if (!(result instanceof StreamResult) && result != null) {
+            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the SAX Filter. Only supports StreamResult at present.");
+        }
+
+        
     }
 }
