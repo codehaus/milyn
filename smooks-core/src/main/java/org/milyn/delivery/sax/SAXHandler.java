@@ -21,6 +21,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
 import javax.xml.namespace.QName;
+import java.io.Writer;
 
 /**
  * SAX Handler.
@@ -31,7 +32,7 @@ public class SAXHandler extends DefaultHandler2 {
     
     private ExecutionContext execContext;
 
-    public SAXHandler(ExecutionContext execContext) {
+    public SAXHandler(ExecutionContext execContext, Writer writer) {
         this.execContext = execContext;
     }
 

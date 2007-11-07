@@ -77,28 +77,40 @@ public abstract class Filter {
         Filter.requestThreadLocal.remove();
     }
 
-    protected Reader getReader(StreamSource streamSource, ExecutionContext executionContext) throws UnsupportedEncodingException {
+    protected Reader getReader(StreamSource streamSource, ExecutionContext executionContext) {
         if(streamSource.getReader() != null) {
             return streamSource.getReader();
         } else if(streamSource.getInputStream() != null) {
-            if(executionContext instanceof StandaloneExecutionContext) {
-                return new InputStreamReader(streamSource.getInputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
-            } else {
-                return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
+            try {
+                if(executionContext instanceof StandaloneExecutionContext) {
+                    return new InputStreamReader(streamSource.getInputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
+                } else {
+                    return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
+                }
+            } catch(UnsupportedEncodingException e) {
+                throw new SmooksException("Unable to decode input stream.", e);
             }
         } else {
             throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
         }
     }
 
-    protected Writer getWriter(StreamResult streamResult, ExecutionContext executionContext) throws UnsupportedEncodingException {
+    protected Writer getWriter(StreamResult streamResult, ExecutionContext executionContext) {
+        if(streamResult == null) {
+            return null;
+        }
+
         if(streamResult.getWriter() != null) {
             return streamResult.getWriter();
         } else if(streamResult.getOutputStream() != null) {
-            if(executionContext instanceof StandaloneExecutionContext) {
-                return new OutputStreamWriter(streamResult.getOutputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
-            } else {
-                return new OutputStreamWriter(streamResult.getOutputStream(), "UTF-8");
+            try {
+                if(executionContext instanceof StandaloneExecutionContext) {
+                    return new OutputStreamWriter(streamResult.getOutputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
+                } else {
+                    return new OutputStreamWriter(streamResult.getOutputStream(), "UTF-8");
+                }
+            } catch(UnsupportedEncodingException e) {
+                throw new SmooksException("Unable to encode output stream.", e);
             }
         } else {
             throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
