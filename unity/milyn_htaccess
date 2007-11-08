@@ -1,28 +1,10 @@
-#This file is generated automatically by Xircles. Changes WILL be overwritten.
-
 RewriteEngine on
-RewriteBase /
+RewriteBase /javadoc/
 
-RewriteRule ^.*javadoc/commons/(.+)$ http://milyn.codehaus.org/javadoc/v0.9/commons/$1 [r]
-RewriteRule ^.*javadoc/edisax/(.+)$ http://milyn.codehaus.org/javadoc/v0.9/edisax/$1 [r]
-RewriteRule ^.*javadoc/magger/(.+)$ http://milyn.codehaus.org/javadoc/v0.9/magger/$1 [r]
-RewriteRule ^.*javadoc/smooks/(.+)$ http://milyn.codehaus.org/javadoc/v0.9/smooks/$1 [r]
-RewriteRule ^.*javadoc/smooks-cartridges/(.+)$ http://milyn.codehaus.org/javadoc/v0.9/smooks-cartridges/$1 [r]
-RewriteRule ^.*javadoc/tinak/(.+)$ http://milyn.codehaus.org/javadoc/v0.9/tinak/$1 [r]
+RewriteRule ^commons/(.+)$              v0.9/commons/$1 [r]
+RewriteRule ^edisax/(.+)$               v0.9/edisax/$1 [r]
+RewriteRule ^magger/(.+)$               v0.9/magger/$1 [r]
+RewriteRule ^smooks/(.+)$               v0.9/smooks/$1 [r]
+RewriteRule ^smooks-cartridges/(.+)$    v0.9/smooks-cartridges/$1 [r]
+RewriteRule ^tinak/(.+)$                v0.9/tinak/$1 [r]
 
-
-#.uhtml files must be passed to unity, even though they exist as files in the public_html directory
-RewriteRule ^(.*\.uhtml)$      http://j2ee.unity.codehaus.org:8080/milyn.codehaus.org/$1         [qsa,p]
-
-RewriteCond     /home/projects/milyn/public_html/%{REQUEST_URI} -f
-RewriteRule     ^(.*)$                  $1                         [l]
-
-RewriteCond     /home/projects/milyn/public_html/%{REQUEST_URI} -d
-RewriteRule     ^(.*)/$                 $1/index.html              [l]
-
-RewriteCond     /home/projects/milyn/public_html/%{REQUEST_URI} -d
-RewriteRule     ^(.*[^/])$              $1index.html               [r]
-
-RewriteRule ((images|download|plugins)/(.*))$   http://docs.codehaus.org/$1             [p]
-RewriteRule ^$                   http://j2ee.unity.codehaus.org:8080/milyn.codehaus.org/Home         [qsa,p]
-RewriteRule ^(.*)$                   http://j2ee.unity.codehaus.org:8080/milyn.codehaus.org/$1         [qsa,p]
