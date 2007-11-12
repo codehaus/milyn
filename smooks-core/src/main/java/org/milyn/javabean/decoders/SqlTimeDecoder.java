@@ -38,12 +38,6 @@ import java.sql.Time;
 @DecodeType(Time.class)
 public class SqlTimeDecoder extends DateDecoder {
 
-    public static final String FORMAT_CONFIG_KEY = "format";
-    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-
-    private String format = DEFAULT_DATE_FORMAT;
-    private SimpleDateFormat decoder = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-
     public Object decode(String data) throws DataDecodeException {
     	Date date = (Date)super.decode(data);
         return new Time(date.getTime());
