@@ -557,14 +557,14 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
             if(beanSetterMethod == null && Double.class.isAssignableFrom(type)) {
                 beanSetterMethod = getMethod(Double.TYPE, bean, setterName);
             }
-            if(beanSetterMethod == null && Double.class.isAssignableFrom(type)) {
-                beanSetterMethod = getMethod(Double.TYPE, bean, setterName);
-            }
             if(beanSetterMethod == null && Character.class.isAssignableFrom(type)) {
                 beanSetterMethod = getMethod(Character.TYPE, bean, setterName);
             }
             if(beanSetterMethod == null && Byte.class.isAssignableFrom(type)) {
                 beanSetterMethod = getMethod(Byte.TYPE, bean, setterName);
+            }
+            if(beanSetterMethod == null && Boolean.class.isAssignableFrom(type)) {
+                beanSetterMethod = getMethod(Boolean.TYPE, bean, setterName);
             }
 
             if(beanSetterMethod == null) {

@@ -15,6 +15,7 @@
             <binding property="date" type="OrderDateLong" selector="header date" />
             <binding property="customerNumber" type="Long" selector="header customer @number" />
             <binding property="customerName" selector="header customer" />
+            <binding property="privatePerson" type="Boolean" selector="header privatePerson" />
         </param>
     </resource-config>
 
