@@ -26,7 +26,7 @@ import java.sql.Time;
  * a java.sql.Time instance.
  * <p/>
  *
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
 public class SqlTimeDecoder extends DateDecoder {
 
