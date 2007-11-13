@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+	<resource-config selector="org.xml.sax.driver">
+		<resource>org.milyn.smooks.edi.SmooksEDIParser</resource>
+		<param name="mapping-model">
+			<![CDATA[
+			<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">
+			
+				<medi:description name="rollingstock_edi" version="1.0" />
+				
+				<medi:delimiters segment="&#10;" field="," component="*" sub-component="-"/>
+				
+			    <medi:segments xmltag="rollingstocks">
+			    
+			        <medi:segment segcode="Ta" xmltag="rollingstock" minOccurs="0" maxOccurs="-1">
+		                <medi:field xmltag="departureDate"/>
+		                <medi:field xmltag="departureTime"/>
+		                <medi:field xmltag="rollingstockId"/>
+		                <medi:field xmltag="departureSignature"/>
+		                <medi:field xmltag="destinationSignature"/>
+		                <medi:field xmltag="dayLimit"/>
+		                
+			                <medi:segment segcode="Tr" xmltag="route" minOccurs="0" maxOccurs="1">
+				                <medi:field xmltag="route"/>
+					        </medi:segment>
+					        
+			                <medi:segment segcode="Fo" xmltag="vehicle" minOccurs="0" maxOccurs="-1">
+				                <medi:field xmltag="litt"/>
+				                <medi:field xmltag="vehicleId"/>
+				                <medi:field xmltag="originalLitt"/>
+				                <medi:field xmltag="ticketId"/>
+				                <medi:field xmltag="vehicleType"/>
+				                <medi:field xmltag="weight"/>
+				                <medi:field xmltag="dynamicWeight"/>
+				                <medi:field xmltag="brakeWeight"/>
+				                <medi:field xmltag="length"/>
+				                <medi:field xmltag="nrOfAxles"/>
+				                <medi:field xmltag="speed"/>
+				                <medi:field xmltag="serviceType"/>
+								<medi:field xmltag="canDoorsBeLocked"/>
+				                <medi:field xmltag="class1"/>
+				                <medi:field xmltag="class2"/>
+				                <medi:field xmltag="couchette"/>
+				                <medi:field xmltag="nrOfCompartments"/>
+				                <medi:field xmltag="nrOfPlacesPerCompartment"/>
+				                <medi:field xmltag="departureStation"/>
+				                <medi:field xmltag="departureDate"/>
+				                <medi:field xmltag="departureTime"/>
+				                <medi:field xmltag="destination"/>
+			            
+			                
+					        <medi:segment segcode="Fx" xmltag="comment" minOccurs="0" maxOccurs="1">
+				                <medi:field xmltag="comment"/>
+					        </medi:segment>
+					        
+					        <medi:segment segcode="Ft" xmltag="phoneNumber" minOccurs="0" maxOccurs="-1">
+				                <medi:field xmltag="litt"/>
+				                <medi:field xmltag="vehicleId"/>
+				                <medi:field xmltag="phoneNumber"/>
+				                <medi:field xmltag="function"/>
+				                <medi:field xmltag="location"/>
+					        </medi:segment>
+				        </medi:segment>
+					        
+			        </medi:segment>
+				        
+			    </medi:segments>
+			    
+			</medi:edimap>
+		]]>
+		</param>
+	</resource-config>
+	
+    <resource-config selector="rollingstocks">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.Rollingstock</param>
+        <param name="addToList">true</param>
+        <param name="bindings">
+            <binding property="rollingstockId" selector="rollingstock rollingstockId" />
+        </param>
+    </resource-config>
+    
+	<resource-config selector="rollingstocks">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">rollingstock</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.Schedule</param>
+        <param name="bindings">
+            <binding property="departureDate" type="Date" selector="rollingstock departureDate" />
+            <binding property="departureTime" type="Time" selector="rollingstock departureTime" />
+            <binding property="destination" type="String" selector="rollingstock destinationSignature" />
+            <binding property="departureStation" type="String" selector="rollingstock departureSignature" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="rollingstocks">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">rollingstock</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.Vehicle</param>
+        <param name="addToList">true</param>
+        <param name="bindings">
+            <binding property="litt" type="String" selector="rollingstock vehicle litt" />
+            <binding property="originalLitt" type="String" selector="rollingstock vehicle originalLitt" />
+            <binding property="ticketId" type="String" selector="rollingstock vehicle ticketId" />
+            <binding property="vehicleType" type="String" selector="rollingstock vehicle vehicleType" />
+            <binding property="nrOfAxles" type="Integer" selector="rollingstock vehicle nrOfAxles" />
+            <binding property="serviceType" type="String" selector="rollingstock vehicle serviceType" />
+            <binding property="canDoorsBeLocked" type="Boolean" selector="rollingstock vehicle canDoorsBeLocked" />
+            <binding property="positionInTrainAssembly" type="Boolean" selector="rollingstock vehicle positionInTrainAssembly" />
+            <binding property="comments" type="comments" selector="rollingstock vehicle comments" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="weight">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">vehicle</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
+        <param name="bindings">
+            <binding property="weight" type="Double" selector="rollingstock vehicle weight" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="vehicle dynamicWeight">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">vehicle</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
+        <param name="bindings">
+            <binding property="weight" type="Double" selector="dynamicWeight" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="brakeWeight">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">vehicle</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
+        <param name="bindings">
+            <binding property="weight" type="Double" selector="rollingstock vehicle brakeWeight" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="comment">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">vehicle</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.Comment</param>
+        <param name="addToList">true</param>
+        <param name="bindings">
+            <binding property="comment" type="String" selector="comment" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="phonenumber">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">vehicle</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.PhoneNumber</param>
+        <param name="addToList">true</param>
+        <param name="bindings">
+            <binding property="function" type="String" selector="function" />
+            <binding property="location" type="String" selector="location" />
+            <binding property="number" type="String" selector="phoneNumber" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="vehicle">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="setOn">vehicle</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.PassengerCarConfiguration</param>
+        <param name="bindings">
+            <binding property="class1" type="Integer" selector="vehicle class1" />
+            <binding property="class2" type="Integer" selector="vehicle class2" />
+            <binding property="couchette" type="Integer" selector="vehicle couchette" />
+            <binding property="compartments" type="Integer" selector="vehicle compartments" />
+        </param>
+    </resource-config>
+    
+    <resource-config selector="decoder:Time">
+        <resource>org.milyn.javabean.decoders.SqlTimeDecoder</resource>
+        <param name="format">HH:mm:ss</param>
+    </resource-config>
+    
+    <resource-config selector="decoder:String">
+        <resource>org.milyn.javabean.decoders.StringDecoder</resource>
+    </resource-config>
+    
+    <resource-config selector="decoder:Date">
+        <resource>org.milyn.javabean.decoders.SqlDateDecoder</resource>
+        <param name="format">yyyy-MM-dd</param>
+    </resource-config>
+    
+</smooks-resource-list>
