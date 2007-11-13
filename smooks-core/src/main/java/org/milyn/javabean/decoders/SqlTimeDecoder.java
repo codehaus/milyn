@@ -15,14 +15,8 @@
 */
 package org.milyn.javabean.decoders;
 
-import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DecodeType;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
-
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.util.Date;
 import java.sql.Time;
 
@@ -33,7 +27,7 @@ import java.sql.Time;
  * a java.sql.Time instance.
  * <p/>
  *
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
 @DecodeType(Time.class)
 public class SqlTimeDecoder extends DateDecoder {
