@@ -16,28 +16,23 @@
 
 package org.milyn.cdr;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.classpath.ClasspathUtils;
 import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.sax.SAXElement;
 import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
-import org.milyn.classpath.ClasspathUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 /**
  * Smooks Resource Targeting Configuration.
@@ -251,6 +246,7 @@ public class SmooksResourceConfiguration {
      */
     public SmooksResourceConfiguration(String selector) {
         setSelector(selector);
+        setTargetProfile("*");
     }
 
     /**
@@ -839,15 +835,13 @@ public class SmooksResourceConfiguration {
      * Is this resource configuration targets at the same namespace as the
      * specified elemnt.
      *
-     * @param element The element to check against.
+     * @param namespace The element to check against.
      * @return True if this resource config is targeted at the element namespace,
      *         or if the resource is not targeted at any namespace (i.e. not specified),
      *         otherwise false.
      */
-    public boolean isTargetedAtElementNamespace(Element element) {
-        // Check the namespace (if specified) of the config against the 
-        // supplied element namespace.
-        if (namespaceURI != null && !namespaceURI.equals(element.getNamespaceURI())) {
+    public boolean isTargetedAtNamespace(String namespace) {
+        if (namespaceURI != null && !namespaceURI.equals(namespace)) {
             return false;
         }
 
@@ -867,7 +861,7 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * Is this resource configuration targeted at the specified element
+     * Is this resource configuration targeted at the specified DOM element
      * in context.
      * <p/>
      * See details about the "selector" attribute in the
@@ -907,7 +901,46 @@ public class SmooksResourceConfiguration {
     }
 
     /**
-     * Is this configuration targeted at the supplied element.
+     * Is this resource configuration targeted at the specified SAX element
+     * in context.
+     * <p/>
+     * See details about the "selector" attribute in the
+     * <a href="#attribdefs">Attribute Definitions</a> section.
+     * <p/>
+     * Note this doesn't perform any namespace checking.
+     *
+     * @param element The element to check against.
+     * @return True if this resource configuration is targeted at the specified
+     *         element in context, otherwise false.
+     */
+    public boolean isTargetedAtElementContext(SAXElement element) {
+        SAXElement currentElement = element;
+
+        // Check the element name(s).
+        for (int i = contextualSelector.length - 1; i >= 0; i--) {
+            if (currentElement == null) {
+                return false;
+            }
+
+            String elementName = currentElement.getName().getLocalPart();
+
+            if (contextualSelector[i].equals("*")) {
+                // match
+            } else if (!contextualSelector[i].equalsIgnoreCase(elementName)) {
+                return false;
+            }
+
+            // Go the next parent node...
+            if (i > 0) {
+                currentElement = currentElement.getParent();
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Is this configuration targeted at the supplied DOM element.
      * <p/>
      * Checks that the element is in the correct namespace and is a contextual
      * match for the configuration.
@@ -917,7 +950,7 @@ public class SmooksResourceConfiguration {
      */
     public boolean isTargetedAtElement(Element element) {
 
-        if (!isTargetedAtElementNamespace(element)) {
+        if (!isTargetedAtNamespace(element.getNamespaceURI())) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
             }
@@ -928,6 +961,35 @@ public class SmooksResourceConfiguration {
             // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
             if (logger.isDebugEnabled()) {
                 logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  This resource is only targeted at '" + DomUtils.getName(element) + "' when in the following context '" + getSelector() + "'.");
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Is this configuration targeted at the supplied SAX element.
+     * <p/>
+     * Checks that the element is in the correct namespace and is a contextual
+     * match for the configuration.
+     *
+     * @param element The element to be checked.
+     * @return True if this configuration is targeted at the supplied element, otherwise false.
+     */
+    public boolean isTargetedAtElement(SAXElement element) {
+
+        if (!isTargetedAtNamespace(element.getName().getNamespaceURI())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
+            }
+            return false;
+        } else if (isSelectorContextual() && !isTargetedAtElementContext(element)) {
+            // Note: If the selector is not contextual, there's no need to perform the
+            // isTargetedAtElementContext check because we already know the unit is targeted at the
+            // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  This resource is only targeted at '" + element.getName().getLocalPart() + "' when in the following context '" + getSelector() + "'.");
             }
             return false;
         }

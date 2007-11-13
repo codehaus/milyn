@@ -21,6 +21,7 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.xml.SmooksXMLReader;
 import org.milyn.container.ExecutionContext;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.util.ClassUtil;
 import org.xml.sax.*;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -105,12 +106,49 @@ public class AbstractParser {
         reader.setFeature("http://xml.org/sax/features/namespaces", true);
         reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 
-        setImplSpecificFeatures(reader, saxDriverConfig);
+        setHandlers(reader);
+        setFeatures(reader);
 
         return reader;
     }
 
-    private void setImplSpecificFeatures(XMLReader reader, SmooksResourceConfiguration saxDriverConfig) throws SAXNotSupportedException, SAXNotRecognizedException {
+    private void setHandlers(XMLReader reader) throws SAXException {
+        if(saxDriverConfig != null) {
+            List<Parameter> handlers;
+
+            handlers = saxDriverConfig.getParameters("sax-handler");
+            if(handlers != null) {
+                for (Parameter handler : handlers) {
+                    Object handlerObj = createHandler(handler.getValue());
+
+                    if(handlerObj instanceof EntityResolver) {
+                        reader.setEntityResolver((EntityResolver) handlerObj);
+                    }
+                    if(handlerObj instanceof DTDHandler) {
+                        reader.setDTDHandler((DTDHandler) handlerObj);
+                    }
+                    if(handlerObj instanceof ErrorHandler) {
+                        reader.setErrorHandler((ErrorHandler) handlerObj);
+                    }
+                }
+            }
+        }
+    }
+
+    private Object createHandler(String handlerName) throws SAXException {
+        try {
+            Class handlerClass = ClassUtil.forName(handlerName, getClass());
+            return handlerClass.newInstance();
+        } catch (ClassNotFoundException e) {
+            throw new SAXException("Failed to create SAX Handler '" + handlerName + "'.", e);
+        } catch (IllegalAccessException e) {
+            throw new SAXException("Failed to create SAX Handler '" + handlerName + "'.", e);
+        } catch (InstantiationException e) {
+            throw new SAXException("Failed to create SAX Handler '" + handlerName + "'.", e);
+        }
+    }
+
+    private void setFeatures(XMLReader reader) throws SAXNotSupportedException, SAXNotRecognizedException {
         // Try setting the xerces "notify-char-refs" feature, may fail if it's not Xerces but that's OK...
         try {
             reader.setFeature("http://apache.org/xml/features/scanner/notify-char-refs", true);

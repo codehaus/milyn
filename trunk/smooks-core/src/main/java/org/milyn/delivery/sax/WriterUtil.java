@@ -15,6 +15,13 @@
 */
 package org.milyn.delivery.sax;
 
+import org.xml.sax.Attributes;
+
+import javax.xml.namespace.QName;
+import javax.xml.XMLConstants;
+import java.io.Writer;
+import java.io.IOException;
+
 /**
  * {@link SAXElement} writing/serialization utility class.
  * 
@@ -22,27 +29,88 @@ package org.milyn.delivery.sax;
  */
 public class WriterUtil {
 
-    public static void writeEmptyElement(SAXElement element) {
-
+    public static void writeEmptyElement(SAXElement element, Writer writer) throws IOException {
+        if(writer != null) {
+            writeUnclosedElement(element, writer);
+            writer.write(" />");
+        }
     }
 
-    public static void writeStartElement(SAXElement element) {
-
+    public static void writeStartElement(SAXElement element, Writer writer) throws IOException {
+        if(writer != null) {
+            writeUnclosedElement(element, writer);
+            writer.write(">");
+        }
     }
 
-    public static void writeText(SAXElement element, String text) {
+    public static void writeEndElement(SAXElement element, Writer writer) throws IOException {
+        if(writer != null) {
+            QName name = element.getName();
+            String prefix = name.getPrefix();
 
+            writer.write("</");
+            if(prefix != null && !prefix.equals(XMLConstants.NULL_NS_URI)) {
+                writer.write(prefix);
+                writer.write(':');
+            }
+            writer.write(name.getLocalPart());
+            writer.write('>');
+        }
     }
 
-    public static void writeComment(SAXElement element, String comment) {
-
+    public static void writeText(String text, TextType textType, Writer writer) throws IOException {
+        if(writer != null) {
+            if(textType == TextType.TEXT) {
+                writer.write(text);
+            } else if(textType == TextType.COMMENT) {
+                writer.write("<!--");
+                writer.write(text);
+                writer.write("-->");
+            } else if(textType == TextType.CDATA) {
+                writer.write("<![CDATA[");
+                writer.write(text);
+                writer.write("]]>");
+            }
+        }
     }
 
-    public static void writeCDATA(SAXElement element, String cdata) {
+    private static void writeUnclosedElement(SAXElement element, Writer writer) throws IOException {
+        QName name = element.getName();
+        String prefix = name.getPrefix();
 
+        writer.write('<');
+        if(prefix != null && !prefix.equals(XMLConstants.NULL_NS_URI)) {
+            writer.write(prefix);
+            writer.write(':');
+        }
+        writer.write(name.getLocalPart());
+        writeAttributes(element.getAttributes(), writer);
     }
 
-    public static void writeEndElement(SAXElement element) {
+    private static void writeAttributes(Attributes attributes, Writer writer) throws IOException {
+        if(attributes != null) {
+            int attribCount = attributes.getLength();
 
+            for(int i = 0; i < attribCount; i++) {
+                String attQName = attributes.getQName(i);
+                String attValue = attributes.getValue(i);
+
+                writer.write(' ');
+                if(attQName != null) {
+                    writer.write(attQName);
+                } else {
+                    writer.write(attributes.getLocalName(i));
+                }
+                if(attValue.indexOf('"') != -1) {
+                    writer.write("=\'");
+                    writer.write(attValue);
+                    writer.write("\'");
+                } else {
+                    writer.write("=\"");
+                    writer.write(attValue);
+                    writer.write('\"');
+                }
+            }
+        }
     }
 }

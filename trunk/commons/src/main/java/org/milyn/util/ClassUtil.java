@@ -15,14 +15,15 @@
 */
 package org.milyn.util;
 
-import org.milyn.classpath.InstanceOfFilter;
-import org.milyn.classpath.Filter;
-import org.milyn.classpath.Scanner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.classpath.InstanceOfFilter;
+import org.milyn.classpath.Scanner;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 /**
@@ -46,9 +47,9 @@ public class ClassUtil {
 	 *             If the class cannot be found.
 	 */
 	public static Class forName(final String className, final Class caller) throws ClassNotFoundException {
-		final ClassLoader threadClassLoader = Thread.currentThread()
-				.getContextClassLoader();
-		if (threadClassLoader != null) {
+		final ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+        
+        if (threadClassLoader != null) {
 			try {
 				return threadClassLoader.loadClass(className);
 			} catch (final ClassNotFoundException cnfe) {
@@ -122,5 +123,15 @@ public class ClassUtil {
         }
 
         return filter.getClasses();
+    }
+
+    public static Object newProxyInstance(Class[] classes, InvocationHandler handler) {
+        final ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+
+        if (threadClassLoader != null) {
+            return Proxy.newProxyInstance(threadClassLoader, classes, handler);
+        } else {
+            return Proxy.newProxyInstance(ClassUtil.class.getClassLoader(), classes, handler);
+        }
     }
 }

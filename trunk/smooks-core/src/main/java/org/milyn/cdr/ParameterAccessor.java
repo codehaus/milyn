@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
 
 /**
  * Accessor class for looking up profile specific attributes.
@@ -43,7 +46,7 @@ public abstract class ParameterAccessor {
 	/**
 	 * Device parameters .cdrl lookup string.
 	 */
-	public static final String DEVICE_PARAMETERS = "device-parameters";
+	public static final String GLOBAL_PARAMETERS = "global-parameters";
 
 	/**
 	 * Get the named parameter instance (decode).
@@ -155,9 +158,15 @@ public abstract class ParameterAccessor {
     public static Parameter getParameter(String name, Map<String, List<SmooksResourceConfiguration>> resourceConfigurations) {
         AssertArgument.isNotNullAndNotEmpty(name, "name");
         AssertArgument.isNotNull(resourceConfigurations, "resourceConfigurations");
-        List<SmooksResourceConfiguration> configList = resourceConfigurations.get(DEVICE_PARAMETERS);
-        
+        List<SmooksResourceConfiguration> configList = resourceConfigurations.get(GLOBAL_PARAMETERS);
+
         if(configList != null) {
+            // Backward compatibility...
+            List<SmooksResourceConfiguration> cbConfigList = resourceConfigurations.get("device-parameters");
+            if(cbConfigList != null) {
+                configList.addAll(cbConfigList);
+            }
+
             for (SmooksResourceConfiguration resourceConfig : configList) {
                 Parameter param = resourceConfig.getParameter(name);
                 if(param != null) {
@@ -167,5 +176,12 @@ public abstract class ParameterAccessor {
         }
 
         return null;
+    }
+
+    public static void setParameter(String name, String value, Smooks smooks) {
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration(ParameterAccessor.GLOBAL_PARAMETERS);
+
+        config.setParameter(name, value);
+        SmooksUtil.registerResource(config, smooks);
     }
 }

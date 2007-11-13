@@ -27,7 +27,7 @@ import java.io.Writer;
  * {@link org.milyn.delivery.sax.SAXElementVisitor} implementations will be passed
  * an instance of this class for each of the event methods of
  * {@link org.milyn.delivery.sax.SAXElementVisitor}.
- *
+ * <p/>
  * <h3 id="element_cache_object">Element Cache Object</h3>
  * This class supports the concept of a "cache" object which can be get and set through
  * the {@link #getCache()} and {@link #setCache(Object)}.  The cache object can be used by
@@ -37,7 +37,7 @@ import java.io.Writer;
  * Obviously we could have implemented this cache as a straightforward {@link java.util.Map},
  * but that forces you to do silly things in situations where you wish to (for example)
  * store a {@link java.util.List}, or a single Object reference of some other type.
- *
+ * <p/>
  * <h3 id="element-writing">Element Writing/Serialization</h3>
  * Each SAXElement instance has a {@link Writer writer} set on it.
  * {@link org.milyn.delivery.sax.SAXElementVisitor} implementations can take care of
@@ -48,7 +48,7 @@ import java.io.Writer;
  * of their "child elements" by {@link #setWriter(java.io.Writer) setting the writter}
  * on the SAXElement instance they receive.  This works because Smooks passes the
  * writer instance that's set on a SAXElement instance to all of the SAXElement
- * instances created for child elements. 
+ * instances created for child elements.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -57,6 +57,7 @@ public class SAXElement {
     private QName name;
     private Attributes attributes;
     private Object cache;
+    private SAXElement parent;
     private Writer writer;
 
     /**
@@ -73,30 +74,32 @@ public class SAXElement {
      * @param attributes   The attributes attached to the element.  If
      *                     there are no attributes, it shall be an empty
      *                     Attributes object.
+     * @param parent       Parent element, or null if the element is the document root element.
      */
-    public SAXElement(String namespaceURI, String localName, String qName, Attributes attributes) {
-        if(namespaceURI != null) {
+    public SAXElement(String namespaceURI, String localName, String qName, Attributes attributes, SAXElement parent) {
+        if (namespaceURI != null) {
             int colonIndex = -1;
-            
-            if(qName != null && (colonIndex = qName.indexOf(':')) != -1) {
+
+            if (qName != null && (colonIndex = qName.indexOf(':')) != -1) {
                 String prefix = qName.substring(0, colonIndex);
                 String qNameLocalName = qName.substring(colonIndex + 1);
 
                 name = new QName(namespaceURI.intern(), qNameLocalName, prefix);
-            } else if(localName != null && !localName.equals("")) {
+            } else if (localName != null && !localName.equals("")) {
                 name = new QName(namespaceURI.intern(), localName.intern());
-            } else if(qName != null && !qName.equals("")) {
+            } else if (qName != null && !qName.equals("")) {
                 name = new QName(namespaceURI.intern(), qName.intern());
             } else {
                 thowInvalidNameException(namespaceURI, localName, qName);
             }
-        } else if(localName != null && !localName.equals("")) {
+        } else if (localName != null && !localName.equals("")) {
             name = new QName(localName.intern());
         } else {
             thowInvalidNameException(namespaceURI, localName, qName);
         }
-        
+
         this.attributes = attributes;
+        this.parent = parent;
     }
 
     private void thowInvalidNameException(String namespaceURI, String localName, String qName) {
@@ -118,7 +121,7 @@ public class SAXElement {
      * Set the writer to which this element should be writen to.
      * <p/>
      * See <a href="#element-writing">element writing</a>.
-     * 
+     *
      * @param writer The element writer.
      */
     public void setWriter(Writer writer) {
@@ -127,6 +130,7 @@ public class SAXElement {
 
     /**
      * Get the element naming details.
+     *
      * @return Element naming details.
      */
     public QName getName() {
@@ -135,6 +139,7 @@ public class SAXElement {
 
     /**
      * Set the naming details for the Element.
+     *
      * @param name The element naming details.
      */
     public void setName(QName name) {
@@ -144,6 +149,7 @@ public class SAXElement {
 
     /**
      * Get the element attributes.
+     *
      * @return Element attributes.
      */
     public Attributes getAttributes() {
@@ -152,6 +158,7 @@ public class SAXElement {
 
     /**
      * Set the element attributes.
+     *
      * @param attributes The element attributes.
      */
     public void setAttributes(Attributes attributes) {
@@ -175,5 +182,14 @@ public class SAXElement {
      */
     public void setCache(Object cache) {
         this.cache = cache;
+    }
+
+    /**
+     * Get parent element.
+     *
+     * @return Parent element, or null if it's the documnent root.
+     */
+    public SAXElement getParent() {
+        return parent;
     }
 }

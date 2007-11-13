@@ -193,9 +193,12 @@ public class ContentDeliveryConfigBuilder {
             Parameter filterTypeParam = ParameterAccessor.getParameter(STREAM_FILTER_TYPE, resourceConfigTable);
 
             if(filterTypeParam == null) {
-                throw new SmooksException("All configured XML Element Content Handler resource configurations can be " +
-                        "applied using the SAX or DOM Stream Filter.  Please select the appropriate Filter type e.g.\n" +
-                        "\t\t<resource-config selector=\"" + ParameterAccessor.DEVICE_PARAMETERS + "\">\n" +
+                filterType = StreamFilterType.DOM;
+                logger.info("All configured XML Element Content Handler resource configurations can be " +
+                        "applied using the SAX or DOM Stream Filter.  Defaulting to DOM Filter.  Set '" + ParameterAccessor.GLOBAL_PARAMETERS + ":"
+                        + STREAM_FILTER_TYPE + "'.  Turn on debug logging for more info.");
+                logger.debug("You can explicitly select the Filter type as follows:\n" +
+                        "\t\t<resource-config selector=\"" + ParameterAccessor.GLOBAL_PARAMETERS + "\">\n" +
                         "\t\t\t<param name=\"" + STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
                         "\t\t</resource-config>");
             } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.DOM.name())) {
@@ -534,7 +537,7 @@ public class ContentDeliveryConfigBuilder {
 
 			try {
 				if(restype == null || restype.trim().equals("")) {
-					logger.warn("Request to attempt ContentHandlerFactory creation based on a null/empty resource type.");
+					logger.debug("Request to attempt ContentHandlerFactory creation based on a null/empty resource type.");
 					return null;
 				}
 				creator = store.getContentHandlerFactory(restype);

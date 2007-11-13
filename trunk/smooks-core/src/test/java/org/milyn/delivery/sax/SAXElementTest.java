@@ -28,40 +28,40 @@ public class SAXElementTest extends TestCase {
     public void test() {
         SAXElement saxElement;
 
-        saxElement = new SAXElement("http://x", "a", "x", new Attributes2Impl());
+        saxElement = new SAXElement("http://x", "a", "x", new Attributes2Impl(), null);
         assertEquals("http://x", saxElement.getName().getNamespaceURI());
         assertEquals("", saxElement.getName().getPrefix());
         assertEquals("a", saxElement.getName().getLocalPart());
 
-        saxElement = new SAXElement("http://x", "", "x", new Attributes2Impl());
+        saxElement = new SAXElement("http://x", "", "x", new Attributes2Impl(), null);
         assertEquals("http://x", saxElement.getName().getNamespaceURI());
         assertEquals("", saxElement.getName().getPrefix());
         assertEquals("x", saxElement.getName().getLocalPart());
 
-        saxElement = new SAXElement("http://x", "a", "x:a", new Attributes2Impl());
+        saxElement = new SAXElement("http://x", "a", "x:a", new Attributes2Impl(), null);
         assertEquals("http://x", saxElement.getName().getNamespaceURI());
         assertEquals("x", saxElement.getName().getPrefix());
         assertEquals("a", saxElement.getName().getLocalPart());
 
-        saxElement = new SAXElement("http://x", null, "x", new Attributes2Impl());
+        saxElement = new SAXElement("http://x", null, "x", new Attributes2Impl(), null);
         assertEquals("http://x", saxElement.getName().getNamespaceURI());
         assertEquals("", saxElement.getName().getPrefix());
         assertEquals("x", saxElement.getName().getLocalPart());
 
-        saxElement = new SAXElement("http://x", "x", null, new Attributes2Impl());
+        saxElement = new SAXElement("http://x", "x", null, new Attributes2Impl(), null);
         assertEquals("http://x", saxElement.getName().getNamespaceURI());
         assertEquals("", saxElement.getName().getPrefix());
         assertEquals("x", saxElement.getName().getLocalPart());
 
         try {
-            new SAXElement("http://x", null, null, new Attributes2Impl());
+            new SAXElement("http://x", null, null, new Attributes2Impl(), null);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             assertEquals("Invalid SAXELement name paramaters: namespaceURI='http://x', localName='null', qName='null'.", e.getMessage());
         }
 
         try {
-            new SAXElement(null, null, null, new Attributes2Impl());
+            new SAXElement(null, null, null, new Attributes2Impl(), null);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             assertEquals("Invalid SAXELement name paramaters: namespaceURI='null', localName='null', qName='null'.", e.getMessage());

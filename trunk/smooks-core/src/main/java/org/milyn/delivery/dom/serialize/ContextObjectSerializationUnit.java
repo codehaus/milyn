@@ -18,6 +18,10 @@ package org.milyn.delivery.dom.serialize;
 import org.w3c.dom.*;
 import org.milyn.container.ExecutionContext;
 import org.milyn.xml.DomUtils;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.TextType;
+import org.milyn.SmooksException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,7 +36,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ContextObjectSerializationUnit implements SerializationUnit {
+public class ContextObjectSerializationUnit implements SerializationUnit, SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(ContextObjectSerializationUnit.class);
 
@@ -88,5 +92,17 @@ public class ContextObjectSerializationUnit implements SerializationUnit {
         resultElement.appendChild(comment);
 
         return resultElement;
+    }
+
+    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+    }
+
+    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
+    }
+
+    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
+    }
+
+    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 }

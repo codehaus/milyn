@@ -36,7 +36,7 @@ public class ScannerTest extends TestCase {
 
         System.out.println(classes);
         assertEquals(2, classes.size());
-        assertEquals(InstanceOfFilter.class, classes.get(0));
-        assertEquals(Filter.class, classes.get(1));
+        assertTrue(classes.contains(InstanceOfFilter.class));
+        assertTrue(classes.contains(Filter.class));
     }
 }

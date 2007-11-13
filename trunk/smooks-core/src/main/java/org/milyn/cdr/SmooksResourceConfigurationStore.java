@@ -329,7 +329,7 @@ public class SmooksResourceConfigurationStore {
 
     /**
      * Close this resource configuration store, {@link org.milyn.cdr.annotation.Uninitialize uninitializing}
-     * all {@link org.milyn.delivery.ContentHandler ContentDeliveryUnits} allocated from this store instance.
+     * all {@link org.milyn.delivery.ContentHandler ContentHandlers} allocated from this store instance.
      */
     public void close() {
         _close();
@@ -338,7 +338,7 @@ public class SmooksResourceConfigurationStore {
 
     private void _close() {
         if(allocatedUnits != null) {
-            logger.info("Uninitializing all ContentHandler instances allocated through this store.");
+            logger.debug("Uninitializing all ContentHandler instances allocated through this store.");
             for(ContentHandler deliveryUnit : allocatedUnits) {
                 try {
                     logger.debug("Uninitializing ContentHandler instance: " + deliveryUnit.getClass().getName());
