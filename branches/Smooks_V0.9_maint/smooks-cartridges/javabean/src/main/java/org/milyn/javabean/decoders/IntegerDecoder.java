@@ -31,6 +31,9 @@ public class IntegerDecoder implements DataDecoder {
     }
 
     public Object decode(String data) throws DataDecodeException {
+    	if ( data != null && data.equals(""))
+    		return new Integer(0);
+    	
         try {
             return Integer.parseInt(data.trim());
         } catch(NumberFormatException e) {
