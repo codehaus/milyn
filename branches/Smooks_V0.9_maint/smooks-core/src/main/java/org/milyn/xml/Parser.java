@@ -215,6 +215,13 @@ public class Parser {
         } else {
             reader = XMLReaderFactory.createXMLReader();
         }
+        
+	    // Try setting the xerces "notify-char-refs" feature, may fail if it's not Xerces but that's OK...
+        try {
+            reader.setFeature("http://apache.org/xml/features/scanner/notify-char-refs", true);
+        } catch(Throwable t) {
+            // Ignore
+        }
 
 		reader.setContentHandler(contentHandler);
 		reader.setProperty("http://xml.org/sax/properties/lexical-handler", contentHandler);
