@@ -150,6 +150,8 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals(1163616328000L, order.getHeader().getDate().getTime());
         assertEquals("Joe", order.getHeader().getCustomerName());
         assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
+        
+        assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
 
         OrderItem orderItem = order.getOrderItems().get(0);
         assertEquals(8.90d, orderItem.getPrice());
