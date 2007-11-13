@@ -104,11 +104,11 @@ public class URIResourceLocator implements ContainerResourceLocator {
         } else if (scheme == null || scheme.equals(SCHEME_CLASSPATH)) {
             String path = uri.resolvedURI.getPath();
 
-            if (path == null) {
+            if (path == null || path.trim().equals("")) {
                 throw new IllegalArgumentException("Unable to locate resource [" + uri +
                         "].  Resource path not specified in URI.");
             }
-            if (!uri.resolvedURI.isAbsolute()) {
+            if (path.charAt(0) != '/') {
                 path = "/" + path;
             }
             stream = ClassUtil.getResourceAsStream(path, getClass());

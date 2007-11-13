@@ -95,9 +95,9 @@ public abstract class StreamUtils {
      * @return StringBuffer containing the line trimmed stream.
      * @throws IOException
      */
-    public static StringBuffer trimLines(InputStream charStream) throws IOException {
+    public static StringBuffer trimLines(Reader charStream) throws IOException {
         StringBuffer stringBuf = new StringBuffer();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(charStream, "UTF-8"));
+        BufferedReader reader = new BufferedReader(charStream);
         String line;
 
         while((line = reader.readLine()) != null) {
@@ -105,5 +105,16 @@ public abstract class StreamUtils {
         }
 
         return stringBuf;
+    }
+
+    /**
+     * Read the lines lines of characters from the stream and trim each line
+     * i.e. remove all leading and trailing whitespace.
+     * @param charStream Character stream.
+     * @return StringBuffer containing the line trimmed stream.
+     * @throws IOException
+     */
+    public static StringBuffer trimLines(InputStream charStream) throws IOException {
+        return trimLines(new InputStreamReader(charStream, "UTF-8"));
     }
 }

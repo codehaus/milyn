@@ -108,6 +108,24 @@ public class Smooks {
     }
 
     /**
+     * Public constructor.
+     * <p/>
+     * Adds the set of {@link SmooksResourceConfiguration resources} via the {@link #addConfigurations(java.io.InputStream)}.
+     * <p/>
+     * Additional resource configurations can be added through calls to
+     * <code>addConfigurations</code> method set.
+     *
+     * @param resourceConfigStream XML resource configuration stream.
+     * @throws IOException  Error reading resource stream.
+     * @throws SAXException Error parsing the resource stream.
+     * @see SmooksResourceConfiguration
+     */
+    public Smooks(InputStream resourceConfigStream) throws IOException, SAXException {
+        this();
+        addConfigurations(resourceConfigStream);
+    }
+
+    /**
      * Add a set of resource configurations to this Smooks instance.
      * <p/>
      * Uses the {@link org.milyn.resource.URIResourceLocator} class to load the resource.
@@ -160,6 +178,21 @@ public class Smooks {
         } catch (URISyntaxException e) {
             throw new IOException("Failed to read resource configuration. Invalid 'baseURI'.");
         }
+    }
+
+    /**
+     * Add a set of resource configurations to this Smooks instance.
+     * <p/>
+     * Calls {@link #addConfigurations(String, java.io.InputStream)} with a baseURI of "./",
+     * which is the default base URI on all {@link org.milyn.resource.URIResourceLocator}
+     * instances.
+     *
+     * @param resourceConfigStream The resource configuration stream.
+     * @throws IOException  Error reading resource stream.
+     * @throws SAXException Error parsing the resource stream.
+     */
+    public void addConfigurations(InputStream resourceConfigStream) throws SAXException, IOException {
+        addConfigurations("./", resourceConfigStream);
     }
 
     /**
@@ -221,7 +254,6 @@ public class Smooks {
      */
     public void filter(Source source, Result result, StandaloneExecutionContext executionContext) throws SmooksException {
         AssertArgument.isNotNull(source, "source");
-        AssertArgument.isNotNull(result, "result");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
         Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);

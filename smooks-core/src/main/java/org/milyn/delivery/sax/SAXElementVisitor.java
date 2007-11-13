@@ -15,12 +15,61 @@
 */
 package org.milyn.delivery.sax;
 
+import org.milyn.SmooksException;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 
+import java.io.IOException;
+
 /**
- * 
- *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public interface SAXElementVisitor extends ContentHandler {
+
+    /**
+     * Visit the supplied element <b>before</b> visiting its child elements.
+     *
+     * @param element          The SAX element being visited.
+     * @param executionContext Execution context.
+     * @throws SmooksException Event processing failure.
+     * @throws IOException Error writing event to output writer.
+     */
+    public abstract void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException;
+
+    /**
+     * Process the onChildText event for the targeted element.
+     * <p/>
+     * Be careful when caching element data.  This is not a DOM.
+     *
+     * @param element          The targeted SAX element.
+     * @param text             The text.
+     * @param textType         The text type (text, comment cdata etc).
+     * @param executionContext Execution context.
+     * @throws SmooksException Event processing failure.
+     * @throws IOException Error writing event to output writer.
+     */
+    public abstract void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException;
+
+    /**
+     * Process the onChildElement event for the targeted element.
+     * <p/>
+     * Be careful when caching element data.  This is not a DOM.
+     *
+     * @param element          The targeted SAX element.
+     * @param childElement     The child element just added to the targeted element.
+     * @param executionContext Execution context.
+     * @throws SmooksException Event processing failure.
+     * @throws IOException Error writing event to output writer.
+     */
+    public abstract void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException;
+
+    /**
+     * Visit the supplied element <b>after</b> visiting its child elements.
+     *
+     * @param element          The SAX element being visited.
+     * @param executionContext Execution context.
+     * @throws SmooksException Event processing failure.
+     * @throws IOException Error writing event to output writer.
+     */
+    public abstract void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException;
 }

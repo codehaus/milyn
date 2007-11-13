@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
 import org.milyn.dtd.DTDStore;
-import org.milyn.xml.Namespace;
+import org.milyn.xml.DocType;
 import org.w3c.dom.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -141,7 +141,7 @@ public class DOMBuilder extends DefaultHandler2 {
             try {
                 if(attNamespace != null && attQName != null) {
                     attNamespace = attNamespace.intern();
-                    if(attNamespace.equals("")) {
+                    if(attNamespace.equals(XMLConstants.NULL_NS_URI)) {
                         if(attQName.startsWith(XMLConstants.XMLNS_ATTRIBUTE)) {
                             attNamespace = XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
                         } else if(attQName.startsWith("xml:")) {
@@ -273,5 +273,7 @@ public class DOMBuilder extends DefaultHandler2 {
         DocumentType docType = documentBuilder.getDOMImplementation().createDocumentType(name, publicId, systemId);
 
         ownerDocument.appendChild(docType);
+
+        DocType.setDocType(name, publicId, systemId, null, execContext);
     }
 }

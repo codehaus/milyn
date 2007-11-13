@@ -126,8 +126,8 @@ public abstract class Filter {
                 } else if(streamSource.getInputStream() != null) {
                     streamSource.getInputStream().close();
                 }
-            } catch (IOException e) {
-                logger.warn("Failed to close input stream/reader.", e);
+            } catch (Throwable throwable) {
+                logger.warn("Failed to close input stream/reader.", throwable);
             }
         }
     }
@@ -142,8 +142,8 @@ public abstract class Filter {
                 } else if (streamResult.getOutputStream() != null) {
                     streamResult.getOutputStream().close();
                 }
-            } catch (IOException e) {
-                logger.warn("Failed to close output stream/writer.", e);
+            } catch (Throwable throwable) {
+                logger.warn("Failed to close output stream/writer.", throwable);
             }
         }
     }

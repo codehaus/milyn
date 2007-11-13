@@ -15,15 +15,11 @@
 */
 package example;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.apache.log4j.Logger;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
@@ -31,14 +27,13 @@ import org.xml.sax.SAXException;
  * @author <a href="daniel.bevenius@redpill.se">Daniel Bevenius</a>
  */
 public class BasicXslTransformTest extends TestCase {
-	private Logger log = Logger.getLogger( BasicXslTransformTest.class );
 
     public void test() throws IOException, SAXException {
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("expected.xml"));
         String result = Main.runSmooksTransform();
 
-        log.debug(  result );
-        log.debug(  new String(expected) );
+        System.out.println(result );
+        System.out.println(new String(expected) );
         assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(result.getBytes())));
     }
 }

@@ -71,8 +71,20 @@ public class XMLConfigDigesterTest extends TestCase {
         assertProfilesOK(smooks);
     }
 
-    public void test_import() throws IOException, SAXException, URISyntaxException {
+    public void test_import_filesys() throws IOException, SAXException, URISyntaxException {
         Smooks smooks = new Smooks("src/test/java/org/milyn/cdr/testconfig3.cdrl");
+        Iterator<SmooksResourceConfigurationList> listIt = smooks.getApplicationContext().getStore().getSmooksResourceConfigurationLists();
+        SmooksResourceConfigurationList list = null;
+
+        while(listIt.hasNext()) {
+            list = listIt.next();
+        }
+
+        assertResourceConfigOK(list);
+    }
+
+    public void test_import_classpath() throws IOException, SAXException, URISyntaxException {
+        Smooks smooks = new Smooks("/org/milyn/cdr/testconfig3.cdrl");
         Iterator<SmooksResourceConfigurationList> listIt = smooks.getApplicationContext().getStore().getSmooksResourceConfigurationLists();
         SmooksResourceConfigurationList list = null;
 

@@ -16,11 +16,6 @@
 
 package org.milyn.delivery.dom.serialize;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
@@ -30,16 +25,14 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
+import org.milyn.xml.DocType;
 import org.milyn.xml.DomUtils;
-import org.w3c.dom.CDATASection;
-import org.w3c.dom.Comment;
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentType;
-import org.w3c.dom.Element;
-import org.w3c.dom.EntityReference;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Node serializer.
@@ -123,43 +116,17 @@ public class Serializer {
 		if(node instanceof Document) {
 			Document doc = (Document)node;
 			Element rootElement = doc.getDocumentElement();
-			String rootElementName = DomUtils.getName(rootElement);
-			SmooksResourceConfiguration docTypeSmooksResourceConfiguration = null;
 
-			// Check for a DOCTYPE decl SmooksResourceConfigurations for this delivery context.
-			docTypeUDs = deliveryConfig.getSmooksResourceConfigurations("doctype");
-			if(docTypeUDs != null && docTypeUDs.size() > 0) {
-				docTypeSmooksResourceConfiguration = (SmooksResourceConfiguration)docTypeUDs.get(0);
-			}
-			
-			// Only use the cdrdef if the override flag is set.  The override flag will
-			// cause this DOCTYPE to override any DOCYTPE decl from the source doc.
-			if(docTypeSmooksResourceConfiguration != null && docTypeSmooksResourceConfiguration.getBoolParameter("override", true)) {
-				String path = docTypeSmooksResourceConfiguration.getResource();
-                
-				if(path != null) {
-					writer.write(new String(docTypeSmooksResourceConfiguration.getBytes()));
-				} else {
-					String publicId = docTypeSmooksResourceConfiguration.getStringParameter("publicId", "!!publicId undefined - fix smooks-resource!!");
-					String systemId = docTypeSmooksResourceConfiguration.getStringParameter("systemId", "!!systemId undefined - fix smooks-resource!!");
-					String xmlns = docTypeSmooksResourceConfiguration.getStringParameter("xmlns");
+            DocType.DocumentTypeData docTypeData = DocType.getDocType(executionContext);
+            if(docTypeData != null) {
+                DocType.serializeDoctype(docTypeData, writer);
+                if(docTypeData.getXmlns() != null) {
+                    rootElement.setAttribute("xmlns", docTypeData.getXmlns());
+                } else {
+                    rootElement.removeAttribute("xmlns");
+                }
+            }
 
-					serializeDoctype(publicId, systemId, rootElementName, writer);
-					if(xmlns != null) {
-						rootElement.setAttribute("xmlns", xmlns);
-					} else {
-						rootElement.removeAttribute("xmlns");
-					}
-				}
-			} else {
-				// If there's no SmooksResourceConfiguration doctypes defined, was there a DOCTYPE decl in 
-				// the source Document?  If there was, write this out as the DOCTYPE.
-				DocumentType docType = doc.getDoctype();
-				
-				if(docType != null) {
-					serializeDoctype(docType.getPublicId(), docType.getSystemId(), rootElementName, writer);
-				}
-			}
             recursiveDOMWrite(rootElement, writer, true);
 		} else {
             // Write the DOM, the child elements of the node

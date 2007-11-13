@@ -164,10 +164,8 @@ public class SmooksResourceConfigurationList {
 
         if(loadedResources.contains(resource)) {
             URI lastLoaded = loadedResources.get(loadedResources.size() - 1);
-            URI originalLoader = loadedResources.get(Math.max(0, loadedResources.indexOf(resource) - 1));
 
-            logger.info("Not adding resource config import '" + resource + "' (specified in resource config '" + lastLoaded + "').  " +
-                    "'" + resource + "' is already loaded on this list (by '" + originalLoader + "').");
+            logger.info("Not adding resource config import '" + resource + "'.  This resource is already loaded on this list.");
 
             return false;
         }
