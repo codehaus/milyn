@@ -4,7 +4,7 @@
     <y:h attrib1='11"11' y:attrib2="1111" />
     <g>gvalue <!-- Comment --></g>
     <!-- Comment -->
-    <h> Some text...
+    <h> Some text... &amp; ... &lt; ...
         <i><![CDATA[cdata data]]></i>
     </h>
 </xx>

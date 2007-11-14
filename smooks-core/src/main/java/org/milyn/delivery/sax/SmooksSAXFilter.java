@@ -54,6 +54,11 @@ public class SmooksSAXFilter extends Filter {
             SAXParser parser = new SAXParser(executionContext);
 
             parser.parse(reader, writer);
+            try {
+                writer.flush();
+            } finally {
+                writer.close();
+            }
         } catch (Exception e) {
             throw new SmooksException("Failed to filter source.", e);
         } finally {

@@ -98,6 +98,10 @@ public class SAXHandler extends DefaultHandler2 {
         // And visit it with the targeted visitor...
         try {
             currentProcessor.visitor.visitBefore(currentProcessor.element, execContext);
+            Writer writer = currentProcessor.element.getWriter();
+            if(writer != null) {
+                writer.flush();
+            }
         } catch(Throwable t) {
             logger.error("Error in '" + currentProcessor.visitor.getClass().getName() + "' while processing the visitBefore event.", t);
         }
@@ -106,6 +110,10 @@ public class SAXHandler extends DefaultHandler2 {
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         try {
             currentProcessor.visitor.visitAfter(currentProcessor.element, execContext);
+            Writer writer = currentProcessor.element.getWriter();
+            if(writer != null) {
+                writer.flush();
+            }
         } catch(Throwable t) {
             logger.error("Error in '" + currentProcessor.visitor.getClass().getName() + "' while processing the visitAfter event.", t);
         }
@@ -118,6 +126,10 @@ public class SAXHandler extends DefaultHandler2 {
         if(currentProcessor != null) {
             try {
                 currentProcessor.visitor.onChildText(currentProcessor.element, new String(ch, start, length), currentTextType, execContext);
+                Writer writer = currentProcessor.element.getWriter();
+                if(writer != null) {
+                    writer.flush();
+                }
             } catch(Throwable t) {
                 logger.error("Error in '" + currentProcessor.visitor.getClass().getName() + "' while processing the onChildText event.", t);
             }

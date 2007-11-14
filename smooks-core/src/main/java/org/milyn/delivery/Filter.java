@@ -18,6 +18,7 @@ package org.milyn.delivery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.io.NullWriter;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 
@@ -97,7 +98,7 @@ public abstract class Filter {
 
     protected Writer getWriter(StreamResult streamResult, ExecutionContext executionContext) {
         if(streamResult == null) {
-            return null;
+            return new NullWriter();
         }
 
         if(streamResult.getWriter() != null) {
@@ -138,9 +139,19 @@ public abstract class Filter {
 
             try {
                 if (streamResult.getWriter() != null) {
-                    streamResult.getWriter().close();
+                    Writer writer = streamResult.getWriter();
+                    try {
+                        writer.flush();
+                    } finally {
+                        writer.close();
+                    }
                 } else if (streamResult.getOutputStream() != null) {
-                    streamResult.getOutputStream().close();
+                    OutputStream stream = streamResult.getOutputStream();
+                    try {
+                        stream.flush();
+                    } finally {
+                        stream.close();
+                    }
                 }
             } catch (Throwable throwable) {
                 logger.warn("Failed to close output stream/writer.", throwable);

@@ -23,10 +23,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -43,5 +40,33 @@ public class SAXFilterTest extends TestCase {
         assertEquals(StreamUtils.trimLines(new StringReader(input)).toString(), StreamUtils.trimLines(new StringReader(writer.toString())).toString());
     }
 
-    // TODO:  Add more tests.  Something funny about using a ByteArrayOutputStream for the result!!!
+    public void test_reader_stream() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
+        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+        smooks.filter(new StreamSource(new StringReader(input)), new StreamResult(outStream), execContext);
+        assertEquals(StreamUtils.trimLines(new StringReader(input)).toString(), StreamUtils.trimLines(new StringReader(outStream.toString())).toString());
+    }
+
+    public void test_stream_stream() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
+        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+        smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), new StreamResult(outStream), execContext);
+        assertEquals(StreamUtils.trimLines(new StringReader(input)).toString(), StreamUtils.trimLines(new StringReader(outStream.toString())).toString());
+    }
+
+    public void test_stream_writer() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
+        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
+        StringWriter writer = new StringWriter();
+
+        smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), new StreamResult(writer), execContext);
+        assertEquals(StreamUtils.trimLines(new StringReader(input)).toString(), StreamUtils.trimLines(new StringReader(writer.toString())).toString());
+    }
 }
