@@ -25,10 +25,16 @@ import junit.framework.TestCase;
 public class IntegerDecodingTest extends TestCase {
 	private IntegerDecoder decoder = new IntegerDecoder();
 
-    public void test_CalendarDecoder() {
+    public void test_CalendarDecoder_empty_data_string() {
         Object decode = decoder.decode( "" );
         assertTrue( decode instanceof Integer);
         assertEquals( new Integer(0), (Integer)decode);
     }
+    
+    public void test_CalendarDecoder_null_data_string() {
+        Object decode = decoder.decode( null );
+        assertEquals( new Integer(0), (Integer)decode);
+    }
+
 
 }
