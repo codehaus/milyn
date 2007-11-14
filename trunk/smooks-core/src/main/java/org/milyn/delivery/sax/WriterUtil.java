@@ -15,12 +15,13 @@
 */
 package org.milyn.delivery.sax;
 
+import org.milyn.xml.HTMLEntityLookup;
 import org.xml.sax.Attributes;
 
-import javax.xml.namespace.QName;
 import javax.xml.XMLConstants;
-import java.io.Writer;
+import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.io.Writer;
 
 /**
  * {@link SAXElement} writing/serialization utility class.
@@ -70,6 +71,10 @@ public class WriterUtil {
                 writer.write("<![CDATA[");
                 writer.write(text);
                 writer.write("]]>");
+            } else if(textType == TextType.ENTITY) {
+                writer.write("&");
+                writer.write(HTMLEntityLookup.getEntityRef(text.charAt(0)));
+                writer.write(';');
             }
         }
     }

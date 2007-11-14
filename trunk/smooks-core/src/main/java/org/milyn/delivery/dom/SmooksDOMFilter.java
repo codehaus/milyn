@@ -194,11 +194,15 @@ public class SmooksDOMFilter extends Filter {
             // Populate the Result
             if (result instanceof StreamResult) {
                 StreamResult streamResult = ((StreamResult) result);
-                Writer writer;
-
-                writer = getWriter(streamResult, executionContext);
+                Writer writer = getWriter(streamResult, executionContext);
+                
                 try {
                     serialize(resultNode, writer);
+                    try {
+                        writer.flush();
+                    } finally {
+                        writer.close();
+                    }
                 } catch (IOException e) {
                     logger.error("Error writing result to output stream.", e);
                 }
