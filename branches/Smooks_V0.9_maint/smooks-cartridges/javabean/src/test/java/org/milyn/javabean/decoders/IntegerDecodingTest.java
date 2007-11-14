@@ -32,7 +32,11 @@ public class IntegerDecodingTest extends TestCase {
         Object decode = decoder.decode( "" );
         
         assertTrue( decode instanceof Integer);
-        
+        assertEquals( new Integer(0), (Integer)decode);
+    }
+    
+    public void test_CalendarDecoder_null_data_string() {
+        Object decode = decoder.decode( null );
         assertEquals( new Integer(0), (Integer)decode);
     }
 

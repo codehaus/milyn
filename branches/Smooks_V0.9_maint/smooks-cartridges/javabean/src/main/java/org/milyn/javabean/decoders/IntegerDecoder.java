@@ -31,7 +31,7 @@ public class IntegerDecoder implements DataDecoder {
     }
 
     public Object decode(String data) throws DataDecodeException {
-    	if ( data != null && data.equals(""))
+    	if ( data == null || data.equals(""))
     		return new Integer(0);
     	
         try {
