@@ -226,7 +226,7 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
                 String setOnProperty = config.getStringParameter("setOnProperty");
                 if(setOnProperty == null) {
                     // If 'setOnProperty' is not defined, default to the name of this bean...
-                    setOnProperty = toBeanId(beanClass);
+                    setOnProperty = beanId;
                     if(addToList && !setOnProperty.endsWith("s")) {
                         setOnProperty += "s";
                     }
