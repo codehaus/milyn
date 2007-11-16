@@ -165,6 +165,7 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
     private Method setOnBeanSetterMethod;
     private boolean isAttribute = true;
     private DataDecoder decoder;
+    private boolean setOnUnconfigured;
 
     /**
      * Set the resource configuration on the bean populator.
@@ -223,6 +224,8 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
         if (setOn != null) {
             setOnMethod = config.getStringParameter("setOnMethod");
             if(setOnMethod == null) {
+                setOnUnconfigured = true;
+
                 String setOnProperty = config.getStringParameter("setOnProperty");
                 if(setOnProperty == null) {
                     // If 'setOnProperty' is not defined, default to the name of this bean...
@@ -458,27 +461,31 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
                 // Set the bean instance on another bean. Supports creating an object graph
                 Object setOnBean = BeanAccessor.getBean(setOn, execContext);
                 if (setOnBean != null) {
-                    try {
-                        if (setOnBeanSetterMethod == null) {
-                            if (!addToList) {
-                                setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
-                            } else {
-                                setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, List.class);
+                    if(setOnUnconfigured && setOnBean instanceof Collection) {
+                        ((Collection)setOnBean).add(bean);
+                    } else {
+                        try {
+                            if (setOnBeanSetterMethod == null) {
+                                if (!addToList) {
+                                    setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
+                                } else {
+                                    setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, List.class);
+                                }
                             }
+                            if(logger.isDebugEnabled()) {
+                                logger.debug("Setting bean '" + beanId + "' on parent bean '" + setOn + "'.");
+                            }
+                            if (!addToList) {
+                                setOnBeanSetterMethod.invoke(setOnBean, bean);
+                            } else {
+                                Object beanList = BeanAccessor.getBean(beanId + "List", execContext);
+                                setOnBeanSetterMethod.invoke(setOnBean, beanList);
+                            }
+                        } catch (IllegalAccessException e) {
+                            throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
+                        } catch (InvocationTargetException e) {
+                            throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
                         }
-                        if(logger.isDebugEnabled()) {
-                            logger.debug("Setting bean '" + beanId + "' on parent bean '" + setOn + "'.");
-                        }
-                        if (!addToList) {
-                            setOnBeanSetterMethod.invoke(setOnBean, bean);
-                        } else {
-                            Object beanList = BeanAccessor.getBean(beanId + "List", execContext);
-                            setOnBeanSetterMethod.invoke(setOnBean, beanList);
-                        }
-                    } catch (IllegalAccessException e) {
-                        throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
-                    } catch (InvocationTargetException e) {
-                        throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
                     }
                 } else {
                     logger.error("Failed to set bean '" + beanId + "' on parent bean '" + setOn + "'.  Failed to find bean '" + setOn + "'.");

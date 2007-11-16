@@ -36,5 +36,6 @@ public class SJTestimonialTest extends TestCase {
         assertEquals(1, rollingstocks.get(0).getVehicles().size());
         assertEquals(2, rollingstocks.get(1).getVehicles().size());
         assertEquals(1, rollingstocks.get(2).getVehicles().size());
+        assertEquals(2, rollingstocks.get(2).getVehicles().get(0).getComments().size());
     }
 }
