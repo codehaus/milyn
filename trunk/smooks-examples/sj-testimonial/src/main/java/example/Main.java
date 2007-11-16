@@ -66,7 +66,7 @@ public class Main {
         System.out.println("==============Message Out=============");
         
 		Vector rollingstocks = (Vector) beans.get( "rollingstockList" );
-		System.out.println( beans );
+		System.out.println( rollingstocks );
 		System.out.println( "======================================\n\n");
 
 
