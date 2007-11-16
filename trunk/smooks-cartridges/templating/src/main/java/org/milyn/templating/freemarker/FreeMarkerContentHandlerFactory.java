@@ -1,26 +1,25 @@
 package org.milyn.templating.freemarker;
 
-import org.milyn.delivery.ContentHandlerFactory;
-import org.milyn.delivery.ContentHandler;
-import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
-import org.milyn.cdr.SmooksResourceConfiguration;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
-import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import java.util.HashMap;
 import java.io.*;
-
-import freemarker.template.Template;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
+import java.util.Map;
 
 /**
  * FreeMarker {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
@@ -145,7 +144,7 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
         }
 
         protected void visit(Element element, ExecutionContext executionContext) {
-            HashMap beans = BeanAccessor.getBeans(executionContext);
+            Map beans = BeanAccessor.getBeanMap(executionContext);
             Writer writer = new StringWriter();
             String templatingResult;
             Node resultNode;

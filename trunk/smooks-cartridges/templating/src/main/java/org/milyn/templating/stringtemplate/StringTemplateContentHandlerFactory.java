@@ -16,12 +16,10 @@
 
 package org.milyn.templating.stringtemplate;
 
-import java.util.HashMap;
-
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
@@ -32,6 +30,8 @@ import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import java.util.Map;
 
 /**
  * StringTemplate {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
@@ -137,7 +137,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
         protected void visit(Element element, ExecutionContext executionContext) {
             // First thing we do is clone the template for this transformation...
             StringTemplate thisTransTemplate = template.getInstanceOf();
-            HashMap beans = BeanAccessor.getBeans(executionContext);
+            Map beans = BeanAccessor.getBeanMap(executionContext);
             String templatingResult;
             Node resultNode;
 
