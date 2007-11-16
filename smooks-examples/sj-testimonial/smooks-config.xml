@@ -72,7 +72,7 @@
 		</param>
 	</resource-config>
 	
-    <resource-config selector="rollingstocks">
+    <resource-config selector="rollingstocks rollingstock">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Rollingstock</param>
         <param name="addToList">true</param>
@@ -81,7 +81,7 @@
         </param>
     </resource-config>
     
-	<resource-config selector="rollingstocks">
+	<resource-config selector="rollingstocks rollingstock">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="setOn">rollingstock</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Schedule</param>
