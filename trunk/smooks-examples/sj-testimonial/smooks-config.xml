@@ -80,6 +80,7 @@
 
     <resource-config selector="rollingstocks rollingstock">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">rollingstock</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Rollingstock</param>
         <param name="setOn">rollingstocks</param>
         <param name="setOnMethod">add</param>
@@ -87,9 +88,10 @@
             <binding property="rollingstockId" selector="rollingstock rollingstockId" />
         </param>
     </resource-config>
-    
-	<resource-config selector="rollingstocks rollingstock">
+
+    <resource-config selector="rollingstocks rollingstock">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">schedule</param>
         <param name="setOn">rollingstock</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Schedule</param>
         <param name="bindings">
@@ -99,12 +101,20 @@
             <binding property="departureStation" type="String" selector="rollingstock departureSignature" />
         </param>
     </resource-config>
-    
+
+    <resource-config selector="rollingstocks rollingstock">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">vehicles</param>
+        <param name="beanClass">java.util.ArrayList</param>
+        <param name="setOn">rollingstock</param>
+    </resource-config>
+
     <resource-config selector="rollingstock vehicle">
         <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="setOn">rollingstock</param>
+        <param name="beanId">vehicle</param>
+        <param name="setOn">vehicles</param>
+        <param name="setOnMethod">add</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Vehicle</param>
-        <param name="addToList">true</param>
         <param name="bindings">
             <binding property="litt" type="String" selector="vehicle litt" />
             <binding property="originalLitt" type="String" selector="vehicle originalLitt" />
@@ -118,38 +128,39 @@
         </param>
     </resource-config>
     
-    <resource-config selector="weight">
+    <resource-config selector="rollingstock vehicle">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">weight</param>
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
         <param name="bindings">
+            <!-- Should only be one of the following... -->
             <binding property="weight" type="Double" selector="vehicle weight" />
+            <binding property="weight" type="Double" selector="vehicle dynamicWeight" />
+            <binding property="weight" type="Double" selector="vehicle brakeWeight" />
         </param>
     </resource-config>
-    
-    <resource-config selector="vehicle dynamicWeight">
+
+    <resource-config selector="rollingstock vehicle">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">comments</param>
+        <param name="beanClass">java.util.ArrayList</param>
         <param name="setOn">vehicle</param>
-        <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
-        <param name="bindings">
-            <binding property="weight" type="Double" selector="dynamicWeight" />
-        </param>
     </resource-config>
-    
-    <resource-config selector="brakeWeight">
+
+    <resource-config selector="rollingstock vehicle">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">phoneNumbers</param>
+        <param name="beanClass">java.util.ArrayList</param>
         <param name="setOn">vehicle</param>
-        <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
-        <param name="bindings">
-            <binding property="weight" type="Double" selector="rollingstock vehicle brakeWeight" />
-        </param>
     </resource-config>
-    
+
     <resource-config selector="comment">
         <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="setOn">vehicle</param>
+        <param name="beanId">comment</param>
+        <param name="setOn">comments</param>
+        <param name="setOnMethod">add</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Comment</param>
-        <param name="addToList">true</param>
         <param name="bindings">
             <binding property="comment" type="String" selector="comment" />
         </param>
@@ -157,9 +168,10 @@
     
     <resource-config selector="Vehicle phoneNumber">
         <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="setOn">vehicle</param>
+        <param name="beanId">phoneNumber</param>
+        <param name="setOn">phoneNumbers</param>
+        <param name="setOnMethod">add</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.PhoneNumber</param>
-        <param name="addToList">true</param>
         <param name="bindings">
             <binding property="function" type="String" selector="phoneNumber function" />
             <binding property="location" type="String" selector="phoneNumber location" />
