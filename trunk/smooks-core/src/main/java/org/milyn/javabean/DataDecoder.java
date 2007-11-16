@@ -88,24 +88,28 @@ public interface DataDecoder extends ContentHandler {
 
         private synchronized static void loadInstalledDecoders() throws DataDecodeException {
             if(installedDecoders == null) {
-                List<Class> decoders = ClassUtil.findInstancesOf(DataDecoder.class);
+                synchronized (Factory.class) {
+                    if(installedDecoders == null) {
+                        List<Class> decoders = ClassUtil.findInstancesOf(DataDecoder.class, null, new String[] {"org/milyn"});
 
-                if(decoders.isEmpty()) {
-                    throw new DataDecodeException("Failed to find installed DataDecoders on clasaspath.");
-                }
+                        if(decoders.isEmpty()) {
+                            throw new DataDecodeException("Failed to find installed DataDecoders on clasaspath.");
+                        }
 
-                installedDecoders = new HashMap<Class, Class<? extends DataDecoder>>();
-                for (Class decoder : decoders) {
-                    DecodeType decoodeType = (DecodeType) decoder.getAnnotation(DecodeType.class);
-                    if(decoodeType != null) {
-                        Class[] types = decoodeType.value();
+                        installedDecoders = new HashMap<Class, Class<? extends DataDecoder>>();
+                        for (Class decoder : decoders) {
+                            DecodeType decoodeType = (DecodeType) decoder.getAnnotation(DecodeType.class);
+                            if(decoodeType != null) {
+                                Class[] types = decoodeType.value();
 
-                        for (Class type : types) {
-                            if(installedDecoders.containsKey(type)) {
-                                logger.warn("More than one DataDecoder for type '" + type.getName() + "' is installed on the classpath.  You must manually configure decoding of this type, where required.");
-                                installedDecoders.put(type, null); // We don't remove, because we need to maintain a record of this!
-                            } else {
-                                installedDecoders.put(type, decoder);
+                                for (Class type : types) {
+                                    if(installedDecoders.containsKey(type)) {
+                                        logger.warn("More than one DataDecoder for type '" + type.getName() + "' is installed on the classpath.  You must manually configure decoding of this type, where required.");
+                                        installedDecoders.put(type, null); // We don't remove, because we need to maintain a record of this!
+                                    } else {
+                                        installedDecoders.put(type, decoder);
+                                    }
+                                }
                             }
                         }
                     }

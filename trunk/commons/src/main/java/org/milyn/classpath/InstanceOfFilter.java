@@ -33,6 +33,7 @@ public class InstanceOfFilter implements Filter {
     private static Log logger = LogFactory.getLog(InstanceOfFilter.class);
     private Class searchType;
     private List<Class> classes = new ArrayList<Class>();
+    private String[] includeList = null;
     private String[] igrnoreList = defaultIgnoreList;
     private static String[] defaultIgnoreList = new String[] {
             "java/", "javax/", "netscape/", "sun/", "com/sun", "org/omg", "org/xml", "org/w3c", "junit/", "org/apache/commons", "org/apache/log4j", 
@@ -43,11 +44,13 @@ public class InstanceOfFilter implements Filter {
         this.searchType = searchType;
     }
 
-    public InstanceOfFilter(Class searchType, String[] igrnoreList) {
+    public InstanceOfFilter(Class searchType, String[] igrnoreList, String[] includeList) {
         AssertArgument.isNotNull(searchType, "searchType");
-        AssertArgument.isNotNull(igrnoreList, "igrnoreList");
         this.searchType = searchType;
-        this.igrnoreList = igrnoreList;
+        if(igrnoreList != null) {
+            this.igrnoreList = igrnoreList;
+        }
+        this.includeList = includeList;
     }
 
     public void filter(String resourceName) {
@@ -60,12 +63,21 @@ public class InstanceOfFilter implements Filter {
                     classes.add(clazz);
                 }
             } catch (Throwable throwable) {
-                logger.debug("Possible Scanner error.  Resource '" + resourceName + "' presented to '" + InstanceOfFilter.class.getName() + "', but not loadable by classloader.", throwable);
+                logger.debug("Resource '" + resourceName + "' presented to '" + InstanceOfFilter.class.getName() + "', but not loadable by classloader.  Ignoring.", throwable);
             }
         }
     }
 
     private boolean isIgnorable(String resourceName) {
+        if(includeList != null) {
+            for(String include : includeList) {
+                if(resourceName.startsWith(include)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         for(String ignore : igrnoreList) {
             if(resourceName.startsWith(ignore)) {
                 return true;
