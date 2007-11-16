@@ -16,6 +16,8 @@ public class DoubleDecoder implements DataDecoder {
     }
 
     public Object decode(String data) throws DataDecodeException {
+    	if(data == null || data.trim().equals("") )
+    		return 0.0d;
         try {
             return Double.parseDouble(data.trim());
         } catch(NumberFormatException e) {
