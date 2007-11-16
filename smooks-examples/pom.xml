@@ -26,6 +26,7 @@
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
+        <module>sj-testimonial</module>        
     </modules>
 
     <properties>

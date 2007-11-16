@@ -161,7 +161,7 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
     private Class beanClass;
     private String property;
     private Method beanSetterMethod;
-    private String setOnProperty; // The name of the property on the bean on which this bean is being set (default to the name of this bean)
+    private String setOnMethod;
     private Method setOnBeanSetterMethod;
     private boolean isAttribute = true;
     private DataDecoder decoder;
@@ -221,8 +221,18 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
 
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
-            // If 'setOnProperty' is not defined, default to the name of this bean...
-            setOnProperty = config.getStringParameter("setOnProperty", beanId);
+            setOnMethod = config.getStringParameter("setOnMethod");
+            if(setOnMethod == null) {
+                String setOnProperty = config.getStringParameter("setOnProperty");
+                if(setOnProperty == null) {
+                    // If 'setOnProperty' is not defined, default to the name of this bean...
+                    setOnProperty = toBeanId(beanClass);
+                    if(addToList && !setOnProperty.endsWith("s")) {
+                        setOnProperty += "s";
+                    }
+                }
+                setOnMethod = toSetterName(setOnProperty);
+            }
         }
 
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].  Add to list=" + addToList + ", attributeName=" + attributeName + ", property=" + property);
@@ -367,7 +377,7 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
 
         // If we need to create the bean setter method instance...
         if (beanSetterMethod == null) {
-            beanSetterMethod = createBeanSetterMethod(bean, property, dataObject.getClass());
+            beanSetterMethod = createBeanSetterMethod(bean, toSetterName(property), dataObject.getClass());
         }
 
         // Set the data on the bean...
@@ -432,6 +442,12 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
         // configured, create a new instance and set it on the request...
         if (beanClass != null) {
             bean = createBeanInstance();
+
+            if (setOn != null) {
+                // Need to associate the 2 bean lifecycles...
+                BeanAccessor.associateLifecycles(execContext, setOn, beanId, addToList);
+            }
+
             BeanAccessor.addBean(beanId, bean, execContext, addToList);
             if (logger.isDebugEnabled()) {
                 logger.debug("Bean [" + beanId + "] instance created.");
@@ -445,9 +461,9 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
                     try {
                         if (setOnBeanSetterMethod == null) {
                             if (!addToList) {
-                                setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnProperty, bean.getClass());
+                                setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
                             } else {
-                                setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnProperty, List.class);
+                                setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, List.class);
                             }
                         }
                         if(logger.isDebugEnabled()) {
@@ -460,9 +476,9 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
                             setOnBeanSetterMethod.invoke(setOnBean, beanList);
                         }
                     } catch (IllegalAccessException e) {
-                        throw new SmooksConfigurationException("Error invoking bean setter method [" + toSetterName(setOnProperty) + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
+                        throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
                     } catch (InvocationTargetException e) {
-                        throw new SmooksConfigurationException("Error invoking bean setter method [" + toSetterName(setOnProperty) + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
+                        throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
                     }
                 } else {
                     logger.error("Failed to set bean '" + beanId + "' on parent bean '" + setOn + "'.  Failed to find bean '" + setOn + "'.");
@@ -475,7 +491,7 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
                 logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  Using [" + bean + "]");
             }
             if (bean == null) {
-                throw new SmooksConfigurationException("Bean instance [id=" + beanId + "] not available and bean runtime class not set on configuration.");
+                throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");
             }
         }
 
@@ -531,14 +547,13 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
     /**
      * Create the bean setter method instance for this visitor.
      *
-     * @param bean The bean instance on which the setter method is to be
+     * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized Method createBeanSetterMethod(Object bean, String beanProperty, Class type) {
+    private synchronized Method createBeanSetterMethod(Object bean, String setterName, Class type) {
         if (beanSetterMethod == null) {
-            String setterName = toSetterName(beanProperty);
-
             beanSetterMethod = getMethod(type, bean, setterName);
+            
             // Try it as a list...
             if (beanSetterMethod == null && List.class.isAssignableFrom(type)) {
                 beanSetterMethod = getMethod(type, bean, setterName + "s");

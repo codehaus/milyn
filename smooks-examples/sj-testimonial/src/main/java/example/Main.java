@@ -17,19 +17,16 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.xml.XmlUtil;
-import org.milyn.io.StreamUtils;
 import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.dom.DOMResult;
-import java.io.*;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Vector;
+import org.milyn.io.StreamUtils;
 import org.milyn.javabean.BeanAccessor;
+import org.xml.sax.SAXException;
+import se.sj.ipl.rollingstock.domain.RollingStockList;
+
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.util.Map;
 
 /**
  * Simple example main class.
@@ -38,9 +35,8 @@ import org.milyn.javabean.BeanAccessor;
 public class Main {
 
     private static byte[] messageIn = readInputMessage();
-	private static HashMap beans;
 
-    protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
+    protected static Map runSmooksTransform() throws IOException, SAXException, SmooksException {
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
          // Create an exec context - no profiles....
@@ -49,9 +45,8 @@ public class Main {
         // Filter the input message to the outputWriter, using the execution context...
         DOMResult domResult = new DOMResult();
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
-		beans = BeanAccessor.getBeans( executionContext );
 
-        return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
+        return BeanAccessor.getBeanMap( executionContext );
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {
@@ -61,14 +56,13 @@ public class Main {
 
         pause("The EDI input stream can be seen above.  Press 'enter' to see this stream transformed into the Java Object model...");
 
-        String messageOut = Main.runSmooksTransform();
+        Map beans = Main.runSmooksTransform();
 
         System.out.println("==============Message Out=============");
         
-		Vector rollingstocks = (Vector) beans.get( "rollingstockList" );
+		RollingStockList rollingstocks = (RollingStockList) beans.get( "rollingstocks" );
 		System.out.println( rollingstocks );
 		System.out.println( "======================================\n\n");
-
 
         pause("And that's it!  Press 'enter' to finish...");
     }

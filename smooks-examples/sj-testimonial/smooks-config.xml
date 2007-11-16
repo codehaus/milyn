@@ -71,11 +71,18 @@
 		]]>
 		</param>
 	</resource-config>
-	
+
+    <resource-config selector="rollingstocks">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">rollingstocks</param>
+        <param name="beanClass">se.sj.ipl.rollingstock.domain.RollingStockList</param>
+    </resource-config>
+
     <resource-config selector="rollingstocks rollingstock">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Rollingstock</param>
-        <param name="addToList">true</param>
+        <param name="setOn">rollingstocks</param>
+        <param name="setOnMethod">add</param>
         <param name="bindings">
             <binding property="rollingstockId" selector="rollingstock rollingstockId" />
         </param>
@@ -93,21 +100,21 @@
         </param>
     </resource-config>
     
-    <resource-config selector="rollingstocks">
+    <resource-config selector="rollingstock vehicle">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="setOn">rollingstock</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Vehicle</param>
         <param name="addToList">true</param>
         <param name="bindings">
-            <binding property="litt" type="String" selector="rollingstock vehicle litt" />
-            <binding property="originalLitt" type="String" selector="rollingstock vehicle originalLitt" />
-            <binding property="ticketId" type="String" selector="rollingstock vehicle ticketId" />
-            <binding property="vehicleType" type="String" selector="rollingstock vehicle vehicleType" />
-            <binding property="nrOfAxles" type="Integer" selector="rollingstock vehicle nrOfAxles" />
-            <binding property="serviceType" type="String" selector="rollingstock vehicle serviceType" />
-            <binding property="canDoorsBeLocked" type="Boolean" selector="rollingstock vehicle canDoorsBeLocked" />
-            <binding property="positionInTrainAssembly" type="Boolean" selector="rollingstock vehicle positionInTrainAssembly" />
-            <binding property="comments" type="comments" selector="rollingstock vehicle comments" />
+            <binding property="litt" type="String" selector="vehicle litt" />
+            <binding property="originalLitt" type="String" selector="vehicle originalLitt" />
+            <binding property="ticketId" type="String" selector="vehicle ticketId" />
+            <binding property="vehicleType" type="String" selector="vehicle vehicleType" />
+            <binding property="nrOfAxles" type="Integer" selector="vehicle nrOfAxles" />
+            <binding property="serviceType" type="String" selector="vehicle serviceType" />
+            <binding property="canDoorsBeLocked" type="Boolean" selector="vehicle canDoorsBeLocked" />
+            <binding property="positionInTrainAssembly" type="Boolean" selector="vehicle positionInTrainAssembly" />
+            <binding property="comments" type="comments" selector="vehicle comments" />
         </param>
     </resource-config>
     
@@ -116,7 +123,7 @@
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
         <param name="bindings">
-            <binding property="weight" type="Double" selector="rollingstock vehicle weight" />
+            <binding property="weight" type="Double" selector="vehicle weight" />
         </param>
     </resource-config>
     
@@ -148,15 +155,15 @@
         </param>
     </resource-config>
     
-    <resource-config selector="phonenumber">
+    <resource-config selector="Vehicle phoneNumber">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.PhoneNumber</param>
         <param name="addToList">true</param>
         <param name="bindings">
-            <binding property="function" type="String" selector="function" />
-            <binding property="location" type="String" selector="location" />
-            <binding property="number" type="String" selector="phoneNumber" />
+            <binding property="function" type="String" selector="phoneNumber function" />
+            <binding property="location" type="String" selector="phoneNumber location" />
+            <binding property="number" type="String" selector="phoneNumber phoneNumber" />
         </param>
     </resource-config>
     
