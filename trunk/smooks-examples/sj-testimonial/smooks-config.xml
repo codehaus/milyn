@@ -113,7 +113,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">vehicle</param>
         <param name="setOn">vehicles</param>
-        <param name="setOnMethod">add</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Vehicle</param>
         <param name="bindings">
             <binding property="litt" type="String" selector="vehicle litt" />
@@ -159,7 +158,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">comment</param>
         <param name="setOn">comments</param>
-        <param name="setOnMethod">add</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Comment</param>
         <param name="bindings">
             <binding property="comment" type="String" selector="comment" />
@@ -170,7 +168,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">phoneNumber</param>
         <param name="setOn">phoneNumbers</param>
-        <param name="setOnMethod">add</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.PhoneNumber</param>
         <param name="bindings">
             <binding property="function" type="String" selector="phoneNumber function" />
