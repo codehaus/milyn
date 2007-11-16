@@ -25,8 +25,23 @@ import java.util.List;
  */
 public class ScannerTest extends TestCase {
 
-    public void test() throws IOException {
+    public void test_no_include() throws IOException {
         InstanceOfFilter filter = new InstanceOfFilter(Filter.class);
+        Scanner scanner = new Scanner(filter);
+
+        long start = System.currentTimeMillis();
+        scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
+        System.out.println("Took: " + (System.currentTimeMillis() - start));
+        List<Class> classes = filter.getClasses();
+
+        System.out.println(classes);
+        assertEquals(2, classes.size());
+        assertTrue(classes.contains(InstanceOfFilter.class));
+        assertTrue(classes.contains(Filter.class));
+    }
+
+    public void test_has_include() throws IOException {
+        InstanceOfFilter filter = new InstanceOfFilter(Filter.class, null, new String[] {"org/milyn"});
         Scanner scanner = new Scanner(filter);
 
         long start = System.currentTimeMillis();

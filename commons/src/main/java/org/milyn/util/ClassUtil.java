@@ -111,13 +111,23 @@ public class ClassUtil {
 		return ClassLoader.getSystemResourceAsStream(resource);
 	}
 
+    public static List<Class> findInstancesOf(final Class type, String[] igrnoreList, String[] includeList) {
+        InstanceOfFilter filter = new InstanceOfFilter(type, igrnoreList, includeList);
+        return findInstancesOf(type, filter);
+    }
+
     public static List<Class> findInstancesOf(final Class type) {
         InstanceOfFilter filter = new InstanceOfFilter(type);
+        return findInstancesOf(type, filter);
+    }
+
+    private static List<Class> findInstancesOf(Class type, InstanceOfFilter filter) {
         Scanner scanner = new Scanner(filter);
 
         try {
+            long startTime = System.currentTimeMillis();
             scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
-            logger.info("Scanned classpath for instances of '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches.");
+            logger.info("Scanned classpath for instances of '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches. Scan took " + (System.currentTimeMillis() - startTime) + "ms.");
         } catch (IOException e) {
             throw new RuntimeException("Failed to search classspath for instances of '" + type.getName() + "'.", e);
         }
