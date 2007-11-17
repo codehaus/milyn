@@ -16,27 +16,29 @@
 
 package org.milyn.cdr;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.util.*;
-import java.net.URISyntaxException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.cdr.annotation.Configurator;
+import org.milyn.classpath.ClasspathUtils;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.UnsupportedContentHandlerTypeException;
+import org.milyn.delivery.JavaContentHandlerFactory;
+import org.milyn.delivery.annotation.Resource;
+import org.milyn.profile.DefaultProfileStore;
+import org.milyn.profile.ProfileSet;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
-import org.milyn.profile.ProfileSet;
-import org.milyn.profile.DefaultProfileStore;
-import org.milyn.cdr.annotation.Configurator;
-import org.milyn.classpath.ClasspathUtils;
 import org.xml.sax.SAXException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} context store.
@@ -73,6 +75,7 @@ public class SmooksResourceConfigurationStore {
      * Store shutdown hook.
      */
     private Thread shutdownHook;
+    private static final String CDU_CREATOR = "cdu-creator";
 
     /**
 	 * Public constructor.
@@ -87,7 +90,7 @@ public class SmooksResourceConfigurationStore {
 		// add the default list to the list.
         configLists.add(defaultList);
         
-        registerInstalledResources("installed-cdu-creators.cdrl");
+        registerInstalledHandlerFactories();
         registerInstalledResources("installed-param-decoders.cdrl");
         registerInstalledResources("installed-serializers.cdrl");
 
@@ -97,6 +100,28 @@ public class SmooksResourceConfigurationStore {
             }
         };
         Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
+    private void registerInstalledHandlerFactories() {
+        List<Class> handlerFactories = ClassUtil.findInstancesOf(ContentHandlerFactory.class, null, new String[] {"org/milyn", "milyn-"});
+
+        for (Class handlerFactory : handlerFactories) {
+            Resource resourceAnnotation = (Resource) handlerFactory.getAnnotation(Resource.class);
+
+            if(resourceAnnotation != null) {
+                addHandlerFactoryConfig(handlerFactory, resourceAnnotation.type());
+            }
+        }
+
+        // And add the Java handler...
+        addHandlerFactoryConfig(JavaContentHandlerFactory.class, "class");
+    }
+
+    private void addHandlerFactoryConfig(Class handlerFactory, String type) {
+        SmooksResourceConfiguration res = new SmooksResourceConfiguration(CDU_CREATOR);
+        res.setResource(handlerFactory.getName());
+        res.setParameter(ContentHandlerFactory.PARAM_RESTYPE, type);
+        defaultList.add(res);
     }
 
     /**
@@ -176,7 +201,7 @@ public class SmooksResourceConfigurationStore {
         configList = XMLConfigDigester.digestConfig(resourceConfigStream, baseURI);
         configLists.add(configList);
 
-        // DTD v2.0 added profiles to the resource config.  If there were any, add them to the
+        // XSD v1.0 added profiles to the resource config.  If there were any, add them to the
         // profile store.
         addProfileSets(configList.getProfiles());
     }
@@ -318,7 +343,7 @@ public class SmooksResourceConfigurationStore {
                 SmooksResourceConfiguration config = list.get(ii);
                 String selector = config.getSelector();
                 
-                if("cdu-creator".equals(selector) && type.equalsIgnoreCase(config.getStringParameter(ContentHandlerFactory.PARAM_RESTYPE))) {
+                if(CDU_CREATOR.equals(selector) && type.equalsIgnoreCase(config.getStringParameter(ContentHandlerFactory.PARAM_RESTYPE))) {
                     return (ContentHandlerFactory) getObject(config);
                 }
             }

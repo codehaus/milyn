@@ -32,6 +32,7 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.annotation.Resource;
 import org.milyn.io.StreamUtils;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.util.ClassUtil;
@@ -63,17 +64,6 @@ import org.w3c.dom.NodeList;
  *  <li>Configurations for targeting the "xsl" templates.
  *  </li>
  * </ol>
- * 
- * <h4>1. Registering XslContentHandlerFactory to Handle "xsl" resource types</h4>
- * <pre>
- * &lt;resource-config selector="cdu-creator"&gt;
- *     &lt;resource&gt;<b>org.milyn.templating.xslt.XslContentHandlerFactory</b>&lt;/resource&gt;
- *     &lt;param name="<b>restype</b>"&gt;xsl&lt;/param&gt;
- * &lt;/resource-config&gt;
- * </pre>
- * <p/>
- * Registration of the {@link XslContentHandlerFactory} to handle "xsl" resources can also be done by calling
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.Smooks)}.
  * 
  * <h4>2. Targeting "xsl" Templates</h4>
  * The following is the basic configuration specification for XSL resources:
@@ -149,6 +139,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
+@Resource(type="xsl")
 public class XslContentHandlerFactory implements ContentHandlerFactory {
 
     /**

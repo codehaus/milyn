@@ -80,7 +80,14 @@ public class Scanner {
         }
     }
 
-    private void handleArchive(File file) throws ZipException, IOException {
+    private void handleArchive(File file) throws IOException {
+        if(filter.isIgnorable(file.getName())) {
+            if(logger.isDebugEnabled()) {
+                logger.debug("Ignoring classpath archive: " + file);
+            }
+            return;
+        }
+
         ZipFile zip = new ZipFile(file);
         Enumeration<? extends ZipEntry> entries = zip.entries();
 
@@ -92,6 +99,13 @@ public class Scanner {
     }
 
     private void handleDirectory(File file, String path) {
+        if(path != null && filter.isIgnorable(path)) {
+            if(logger.isDebugEnabled()) {
+                logger.debug("Ignoring classpath directory (and subdirectories): " + path);
+            }
+            return;
+        }
+
         for (File child : file.listFiles()) {
             String newPath = path == null?child.getName() : path + '/' + child.getName();
 

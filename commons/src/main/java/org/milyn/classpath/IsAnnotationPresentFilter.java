@@ -17,21 +17,23 @@ package org.milyn.classpath;
 
 import org.milyn.assertion.AssertArgument;
 
+import java.lang.annotation.Annotation;
+
 /**
- * Filter classpath classes based on their type.
+ * Classpath filter for finding classes that are annotated with a particular annotation.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class InstanceOfFilter extends AbstractFilter {
+public class IsAnnotationPresentFilter extends AbstractFilter {
 
-    private Class searchType;
-    
-    public InstanceOfFilter(Class searchType) {
+    private Class<? extends Annotation> searchType;
+
+    public IsAnnotationPresentFilter(Class<? extends Annotation> searchType) {
         AssertArgument.isNotNull(searchType, "searchType");
         this.searchType = searchType;
     }
 
-    public InstanceOfFilter(Class searchType, String[] igrnoreList, String[] includeList) {
+    public IsAnnotationPresentFilter(Class<? extends Annotation> searchType, String[] igrnoreList, String[] includeList) {
         super(igrnoreList, includeList);
 
         AssertArgument.isNotNull(searchType, "searchType");
@@ -39,6 +41,6 @@ public class InstanceOfFilter extends AbstractFilter {
     }
 
     protected boolean addClass(Class clazz) {
-        return searchType.isAssignableFrom(clazz);
+        return clazz.isAnnotationPresent(searchType);
     }
 }

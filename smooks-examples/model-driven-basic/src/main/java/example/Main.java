@@ -37,7 +37,6 @@ public class Main {
 
     protected Main() throws IOException, SAXException {
         smooks = new Smooks("smooks-config.xml");
-        TemplatingUtils.registerCDUCreators(smooks);
     }
 
     /**

@@ -11,6 +11,7 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
@@ -40,18 +41,6 @@ import java.util.Map;
  *  <li>Configurations for targeting ".ftl" template files.
  *  </li>
  * </ol>
- *
- * <h4>1. Registering FreeMarkerContentHandlerFactory to Handle ".ftl" Files</h4>
- * <pre>
- * &lt;resource-config selector="cdu-creator"&gt;
- *     &lt;resource&gt;<b>org.milyn.templating.freemarker.FreeMarkerContentHandlerFactory</b>&lt;/resource&gt;
- *     &lt;param name="<b>restype</b>"&gt;ftl&lt;/param&gt;
- * &lt;/resource-config&gt;
- * </pre>
- * <p/>
- * Registration of the {@link FreeMarkerContentHandlerFactory} to handle
- * ".ftl" files can also be done by calling
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.Smooks)}.
  *
  * <h4>2. Targeting "ftl" Templates</h4>
  * The following is the basic configuration specification for FreeMarker resources:
@@ -103,6 +92,7 @@ import java.util.Map;
  *
  * @author tfennelly
  */
+@Resource(type="ftl")
 public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
 
     /**

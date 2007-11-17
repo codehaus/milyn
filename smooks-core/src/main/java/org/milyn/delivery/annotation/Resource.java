@@ -13,26 +13,22 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.classpath;
+package org.milyn.delivery.annotation;
+
+import java.lang.annotation.*;
 
 /**
- * Classpath resource filter.
- *
+ * Resource Type annotation.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface Filter {
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Resource {
 
     /**
-     * Classpath resource filter method.
-     * @param resourceName The classpath resource file name.  Needs to be converted to
-     * a proper class name
-     */
-    public void filter(String resourceName);
-
-    /**
-     * Is this resource ignorable.
-     * @param resourceName
+     * Resource type value.
      * @return
      */
-    public boolean isIgnorable(String resourceName);
+    public String type();
 }

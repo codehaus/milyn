@@ -12,11 +12,23 @@
     </resource-config>
 
     <!--
+    Create an ArrayList bean instance when we visit the start of the <order> element.
+    Call it "orderItems" and seet it on the "order".
+    -->
+    <resource-config selector="order">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">orderItems</param>
+        <param name="beanClass">java.util.ArrayList</param>
+        <param name="setOn">order</param>
+    </resource-config>
+
+    <!--
     Create an "example.beans.Header" bean instance when we visit the start of the <header> element.
     Set the new bean instance on the "order" bean.
     -->
     <resource-config selector="header">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">header</param>
         <param name="beanClass">example.model.Header</param>
         <param name="setOn">order</param>
         <param name="bindings">
@@ -29,14 +41,12 @@
 
     <!--
     Create an "example.beans.OrderItem" bean instance when we visit the start of the <order-item> element.
-    Add the OrderItem instances to a list (because there are potentially many of them on an order).
-    Set the OrderItem list on the "order" bean.
+    Set the OrderItem instances on the "orderItem".
     -->
     <resource-config selector="order-item">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">example.model.OrderItem</param>
-        <param name="addToList">true</param>
-        <param name="setOn">order</param>
+        <param name="setOn">orderItems</param>
         <param name="bindings">
             <!-- OrderItem bindings... -->
             <binding property="productId" type="Long" selector="order-item product" />

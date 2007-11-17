@@ -69,4 +69,62 @@ public class SAXFilterTest extends TestCase {
         smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), new StreamResult(writer), execContext);
         assertEquals(StreamUtils.trimLines(new StringReader(input)).toString(), StreamUtils.trimLines(new StringReader(writer.toString())).toString());
     }
+
+    protected void setUp() throws Exception {
+        SAXVisitor01.element = null;
+        SAXVisitor01.children.clear();
+        SAXVisitor01.childText.clear();
+        SAXVisitor02.element = null;
+        SAXVisitor02.children.clear();
+        SAXVisitor02.childText.clear();
+        SAXVisitor03.element = null;
+        SAXVisitor03.children.clear();
+        SAXVisitor03.childText.clear();
+    }
+
+    public void test_selection() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-02.xml"));
+        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
+
+        smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), null, execContext);
+        assertEquals("h", SAXVisitor01.element.getName().getLocalPart());
+        assertEquals("y", SAXVisitor01.element.getName().getPrefix());
+        assertEquals("http://y", SAXVisitor01.element.getName().getNamespaceURI());
+        assertEquals(0, SAXVisitor01.children.size());
+        assertEquals(0, SAXVisitor01.childText.size());
+
+        assertEquals("i", SAXVisitor02.element.getName().getLocalPart());
+        assertEquals("", SAXVisitor02.element.getName().getPrefix());
+        assertEquals("http://x", SAXVisitor02.element.getName().getNamespaceURI());
+        assertEquals(0, SAXVisitor02.children.size());
+        assertEquals(1, SAXVisitor02.childText.size());
+
+        assertEquals("h", SAXVisitor03.element.getName().getLocalPart());
+        assertEquals("", SAXVisitor03.element.getName().getPrefix());
+        assertEquals("http://x", SAXVisitor03.element.getName().getNamespaceURI());
+        assertEquals(1, SAXVisitor03.children.size());
+        assertEquals(7, SAXVisitor03.childText.size());
+    }
+
+    public void test_contextual() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-03.xml"));
+        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
+
+        smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), null, execContext);
+        assertEquals("h", SAXVisitor01.element.getName().getLocalPart());
+        assertEquals("y", SAXVisitor01.element.getName().getPrefix());
+        assertEquals("http://y", SAXVisitor01.element.getName().getNamespaceURI());
+        assertEquals(0, SAXVisitor01.children.size());
+        assertEquals(0, SAXVisitor01.childText.size());
+
+        assertNull(SAXVisitor02.element);
+
+        assertEquals("i", SAXVisitor03.element.getName().getLocalPart());
+        assertEquals("", SAXVisitor03.element.getName().getPrefix());
+        assertEquals("http://x", SAXVisitor03.element.getName().getNamespaceURI());
+        assertEquals(0, SAXVisitor03.children.size());
+        assertEquals(1, SAXVisitor03.childText.size());
+    }
 }

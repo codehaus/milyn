@@ -43,7 +43,6 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
         System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
 		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
 		SmooksUtil.registerResource(res, smooks);
-		TemplatingUtils.registerCDUCreators(smooks);
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
@@ -75,7 +74,6 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		res.setParameter("action", action);
 		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
 		SmooksUtil.registerResource(res, smooks);
-		TemplatingUtils.registerCDUCreators(smooks);
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");

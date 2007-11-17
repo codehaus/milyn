@@ -33,8 +33,12 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.delivery.ExpandableContentHandler;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.TextType;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
+import org.milyn.SmooksException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -90,14 +94,28 @@ import org.w3c.dom.NodeList;
  * &lt;?xml version="1.0"?&gt;
  * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd"&gt;
  *
+ *     &lt;-- Create the Order bean instance when we encounter the "order" element
+ *            and call it "order"... --&gt;
  *     &lt;resource-config selector="order"&gt;
  *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanId"&gt;<b><u>order</u></b>&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Order</b>&lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
+ *     &lt;-- Create a List for the OrderItem instances when we encounter the "order" element.
+ *            Call it "orderItems" and set it on the "order" bean... --&gt;
+ *     &lt;resource-config selector="order"&gt;
+ *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
+ *         &lt;param name="beanId"&gt;<b><u>orderItems</u></b>&lt;/param&gt;
+ *         &lt;param name="beanClass"&gt;<b>{@link ArrayList java.util.ArrayList}</b>&lt;/param&gt;
+ *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt;
+ *     &lt;/resource-config&gt;
+ *
+ *     &lt;-- Create the Header bean instance when we encounter the "header" element.
+ *            Call it "header" and set it on the "order" bean... --&gt;
  *     &lt;resource-config selector="header"&gt;
  *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
+ *         &lt;param name="beanId"&gt;<b><u>header</u></b>&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Header</b>&lt;/param&gt;
  *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
  *         &lt;param name="bindings"&gt;
@@ -108,11 +126,12 @@ import org.w3c.dom.NodeList;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
+ *     &lt;-- Create OrderItem instances when we encounter the "order-item" element.
+ *            Set them on the "orderItems" bean (List)... --&gt;
  *     &lt;resource-config selector="order-item"&gt;
  *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.OrderItem</b>&lt;/param&gt;
- *         &lt;param name="addToList"&gt;<b>true</b>&lt;/param&gt;  &lt;-- Create a list of these bean instances --&gt;
- *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
+ *         &lt;param name="setOn"&gt;<b><u>orderItems</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;-- OrderItem bindings... --&gt;
  *             &lt;binding property="productId" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="order-item product" /&gt;
@@ -135,7 +154,7 @@ import org.w3c.dom.NodeList;
  *
  * @author tfennelly
  */
-public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandler {
+public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, ExpandableContentHandler {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
@@ -611,5 +630,17 @@ public class BeanPopulator implements DOMElementVisitor, ExpandableContentHandle
         }
 
         return beanSetterMethod;
+    }
+
+    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+    }
+
+    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
+    }
+
+    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
+    }
+
+    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 }
