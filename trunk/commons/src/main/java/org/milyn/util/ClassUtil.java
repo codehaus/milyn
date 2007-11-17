@@ -18,10 +18,12 @@ package org.milyn.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.classpath.InstanceOfFilter;
+import org.milyn.classpath.IsAnnotationPresentFilter;
 import org.milyn.classpath.Scanner;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -29,7 +31,7 @@ import java.util.List;
 /**
  * Utility methods to aid in class/resource loading.
  * 
- * @author kevin
+ * @author Kevin Conner
  */
 public class ClassUtil {
     
@@ -130,6 +132,30 @@ public class ClassUtil {
             logger.info("Scanned classpath for instances of '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches. Scan took " + (System.currentTimeMillis() - startTime) + "ms.");
         } catch (IOException e) {
             throw new RuntimeException("Failed to search classspath for instances of '" + type.getName() + "'.", e);
+        }
+
+        return filter.getClasses();
+    }
+
+    public static List<Class> findAnnotatedWith(Class<? extends Annotation> type, String[] igrnoreList, String[] includeList) {
+        IsAnnotationPresentFilter filter = new IsAnnotationPresentFilter(type, igrnoreList, includeList);
+        return findAnnotatedWith(type, filter);
+    }
+
+    public static List<Class> findAnnotatedWith(Class<? extends Annotation> type) {
+        IsAnnotationPresentFilter filter = new IsAnnotationPresentFilter(type);
+        return findAnnotatedWith(type, filter);
+    }
+
+    private static List<Class> findAnnotatedWith(Class<? extends Annotation> type, IsAnnotationPresentFilter filter) {
+        Scanner scanner = new Scanner(filter);
+
+        try {
+            long startTime = System.currentTimeMillis();
+            scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
+            logger.info("Scanned classpath for class annotated with annotation '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches. Scan took " + (System.currentTimeMillis() - startTime) + "ms.");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to search classspath for class annotated with annotation '" + type.getName() + "'.", e);
         }
 
         return filter.getClasses();

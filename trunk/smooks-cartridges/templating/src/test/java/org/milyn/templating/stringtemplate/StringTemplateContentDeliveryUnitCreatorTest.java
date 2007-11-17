@@ -40,7 +40,6 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
         // Configure Smooks
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
-        TemplatingUtils.registerCDUCreators(smooks);
         smooks.addConfigurations("test-configs.cdrl", getClass().getResourceAsStream("test-configs.cdrl"));
 
         test_st(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");

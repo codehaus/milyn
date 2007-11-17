@@ -26,27 +26,27 @@ import java.util.List;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SAXVisitor01 implements SAXElementVisitor {
+public class SAXVisitor02 implements SAXElementVisitor {
 
     public static SAXElement element;
     public static List<SAXElement> children = new ArrayList<SAXElement>();
     public static List<String> childText = new ArrayList<String>();
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        SAXVisitor01.element = element;
+        SAXVisitor02.element = element;
     }
 
     public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
-        TestCase.assertEquals(SAXVisitor01.element, element);
+        TestCase.assertEquals(SAXVisitor02.element, element);
         childText.add(text);
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-        TestCase.assertEquals(SAXVisitor01.element, element);
+        TestCase.assertEquals(SAXVisitor02.element, element);
         children.add(childElement);
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        TestCase.assertEquals(SAXVisitor01.element, element);
+        TestCase.assertEquals(SAXVisitor02.element, element);
     }
 }

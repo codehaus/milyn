@@ -16,23 +16,8 @@
 package org.milyn.classpath;
 
 /**
- * Classpath resource filter.
- *
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author
  */
-public interface Filter {
-
-    /**
-     * Classpath resource filter method.
-     * @param resourceName The classpath resource file name.  Needs to be converted to
-     * a proper class name
-     */
-    public void filter(String resourceName);
-
-    /**
-     * Is this resource ignorable.
-     * @param resourceName
-     * @return
-     */
-    public boolean isIgnorable(String resourceName);
+@TestAnnotation
+public class AnnotatedClass2 {
 }

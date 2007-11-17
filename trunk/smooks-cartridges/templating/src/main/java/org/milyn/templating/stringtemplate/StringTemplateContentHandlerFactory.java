@@ -24,6 +24,7 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
@@ -52,18 +53,6 @@ import java.util.Map;
  *  <li>Configurations for targeting ".st" template files.
  *  </li>
  * </ol>
- *
- * <h4>1. Registering StringTemplateContentHandlerFactory to Handle ".st" Files</h4>
- * <pre>
- * &lt;resource-config selector="cdu-creator"&gt;
- *     &lt;resource&gt;<b>org.milyn.templating.stringtemplate.StringTemplateContentHandlerFactory</b>&lt;/resource&gt;
- *     &lt;param name="<b>restype</b>"&gt;st&lt;/param&gt;
- * &lt;/resource-config&gt;
- * </pre>
- * <p/>
- * Registration of the {@link StringTemplateContentHandlerFactory} to handle
- * ".st" files can also be done by calling
- * {@link org.milyn.templating.TemplatingUtils#registerCDUCreators(org.milyn.Smooks)}.
  *
  * <h4>2. Targeting ".st" Files for Transformation</h4>
  * <pre>
@@ -94,6 +83,7 @@ import java.util.Map;
  *
  * @author tfennelly
  */
+@Resource(type="st")
 public class StringTemplateContentHandlerFactory implements ContentHandlerFactory {
 
 	/**

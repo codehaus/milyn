@@ -24,6 +24,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.delivery.dom.DOMElementVisitor;
 
@@ -97,6 +98,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
+@Resource(type="groovy")
 public class GroovyContentHandlerFactory implements ContentHandlerFactory {
 
 	/* (non-Javadoc)
