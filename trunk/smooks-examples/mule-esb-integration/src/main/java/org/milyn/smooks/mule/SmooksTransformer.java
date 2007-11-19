@@ -17,6 +17,7 @@ import org.xml.sax.SAXException;
  * 	<p>
  * 	Usage:
  *  Declare the tranformer in the Mule configuration file:
+ *  <pre>
  *  &lt;transformers&gt;
  *       &lt;transformer name="SmooksTransformer" 
  *		className="org.milyn.smooks.mule.SmooksTransformer"/&gt;
@@ -25,6 +26,7 @@ import org.xml.sax.SAXException;
  *  &lt;inbound-router&gt;
  *      &lt;endpoint address="stream://System.in"  transformers="SmooksTransformer"/&gt;
  *  &lt;/inbound-router&gt;
+ *  </pre>
  * 	</p> 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>				
  *
@@ -64,7 +66,10 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
 		try
 		{
 			if ( smooks == null )
+			{
+				log.info("Using smooksConfigFile :" + smooksConfigFile );
 				smooks = new Smooks( smooksConfigFile );
+			}
 		} catch (IOException e)
 		{
 			log.error( "IOException while trying to get smooks instance: ", e);
@@ -81,7 +86,11 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
 	{
 		return smooksConfigFile;
 	}
-
+	
+	/**
+	 * 
+	 * @param smooksResFile
+	 */
 	public void setSmooksConfigFile( final String smooksResFile )
 	{
 		this.smooksConfigFile = smooksResFile;

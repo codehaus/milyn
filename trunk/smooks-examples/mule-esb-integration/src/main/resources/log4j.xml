@@ -17,12 +17,12 @@
 	</logger>
 	
 	<logger name="org.milyn">
-		<level value="ERROR" />
+		<level value="INFO" />
 		<appender-ref ref="console"/>
 	</logger>
 	
 	<logger name="org.milyn.smooks.mule">
-		<level value="ERROR" />
+		<level value="INFO" />
 		<appender-ref ref="console"/>
 	</logger>
 
