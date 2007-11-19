@@ -12,11 +12,11 @@ About This Example:
 		export PATH=$MULE_HOME/bin:$PATH
 		export MULE_LIB=$MULE_HOME/lib/user
 	3. The following Smooks jar must be copied to $MULE_HOME/lib/user
-		*  milyn-commons-1.0-SNAPSHOT.jar
-		*  milyn-smooks-core-1.0-SNAPSHOT.jar
-		*  milyn-smooks-javabean-1.0-SNAPSHOT.jar
-		*  milyn-smooks-misc-1.0-SNAPSHOT.jar
-		*  milyn-smooks-templating-1.0-SNAPSHOT.jar
+		*  target/dependencies/milyn-commons-1.0-SNAPSHOT.jar
+		*  target/dependencies/milyn-smooks-core-1.0-SNAPSHOT.jar
+		*  target/dependencies/milyn-smooks-javabean-1.0-SNAPSHOT.jar
+		*  target/dependencies/milyn-smooks-misc-1.0-SNAPSHOT.jar
+		*  target/dependencies/milyn-smooks-templating-1.0-SNAPSHOT.jar
 
     See:
         1. The "SmooksTransformer" class in src/main/java/org/milyn/smooks/mule/
