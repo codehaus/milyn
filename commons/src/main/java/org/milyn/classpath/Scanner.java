@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
@@ -52,6 +53,7 @@ public class Scanner {
         }
 
         URL[] urls = ((URLClassLoader) classLoader).getURLs();
+        HashSet alreadyScanned = new HashSet();
 
         for (URL url : urls) {
             String urlPath = url.getFile();
@@ -66,11 +68,14 @@ public class Scanner {
             }
 
             File file = new File(urlPath);
-            if (file.isDirectory()) {
+            if(alreadyScanned.contains(file.getAbsolutePath())) {
+                continue;
+            } if (file.isDirectory()) {
                 handleDirectory(file, null);
             } else {
                 handleArchive(file);
             }
+            alreadyScanned.add(file.getAbsolutePath());
         }
     }
 
