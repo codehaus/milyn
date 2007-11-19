@@ -37,3 +37,5 @@ How to Run?
 		3. mule -config src/main/resources/mule-config.xml
 			or
 		3. mule -config src/main/resources/mule-config-smookstransformer.xml
+		4. Past the following a the prompt to as the input to the Mule service:
+			<a><b><c><b></b></c></b></a>
