@@ -17,7 +17,7 @@
 	</logger>
 	
 	<logger name="org.milyn">
-		<level value="DEBUG" />
+		<level value="ERROR" />
 		<appender-ref ref="console"/>
 	</logger>
 

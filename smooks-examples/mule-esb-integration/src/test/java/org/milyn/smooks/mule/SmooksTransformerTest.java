@@ -58,7 +58,7 @@ public class SmooksTransformerTest extends TestCase
 	
 	private static byte[] readInputMessage() {
         try {
-            return StreamUtils.readStream(new FileInputStream("input-message.xml"));
+            return StreamUtils.readStream(new FileInputStream("target/classes/input-message.xml"));
         } catch (IOException e) {
             e.printStackTrace();
             return "<no-message/>".getBytes();
