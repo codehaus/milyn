@@ -5,7 +5,7 @@
 <mule-configuration id="Mule_Smooks_Example" version="1.0">
 
     <description>
-		This example demonstrates how Smooks can be with Mule
+		This example demonstrates how a SmooksTransformer can be used with Mule
 	</description>
 
     <connector name="SystemStreamConnector" className="org.mule.providers.stream.SystemStreamConnector">
@@ -16,13 +16,14 @@
     </connector>
 
     <transformers>
-        <transformer name="HttpRequestToSoapRequest" className="org.mule.providers.soap.transformers.HttpRequestToSoapRequest"/>
+        <transformer name="SmooksTransformer" 
+					className="org.milyn.smooks.mule.SmooksTransformer"/>
     </transformers>
 
     <model name="SmooksExample">
         <mule-descriptor name="SmooksExample" implementation="example.Main">
 			 <inbound-router>
-                <endpoint address="stream://System.in"/>
+                <endpoint address="stream://System.in"  transformers="SmooksTransformer"/>
             </inbound-router>
 
             <outbound-router>

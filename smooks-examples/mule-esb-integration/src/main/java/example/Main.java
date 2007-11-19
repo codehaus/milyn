@@ -16,65 +16,18 @@
 package example;
 
 import org.apache.log4j.Logger;
-import org.milyn.Smooks;
-import org.milyn.SmooksException;
-import org.milyn.templating.TemplatingUtils;
-import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.*;
 
 /**
  * Simple example main class.
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
 public class Main implements SmooksMule {
+	
 	private Logger log = Logger.getLogger( Main.class );
 
-    private static byte[] messageIn = readInputMessage();
-
-    protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
-
-        // Instantiate Smooks with the config...
-        Smooks smooks = new Smooks("smooks-config.xml");
-        // Register the templating CDU creators - tell Smooks how to handle .xsl resources...
-        TemplatingUtils.registerCDUCreators(smooks);
-         // Create an exec context - no profiles....
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
-        CharArrayWriter outputWriter = new CharArrayWriter();
-
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
-
-        return outputWriter.toString();
-    }
-
-    public static void main(String[] args) throws IOException, SAXException, SmooksException {
-        System.out.println("\n\n==============Message In==============");
-        System.out.println(new String(messageIn));
-        System.out.println("======================================\n");
-
-        String messageOut = Main.runSmooksTransform();
-
-        System.out.println("==============Message Out=============");
-        System.out.println(messageOut);
-        System.out.println("======================================\n\n");
-    }
-
-    private static byte[] readInputMessage() {
-        try {
-            return StreamUtils.readStream(new FileInputStream("input-message.xml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "<no-message/>".getBytes();
-        }
-    }
-
-	public void performTranformation(String s) 
+	public void performService(String s) 
 	{
 		log.debug( "Input to Service : " + s);
+		//... service impl here
 	}
 }

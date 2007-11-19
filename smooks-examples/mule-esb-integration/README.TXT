@@ -6,11 +6,11 @@ About This Example:
 	[Work in progress]
 
 	Preparation:
-	1. Mule-1.3 is installed (http://mule.mulesource.org/display/MULE/Download)
+	1. Mule-1.4.3 is installed (http://mule.mulesource.org/display/MULE/Download)
 	2. The following enironment variables are set:
-		MULE_HOME=<path_to_mule_1.3>
-		PATH=$MULE_HOME/bin:$PATH
-		MULE_LIB=$MULE_HOME/lib/user
+		export MULE_HOME=<path_to_mule_1.4.3>
+		export PATH=$MULE_HOME/bin:$PATH
+		export MULE_LIB=$MULE_HOME/lib/user
 	3. The following Smooks jar must be copied to $MULE_HOME/lib/user
 		*  milyn-commons-1.0-SNAPSHOT.jar
 		*  milyn-smooks-core-1.0-SNAPSHOT.jar
@@ -19,11 +19,8 @@ About This Example:
 		*  milyn-smooks-templating-1.0-SNAPSHOT.jar
 
     See:
-        1. The "Main" class in src/main/java/example
-        2. The "SmooksMule" interface in src/main/java/example
-        3. The input message in input-message.xml.
-        4. The code in the src/main/java folder tree (.java, .xsl).
-        5. smooks-config.xml.
+        1. The "SmooksTransformer" class in src/main/java/org/milyn/smooks/mule/
+        2. The mule-config.xml in src/main/resources
 
 How to Run?
 ===========
@@ -33,9 +30,7 @@ How to Run?
 
     Running:
         1. "mvn clean install"
-		2. cp target/milyn-smooks-example-xslt-basic-1.0.jar $MULE_HOME/lib/user
-		3. mule -config src/main/resources/mule-config.xml
-			or
-		3. mule -config src/main/resources/mule-config-smookstransformer.xml
+		2. cp target/milyn-smooks-example-mule-esb-integration-1.0.jar $MULE_HOME/lib/user
+		3. "mule -config src/main/resources/mule-config.xml"
 		4. Past the following a the prompt to as the input to the Mule service:
-			<a><b><c><b></b></c></b></a>
+		   <a><b><c><b></b></c></b></a>
