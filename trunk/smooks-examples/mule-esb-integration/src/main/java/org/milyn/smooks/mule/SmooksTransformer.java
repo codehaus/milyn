@@ -9,8 +9,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.milyn.Smooks;
-import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.mule.config.i18n.Message;
 import org.mule.umo.transformer.TransformerException;
 import org.xml.sax.SAXException;
 
