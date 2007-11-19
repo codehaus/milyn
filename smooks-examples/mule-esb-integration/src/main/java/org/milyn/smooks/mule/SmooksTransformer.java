@@ -10,6 +10,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.log4j.Logger;
 import org.milyn.Smooks;
 import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.mule.config.i18n.Message;
 import org.mule.umo.transformer.TransformerException;
 import org.xml.sax.SAXException;
 
@@ -17,6 +18,15 @@ import org.xml.sax.SAXException;
  *  SmooksTransformer indended to be used with the Mule ESB
  * 	<p>
  * 	Usage:
+ *  Declare the tranformer in the Mule configuration file:
+ *  &lt;transformers&gt;
+ *       &lt;transformer name="SmooksTransformer" 
+ *		className="org.milyn.smooks.mule.SmooksTransformer"/&gt;
+ *   &lt;/transformers&gt;
+ *  Declare the tranformer in the Mule configuration file:
+ *  &lt;inbound-router&gt;
+ *      &lt;endpoint address="stream://System.in"  transformers="SmooksTransformer"/&gt;
+ *  &lt;/inbound-router&gt;
  * 	</p> 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>				
  *
@@ -39,13 +49,15 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
 	@Override
 	protected Object doTransform( Object message, String encoding ) throws TransformerException
 	{
-		smooks = getSmooks();
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
-        
         byte[] bytes = getBytesFromMessageObject( message );
+        if ( bytes == null )
+        	return null;
 	        
         CharArrayWriter outputWriter = new CharArrayWriter();
-        smooks.filter(new StreamSource(new ByteArrayInputStream(bytes), encoding), new StreamResult(outputWriter), executionContext);
+        
+		smooks = getSmooks();
+        smooks.filter(new StreamSource(new ByteArrayInputStream(bytes), encoding), new StreamResult(outputWriter), smooks.createExecutionContext());
+        
         return outputWriter.toString();
 	}
 	
