@@ -19,5 +19,5 @@ package example;
 /**
  */
 public interface SmooksMule {
-	public void performTranformation(String s);
+	public void performService(String s);
 }

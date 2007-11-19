@@ -6,9 +6,9 @@
 		<artifactId>smooks-examples</artifactId>
 		<version>1.1</version>
 	</parent>
-    <name>Milyn Smooks Example - XSLT-Basic</name>
+    <name>Milyn Smooks Example - Mule ESB Integratoin</name>
 	<groupId>milyn</groupId>
-	<artifactId>milyn-smooks-example-xslt-basic</artifactId>
+	<artifactId>milyn-smooks-example-mule-esb-integration</artifactId>
 	<version>1.0</version>
 
     <dependencies>
