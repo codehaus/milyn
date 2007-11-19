@@ -67,14 +67,8 @@ public class Scanner {
 
             File file = new File(urlPath);
             if (file.isDirectory()) {
-                if(logger.isDebugEnabled()) {
-                    logger.debug("Scanning directory: " + file.getAbsolutePath());
-                }
                 handleDirectory(file, null);
             } else {
-                if(logger.isDebugEnabled()) {
-                    logger.debug("Scanning archive: " + file.getAbsolutePath());
-                }
                 handleArchive(file);
             }
         }
@@ -83,9 +77,12 @@ public class Scanner {
     private void handleArchive(File file) throws IOException {
         if(filter.isIgnorable(file.getName())) {
             if(logger.isDebugEnabled()) {
-                logger.debug("Ignoring classpath archive: " + file);
+                logger.debug("Ignoring archive: " + file);
             }
             return;
+        }
+        if(logger.isDebugEnabled()) {
+            logger.debug("Scanning archive: " + file.getAbsolutePath());
         }
 
         ZipFile zip = new ZipFile(file);
@@ -101,9 +98,12 @@ public class Scanner {
     private void handleDirectory(File file, String path) {
         if(path != null && filter.isIgnorable(path)) {
             if(logger.isDebugEnabled()) {
-                logger.debug("Ignoring classpath directory (and subdirectories): " + path);
+                logger.debug("Ignoring directory (and subdirectories): " + path);
             }
             return;
+        }
+        if(logger.isDebugEnabled()) {
+            logger.debug("Scanning directory: " + file.getAbsolutePath());
         }
 
         for (File child : file.listFiles()) {
