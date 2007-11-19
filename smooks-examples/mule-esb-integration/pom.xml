@@ -17,6 +17,39 @@
             <artifactId>milyn-smooks-templating</artifactId>
             <version>${milyn.smooks.templating.version}</version>
         </dependency>
+		<dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-client</artifactId>
+            <version>1.4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-vm</artifactId>
+            <version>1.4.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-axis</artifactId>
+            <version>1.4.3</version>
+        </dependency>
+        <!--dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-xfire</artifactId>
+            <version>1.4.3</version>
+        </dependency-->
+
+		 <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.2</version>
+		</dependency>
+
 	</dependencies>
 
     <repositories>
