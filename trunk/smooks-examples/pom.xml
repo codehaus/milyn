@@ -26,7 +26,7 @@
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
-        <module>sj-testimonial</module>        
+        <module>sj-testimonial</module>
     </modules>
 
     <properties>
@@ -70,6 +70,25 @@
                     <executable>java</executable>
                     <mainClass>example.Main</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <excludeTransitive>true</excludeTransitive>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
