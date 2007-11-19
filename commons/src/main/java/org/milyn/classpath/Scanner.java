@@ -19,16 +19,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
+import java.util.Set;
 import java.util.zip.ZipEntry;
-import java.io.IOException;
-import java.io.File;
+import java.util.zip.ZipFile;
 
 /**
  * Classpath scanner.
@@ -53,7 +53,7 @@ public class Scanner {
         }
 
         URL[] urls = ((URLClassLoader) classLoader).getURLs();
-        HashSet alreadyScanned = new HashSet();
+        Set alreadyScanned = new HashSet();
 
         for (URL url : urls) {
             String urlPath = url.getFile();
@@ -69,6 +69,7 @@ public class Scanner {
 
             File file = new File(urlPath);
             if(alreadyScanned.contains(file.getAbsolutePath())) {
+                logger.debug("Ignoring classpath URL '" + file.getAbsolutePath() + "'.  Already scanned this URL.");
                 continue;
             } if (file.isDirectory()) {
                 handleDirectory(file, null);
