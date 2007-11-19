@@ -42,21 +42,11 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
 		smooks = getSmooks();
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
         
-        log.debug( "Message before transform : "  + message );
-        try{
         byte[] bytes = getBytesFromMessageObject( message );
 	        
         CharArrayWriter outputWriter = new CharArrayWriter();
         smooks.filter(new StreamSource(new ByteArrayInputStream(bytes), encoding), new StreamResult(outputWriter), executionContext);
-        String transformedStr = outputWriter.toString();
-        log.debug( "Message after transform : "  + transformedStr );
-        return transformedStr;
-        }
-        catch(Throwable t)
-        {
-        	t.printStackTrace();
-        }
-        return null;
+        return outputWriter.toString();
 	}
 	
 	public final Smooks getSmooks() throws TransformerException
