@@ -32,5 +32,5 @@ How to Run?
         1. "mvn clean install"
 		2. cp target/milyn-smooks-example-mule-esb-integration-1.0.jar $MULE_HOME/lib/user
 		3. "mule -config src/main/resources/mule-config.xml"
-		4. Past the following a the prompt to as the input to the Mule service:
+		4. Paste the following a the prompt to as the input to the Mule service:
 		   <a><b><c><b></b></c></b></a>
