@@ -12,17 +12,17 @@
 	</appender>
 
 	<logger name="example">
-		<level value="ERROR"/>
+		<level value="DEBUG"/>
 		<appender-ref ref="console"/>
 	</logger>
 	
 	<logger name="org.milyn">
-		<level value="ERROR" />
+		<level value="INFO" />
 		<appender-ref ref="console"/>
 	</logger>
 
 	<logger name="org.mule">
-		<level value="ERROR" />
+		<level value="INFO" />
 		<appender-ref ref="console"/>
 	</logger>
 

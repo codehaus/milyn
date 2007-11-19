@@ -15,6 +15,7 @@
 */
 package example;
 
+import org.apache.log4j.Logger;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.templating.TemplatingUtils;
@@ -31,7 +32,7 @@ import java.io.*;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class Main implements SmooksMule {
-	
+	private Logger log = Logger.getLogger( Main.class );
 
     private static byte[] messageIn = readInputMessage();
 
@@ -74,18 +75,6 @@ public class Main implements SmooksMule {
 
 	public void performTranformation(String s) 
 	{
-		try
-		{
-			Main.main( null );
-		} catch (SmooksException e)
-		{
-			e.printStackTrace();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		} catch (SAXException e)
-		{
-			e.printStackTrace();
-		}
+		log.debug( "Input to Service : " + s);
 	}
 }
