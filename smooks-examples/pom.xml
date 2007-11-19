@@ -5,13 +5,13 @@
     <parent>
         <groupId>milyn</groupId>
         <artifactId>milyn</artifactId>
-        <version>1.1</version>
+        <version>1.1-SNAPSHOT</version>
     </parent>
     <groupId>milyn</groupId>
     <artifactId>smooks-examples</artifactId>
     <name>Milyn Smooks Examples (Base POM)</name>
     <packaging>pom</packaging>
-    <version>1.1</version>
+    <version>1.1-SNAPSHOT</version>
 
     <modules>
         <module>css</module>
@@ -27,6 +27,7 @@
         <module>edi-to-java</module>
         <module>profiling</module>
         <module>sj-testimonial</module>
+        <module>mule-esb-integration</module>        
     </modules>
 
     <properties>
