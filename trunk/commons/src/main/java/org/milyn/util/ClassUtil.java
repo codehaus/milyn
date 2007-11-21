@@ -22,15 +22,13 @@ import org.milyn.classpath.InstanceOfFilter;
 import org.milyn.classpath.IsAnnotationPresentFilter;
 import org.milyn.classpath.Scanner;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -178,7 +176,7 @@ public class ClassUtil {
     
     /**
      * Will try to create a List of classes that are listed 
-     * int the passed in file.
+     * in the passed in file.
      * The fileName is expected to be found on the classpath.
      * 
      * @param fileName name of the file containing the classes
@@ -186,39 +184,64 @@ public class ClassUtil {
      */
     public static List<Class> getClasses(final String fileName) {
     	AssertArgument.isNotNull( fileName, "fileName" );
-    	
-    	logger.debug( "Will use file " + fileName + " to look for jars." );
-    	List<Class> classes = new ArrayList<Class>();
-    	
-    	InputStream ins = null;
-    	BufferedReader br = null;
-    	try
+
+        long start = System.currentTimeMillis();
+        List<Class> classes = new ArrayList<Class>();
+        Enumeration<URL> cpURLs;
+        int resCount = 0;
+
+        try {
+            cpURLs = Thread.currentThread().getContextClassLoader().getResources(fileName);
+        } catch (IOException e) {
+            throw new RuntimeException("Error getting resource URLs for resource : " + fileName, e);
+        }
+
+        while (cpURLs.hasMoreElements()) {
+            URL url = cpURLs.nextElement();
+            addClasses(url, classes);
+            resCount++;
+        }
+
+        logger.info("Loaded " + classes.size() + " classes from " + resCount + " URLs through class list file "
+                + fileName + ".  Process took " + (System.currentTimeMillis() - start) + "ms.  Turn on debug logging for more info.");
+
+        return classes;
+    }
+
+    private static void addClasses(URL url, List<Class> classes) {
+        InputStream ins = null;
+        BufferedReader br = null;
+
+        try
     	{
-	    	ins = Thread.currentThread().getContextClassLoader().getResourceAsStream( fileName );
-	    	br = new BufferedReader( new InputStreamReader( ins ));
-	    	String line;
+            String line;
+            int count = 0;
+
+            ins = url.openStream();
+            br = new BufferedReader( new InputStreamReader( ins ));
 	    	while( (line = br.readLine()) != null )
 	    	{
 	    		classes.add( forName( line, ClassUtil.class ));
-	    		logger.info( "Adding " + line + " to list of classes");
-	    	}
-    	} 
+	    		logger.debug( "Adding " + line + " to list of classes");
+                count++;
+            }
+            logger.debug("Loaded '" + count + "' classes listed in '" + url + "'.");
+    	}
     	catch (IOException e)
 		{
-            throw new RuntimeException("Failed to read from file : " + fileName, e);
-		} 
+            throw new RuntimeException("Failed to read from file : " + url, e);
+		}
     	catch (ClassNotFoundException e)
 		{
-            throw new RuntimeException("Failed to load classes from file : " + fileName, e);
+            throw new RuntimeException("Failed to load classes from file : " + url, e);
 		}
     	finally
     	{
     		close(ins);
     		close(br);
     	}
-    	return classes;
     }
-    
+
     private static void close( final Closeable closable ) {
     	if(  closable != null )
     	{

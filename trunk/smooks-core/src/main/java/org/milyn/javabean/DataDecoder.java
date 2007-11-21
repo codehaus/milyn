@@ -74,12 +74,8 @@ public interface DataDecoder extends ContentHandler {
         private static volatile Map<Class, Class<? extends DataDecoder>> installedDecoders;
 							        
         public static DataDecoder create(final Class targetType) throws DataDecodeException {
-        	return create(targetType, null);
-        }
-        
-        public static DataDecoder create(Class targetType, final String classesFile) throws DataDecodeException {
             if(installedDecoders == null) {
-                loadInstalledDecoders(classesFile);
+                loadInstalledDecoders();
             }
 
             Class<? extends DataDecoder> decoderType = installedDecoders.get(targetType);
@@ -90,16 +86,11 @@ public interface DataDecoder extends ContentHandler {
             return null;
         }
 
-        private synchronized static void loadInstalledDecoders(final String classesFile) throws DataDecodeException {
+        private synchronized static void loadInstalledDecoders() throws DataDecodeException {
             if(installedDecoders == null) {
                 synchronized (Factory.class) {
                     if(installedDecoders == null) {
-                    	
-                        List<Class> decoders;
-                        if ( classesFile != null )
-                        	decoders = ClassUtil.getClasses(classesFile);
-                        else
-                        	decoders = ClassUtil.findInstancesOf(DataDecoder.class, null, new String[] {"org/milyn", "milyn-"});
+                        List<Class> decoders = ClassUtil.getClasses("META-INF/data-decoders.inf");
 
                         if(decoders.isEmpty()) {
                             throw new DataDecodeException("Failed to find installed DataDecoders on clasaspath.");
