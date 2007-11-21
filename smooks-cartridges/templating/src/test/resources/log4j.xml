@@ -33,11 +33,11 @@
    <!-- Limit categories -->
 
    <category name="org.milyn">
-      <priority value="info"/>
+      <priority value="debug"/>
    </category>
 
     <category name="org.milyn.classpath.Scanner">
-       <priority value="info"/>
+       <priority value="debug"/>
     </category>
 
    <!-- ======================= -->

@@ -90,7 +90,7 @@ public class SmooksResourceConfigurationStore {
 		// add the default list to the list.
         configLists.add(defaultList);
         
-        registerInstalledHandlerFactories();
+        registerInstalledHandlerFactories("META-INF/content-handlers.inf");
         registerInstalledResources("installed-param-decoders.cdrl");
         registerInstalledResources("installed-serializers.cdrl");
 
@@ -102,8 +102,12 @@ public class SmooksResourceConfigurationStore {
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
-    private void registerInstalledHandlerFactories() {
-        List<Class> handlerFactories = ClassUtil.findInstancesOf(ContentHandlerFactory.class, null, new String[] {"org/milyn", "milyn-"});
+    private void registerInstalledHandlerFactories(final String classesFile) {
+        List<Class> handlerFactories;
+        if ( classesFile != null )
+        	handlerFactories = ClassUtil.getClasses(classesFile);
+        else
+	        handlerFactories = ClassUtil.findInstancesOf(ContentHandlerFactory.class, null, new String[] {"org/milyn", "milyn-"});
 
         for (Class handlerFactory : handlerFactories) {
             Resource resourceAnnotation = (Resource) handlerFactory.getAnnotation(Resource.class);
