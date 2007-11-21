@@ -28,7 +28,7 @@ public class ClassUtilTest extends TestCase
 {
 	private String fileName = "META-INF/classes.inf";
 	
-	public void test_getJarsNegative()
+	public void test_getClassesNegative()
 	{
 		try
 		{
