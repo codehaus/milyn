@@ -418,8 +418,6 @@ public class ContentDeliveryConfigBuilder {
 		SmooksResourceConfigurationTableIterator tableIterator = new SmooksResourceConfigurationTableIterator(cduStrategy);
 
         tableIterator.iterate();
-        // Process any expansions that may have been added...
-        cduStrategy.processExpansionConfigurations();
     }
 	
 	/**
@@ -480,7 +478,6 @@ public class ContentDeliveryConfigBuilder {
 	private final class ContentHandlerExtractionStrategy implements SmooksResourceConfigurationStrategy {
 		
         private SmooksResourceConfigurationStore store;
-        private List<SmooksResourceConfiguration> expansionConfigs = new ArrayList<SmooksResourceConfiguration>();
 
         public ContentHandlerExtractionStrategy(ApplicationContext applicationContext) {
             store = applicationContext.getStore();
@@ -611,7 +608,13 @@ public class ContentDeliveryConfigBuilder {
             if(contentHandler instanceof ExpandableContentHandler) {
                 List<SmooksResourceConfiguration> additionalConfigs = ((ExpandableContentHandler)contentHandler).getExpansionConfigurations();
                 if(additionalConfigs != null && !additionalConfigs.isEmpty()) {
-                    expansionConfigs.addAll(additionalConfigs);
+                    if(logger.isDebugEnabled()) {
+                        logger.debug("Adding expansion resource configurations created by: " + resourceConfig);
+                        for (SmooksResourceConfiguration additionalConfig : additionalConfigs) {
+                            logger.debug("\tAdding expansion resource configuration: " + additionalConfig);
+                        }
+                    }
+                    processExpansionConfigurations(additionalConfigs);
                 }
             }
 
@@ -619,10 +622,11 @@ public class ContentDeliveryConfigBuilder {
 		}
 
         /**
-         * Process any expansion configurations on this ContentHandlerExtractionStrategy instance.
+         * Process the supplied expansion configurations.
+         * @param additionalConfigs Expansion configs.
          */
-        public void processExpansionConfigurations() {
-            for(SmooksResourceConfiguration config : expansionConfigs) {
+        private void processExpansionConfigurations(List<SmooksResourceConfiguration> additionalConfigs) {
+            for(SmooksResourceConfiguration config : additionalConfigs) {
                 String targetElement = config.getTargetElement();
 
                 // Try adding it as a ContentHandler instance...

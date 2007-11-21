@@ -16,31 +16,34 @@
 
 package org.milyn.javabean;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
+import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.Parameter;
-import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Config;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ExpandableContentHandler;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.VisitPhase;
-import org.milyn.delivery.ExpandableContentHandler;
-import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.sax.TextType;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
-import org.milyn.SmooksException;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Javabean Populator.
@@ -161,7 +164,7 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
     @ConfigParam(defaultVal ="", use=ConfigParam.Use.OPTIONAL)
     private String beanId;
 
-    @ConfigParam(name="beanClass", defaultVal ="", use=ConfigParam.Use.OPTIONAL)
+    @ConfigParam(name="beanClass", defaultVal = "", use=ConfigParam.Use.OPTIONAL)
     private String beanClassName;
 
     @ConfigParam(defaultVal ="false", use=ConfigParam.Use.OPTIONAL)
@@ -170,8 +173,11 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
     @ConfigParam(use=ConfigParam.Use.OPTIONAL)
     private String setOn; // The name of the bean on which to set this bean
 
-    @ConfigParam(name="type", defaultVal ="String", use=ConfigParam.Use.OPTIONAL)
+    @ConfigParam(name="type", defaultVal = "String", use=ConfigParam.Use.OPTIONAL)
     private String typeAlias;
+
+    @ConfigParam(name="default", defaultVal = ConfigParam.NULL, use=ConfigParam.Use.OPTIONAL)
+    private String defaultVal;
 
     @Config
     private SmooksResourceConfiguration config;
@@ -185,6 +191,123 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
     private boolean isAttribute = true;
     private DataDecoder decoder;
     private boolean setOnUnconfigured;
+
+    /*******************************************************************************************************
+     *  DOM Processing Methods.
+     *******************************************************************************************************/
+
+    /**
+     * DOM Visit Before.
+     * @param element
+     * @param executionContext
+     */
+    public void visitBefore(Element element, ExecutionContext executionContext) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Visiting bean populator for beanId [" + beanId + "] on element " + DomUtils.getXPath(element));
+        }
+
+        if (beanClass != null) {
+            createAndSetBean(executionContext);
+        }
+    }
+
+    /**
+     * DOM Visit After.
+     * @param element
+     * @param executionContext
+     */
+    public void visitAfter(Element element, ExecutionContext executionContext) {
+        if (beanClass == null) {
+            String dataString;
+
+            if (isAttribute) {
+                dataString = element.getAttribute(attributeName);
+            } else {
+                dataString = DomUtils.getAllText(element, false);
+            }
+
+            populateAndSetBean(dataString, executionContext);
+        }
+    }
+
+    /*******************************************************************************************************
+     *  SAX Processing Methods.
+     *******************************************************************************************************/
+
+    /**
+     * SAX Visit Before.
+     * @param element
+     * @param executionContext
+     */
+    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Visiting bean populator for beanId [" + beanId + "] on element " + SAXUtil.getXPath(element));
+        }
+
+        if (beanClass != null) {
+            createAndSetBean(executionContext);
+        }
+    }
+
+    /**
+     * SAX Text event.
+     * @param element
+     * @param executionContext
+     */
+    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
+        if(!isAttribute) {
+            /*
+            StringBuffer buffer = getBuffer(element);
+            buffer.append(text);
+            */
+            element.setCache(text);
+        }
+    }
+
+    /**
+     * SAX child element event.
+     * @param element
+     * @param childElement
+     * @param executionContext
+     * @throws SmooksException
+     * @throws IOException
+     */
+    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
+    }
+
+    /**
+     * SAX Visit After.
+     * @param element
+     * @param executionContext
+     */
+    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        if (beanClass == null) {
+            String dataString;
+
+            if (isAttribute) {
+                dataString = SAXUtil.getAttribute(attributeName, element.getAttributes());
+            } else {
+                //StringBuffer buffer = getBuffer(element);
+                //dataString = buffer.toString();
+                dataString = (String) element.getCache();
+            }
+
+            populateAndSetBean(dataString, executionContext);
+        }
+    }
+
+    private StringBuffer getBuffer(SAXElement element) {
+        StringBuffer buffer = (StringBuffer) element.getCache();
+        if(buffer == null) {
+            buffer = new StringBuffer();
+            element.setCache(buffer);
+        }
+        return buffer;
+    }
+
+    /*******************************************************************************************************
+     *  Common Methods. 
+     *******************************************************************************************************/
 
     /**
      * Set the resource configuration on the bean populator.
@@ -211,33 +334,24 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
             logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'.  Defaulting beanId to '" + beanId + "'.");
         }
 
+        if (config.getStringParameter("attributeName") != null) {
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'attributeName' param config no longer supported.  Please use the <bindings> config style.");
+        }
+
         // What data is to be extracted from the visited element and set on the bean...
-        attributeName = config.getStringParameter("attributeName");
+        attributeName = config.getStringParameter("valueAttributeName");
         if (attributeName != null) {
-            if ((attributeName = attributeName.trim()).equals("")) {
-                throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'attributeName' param specified but blank.");
-            }
             isAttribute = true;
         } else {
             // Not an attribute - this means we'll be setting the element text on the bean.
             isAttribute = false;
         }
 
-        // Support legacy "setterName" attribute - map it to a "property"...
-        property = config.getStringParameter("setterName");
-        if (property != null) {
-            property = toPropertyName(property);
-        } else {
-            property = config.getStringParameter("property");
+        if (config.getStringParameter("setterName") != null) {
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
-        if (property == null || (property = property.trim()).equals("")) {
-            if (isAttribute) {
-                property = attributeName;
-            } else {
-                // setterName and attributeName are not set - visitAfter method should only
-                // create the bean!!
-            }
-        }
+
+        property = config.getStringParameter("property");
 
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
@@ -257,7 +371,7 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
             }
         }
 
-        logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].  Add to list=" + addToList + ", attributeName=" + attributeName + ", property=" + property);
+        logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].  Add to list=" + addToList + ", property=" + property);
     }
 
     public List<SmooksResourceConfiguration> getExpansionConfigurations() throws SmooksConfigurationException {
@@ -288,8 +402,10 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
     private SmooksResourceConfiguration buildConfig(Element bindingConfig) throws IOException, SmooksConfigurationException {
         SmooksResourceConfiguration resourceConfig = null;
         String selector;
+        String selectorNamespace;
         String property;
         String type;
+        String defaultVal;
 
         // Make sure there's both 'selector' and 'property' attributes...
         selector = DomUtils.getAttributeValue(bindingConfig, "selector");
@@ -307,16 +423,32 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
 
         // Construct the configuraton...
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, getClass().getName());
-        resourceConfig.setParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.name());
+        resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
         resourceConfig.setParameter("beanId", beanId);
         resourceConfig.setParameter("property", property);
         if (attributeNameProperty != null && !attributeNameProperty.trim().equals("")) {
             // The value is comming out of a property on the target element.
             // If this attribute is not defined, the value will be taken from the element text...
-            resourceConfig.setParameter("attributeName", attributeNameProperty);
+            resourceConfig.setParameter("valueAttributeName", attributeNameProperty);
         }
+
+        // Set the data type...
         type = DomUtils.getAttributeValue(bindingConfig, "type");
         resourceConfig.setParameter("type", (type != null?type:"String"));
+        resourceConfig.setTargetProfile(config.getTargetProfile());
+
+        // Set the selector namespace...
+        selectorNamespace = DomUtils.getAttributeValue(bindingConfig, "selector-namespace");
+        if(selectorNamespace == null) {
+            selectorNamespace = config.getSelectorNamespaceURI();
+        }
+        resourceConfig.setSelectorNamespaceURI(selectorNamespace);
+
+        // Set the default value...
+        defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
+        if(defaultVal != null) {
+            resourceConfig.setParameter("default", defaultVal);
+        }
 
         return resourceConfig;
     }
@@ -331,7 +463,7 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
             }
         }
 
-        return selectorProp.toString();
+        return selectorProp.toString().trim();
     }
 
     private String getAttributeNameProperty(String selector) {
@@ -360,42 +492,15 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
         return setterName.toString();
     }
 
-    private String toPropertyName(String setterName) {
-        StringBuffer propertyName = new StringBuffer(setterName);
-
-        if (setterName.startsWith("set")) {
-            propertyName.delete(0, 3);
-            propertyName.setCharAt(0, Character.toLowerCase(propertyName.charAt(0)));
-        }
-
-        return propertyName.toString();
-    }
-
     private String toBeanId(Class beanClass) {
         StringBuffer simpleClassName = new StringBuffer(beanClass.getSimpleName());
         simpleClassName.setCharAt(0, Character.toLowerCase(simpleClassName.charAt(0)));
         return simpleClassName.toString();
     }
 
-    /**
-     * Visit the element and extract data and set on the bean.
-     *
-     * @param element          Element being visited.
-     * @param executionContext Execution context.
-     */
-    public void visitBefore(Element element, ExecutionContext executionContext) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Visiting bean populator for beanId [" + beanId + "] on element " + DomUtils.getXPath(element));
-        }
-
+    private void populateAndSetBean(String dataString, ExecutionContext executionContext) {
         Object bean = getBean(executionContext);
-        Object dataObject = getDataObject(element, executionContext);
-
-        if (property == null && attributeName == null) {
-            // property and attributeName are not set - visitAfter method should only
-            // create the bean!!
-            return;
-        }
+        Object dataObject = decodeDataString(dataString, executionContext);
 
         // If we need to create the bean setter method instance...
         if (beanSetterMethod == null) {
@@ -412,13 +517,9 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
         }
     }
 
-    private Object getDataObject(Element element, ExecutionContext executionContext) throws DataDecodeException {
-        String dataString;
-
-        if (isAttribute) {
-            dataString = element.getAttribute(attributeName);
-        } else {
-            dataString = DomUtils.getAllText(element, false);
+    private Object decodeDataString(String dataString, ExecutionContext executionContext) throws DataDecodeException {
+        if((dataString == null || dataString.equals("")) && defaultVal != null) {
+            dataString = defaultVal;
         }
 
         if (decoder == null) {
@@ -443,15 +544,6 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
     }
 
     /**
-     * Visit the element and extract data and set on the bean.
-     *
-     * @param element          Element being visited.
-     * @param executionContext Container request.
-     */
-    public void visitAfter(Element element, ExecutionContext executionContext) {
-    }
-
-    /**
      * Get the bean instance on which this populator instance is to set data.
      *
      * @param execContext The execution context.
@@ -460,68 +552,71 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
     private Object getBean(ExecutionContext execContext) {
         Object bean = null;
 
-        // If the configuration associated with this populator instance has a beanClass
-        // configured, create a new instance and set it on the request...
-        if (beanClass != null) {
-            bean = createBeanInstance();
-
-            if (setOn != null) {
-                // Need to associate the 2 bean lifecycles...
-                BeanAccessor.associateLifecycles(execContext, setOn, beanId, addToList);
-            }
-
-            BeanAccessor.addBean(beanId, bean, execContext, addToList);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Bean [" + beanId + "] instance created.");
-            }
-
-            // If the new bean is to be set on a parent bean... set it...
-            if (setOn != null) {
-                // Set the bean instance on another bean. Supports creating an object graph
-                Object setOnBean = BeanAccessor.getBean(setOn, execContext);
-                if (setOnBean != null) {
-                    if(setOnUnconfigured && setOnBean instanceof Collection) {
-                        ((Collection)setOnBean).add(bean);
-                    } else {
-                        try {
-                            if (setOnBeanSetterMethod == null) {
-                                if (!addToList) {
-                                    setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
-                                } else {
-                                    setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, List.class);
-                                }
-                            }
-                            if(logger.isDebugEnabled()) {
-                                logger.debug("Setting bean '" + beanId + "' on parent bean '" + setOn + "'.");
-                            }
-                            if (!addToList) {
-                                setOnBeanSetterMethod.invoke(setOnBean, bean);
-                            } else {
-                                Object beanList = BeanAccessor.getBean(beanId + "List", execContext);
-                                setOnBeanSetterMethod.invoke(setOnBean, beanList);
-                            }
-                        } catch (IllegalAccessException e) {
-                            throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
-                        } catch (InvocationTargetException e) {
-                            throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
-                        }
-                    }
-                } else {
-                    logger.error("Failed to set bean '" + beanId + "' on parent bean '" + setOn + "'.  Failed to find bean '" + setOn + "'.");
-                }
-            }
-        } else {
-            // Get the bean instance from the request.  If there is non, it's a bad config!!
-            bean = BeanAccessor.getBean(beanId, execContext);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  Using [" + bean + "]");
-            }
-            if (bean == null) {
-                throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");
-            }
+        // Get the bean instance from the request.  If there is non, it's a bad config!!
+        bean = BeanAccessor.getBean(beanId, execContext);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  Using [" + bean + "]");
+        }
+        if (bean == null) {
+            throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");
         }
 
         return bean;
+    }
+
+    private void createAndSetBean(ExecutionContext executionContext) {
+        Object bean;
+        bean = createBeanInstance();
+
+        if (setOn != null) {
+            // Need to associate the 2 bean lifecycles...
+            BeanAccessor.associateLifecycles(executionContext, setOn, beanId, addToList);
+        }
+
+        BeanAccessor.addBean(beanId, bean, executionContext, addToList);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Bean [" + beanId + "] instance created.");
+        }
+
+        // If the new bean is to be set on a parent bean... set it...
+        if (setOn != null) {
+            setOn(bean, executionContext);
+        }
+    }
+
+    private void setOn(Object bean, ExecutionContext execContext) {
+        // Set the bean instance on another bean. Supports creating an object graph
+        Object setOnBean = BeanAccessor.getBean(setOn, execContext);
+        if (setOnBean != null) {
+            if(setOnUnconfigured && setOnBean instanceof Collection) {
+                ((Collection)setOnBean).add(bean);
+            } else {
+                try {
+                    if (setOnBeanSetterMethod == null) {
+                        if (!addToList) {
+                            setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
+                        } else {
+                            setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, List.class);
+                        }
+                    }
+                    if(logger.isDebugEnabled()) {
+                        logger.debug("Setting bean '" + beanId + "' on parent bean '" + setOn + "'.");
+                    }
+                    if (!addToList) {
+                        setOnBeanSetterMethod.invoke(setOnBean, bean);
+                    } else {
+                        Object beanList = BeanAccessor.getBean(beanId + "List", execContext);
+                        setOnBeanSetterMethod.invoke(setOnBean, beanList);
+                    }
+                } catch (IllegalAccessException e) {
+                    throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
+                } catch (InvocationTargetException e) {
+                    throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
+                }
+            }
+        } else {
+            logger.error("Failed to set bean '" + beanId + "' on parent bean '" + setOn + "'.  Failed to find bean '" + setOn + "'.");
+        }
     }
 
     /**
@@ -630,17 +725,5 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
         }
 
         return beanSetterMethod;
-    }
-
-    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 }

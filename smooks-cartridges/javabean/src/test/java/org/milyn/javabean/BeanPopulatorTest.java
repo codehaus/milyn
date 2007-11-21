@@ -16,27 +16,25 @@
 
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Calendar;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-
+import junit.framework.TestCase;
+import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
-import org.milyn.container.MockExecutionContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.xml.XmlUtil;
-import org.milyn.Smooks;
-import org.w3c.dom.Document;
+import org.milyn.io.StreamUtils;
+import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
-import junit.framework.TestCase;
-
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  *
@@ -62,8 +60,6 @@ public class BeanPopulatorTest extends TestCase {
         config.setParameter("beanId", " ");
         config.setParameter("beanClass", " ");
 
-        config.setParameter("setterName", "setX");
-
         testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
 
         config.removeParameter("beanClass");
@@ -74,7 +70,7 @@ public class BeanPopulatorTest extends TestCase {
         config.removeParameter("beanClass");
         config.setParameter("beanClass", MyGoodBean.class.getName());
 
-        config.setParameter("attributeName", "attributeX");
+        config.setParameter("valueAttributeName", "attributeX");
 
         Configurator.configure(new BeanPopulator(), config);
     }
@@ -90,6 +86,7 @@ public class BeanPopulatorTest extends TestCase {
         }
     }
 
+    /*
     public void test_visit_validateSetterName() throws SAXException, IOException {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
         MockExecutionContext request = new MockExecutionContext();
@@ -108,10 +105,8 @@ public class BeanPopulatorTest extends TestCase {
             assertEquals("Bean [userBean] configuration invalid.  Bean setter method [setX(java.lang.String)] not found on type [org.milyn.javabean.MyGoodBean].  You may need to set a 'decoder' on the binding config.", e.getMessage());
         }
     }
+    */
 
-    public void test_visit_1() throws SAXException, IOException {
-        test_visit_userBean("expanded-config.xml");
-    }
     public void test_visit_2() throws SAXException, IOException {
         test_visit_userBean("compressed-config.xml");        
     }
@@ -132,14 +127,19 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals("Skeagh Bridge...", bean.getAddress());
     }
 
-    public void test_populate_Order() throws SAXException, IOException {
+    public void test_populate_Order() throws SAXException, IOException, InterruptedException {
+        test_populate_Order("order-01-smooks-config.xml");
+        test_populate_Order("order-01-smooks-config-sax.xml");
+    }
 
-        Smooks smooks = new Smooks();
+    public void test_populate_Order(String configName) throws SAXException, IOException, InterruptedException {
 
-        smooks.addConfigurations("order-01-smooks-config.xml", getClass().getResourceAsStream("order-01-smooks-config.xml"));
+        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
+        Smooks smooks = new Smooks(packagePath + "/" + configName);
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        String res = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
 
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), new DOMResult(), executionContext);
+        smooks.filter(new StreamSource(new StringReader(res)), null, executionContext);
 
         Order order = (Order)BeanAccessor.getBean("order", executionContext);
 

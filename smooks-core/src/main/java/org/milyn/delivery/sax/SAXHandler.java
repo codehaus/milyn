@@ -21,12 +21,14 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.xml.DocType;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -44,7 +46,7 @@ public class SAXHandler extends DefaultHandler2 {
     private ElementProcessor currentProcessor = null;
     private TextType currentTextType = TextType.TEXT;
     private ContentHandlerConfigMapTable<SAXElementVisitor> saxVisitors;
-    private SAXElementVisitor defaultVisitor;
+    private List<ContentHandlerConfigMap<SAXElementVisitor>> defaultVisitors;
 
     public SAXHandler(ExecutionContext execContext, Writer writer) {
         this.execContext = execContext;
@@ -53,9 +55,10 @@ public class SAXHandler extends DefaultHandler2 {
 
         List<ContentHandlerConfigMap<SAXElementVisitor>> defaultMappings = saxVisitors.getMappings("*");
         if(defaultMappings != null && !defaultMappings.isEmpty()) {
-            defaultVisitor = defaultMappings.get(0).getContentHandler();
+            defaultVisitors = defaultMappings;
         } else {
-            defaultVisitor = new DefaultSAXElementVisitor();
+            defaultVisitors = new ArrayList<ContentHandlerConfigMap<SAXElementVisitor>>();
+            defaultVisitors.add(new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), new SmooksResourceConfiguration("*")));
         }
     }
 
@@ -67,10 +70,13 @@ public class SAXHandler extends DefaultHandler2 {
             // based on this start event...
             element = new SAXElement(namespaceURI, localName, qName, atts, currentProcessor.element);
             element.setWriter(currentProcessor.element.getWriter());
-            try {
-                currentProcessor.visitor.onChildElement(currentProcessor.element, element, execContext);
-            } catch(Throwable t) {
-                logger.error("Error in '" + currentProcessor.visitor.getClass().getName() + "' while processing the onChildElement event.", t);
+            for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
+                try {
+                    mapping.getContentHandler().onChildElement(currentProcessor.element, element, execContext);
+                } catch(Throwable t) {
+                    logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildElement event.", t);
+                }
+                flushCurrentWriter();
             }
             elementProcessorStack.push(currentProcessor);
         } else {
@@ -83,39 +89,34 @@ public class SAXHandler extends DefaultHandler2 {
         // Now create the new "current" processor...
         currentProcessor = new ElementProcessor();
         currentProcessor.element = element;
-        if(mappings != null && !mappings.isEmpty()) {
-            for(ContentHandlerConfigMap<SAXElementVisitor> mapping : mappings) {
-                if(mapping.getResourceConfig().isTargetedAtElement(element)) {
-                    currentProcessor.visitor = mapping.getContentHandler();
-                    break;
-                }
-            }
-        }
-        if (currentProcessor.visitor == null) {
-            currentProcessor.visitor = defaultVisitor;
+        currentProcessor.mappings = mappings;
+        if(mappings == null || mappings.isEmpty()) {            
+            currentProcessor.mappings = defaultVisitors;
         }
 
         // And visit it with the targeted visitor...
-        try {
-            currentProcessor.visitor.visitBefore(currentProcessor.element, execContext);
-            Writer writer = currentProcessor.element.getWriter();
-            if(writer != null) {
-                writer.flush();
+        for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
+            try {
+                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                    mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
+                }
+            } catch(Throwable t) {
+                logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the visitBefore event.", t);
             }
-        } catch(Throwable t) {
-            logger.error("Error in '" + currentProcessor.visitor.getClass().getName() + "' while processing the visitBefore event.", t);
+            flushCurrentWriter();
         }
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        try {
-            currentProcessor.visitor.visitAfter(currentProcessor.element, execContext);
-            Writer writer = currentProcessor.element.getWriter();
-            if(writer != null) {
-                writer.flush();
+        for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
+            try {
+                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                    mapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
+                }
+            } catch(Throwable t) {
+                logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the visitAfter event.", t);
             }
-        } catch(Throwable t) {
-            logger.error("Error in '" + currentProcessor.visitor.getClass().getName() + "' while processing the visitAfter event.", t);
+            flushCurrentWriter();
         }
         if(!elementProcessorStack.isEmpty()) {
             currentProcessor = elementProcessorStack.pop();
@@ -124,14 +125,26 @@ public class SAXHandler extends DefaultHandler2 {
 
     public void characters(char[] ch, int start, int length) throws SAXException {
         if(currentProcessor != null) {
-            try {
-                currentProcessor.visitor.onChildText(currentProcessor.element, new String(ch, start, length), currentTextType, execContext);
-                Writer writer = currentProcessor.element.getWriter();
-                if(writer != null) {
-                    writer.flush();
+            for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
+                try {
+                    if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                        mapping.getContentHandler().onChildText(currentProcessor.element, new String(ch, start, length), currentTextType, execContext);
+                    }
+                } catch(Throwable t) {
+                    logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildText event.", t);
                 }
-            } catch(Throwable t) {
-                logger.error("Error in '" + currentProcessor.visitor.getClass().getName() + "' while processing the onChildText event.", t);
+                flushCurrentWriter();
+            }
+        }
+    }
+
+    private void flushCurrentWriter() {
+        Writer writer = currentProcessor.element.getWriter();
+        if(writer != null) {
+            try {
+                writer.flush();
+            } catch (IOException e) {
+                logger.error("Error flushing writer.", e);
             }
         }
     }
@@ -179,6 +192,6 @@ public class SAXHandler extends DefaultHandler2 {
 
     private class ElementProcessor {
         private SAXElement element;
-        private SAXElementVisitor visitor;
+        private List<ContentHandlerConfigMap<SAXElementVisitor>> mappings;
     }
 }

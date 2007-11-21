@@ -17,6 +17,7 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.BeanAccessor;
@@ -43,8 +44,12 @@ public class Main {
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 
         // Filter the input message to the outputWriter, using the execution context...
-        DOMResult domResult = new DOMResult();
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
+        if(executionContext.getDeliveryConfig() instanceof DOMContentDeliveryConfig) {
+            DOMResult domResult = new DOMResult();
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
+        } else {
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, executionContext);
+        }
 
         return BeanAccessor.getBeanMap( executionContext );
     }
