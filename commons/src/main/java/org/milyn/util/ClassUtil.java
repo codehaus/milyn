@@ -179,14 +179,17 @@ public class ClassUtil {
      * in the passed in file.
      * The fileName is expected to be found on the classpath.
      * 
-     * @param fileName name of the file containing the classes
-     * @return List<Class>	list of the classes contained in the file.
+     * @param fileName The name of the file containing the list of classes,
+     * one class name per line.
+     * @param instanceOf The instanceof filter.
+     * @return List<Class<T>>	list of the classes contained in the file.
      */
-    public static List<Class> getClasses(final String fileName) {
+    public static <T> List<Class<T>> getClasses(final String fileName, Class<T> instanceOf) {
     	AssertArgument.isNotNull( fileName, "fileName" );
+        AssertArgument.isNotNull( instanceOf, "instanceOf" );
 
         long start = System.currentTimeMillis();
-        List<Class> classes = new ArrayList<Class>();
+        List<Class<T>> classes = new ArrayList<Class<T>>();
         Enumeration<URL> cpURLs;
         int resCount = 0;
 
@@ -198,7 +201,7 @@ public class ClassUtil {
 
         while (cpURLs.hasMoreElements()) {
             URL url = cpURLs.nextElement();
-            addClasses(url, classes);
+            addClasses(url, instanceOf, classes);
             resCount++;
         }
 
@@ -208,32 +211,48 @@ public class ClassUtil {
         return classes;
     }
 
-    private static void addClasses(URL url, List<Class> classes) {
+    private static <T>  void addClasses(URL url, Class<T> instanceOf, List<Class<T>> classes) {
         InputStream ins = null;
         BufferedReader br = null;
 
         try
     	{
-            String line;
+            String className;
             int count = 0;
 
             ins = url.openStream();
             br = new BufferedReader( new InputStreamReader( ins ));
-	    	while( (line = br.readLine()) != null )
+	    	while( (className = br.readLine()) != null )
 	    	{
-	    		classes.add( forName( line, ClassUtil.class ));
-	    		logger.debug( "Adding " + line + " to list of classes");
-                count++;
+                Class clazz;
+
+                className = className.trim();
+                
+                // Ignore blank lines and lines that start with a hash...
+                if(className.equals("") || className.startsWith("#")) {
+                    continue;
+                }
+
+                try {
+                    clazz = forName(className, ClassUtil.class);
+                } catch (ClassNotFoundException e) {
+                    logger.warn("Failed to load class '" + className + "'. Class not found.");
+                    continue;
+                }
+
+                if(instanceOf.isAssignableFrom(clazz)) {
+                    classes.add(clazz);
+                    logger.debug( "Adding " + className + " to list of classes");
+                    count++;
+                } else {
+                    logger.info("Not adding class '" + clazz.getName() + "' to list.  Class does not implement/extend '" + instanceOf.getName() + "'.");
+                }
             }
             logger.debug("Loaded '" + count + "' classes listed in '" + url + "'.");
     	}
     	catch (IOException e)
 		{
             throw new RuntimeException("Failed to read from file : " + url, e);
-		}
-    	catch (ClassNotFoundException e)
-		{
-            throw new RuntimeException("Failed to load classes from file : " + url, e);
 		}
     	finally
     	{

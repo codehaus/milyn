@@ -90,7 +90,7 @@ public interface DataDecoder extends ContentHandler {
             if(installedDecoders == null) {
                 synchronized (Factory.class) {
                     if(installedDecoders == null) {
-                        List<Class> decoders = ClassUtil.getClasses("META-INF/data-decoders.inf");
+                        List<Class<DataDecoder>> decoders = ClassUtil.getClasses("META-INF/data-decoders.inf", DataDecoder.class);
 
                         if(decoders.isEmpty()) {
                             throw new DataDecodeException("Failed to find installed DataDecoders on clasaspath.");

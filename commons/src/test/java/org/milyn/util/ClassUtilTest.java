@@ -37,7 +37,7 @@ public class ClassUtilTest extends TestCase
 	{
 		try
 		{
-			ClassUtil.getClasses( null );
+			ClassUtil.getClasses( null, null);
 		} 
 		catch (Exception e)
 		{
@@ -47,7 +47,7 @@ public class ClassUtilTest extends TestCase
 	
 	public void test_getClasses() throws MalformedURLException 
 	{
-		List<Class> classes = ClassUtil.getClasses( fileName );
+		List<Class<Object>> classes = ClassUtil.getClasses( fileName, Object.class);
 		assertNotNull( classes );
 		assertTrue( classes.contains( String.class ) );
 		assertTrue( classes.contains( Integer.class ) );
