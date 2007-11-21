@@ -33,7 +33,7 @@ public class DataDecoderTest extends TestCase
 	
 	public void test_factory() throws MalformedURLException
 	{
-		DataDecoder decoder = DataDecoder.Factory.create( BigDecimal.class, fileName );
+		DataDecoder decoder = DataDecoder.Factory.create( BigDecimal.class);
 		assertNotNull( decoder );
 		assertEquals( BigDecimalDecoder.class, decoder.getClass() );
 	}
