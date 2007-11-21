@@ -15,7 +15,10 @@
 */
 package org.milyn.util;
 
+import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -27,6 +30,8 @@ import junit.framework.TestCase;
 public class ClassUtilTest extends TestCase
 {
 	private String fileName = "META-INF/classes.inf";
+	private String testClassesDirName = "target" + File.separator + "test-classes";
+	private File jarFile = new File ( testClassesDirName + File.separator + "test.jar");
 	
 	public void test_getClassesNegative()
 	{
@@ -42,9 +47,16 @@ public class ClassUtilTest extends TestCase
 	
 	public void test_getClasses() throws MalformedURLException 
 	{
-		List<Class> jars = ClassUtil.getClasses( fileName );
-		assertNotNull( "jars should not have been null", jars );
-		assertEquals( String.class, jars.get(0) );
+		List<Class> classes = ClassUtil.getClasses( fileName );
+		assertNotNull( classes );
+		assertTrue( classes.contains( String.class ) );
+		assertTrue( classes.contains( Integer.class ) );
 	}
 	
+	public void setUp() throws MalformedURLException
+	{
+		File testClassesDir = new File( testClassesDirName );
+		URLClassLoader urlc = new URLClassLoader( new URL[] { jarFile.toURL(), testClassesDir.toURL() } ); 
+		Thread.currentThread().setContextClassLoader( urlc );
+	}
 }
