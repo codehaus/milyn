@@ -17,15 +17,23 @@ package org.milyn.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.classpath.InstanceOfFilter;
 import org.milyn.classpath.IsAnnotationPresentFilter;
 import org.milyn.classpath.Scanner;
 
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -169,6 +177,63 @@ public class ClassUtil {
         } else {
             return Proxy.newProxyInstance(ClassUtil.class.getClassLoader(), classes, handler);
         }
+    }
+    
+    /**
+     * Will try to create a List of classes that are listed 
+     * int the passed in file.
+     * The fileName is expected to be found on the classpath.
+     * 
+     * @param fileName name of the file containing the classes
+     * @return List<Class>	list of the classes contained in the file.
+     */
+    public static List<Class> getClasses(final String fileName) {
+    	AssertArgument.isNotNull( fileName, "fileName" );
+    	
+    	logger.debug( "Will use file " + fileName + " to look for jars." );
+    	List<Class> classes = new ArrayList<Class>();
+    	
+    	InputStream ins = null;
+    	BufferedReader br = null;
+    	try
+    	{
+	    	ins = Thread.currentThread().getContextClassLoader().getResourceAsStream( fileName );
+	    	br = new BufferedReader( new InputStreamReader( ins ));
+	    	String line;
+	    	while( (line = br.readLine()) != null )
+	    	{
+	    		classes.add( forName( line, ClassUtil.class ));
+	    		logger.info( "Adding " + line + " to list of classes");
+	    	}
+    	} 
+    	catch (IOException e)
+		{
+            throw new RuntimeException("Failed to read from file : " + fileName, e);
+		} 
+    	catch (ClassNotFoundException e)
+		{
+            throw new RuntimeException("Failed to load classes from file : " + fileName, e);
+		}
+    	finally
+    	{
+    		close(ins);
+    		close(br);
+    	}
+    	return classes;
+    }
+    
+    private static void close( final Closeable closable ) {
+    	if(  closable != null )
+    	{
+			try
+			{
+				closable.close();
+			} 
+    		catch (IOException e)
+			{
+    			logger.warn( "Exception while trying to close : " + closable, e);
+			}
+    	}
     }
 
     public static String toFilePath(Package aPackage) {

@@ -19,32 +19,23 @@ package org.milyn;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.io.File;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.container.standalone.PreconfiguredSmooks;
-import org.milyn.util.DomUtil;
-import org.milyn.util.ClassUtil;
-import org.milyn.xml.XmlUtil;
-import org.milyn.profile.DefaultProfileSet;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import junit.framework.TestCase;
 
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.Source;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.XMLConstants;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.standalone.PreconfiguredSmooks;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.util.DomUtil;
+import org.milyn.xml.XmlUtil;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class SmooksStandaloneTest extends TestCase {
-
+	
     public void testProcess() {
         Smooks smooks = null;
         try {
@@ -113,4 +104,5 @@ public class SmooksStandaloneTest extends TestCase {
 
         assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
     }
+    
 }

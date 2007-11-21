@@ -142,7 +142,7 @@ public class Configurator {
             decoderClass = configParam.decoder();
             if(decoderClass.isAssignableFrom(DataDecoder.class)) {
                 // No decoder specified via annotation.  Infer from the field type...
-                decoder = DataDecoder.Factory.create(type);
+                decoder = DataDecoder.Factory.create(type, "META-INF/data-decoders.inf");
                 if(decoder == null) {
                     throw new SmooksConfigurationException("ContentHandler class member '" + getLongMemberName(member) + "' must define a decoder through it's @ConfigParam annotation.  Unable to automatically determine DataDecoder from member type.");
                 }
