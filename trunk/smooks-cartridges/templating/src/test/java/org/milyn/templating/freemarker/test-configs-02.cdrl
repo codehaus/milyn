@@ -6,7 +6,9 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">myBeanData</param>
         <param name="beanClass">org.milyn.templating.MyBean</param>
-        <param name="attributeName">x</param>
+        <param name="bindings">
+            <binding property="x" selector="c @x" />
+        </param>
     </resource-config>
 
     <resource-config selector="c">

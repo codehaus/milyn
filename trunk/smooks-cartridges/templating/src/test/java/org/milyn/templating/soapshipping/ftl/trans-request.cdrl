@@ -1,5 +1,4 @@
 <?xml version='1.0'?>
-
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-target-profile="shipping-request">
 
     <!--

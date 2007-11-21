@@ -36,6 +36,10 @@
       <priority value="info"/>
    </category>
 
+    <category name="org.milyn.classpath.Scanner">
+       <priority value="info"/>
+    </category>
+
    <!-- ======================= -->
    <!-- Setup the Root category -->
    <!-- ======================= -->

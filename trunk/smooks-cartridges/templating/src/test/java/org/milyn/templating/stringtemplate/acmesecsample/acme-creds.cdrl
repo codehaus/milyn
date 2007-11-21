@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE smooks-resource-list PUBLIC "-//MILYN//DTD SMOOKS 1.0//EN" "http://www.milyn.org/dtd/smooksres-list-1.0.dtd">
-
-<smooks-resource-list default-useragent="acme-request"> 
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-target-profile="acme-request">
 
 	<!-- ==========================================================================
 		Configure the Credentials bean creation and population.
@@ -12,38 +10,25 @@
 		processing phase - adding the security info to the header as a 
 		WS-Security block.
 	========================================================================== -->
-	<smooks-resource selector="acmeCreds"
-				namespace="http://schemas.acme.com/security/"
-				path="org.milyn.javabean.BeanPopulator">
-		<!-- create and bind the Credentials bean instance on encountering the acmecreds element. -->
+	<resource-config selector="acmeCreds" selector-namespace="http://schemas.acme.com/security/">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <!-- create and bind the Credentials bean instance on encountering the acmecreds element. -->
 		<param name="beanId">credentials</param>
         <param name="VisitPhase">ASSEMBLY</param>
         <param name="beanClass">org.milyn.templating.stringtemplate.acmesecsample.Credentials</param>
-	</smooks-resource>	
-	<smooks-resource selector="acmeCreds usr"
-				namespace="http://schemas.acme.com/security/"
-				path="org.milyn.javabean.BeanPopulator">
-		<!-- extract the username and set it on the Credentials bean -->
-		<param name="beanId">credentials</param>
-        <param name="VisitPhase">ASSEMBLY</param>
-		<param name="setterName">setUsername</param>
-	</smooks-resource>	
-	<smooks-resource selector="acmeCreds pwd"
-				namespace="http://schemas.acme.com/security/"
-				path="org.milyn.javabean.BeanPopulator">
-		<!-- extract the password and set it on the Credentials bean -->
-		<param name="beanId">credentials</param>
-        <param name="VisitPhase">ASSEMBLY</param>
-		<param name="setterName">setPassword</param>
-	</smooks-resource>	
+        <param name="bindings">
+            <binding property="username" selector="acmeCreds usr" />
+            <binding property="password" selector="acmeCreds pwd" />
+        </param>
+	</resource-config>
 
 	<!-- Remove the acmecreds element from the SOAP body.  In reality, you'd
 		 prob not need to remove this element in this way. It would probably
 		 get removed as part of a more general revamp of the SOAP body i.e. to
 		 "make it fit" a different schema altogether.-->
-	<smooks-resource selector="acmeCreds"
-				namespace="http://schemas.acme.com/security/"
-				path="org.milyn.cdres.assemble.RemoveElementAU" />
+	<resource-config selector="acmeCreds" selector-namespace="http://schemas.acme.com/security/">
+        <resource>org.milyn.cdres.assemble.RemoveElementAU</resource>
+    </resource-config>
 		
 	<!-- ==========================================================================
 		Use a StringTemplate template to write the Credentials info (gathered
@@ -51,10 +36,9 @@
 		the header i.e. "addto").
 		Note: This template is applied during the "Processing Phase".
 	========================================================================== -->
-	<smooks-resource selector="Envelope Header" 
-					namespace="http://schemas.xmlsoap.org/soap/envelope/" 
-					path="/org/milyn/templating/stringtemplate/acmesecsample/WsseCredsWriter.st">
-		<param name="action">addto</param>
-	</smooks-resource>
+	<resource-config selector="Envelope Header" selector-namespace="http://schemas.xmlsoap.org/soap/envelope/">
+        <resource>/org/milyn/templating/stringtemplate/acmesecsample/WsseCredsWriter.st</resource>
+        <param name="action">addto</param>
+	</resource-config>
 	
 </smooks-resource-list>

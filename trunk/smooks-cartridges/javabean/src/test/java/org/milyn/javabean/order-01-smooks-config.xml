@@ -7,15 +7,15 @@
         <param name="beanClass">org.milyn.javabean.Order</param>
     </resource-config>
 
-    <resource-config selector="header">
+    <resource-config selector="header" selector-namespace="http://x">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">org.milyn.javabean.Header</param>
         <param name="setOn">order</param>
         <param name="bindings">
-            <binding property="date" type="OrderDateLong" selector="header date" />
+            <binding property="date" type="OrderDateLong" selector="header date" selector-namespace="http://y" />
             <binding property="customerNumber" type="Long" selector="header customer @number" />
             <binding property="customerName" selector="header customer" />
-            <binding property="privatePerson" type="Boolean" selector="header privatePerson" />
+            <binding property="privatePerson" type="Boolean" selector="header privatePerson" default="true" />
         </param>
     </resource-config>
 

@@ -172,7 +172,7 @@ public class SmooksDOMFilter extends Filter {
         if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
             throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported by the DOM Filter.");
         }
-        if (!(result instanceof StreamResult) && !(result instanceof DOMResult)) {
+        if (result != null && !(result instanceof StreamResult) && !(result instanceof DOMResult)) {
             throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the DOM Filter.");
         }
 
@@ -206,7 +206,7 @@ public class SmooksDOMFilter extends Filter {
                 } catch (IOException e) {
                     logger.error("Error writing result to output stream.", e);
                 }
-            } else {
+            } else if (result instanceof DOMResult) {
                 ((DOMResult) result).setNode(resultNode);
             }
         } finally {

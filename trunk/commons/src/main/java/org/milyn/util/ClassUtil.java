@@ -170,4 +170,8 @@ public class ClassUtil {
             return Proxy.newProxyInstance(ClassUtil.class.getClassLoader(), classes, handler);
         }
     }
+
+    public static String toFilePath(Package aPackage) {
+        return "/" + aPackage.getName().replace('.', '/');
+    }
 }

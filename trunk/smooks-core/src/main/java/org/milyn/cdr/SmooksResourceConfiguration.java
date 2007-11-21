@@ -159,6 +159,10 @@ public class SmooksResourceConfiguration {
      */
     private String[] contextualSelector;
     /**
+     * Target profile.
+     */
+    private String targetProfile;
+    /**
      * List of device/profile names on which the Content Delivery Resource is to be applied
      * for instances of selector.
      */
@@ -342,6 +346,14 @@ public class SmooksResourceConfiguration {
     }
 
     /**
+     * Get the target profile string as set in the configuration.
+     * @return The target profile.
+     */
+    public String getTargetProfile() {
+        return targetProfile;
+    }
+
+    /**
      * Set the configs "target profile".
      *
      * @param targetProfile Target Profile(s).  Comma separated list of
@@ -352,6 +364,7 @@ public class SmooksResourceConfiguration {
             // Default the target profile to everything if not specified.
             targetProfile = "*";
         }
+        this.targetProfile = targetProfile;
         parseTargetingExpressions(targetProfile);
     }
 
