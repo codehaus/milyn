@@ -16,7 +16,7 @@
         </fileSet>
         <fileSet>
             <directory>target/dependencies</directory>
-            <outputDirectory></outputDirectory>
+            <outputDirectory>lib</outputDirectory>
             <excludes>
                 <exclude>avalon*</exclude>
                 <exclude>junit*</exclude>
