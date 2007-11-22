@@ -9,6 +9,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.milyn.Smooks;
+import org.mule.umo.lifecycle.InitialisationException;
 import org.mule.umo.transformer.TransformerException;
 import org.xml.sax.SAXException;
 
@@ -54,23 +55,19 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
         	return null;
 	        
         CharArrayWriter outputWriter = new CharArrayWriter();
-        
-		smooks = getSmooks();
         smooks.filter(new StreamSource(new ByteArrayInputStream(bytes), encoding), new StreamResult(outputWriter), smooks.createExecutionContext());
         
         return outputWriter.toString();
 	}
 	
-	public final Smooks getSmooks() throws TransformerException
+	private final Smooks getSmooks() throws TransformerException
 	{
 		try
 		{
-			if ( smooks == null )
-			{
-				log.info("Using smooksConfigFile :" + smooksConfigFile );
-				smooks = new Smooks( smooksConfigFile );
-			}
-		} catch (IOException e)
+			log.info("Using smooksConfigFile :" + smooksConfigFile );
+			smooks = new Smooks( smooksConfigFile );
+		} 
+		catch (IOException e)
 		{
 			log.error( "IOException while trying to get smooks instance: ", e);
 			throw new TransformerException( this, e );
@@ -80,6 +77,18 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
 			throw new TransformerException( this, e );
 		}
 		return smooks;
+	}
+	
+	public void initialise() throws InitialisationException
+	{
+		try
+		{
+			smooks = getSmooks();
+		} 
+		catch (TransformerException e)
+		{
+			throw new InitialisationException( e, this );
+		}
 	}
 
 	public String getSmooksConfigFile()
@@ -105,6 +114,11 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
 		else
 			return null;
 	}
+	
+    public Object clone() throws CloneNotSupportedException
+    {
+		return this;
+    }
 	
 	
 }

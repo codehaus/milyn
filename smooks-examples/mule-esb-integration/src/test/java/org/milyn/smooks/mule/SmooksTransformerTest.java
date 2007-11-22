@@ -6,8 +6,8 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
-import org.milyn.Smooks;
 import org.milyn.io.StreamUtils;
+import org.mule.umo.lifecycle.InitialisationException;
 import org.mule.umo.transformer.TransformerException;
 
 /**
@@ -29,15 +29,6 @@ public class SmooksTransformerTest extends TestCase
 		assertEquals( smooksConfigFileName, smooksTransformer.getSmooksConfigFile() );
 	}
 	
-	public void test_getSmooks() throws TransformerException
-	{
-		smooksTransformer.setSmooksConfigFile( smooksConfigFileName );
-		Smooks smooks = smooksTransformer.getSmooks();
-		assertNotNull( smooks );
-		Smooks smooks2 = smooksTransformer.getSmooks();
-		assertSame( smooks, smooks2 );
-	}
-	
 	public void test_doTransformation() throws TransformerException
 	{
 		smooksTransformer.setSmooksConfigFile( smooksConfigFileName );
@@ -54,6 +45,11 @@ public class SmooksTransformerTest extends TestCase
 		String inputAsString = new String( inputMessage );
 		byte[] bytesFromMessageObject = smooksTransformer.getBytesFromMessageObject( inputAsString );
 		assertEquals( new String( inputMessage ), new String ( bytesFromMessageObject ) );
+	}
+	
+	public void setUp() throws InitialisationException
+	{
+		smooksTransformer.initialise();
 	}
 	
 	private static byte[] readInputMessage() {
