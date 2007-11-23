@@ -15,12 +15,13 @@
 */
 package org.milyn.delivery;
 
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.TextType;
-import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.TextType;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class SAXAndDOMVisitor implements DOMElementVisitor, SAXElementVisitor {
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 
-    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
+    public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {

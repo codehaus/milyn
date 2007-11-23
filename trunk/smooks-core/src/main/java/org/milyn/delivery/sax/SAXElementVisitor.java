@@ -41,21 +41,20 @@ public interface SAXElementVisitor extends ContentHandler {
      * <p/>
      * Be careful when caching element data.  This is not a DOM.
      *
-     * @param element          The targeted SAX element.
+     * @param element          The element containing the text (parent).  The targeted element.
      * @param text             The text.
-     * @param textType         The text type (text, comment cdata etc).
      * @param executionContext Execution context.
      * @throws SmooksException Event processing failure.
      * @throws IOException Error writing event to output writer.
      */
-    public abstract void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException;
+    public abstract void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException;
 
     /**
      * Process the onChildElement event for the targeted element.
      * <p/>
      * Be careful when caching element data.  This is not a DOM.
      *
-     * @param element          The targeted SAX element.
+     * @param element          The element containing the child element (parent). The targeted element.
      * @param childElement     The child element just added to the targeted element.
      * @param executionContext Execution context.
      * @throws SmooksException Event processing failure.

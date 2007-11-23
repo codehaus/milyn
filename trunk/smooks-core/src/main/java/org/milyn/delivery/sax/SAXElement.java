@@ -86,14 +86,14 @@ public class SAXElement {
 
                 name = new QName(namespaceURI.intern(), qNameLocalName, prefix);
             } else if (localName != null && !localName.equals("")) {
-                name = new QName(namespaceURI.intern(), localName.intern());
+                name = new QName(namespaceURI.intern(), localName);
             } else if (qName != null && !qName.equals("")) {
-                name = new QName(namespaceURI.intern(), qName.intern());
+                name = new QName(namespaceURI.intern(), qName);
             } else {
                 thowInvalidNameException(namespaceURI, localName, qName);
             }
         } else if (localName != null && !localName.equals("")) {
-            name = new QName(localName.intern());
+            name = new QName(localName);
         } else {
             thowInvalidNameException(namespaceURI, localName, qName);
         }

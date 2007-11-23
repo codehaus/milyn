@@ -20,7 +20,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.xml.DomUtils;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.TextType;
+import org.milyn.delivery.sax.SAXText;
 import org.milyn.SmooksException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,7 +97,7 @@ public class ContextObjectSerializationUnit implements SerializationUnit, SAXEle
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 
-    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
+    public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
