@@ -117,7 +117,9 @@ public class SmooksTransformer extends org.mule.transformers.AbstractTransformer
 	
     public Object clone() throws CloneNotSupportedException
     {
-		return this;
+    	SmooksTransformer smooksTransformer = new SmooksTransformer();
+    	smooksTransformer.smooks = this.smooks;
+		return smooksTransformer;
     }
 	
 	
