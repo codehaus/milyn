@@ -32,7 +32,7 @@ public interface SAXElementVisitor extends ContentHandler {
      * @param element          The SAX element being visited.
      * @param executionContext Execution context.
      * @throws SmooksException Event processing failure.
-     * @throws IOException Error writing event to output writer.
+     * @throws IOException     Error writing event to output writer.
      */
     public abstract void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException;
 
@@ -42,12 +42,12 @@ public interface SAXElementVisitor extends ContentHandler {
      * Be careful when caching element data.  This is not a DOM.
      *
      * @param element          The element containing the text (parent).  The targeted element.
-     * @param text             The text.
+     * @param childText        The text.
      * @param executionContext Execution context.
      * @throws SmooksException Event processing failure.
-     * @throws IOException Error writing event to output writer.
+     * @throws IOException     Error writing event to output writer.
      */
-    public abstract void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException;
+    public abstract void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException;
 
     /**
      * Process the onChildElement event for the targeted element.
@@ -58,7 +58,7 @@ public interface SAXElementVisitor extends ContentHandler {
      * @param childElement     The child element just added to the targeted element.
      * @param executionContext Execution context.
      * @throws SmooksException Event processing failure.
-     * @throws IOException Error writing event to output writer.
+     * @throws IOException     Error writing event to output writer.
      */
     public abstract void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException;
 
@@ -68,7 +68,7 @@ public interface SAXElementVisitor extends ContentHandler {
      * @param element          The SAX element being visited.
      * @param executionContext Execution context.
      * @throws SmooksException Event processing failure.
-     * @throws IOException Error writing event to output writer.
+     * @throws IOException     Error writing event to output writer.
      */
     public abstract void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException;
 }
