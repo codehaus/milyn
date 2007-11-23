@@ -29,9 +29,9 @@ public class DefaultSAXElementVisitor implements SAXElementVisitor {
         // Do nothing here... see is there any child text/elements first...
     }
 
-    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
+    public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
         writeStartElement(element);
-        WriterUtil.writeText(text, textType, element.getWriter());
+        text.toWriter(element.getWriter());
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {

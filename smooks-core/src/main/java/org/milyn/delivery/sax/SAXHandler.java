@@ -84,7 +84,7 @@ public class SAXHandler extends DefaultHandler2 {
             element.setWriter(writer);
         }
 
-        List<ContentHandlerConfigMap<SAXElementVisitor>> mappings = saxVisitors.getMappings(element.getName().getLocalPart().toLowerCase());
+        List<ContentHandlerConfigMap<SAXElementVisitor>> mappings = saxVisitors.getMappings(element.getName().getLocalPart());
 
         // Now create the new "current" processor...
         currentProcessor = new ElementProcessor();
@@ -123,12 +123,14 @@ public class SAXHandler extends DefaultHandler2 {
         }
     }
 
+    private SAXText textWrapper = new SAXText();
     public void characters(char[] ch, int start, int length) throws SAXException {
         if(currentProcessor != null) {
             for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
                 try {
-                    if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                        mapping.getContentHandler().onChildText(currentProcessor.element, new String(ch, start, length), currentTextType, execContext);
+                    if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {                        
+                        textWrapper.setText(ch, start, length, currentTextType);
+                        mapping.getContentHandler().onChildText(currentProcessor.element, textWrapper, execContext);
                     }
                 } catch(Throwable t) {
                     logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildText event.", t);

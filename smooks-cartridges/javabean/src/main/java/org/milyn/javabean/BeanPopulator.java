@@ -29,10 +29,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ExpandableContentHandler;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.VisitPhase;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXUtil;
-import org.milyn.delivery.sax.TextType;
+import org.milyn.delivery.sax.*;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -252,15 +249,18 @@ public class BeanPopulator implements DOMElementVisitor, SAXElementVisitor, Expa
     /**
      * SAX Text event.
      * @param element
+     * @param text
      * @param executionContext
+     * @throws SmooksException
+     * @throws IOException
      */
-    public void onChildText(SAXElement element, String text, TextType textType, ExecutionContext executionContext) throws SmooksException, IOException {
+    public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
         if(!isAttribute) {
             /*
             StringBuffer buffer = getBuffer(element);
             buffer.append(text);
             */
-            element.setCache(text);
+            element.setCache(text.getText());
         }
     }
 
