@@ -25,9 +25,8 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  * Tests for the Calendar and Date decoders.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
- * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
-public class TimeDecodingTest extends TestCase {
+public class DateDecoderTest extends TestCase {
 
     public void test_DateDecoder() {
         DateDecoder decoder = new DateDecoder();
