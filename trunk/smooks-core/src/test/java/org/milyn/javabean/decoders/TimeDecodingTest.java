@@ -15,33 +15,19 @@
 */
 package org.milyn.javabean.decoders;
 
-import junit.framework.TestCase;
-import org.milyn.cdr.SmooksResourceConfiguration;
-
-import java.util.Calendar;
 import java.util.Date;
+
+import junit.framework.TestCase;
+
+import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Tests for the Calendar and Date decoders.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
 public class TimeDecodingTest extends TestCase {
-
-    public void test_CalendarDecoder() {
-        CalendarDecoder decoder = new CalendarDecoder();
-        SmooksResourceConfiguration config;
-
-        config = new SmooksResourceConfiguration();
-        config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
-        decoder.setConfiguration(config);
-
-        Calendar cal_a = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
-        assertEquals(1163616328000L, cal_a.getTimeInMillis());
-        assertEquals("Eastern Standard Time", cal_a.getTimeZone().getDisplayName());
-        Calendar cal_b = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
-        assertNotSame(cal_a, cal_b);
-    }
 
     public void test_DateDecoder() {
         DateDecoder decoder = new DateDecoder();
@@ -56,4 +42,5 @@ public class TimeDecodingTest extends TestCase {
         Date date_b = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
         assertNotSame(date_a, date_b);
     }
+    
 }
