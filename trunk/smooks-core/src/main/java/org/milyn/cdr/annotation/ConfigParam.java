@@ -70,7 +70,7 @@ public @interface ConfigParam {
      *
      * @return The default paramater value (un-decoded).
      */
-    public String defaultVal() default NULL;
+    public String defaultVal() default UNASSIGNED;
 
     /**
      * Paramater choice values.
@@ -101,4 +101,5 @@ public @interface ConfigParam {
     }
 
     public static final String NULL = "##NULL";
+    public static final String UNASSIGNED = "org.milyn.cdr.annotation.ConfigParam##UNASSIGNED";
 }

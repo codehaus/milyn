@@ -24,6 +24,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.TransformResult;
 import org.milyn.net.URIUtil;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
@@ -258,6 +259,7 @@ public class Smooks {
 
         Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
 
+        TransformResult.setResult(result, executionContext);
         Filter.setCurrentExecutionContext(executionContext);
         try {
             contentFilter.doFilter(source, result);

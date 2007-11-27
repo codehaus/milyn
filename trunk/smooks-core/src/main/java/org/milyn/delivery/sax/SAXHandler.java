@@ -86,18 +86,31 @@ public class SAXHandler extends DefaultHandler2 {
 
         List<ContentHandlerConfigMap<SAXElementVisitor>> mappings = saxVisitors.getMappings(element.getName().getLocalPart());
 
+        if(mappings == null || mappings.isEmpty()) {
+            visitBefore(element, defaultVisitors);
+            return;
+        }
+
+        if(!visitBefore(element, mappings)) {
+            // If none of the configured resource are applied to the targeted element e.g. due to the
+            // context of the element, we switch it to use the default visitir set...
+            visitBefore(element, defaultVisitors);
+        }
+    }
+
+    private boolean visitBefore(SAXElement element, List<ContentHandlerConfigMap<SAXElementVisitor>> mappings) {
+        boolean applied = false;
+
         // Now create the new "current" processor...
         currentProcessor = new ElementProcessor();
         currentProcessor.element = element;
         currentProcessor.mappings = mappings;
-        if(mappings == null || mappings.isEmpty()) {            
-            currentProcessor.mappings = defaultVisitors;
-        }
 
         // And visit it with the targeted visitor...
         for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
             try {
                 if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                    applied = true;
                     mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                 }
             } catch(Throwable t) {
@@ -105,6 +118,8 @@ public class SAXHandler extends DefaultHandler2 {
             }
             flushCurrentWriter();
         }
+
+        return applied;
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {

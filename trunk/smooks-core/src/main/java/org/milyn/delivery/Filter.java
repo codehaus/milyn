@@ -96,11 +96,12 @@ public abstract class Filter {
         }
     }
 
-    protected Writer getWriter(StreamResult streamResult, ExecutionContext executionContext) {
-        if(streamResult == null) {
+    protected Writer getWriter(Result result, ExecutionContext executionContext) {
+        if(!(result instanceof StreamResult)) {
             return new NullWriter();
         }
 
+        StreamResult streamResult = (StreamResult) result;
         if(streamResult.getWriter() != null) {
             return streamResult.getWriter();
         } else if(streamResult.getOutputStream() != null) {

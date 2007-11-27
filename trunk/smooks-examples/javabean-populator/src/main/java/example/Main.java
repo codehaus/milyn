@@ -18,6 +18,7 @@ package example;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.javabean.JavaResult;
 import org.milyn.io.StreamUtils;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
@@ -44,11 +45,13 @@ public class Main {
         Smooks smooks = new Smooks("smooks-config.xml");
          // Create an exec context - no profiles....
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        // The result of this transform is a set of Java objects...
+        JavaResult result = new JavaResult();
 
         // Filter the input message to extract, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new DOMResult(), executionContext);
+        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
 
-        return (Order) BeanAccessor.getBean("order", executionContext);
+        return (Order) result.getResultMap().get("order");
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

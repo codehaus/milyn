@@ -17,14 +17,16 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.javabean.JavaResult;
 import org.xml.sax.SAXException;
 import se.sj.ipl.rollingstock.domain.RollingStockList;
 import se.sj.ipl.rollingstock.domain.Rollingstock;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
@@ -36,23 +38,20 @@ import java.util.Map;
  */
 public class Main {
 
-    private static byte[] messageIn = readInputMessage();
+    public static byte[] messageIn = readInputMessage();
 
-    protected static Map runSmooksTransform() throws IOException, SAXException, SmooksException {
+    protected static Map runSmooksTransform(String config) throws IOException, SAXException, SmooksException {
         // Instantiate Smooks with the config...
-        Smooks smooks = new Smooks("smooks-config.xml");
+        Smooks smooks = new Smooks(config);
          // Create an exec context - no profiles....
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        // The result of this transform is a set of Java objects...
+        JavaResult result = new JavaResult();
 
         // Filter the input message to the outputWriter, using the execution context...
-        if(executionContext.getDeliveryConfig() instanceof DOMContentDeliveryConfig) {
-            DOMResult domResult = new DOMResult();
-            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
-        } else {
-            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, executionContext);
-        }
+        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
 
-        return BeanAccessor.getBeanMap( executionContext );
+        return result.getResultMap();
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {
@@ -62,7 +61,7 @@ public class Main {
 
         pause("The EDI input stream can be seen above.  Press 'enter' to see this stream transformed into the Java Object model...");
 
-        Map beans = Main.runSmooksTransform();
+        Map beans = Main.runSmooksTransform("smooks-config-sax.xml");
 
         System.out.println("==============Message Out=============");
         

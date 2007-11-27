@@ -128,6 +128,13 @@ public class Configurator {
         if(paramValue == null) {
             paramValue = configParam.defaultVal();
             if(ConfigParam.NULL.equals(paramValue)) {
+                // A null default was assigned...
+                String[] choices = configParam.choice();
+                assertValidChoice(choices, name, ConfigParam.NULL);
+                setMember(member, instance, null);
+                return;
+            } else if(ConfigParam.UNASSIGNED.equals(paramValue)) {
+                // No default was assigned...
                 paramValue = null;
             }
         }
@@ -158,17 +165,7 @@ public class Configurator {
             }
 
             try {
-                if(member instanceof Field) {
-                    setField((Field)member, instance, decoder.decode(paramValue));
-                } else {
-                    try {
-                        setMethod((Method)member, instance, decoder.decode(paramValue));
-                    } catch (InvocationTargetException e) {
-                        throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e.getTargetException());
-                    }
-                }
-            } catch (IllegalAccessException e) {
-                throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e);
+                setMember(member, instance, decoder.decode(paramValue));
             } catch (DataDecodeException e) {
                 throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e);
             }
@@ -224,6 +221,22 @@ public class Configurator {
 
     private static String getLongMemberName(Member field) {
         return field.getDeclaringClass().getName() + "#" + field.getName();
+    }
+
+    private static void setMember(Member member, ContentHandler instance, Object value) {
+        try {
+            if(member instanceof Field) {
+                setField((Field)member, instance, value);
+            } else {
+                try {
+                    setMethod((Method)member, instance, value);
+                } catch (InvocationTargetException e) {
+                    throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e.getTargetException());
+                }
+            }
+        } catch (IllegalAccessException e) {
+            throw new SmooksConfigurationException("Failed to set paramater configuration value on '" + getLongMemberName(member) + "'.", e);
+        }
     }
 
     private static void setField(Field field, ContentHandler instance, Object value) throws IllegalAccessException {

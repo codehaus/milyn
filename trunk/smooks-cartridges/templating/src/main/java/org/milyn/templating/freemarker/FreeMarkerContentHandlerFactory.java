@@ -31,18 +31,7 @@ import java.util.Map;
  * This templating solution relies on the <a href="http://milyn.codehaus.org/downloads">Smooks JavaBean Cartridge</a>
  * to perform the JavaBean population that's required by <a href="http://freemarker.org/">FreeMarker</a> (for the data model).
  *
- * <h3>Resource Configuration</h3>
- * Two configurations are required in order to use <a href="http://freemarker.org/">FreeMarker</a>
- * based templating:
- * <ol>
- *  <li>A Configuration to register this {@link org.milyn.delivery.ContentHandlerFactory}
- *      implementation.  This configuration basically tells Smooks how to handle ".ftl" files.
- *  </li>
- *  <li>Configurations for targeting ".ftl" template files.
- *  </li>
- * </ol>
- *
- * <h4>2. Targeting "ftl" Templates</h4>
+ * <h2>Targeting "ftl" Templates</h2>
  * The following is the basic configuration specification for FreeMarker resources:
  * <pre>
  * &lt;resource-config selector="<i>target-element</i>"&gt;

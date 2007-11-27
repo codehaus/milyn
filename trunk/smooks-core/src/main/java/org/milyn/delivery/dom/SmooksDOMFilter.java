@@ -16,35 +16,31 @@
 
 package org.milyn.delivery.dom;
 
-import java.io.*;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.delivery.*;
 import org.milyn.delivery.dom.serialize.Serializer;
-import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentHandlerConfigMap;
-import org.milyn.delivery.ContentHandlerConfigMapTable;
-import org.milyn.delivery.Filter;
 import org.milyn.xml.DomUtils;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.transform.Source;
 import javax.xml.transform.Result;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Smooks DOM based content filtering class.
@@ -172,8 +168,10 @@ public class SmooksDOMFilter extends Filter {
         if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
             throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported by the DOM Filter.");
         }
-        if (result != null && !(result instanceof StreamResult) && !(result instanceof DOMResult)) {
-            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the DOM Filter.");
+        if(!(result instanceof TransformResult)) {
+            if (result != null && !(result instanceof StreamResult) && !(result instanceof DOMResult)) {
+                throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the DOM Filter.");
+            }
         }
 
         try {

@@ -43,18 +43,7 @@ import java.util.Map;
  * This templating solution relies on the <a href="http://milyn.codehaus.org/downloads">Smooks JavaBean Cartridge</a>
  * to perform the JavaBean population that's required by <a href="http://www.stringtemplate.org/">StringTemplate</a>.
  *
- * <h3>Resource Configuration</h3>
- * Two configurations are required in order to use <a href="http://www.stringtemplate.org/">StringTemplate</a>
- * based templating:
- * <ol>
- *  <li>A Configuration to register this {@link org.milyn.delivery.ContentHandlerFactory}
- *      implementation.  This configuration basically tells Smooks how to handle ".st" files.
- *  </li>
- *  <li>Configurations for targeting ".st" template files.
- *  </li>
- * </ol>
- *
- * <h4>2. Targeting ".st" Files for Transformation</h4>
+ * <h2>Targeting ".st" Files for Transformation</h2>
  * <pre>
  * &lt;resource-config selector="<i>target-element</i>"&gt;
  *     &lt;!-- See {@link org.milyn.resource.URIResourceLocator} --&gt;

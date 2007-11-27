@@ -54,18 +54,7 @@ import org.w3c.dom.NodeList;
  * this should not be necessary.  However, Xalan 2.7.0 (for one) has a bug which results in
  * unsynchronized template application causing invalid transforms.
  * 
- * <h3>Resource Configuration</h3>
- * Two configurations are required in order to use <a href="http://www.w3.org/Style/XSL/">XSL</a>
- * based templating:
- * <ol>
- *  <li>A Configuration to register this {@link org.milyn.delivery.ContentHandlerFactory}
- *      implementation.  This configuration basically tells Smooks how to handle ".xsl" files.
- *  </li>
- *  <li>Configurations for targeting the "xsl" templates.
- *  </li>
- * </ol>
- * 
- * <h4>2. Targeting "xsl" Templates</h4>
+ * <h2>Targeting "xsl" Templates</h2>
  * The following is the basic configuration specification for XSL resources:
  * <pre>
  * &lt;resource-config selector="<i>target-element</i>"&gt;

@@ -13,12 +13,12 @@ import java.util.ArrayList;
 /**
  * @author
  */
-public class TestExpandableContentHandler implements DOMElementVisitor, ExpandableContentHandler {
+public class TestExpandableContentHandler implements DOMElementVisitor, ConfigurationExpander {
 
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
     }
 
-    public List<SmooksResourceConfiguration> getExpansionConfigurations() {
+    public List<SmooksResourceConfiguration> expandConfigurations() {
 
         List<SmooksResourceConfiguration> expansionConfigs = new ArrayList<SmooksResourceConfiguration>();
 

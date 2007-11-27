@@ -484,6 +484,10 @@ public class ContentDeliveryConfigBuilder {
         }
 
         public void applyStrategy(String elementName, SmooksResourceConfiguration resourceConfig) {
+            applyCDUStrategy(elementName, resourceConfig);
+        }
+
+        public boolean applyCDUStrategy(String elementName, SmooksResourceConfiguration resourceConfig) {
 			ContentHandlerFactory creator;
 
 			// Try it as a Java class before trying anything else.  This is to
@@ -494,7 +498,7 @@ public class ContentDeliveryConfigBuilder {
     				creator = store.getContentHandlerFactory("class");
     				if(addCDU(elementName, resourceConfig, creator)) {
     					// Job done - it's a CDU and we've added it!
-    					return;
+    					return true;
     				}
     			} catch (UnsupportedContentHandlerTypeException e) {
     				throw new IllegalStateException("No ContentHandlerFactory configured (IoC) for type 'class' (Java).");
@@ -513,14 +517,16 @@ public class ContentDeliveryConfigBuilder {
             // we tried this above.
             if(creator != null && !(creator instanceof JavaContentHandlerFactory)) {
 				try {
-					addCDU(elementName, resourceConfig, creator);
+					return addCDU(elementName, resourceConfig, creator);
 				} catch (InstantiationException e) {
 					logger.warn("ContentHandler creation failure.", e);
 				}
             } else {
 				// Just ignore it - something else will use it (hopefully)            	
             }
-		}
+
+            return false;
+        }
         
         /**
          * Try create the CDU creator for the specified resource type.
@@ -561,9 +567,9 @@ public class ContentDeliveryConfigBuilder {
 				contentHandler = creator.create(resourceConfig);
 			} catch(Throwable thrown) {
 				if(logger.isDebugEnabled()) {
-					logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
-				} else {
-					logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
+                    logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
+                } else {
+                    logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
 				}
 				return false;
 			}
@@ -598,15 +604,15 @@ public class ContentDeliveryConfigBuilder {
                         serializationUnitTable.addMapping(elementName, resourceConfig, (SerializationUnit) contentHandler);
                     }
                 }
-            } else {
+            } else if(!(contentHandler instanceof ConfigurationExpander)) {
                 // It's not a ContentHandler type we care about!  Leave for now - whatever's using it
                 // can instantiate it itself.
                 return false;
             }
 
             // Content delivery units are allowed to dynamically add new configurations...
-            if(contentHandler instanceof ExpandableContentHandler) {
-                List<SmooksResourceConfiguration> additionalConfigs = ((ExpandableContentHandler)contentHandler).getExpansionConfigurations();
+            if(contentHandler instanceof ConfigurationExpander) {
+                List<SmooksResourceConfiguration> additionalConfigs = ((ConfigurationExpander)contentHandler).expandConfigurations();
                 if(additionalConfigs != null && !additionalConfigs.isEmpty()) {
                     if(logger.isDebugEnabled()) {
                         logger.debug("Adding expansion resource configurations created by: " + resourceConfig);
@@ -630,9 +636,10 @@ public class ContentDeliveryConfigBuilder {
                 String targetElement = config.getTargetElement();
 
                 // Try adding it as a ContentHandler instance...
-                applyStrategy(targetElement, config);
-                // Add the configuration itself to the main list...
-                addResourceConfiguration(config);
+                if(!applyCDUStrategy(targetElement, config)) {
+                    // Else just add it to the main list...
+                    addResourceConfiguration(config);
+                }
             }
         }
     }

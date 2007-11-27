@@ -17,6 +17,7 @@
 package org.milyn.javabean;
 
 import junit.framework.TestCase;
+import org.apache.log4j.Logger;
 import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -31,10 +32,12 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 
 /**
  *
@@ -55,24 +58,12 @@ public class BeanPopulatorTest extends TestCase {
     public void testConstructorConfigValidation() {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
         
-        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
 
-        config.setParameter("beanId", " ");
+        config.setParameter("beanId", "x");
         config.setParameter("beanClass", " ");
 
-        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
-
-        config.removeParameter("beanClass");
-        config.setParameter("beanClass", MyBadBean.class.getName());
-
-        testConstructorConfigValidation(config, "doesn't have a public default constructor");
-
-        config.removeParameter("beanClass");
-        config.setParameter("beanClass", MyGoodBean.class.getName());
-
-        config.setParameter("valueAttributeName", "attributeX");
-
-        Configurator.configure(new BeanPopulator(), config);
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
     }
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
@@ -80,8 +71,10 @@ public class BeanPopulatorTest extends TestCase {
             Configurator.configure(new BeanPopulator(), config);
             fail("Expected SmooksConfigurationException - " + expected);
         } catch(SmooksConfigurationException e) {
-            if(e.getCause().getMessage().indexOf(expected) == -1) {
-                fail("Expected message to contain [" + expected + "]. Actual [" + e.getMessage() + "]");
+            Throwable t = e.getCause();
+            if(t.getMessage().indexOf(expected) == -1) {
+                e.printStackTrace();
+                fail("Expected message to contain [" + expected + "]. Actual [" + t.getMessage() + "]");
             }
         }
     }
@@ -113,9 +106,7 @@ public class BeanPopulatorTest extends TestCase {
 
     public void test_visit_userBean(String configName) throws SAXException, IOException {
 
-        Smooks smooks = new Smooks();
-
-        smooks.addConfigurations(configName, getClass().getResourceAsStream(configName));
+        Smooks smooks = new Smooks(getClass().getResourceAsStream(configName));
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult(), executionContext);
@@ -137,11 +128,12 @@ public class BeanPopulatorTest extends TestCase {
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
         StandaloneExecutionContext executionContext = smooks.createExecutionContext();
-        String res = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
+        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
+        JavaResult result = new JavaResult();
 
-        smooks.filter(new StreamSource(new StringReader(res)), null, executionContext);
+        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
-        Order order = (Order)BeanAccessor.getBean("order", executionContext);
+        Order order = (Order) result.getResultMap().get("order");
 
         assertNotNull(order);
         assertNotNull(order.getHeader());
