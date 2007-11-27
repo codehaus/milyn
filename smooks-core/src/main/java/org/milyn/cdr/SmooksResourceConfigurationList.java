@@ -71,8 +71,15 @@ public class SmooksResourceConfigurationList {
      */
     public void add(SmooksResourceConfiguration config) {
         AssertArgument.isNotNull(config, "config");
-        list.add(config);
-        logger.debug("Smooks ResourceConfiguration [" + config + "] added to list [" + name + "].");
+        String[] selectors = config.getSelector().split(",");
+
+        for(String selector : selectors) {
+            SmooksResourceConfiguration clone = (SmooksResourceConfiguration) config.clone();
+
+            clone.setSelector(selector.trim());
+            list.add(clone);
+            logger.debug("Smooks ResourceConfiguration [" + clone + "] added to list [" + name + "].");
+        }
     }
 
     /**

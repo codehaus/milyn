@@ -20,19 +20,18 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import java.util.List;
 
 /**
- * Interface to allow content handlers expand their configuration by adding additional
- * configurations.
+ * Interface to allow configuration expansion.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface ExpandableContentHandler extends ContentHandler {
+public interface ConfigurationExpander extends ContentHandler {
 
     /**
      * Get the additional configurations to be added to the delivery config by
      * this ContentHandler.
      *
-     * @return A list of additional configurations, or an empty list if no configutations
+     * @return A list of expansion configurations, or an empty list if no configutations
      *         are to be added for this instance.
      */
-    public List<SmooksResourceConfiguration> getExpansionConfigurations();
+    public List<SmooksResourceConfiguration> expandConfigurations();
 }

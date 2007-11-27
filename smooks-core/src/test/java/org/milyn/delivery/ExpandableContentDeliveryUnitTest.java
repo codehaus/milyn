@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 
 /**
- * ExpandableContentHandler tests.
+ * ConfigurationExpander tests.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */

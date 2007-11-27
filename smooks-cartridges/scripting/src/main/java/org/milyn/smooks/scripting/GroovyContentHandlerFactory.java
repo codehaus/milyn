@@ -41,21 +41,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
  * the {@link DOMElementVisitor} javadoc.  Alternatively, you can try using Groovy 1.1, which is supposed
  * to support annotations. 
  * 
- * <h3>Resource Configuration</h3>
- * Two configurations are required in order to use <a href="http://groovy.codehaus.org/">Groovy</a>
- * based scripting in Smooks:
- * <ol>
- *  <li>A Configuration to register this {@link org.milyn.delivery.ContentHandlerFactory}
- *      implementation.  This configuration basically tells Smooks how to handle the "groovy" 
- *      resource type i.e. resources with a restype of "groovy", or resources with a ".groovy" file
- *      extension in their path.
- *  </li>
- *  <li>One or more configurations for targeting Groovy resources at one or more 
- *  	document/message fragments.
- *  </li>
- * </ol>
- * 
- * <h4>1. Registering GroovyContentHandlerFactory to Handle "groovy" Resources</h4>
+ * <h2>Registering GroovyContentHandlerFactory to Handle "groovy" Resources</h2>
  * So this configuration tells Smooks how to handle "groovy" resource configuration types i.e. resources with
  * a restype of "groovy", or resources with a ".groovy" file extension in their path.
  * <pre>

@@ -21,8 +21,20 @@ package org.milyn.delivery.sax;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public enum TextType {
+    /**
+     * Raw text node.
+     */
     TEXT,
+    /**
+     * CDATA Text node (&lt;![CDATA[<b>text</b>]]&gt;).
+     */
     CDATA,
+    /**
+     * Comment Text node (&lt;!--<b>text</b>--&gt;).
+     */
     COMMENT,
+    /**
+     * Character Entity Text node (&amp;xx;).
+     */
     ENTITY,
 }

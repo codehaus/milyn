@@ -149,6 +149,35 @@ public class SmooksResourceConfiguration {
      */
     private static Log logger = LogFactory.getLog(SmooksResourceConfiguration.class);
     /**
+     * The resource type can be specified as a resource parameter.  This constant defines
+     * that parameter name.
+     *
+     * @deprecated Resource type now specified on "type" attribute of &lt;resource&gt; element.
+     *             Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
+     */
+    public static final String PARAM_RESTYPE = "restype";
+    /**
+     * The resource data can be specified as a resource parameter.  This constant defines
+     * that parameter name.
+     *
+     * @deprecated Resource now specified on &lt;resource&gt; element.
+     *             Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
+     */
+    public static final String PARAM_RESDATA = "resdata";
+    /**
+     * XML selector type definition prefix
+     */
+    public static final String XML_DEF_PREFIX = "xmldef:".toLowerCase();
+    /**
+     * URI resource locator.
+     */
+    private static URIResourceLocator uriResourceLocator = new URIResourceLocator();
+    /**
+     * A special selector for resource targeted at the document as a whole (the roor element).
+     */
+    public static final String DOCUMENT_FRAGMENT_SELECTOR = "$document";
+
+    /**
      * Document target on which the resource is to be applied.
      */
     private String selector;
@@ -180,26 +209,6 @@ public class SmooksResourceConfiguration {
      */
     private String resourceType;
     /**
-     * The resource type can be specified as a resource parameter.  This constant defines
-     * that parameter name.
-     *
-     * @deprecated Resource type now specified on "type" attribute of &lt;resource&gt; element.
-     *             Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
-     */
-    public static final String PARAM_RESTYPE = "restype";
-    /**
-     * The resource data can be specified as a resource parameter.  This constant defines
-     * that parameter name.
-     *
-     * @deprecated Resource now specified on &lt;resource&gt; element.
-     *             Since <a href="http://milyn.codehaus.org/dtd/smooksres-list-2.0.dtd">Configuration DTD v2.0</a>.
-     */
-    public static final String PARAM_RESDATA = "resdata";
-    /**
-     * XML selector type definition prefix
-     */
-    public static final String XML_DEF_PREFIX = "xmldef:".toLowerCase();
-    /**
      * Is this selector defininition an XML based definition.
      */
     private boolean isXmlDef;
@@ -213,14 +222,6 @@ public class SmooksResourceConfiguration {
      * should only be applied.
      */
     private String namespaceURI;
-    /**
-     * URI resource locator.
-     */
-    private static URIResourceLocator uriResourceLocator = new URIResourceLocator();
-    /**
-     * A special selector for resource targeted at the document as a whole (the roor element).
-     */
-    public static final String DOCUMENT_FRAGMENT_SELECTOR = "$document";
 
     /**
      * Public default constructor.
@@ -285,6 +286,28 @@ public class SmooksResourceConfiguration {
 
         setTargetProfile(targetProfile);
         setResource(resource);
+    }
+
+    /**
+     * Perform a shallow clone of this configuration.
+     * @return Configuration clone.
+     */
+    public Object clone() {
+        SmooksResourceConfiguration clone = new SmooksResourceConfiguration();
+
+        clone.selector = selector;
+        clone.contextualSelector = contextualSelector;
+        clone.targetProfile = targetProfile;
+        clone.profileTargetingExpressionStrings = profileTargetingExpressionStrings;
+        clone.profileTargetingExpressions = profileTargetingExpressions;
+        clone.resource = resource;
+        clone.resourceType = resourceType;
+        clone.isXmlDef = isXmlDef;
+        clone.parameters = parameters;
+        clone.parameterCount = parameterCount;
+        clone.namespaceURI = namespaceURI;
+
+        return clone;
     }
 
     /**

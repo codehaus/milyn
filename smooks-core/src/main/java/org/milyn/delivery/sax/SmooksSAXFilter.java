@@ -18,6 +18,7 @@ package org.milyn.delivery.sax;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.TransformResult;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.Result;
@@ -44,13 +45,15 @@ public class SmooksSAXFilter extends Filter {
         if (!(source instanceof StreamSource)) {
             throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported by the SAX Filter. Only supports StreamSource at present.");
         }
-        if (!(result instanceof StreamResult) && result != null) {
-            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the SAX Filter. Only supports StreamResult at present.");
+        if(!(result instanceof TransformResult)) {
+            if (!(result instanceof StreamResult) && result != null) {
+                throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the SAX Filter. Only supports StreamResult at present.");
+            }
         }
 
         try {
             Reader reader = getReader((StreamSource) source, executionContext);
-            Writer writer = getWriter((StreamResult) result, executionContext);
+            Writer writer = getWriter(result, executionContext);
             SAXParser parser = new SAXParser(executionContext);
 
             parser.parse(reader, writer);

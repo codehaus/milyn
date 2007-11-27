@@ -17,7 +17,9 @@
 package org.milyn.javabean;
 
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.TransformResult;
 
+import javax.xml.transform.Result;
 import java.util.*;
 
 /**
@@ -30,8 +32,26 @@ public class BeanAccessor {
     
     private static final String BEAN_MAP_REQUEST_KEY = BeanAccessor.class.getName() + "#BEAN_MAP_REQUEST_KEY";
 
-    private Map<String, Object> beans = new LinkedHashMap<String, Object>();
+    private Map<String, Object> beans;
     private Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
+
+    /**
+     * Public default constructor.
+     */
+    public BeanAccessor() {
+        beans = new LinkedHashMap<String, Object>();
+    }
+
+    /**
+     * Public constructor.
+     * <p/>
+     * Creates an accessor based on the supplied result Map.
+     * 
+     * @param resultMap The result Map.
+     */
+    public BeanAccessor(Map<String, Object> resultMap) {
+        beans = resultMap;
+    }
 
     /**
      * Get the current bean, specified by the supplied beanId, from the supplied request.
@@ -86,7 +106,15 @@ public class BeanAccessor {
         BeanAccessor accessor = (BeanAccessor) executionContext.getAttribute(BEAN_MAP_REQUEST_KEY);
 
         if(accessor == null) {
-            accessor = new BeanAccessor();
+            Result result = TransformResult.getResult(executionContext);
+
+            if(result instanceof JavaResult) {
+                JavaResult javaResult = (JavaResult) result;
+                accessor = new BeanAccessor(javaResult.getResultMap());
+            } else {
+                accessor = new BeanAccessor();
+            }
+
             executionContext.setAttribute(BEAN_MAP_REQUEST_KEY, accessor);
         }
 

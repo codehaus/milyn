@@ -49,7 +49,7 @@ public class PerformanceComparisonTest extends TestCase {
     private Smooks smooksTransformer_xsltonly;
     private Smooks smooksTransformer_xsltjava;
 
-    private static final double TEST_DURATION_MINS = 5;
+    private static final double TEST_DURATION_MINS = 1;
     private static final long SLEEP_DURATION = 10;
     private static final int NUM_TRANS_PER_ITERATION = 1;
     private static boolean compareResults = false;

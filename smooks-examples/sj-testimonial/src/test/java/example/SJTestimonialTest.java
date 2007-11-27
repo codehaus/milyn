@@ -16,9 +16,15 @@
 package example;
 
 import junit.framework.TestCase;
+import org.milyn.Smooks;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.javabean.BeanAccessor;
+import org.milyn.javabean.JavaResult;
 import org.xml.sax.SAXException;
 import se.sj.ipl.rollingstock.domain.RollingStockList;
 
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -27,8 +33,13 @@ import java.util.Map;
  */
 public class SJTestimonialTest extends TestCase {
 
-    public void test() throws IOException, SAXException {
-        Map beans = Main.runSmooksTransform();
+    public void test_sax() throws IOException, SAXException {
+        test("smooks-config.xml");
+        test("smooks-config-sax.xml");
+    }
+
+    private void test(String config) throws IOException, SAXException {
+        Map beans = Main.runSmooksTransform(config);
         RollingStockList rollingstocks = (RollingStockList) beans.get("rollingstocks");
 
         // Just some really basic checks
