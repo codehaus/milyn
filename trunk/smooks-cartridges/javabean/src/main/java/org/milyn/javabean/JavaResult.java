@@ -15,19 +15,21 @@
 */
 package org.milyn.javabean;
 
-import org.milyn.delivery.TransformResult;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.TransformResult;
 
 import javax.xml.transform.Result;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Java transformation result.
  * <p/>
  * Used to extract a Java "{@link Result result}" Map from the transformation.
- * Simply set this
- * 
+ * Simply set an instance of this class as the {@link Result} arg in the call
+ * to {@link org.milyn.Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.standalone.StandaloneExecutionContext)}.
+ *
+ * @see BeanAccessor
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class JavaResult extends TransformResult {
