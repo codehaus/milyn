@@ -23,6 +23,7 @@ import org.milyn.io.StreamUtils;
 import org.milyn.javabean.BeanAccessor;
 import org.xml.sax.SAXException;
 import se.sj.ipl.rollingstock.domain.RollingStockList;
+import se.sj.ipl.rollingstock.domain.Rollingstock;
 
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
@@ -66,7 +67,15 @@ public class Main {
         System.out.println("==============Message Out=============");
         
 		RollingStockList rollingstocks = (RollingStockList) beans.get( "rollingstocks" );
-		System.out.println( rollingstocks );
+		for( int i = 0; i < rollingstocks.size() ; i ++ )
+		{
+			Rollingstock rollingstock = rollingstocks.get( i );
+			System.out.println( "" );
+			System.out.println( "RollingstockId : " + rollingstock.getRollingstockId() );
+			System.out.println( "Schedule : " + rollingstock.getSchedule() );
+			System.out.println( "Vehicles : " + rollingstock.getVehicles() );
+			System.out.println( "" );
+		}
 		System.out.println( "======================================\n\n");
 
         pause("And that's it!  Press 'enter' to finish...");
