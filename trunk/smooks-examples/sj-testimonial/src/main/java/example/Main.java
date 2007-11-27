@@ -25,11 +25,14 @@ import org.milyn.javabean.JavaResult;
 import org.xml.sax.SAXException;
 import se.sj.ipl.rollingstock.domain.RollingStockList;
 import se.sj.ipl.rollingstock.domain.Rollingstock;
+import se.sj.ipl.rollingstock.domain.Vehicle;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,8 +75,13 @@ public class Main {
 			System.out.println( "" );
 			System.out.println( "RollingstockId : " + rollingstock.getRollingstockId() );
 			System.out.println( "Schedule : " + rollingstock.getSchedule() );
-			System.out.println( "Vehicles : " + rollingstock.getVehicles() );
-			System.out.println( "" );
+			List<Vehicle> vehicles = rollingstock.getVehicles();
+			for ( int y = 0 ; y < vehicles.size() ; y ++ )
+			{
+				Vehicle vehicle = vehicles.get( y );
+				System.out.println( "Vehicle : " + y  + ": " + vehicle );
+			}
+			System.out.println( "Route : " + rollingstock.getRoute() );
 		}
 		System.out.println( "======================================\n\n");
 
