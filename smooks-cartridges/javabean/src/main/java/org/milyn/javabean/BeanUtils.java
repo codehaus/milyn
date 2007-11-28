@@ -15,6 +15,11 @@
 */
 package org.milyn.javabean;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.container.ExecutionContext;
+
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -36,7 +41,13 @@ abstract class BeanUtils {
 
         // Try it as a list...
         if (beanSetterMethod == null && List.class.isAssignableFrom(type)) {
-            beanSetterMethod = getMethod(type, bean, setterName + "s");
+            String setterNamePlural = setterName + "s";
+
+            // Try it as a List using the plural name...
+            beanSetterMethod = getMethod(type, bean, setterNamePlural);
+            if(beanSetterMethod == null) {
+                // Try it as an array using the non-plural name...
+            }
         }
 
         // Try it as a primitive...
@@ -93,5 +104,26 @@ abstract class BeanUtils {
         setterName.insert(0, "set");
 
         return setterName.toString();
+    }
+
+    /**
+     * Get the bean instance on which this populator instance is to set data.
+     *
+     * @param execContext The execution context.
+     * @return The bean instance.
+     */
+    public static Object getBean(String beanId, ExecutionContext execContext) {
+        Object bean;
+
+        // Get the bean instance from the request.  If there is non, it's a bad config!!
+        bean = BeanAccessor.getBean(beanId, execContext);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  Using [" + bean + "]");
+        }
+        if (bean == null) {
+            throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");
+        }
+
+        return bean;
     }
 }
