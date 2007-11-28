@@ -241,7 +241,9 @@ public class ClassUtil {
                 }
 
                 if(instanceOf.isAssignableFrom(clazz)) {
-                    classes.add(clazz);
+                    if(!contains(clazz.getName(), classes)) {
+                        classes.add(clazz);
+                    }
                     logger.debug( "Adding " + className + " to list of classes");
                     count++;
                 } else {
@@ -259,6 +261,17 @@ public class ClassUtil {
     		close(ins);
     		close(br);
     	}
+    }
+
+    private static <T> boolean contains(String name, List<Class<T>> classes) {
+        for (Class<T> aClass : classes) {
+            if(aClass.getName().equals(name)) {
+                logger.debug("Class '" + name + "' already found on classpath.  Not adding to list.");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void close( final Closeable closable ) {
