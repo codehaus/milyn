@@ -103,6 +103,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+        if (setOn != null) {
+            setOn(executionContext);
+        }
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -116,6 +119,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        if (setOn != null) {
+            setOn(executionContext);
+        }
     }
 
     private void createAndSetBean(ExecutionContext executionContext) {
@@ -131,18 +137,14 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
         if (logger.isDebugEnabled()) {
             logger.debug("Bean [" + beanId + "] instance created.");
         }
-
-        // If the new bean is to be set on a parent bean... set it...
-        if (setOn != null) {
-            setOn(bean, executionContext);
-        }
     }
 
+    private void setOn(ExecutionContext execContext) {
+        Object bean = BeanUtils.getBean(beanId, execContext);
+        Object setOnBean = BeanUtils.getBean(setOn, execContext);
 
-    private void setOn(Object bean, ExecutionContext execContext) {
-        // Set the bean instance on another bean. Supports creating an object graph
-        Object setOnBean = BeanAccessor.getBean(setOn, execContext);
         if (setOnBean != null) {
+            // Set the bean instance on another bean. Supports creating an object graph
             if(isSetOnMethodUnconfigured && setOnBean instanceof Collection) {
                 ((Collection)setOnBean).add(bean);
             } else {

@@ -102,10 +102,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
         if(!isAttribute) {
-            /*
-            StringBuffer buffer = getBuffer(element);
-            buffer.append(text);
-            */
             element.setCache(childText.getText());
         }
     }
@@ -119,25 +115,14 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            //StringBuffer buffer = getBuffer(element);
-            //dataString = buffer.toString();
             dataString = (String) element.getCache();
         }
 
         populateAndSetBean(dataString, executionContext);
     }
 
-    private StringBuffer getBuffer(SAXElement element) {
-        StringBuffer buffer = (StringBuffer) element.getCache();
-        if(buffer == null) {
-            buffer = new StringBuffer();
-            element.setCache(buffer);
-        }
-        return buffer;
-    }
-
     private void populateAndSetBean(String dataString, ExecutionContext executionContext) {
-        Object bean = getBean(executionContext);
+        Object bean = BeanUtils.getBean(beanId, executionContext);
         Object dataObject = decodeDataString(dataString, executionContext);
 
         // If we need to create the bean setter method instance...
@@ -153,27 +138,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         } catch (InvocationTargetException e) {
             throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
         }
-    }
-
-    /**
-     * Get the bean instance on which this populator instance is to set data.
-     *
-     * @param execContext The execution context.
-     * @return The bean instance.
-     */
-    private Object getBean(ExecutionContext execContext) {
-        Object bean = null;
-
-        // Get the bean instance from the request.  If there is non, it's a bad config!!
-        bean = BeanAccessor.getBean(beanId, execContext);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  Using [" + bean + "]");
-        }
-        if (bean == null) {
-            throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");
-        }
-
-        return bean;
     }
 
     /**
