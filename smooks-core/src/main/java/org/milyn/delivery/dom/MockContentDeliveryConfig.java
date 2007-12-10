@@ -16,12 +16,10 @@
 
 package org.milyn.delivery.dom;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
-import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.delivery.ContentHandlerConfigMapTable;
+
+import java.util.*;
 
 /**
  * Mock ContentDeliveryConfig for DOM. 
@@ -29,11 +27,11 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  */
 public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
 
-    private Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable = new Hashtable<String, List<SmooksResourceConfiguration>>();
+    private Map<String, List<SmooksResourceConfiguration>> resourceConfigTable = new LinkedHashMap<String, List<SmooksResourceConfiguration>>();
 	public ContentHandlerConfigMapTable assemblyUnits = new ContentHandlerConfigMapTable();
 	public ContentHandlerConfigMapTable processingSets = new ContentHandlerConfigMapTable();
     public ContentHandlerConfigMapTable serializationUnits = new ContentHandlerConfigMapTable();
-	public Hashtable objectsHash = new Hashtable();
+	public Map objectsHash = new LinkedHashMap();
 
     public MockContentDeliveryConfig() {
         setSmooksResourceConfigurations(resourceConfigTable);

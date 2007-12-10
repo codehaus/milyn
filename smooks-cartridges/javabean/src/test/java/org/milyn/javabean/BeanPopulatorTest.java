@@ -17,11 +17,11 @@
 package org.milyn.javabean;
 
 import junit.framework.TestCase;
-import org.apache.log4j.Logger;
 import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.MockApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
@@ -32,12 +32,9 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
+import java.util.*;
 
 /**
  *
@@ -45,19 +42,9 @@ import java.util.Enumeration;
  */
 public class BeanPopulatorTest extends TestCase {
 
-    public void testX() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-
-        sdf.clone();
-        Date date = sdf.parse("Wed Nov 15 13:45:28 EST 2006");
-        Calendar cal = (Calendar) sdf.getCalendar().clone();
-        System.out.println(cal.getTime());
-        System.out.println(cal.getTimeZone());
-    }
-
     public void testConstructorConfigValidation() {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
-        
+
         testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
 
         config.setParameter("beanId", "x");
@@ -68,7 +55,7 @@ public class BeanPopulatorTest extends TestCase {
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
         try {
-            Configurator.configure(new BeanPopulator(), config);
+            Configurator.configure(new BeanPopulator(), config, new MockApplicationContext());
             fail("Expected SmooksConfigurationException - " + expected);
         } catch(SmooksConfigurationException e) {
             Throwable t = e.getCause();
@@ -77,6 +64,23 @@ public class BeanPopulatorTest extends TestCase {
                 fail("Expected message to contain [" + expected + "]. Actual [" + t.getMessage() + "]");
             }
         }
+    }
+
+    public void test_TypePopCheckBean() throws ParseException, IOException, SAXException {
+        test_TypePopCheckBean("type-pop-check-bean-smooks-config.xml");
+        test_TypePopCheckBean("type-pop-check-bean-smooks-config-sax.xml");
+    }
+
+    public void test_TypePopCheckBean(String configName) throws ParseException, IOException, SAXException {
+        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
+        Smooks smooks = new Smooks(packagePath + "/" + configName);
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        JavaResult result = new JavaResult();
+
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result, executionContext);
+
+        TypePopCheckBean bean = (TypePopCheckBean) result.getResultMap().get("data");
+        assertEquals("1, 2, true, 3.0, 4.0, a, 5, 1163616328000, 6, 7, 8, [9, 10, 11], [12, 13, 14], {integerVal1=15, integerVal2=16, integerVal3=17, integerVal4=18, integerVal5=19, integerVal6=20, integerVal=21, mixedMap={intVal=1, longVal=2, boolVal=true, floatVal=3.0, doubleVal=4.0, charVal=a, integerVal=5, mixedIntValArray=[6, 7, 8]}},", bean.toString().trim());
     }
 
     /*
@@ -121,6 +125,7 @@ public class BeanPopulatorTest extends TestCase {
     public void test_populate_Order() throws SAXException, IOException, InterruptedException {
         test_populate_Order("order-01-smooks-config.xml");
         test_populate_Order("order-01-smooks-config-sax.xml");
+        test_populate_Order("order-01-smooks-config-arrays.xml");
     }
 
     public void test_populate_Order(String configName) throws SAXException, IOException, InterruptedException {
@@ -137,24 +142,57 @@ public class BeanPopulatorTest extends TestCase {
 
         assertNotNull(order);
         assertNotNull(order.getHeader());
-        assertNotNull(order.getOrderItems());
-        assertEquals(2, order.getOrderItems().size());
 
         assertEquals(1163616328000L, order.getHeader().getDate().getTime());
         assertEquals("Joe", order.getHeader().getCustomerName());
         assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
-        
+
         assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
 
-        OrderItem orderItem = order.getOrderItems().get(0);
+        testOrderItems(order);
+    }
+
+    private void testOrderItems(Order order) {
+        List<OrderItem> orderItems = order.getOrderItems();
+        OrderItem[] orderItemsArray = order.getOrderItemsArray();
+
+        assertTrue(orderItems != null || orderItemsArray != null);
+
+        if(orderItemsArray != null) {
+            orderItems = Arrays.asList(orderItemsArray);
+        }
+
+        assertEquals(2, orderItems.size());
+
+        OrderItem orderItem = orderItems.get(0);
         assertEquals(8.90d, orderItem.getPrice());
         assertEquals(111, orderItem.getProductId());
         assertEquals(new Integer(2), orderItem.getQuantity());
 
-        orderItem = order.getOrderItems().get(1);
+        orderItem = orderItems.get(1);
         assertEquals(5.20d, orderItem.getPrice());
         assertEquals(222, orderItem.getProductId());
         assertEquals(new Integer(7), orderItem.getQuantity());
-        
+    }
+
+    public void test_arrays() {
+        int[] ints = new int[] {};
+        Integer[] integers = new Integer[] {};
+
+        callX(ints);
+        callY(integers);
+        callZ(integers);
+    }
+
+    private void callX(int[] ints) {
+    }
+
+    private void callY(Integer[] integers) {
+        if(integers instanceof Number[]) {
+            System.out.println("Yep!!");
+        }
+    }
+
+    private void callZ(Number[] nums) {
     }
 }

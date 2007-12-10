@@ -19,10 +19,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ApplicationContext;
 import org.milyn.dtd.DTDStore;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * Abstract {@link ContentDeliveryConfig}.
@@ -39,12 +36,12 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
      * Table of SmooksResourceConfiguration instances keyed by selector value. Each table entry
      * contains a List of SmooksResourceConfiguration instances.
      */
-    private Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable = new Hashtable<String, List<SmooksResourceConfiguration>>();
+    private Map<String, List<SmooksResourceConfiguration>> resourceConfigTable = new LinkedHashMap<String, List<SmooksResourceConfiguration>>();
     /**
      * Table of Object instance lists keyed by selector. Each table entry
      * contains a List of Objects.
      */
-    private Map objectsTable = new Hashtable();
+    private Map objectsTable = new LinkedHashMap();
     /**
      * DTD for the associated device.
      */
@@ -63,7 +60,7 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
         return resourceConfigTable.get(selector.toLowerCase());
     }
 
-    public void setSmooksResourceConfigurations(Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable) {
+    public void setSmooksResourceConfigurations(Map<String, List<SmooksResourceConfiguration>> resourceConfigTable) {
         this.resourceConfigTable = resourceConfigTable;
     }
 

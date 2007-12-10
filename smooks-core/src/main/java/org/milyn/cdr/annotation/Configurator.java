@@ -15,19 +15,21 @@
 */
 package org.milyn.cdr.annotation;
 
-import org.milyn.delivery.ContentHandler;
-import org.milyn.cdr.annotation.Initialize;
-import org.milyn.cdr.annotation.Uninitialize;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.assertion.AssertArgument;
-import org.milyn.javabean.DataDecoder;
-import org.milyn.javabean.DataDecodeException;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ApplicationContext;
+import org.milyn.delivery.ContentHandler;
+import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DataDecoder;
 
-import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
@@ -43,7 +45,27 @@ public class Configurator {
 
     /**
      * Configure the supplied {@link org.milyn.delivery.ContentHandler} instance using the supplied
-     * {@link SmooksResourceConfiguration}.
+     * {@link SmooksResourceConfiguration} and {@link org.milyn.container.ApplicationContext} instances.
+     * @param instance The instance to be configured.
+     * @param config The configuration.
+     * @param appContext Associated application context.
+     * @return The configured ContentHandler instance.
+     * @throws SmooksConfigurationException Invalid field annotations.
+     */
+    public static <U extends ContentHandler> U configure(U instance, SmooksResourceConfiguration config, ApplicationContext appContext) throws SmooksConfigurationException {
+        AssertArgument.isNotNull(appContext, "appContext");
+
+        // process the field annotations (@AppContext)...
+        processFieldContextAnnotation(instance, appContext);
+
+        // TODO: Add by-setter-method injection support for the app context
+
+        return configure(instance, config);
+    }
+
+    /**
+     * Configure the supplied {@link org.milyn.delivery.ContentHandler} instance using the supplied
+     * {@link SmooksResourceConfiguration} isntance.
      * @param instance The instance to be configured.
      * @param config The configuration.
      * @return The configured ContentHandler instance.
@@ -54,10 +76,10 @@ public class Configurator {
         AssertArgument.isNotNull(config, "config");
 
         // process the field annotations (@ConfigParam and @Config)...
-        processFieldAnnotations(instance, config);
+        processFieldConfigAnnotations(instance, config);
 
         // process the method annotations (@ConfigParam)...
-        processMethodAnnotations(instance, config);
+        processMethodConfigAnnotations(instance, config);
 
         // reflectively call the "setConfiguration" method, if defined...
         setConfiguration(instance, config);
@@ -68,7 +90,22 @@ public class Configurator {
         return instance;
     }
 
-    private static <U extends ContentHandler> void processFieldAnnotations(U instance, SmooksResourceConfiguration config) {
+    private static <U extends ContentHandler> void processFieldContextAnnotation(U instance, ApplicationContext appContext) {
+        Field[] fields = instance.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            AppContext appContextAnnotation = field.getAnnotation(AppContext.class);
+            if(appContextAnnotation != null) {
+                try {
+                    setField(field, instance, appContext);
+                } catch (IllegalAccessException e) {
+                    throw new SmooksConfigurationException("Failed to set ApplicationContext value on '" + getLongMemberName(field) + "'.", e);
+                }
+            }
+        }
+    }
+
+    private static <U extends ContentHandler> void processFieldConfigAnnotations(U instance, SmooksResourceConfiguration config) {
         Field[] fields = instance.getClass().getDeclaredFields();
 
         for (Field field : fields) {
@@ -86,7 +123,7 @@ public class Configurator {
         }
     }
 
-    private static <U extends ContentHandler> void processMethodAnnotations(U instance, SmooksResourceConfiguration config) {
+    private static <U extends ContentHandler> void processMethodConfigAnnotations(U instance, SmooksResourceConfiguration config) {
         Method[] methods = instance.getClass().getMethods();
 
         for (Method method : methods) {

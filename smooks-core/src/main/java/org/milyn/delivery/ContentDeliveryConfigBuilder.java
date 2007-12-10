@@ -62,11 +62,15 @@ public class ContentDeliveryConfigBuilder {
 	 * XML selector content spec definition prefix
 	 */
 	private static final String ELCSPEC_PREFIX = "elcspec:";
+    /**
+     * An unsorted list of SmooksResourceConfiguration.
+     */
+    private List<SmooksResourceConfiguration> resourceConfigsList = new ArrayList<SmooksResourceConfiguration>();
 	/**
-	 * Table of SmooksResourceConfiguration instances keyed by selector value. Each table entry
+	 * Table (by element) of sorted SmooksResourceConfiguration instances keyed by selector value. Each table entry
 	 * contains a List of SmooksResourceConfiguration instances.
 	 */
-	private Hashtable<String, List<SmooksResourceConfiguration>> resourceConfigTable = new Hashtable<String, List<SmooksResourceConfiguration>>();
+	private LinkedHashMap<String, List<SmooksResourceConfiguration>> resourceConfigTable = new LinkedHashMap<String, List<SmooksResourceConfiguration>>();
 	/**
 	 * Table of AssemblyUnit instances keyed by selector. Each table entry
 	 * contains a single {@link org.milyn.delivery.dom.DOMElementVisitor} instances.
@@ -127,7 +131,7 @@ public class ContentDeliveryConfigBuilder {
 	 */
 	public static ContentDeliveryConfig getConfig(ProfileSet profileSet, ApplicationContext applicationContext) {
 		ContentDeliveryConfig config;
-		Hashtable<String, ContentDeliveryConfig> configTable;
+		LinkedHashMap<String, ContentDeliveryConfig> configTable;
 		
 		if(profileSet == null) {
 			throw new IllegalArgumentException("null 'profileSet' arg passed in method call.");
@@ -138,7 +142,7 @@ public class ContentDeliveryConfigBuilder {
 		// Get the delivery config config from container context.
         configTable = getDeliveryConfigTable(applicationContext);
         if(configTable == null) {
-			configTable = new Hashtable<String, ContentDeliveryConfig>();
+			configTable = new LinkedHashMap<String, ContentDeliveryConfig>();
 			applicationContext.setAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY, configTable);
 		}
 		// Get the delivery config instance for this UAContext
@@ -262,8 +266,8 @@ public class ContentDeliveryConfigBuilder {
         }
     }
 
-    private static Hashtable<String, ContentDeliveryConfig> getDeliveryConfigTable(ApplicationContext applicationContext) {
-        return (Hashtable) applicationContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
+    private static LinkedHashMap<String, ContentDeliveryConfig> getDeliveryConfigTable(ApplicationContext applicationContext) {
+        return (LinkedHashMap) applicationContext.getAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY);
     }
 
     /**
@@ -273,14 +277,15 @@ public class ContentDeliveryConfigBuilder {
 	 * for the specified device.
 	 */
 	private void load() {
-		List resourceConfigsList = Arrays.asList(applicationContext.getStore().getSmooksResourceConfigurations(profileSet));
+        resourceConfigsList.clear();
+        resourceConfigsList.addAll(Arrays.asList(applicationContext.getStore().getSmooksResourceConfigurations(profileSet)));
 
 		// Build and sort the resourceConfigTable table - non-transforming elements.
 		buildSmooksResourceConfigurationTable(resourceConfigsList);
 		sortSmooksResourceConfigurations(resourceConfigTable);
 		
 		// If there's a DTD for this device, get it and add it to the DTDStore.
-		List dtdSmooksResourceConfigurations = (List)resourceConfigTable.get("dtd");
+		List dtdSmooksResourceConfigurations = resourceConfigTable.get("dtd");
 		if(dtdSmooksResourceConfigurations != null && dtdSmooksResourceConfigurations.size() > 0) {
             SmooksResourceConfiguration dtdSmooksResourceConfiguration = (SmooksResourceConfiguration)dtdSmooksResourceConfigurations.get(0);
             byte[] dtdDataBytes = dtdSmooksResourceConfiguration.getBytes();
@@ -298,12 +303,12 @@ public class ContentDeliveryConfigBuilder {
 		expandSmooksResourceConfigurationTable();
 		sortSmooksResourceConfigurations(resourceConfigTable);
 
-		if(logger.isDebugEnabled()) {
-			logResourceConfig();
-		}
-		
-		// Extract the ContentDeliveryUnits and build the tables
-		extractContentDeliveryUnits();
+        // Extract the ContentDeliveryUnits and build the tables
+        extractContentDeliveryUnits();
+
+        if(logger.isDebugEnabled()) {
+            logResourceConfig();
+        }
 	}
 
 	/**
@@ -353,15 +358,29 @@ public class ContentDeliveryConfigBuilder {
             target = config.getTargetElement();
         }
 
-        Vector selectorUnits = (Vector)resourceConfigTable.get(target);
+        addResourceConfiguration(target, config);
+    }
 
-        if(selectorUnits == null) {
-            selectorUnits = new Vector();
-            resourceConfigTable.put(target, selectorUnits);
+    /**
+     * Add the config for the specified element.
+     * @param element The element to which the config is to be added.
+     * @param resourceConfiguration The Object to be added.
+     */
+    private void addResourceConfiguration(String element, SmooksResourceConfiguration resourceConfiguration) {
+        // Add it to the unsorted list...
+        if(!resourceConfigsList.contains(resourceConfiguration)) {
+            resourceConfigsList.add(resourceConfiguration);
         }
 
-        // Add to the smooks-resource on the resourceConfigTable
-        selectorUnits.addElement(config);
+        // Add it to the sorted resourceConfigTable...
+        List elementConfigList = resourceConfigTable.get(element);
+        if(elementConfigList == null) {
+            elementConfigList = new Vector();
+            resourceConfigTable.put(element, elementConfigList);
+        }
+        if(!elementConfigList.contains(resourceConfiguration)) {
+            elementConfigList.add(resourceConfiguration);
+        }
     }
 
     /**
@@ -378,10 +397,10 @@ public class ContentDeliveryConfigBuilder {
 				if(resourceConfig.isXmlDef()) {
 					String[] elements = getDTDElements(resourceConfig.getSelector().substring(SmooksResourceConfiguration.XML_DEF_PREFIX.length()));
 					for(int i = 0; i < elements.length; i++) {
-						addObject(elements[i], resourceConfig, resourceConfigTable);
+						addResourceConfiguration(elements[i], resourceConfig);
 					}
 				}
-				
+
 				// Add code to expand other expandable entry types here.
 			}
 		}
@@ -389,14 +408,14 @@ public class ContentDeliveryConfigBuilder {
 		tableIterator.iterate();
 	}
 
-	/**
+    /**
 	 * Iterate over the table smooks-resource instances and sort the SmooksResourceConfigurations
 	 * on each element.  Ordered by specificity.
 	 */
-	private void sortSmooksResourceConfigurations(Hashtable<String, List<SmooksResourceConfiguration>> table) {
+	private void sortSmooksResourceConfigurations(Map<String, List<SmooksResourceConfiguration>> table) {
 		if(!table.isEmpty()) {
 			Iterator tableEntrySet = table.entrySet().iterator();
-			
+
 			while(tableEntrySet.hasNext()) {
 				Map.Entry entry = (Map.Entry)tableEntrySet.next();
 				List markupElSmooksResourceConfigurations = (List)entry.getValue();
@@ -409,8 +428,8 @@ public class ContentDeliveryConfigBuilder {
 		}
 	}
 
-	/**
-	 * Extract the ContentDeliveryUnits from the SmooksResourceConfiguration table and add them to  
+    /**
+	 * Extract the ContentDeliveryUnits from the SmooksResourceConfiguration table and add them to
 	 * their respective tables.
 	 */
 	private void extractContentDeliveryUnits() {
@@ -419,15 +438,15 @@ public class ContentDeliveryConfigBuilder {
 
         tableIterator.iterate();
     }
-	
-	/**
+
+    /**
 	 * Get the DTD elements for specific device context.
 	 * @param string DTD spec string e.g. "elcspec:empty"
 	 * @return List of element names.
 	 */
 	private String[] getDTDElements(String string) {
 		String tmpString = string.toLowerCase();
-		
+
 		if(tmpString.startsWith(ELCSPEC_PREFIX)) {
 			tmpString = tmpString.substring(ELCSPEC_PREFIX.length());
 			if(tmpString.equals("empty")) {
@@ -448,30 +467,11 @@ public class ContentDeliveryConfigBuilder {
 				return dtd.getNonPCDataElements();
 			}
 		}
-		
+
 		throw new IllegalStateException("Unsupported DTD spec definition [" + string + "]");
 	}
 
-	/**
-	 * Add the Object for the specified element to the supplied table.
-	 * @param element The element to which the Object is to be added.
-	 * @param object The Object to be added.
-	 * @param table The table to be added to.
-	 */
-	private void addObject(String element, Object object, Hashtable table) {
-		List markupElCDRs = (List)table.get(element);
-		
-		if(markupElCDRs == null) {
-			markupElCDRs = new Vector();
-			table.put(element, markupElCDRs);
-		}
-		
-		if(!markupElCDRs.contains(object)) {
-			markupElCDRs.add(object);
-		}
-	}
-	
-	/**
+    /**
 	 * ContentHandler extraction strategy.
 	 * @author tfennelly
 	 */
@@ -555,21 +555,21 @@ public class ContentDeliveryConfigBuilder {
 		 * Add a {@link ContentHandler} for the specified element and configuration.
 		 * @param elementName Element name against which to associate the CDU.
 		 * @param resourceConfig Configuration.
-		 * @param creator CDU Creator class.
+		 * @param handlerFactory CDU Creator class.
 		 * @throws InstantiationException Failed to instantia
          * @return True if the CDU was added, otherwise false. 
 		 */
-		private boolean addCDU(String elementName, SmooksResourceConfiguration resourceConfig, ContentHandlerFactory creator) throws InstantiationException {
+		private boolean addCDU(String elementName, SmooksResourceConfiguration resourceConfig, ContentHandlerFactory handlerFactory) throws InstantiationException {
 			ContentHandler contentHandler;
 
 			// Create the ContentHandler.
 			try {
-				contentHandler = creator.create(resourceConfig);
+				contentHandler = handlerFactory.create(resourceConfig);
 			} catch(Throwable thrown) {
 				if(logger.isDebugEnabled()) {
-                    logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
+                    logger.warn("ContentHandlerFactory [" + handlerFactory.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
                 } else {
-                    logger.warn("ContentHandlerFactory [" + creator.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
+                    logger.warn("ContentHandlerFactory [" + handlerFactory.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
 				}
 				return false;
 			}
@@ -668,22 +668,10 @@ public class ContentDeliveryConfigBuilder {
 		 * Iterate over the table applying the strategy.
 		 */
 		private void iterate() {
-			if(!resourceConfigTable.isEmpty()) {
-				Hashtable tableClone = (Hashtable)resourceConfigTable.clone();
-				Iterator iterator = tableClone.entrySet().iterator();				
-				
-				while(iterator.hasNext()) {
-					Map.Entry entry = (Map.Entry)iterator.next();
-					String elementName = (String)entry.getKey();
-					List resourceConfigList = (List)entry.getValue();
-
-					for(int i = 0; i < resourceConfigList.size(); i++) {
-						SmooksResourceConfiguration resourceConfig = (SmooksResourceConfiguration)resourceConfigList.get(i);
-						
-						strategy.applyStrategy(elementName, resourceConfig);
-					}
-				}
-			}			
+            for (int i = 0; i < resourceConfigsList.size(); i++) {
+                SmooksResourceConfiguration smooksResourceConfiguration = resourceConfigsList.get(i);
+                strategy.applyStrategy(smooksResourceConfiguration.getTargetElement(), smooksResourceConfiguration);
+            }
 		}
 	}
 	
