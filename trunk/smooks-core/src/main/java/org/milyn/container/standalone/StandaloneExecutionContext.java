@@ -36,7 +36,6 @@ public class StandaloneExecutionContext implements ExecutionContext {
 
     private ProfileSet targetProfileSet;
     private Hashtable attributes = new Hashtable();
-	private Hashtable elementListTable = new Hashtable();
     private ContentDeliveryConfig deliveryConfig;
     private URI docSource;
     private LinkedHashMap parameters;

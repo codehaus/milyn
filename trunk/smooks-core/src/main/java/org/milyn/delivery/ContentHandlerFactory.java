@@ -24,7 +24,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  *
  * @author tfennelly
  */
-public interface ContentHandlerFactory {
+public interface ContentHandlerFactory extends ContentHandler {
 
     /**
      * Name of the param used on a ContentHandlerFactory config that specifies

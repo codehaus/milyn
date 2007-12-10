@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class ContentHandlerConfigMapTable<T extends ContentHandler> {
 
-    private Map<String, List<ContentHandlerConfigMap<T>>> table = new Hashtable<String, List<ContentHandlerConfigMap<T>>>();
+    private Map<String, List<ContentHandlerConfigMap<T>>> table = new LinkedHashMap<String, List<ContentHandlerConfigMap<T>>>();
     private int count = 0;
 
     /**

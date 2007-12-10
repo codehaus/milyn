@@ -27,9 +27,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 /**
  * Utility methods to aid in class/resource loading.
@@ -39,6 +37,19 @@ import java.util.List;
 public class ClassUtil {
     
     private static Log logger = LogFactory.getLog(ClassUtil.class);
+    private static final Map<String, Class> primitives;
+
+    static {
+        primitives = new HashMap<String, Class>();
+        primitives.put("int", Integer.TYPE);
+        primitives.put("long", Long.TYPE);
+        primitives.put("boolean", Boolean.TYPE);
+        primitives.put("float", Float.TYPE);
+        primitives.put("double", Double.TYPE);
+        primitives.put("char", Character.TYPE);
+        primitives.put("byte", Byte.TYPE);
+        primitives.put("short", Short.TYPE);
+    }
     
     /**
 	 * Load the specified class.
@@ -53,6 +64,11 @@ public class ClassUtil {
 	 */
 	public static Class forName(final String className, final Class caller) throws ClassNotFoundException {
 		final ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+
+        Class primitiveClass = primitives.get(className);
+        if(primitiveClass != null) {
+            return primitiveClass;
+        }
         
         if (threadClassLoader != null) {
 			try {

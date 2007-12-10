@@ -314,7 +314,7 @@ public class SmooksResourceConfigurationStore {
 		}
 
 		if(object instanceof ContentHandler) {
-			Configurator.configure((ContentHandler)object, resourceConfig);
+			Configurator.configure((ContentHandler)object, resourceConfig, applicationContext);
             allocatedUnits.add((ContentHandler)object);
         }
 		

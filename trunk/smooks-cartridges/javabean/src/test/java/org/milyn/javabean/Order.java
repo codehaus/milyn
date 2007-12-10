@@ -8,6 +8,7 @@ import java.util.List;
 public class Order {
     private Header header;
     private List<OrderItem> orderItems;
+    private OrderItem[] orderItemsArray;
 
     public Header getHeader() {
         return header;
@@ -23,5 +24,13 @@ public class Order {
 
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public void setOrderItems(OrderItem[] orderItems) {
+        this.orderItemsArray = orderItems;
+    }
+
+    public OrderItem[] getOrderItemsArray() {
+        return orderItemsArray;
     }
 }

@@ -18,24 +18,26 @@ package org.milyn.javabean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.xml.DomUtils;
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
-import org.milyn.cdr.annotation.Config;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Bean instance populator visitor class.
@@ -51,8 +53,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @ConfigParam
     private String beanId;
 
-    @ConfigParam
+    @ConfigParam(defaultVal = ConfigParam.NULL)
     private String property;
+
+    @ConfigParam(defaultVal = ConfigParam.NULL)
+    private String setterMethod;
 
     @ConfigParam(defaultVal = ConfigParam.NULL)
     private String valueAttributeName;
@@ -63,12 +68,15 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @ConfigParam(name="default", defaultVal = ConfigParam.NULL)
     private String defaultVal;
 
-    @Config
-    private SmooksResourceConfiguration config;
+    @AppContext
+    private ApplicationContext appContext;
 
-    private Method beanSetterMethod;
+    private BeanRuntimeInfo beanRuntimeInfo;
+    private Method propertySetterMethod;
     private boolean isAttribute = true;
     private DataDecoder decoder;
+    private boolean checkedForSetterMethod;
+    private String mapKeyAttribute;
 
     /**
      * Set the resource configuration on the bean populator.
@@ -76,11 +84,24 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      */
     @Initialize
     public void initialize() throws SmooksConfigurationException {
+        beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
         isAttribute = (valueAttributeName != null);
+
+        if (setterMethod == null && property == null && beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION) {
+            throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
+                    "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
+                    "  Bean is type '" + beanRuntimeInfo.getPopulateType().getName() + "'.");
+        }
+
+        if(beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION && property != null) {
+            property = property.trim();
+            if(property.length() > 1 && property.charAt(0) == '@') {
+                mapKeyAttribute = property.substring(1);
+            }
+        }
 
         logger.debug("Bean Instance Populator created for [" + beanId + "].  property=" + property);
     }
-
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
     }
@@ -94,7 +115,19 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             dataString = DomUtils.getAllText(element, false);
         }
 
-        populateAndSetBean(dataString, executionContext);
+        String mapPropertyName;
+        if(mapKeyAttribute != null) {
+            mapPropertyName = DomUtils.getAttributeValue(element, mapKeyAttribute);
+            if(mapPropertyName == null) {
+                mapPropertyName = DomUtils.getName(element);
+            }
+        } else if(property != null) {
+            mapPropertyName = property;
+        } else {
+            mapPropertyName = DomUtils.getName(element);
+        }
+
+        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -118,21 +151,51 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             dataString = (String) element.getCache();
         }
 
-        populateAndSetBean(dataString, executionContext);
+        String mapPropertyName;
+        if(mapKeyAttribute != null) {
+            mapPropertyName = SAXUtil.getAttribute(mapKeyAttribute, element.getAttributes(), null);
+            if(mapPropertyName == null) {
+                mapPropertyName = element.getName().getLocalPart();
+            }
+        } else if(property != null) {
+            mapPropertyName = property;
+        } else {
+            mapPropertyName = element.getName().getLocalPart();
+        }
+
+        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
     }
 
-    private void populateAndSetBean(String dataString, ExecutionContext executionContext) {
+    private void populateAndSetPropertyValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {
         Object bean = BeanUtils.getBean(beanId, executionContext);
         Object dataObject = decodeDataString(dataString, executionContext);
+        Classification beanType = beanRuntimeInfo.getClassification();
 
         // If we need to create the bean setter method instance...
-        if (beanSetterMethod == null) {
-            beanSetterMethod = createBeanSetterMethod(bean, BeanUtils.toSetterName(property), dataObject.getClass());
+        if (!checkedForSetterMethod && propertySetterMethod == null) {
+            if(setterMethod != null) {
+                propertySetterMethod = createPropertySetterMethod(bean, setterMethod, dataObject.getClass());
+            } else if(property != null) {
+                propertySetterMethod = createPropertySetterMethod(bean, BeanUtils.toSetterName(property), dataObject.getClass());
+            }
+            checkedForSetterMethod = true;
         }
 
         // Set the data on the bean...
         try {
-            beanSetterMethod.invoke(bean, dataObject);
+            if(propertySetterMethod != null) {
+                propertySetterMethod.invoke(bean, dataObject);
+            } else if(beanType == Classification.MAP_COLLECTION) {
+                ((Map)bean).put(mapPropertyName, dataObject);
+            } else if(beanType == Classification.ARRAY_COLLECTION || beanType == Classification.COLLECTION_COLLECTION) {
+                ((List)bean).add(dataObject);
+            } else if(propertySetterMethod == null) {
+                if(setterMethod != null) {
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                } else if(property != null) {
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                }
+            }
         } catch (IllegalAccessException e) {
             throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
         } catch (InvocationTargetException e) {
@@ -146,16 +209,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized Method createBeanSetterMethod(Object bean, String setterName, Class type) {
-        if (beanSetterMethod == null) {
-            beanSetterMethod = BeanUtils.createBeanSetterMethod(bean, setterName, type);
-
-            if(beanSetterMethod == null) {
-                throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterName + "(" + type.getName() + ")] not found on type [" + bean.getClass().getName() + "].  You may need to set a 'decoder' on the binding config.");
-            }
+    private synchronized Method createPropertySetterMethod(Object bean, String setterName, Class setterParamType) {
+        if (propertySetterMethod == null) {
+            propertySetterMethod = BeanUtils.createSetterMethod(setterName, bean, setterParamType);
         }
 
-        return beanSetterMethod;
+        return propertySetterMethod;
     }
 
     private Object decodeDataString(String dataString, ExecutionContext executionContext) throws DataDecodeException {

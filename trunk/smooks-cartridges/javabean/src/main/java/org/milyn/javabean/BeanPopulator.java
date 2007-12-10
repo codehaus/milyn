@@ -242,6 +242,7 @@ public class BeanPopulator implements ConfigurationExpander {
         String selector;
         String selectorNamespace;
         String property;
+        String setterMethod;
         String type;
         String defaultVal;
 
@@ -250,10 +251,8 @@ public class BeanPopulator implements ConfigurationExpander {
         if (selector == null) {
             throw new SmooksConfigurationException("Binding configuration must contain a 'selector' key: " + bindingConfig);
         }
+        setterMethod = DomUtils.getAttributeValue(bindingConfig, "setterMethod");
         property = DomUtils.getAttributeValue(bindingConfig, "property");
-        if (property == null) {
-            throw new SmooksConfigurationException("Binding configuration must contain a 'property' key: " + bindingConfig);
-        }
 
         // Extract the binding config properties from the selector and property values...
         String attributeNameProperty = getAttributeNameProperty(selector);
@@ -263,7 +262,14 @@ public class BeanPopulator implements ConfigurationExpander {
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, BeanInstancePopulator.class.getName());
         resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
         resourceConfig.setParameter("beanId", beanId);
-        resourceConfig.setParameter("property", property);
+
+        if(setterMethod != null) {
+            resourceConfig.setParameter("setterMethod", setterMethod);
+        }
+        if(property != null) {
+            resourceConfig.setParameter("property", property);
+        }
+
         if (attributeNameProperty != null && !attributeNameProperty.trim().equals("")) {
             // The value is comming out of a property on the target element.
             // If this attribute is not defined, the value will be taken from the element text...

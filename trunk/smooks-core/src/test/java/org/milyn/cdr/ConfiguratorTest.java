@@ -21,6 +21,8 @@ import org.milyn.cdr.annotation.Initialize;
 import org.milyn.cdr.annotation.*;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.javabean.decoders.IntegerDecoder;
+import org.milyn.container.ApplicationContext;
+import org.milyn.container.MockApplicationContext;
 
 import java.nio.charset.Charset;
 
@@ -76,12 +78,13 @@ public class ConfiguratorTest extends TestCase {
         assertEquals(9, cdu.paramC);
     }
 
-    public void test_paramaterSetting_Config_annotation() {
+    public void test_Config_And_Context_Setting() {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration();
         MyContentDeliveryUnit3 cdu = new MyContentDeliveryUnit3();
 
-        Configurator.configure(cdu, config);
+        Configurator.configure(cdu, config, new MockApplicationContext());
         assertNotNull(cdu.config);
+        assertNotNull(cdu.appContext);
     }
 
     public void test_paramaterSetting_Config_setConfiguration_on_private_inner_class() {
@@ -234,6 +237,9 @@ public class ConfiguratorTest extends TestCase {
     }
 
     private class MyContentDeliveryUnit3 implements ContentHandler {
+
+        @AppContext
+        private ApplicationContext appContext;
 
         @Config
         private SmooksResourceConfiguration config;

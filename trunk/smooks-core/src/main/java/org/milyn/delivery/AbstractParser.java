@@ -94,7 +94,7 @@ public class AbstractParser {
                 reader = XMLReaderFactory.createXMLReader();
             }
             if(reader instanceof SmooksXMLReader) {
-            	Configurator.configure((SmooksXMLReader)reader, saxDriverConfig);
+            	Configurator.configure((SmooksXMLReader)reader, saxDriverConfig, execContext.getContext());
             	((SmooksXMLReader)reader).setExecutionContext(execContext);
             }
         } else {

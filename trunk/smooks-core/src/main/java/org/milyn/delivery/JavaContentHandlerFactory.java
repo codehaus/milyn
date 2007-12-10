@@ -18,8 +18,10 @@ package org.milyn.delivery;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.classpath.ClasspathUtils;
 import org.milyn.util.ClassUtil;
+import org.milyn.container.ApplicationContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -33,12 +35,8 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class JavaContentHandlerFactory implements ContentHandlerFactory {
 
-    /**
-     * Public constructor.
-     * @param config Configuration details for this ContentHandlerFactory.
-     */
-    public JavaContentHandlerFactory(SmooksResourceConfiguration config) {
-    }
+    @AppContext
+    private ApplicationContext appContext;
 
     /**
 	 * Create a Java based ContentHandler instance.
@@ -61,7 +59,7 @@ public class JavaContentHandlerFactory implements ContentHandlerFactory {
 			} catch (NoSuchMethodException e) {
 				deliveryUnit = (ContentHandler) classRuntime.newInstance();
 			}
-            Configurator.configure(deliveryUnit, resourceConfig);
+            Configurator.configure(deliveryUnit, resourceConfig, appContext);
         } catch (InstantiationException e) {
             exception = e;
         } catch (IllegalAccessException e) {
