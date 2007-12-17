@@ -65,18 +65,20 @@ public class CalendarDecoderTest extends TestCase {
 	    SmooksResourceConfiguration config;
 
 	    config = new SmooksResourceConfiguration();
-	    config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss yyyy");
+	    config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
 	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "se");
 	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "SE");
 	    decoder.setConfiguration(config);
 
-	    Calendar cal_a = (Calendar) decoder.decode("Wed Nov 15 13:45:28 2006");
-	    //assertEquals("Central European Time", cal_a.getTimeZone().getDisplayName());
-	    Calendar cal_b = (Calendar) decoder.decode("Wed Nov 15 13:45:28 2006");
-	    assertNotSame(cal_a, cal_b);
+	    Calendar cal_a = (Calendar) decoder.decode("Wed Nov 15 13:45:28 CET 2006");
+	    assertEquals("Central European Time", cal_a.getTimeZone().getDisplayName());
+	    Calendar cal_b = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
+	    assertEquals("Eastern Standard Time", cal_b.getTimeZone().getDisplayName());
+	    assertNotSame(cal_a.getTimeZone().getID(), cal_b.getTimeZone().getID());
 	}
 	
 	public void setUp() {
+		Locale.setDefault( new Locale("ga_IE") );
 	    decoder = new CalendarDecoder();
 	    languageCode = "sv";
 	    countryCode = "SE";
