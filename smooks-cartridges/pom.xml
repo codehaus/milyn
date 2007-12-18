@@ -51,7 +51,8 @@
 		<module>scripting</module>
 		<module>servlet</module>
 		<module>templating</module>
-	</modules>
+    <module>routing</module>
+  </modules>
 
 	<dependencies>
 		<dependency>
