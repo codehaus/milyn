@@ -7,9 +7,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>milyn</groupId>
-  <artifactId>smooks-cartridge-routing-base-pom</artifactId>
-  <packaging>pom</packaging>
-  <name>Milyn Smooks Cartridges Routing (Base POM)</name>
+  <artifactId>smooks-routing</artifactId>
+  <name>Milyn Smooks Cartridges Routing</name>
   <version>1.0-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <dependencies>
@@ -20,7 +19,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <modules>
-    <module>jmsrouter</module>
-  </modules>
 </project>
