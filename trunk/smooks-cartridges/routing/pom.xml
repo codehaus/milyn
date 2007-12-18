@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <parent>
+    <artifactId>smooks-cartridge-base-pom</artifactId>
+    <groupId>milyn</groupId>
+    <version>1.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>milyn</groupId>
+  <artifactId>smooks-cartridge-routing-base-pom</artifactId>
+  <packaging>pom</packaging>
+  <name>Milyn Smooks Cartridges Routing (Base POM)</name>
+  <version>1.0-SNAPSHOT</version>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <modules>
+    <module>jmsrouter</module>
+  </modules>
+</project>
