@@ -21,10 +21,9 @@ import java.io.InputStream;
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.templating.TemplatingUtils;
 import org.milyn.templating.util.CharUtils;
 
 import junit.framework.TestCase;
@@ -46,7 +45,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
-            StandaloneExecutionContext context = smooks.createExecutionContext("devicename");
+            ExecutionContext context = smooks.createExecutionContext("devicename");
 			transResult = SmooksUtil.filterAndSerialize(context, stream, smooks);
 		} catch (SmooksException e) {
 			e.printStackTrace();
@@ -77,7 +76,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
-            StandaloneExecutionContext context = smooks.createExecutionContext("devicename");
+            ExecutionContext context = smooks.createExecutionContext("devicename");
 			transResult = SmooksUtil.filterAndSerialize(context, stream, smooks);
 		} catch (SmooksException e) {
 			e.printStackTrace();

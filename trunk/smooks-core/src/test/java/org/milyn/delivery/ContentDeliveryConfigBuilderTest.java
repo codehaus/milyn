@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.delivery.sax.SAXContentDeliveryConfig;
 import org.milyn.delivery.sax.SAXVisitor01;
@@ -35,7 +35,7 @@ public class ContentDeliveryConfigBuilderTest extends TestCase {
 
     public void test_sax() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-sax.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
 
         assertTrue(execContext.getDeliveryConfig() instanceof SAXContentDeliveryConfig);
         SAXContentDeliveryConfig config = (SAXContentDeliveryConfig) execContext.getDeliveryConfig();
@@ -47,7 +47,7 @@ public class ContentDeliveryConfigBuilderTest extends TestCase {
 
     public void test_dom() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-dom.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
 
         assertTrue(execContext.getDeliveryConfig() instanceof DOMContentDeliveryConfig);
         DOMContentDeliveryConfig config = (DOMContentDeliveryConfig) execContext.getDeliveryConfig();
@@ -59,7 +59,7 @@ public class ContentDeliveryConfigBuilderTest extends TestCase {
 
     public void test_dom_sax_1() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-dom-sax-1.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
 
         // Should default to DOM
         assertTrue(execContext.getDeliveryConfig() instanceof DOMContentDeliveryConfig);
@@ -67,7 +67,7 @@ public class ContentDeliveryConfigBuilderTest extends TestCase {
 
     public void test_dom_sax_2() throws IOException, SAXException {
         Smooks smooks;
-        StandaloneExecutionContext execContext;
+        ExecutionContext execContext;
 
         smooks = new Smooks(getClass().getResourceAsStream("smooks-config-dom-sax-2.1.xml"));
         execContext = smooks.createExecutionContext();

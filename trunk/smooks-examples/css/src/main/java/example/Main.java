@@ -18,7 +18,6 @@ package example;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.css.CSSAccessor;
 import org.milyn.io.StreamUtils;
 import org.milyn.magger.CSSProperty;
@@ -70,7 +69,7 @@ public class Main {
 
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
-        StandaloneExecutionContext executionContext;
+        ExecutionContext executionContext;
 
         // Set the Resource locator for picking up the <link/> ref'd .css files
         // from the local File sys... Only need to do this because of a bug in

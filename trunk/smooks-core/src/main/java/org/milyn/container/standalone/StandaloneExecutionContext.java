@@ -19,7 +19,6 @@ package org.milyn.container.standalone;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Hashtable;
-import java.util.LinkedHashMap;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
@@ -38,21 +37,8 @@ public class StandaloneExecutionContext implements ExecutionContext {
     private Hashtable attributes = new Hashtable();
     private ContentDeliveryConfig deliveryConfig;
     private URI docSource;
-    private LinkedHashMap parameters;
 	private String contentEncoding;
-    private StandaloneApplicationContext context;
-
-    /**
-     * Public Constructor.
-     * <p/>
-     * The execution context is constructed within the context of a target profile and
-     * application context.
-     * @param context The application context.
-     * @throws UnknownProfileMemberException Unknown target profile.
-     */
-    public StandaloneExecutionContext(String targetProfile, StandaloneApplicationContext context) throws UnknownProfileMemberException {
-        this(targetProfile, null, context);
-    }
+    private ApplicationContext context;
     
 	/**
 	 * Public Constructor.
@@ -60,13 +46,12 @@ public class StandaloneExecutionContext implements ExecutionContext {
      * The execution context is constructed within the context of a target profile and
      * application context.
 	 * @param targetProfile The target base profile for the execution context.
-	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
      * @param context The application context.
      * @throws UnknownProfileMemberException Unknown target profile.
 	 */
-	public StandaloneExecutionContext(String targetProfile, LinkedHashMap parameters, StandaloneApplicationContext context) throws UnknownProfileMemberException {
-		this(targetProfile, parameters, context, "UTF-8");
+	public StandaloneExecutionContext(String targetProfile, ApplicationContext context) throws UnknownProfileMemberException {
+		this(targetProfile, context, "UTF-8");
 	}
     
 	/**
@@ -75,24 +60,18 @@ public class StandaloneExecutionContext implements ExecutionContext {
      * The execution context is constructed within the context of a target profile and
      * application context.
 	 * @param targetProfile The target profile (base profile) for this context.
-	 * @param parameters The request parameters.  The parameter values should be String arrays i.e. {@link String String[]}.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
      * @param context The application context.
 	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
 	 * defaults to "UTF-8".
      * @throws UnknownProfileMemberException Unknown target profile.
 	 */
-	public StandaloneExecutionContext(String targetProfile, LinkedHashMap parameters, StandaloneApplicationContext context, String contentEncoding) throws UnknownProfileMemberException {
+	public StandaloneExecutionContext(String targetProfile, ApplicationContext context, String contentEncoding) throws UnknownProfileMemberException {
         if(targetProfile == null) {
             throw new IllegalArgumentException("null 'targetProfile' arg in constructor call.");
         }
         if(context == null) {
             throw new IllegalArgumentException("null 'context' arg in constructor call.");
-        }
-        if(parameters != null) {
-            this.parameters = parameters;
-        } else {
-            this.parameters = new LinkedHashMap();
         }
 		this.context = context;
 		setContentEncoding(contentEncoding);

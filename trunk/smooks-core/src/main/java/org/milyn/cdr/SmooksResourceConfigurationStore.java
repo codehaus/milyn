@@ -21,14 +21,13 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.classpath.ClasspathUtils;
 import org.milyn.container.ApplicationContext;
-import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
-import org.milyn.delivery.UnsupportedContentHandlerTypeException;
 import org.milyn.delivery.JavaContentHandlerFactory;
+import org.milyn.delivery.UnsupportedContentHandlerTypeException;
 import org.milyn.delivery.annotation.Resource;
-import org.milyn.profile.DefaultProfileStore;
 import org.milyn.profile.ProfileSet;
+import org.milyn.profile.ProfileStore;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
@@ -212,14 +211,12 @@ public class SmooksResourceConfigurationStore {
         }
 
         // TODO Sort out the other app context impls such that we can get the profile store from them too
-        if(applicationContext instanceof StandaloneApplicationContext) {
-            DefaultProfileStore profileStore = ((StandaloneApplicationContext)applicationContext).getProfileStore();
+        if(applicationContext instanceof ApplicationContext) {
+            ProfileStore profileStore = applicationContext.getProfileStore();
 
             for(ProfileSet profileSet : profileSets) {
                 profileStore.addProfileSet(profileSet);
             }
-            
-            profileStore.expandProfiles();
         }
     }
 

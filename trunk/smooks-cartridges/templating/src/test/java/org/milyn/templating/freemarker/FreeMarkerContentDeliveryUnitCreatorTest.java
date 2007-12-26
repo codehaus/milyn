@@ -19,8 +19,7 @@ import junit.framework.TestCase;
 import org.xml.sax.SAXException;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
-import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.templating.TemplatingUtils;
+import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 
 import java.io.IOException;
@@ -59,7 +58,7 @@ public class FreeMarkerContentDeliveryUnitCreatorTest extends TestCase {
 
     private void test_ftl(Smooks smooks, String input, String expected) {
         InputStream stream = new ByteArrayInputStream(input.getBytes());
-        StandaloneExecutionContext context = smooks.createExecutionContext("useragent");
+        ExecutionContext context = smooks.createExecutionContext("useragent");
         String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
 
         assertEquals(expected, result);

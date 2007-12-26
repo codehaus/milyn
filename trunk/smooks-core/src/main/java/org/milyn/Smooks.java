@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
@@ -39,21 +40,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.LinkedHashMap;
 
 /**
- * Smooks standalone execution class.
+ * Smooks executor class.
  * <p/>
  * Additional configurations can be carried out on the {@link org.milyn.Smooks} instance
  * through the {@link org.milyn.SmooksUtil} class.
  * <p/>
  * The basic usage scenario for this class might be as follows:
  * <ol>
- * <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor} to
+ * <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor}/{@link org.milyn.delivery.sax.SAXElementVisitor} to
  * perform some transformation/analysis operation on a message.  There are a number of prebuilt
  * and reuseable implemntations available as
  * "<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">Smooks Cartridges</a>".</li>
- * <li>Write a {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration} to target the {@link org.milyn.delivery.dom.DOMElementVisitor}
+ * <li>Write a {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration} to target the {@link org.milyn.delivery.dom.DOMElementVisitor}/{@link org.milyn.delivery.sax.SAXElementVisitor}
  * implementation at the target fragment of the message being processed.</li>
  * <li>Apply the logic as follows:
  * <pre>
@@ -65,9 +65,9 @@ import java.util.LinkedHashMap;
  * </pre>
  * </li>
  * </ol>
- * Remember, you can implement and apply multiple {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}
+ * Remember, you can implement and apply multiple {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}/{@link org.milyn.delivery.sax.SAXElementVisitor}
  * within the context of a single filtering operation.  You can also target
- * {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} based on target profiles, and so use a single
+ * {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}/{@link org.milyn.delivery.sax.SAXElementVisitor} based on target profiles, and so use a single
  * configuration to process multiple messages by sharing profiles across your message set.
  * <p/>
  * See <a target="new" href="http://milyn.codehaus.org/Tutorials">Smooks Tutorials</a>.
@@ -197,12 +197,12 @@ public class Smooks {
     }
 
     /**
-     * Create a {@link StandaloneExecutionContext} instance for use on this Smooks instance.
+     * Create a {@link ExecutionContext} instance for use on this Smooks instance.
      * <p/>
      * The created context is profile agnostic and should be used where profile based targeting is not in use.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.standalone.StandaloneExecutionContext)}.
+     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
@@ -210,18 +210,18 @@ public class Smooks {
      *
      * @return Execution context instance.
      */
-    public StandaloneExecutionContext createExecutionContext() {
-        return new StandaloneExecutionContext(StandaloneApplicationContext.OPEN_PROFILE_NAME, new LinkedHashMap(), context);
+    public ExecutionContext createExecutionContext() {
+        return new StandaloneExecutionContext(StandaloneApplicationContext.OPEN_PROFILE_NAME, context);
     }
 
     /**
-     * Create a {@link StandaloneExecutionContext} instance for use on this Smooks instance.
+     * Create a {@link ExecutionContext} instance for use on this Smooks instance.
      * <p/>
      * The created context is profile aware and should be used where profile based targeting is in use. In this case,
      * the transfromation/analysis resources must be configured with profile targeting information.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.standalone.StandaloneExecutionContext)}.
+     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
@@ -232,8 +232,8 @@ public class Smooks {
      * @return Execution context instance.
      * @throws UnknownProfileMemberException Unknown target profile.
      */
-    public StandaloneExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
-        return new StandaloneExecutionContext(targetProfile, new LinkedHashMap(), context);
+    public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
+        return new StandaloneExecutionContext(targetProfile, context);
     }
 
     /**
@@ -249,11 +249,11 @@ public class Smooks {
      * @param source           The content Source.
      * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
      *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
-     * @param executionContext The {@link StandaloneExecutionContext} for this filter operation. See
+     * @param executionContext The {@link ExecutionContext} for this filter operation. See
      *                         {@link #createExecutionContext(String)}.
      * @throws SmooksException Failed to filter.
      */
-    public void filter(Source source, Result result, StandaloneExecutionContext executionContext) throws SmooksException {
+    public void filter(Source source, Result result, ExecutionContext executionContext) throws SmooksException {
         AssertArgument.isNotNull(source, "source");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
@@ -274,7 +274,7 @@ public class Smooks {
      *
      * @return The Smooks {@link org.milyn.container.ApplicationContext}.
      */
-    public StandaloneApplicationContext getApplicationContext() {
+    public ApplicationContext getApplicationContext() {
         return context;
     }
 

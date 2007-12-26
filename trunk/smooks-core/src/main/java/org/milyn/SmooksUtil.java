@@ -15,21 +15,20 @@
 */
 package org.milyn;
 
-import org.milyn.profile.ProfileSet;
-import org.milyn.profile.UnknownProfileMemberException;
-import org.milyn.profile.DefaultProfileStore;
-import org.milyn.assertion.AssertArgument;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.xml.sax.SAXException;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ExecutionContext;
+import org.milyn.profile.ProfileSet;
+import org.milyn.profile.ProfileStore;
+import org.milyn.profile.UnknownProfileMemberException;
 
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.InputStream;
-import java.io.IOException;
+import javax.xml.transform.stream.StreamSource;
 import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * {@link org.milyn.Smooks} utilities.
@@ -55,14 +54,13 @@ public abstract class SmooksUtil {
     public static void registerProfileSet(ProfileSet profileSet, Smooks smooks) {
         AssertArgument.isNotNull(profileSet, "profileSet");
 
-        DefaultProfileStore profileStore = smooks.getApplicationContext().getProfileStore();
+        ProfileStore profileStore = smooks.getApplicationContext().getProfileStore();
         try {
             profileStore.getProfileSet(profileSet.getBaseProfile());
             logger.warn("ProfileSet [" + profileSet.getBaseProfile() + "] already registered.  Not registering new profile set.");
         } catch (UnknownProfileMemberException e) {
             // It's an unregistered profileset...
             profileStore.addProfileSet(profileSet);
-            profileStore.expandProfiles();
         }
     }
 
@@ -83,7 +81,7 @@ public abstract class SmooksUtil {
      * Utility method to filter the content in the specified {@link InputStream} for the specified {@link org.milyn.container.ExecutionContext}.
      * <p/>
      * Useful for testing purposes.  In a real scenario, use
-     * {@link Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.standalone.StandaloneExecutionContext)}.
+     * {@link Smooks#filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
      * <p/>
      * The content of the returned String is totally dependent on the configured
      * {@link org.milyn.delivery.dom.DOMElementVisitor} and {@link org.milyn.delivery.dom.serialize.SerializationUnit}
@@ -91,12 +89,12 @@ public abstract class SmooksUtil {
      *
      * @param executionContext Execution context for the filter.
      * @param stream           Stream to be processed.  Will be closed before returning.
-     * @param smooks           The {@link org.milyn.Smooks} instance through which to perform the filter and serialize operations.
+     * @param smooks           The {@link Smooks} instance through which to perform the filter and serialize operations.
      * @return The Smooks processed content buffer.
      * @throws IOException     Exception using or closing the supplied InputStream.
      * @throws SmooksException Excepting processing content stream.
      */
-    public static String filterAndSerialize(StandaloneExecutionContext executionContext, InputStream stream, Smooks smooks) throws SmooksException {
+    public static String filterAndSerialize(ExecutionContext executionContext, InputStream stream, Smooks smooks) throws SmooksException {
         String responseBuf = null;
         CharArrayWriter writer = new CharArrayWriter();
         try {

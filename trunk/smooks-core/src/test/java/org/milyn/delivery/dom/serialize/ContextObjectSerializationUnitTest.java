@@ -19,8 +19,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 import org.milyn.cdr.ParameterAccessor;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 
 import java.io.ByteArrayInputStream;
@@ -32,7 +31,7 @@ public class ContextObjectSerializationUnitTest extends TestCase {
 
     public void test() {
         Smooks smooks = new Smooks();
-        StandaloneExecutionContext context;
+        ExecutionContext context;
 
         ParameterAccessor.setParameter(ContentDeliveryConfigBuilder.STREAM_FILTER_TYPE, "DOM", smooks);
 

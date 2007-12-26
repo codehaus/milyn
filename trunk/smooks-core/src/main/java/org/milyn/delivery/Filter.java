@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.io.NullWriter;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.standalone.StandaloneExecutionContext;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -83,8 +82,8 @@ public abstract class Filter {
             return streamSource.getReader();
         } else if(streamSource.getInputStream() != null) {
             try {
-                if(executionContext instanceof StandaloneExecutionContext) {
-                    return new InputStreamReader(streamSource.getInputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
+                if(executionContext instanceof ExecutionContext) {
+                    return new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding());
                 } else {
                     return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
                 }
@@ -106,8 +105,8 @@ public abstract class Filter {
             return streamResult.getWriter();
         } else if(streamResult.getOutputStream() != null) {
             try {
-                if(executionContext instanceof StandaloneExecutionContext) {
-                    return new OutputStreamWriter(streamResult.getOutputStream(), ((StandaloneExecutionContext)executionContext).getContentEncoding());
+                if(executionContext instanceof ExecutionContext) {
+                    return new OutputStreamWriter(streamResult.getOutputStream(), executionContext.getContentEncoding());
                 } else {
                     return new OutputStreamWriter(streamResult.getOutputStream(), "UTF-8");
                 }

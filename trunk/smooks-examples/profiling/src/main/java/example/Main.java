@@ -18,13 +18,12 @@ package example;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.util.Arrays;
 
 /**
  * Simple example main class.
@@ -44,7 +43,7 @@ public class Main {
     protected String runSmooksTransform(String targetProfile) {
 
         // Create an exec context for the target profile....
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext(targetProfile);
+        ExecutionContext executionContext = smooks.createExecutionContext(targetProfile);
         CharArrayWriter outputWriter = new CharArrayWriter();
 
         // Filter the input message to the outputWriter, using the execution context...

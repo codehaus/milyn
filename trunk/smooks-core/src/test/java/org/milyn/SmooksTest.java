@@ -21,7 +21,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.container.standalone.StandaloneApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.profile.DefaultProfileSet;
 import org.w3c.dom.Node;
@@ -34,7 +34,7 @@ import junit.framework.TestCase;
  */
 public class SmooksTest extends TestCase {
 
-    private StandaloneExecutionContext request;
+    private ExecutionContext execContext;
     
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -42,11 +42,11 @@ public class SmooksTest extends TestCase {
     protected void setUp() throws Exception {
         Smooks smooks = new Smooks();
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"profile1"}), smooks);
-        request = new StandaloneExecutionContext("device1", (StandaloneApplicationContext) smooks.getApplicationContext());
+        execContext = new StandaloneExecutionContext("device1", smooks.getApplicationContext());
     }
 	
 	public void test_applyTransform_bad_params() {
-		SmooksDOMFilter smooks = new SmooksDOMFilter(request);
+		SmooksDOMFilter smooks = new SmooksDOMFilter(execContext);
 		
 		try {
 			smooks.filter((Reader)null);
@@ -65,7 +65,7 @@ public class SmooksTest extends TestCase {
 		Node deliveryNode = null;
 		
 		stream = getClass().getResourceAsStream("html_1.html");
-		smooks = new SmooksDOMFilter(request);
+		smooks = new SmooksDOMFilter(execContext);
 		try {
 			deliveryNode = smooks.filter(new InputStreamReader(stream));
 		} catch (SmooksException e) {

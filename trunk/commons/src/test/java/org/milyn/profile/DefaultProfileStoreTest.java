@@ -33,7 +33,7 @@ public class DefaultProfileStoreTest extends TestCase {
 	}
 
 	public void testAddGetProfileSet() {
-		DefaultProfileStore store = new DefaultProfileStore();
+		ProfileStore store = new DefaultProfileStore();
 		DefaultProfileSet set1 = new DefaultProfileSet("device1");
 		DefaultProfileSet set2 = new DefaultProfileSet("device2");
 

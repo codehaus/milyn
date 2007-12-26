@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.standalone.PreconfiguredSmooks;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.util.DomUtil;
 import org.milyn.xml.XmlUtil;
@@ -40,7 +40,7 @@ public class SmooksStandaloneTest extends TestCase {
         Smooks smooks = null;
         try {
             smooks = new PreconfiguredSmooks();
-            StandaloneExecutionContext context = smooks.createExecutionContext("msie6");
+            ExecutionContext context = smooks.createExecutionContext("msie6");
             String response = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("html_2.html"), smooks);
             System.out.println(response);
             Document doc = DomUtil.parse(response);
@@ -70,7 +70,7 @@ public class SmooksStandaloneTest extends TestCase {
 
         // Transform the same message for each useragent...
         String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
-        StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
+        ExecutionContext context = smooks.createExecutionContext("message-target1");
         String result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
         System.out.println(result);
         assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", result);
@@ -98,7 +98,7 @@ public class SmooksStandaloneTest extends TestCase {
         // Transform the same message for each useragent...
         String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
 
-        StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
+        ExecutionContext context = smooks.createExecutionContext("message-target1");
         CharArrayWriter writer = new CharArrayWriter();
         smooks.filter(new StreamSource(new ByteArrayInputStream(message.getBytes())), new StreamResult(writer), context);
 

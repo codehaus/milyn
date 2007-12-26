@@ -20,11 +20,10 @@ import org.milyn.SmooksException;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.xml.XmlUtil;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.dom.DOMResult;
 import java.io.*;
 
@@ -43,7 +42,7 @@ public class Main {
         smooks = new Smooks("smooks-config.xml");
     }
 
-    protected String runSmooksTransform(StandaloneExecutionContext executionContext) throws IOException, SAXException, SmooksException {
+    protected String runSmooksTransform(ExecutionContext executionContext) throws IOException, SAXException, SmooksException {
         // Filter the input message to the outputWriter, using the execution context...
         DOMResult domResult = new DOMResult();
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
@@ -59,7 +58,7 @@ public class Main {
         pause("The EDI input stream can be seen above.  Press 'enter' to see how this stream is transformed into DOM representation...");
 
         Main smooksMain = new Main();
-        StandaloneExecutionContext executionContext = smooksMain.smooks.createExecutionContext();
+        ExecutionContext executionContext = smooksMain.smooks.createExecutionContext();
         System.out.println("==============EDI as XML=============");
         System.out.println(smooksMain.runSmooksTransform(executionContext));
         System.out.println("======================================\n\n");
@@ -93,7 +92,7 @@ public class Main {
     }
 
     public String runSmooksTransform() throws IOException, SAXException {
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         return runSmooksTransform(executionContext);
     }
 }

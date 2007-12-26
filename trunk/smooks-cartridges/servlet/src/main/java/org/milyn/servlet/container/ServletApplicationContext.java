@@ -24,6 +24,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.profile.ProfileStore;
 
 /**
  * ApplicationContext adapter for the javax.servlet.ServletContext interface.
@@ -95,6 +96,14 @@ public class ServletApplicationContext implements ApplicationContext {
 	public SmooksResourceConfigurationStore getStore() {
 		return resStore;
 	}
+
+    public ProfileStore getProfileStore() {
+        throw new UnsupportedOperationException("Cannot access the ProfileStore on the " + ServletApplicationContext.class.getName() + " class.");
+    }
+
+    public void setResourceLocator(ContainerResourceLocator resourceLocator) {
+        throw new UnsupportedOperationException("Cannot set the resource locator on the " + ServletApplicationContext.class.getName() + " class.");
+    }
 
     /**
 	 * Get the associated ServletContext instance.

@@ -82,6 +82,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	public ContainerResourceLocator getResourceLocator() {
 		return resourceLocator;
 	}
+
     public void setResourceLocator(ContainerResourceLocator resourceLocator) {
         this.resourceLocator = resourceLocator;
     }
@@ -94,7 +95,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	 * Get the ProfileStore in use within the Standalone Context.
 	 * @return The ProfileStore.
 	 */
-	public DefaultProfileStore getProfileStore() {
+	public ProfileStore getProfileStore() {
 		return profileStore;
 	}
 }

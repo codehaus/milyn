@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.templating.util.CharUtils;
 import org.xml.sax.SAXException;
@@ -39,7 +39,7 @@ public class FindAddressSampleTest extends TestCase {
 
         // Perform the transformation...
         InputStream requestStream = getClass().getResourceAsStream("AcmeFindaddressRequest.xml");
-        StandaloneExecutionContext context = smooks.createExecutionContext("acme-findAddresses-request");
+        ExecutionContext context = smooks.createExecutionContext("acme-findAddresses-request");
         String requestResult = SmooksUtil.filterAndSerialize(context, requestStream, smooks);
         
 		CharUtils.assertEquals("StringTemplate test failed.", "/org/milyn/templating/stringtemplate/acmesecsample/AcmeFindaddressRequest.xml.tran.expected", requestResult);

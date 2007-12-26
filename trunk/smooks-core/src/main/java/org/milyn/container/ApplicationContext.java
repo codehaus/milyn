@@ -18,6 +18,7 @@ package org.milyn.container;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
+import org.milyn.profile.ProfileStore;
 
 /**
  * Smooks Application context interface definition.
@@ -30,10 +31,22 @@ public interface ApplicationContext extends BoundAttributeStore {
 	 * @return ContainerResourceLocator for the context.
 	 */
 	public abstract ContainerResourceLocator getResourceLocator();
-	
-	/**
+
+    /**
+     * Set the resource locator for this Smooks application context.
+     * @param resourceLocator The Resource locator.
+     */
+    public void setResourceLocator(ContainerResourceLocator resourceLocator);
+
+    /**
 	 * Get the Store for from the container application context.
 	 * @return SmooksResourceConfigurationStore instance.
 	 */
 	public abstract SmooksResourceConfigurationStore getStore();
+
+    /**
+	 * Get the ProfileStore in use within this Context.
+	 * @return The ProfileStore.
+	 */
+    public ProfileStore getProfileStore();
 }
