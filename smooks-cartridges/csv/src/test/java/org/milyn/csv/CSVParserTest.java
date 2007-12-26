@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.xml.XmlUtil;
@@ -42,7 +42,7 @@ public class CSVParserTest extends TestCase {
 	public void test_01() throws SmooksException, UnsupportedEncodingException {
 		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration config;
-        StandaloneExecutionContext context;
+        ExecutionContext context;
 
         config = new SmooksResourceConfiguration("org.xml.sax.driver", "type:Order-List and from:Acme", CSVParser.class.getName());
 		config.setParameter("fields", "string-list", "name,address");		
@@ -75,7 +75,7 @@ public class CSVParserTest extends TestCase {
 
     public void test_02() throws SmooksException, IOException, SAXException {
         Smooks smooks = new Smooks();
-        StandaloneExecutionContext context;
+        ExecutionContext context;
 
         smooks.addConfigurations("config", getClass().getResourceAsStream("smooks-config-01.xml"));
         context = smooks.createExecutionContext();
@@ -85,7 +85,7 @@ public class CSVParserTest extends TestCase {
 
     public void test_03() throws SmooksException, IOException, SAXException {
         Smooks smooks = new Smooks();
-        StandaloneExecutionContext context;
+        ExecutionContext context;
 
         smooks.addConfigurations("config", getClass().getResourceAsStream("smooks-config-02.xml"));
         context = smooks.createExecutionContext();

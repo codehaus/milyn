@@ -17,14 +17,12 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.xml.XmlUtil;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.dom.DOMResult;
 import java.io.*;
 
 /**
@@ -38,7 +36,7 @@ public class Main {
     protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
 
         Smooks smooks = new Smooks("smooks-config.xml");
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         StringWriter writer = new StringWriter();
 
         smooks.filter(new StreamSource(new InputStreamReader(new ByteArrayInputStream(messageIn), "UTF-8")), new StreamResult(writer), executionContext);

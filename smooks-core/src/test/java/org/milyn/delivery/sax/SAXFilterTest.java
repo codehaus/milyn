@@ -17,7 +17,7 @@ package org.milyn.delivery.sax;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
@@ -32,7 +32,7 @@ public class SAXFilterTest extends TestCase {
 
     public void test_reader_writer() throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
         StringWriter writer = new StringWriter();
 
@@ -42,7 +42,7 @@ public class SAXFilterTest extends TestCase {
 
     public void test_reader_stream() throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
@@ -52,7 +52,7 @@ public class SAXFilterTest extends TestCase {
 
     public void test_stream_stream() throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
@@ -62,7 +62,7 @@ public class SAXFilterTest extends TestCase {
 
     public void test_stream_writer() throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
         StringWriter writer = new StringWriter();
 
@@ -84,7 +84,7 @@ public class SAXFilterTest extends TestCase {
 
     public void test_selection() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-02.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
 
         smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), null, execContext);
@@ -109,7 +109,7 @@ public class SAXFilterTest extends TestCase {
 
     public void test_contextual() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-03.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
 
         smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), null, execContext);

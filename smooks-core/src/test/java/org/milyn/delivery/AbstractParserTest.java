@@ -17,7 +17,6 @@ package org.milyn.delivery;
 
 import junit.framework.TestCase;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.Smooks;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
@@ -31,7 +30,7 @@ public class AbstractParserTest extends TestCase {
 
     public void test() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-AbstractParserTest.xml"));
-        StandaloneExecutionContext execContext = smooks.createExecutionContext();
+        ExecutionContext execContext = smooks.createExecutionContext();
 
         TestParser parser = new TestParser(execContext);
         TestXMLReader reader = (TestXMLReader) parser.createXMLReader(new DefaultHandler2());

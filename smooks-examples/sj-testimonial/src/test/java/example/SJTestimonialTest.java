@@ -16,15 +16,9 @@
 package example;
 
 import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.javabean.BeanAccessor;
-import org.milyn.javabean.JavaResult;
 import org.xml.sax.SAXException;
 import se.sj.ipl.rollingstock.domain.RollingStockList;
 
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
 

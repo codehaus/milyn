@@ -35,6 +35,13 @@ public interface ExecutionContext extends BoundAttributeStore {
     public static final URI DOCUMENT_URI = URI.create("org:milyn:smooks:unknowndoc");
 
     /**
+     * Set the document source URI.
+     *
+     * @param docSource The document URI.
+     */
+    public void setDocumentSource(URI docSource);
+
+    /**
      * Get the document source URI.
      * <p/>
      * If the document source URI is not set for the context, implementations should
@@ -68,4 +75,19 @@ public interface ExecutionContext extends BoundAttributeStore {
      * @return ContentDeliveryConfig instance.
      */
 	public abstract ContentDeliveryConfig getDeliveryConfig();
+
+
+    /**
+     * Set the content encoding to be used when parsing content on this context.
+     * @param contentEncoding Character encoding to be used when parsing content.  Null
+     * defaults to "UTF-8".
+     * @throws IllegalArgumentException Invalid encoding.
+     */
+    public void setContentEncoding(String contentEncoding) throws IllegalArgumentException;
+
+    /**
+     * Get the content encoding to be used when parsing content on this context.
+     * @return Character encoding to be used when parsing content.  Defaults to "UTF-8".
+     */
+    public String getContentEncoding();
 }

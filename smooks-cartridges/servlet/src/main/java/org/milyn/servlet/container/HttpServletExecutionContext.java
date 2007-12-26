@@ -16,27 +16,30 @@
 
 package org.milyn.servlet.container;
 
-import java.net.URI;
-import java.util.Enumeration;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
+import org.milyn.profile.ProfileSet;
+import org.milyn.servlet.ServletUAContext;
 import org.milyn.useragent.UAContext;
 import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.useragent.request.HttpRequest;
-import org.milyn.servlet.ServletUAContext;
-import org.milyn.profile.ProfileSet;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.util.Enumeration;
 
 /**
  * Smooks ExecutionContext implementation for the HttpServlet container.
  * @author tfennelly
  */
 public class HttpServletExecutionContext implements ExecutionContext, HttpRequest {
+
+    private static Log logger = LogFactory.getLog(HttpServletExecutionContext.class);
 
     /**
 	 * HttpServletRequest instance.
@@ -78,7 +81,11 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		deliveryConfig = ContentDeliveryConfigBuilder.getConfig(uaContext.getProfileSet(), containerContext);
 	}
 
-	/* (non-Javadoc)
+    public void setDocumentSource(URI docSource) {
+        logger.error("Cannot set the document source on this context implementation.");
+    }
+
+    /* (non-Javadoc)
 	 * @see org.milyn.container.ExecutionContext#getDocumentSource()
 	 */
 	public URI getDocumentSource() {
@@ -142,9 +149,17 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		return deliveryConfig;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
-	 */
+    public void setContentEncoding(String contentEncoding) throws IllegalArgumentException {
+        logger.error("Cannot set the contentEncoding on this context implementation.");
+    }
+
+    public String getContentEncoding() {
+        return servletRequest.getCharacterEncoding();
+    }
+
+    /* (non-Javadoc)
+      * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
+      */
 	public void setAttribute(Object key, Object value) {
 		servletRequest.setAttribute(key.toString(), value);
 	}

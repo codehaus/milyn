@@ -21,9 +21,8 @@ import java.io.InputStream;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
-import org.milyn.templating.TemplatingUtils;
 import org.milyn.templating.util.CharUtils;
 import org.xml.sax.SAXException;
 
@@ -41,7 +40,7 @@ public abstract class ShippingIntegTestBase extends TestCase {
         smooks.addConfigurations("trans-response.cdrl", getClass().getResourceAsStream("trans-response.cdrl"));
                 
         InputStream requestStream = getClass().getResourceAsStream("../request.xml");
-        StandaloneExecutionContext context = smooks.createExecutionContext("shipping-request");
+        ExecutionContext context = smooks.createExecutionContext("shipping-request");
         String requestResult = SmooksUtil.filterAndSerialize(context, requestStream, smooks);
 		CharUtils.assertEquals("Template test failed.", "/org/milyn/templating/soapshipping/request.xml.tran.expected", requestResult);
 

@@ -18,15 +18,12 @@ package example;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.xml.XmlUtil;
-import org.milyn.smooks.scripting.ScriptingUtils;
-import org.milyn.templating.TemplatingUtils;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 import org.w3c.dom.Node;
 
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.TransformerFactory;
 import java.io.*;
@@ -44,7 +41,7 @@ public class Main {
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
          // Create an exec context - no profiles....
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
 
         // Filter the input message to the outputWriter, using the execution context...
         DOMResult domResult = new DOMResult();

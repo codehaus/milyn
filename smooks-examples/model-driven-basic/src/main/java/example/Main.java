@@ -17,9 +17,8 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.templating.TemplatingUtils;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -47,7 +46,7 @@ public class Main {
     protected String runSmooksTransform(byte[] message) {
 
         // Create an exec context for the target profile....
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         CharArrayWriter outputWriter = new CharArrayWriter();
 
         // Filter the message to the outputWriter, using the execution context...

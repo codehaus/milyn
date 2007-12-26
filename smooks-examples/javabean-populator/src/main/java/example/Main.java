@@ -17,14 +17,12 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.javabean.BeanAccessor;
 import org.milyn.javabean.JavaResult;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.TransformerFactory;
 import java.io.*;
 
@@ -44,7 +42,7 @@ public class Main {
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
          // Create an exec context - no profiles....
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         // The result of this transform is a set of Java objects...
         JavaResult result = new JavaResult();
 

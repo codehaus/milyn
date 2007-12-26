@@ -43,9 +43,13 @@ public class MockExecutionContext implements ExecutionContext {
 	public LinkedHashMap parameters = new LinkedHashMap();
 	public Hashtable headers = new Hashtable();
 	public Hashtable elementListTable = new Hashtable();
-	
+    private String contentEncoding;
 
-	public URI getDocumentSource() {
+    public void setDocumentSource(URI docSource) {
+        this.docSource = docSource;
+    }
+
+    public URI getDocumentSource() {
 		return docSource;
 	}
 
@@ -93,9 +97,17 @@ public class MockExecutionContext implements ExecutionContext {
 		return deliveryConfig;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
-	 */
+    public void setContentEncoding(String contentEncoding) throws IllegalArgumentException {
+        this.contentEncoding = contentEncoding;
+    }
+
+    public String getContentEncoding() {
+        return contentEncoding;
+    }
+
+    /* (non-Javadoc)
+      * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
+      */
 	public void setAttribute(Object key, Object value) {
 		attributes.put(key, value);
 	}

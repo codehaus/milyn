@@ -20,7 +20,6 @@ import org.milyn.Smooks;
 import org.milyn.io.StreamUtils;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -64,7 +63,7 @@ public class SmooksVisitorPhaseTest extends TestCase {
 
         smooks.addConfigurations("config2.xml", getClass().getResourceAsStream("config2.xml"));
         // Create an exec context - no profiles....
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         CharArrayWriter outputWriter = new CharArrayWriter();
 
         // Filter the input message to the outputWriter, using the execution context...

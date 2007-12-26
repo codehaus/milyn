@@ -22,9 +22,8 @@ import java.io.InputStream;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
-import org.milyn.templating.TemplatingUtils;
 import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
@@ -49,7 +48,7 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
     private void test_st(Smooks smooks, String input, String expected) {
         InputStream stream = new ByteArrayInputStream(input.getBytes());
-        StandaloneExecutionContext context = smooks.createExecutionContext("useragent");
+        ExecutionContext context = smooks.createExecutionContext("useragent");
         String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
 
         assertEquals(expected, result);

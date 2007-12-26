@@ -22,7 +22,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -74,7 +73,7 @@ public class BeanPopulatorTest extends TestCase {
     public void test_TypePopCheckBean(String configName) throws ParseException, IOException, SAXException {
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         JavaResult result = new JavaResult();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result, executionContext);
@@ -111,7 +110,7 @@ public class BeanPopulatorTest extends TestCase {
     public void test_visit_userBean(String configName) throws SAXException, IOException {
 
         Smooks smooks = new Smooks(getClass().getResourceAsStream(configName));
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult(), executionContext);
 
@@ -132,7 +131,7 @@ public class BeanPopulatorTest extends TestCase {
 
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
         JavaResult result = new JavaResult();
 

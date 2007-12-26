@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.milyn.profile.DefaultProfileConfigDigester;
-import org.milyn.profile.DefaultProfileStore;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
 import org.xml.sax.SAXException;
@@ -175,10 +174,10 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
 		InputStream stream = getClass().getResourceAsStream(
 				"profiles_success_two_profiles.xml");
-		DefaultProfileStore store = null;
+		ProfileStore store = null;
 
 		try {
-			store = (DefaultProfileStore) digester.parse(stream);
+			store = digester.parse(stream);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
@@ -205,10 +204,10 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
 		InputStream stream = getClass().getResourceAsStream(
 				"profiles_success_one_profile.xml");
-		DefaultProfileStore store = null;
+		ProfileStore store = null;
 
 		try {
-			store = (DefaultProfileStore) digester.parse(stream);
+			store = digester.parse(stream);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
@@ -228,10 +227,10 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
 		InputStream stream = getClass().getResourceAsStream(
 				"profiles_success_many_profiles.xml");
-		DefaultProfileStore store = null;
+		ProfileStore store = null;
 
 		try {
-			store = (DefaultProfileStore) digester.parse(stream);
+			store = digester.parse(stream);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
@@ -257,10 +256,10 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 		DefaultProfileConfigDigester digester = new DefaultProfileConfigDigester();
 		InputStream stream = getClass().getResourceAsStream(
 				"profiles_success_many_profiles_nested.xml");
-		DefaultProfileStore store = null;
+		ProfileStore store = null;
 
 		try {
-			store = (DefaultProfileStore) digester.parse(stream);
+			store = digester.parse(stream);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
