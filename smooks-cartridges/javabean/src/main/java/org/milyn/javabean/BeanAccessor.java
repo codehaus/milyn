@@ -17,7 +17,8 @@
 package org.milyn.javabean;
 
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.TransformResult;
+import org.milyn.delivery.FilterResult;
+import org.milyn.delivery.java.JavaResult;
 
 import javax.xml.transform.Result;
 import java.util.*;
@@ -106,7 +107,7 @@ public class BeanAccessor {
         BeanAccessor accessor = (BeanAccessor) executionContext.getAttribute(BEAN_MAP_REQUEST_KEY);
 
         if(accessor == null) {
-            Result result = TransformResult.getResult(executionContext);
+            Result result = FilterResult.getResult(executionContext);
 
             if(result instanceof JavaResult) {
                 JavaResult javaResult = (JavaResult) result;

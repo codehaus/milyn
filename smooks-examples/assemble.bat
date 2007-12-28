@@ -14,7 +14,7 @@ pushd edi-to-xml
 call call mvn assembly:assembly
 popd
 
-pushd java-basic
+pushd xml-to-java-basic
 call mvn assembly:assembly
 popd
 

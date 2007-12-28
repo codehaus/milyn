@@ -18,6 +18,7 @@ package org.milyn.javabean;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.delivery.java.JavaResult;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
@@ -78,7 +79,7 @@ public class BeanPopulatorTest extends TestCase {
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result, executionContext);
 
-        TypePopCheckBean bean = (TypePopCheckBean) result.getResultMap().get("data");
+        TypePopCheckBean bean = (TypePopCheckBean) result.getBean("data");
         assertEquals("1, 2, true, 3.0, 4.0, a, 5, 1163616328000, 6, 7, 8, [9, 10, 11], [12, 13, 14], {integerVal1=15, integerVal2=16, integerVal3=17, integerVal4=18, integerVal5=19, integerVal6=20, integerVal=21, mixedMap={intVal=1, longVal=2, boolVal=true, floatVal=3.0, doubleVal=4.0, charVal=a, integerVal=5, mixedIntValArray=[6, 7, 8]}},", bean.toString().trim());
     }
 
@@ -137,7 +138,7 @@ public class BeanPopulatorTest extends TestCase {
 
         smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
-        Order order = (Order) result.getResultMap().get("order");
+        Order order = (Order) result.getBean("order");
 
         assertNotNull(order);
         assertNotNull(order.getHeader());

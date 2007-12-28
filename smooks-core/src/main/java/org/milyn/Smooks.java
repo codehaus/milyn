@@ -25,7 +25,8 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
-import org.milyn.delivery.TransformResult;
+import org.milyn.delivery.FilterResult;
+import org.milyn.delivery.FilterSource;
 import org.milyn.net.URIUtil;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
@@ -239,12 +240,6 @@ public class Smooks {
     /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
      * to the supplied {@link javax.xml.transform.Result} instance.
-     * <p/>
-     * This method always executes the {@link org.milyn.delivery.dom.SmooksDOMFilter visit phases} of content
-     * processing.  It will also execute the serialization phase if the
-     * supplied result is a {@link javax.xml.transform.stream.StreamResult}.
-     * <p/>
-     * SAX based Source and Result are not yet supported.
      *
      * @param source           The content Source.
      * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
@@ -259,7 +254,10 @@ public class Smooks {
 
         Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
 
-        TransformResult.setResult(result, executionContext);
+        // Attach the source and result to the context... 
+        FilterSource.setSource(source, executionContext);
+        FilterResult.setResult(result, executionContext);
+        
         Filter.setCurrentExecutionContext(executionContext);
         try {
             contentFilter.doFilter(source, result);

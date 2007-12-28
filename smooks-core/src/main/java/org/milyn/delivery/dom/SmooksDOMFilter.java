@@ -24,6 +24,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
 import org.milyn.delivery.dom.serialize.Serializer;
+import org.milyn.delivery.java.JavaSource;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -165,10 +166,10 @@ public class SmooksDOMFilter extends Filter {
 
     public void doFilter(Source source, Result result) throws SmooksException {
 
-        if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
+        if (!(source instanceof StreamSource) && !(source instanceof DOMSource) && !(source instanceof JavaSource)) {
             throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported by the DOM Filter.");
         }
-        if(!(result instanceof TransformResult)) {
+        if(!(result instanceof FilterResult)) {
             if (result != null && !(result instanceof StreamResult) && !(result instanceof DOMResult)) {
                 throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported by the DOM Filter.");
             }
@@ -178,15 +179,14 @@ public class SmooksDOMFilter extends Filter {
             Node resultNode;
 
             // Filter the Source....
-            if (source instanceof StreamSource) {
-                StreamSource streamSource = (StreamSource) source;
-                resultNode = filter(getReader(streamSource, executionContext));
-            } else {
+            if (source instanceof DOMSource) {
                 Node node = ((DOMSource) source).getNode();
                 if (!(node instanceof Document)) {
                     throw new IllegalArgumentException("DOMSource Source types must contain a Document node.");
                 }
                 resultNode = filter((Document) node);
+            } else {
+                resultNode = filter(getReader(source, executionContext));
             }
 
             // Populate the Result

@@ -15,17 +15,23 @@
 */
 package org.milyn.delivery;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.Parameter;
-import org.milyn.cdr.annotation.Configurator;
-import org.milyn.xml.SmooksXMLReader;
-import org.milyn.container.ExecutionContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.Parameter;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.java.JavaSource;
+import org.milyn.delivery.java.JavaXMLReader;
+import org.milyn.delivery.java.XStreamXMLReader;
 import org.milyn.util.ClassUtil;
+import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.*;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.xml.transform.Source;
 import java.util.List;
 
 /**
@@ -34,6 +40,8 @@ import java.util.List;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class AbstractParser {
+    
+    private static Log logger = LogFactory.getLog(AbstractParser.class);
     
     private ExecutionContext execContext;
     private SmooksResourceConfiguration saxDriverConfig;
@@ -84,6 +92,8 @@ public class AbstractParser {
 
     protected XMLReader createXMLReader(DefaultHandler2 handler) throws SAXException {
         XMLReader reader;
+        ExecutionContext execContext = getExecContext();
+        Source source = FilterSource.getSource(execContext);
 
         if(saxDriverConfig != null) {
             String className = saxDriverConfig.getResource();
@@ -98,11 +108,26 @@ public class AbstractParser {
             	((SmooksXMLReader)reader).setExecutionContext(execContext);
             }
         } else {
-            reader = XMLReaderFactory.createXMLReader();
+            if(source instanceof JavaSource) {
+                reader = new XStreamXMLReader();
+            } else {
+                reader = XMLReaderFactory.createXMLReader();
+            }
+        }
+
+        if(reader instanceof JavaXMLReader) {
+            if(!(source instanceof JavaSource)) {
+                throw new SAXException("A " + JavaSource.class.getName() + " source must be supplied for " + JavaXMLReader.class.getName() + " implementations.");
+            }
+            ((JavaXMLReader)reader).setSourceObjects(((JavaSource)source).getSourceObjects());
         }
 
         reader.setContentHandler(handler);
-        reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
+        try {
+            reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
+        } catch (SAXNotRecognizedException e) {
+            logger.debug("XMLReader property 'http://xml.org/sax/properties/lexical-handler' not recognized by XMLReader '" + reader.getClass().getName() + "'.");
+        }
         reader.setFeature("http://xml.org/sax/features/namespaces", true);
         reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 

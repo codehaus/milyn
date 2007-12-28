@@ -35,7 +35,18 @@
         <param name="bindings">
             <!-- Bindings. -->
             <binding property="id" type="Integer" selector="history @warehouse" />
+            <binding property="name" type="WarehouseNameMapper" selector="history @warehouse" />
         </param>
+    </resource-config>
+
+    <!--
+    Configure a "special" decoder for mapping the warehouse ids to their names.
+    -->
+    <resource-config selector="decoder:WarehouseNameMapper">
+        <resource>org.milyn.javabean.decoders.MappingDecoder</resource>
+        <param name="1">Dublin</param>
+        <param name="2">Belfast</param>
+        <param name="3">Cork</param>
     </resource-config>
 
     <!--
