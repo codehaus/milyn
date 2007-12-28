@@ -18,8 +18,9 @@ package org.milyn.delivery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.io.NullWriter;
 import org.milyn.container.ExecutionContext;
+import org.milyn.io.NullReader;
+import org.milyn.io.NullWriter;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -77,22 +78,27 @@ public abstract class Filter {
         Filter.requestThreadLocal.remove();
     }
 
-    protected Reader getReader(StreamSource streamSource, ExecutionContext executionContext) {
-        if(streamSource.getReader() != null) {
-            return streamSource.getReader();
-        } else if(streamSource.getInputStream() != null) {
-            try {
-                if(executionContext instanceof ExecutionContext) {
-                    return new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding());
-                } else {
-                    return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
+    protected Reader getReader(Source source, ExecutionContext executionContext) {
+        if(source instanceof StreamSource) {
+            StreamSource streamSource = (StreamSource) source;
+            if(streamSource.getReader() != null) {
+                return streamSource.getReader();
+            } else if(streamSource.getInputStream() != null) {
+                try {
+                    if(executionContext instanceof ExecutionContext) {
+                        return new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding());
+                    } else {
+                        return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
+                    }
+                } catch(UnsupportedEncodingException e) {
+                    throw new SmooksException("Unable to decode input stream.", e);
                 }
-            } catch(UnsupportedEncodingException e) {
-                throw new SmooksException("Unable to decode input stream.", e);
+            } else {
+                throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
             }
-        } else {
-            throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
         }
+
+        return new NullReader();
     }
 
     protected Writer getWriter(Result result, ExecutionContext executionContext) {

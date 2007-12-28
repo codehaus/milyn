@@ -17,9 +17,9 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.delivery.java.JavaResult;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
-import org.milyn.javabean.JavaResult;
 import org.xml.sax.SAXException;
 import se.sj.ipl.rollingstock.domain.RollingStockList;
 import se.sj.ipl.rollingstock.domain.Rollingstock;

@@ -15,13 +15,16 @@
 
     <modules>
         <module>css</module>
-        <module>java-basic</module>
         <module>xslt-basic</module>
         <module>xslt-groovy</module>
         <module>xslt-namespaces</module>
-        <!-- module>xslt-complex</module -->
-        <module>javabean-populator</module>
+        <module>java-basic</module>
+        <module>xml-to-java</module>
+        <module>xml-to-java-virtual</module>
         <module>model-driven-basic</module>
+        <module>model-driven-basic-virtual</module>
+        <module>java-to-xml</module>
+        <module>java-to-java</module>
         <module>csv-to-xml</module>
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
