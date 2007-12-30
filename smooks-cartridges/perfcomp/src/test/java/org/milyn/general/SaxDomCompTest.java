@@ -17,7 +17,7 @@ package org.milyn.general;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.io.NullWriter;
 import org.xml.sax.SAXException;
 
@@ -58,14 +58,14 @@ public class SaxDomCompTest extends TestCase {
         runTransform(smooks, writer);
 
         long start = System.currentTimeMillis();
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 1; i++) {
             runTransform(smooks, writer);
         }
         System.out.println("Took: " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void runTransform(Smooks smooks, Writer writer) throws InterruptedException {
-        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
+        ExecutionContext executionContext = smooks.createExecutionContext();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), new StreamResult(writer), executionContext);
         Thread.sleep(20);
     }
