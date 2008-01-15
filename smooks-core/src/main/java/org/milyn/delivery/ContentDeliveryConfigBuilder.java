@@ -16,6 +16,7 @@
 
 package org.milyn.delivery;
 
+import com.sun.swing.internal.plaf.synth.resources.synth;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -142,17 +143,29 @@ public class ContentDeliveryConfigBuilder {
 		// Get the delivery config config from container context.
         configTable = getDeliveryConfigTable(applicationContext);
         if(configTable == null) {
-			configTable = new LinkedHashMap<String, ContentDeliveryConfig>();
-			applicationContext.setAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY, configTable);
-		}
+            synchronized(ContentDeliveryConfigBuilder.class) {
+                // Try again, just in case we have 1+ threads firing...
+                configTable = getDeliveryConfigTable(applicationContext);
+                if(configTable == null) {
+                    configTable = new LinkedHashMap<String, ContentDeliveryConfig>();
+                    applicationContext.setAttribute(DELIVERY_CONFIG_TABLE_CTX_KEY, configTable);
+                }
+            }
+        }
 		// Get the delivery config instance for this UAContext
 		config = configTable.get(profileSet.getBaseProfile());
 		if(config == null) {
-			ContentDeliveryConfigBuilder configBuilder = new ContentDeliveryConfigBuilder(profileSet, applicationContext);
-			configBuilder.load();
-            config = configBuilder.createConfig();
-            configTable.put(profileSet.getBaseProfile(), config);
-		}
+            synchronized(ContentDeliveryConfigBuilder.class) {
+                // Try again, just in case we have 1+ threads firing on the same profile...
+                config = configTable.get(profileSet.getBaseProfile());
+                if(config == null) {
+                    ContentDeliveryConfigBuilder configBuilder = new ContentDeliveryConfigBuilder(profileSet, applicationContext);
+                    configBuilder.load();
+                    config = configBuilder.createConfig();
+                    configTable.put(profileSet.getBaseProfile(), config);
+                }
+            }
+        }
 		
 		return config;
 	}
