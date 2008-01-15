@@ -34,6 +34,7 @@ import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -131,11 +132,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        element.setWriter(new StringWriter());
     }
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
         if(!isAttribute) {
-            element.setCache(childText.getText());
+            childText.toWriter(element.getWriter());
         }
     }
 
@@ -148,7 +150,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            dataString = (String) element.getCache();
+            dataString = element.getWriter().toString();
         }
 
         String mapPropertyName;

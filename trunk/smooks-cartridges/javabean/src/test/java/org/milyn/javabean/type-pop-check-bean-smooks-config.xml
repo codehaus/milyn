@@ -28,7 +28,7 @@
         <param name="beanClass">int[]</param>
         <param name="setOn">data</param>
         <param name="bindings">
-            <binding type="Integer" selector="intValArray intVal" />
+            <binding type="Integer" selector="data intValArray intVal" />
         </param>
     </resource-config>
 

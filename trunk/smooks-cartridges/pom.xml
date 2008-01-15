@@ -55,7 +55,9 @@
         <module>scripting</module>
         <module>servlet</module>
         <module>templating</module>
-        <module>routing</module>
+        
+        <!-- Temporarily disabled until mockrunner dependencies are worked out
+            module>routing</module -->
         <!-- module>perfcomp</module -->
     </modules>
 
