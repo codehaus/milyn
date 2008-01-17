@@ -22,6 +22,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.ExecutionEventListener;
 import org.milyn.delivery.*;
 import org.milyn.delivery.dom.serialize.Serializer;
 import org.milyn.delivery.java.JavaSource;
@@ -148,6 +149,10 @@ public class SmooksDOMFilter extends Filter {
 	 * the document root node.
 	 */
 	public static final String DELIVERY_NODE_REQUEST_KEY = ContentDeliveryConfig.class.getName() + "#DELIVERY_NODE_REQUEST_KEY";
+    /**
+     * Event Listener.
+     */
+    private ExecutionEventListener eventListener;
 
     /**
 	 * Public constructor.
@@ -162,7 +167,8 @@ public class SmooksDOMFilter extends Filter {
 		}
 		this.executionContext = executionContext;
         deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
-	}
+        eventListener = executionContext.getEventListener();
+    }
 
     public void doFilter(Source source, Result result) throws SmooksException {
 
@@ -322,7 +328,12 @@ public class SmooksDOMFilter extends Filter {
                 // Make sure the assembly unit is targeted at this element...
                 if(!config.isTargetedAtElement(element)) {
                     continue;
-                }            
+                }
+
+                // Register the targeting event.  No need to register it again in the visitAfter loop...
+                if(eventListener != null) {
+                    eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitPhase.ASSEMBLY));
+                }
                 
                 DOMElementVisitor assemblyUnit = configMap.getContentHandler();
                 try {
@@ -516,6 +527,11 @@ public class SmooksDOMFilter extends Filter {
                 if(!config.isTargetedAtElement(element)) {
                     continue;
                 }            
+
+                // Register the targeting event...
+                if(eventListener != null) {
+                    eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitPhase.PROCESSING));
+                }
 
                 DOMElementVisitor processingUnit = (DOMElementVisitor)configMap.getContentHandler();
 				// Could add an "is-element-in-document-tree" check here

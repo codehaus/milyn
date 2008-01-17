@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.ExecutionEventListener;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;
@@ -61,8 +62,12 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	 * Request URI.
 	 */
 	private URI requestURI;
+    /**
+     * Execution Listener.
+     */
+    private ExecutionEventListener executionListener;
 
-	/**
+    /**
 	 * Public Constructor.
 	 * @param servletRequest HttpServletRequest instance.
 	 * @param servletConfig ServletConfig instance.
@@ -155,6 +160,14 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 
     public String getContentEncoding() {
         return servletRequest.getCharacterEncoding();
+    }
+
+    public void setEventListener(ExecutionEventListener listener) {
+        this.executionListener = listener;
+    }
+
+    public ExecutionEventListener getEventListener() {
+        return executionListener;
     }
 
     /* (non-Javadoc)

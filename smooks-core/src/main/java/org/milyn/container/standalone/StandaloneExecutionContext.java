@@ -22,6 +22,7 @@ import java.util.Hashtable;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.ExecutionEventListener;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;
@@ -39,8 +40,9 @@ public class StandaloneExecutionContext implements ExecutionContext {
     private URI docSource;
 	private String contentEncoding;
     private ApplicationContext context;
-    
-	/**
+    private ExecutionEventListener executionListener;
+
+    /**
 	 * Public Constructor.
 	 * <p/>
      * The execution context is constructed within the context of a target profile and
@@ -129,9 +131,17 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		return (contentEncoding == null)?"UTF-8":contentEncoding;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
-	 */
+    public void setEventListener(ExecutionEventListener listener) {
+        this.executionListener = listener;
+    }
+
+    public ExecutionEventListener getEventListener() {
+        return executionListener;
+    }
+
+    /* (non-Javadoc)
+      * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
+      */
 	public void setAttribute(Object key, Object value) {
 		attributes.put(key, value);
 	}
