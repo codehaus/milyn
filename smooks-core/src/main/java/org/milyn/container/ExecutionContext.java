@@ -20,6 +20,7 @@ import java.net.URI;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.profile.ProfileSet;
+import org.milyn.event.ExecutionEventListener;
 
 /**
  * Smooks execution context interface definition.
@@ -103,7 +104,7 @@ public interface ExecutionContext extends BoundAttributeStore {
      * is incured.
      *
      * @param listener The listener instance.
-     * @see org.milyn.container.GlobalExecutionEventListener
+     * @see org.milyn.event.BasicExecutionEventListener
      */
     public abstract void setEventListener(ExecutionEventListener listener);
 

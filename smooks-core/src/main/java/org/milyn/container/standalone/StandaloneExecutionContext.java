@@ -22,7 +22,7 @@ import java.util.Hashtable;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.ExecutionEventListener;
+import org.milyn.event.ExecutionEventListener;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;

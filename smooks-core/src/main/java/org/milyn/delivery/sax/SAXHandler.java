@@ -18,7 +18,7 @@ package org.milyn.delivery.sax;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.ExecutionEventListener;
+import org.milyn.event.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.delivery.ResourceTargetingEvent;

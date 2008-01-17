@@ -20,13 +20,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ExecutionContext;
 import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.FilterLifecycleEvent;
 import org.milyn.delivery.FilterResult;
 import org.milyn.delivery.FilterSource;
+import org.milyn.event.ExecutionEventListener;
 import org.milyn.net.URIUtil;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
@@ -252,17 +254,29 @@ public class Smooks {
         AssertArgument.isNotNull(source, "source");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
-        Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
+        ExecutionEventListener eventListener = executionContext.getEventListener();
 
-        // Attach the source and result to the context... 
-        FilterSource.setSource(source, executionContext);
-        FilterResult.setResult(result, executionContext);
-        
-        Filter.setCurrentExecutionContext(executionContext);
         try {
-            contentFilter.doFilter(source, result);
+            if(eventListener != null) {
+                eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.STARTED));
+            }
+
+            Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
+
+            // Attach the source and result to the context...
+            FilterSource.setSource(source, executionContext);
+            FilterResult.setResult(result, executionContext);
+
+            Filter.setCurrentExecutionContext(executionContext);
+            try {
+                contentFilter.doFilter(source, result);
+            } finally {
+                Filter.removeCurrentExecutionContext();
+            }
         } finally {
-            Filter.removeCurrentExecutionContext();
+            if(eventListener != null) {
+                eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.FINISHED));
+            }
         }
     }
 
