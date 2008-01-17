@@ -16,7 +16,7 @@
 package org.milyn.delivery;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ExecutionEvent;
+import org.milyn.event.ExecutionEvent;
 
 import java.util.Arrays;
 
