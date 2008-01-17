@@ -22,8 +22,10 @@ import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
+import org.milyn.delivery.ResourceTargetingEvent;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.xml.DocType;
 import org.milyn.xml.DomUtils;
@@ -68,8 +70,12 @@ public class Serializer {
 	 * Default SerializationUnit.
 	 */
 	private List defaultSUs;
+    /**
+     * Event Listener.
+     */
+    private ExecutionEventListener eventListener;
 
-	/**
+    /**
 	 * Public constructor.
 	 * @param node Node to be serialized.
 	 * @param executionContext Target device context.
@@ -82,6 +88,7 @@ public class Serializer {
 		}
 		this.node = node;
 		this.executionContext = executionContext;
+        eventListener = executionContext.getEventListener();
 		// Get the delivery context for the device.
 		deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 		// Initialise the serializationUnits member
@@ -260,6 +267,11 @@ public class Serializer {
             if(!config.isTargetedAtElement(element)) {
                 continue;
             }            
+
+            // Register the targeting event...
+            if(eventListener != null) {
+                eventListener.onEvent(new ResourceTargetingEvent(element, config));
+            }
 
     		if(logger.isDebugEnabled()) {
     			logger.debug("Applying serialisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");

@@ -18,8 +18,10 @@ package org.milyn.delivery.sax;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
+import org.milyn.delivery.ResourceTargetingEvent;
 import org.milyn.xml.DocType;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.xml.sax.Attributes;
@@ -47,10 +49,12 @@ public class SAXHandler extends DefaultHandler2 {
     private TextType currentTextType = TextType.TEXT;
     private ContentHandlerConfigMapTable<SAXElementVisitor> saxVisitors;
     private List<ContentHandlerConfigMap<SAXElementVisitor>> defaultVisitors;
+    private ExecutionEventListener eventListener;
 
     public SAXHandler(ExecutionContext execContext, Writer writer) {
         this.execContext = execContext;
         this.writer = writer;
+        eventListener = execContext.getEventListener();
         saxVisitors = ((SAXContentDeliveryConfig)execContext.getDeliveryConfig()).getSaxVisitors();
 
         List<ContentHandlerConfigMap<SAXElementVisitor>> defaultMappings = saxVisitors.getMappings("*");
@@ -110,6 +114,10 @@ public class SAXHandler extends DefaultHandler2 {
         for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
             try {
                 if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                    // Register the targeting event.  No need to register this event again on the visitAfter...
+                    if(eventListener != null) {
+                        eventListener.onEvent(new ResourceTargetingEvent(element, mapping.getResourceConfig()));
+                    }
                     applied = true;
                     mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                 }

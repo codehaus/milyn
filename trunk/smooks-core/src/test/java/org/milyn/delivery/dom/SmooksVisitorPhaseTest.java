@@ -20,6 +20,7 @@ import org.milyn.Smooks;
 import org.milyn.io.StreamUtils;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.container.ExecutionContext;
+import org.milyn.container.GlobalExecutionEventListener;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -60,6 +61,7 @@ public class SmooksVisitorPhaseTest extends TestCase {
 
     public void test_filtering() throws IOException, SAXException {
         Smooks smooks = new Smooks();
+        GlobalExecutionEventListener eventListener = new GlobalExecutionEventListener();
 
         smooks.addConfigurations("config2.xml", getClass().getResourceAsStream("config2.xml"));
         // Create an exec context - no profiles....
@@ -67,10 +69,12 @@ public class SmooksVisitorPhaseTest extends TestCase {
         CharArrayWriter outputWriter = new CharArrayWriter();
 
         // Filter the input message to the outputWriter, using the execution context...
+        executionContext.setEventListener(eventListener);
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml1.xml")), new StreamResult(outputWriter), executionContext);
 
         System.out.println(outputWriter.toString());
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("testxml1-expected.xml"));
-        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(outputWriter.toString().getBytes())));        
+        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(outputWriter.toString().getBytes())));
+        assertEquals(11, eventListener.getEvents().size());
     }
 }

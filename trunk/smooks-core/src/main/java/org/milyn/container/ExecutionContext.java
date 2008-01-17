@@ -83,11 +83,34 @@ public interface ExecutionContext extends BoundAttributeStore {
      * defaults to "UTF-8".
      * @throws IllegalArgumentException Invalid encoding.
      */
-    public void setContentEncoding(String contentEncoding) throws IllegalArgumentException;
+    public abstract void setContentEncoding(String contentEncoding) throws IllegalArgumentException;
 
     /**
      * Get the content encoding to be used when parsing content on this context.
      * @return Character encoding to be used when parsing content.  Defaults to "UTF-8".
      */
-    public String getContentEncoding();
+    public abstract String getContentEncoding();
+
+    /**
+     * Set the ExecutionEventListener for the {@link ExecutionContext}.
+     * <p/>
+     * Allows calling code to listen to (and capture data on) specific
+     * context execution events e.g. the targeting of resources.
+     * <p/>
+     * Note, this is not a logging facility and should be used with care.
+     * It's overuse should be avoided as it can have a serious negative effect
+     * on performance.  By default, no listenrs are applied and so no overhead
+     * is incured.
+     *
+     * @param listener The listener instance.
+     * @see org.milyn.container.GlobalExecutionEventListener
+     */
+    public abstract void setEventListener(ExecutionEventListener listener);
+
+    /**
+     * Get the ExecutionEventListener for the {@link ExecutionContext}.
+     * @return The listener instance.
+     * @see #setEventListener(ExecutionEventListener) 
+     */
+    public abstract ExecutionEventListener getEventListener();
 }
