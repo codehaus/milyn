@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE device-ident PUBLIC "-//MILYN//DTD TINAK 1.0//EN" "http://www.milyn.org/dtd/device-ident-1.0.dtd">
+
+<device-ident>
+    <device name="Firefox20Windows">
+        <http-req-header name="User-Agent" value="Mozilla\/.*Windows.*Firefox\/2.0.*" />
+    </device>
+    <device name="MSIE60">
+        <http-req-header name="User-Agent" value=".*MSIE 6.0.*" />
+    </device>
+    <device name="Unknown-HTML4">
+        <http-req-header name="User-Agent" value="Mozilla\/4.*" />
+    </device>
+    <device name="Unknown-HTML" match="*">
+        <http-req-header name="Accept" value=".*text\/html.*" />
+        <http-req-header name="Accept" value=".*\*\/\*.*" />
+    </device>
+    <device name="Unknown-WML">
+        <http-req-header name="Accept" value=".*text\/vnd.wap.wml.*" />
+    </device>
+    <device name="text">
+        <http-req-header name="Accept" value=".*text\/plain.*" />
+    </device>
+</device-ident>
+
+
+
+
+
