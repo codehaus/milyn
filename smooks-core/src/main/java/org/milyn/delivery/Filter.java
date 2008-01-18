@@ -160,7 +160,7 @@ public abstract class Filter {
                     }
                 }
             } catch (Throwable throwable) {
-                logger.warn("Failed to close output stream/writer.", throwable);
+                logger.debug("Failed to close output stream/writer.  May already be closed.", throwable);
             }
         }
     }

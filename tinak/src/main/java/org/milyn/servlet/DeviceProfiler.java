@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.milyn.profile.DefaultProfileConfigDigester;
@@ -47,7 +48,7 @@ import org.milyn.resource.URIResourceLocator;
  * </ol>
  * <p/>
  * This profiler also adds the requesting devices "Accept" header media types as profiles.  
- * See {@link org.milyn.device.profile.HttpAcceptHeaderProfile}.
+ * See {@link HttpAcceptHeaderProfile}.
  * @author tfennelly
  */
 public abstract class DeviceProfiler {
@@ -64,10 +65,8 @@ public abstract class DeviceProfiler {
      * Default device profile config file.
      */
     private static final String DEFAULT_CONFIG = "/device-profile.xml";
-	/**
-	 * ProfileStore for the VM.
-	 */
-	private static ProfileStore profileStore;
+
+    private static final String PROFILE_STORE_CTX_KEY = DeviceProfiler.class.getName() + "#CONTEXT_KEY";
 
     /**
      * Get the ProfileSet for the named device.
@@ -95,14 +94,22 @@ public abstract class DeviceProfiler {
         }
         
         try {
-        	ProfileSet profileSet;
-        	
-        	if(profileStore == null) {
-        		ServletResourceLocator resLocator = new ServletResourceLocator(config, new URIResourceLocator());
-        		
-				configStream = resLocator.getResource(DEVICE_PROFILE_CONFIG_PARAM, DEFAULT_CONFIG);
-				profileStore = (DeviceProfiler.getConfigDigester(config)).parse(configStream);
-        	}
+            ProfileStore profileStore;
+            ProfileSet profileSet;
+
+            profileStore = getProfileStore(config.getServletContext());
+            if(profileStore == null) {
+                synchronized (config) {
+                    profileStore = getProfileStore(config.getServletContext());
+                    if(profileStore == null) {
+                        ServletResourceLocator resLocator = new ServletResourceLocator(config, new URIResourceLocator());
+
+                        configStream = resLocator.getResource(DEVICE_PROFILE_CONFIG_PARAM, DEFAULT_CONFIG);
+                        profileStore = (DeviceProfiler.getConfigDigester(config)).parse(configStream);
+                        setProfileStore(profileStore, config.getServletContext());
+                    }
+                }
+            }
         	profileSet = profileStore.getProfileSet(deviceName);
     		// Add the request accept header media types as profiles...
     		addAcceptHeaderProfiles(request, profileSet);
@@ -115,7 +122,15 @@ public abstract class DeviceProfiler {
         }
     }
 
-	/**
+    private static ProfileStore getProfileStore(ServletContext servletContext) {
+        return (ProfileStore) servletContext.getAttribute(PROFILE_STORE_CTX_KEY);
+    }
+
+    public static void setProfileStore(ProfileStore profileStore, ServletContext servletContext) {
+        servletContext.setAttribute(PROFILE_STORE_CTX_KEY, profileStore);
+    }
+
+    /**
      * Construct an instance of the configured (or default) ProfileConfigDigester.
      * @param config The ServletConfig instance.
      * @return An instance of the configured ProfileConfigDigester.

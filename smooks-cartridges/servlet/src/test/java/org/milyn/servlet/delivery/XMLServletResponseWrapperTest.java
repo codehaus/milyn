@@ -129,7 +129,7 @@ public class XMLServletResponseWrapperTest extends TestCase {
 			wrapper.deliverResponse();
 			wrapper.close();
 			
-			assertEquals("Wrong SmooksDOMFilter delivery response.", "<X>sometext<A></A></X>", mockOS.getContents());
+			assertEquals("Wrong SmooksDOMFilter delivery response.", "<x>sometext<a></a></x>", mockOS.getContents());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
