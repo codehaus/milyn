@@ -15,10 +15,6 @@
 */
 package org.milyn.servlet.delivery;
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
 import junit.framework.TestCase;
 
 import java.io.IOException;
