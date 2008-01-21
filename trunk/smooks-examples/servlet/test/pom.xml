@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>milyn</groupId>
+        <artifactId>smooks-examples-servlet-base</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+    <name>Milyn Smooks Example - Servlet (Test)</name>
+    <groupId>milyn</groupId>
+    <artifactId>milyn-smooks-example-servlet-test</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0</version>
+
+    <dependencies>
+        
+        <dependency>
+            <groupId>httpunit</groupId>
+            <artifactId>httpunit</artifactId>
+            <version>1.6.2</version>
+            <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <tasks>
+                                <ant dir="./" antfile="deploy.xml" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
+
+</project>

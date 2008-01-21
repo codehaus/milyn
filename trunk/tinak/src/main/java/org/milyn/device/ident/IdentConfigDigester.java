@@ -16,12 +16,17 @@
 
 package org.milyn.device.ident;
 
+import org.milyn.xml.XmlUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.milyn.xml.XmlUtil;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import com.sun.org.apache.xerces.internal.util.DOMUtil;
 
 /**
  * Device Ident configuration XML digester. 
@@ -42,17 +47,15 @@ public class IdentConfigDigester {
 		DeviceIdent deviceIdent = new DeviceIdent();
 		Document identDoc = XmlUtil.parseStream(input, XmlUtil.VALIDATION_TYPE.DTD, true);
 		int deviceIndex = 1;
-		String deviceSelector = null; 
+        NodeList devices = identDoc.getElementsByTagName("device");
 
-		// While there are device ident definitions.
-		deviceSelector = "/device-ident/device[" + deviceIndex + "]";
-		while(!XmlUtil.getString(identDoc, deviceSelector).equals("")) {
-			IdentSet identSet = new IdentSet();
-			String name = XmlUtil.getString(identDoc, deviceSelector + "/@name"); 
-			String match = XmlUtil.getString(identDoc, deviceSelector + "/@match");
+        // While there are device ident definitions.
+		for (int i = 0; i < devices.getLength(); i++) {
+            IdentSet identSet = new IdentSet();
+            Element device = (Element) devices.item(i);
+			String name = device.getAttribute("name");
+			String match = device.getAttribute("match");
 			int identUnitIndex = 1; 
-			String identUnitSelector = null;
-			String identUnitQName = null;
 
 			if(name == null || name.equals("")) {
 				throw new SAXException("\"name\" attribute not specified.  Unable to specify exact device.");
@@ -64,24 +67,24 @@ public class IdentConfigDigester {
 			deviceIdent.addIdentSet(identSet);
 			
 			// Extract the IdentUnits now...
-			identUnitSelector = deviceSelector + "/*[" + identUnitIndex + "]";
-			while((identUnitQName = XmlUtil.getString(identDoc, identUnitSelector + "/name()")) != null && !identUnitQName.equals("")) {
-				String id = XmlUtil.getString(identDoc, identUnitSelector + "/@id");
-				String identName = XmlUtil.getString(identDoc, identUnitSelector + "/@name");
-				String value = XmlUtil.getString(identDoc, identUnitSelector + "/@value");
-				IdentUnit identUnit = null;
-				
-				// Create the ident unit from the attributes
-				identUnit = createIdentUnit(identUnitQName, id, identName, value);
-				// And add it to the current ident set.
-				identSet.addIdentUnit(identUnit);
-				
-				identUnitIndex++;
-				identUnitSelector = deviceSelector + "/*[" + identUnitIndex + "]";
-			}
-			
-			deviceIndex++;
-			deviceSelector = "/device-ident/device[" + deviceIndex + "]";
+            NodeList deviceNodeList = device.getChildNodes();
+            for (int ii = 0; ii < deviceNodeList.getLength(); ii++) {
+                Node child = deviceNodeList.item(ii);
+
+                if(child.getNodeType() == Node.ELEMENT_NODE) {
+                    Element identUnitEl = (Element) child;
+                    String identUnitQName = DOMUtil.getName(identUnitEl);
+                    String id = identUnitEl.getAttribute("id");
+                    String identName = identUnitEl.getAttribute("name");
+                    String value = identUnitEl.getAttribute("value");
+                    IdentUnit identUnit;
+
+                    // Create the ident unit from the attributes
+                    identUnit = createIdentUnit(identUnitQName, id, identName, value);
+                    // And add it to the current ident set.
+                    identSet.addIdentUnit(identUnit);
+                }
+            }
 		}
 
 		// Prepare it before we return it.

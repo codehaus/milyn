@@ -27,6 +27,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 /**
@@ -236,7 +237,11 @@ public class ClassUtil {
             String className;
             int count = 0;
 
-            ins = url.openStream();
+            // Get the input stream from the connection.  Need to set the defaultUseCaches
+            URLConnection connection = url.openConnection();
+            connection.setDefaultUseCaches(false);
+            ins = connection.getInputStream();
+
             br = new BufferedReader( new InputStreamReader( ins ));
 	    	while( (className = br.readLine()) != null )
 	    	{
@@ -274,9 +279,9 @@ public class ClassUtil {
 		}
     	finally
     	{
-    		close(ins);
-    		close(br);
-    	}
+            close(br);
+            close(ins);
+        }
     }
 
     private static <T> boolean contains(String name, List<Class<T>> classes) {

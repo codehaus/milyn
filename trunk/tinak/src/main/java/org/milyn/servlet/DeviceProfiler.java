@@ -66,7 +66,7 @@ public abstract class DeviceProfiler {
      */
     private static final String DEFAULT_CONFIG = "/device-profile.xml";
 
-    private static final String PROFILE_STORE_CTX_KEY = DeviceProfiler.class.getName() + "#CONTEXT_KEY";
+    public static final String PROFILE_STORE_CTX_KEY = DeviceProfiler.class.getName() + "#CONTEXT_KEY";
 
     /**
      * Get the ProfileSet for the named device.
