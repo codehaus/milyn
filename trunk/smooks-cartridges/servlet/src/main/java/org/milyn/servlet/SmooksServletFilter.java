@@ -215,7 +215,9 @@ public class SmooksServletFilter implements Filter {
 	 * @see javax.servlet.Phase#destroy()
 	 */
 	public void destroy() {
-	}
+        smooksContainerContext.getStore().close();
+        servletConfig.getServletContext().removeAttribute(DeviceProfiler.PROFILE_STORE_CTX_KEY);
+    }
 
 	/**
 	 * Adaptorfor Phase to Servlet config.
