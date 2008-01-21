@@ -44,7 +44,7 @@ public class ClassUtilTest extends TestCase
 			assertTrue ( e instanceof IllegalArgumentException );
 		}
 	}
-	
+	    
 	public void test_getClasses() throws MalformedURLException 
 	{
 		List<Class<Object>> classes = ClassUtil.getClasses( fileName, Object.class);

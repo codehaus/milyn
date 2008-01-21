@@ -45,3 +45,7 @@ popd
 pushd xslt-namespaces
 call mvn assembly:assembly
 popd
+
+pushd servlet\war
+call mvn assembly:assembly
+popd

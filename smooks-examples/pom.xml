@@ -30,7 +30,8 @@
         <module>edi-to-java</module>
         <module>profiling</module>
         <module>sj-testimonial</module>
-        <module>mule-esb-integration</module>        
+        <module>mule-esb-integration</module>
+        <module>servlet</module>
     </modules>
 
     <properties>

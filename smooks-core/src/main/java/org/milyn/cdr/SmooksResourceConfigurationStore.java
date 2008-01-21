@@ -105,7 +105,7 @@ public class SmooksResourceConfigurationStore {
         List<Class<ContentHandlerFactory>> handlerFactories = ClassUtil.getClasses("META-INF/content-handlers.inf", ContentHandlerFactory.class);
 
         for (Class<ContentHandlerFactory> handlerFactory : handlerFactories) {
-            Resource resourceAnnotation = (Resource) handlerFactory.getAnnotation(Resource.class);
+            Resource resourceAnnotation = handlerFactory.getAnnotation(Resource.class);
 
             if(resourceAnnotation != null) {
                 addHandlerFactoryConfig(handlerFactory, resourceAnnotation.type());
