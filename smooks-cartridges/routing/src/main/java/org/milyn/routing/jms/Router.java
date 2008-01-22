@@ -34,6 +34,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
+import org.milyn.cdr.annotation.Uninitialize;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
@@ -124,6 +125,8 @@ public class Router implements DOMElementVisitor, SAXElementVisitor
     
     private Destination destination;
     
+    private Connection connection;
+    
     private MessageProducer msgProducer;
     
     private Session jmsSession;
@@ -152,10 +155,32 @@ public class Router implements DOMElementVisitor, SAXElementVisitor
     	}
     }
     
+    @Uninitialize
+    public void uninitialize() 
+    {
+    	if ( connection != null )
+			try
+			{
+				connection.stop();
+			} catch ( JMSException e )
+			{
+				final String errorMsg = "JMSException while trying to stop connection";
+				log.error( errorMsg, e );
+			}
+    	
+    	if ( msgProducer != null )
+			try
+			{
+				msgProducer.close();
+			} catch (JMSException e)
+			{
+				final String errorMsg = "JMSException while trying to close message producer";
+				log.error( errorMsg, e );
+			}
+    }
+    
     protected MessageProducer createMessageProducer( final Destination destination, final Context context )
 	{
-		MessageProducer msgProducer = null;
-		Connection connection = null;
 		try 
 		{
 		    ConnectionFactory connFactory = (ConnectionFactory) context.lookup( connectionFactoryName );
