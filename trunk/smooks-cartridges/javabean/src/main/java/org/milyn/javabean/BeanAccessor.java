@@ -18,9 +18,12 @@ package org.milyn.javabean;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.FilterResult;
+import org.milyn.delivery.FilterSource;
 import org.milyn.delivery.java.JavaResult;
+import org.milyn.delivery.java.JavaSource;
 
 import javax.xml.transform.Result;
+import javax.xml.transform.Source;
 import java.util.*;
 
 /**
@@ -108,10 +111,28 @@ public class BeanAccessor {
 
         if(accessor == null) {
             Result result = FilterResult.getResult(executionContext);
+            Source source = FilterSource.getSource(executionContext);
+            Map beanMap = null;
 
             if(result instanceof JavaResult) {
                 JavaResult javaResult = (JavaResult) result;
-                accessor = new BeanAccessor(javaResult.getResultMap());
+                beanMap = javaResult.getResultMap();
+            }
+            if(source instanceof JavaSource) {
+                JavaSource javaSource = (JavaSource) source;
+                Map sourceBeans = javaSource.getBeans();
+
+                if(sourceBeans != null) {
+                    if(beanMap != null) {
+                        beanMap.putAll(sourceBeans);
+                    } else {
+                        beanMap = sourceBeans;
+                    }
+                }
+            }
+
+            if(beanMap != null) {
+                accessor = new BeanAccessor(beanMap);
             } else {
                 accessor = new BeanAccessor();
             }

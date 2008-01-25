@@ -127,4 +127,16 @@ public class SAXFilterTest extends TestCase {
         assertEquals(0, SAXVisitor03.children.size());
         assertEquals(1, SAXVisitor03.childText.size());
     }
+
+
+    public void test_$document() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-04.xml"));
+        ExecutionContext execContext = smooks.createExecutionContext();
+        String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
+
+        smooks.filter(new StreamSource(new ByteArrayInputStream(input.getBytes())), null, execContext);
+        assertEquals("xx", SAXVisitor01.element.getName().getLocalPart());
+        assertEquals("xx", SAXVisitor02.element.getName().getLocalPart());
+        assertNull(SAXVisitor03.element);
+    }
 }

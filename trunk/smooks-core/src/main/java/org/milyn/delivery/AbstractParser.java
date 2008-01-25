@@ -26,6 +26,7 @@ import org.milyn.delivery.java.JavaSource;
 import org.milyn.delivery.java.JavaXMLReader;
 import org.milyn.delivery.java.XStreamXMLReader;
 import org.milyn.util.ClassUtil;
+import org.milyn.xml.NullSourceXMLReader;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.*;
 import org.xml.sax.ext.DefaultHandler2;
@@ -109,7 +110,12 @@ public class AbstractParser {
             }
         } else {
             if(source instanceof JavaSource) {
-                reader = new XStreamXMLReader();
+                JavaSource javaSource = (JavaSource) source;
+                if(javaSource.getSourceObjects() != null) {
+                    reader = new XStreamXMLReader();
+                } else {
+                    reader = new NullSourceXMLReader();
+                }
             } else {
                 reader = XMLReaderFactory.createXMLReader();
             }

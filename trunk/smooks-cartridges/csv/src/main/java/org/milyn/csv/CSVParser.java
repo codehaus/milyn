@@ -40,6 +40,8 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import au.com.bytecode.opencsv.CSVReader;
 
+import javax.xml.XMLConstants;
+
 /**
  * CSV to SAX event parser.
  * <p/>
@@ -157,7 +159,7 @@ public class CSVParser implements SmooksXMLReader {
         
         // Start the document and add the root "csv-set" element...
         contentHandler.startDocument();
-        contentHandler.startElement(null, CVS_SET_EL, "", EMPTY_ATTRIBS);
+        contentHandler.startElement(XMLConstants.NULL_NS_URI, CVS_SET_EL, "", EMPTY_ATTRIBS);
         
         // Output each of the CVS line entries...
         int lineNumber = 0;
@@ -169,19 +171,19 @@ public class CSVParser implements SmooksXMLReader {
         		continue;
         	}
         	
-            contentHandler.startElement(null, CVS_RECORD_EL, "", EMPTY_ATTRIBS);
+            contentHandler.startElement(XMLConstants.NULL_NS_URI, CVS_RECORD_EL, "", EMPTY_ATTRIBS);
         	for(int i = 0; i < csvRecord.length; i++) {
                 String fieldName = csvFields[i];
 
-                contentHandler.startElement(null, fieldName, "", EMPTY_ATTRIBS);
+                contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", EMPTY_ATTRIBS);
                 contentHandler.characters(csvRecord[i].toCharArray(), 0, csvRecord[i].length());
-                contentHandler.endElement(null, fieldName, "");
+                contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
         	}
             contentHandler.endElement(null, CVS_RECORD_EL, "");
         }
 
         // Close out the "csv-set" root element and end the document..
-        contentHandler.endElement(null, CVS_SET_EL, "");
+        contentHandler.endElement(XMLConstants.NULL_NS_URI, CVS_SET_EL, "");
         contentHandler.endDocument();
 	}
 
