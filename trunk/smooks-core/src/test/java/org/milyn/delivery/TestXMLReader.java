@@ -15,15 +15,12 @@
 */
 package org.milyn.delivery;
 
-import org.junit.Test;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import junit.framework.JUnit4TestAdapter;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -86,12 +83,4 @@ public class TestXMLReader implements XMLReader {
 
     public void parse(String systemId) throws IOException, SAXException {
     }
-    
-    @Test
-    public void test_dummy() {}
-    
-    public static junit.framework.Test suite()
-	{
-		return new JUnit4TestAdapter( TestXMLReader.class );
-	}
 }

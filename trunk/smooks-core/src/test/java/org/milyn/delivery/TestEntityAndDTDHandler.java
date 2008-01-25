@@ -15,15 +15,12 @@
 */
 package org.milyn.delivery;
 
-import java.io.IOException;
-
-import junit.framework.JUnit4TestAdapter;
-
-import org.junit.Test;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
+
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -38,14 +35,4 @@ public class TestEntityAndDTDHandler implements DTDHandler, EntityResolver {
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         return null;
     }
-    
-    @Test
-    public void test_dummy() {}
-    
-    public static junit.framework.Test suite()
-	{
-		return new JUnit4TestAdapter( TestEntityAndDTDHandler.class );
-	}
-    
-    
 }

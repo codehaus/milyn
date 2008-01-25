@@ -15,9 +15,6 @@
 */
 package org.milyn.delivery;
 
-import junit.framework.JUnit4TestAdapter;
-
-import org.junit.Test;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
@@ -34,12 +31,4 @@ public class TestErrorHandler implements ErrorHandler {
 
     public void fatalError(SAXParseException exception) throws SAXException {
     }
-    
-    @Test
-    public void test_dummy() {}
-    
-    public static junit.framework.Test suite()
-	{
-		return new JUnit4TestAdapter( TestErrorHandler.class );
-	}
 }
