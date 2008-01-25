@@ -39,4 +39,9 @@ public class Header {
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
+    
+    public String toString()
+    {
+    	return "Header [customerName:" + customerName + ", customerNumber:" + customerNumber + "]";
+    }
 }

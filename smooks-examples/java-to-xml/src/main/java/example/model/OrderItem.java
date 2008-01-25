@@ -46,4 +46,9 @@ public class OrderItem {
     public void setPrice(double price) {
         this.price = price;
     }
+    
+    public String toString()
+    {
+    	return "OrderItem [productId:" + productId + ", quantity:" + quantity + ", price:" + price + "]";
+    }
 }
