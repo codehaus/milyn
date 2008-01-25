@@ -62,7 +62,6 @@ public class Main {
 
         System.out.println("This needs to be transformed to XML.");
         pause("Press 'enter' to display the transformed message...");
-        try {
         transResult = smooksMain.runSmooksTransform(javaInput);
         System.out.println("\n");
         System.out.println(transResult);
@@ -70,11 +69,6 @@ public class Main {
 
         pause("And that's it!");
         System.out.println("\n\n");
-        }
-        catch( Throwable th )
-        {
-        	th.printStackTrace();
-        }
     }
 
     private static void pause(String message) {
