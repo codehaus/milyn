@@ -68,19 +68,22 @@ public class SAXHandler extends DefaultHandler2 {
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         SAXElement element;
+        boolean isRoot = (currentProcessor == null);
 
-        if(currentProcessor != null) {
+        if(!isRoot) {
             // Push the existing "current" processor onto the stack and create a new current
             // based on this start event...
             element = new SAXElement(namespaceURI, localName, qName, atts, currentProcessor.element);
             element.setWriter(currentProcessor.element.getWriter());
             for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
-                try {
-                    mapping.getContentHandler().onChildElement(currentProcessor.element, element, execContext);
-                } catch(Throwable t) {
-                    logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildElement event.", t);
+                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                    try {
+                        mapping.getContentHandler().onChildElement(currentProcessor.element, element, execContext);
+                    } catch(Throwable t) {
+                        logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildElement event.", t);
+                    }
+                    flushCurrentWriter();
                 }
-                flushCurrentWriter();
             }
             elementProcessorStack.push(currentProcessor);
         } else {
@@ -88,7 +91,13 @@ public class SAXHandler extends DefaultHandler2 {
             element.setWriter(writer);
         }
 
-        List<ContentHandlerConfigMap<SAXElementVisitor>> mappings = saxVisitors.getMappings(element.getName().getLocalPart());
+        List<ContentHandlerConfigMap<SAXElementVisitor>> mappings;
+        String elementName = element.getName().getLocalPart();
+        if(isRoot) {
+            mappings = saxVisitors.getMappings(new String[] {elementName, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR});
+        } else {
+            mappings = saxVisitors.getMappings(elementName);
+        }
 
         if(mappings == null || mappings.isEmpty()) {
             visitBefore(element, defaultVisitors);

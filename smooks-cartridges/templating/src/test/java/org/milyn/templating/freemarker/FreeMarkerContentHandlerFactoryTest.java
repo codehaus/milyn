@@ -16,21 +16,27 @@
 package org.milyn.templating.freemarker;
 
 import junit.framework.TestCase;
-import org.xml.sax.SAXException;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.java.JavaSource;
 import org.milyn.profile.DefaultProfileSet;
+import org.milyn.templating.MyBean;
+import org.xml.sax.SAXException;
 
+import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
  * @author tfennelly
  */
-public class FreeMarkerContentDeliveryUnitCreatorTest extends TestCase {
+public class FreeMarkerContentHandlerFactoryTest extends TestCase {
 
     public void testFreeMarkerTrans_01() throws SAXException, IOException {
         Smooks smooks = new Smooks();
@@ -54,6 +60,27 @@ public class FreeMarkerContentDeliveryUnitCreatorTest extends TestCase {
         test_ftl(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
         // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
         test_ftl(smooks, "<c x='xvalueonc1' />", "<mybean>xvalueonc1</mybean>");
+    }
+
+    public void testFreeMarkerTrans_03() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-03.cdrl"));
+
+        // Initialise the input bean map...
+        Map<String, Object> myBeans = new HashMap<String, Object>();
+        MyBean myBean = new MyBean();
+        myBean.setX("xxxxxxx");
+        myBeans.put("myBeanData", myBean);
+
+        // Create the "null" JavaSource and set the bean Map on it...
+        JavaSource source = new JavaSource();
+        source.setBeans(myBeans);
+
+        // Create the output writer for the transform and run it...
+        StringWriter myTransformResult = new StringWriter();
+        smooks.filter(source, new StreamResult(myTransformResult), smooks.createExecutionContext());
+
+        // Check it...
+        assertEquals("<mybean>xxxxxxx</mybean>", myTransformResult.toString());
     }
 
     private void test_ftl(Smooks smooks, String input, String expected) {
