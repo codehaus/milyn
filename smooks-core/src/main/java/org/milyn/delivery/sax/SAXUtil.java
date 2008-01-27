@@ -55,7 +55,24 @@ public abstract class SAXUtil {
     }
 
     public static String getXPath(SAXElement element) {
-        // TODO
-        return "SAX XPath feature not implemented!";
+        StringBuilder builder = new StringBuilder();
+
+        addXPathElement(element, builder);
+
+        return builder.toString();
+    }
+
+    private static void addXPathElement(SAXElement element, StringBuilder builder) {
+        if(builder.length() > 0) {
+            builder.insert(0, "/");
+            builder.insert(0, element.getName().getLocalPart());
+        } else {
+            builder.append(element.getName().getLocalPart());
+        }
+
+        SAXElement parent = element.getParent();
+        if(parent != null) {
+            addXPathElement(parent, builder);
+        }
     }
 }

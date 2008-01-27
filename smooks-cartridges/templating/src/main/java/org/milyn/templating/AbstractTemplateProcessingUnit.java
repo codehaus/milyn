@@ -2,6 +2,7 @@ package org.milyn.templating;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -166,7 +167,7 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
             }
         } else if(action == Action.BIND_TO) {
             if(bindId == null) {
-                logger.error("'bindTo' templating action configurations must also specify a 'beanId' configuration for the Id of the bean");
+                throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
             } else if(node.getNodeType() == Node.TEXT_NODE) {
                 ExecutionContext context = Filter.getCurrentExecutionContext();
                 context.setAttribute(bindId, node.getTextContent());
@@ -176,7 +177,7 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
                 
                 context.setAttribute(bindId, context.getAttribute(contextKey));
             } else {
-                logger.error("Unsupported 'bindTo' templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
+                throw new SmooksException("Unsupported 'bindTo' templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
             }
         } else if(action == Action.REPLACE) {
             // Don't perform any "replace" actions here!

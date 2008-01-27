@@ -5,6 +5,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
@@ -13,6 +14,10 @@ import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.xml.DomUtils;
@@ -103,7 +108,7 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
 	 * <a href="http://freemarker.org/">FreeMarker</a> template application ProcessingUnit.
 	 * @author tfennelly
 	 */
-	private static class FreeMarkerProcessingUnit extends AbstractTemplateProcessingUnit {
+	private static class FreeMarkerProcessingUnit extends AbstractTemplateProcessingUnit implements SAXElementVisitor {
 
         private static Log logger = LogFactory.getLog(FreeMarkerProcessingUnit.class);
 
@@ -123,14 +128,12 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
         }
 
         protected void visit(Element element, ExecutionContext executionContext) {
-            Map beans = BeanAccessor.getBeanMap(executionContext);
-            Writer writer = new StringWriter();
-            String templatingResult;
-            Node resultNode;
-
             // Apply the template...
+            String templatingResult;
             try {
-                template.process(beans, writer);
+                Writer writer = new StringWriter();
+                applyTemplate(executionContext, writer);
+                templatingResult = writer.toString();
             } catch (TemplateException e) {
                 logger.warn("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
                 return;
@@ -139,7 +142,7 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
                 return;
             }
 
-            templatingResult = writer.toString();
+            Node resultNode;
             if(getAction() != Action.ADDTO && element == element.getOwnerDocument().getDocumentElement()) {
                 // We can't replace the root node with a text node (or insert before/after), so we need
                 // to replace the root node with a <context-object key="xxx" /> element and bind the result to the
@@ -157,5 +160,45 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
             // Process the templating action, supplying the templating result...
             processTemplateAction(element, resultNode);
         }
-	}
+
+        public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        }
+
+        public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
+        }
+
+        public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
+        }
+
+        public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+            try {
+                if(getAction() == Action.REPLACE) {
+                    Writer writer = element.getWriter();
+                    applyTemplate(executionContext, writer);
+                } else if(getAction() == Action.BIND_TO) {
+                    String bindId = getBindId();
+
+                    if(bindId == null) {
+                        throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
+                    }
+                    Writer writer = new StringWriter();
+                    applyTemplate(executionContext, writer);
+                    executionContext.setAttribute(bindId, writer.toString());
+                } else {
+                    throw new SmooksConfigurationException("Sorry, templating action '" + getAction() + "' not supported for SAX.  SAX processing only supports 'replace' and 'bindto' templating actions.");
+                }
+            } catch (TemplateException e) {
+                logger.warn("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
+                return;
+            } catch (IOException e) {
+                logger.warn("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
+                return;
+            }
+        }
+
+        private void applyTemplate(ExecutionContext executionContext, Writer writer) throws TemplateException, IOException {
+            Map beans = BeanAccessor.getBeanMap(executionContext);
+            template.process(beans, writer);
+        }
+    }
 }

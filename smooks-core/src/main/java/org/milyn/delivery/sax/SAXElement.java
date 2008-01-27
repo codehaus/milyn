@@ -17,6 +17,7 @@ package org.milyn.delivery.sax;
 
 import org.milyn.assertion.AssertArgument;
 import org.xml.sax.Attributes;
+import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.namespace.QName;
 import java.io.Writer;
@@ -98,8 +99,23 @@ public class SAXElement {
             thowInvalidNameException(namespaceURI, localName, qName);
         }
 
-        this.attributes = attributes;
+        this.attributes = copyAttributes(attributes);
         this.parent = parent;
+    }
+
+    /**
+     * Create a copy of the attributes.
+     * <p/>
+     * This needs to be done because some SAX parsers reuse the same {@link Attributes} instance
+     * across SAX events.
+     *
+     * @param attributes The attributes to copy.
+     * @return The new {@link Attributes} instance with a copy of the attributes.
+     */
+    private Attributes copyAttributes(Attributes attributes) {
+        AttributesImpl attributesCopy = new AttributesImpl();
+        attributesCopy.setAttributes(attributes);
+        return attributesCopy;
     }
 
     private void thowInvalidNameException(String namespaceURI, String localName, String qName) {
