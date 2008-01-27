@@ -27,6 +27,7 @@ public class DefaultSAXElementVisitor implements SAXElementVisitor {
     
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         // Do nothing here... see is there any child text/elements first...
+        //System.out.println("");
     }
 
     public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {

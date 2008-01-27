@@ -37,11 +37,15 @@ import java.util.Map;
 public class FreeMarkerContentHandlerFactoryTest extends TestCase {
 
     public void testFreeMarkerTrans_01() throws SAXException, IOException {
-        Smooks smooks = new Smooks();
+        testFreeMarkerTrans_01("test-configs-01.cdrl");
+        testFreeMarkerTrans_01("test-configs-01-SAX.cdrl");
+    }
+
+    public void testFreeMarkerTrans_01(String config) throws SAXException, IOException {
+        Smooks smooks = new Smooks("/org/milyn/templating/freemarker/" + config);
 
         // Configure Smooks
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
-        smooks.addConfigurations("test-configs.cdrl", getClass().getResourceAsStream("test-configs-01.cdrl"));
 
         test_ftl(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
         // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
@@ -82,7 +86,11 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
     }
 
     public void testFreeMarkerTrans_bind() throws SAXException, IOException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-04.cdrl"));
+        testFreeMarkerTrans_bind("test-configs-04.cdrl");
+        testFreeMarkerTrans_bind("test-configs-04-SAX.cdrl");
+    }
+    public void testFreeMarkerTrans_bind(String config) throws SAXException, IOException {
+        Smooks smooks = new Smooks("/org/milyn/templating/freemarker/" + config);
         StringReader input;
         ExecutionContext context;
 
