@@ -14,7 +14,7 @@
     <resource-config selector="c">
         <resource>/org/milyn/templating/stringtemplate/test-template.st</resource>
         <param name="action">bindto</param>
-        <param name="bindBeanId">templateBean</param>
+        <param name="bindId">mybeanTemplate</param>
     </resource-config>
 
 </smooks-resource-list>

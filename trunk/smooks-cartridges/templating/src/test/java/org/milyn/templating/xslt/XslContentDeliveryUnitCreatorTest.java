@@ -98,11 +98,11 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
         input = new StringReader("<a><b><c/></b></a>");
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<bind/>", context.getAttribute("templateBean"));
+        assertEquals("<bind/>", context.getAttribute("mybeanTemplate"));
 
         input = new StringReader("<c/>");
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<bind/>", context.getAttribute("templateBean"));
+        assertEquals("<bind/>", context.getAttribute("mybeanTemplate"));
     }
 }
