@@ -19,6 +19,7 @@ package org.milyn.templating.stringtemplate;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
@@ -27,6 +28,8 @@ import org.milyn.profile.DefaultProfileSet;
 import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
+
+import javax.xml.transform.stream.StreamSource;
 
 /**
  *
@@ -52,5 +55,21 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
         String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
 
         assertEquals(expected, result);
+    }
+
+    public void test_st_bind() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-02.cdrl"));
+        StringReader input;
+        ExecutionContext context;
+
+        context = smooks.createExecutionContext();
+        input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
+        smooks.filter(new StreamSource(input), null, context);
+        assertEquals("<mybean>xvalueonc2</mybean>", context.getAttribute("templateBean"));
+
+        context = smooks.createExecutionContext();
+        input = new StringReader("<c x='xvalueonc2' />");
+        smooks.filter(new StreamSource(input), null, context);
+        assertEquals("<mybean>xvalueonc2</mybean>", context.getAttribute("templateBean"));
     }
 }

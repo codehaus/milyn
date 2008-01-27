@@ -21,6 +21,7 @@ import org.milyn.SmooksUtil;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
+import org.milyn.xml.Namespace;
 
 import java.io.ByteArrayInputStream;
 
@@ -38,7 +39,7 @@ public class ContextObjectSerializationUnitTest extends TestCase {
         context = smooks.createExecutionContext();
         context.setAttribute("object-x", "Hi there!");
 
-        String result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream("<context-object key='object-x' />".getBytes()), smooks);
+        String result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(("<context-object key='object-x' xmlns=\"" + Namespace.SMOOKS_URI + "\" />").getBytes()), smooks);
         assertEquals("Hi there!", result);
     }
 }

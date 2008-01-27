@@ -17,6 +17,8 @@
 package org.milyn.templating.xslt;
 
 import java.io.InputStream;
+import java.io.IOException;
+import java.io.StringReader;
 
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
@@ -25,8 +27,11 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.templating.util.CharUtils;
+import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
+
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * 
@@ -84,4 +89,20 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		}
 		CharUtils.assertEquals("XSL Comparison Failure.  action=" + action + ".  See " + expectedFileName, "/org/milyn/templating/xslt/" + expectedFileName, transResult);
 	}	
+
+    public void test_xsl_bind() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-bind.cdrl"));
+        StringReader input;
+        ExecutionContext context;
+
+        input = new StringReader("<a><b><c/></b></a>");
+        context = smooks.createExecutionContext();
+        smooks.filter(new StreamSource(input), null, context);
+        assertEquals("<bind/>", context.getAttribute("templateBean"));
+
+        input = new StringReader("<c/>");
+        context = smooks.createExecutionContext();
+        smooks.filter(new StreamSource(input), null, context);
+        assertEquals("<bind/>", context.getAttribute("templateBean"));
+    }
 }
