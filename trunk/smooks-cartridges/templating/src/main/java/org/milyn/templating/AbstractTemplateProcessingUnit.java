@@ -1,24 +1,25 @@
 package org.milyn.templating;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-import javax.xml.transform.TransformerConfigurationException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.xml.DomUtils;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.DataDecoder;
+import org.milyn.delivery.Filter;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DataDecoder;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.transform.TransformerConfigurationException;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * Abstract template processing unit.
@@ -38,6 +39,7 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         ADDTO,
         INSERT_BEFORE,
         INSERT_AFTER,
+        BIND_TO,
     }
 
     private boolean visitBefore;
@@ -45,6 +47,8 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
     private Action action;
 
     private Charset encoding;
+
+    private String bindBeanId;
 
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         try {
@@ -65,7 +69,7 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         this.visitBefore = visitBefore;
     }
 
-    @ConfigParam(name = "action", defaultVal = "replace", choice = {"replace", "addto", "insertbefore", "insertafter"}, decoder = ActionDecoder.class)
+    @ConfigParam(name = "action", defaultVal = "replace", choice = {"replace", "addto", "insertbefore", "insertafter", "bindto"}, decoder = ActionDecoder.class)
     public void setAction(Action action) {
         this.action = action;
     }
@@ -81,6 +85,15 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
     @ConfigParam(defaultVal = "UTF-8")
     public void setEncoding(Charset encoding) {
         this.encoding = encoding;
+    }
+
+    public String getBindBeanId() {
+        return bindBeanId;
+    }
+
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
+    public void setBindBeanId(String bindBeanId) {
+        this.bindBeanId = bindBeanId;
     }
 
     protected void processTemplateAction(Element element, Node templatingResult) {
@@ -151,6 +164,20 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
                 // insert before the "nextSibling" - Node doesn't have an "insertAfter" operation!
                 DomUtils.insertBefore(node, nextSibling);
             }
+        } else if(action == Action.BIND_TO) {
+            if(bindBeanId == null) {
+                logger.error("'bindTo' templating action configurations must also specify a 'beanId' configuration for the Id of the bean");
+            } else if(node.getNodeType() == Node.TEXT_NODE) {
+                ExecutionContext context = Filter.getCurrentExecutionContext();
+                context.setAttribute(bindBeanId, node.getTextContent());
+            } else if(node.getNodeType() == Node.ELEMENT_NODE && ContextObjectSerializationUnit.isContextObjectElement((Element) node)) {
+                String contextKey = ContextObjectSerializationUnit.getContextKey((Element) node);
+                ExecutionContext context = Filter.getCurrentExecutionContext();
+                
+                context.setAttribute(bindBeanId, context.getAttribute(contextKey));
+            } else {
+                logger.error("Unsupported 'bindTo' templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
+            }
         } else if(action == Action.REPLACE) {
             // Don't perform any "replace" actions here!
         }
@@ -178,6 +205,8 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
                 return Action.INSERT_BEFORE;
             } else if("insertafter".equals(data)) {
                 return Action.INSERT_AFTER;
+            } else if("bindto".equals(data)) {
+                return Action.BIND_TO;
             } else {
                 return Action.REPLACE;
             }

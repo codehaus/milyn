@@ -40,7 +40,7 @@ public abstract class Filter {
     /**
      * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
      */
-    private static final ThreadLocal<ExecutionContext> requestThreadLocal = new ThreadLocal<ExecutionContext>();
+    private static final ThreadLocal<ExecutionContext> execThreadLocal = new ThreadLocal<ExecutionContext>();
 
     /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
@@ -59,7 +59,7 @@ public abstract class Filter {
      * @return The thread-bound {@link org.milyn.container.ExecutionContext} instance.
      */
     public static ExecutionContext getCurrentExecutionContext() {
-        return requestThreadLocal.get();
+        return execThreadLocal.get();
     }
 
     /**
@@ -68,14 +68,14 @@ public abstract class Filter {
      * @param executionContext The thread-bound {@link org.milyn.container.ExecutionContext} instance.
      */
     public static void setCurrentExecutionContext(ExecutionContext executionContext) {
-        Filter.requestThreadLocal.set(executionContext);
+        Filter.execThreadLocal.set(executionContext);
     }
 
     /**
      * Remove the {@link org.milyn.container.ExecutionContext} bound to the current thread.
      */
     public static void removeCurrentExecutionContext() {
-        Filter.requestThreadLocal.remove();
+        Filter.execThreadLocal.remove();
     }
 
     protected Reader getReader(Source source, ExecutionContext executionContext) {

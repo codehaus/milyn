@@ -25,10 +25,8 @@ import org.milyn.templating.MyBean;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,6 +79,22 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
 
         // Check it...
         assertEquals("<mybean>xxxxxxx</mybean>", myTransformResult.toString());
+    }
+
+    public void testFreeMarkerTrans_bind() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-04.cdrl"));
+        StringReader input;
+        ExecutionContext context;
+
+        context = smooks.createExecutionContext();
+        input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
+        smooks.filter(new StreamSource(input), null, context);
+        assertEquals("<mybean>xvalueonc2</mybean>", context.getAttribute("freeMarkerTemplateBean"));
+
+        context = smooks.createExecutionContext();
+        input = new StringReader("<c x='xvalueonc1' />");
+        smooks.filter(new StreamSource(input), null, context);
+        assertEquals("<mybean>xvalueonc1</mybean>", context.getAttribute("freeMarkerTemplateBean"));
     }
 
     private void test_ftl(Smooks smooks, String input, String expected) {

@@ -33,12 +33,8 @@
    <!-- Limit categories -->
 
    <category name="org.milyn">
-      <priority value="debug"/>
+      <priority value="info"/>
    </category>
-
-    <category name="org.milyn.classpath.Scanner">
-       <priority value="debug"/>
-    </category>
 
    <!-- ======================= -->
    <!-- Setup the Root category -->
