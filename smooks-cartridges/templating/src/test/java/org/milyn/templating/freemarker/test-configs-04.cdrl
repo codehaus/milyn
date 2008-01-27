@@ -14,7 +14,7 @@
     <resource-config selector="c">
         <resource type="ftl"><!--<mybean>${myBeanData.x}</mybean>--></resource>
         <param name="action">bindto</param>
-        <param name="bindBeanId">freeMarkerTemplateBean</param>
+        <param name="bindId">mybeanTemplate</param>
     </resource-config>
 
 </smooks-resource-list>

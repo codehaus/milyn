@@ -48,7 +48,7 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
 
     private Charset encoding;
 
-    private String bindBeanId;
+    private String bindId;
 
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         try {
@@ -87,13 +87,13 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         this.encoding = encoding;
     }
 
-    public String getBindBeanId() {
-        return bindBeanId;
+    public String getBindId() {
+        return bindId;
     }
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    public void setBindBeanId(String bindBeanId) {
-        this.bindBeanId = bindBeanId;
+    public void setBindId(String bindId) {
+        this.bindId = bindId;
     }
 
     protected void processTemplateAction(Element element, Node templatingResult) {
@@ -165,16 +165,16 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
                 DomUtils.insertBefore(node, nextSibling);
             }
         } else if(action == Action.BIND_TO) {
-            if(bindBeanId == null) {
+            if(bindId == null) {
                 logger.error("'bindTo' templating action configurations must also specify a 'beanId' configuration for the Id of the bean");
             } else if(node.getNodeType() == Node.TEXT_NODE) {
                 ExecutionContext context = Filter.getCurrentExecutionContext();
-                context.setAttribute(bindBeanId, node.getTextContent());
+                context.setAttribute(bindId, node.getTextContent());
             } else if(node.getNodeType() == Node.ELEMENT_NODE && ContextObjectSerializationUnit.isContextObjectElement((Element) node)) {
                 String contextKey = ContextObjectSerializationUnit.getContextKey((Element) node);
                 ExecutionContext context = Filter.getCurrentExecutionContext();
                 
-                context.setAttribute(bindBeanId, context.getAttribute(contextKey));
+                context.setAttribute(bindId, context.getAttribute(contextKey));
             } else {
                 logger.error("Unsupported 'bindTo' templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
             }
