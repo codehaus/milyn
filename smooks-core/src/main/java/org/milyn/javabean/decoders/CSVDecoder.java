@@ -26,6 +26,12 @@ import org.milyn.javabean.DecodeType;
 @DecodeType(String[].class)
 public class CSVDecoder implements DataDecoder {
     public Object decode(String data) throws DataDecodeException {
-        return data.split(",");
+        String[] values = data.split(",");
+
+        for (int i = 0; i < values.length; i++) {
+            values[i] = values[i].trim();            
+        }
+
+        return values;
     }
 }
