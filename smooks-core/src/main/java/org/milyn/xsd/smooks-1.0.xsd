@@ -33,8 +33,9 @@
     <xs:element name="profile">
         <xs:complexType>
             <xs:annotation>
-                <xs:documentation xml:lang="en">Profile Configuration.  Basically allows you to specify the name of a
-                    base profile along with a list of its sub-profiles.</xs:documentation>
+                <xs:documentation xml:lang="en">Profile Configuration. Basically allows you to specify the name of a
+                    base profile along with a list of its sub-profiles.
+                </xs:documentation>
             </xs:annotation>
             <xs:simpleContent>
                 <xs:extension base="xs:string">
@@ -45,7 +46,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:complexType name="abstract-resource-config" abstract="true" />
+    <xs:complexType name="abstract-resource-config" abstract="true"/>
     <xs:element name="abstract-resource-config" type="smooks:abstract-resource-config" abstract="true"/>
 
     <xs:element name="import" substitutionGroup="smooks:abstract-resource-config">
@@ -69,8 +70,9 @@
                         <xs:documentation xml:lang="en">Smooks Resource Configuration</xs:documentation>
                     </xs:annotation>
                     <xs:sequence>
-                        <xs:element minOccurs="0" ref="smooks:resource"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" ref="smooks:param"/>
+                        <xs:element minOccurs="0" maxOccurs="1" ref="smooks:resource"/>
+                        <xs:element minOccurs="0" maxOccurs="1" ref="smooks:condition"/>
+                        <xs:element minOccurs="0" maxOccurs="unbounded" ref="smooks:param"/>
                     </xs:sequence>
                     <xs:attribute name="selector" type="xs:string"/>
                     <xs:attribute name="selector-namespace" type="xs:anyURI"/>
@@ -93,8 +95,21 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="condition">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Resource Targetting Condition</xs:documentation>
+            </xs:annotation>
+            <xs:simpleContent>
+                <xs:extension base="xs:string">
+                    <xs:attribute name="evaluator" type="xs:string" use="required" />
+                </xs:extension>
+            </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="param">
-        <xs:complexType >
+        <xs:complexType>
             <xs:annotation>
                 <xs:documentation xml:lang="en">Resource Parameter</xs:documentation>
             </xs:annotation>
