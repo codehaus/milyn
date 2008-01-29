@@ -17,24 +17,42 @@ package org.milyn.classpath;
 
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class ScannerTest extends TestCase {
+	private Logger log = Logger.getLogger( ScannerTest.class );
+	
+	private URLClassLoader classLoader;
+	
+	public void setUp() throws MalformedURLException
+	{
+		File targetDir = new File ( "target" );
+        File classesDir = new File( targetDir, "classes" );
+        File testClassesDir = new File( targetDir, "test-classes" );
+        classLoader = new URLClassLoader(new URL[] { classesDir.toURL(), testClassesDir.toURL() });
+	}
 
     public void test_instanceof_has_include() throws IOException {
+    	
         InstanceOfFilter filter = new InstanceOfFilter(Filter.class, null, new String[] {"org/milyn"});
         Scanner scanner = new Scanner(filter);
 
         long start = System.currentTimeMillis();
-        scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
-        System.out.println("Took: " + (System.currentTimeMillis() - start));
+        scanner.scanClasspath(classLoader);
+        log.debug("Took: " + (System.currentTimeMillis() - start));
         List<Class> classes = filter.getClasses();
 
-        System.out.println(classes);
+        log.debug(classes);
         assertEquals(4, classes.size());
         assertTrue(classes.contains(InstanceOfFilter.class));
         assertTrue(classes.contains(IsAnnotationPresentFilter.class));
@@ -47,11 +65,11 @@ public class ScannerTest extends TestCase {
         Scanner scanner = new Scanner(filter);
 
         long start = System.currentTimeMillis();
-        scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
-        System.out.println("Took: " + (System.currentTimeMillis() - start));
+        scanner.scanClasspath(classLoader);
+        log.debug("Took: " + (System.currentTimeMillis() - start));
         List<Class> classes = filter.getClasses();
 
-        System.out.println(classes);
+        log.debug(classes);
         assertEquals(2, classes.size());
         assertTrue(classes.contains(AnnotatedClass1.class));
         assertTrue(classes.contains(AnnotatedClass1.class));
@@ -62,11 +80,11 @@ public class ScannerTest extends TestCase {
         Scanner scanner = new Scanner(filter);
 
         long start = System.currentTimeMillis();
-        scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
-        System.out.println("Took: " + (System.currentTimeMillis() - start));
+        scanner.scanClasspath(classLoader);
+        log.debug("Took: " + (System.currentTimeMillis() - start));
         List<Class> classes = filter.getClasses();
 
-        System.out.println(classes);
+        log.debug(classes);
         assertEquals(4, classes.size());
         assertTrue(classes.contains(InstanceOfFilter.class));
         assertTrue(classes.contains(IsAnnotationPresentFilter.class));
