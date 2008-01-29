@@ -15,6 +15,7 @@
 package org.milyn.routing.jms;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -34,6 +35,8 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.javabean.BeanAccessor;
 import org.mockejb.jndi.MockContextFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -84,6 +87,38 @@ public class RouterTest
         TextMessage textMessage = (TextMessage) message;
         Diff diff = new Diff(expectedXML, textMessage.getText() );
         assertXMLEqual( diff, true );
+	}
+	
+	@Test
+	public void visitAfter_textMessage_beanId() throws ParserConfigurationException, JMSException, SAXException, IOException
+	{
+		final String beanId = "beanId";
+		final String address = "Fleminggatan";
+		final String name = "Daniel";
+		final String phoneNumber = "555-555-5555";
+    	final String expectedString = "TestBean [name:" + name + ", address:" + address + ", phoneNumber:" + phoneNumber + "]";
+    	
+		TestBean bean = new TestBean();
+		bean.setAddress( address );
+		bean.setName( name );
+		bean.setPhoneNumber( phoneNumber );
+		
+		final boolean addToList = false;
+        MockExecutionContext executionContext = new MockExecutionContext();
+        BeanAccessor.addBean( beanId, bean, executionContext, addToList );
+        
+        config.setParameter( "destinationName", queueName );
+        config.setParameter( "beanId", beanId );
+        Router router = new Router();
+        Configurator.configure( router, config, new MockApplicationContext() );
+        
+        router.visitAfter( (SAXElement)null, executionContext );
+        
+        Message message = queue.getMessage();
+        assertTrue ( message instanceof TextMessage );
+        
+        TextMessage textMessage = (TextMessage) message;
+        assertEquals( expectedString, textMessage.getText() );
 	}
 	
 	@BeforeClass

@@ -33,6 +33,7 @@ import org.milyn.delivery.sax.SAXElement;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.Attributes2Impl;
 
 import com.mockrunner.mock.jms.JMSMockObjectFactory;
 import com.mockrunner.mock.jms.MockConnectionFactory;
@@ -68,8 +69,8 @@ public class TextMessageCreationStrategyTest
 	@Test
 	public void visitAfter_textMessage_SAX() throws ParserConfigurationException, JMSException, IOException, SAXException
 	{
-		final String expectedXML = "<x></x>";
-        SAXElement saxElement = new SAXElement("http://x", "", "x", null, null);
+		final String expectedXML = "<a></a>";
+        SAXElement saxElement = new SAXElement("http://x", "a", "x", new Attributes2Impl(), null);
         
         Message message = strategy.createJMSMessage( saxElement, null, jmsSession ) ;
         assertTrue ( message instanceof TextMessage );

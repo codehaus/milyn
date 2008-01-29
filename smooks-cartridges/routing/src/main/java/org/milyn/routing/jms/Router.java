@@ -269,22 +269,20 @@ public class Router implements DOMElementVisitor, SAXElementVisitor
 	{
 	}
 
-	/**
-	 * TODO:
-	 */
-	public void visitAfter( SAXElement element, ExecutionContext arg1 ) throws SmooksException, IOException
+	public void visitAfter( SAXElement element, ExecutionContext execContext ) throws SmooksException, IOException
 	{
-		if ( !visitBefore )
-			;
+		if ( beanId != null )
+			sendMessage( messageCreationStrategy.createJMSMessage( beanId, execContext, jmsSession ));
+		else
+			sendMessage( messageCreationStrategy.createJMSMessage( element, execContext, jmsSession ));
 	}
 	
-	/**
-	 * TODO:
-	 */
-	public void visitBefore( SAXElement arg0, ExecutionContext arg1 ) throws SmooksException, IOException
+	public void visitBefore( SAXElement element, ExecutionContext execContext ) throws SmooksException, IOException
 	{
-		if ( visitBefore )
-			;
+		if ( beanId != null )
+			sendMessage( messageCreationStrategy.createJMSMessage( beanId, execContext, jmsSession ));
+		else
+			sendMessage( messageCreationStrategy.createJMSMessage( element, execContext, jmsSession ));
 	}
 	
 	private void visitDOM( final Element element, final ExecutionContext execContext )
