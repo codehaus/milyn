@@ -24,6 +24,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.message.creationstrategies.util.TransformUtil;
 import org.w3c.dom.Element;
 
@@ -40,34 +41,34 @@ public class TextMessageCreationStrategy implements MessageCreationStrategy
 		throws SmooksException
 	{
 		final String msgContent = TransformUtil.transformElement( element );
-		return createTextMessage( msgContent, context, session );
+		return createTextMessage( msgContent, session );
 	}
 
 	public Message createJMSMessage( SAXElement element, ExecutionContext context, Session session ) 
 		throws SmooksException
 	{
 		final String msgContent = TransformUtil.transformElement( element );
-		return createTextMessage( msgContent, context, session );
-	}
-	
-	private TextMessage createTextMessage( final String msgContent, final ExecutionContext context, final Session session ) 
-		throws SmooksException
-	{
-		try
-		{
-			return session.createTextMessage( msgContent );
-		}
-		catch (JMSException e)
-		{
-			final String errorMsg = "JMSException while trying to set JMS Header Fields";
-			log.error( errorMsg, e );
-			throw new SmooksConfigurationException( errorMsg, e );
-		}
+		return createTextMessage( msgContent, session );
 	}
 	
 	public Message createJMSMessage( String beanId, ExecutionContext context, Session jmsSession ) throws SmooksException
 	{
-		throw new UnsupportedOperationException( "Operation not implemented for beanId. Please use ObjectMessageCreationStrategy.");
+        Object bean = BeanAccessor.getBean( beanId, context );
+        return createTextMessage( bean.toString(), jmsSession );
+	}
+	
+	private TextMessage createTextMessage( final String text, final Session jmsSession ) throws SmooksException
+	{
+		try
+		{
+			return jmsSession.createTextMessage( text );
+		} 
+		catch (JMSException e)
+		{
+			final String errorMsg = "JMSException while trying to create TextMessae";
+			log.error( errorMsg, e );
+			throw new SmooksConfigurationException( errorMsg, e );
+		}
 	}
 	
 }

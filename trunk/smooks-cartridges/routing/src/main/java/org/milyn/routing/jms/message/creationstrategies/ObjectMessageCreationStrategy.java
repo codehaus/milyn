@@ -1,17 +1,15 @@
 package org.milyn.routing.jms.message.creationstrategies;
 
-import java.io.Serializable;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-
 import org.apache.log4j.Logger;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.message.creationstrategies.util.TransformUtil;
 import org.w3c.dom.Element;
 
@@ -34,15 +32,16 @@ public class ObjectMessageCreationStrategy implements MessageCreationStrategy
 	public Message createJMSMessage( String beanId, ExecutionContext context, Session jmsSession ) 
 		throws SmooksException
 	{
-		return null;
+        Object bean = BeanAccessor.getBean( beanId, context );
+        return createObjectMessage( bean, context, jmsSession );
 	}
 	
-	private ObjectMessage createObjectMessage( final Serializable object, final ExecutionContext context, final Session session ) 
+	private ObjectMessage createObjectMessage( final Object object, final ExecutionContext context, final Session session ) 
 		throws SmooksException
 	{
 		try
 		{
-			return session.createObjectMessage( object );
+			return session.createObjectMessage( object.toString() );
 		}
 		catch (JMSException e)
 		{
