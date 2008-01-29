@@ -16,28 +16,27 @@
 
 package org.milyn.cdr;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.xml.*;
-import org.milyn.profile.DefaultProfileSet;
+import org.milyn.delivery.condition.ConditionEvaluator;
 import org.milyn.io.StreamUtils;
-import org.milyn.util.ClassUtil;
-import org.milyn.resource.URIResourceLocator;
 import org.milyn.net.URIUtil;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.resource.URIResourceLocator;
+import org.milyn.util.ClassUtil;
+import org.milyn.xml.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Digester class for an XML {@link org.milyn.cdr.SmooksResourceConfiguration} file (.cdrl).
@@ -203,6 +202,7 @@ public final class XMLConfigDigester {
         String namespace = DomUtils.getAttributeValue(configElement, "selector-namespace");
         String profiles = DomUtils.getAttributeValue(configElement, "target-profile");
         Element resourceElement = (Element) XmlUtil.getNode(configElement, "resource");
+        Element conditionElement = (Element) XmlUtil.getNode(configElement, "condition");
         String resource = null;
         SmooksResourceConfiguration resourceConfig;
 
@@ -216,6 +216,25 @@ public final class XMLConfigDigester {
                     resource);
             if (resourceElement != null) {
                 resourceConfig.setResourceType(DomUtils.getAttributeValue(resourceElement, "type"));
+            }
+
+            // And add the condition, if defined...
+            if(conditionElement != null) {
+                String evaluatorClassName = conditionElement.getAttribute("evaluator");
+                if(evaluatorClassName == null) {
+                    throw new SAXException("smooks-resource/condition must specify an 'evaluator' attribute.  This attribute specifies the " + ConditionEvaluator.class.getName() + " implementation class used to evaluate the condition expression.");
+                }
+
+                String evaluatorConditionExpression = DomUtils.getAllText(conditionElement, true);
+                if(evaluatorConditionExpression == null || evaluatorConditionExpression.trim().equals("")) {
+                    throw new SAXException("smooks-resource/condition must specify a condition expression as child text e.g. <condition evaluator=\"....\">A + B > C</condition>.");
+                }
+
+                // And construct it...
+                ConditionEvaluator evaluator = ConditionEvaluator.Factory.createInstance(evaluatorClassName, evaluatorConditionExpression);
+
+                // We have a valid ConditionEvaluator, so set it on the resource...
+                resourceConfig.setConditionEvaluator(evaluator);
             }
         } catch (IllegalArgumentException e) {
             throw new SAXException("Invalid unit definition.", e);

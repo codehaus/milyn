@@ -30,22 +30,30 @@ import java.io.IOException;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class SAXAndDOMVisitor implements DOMElementVisitor, SAXElementVisitor {
+
+    public static boolean visited = false;
     
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
+        visited = true;
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+        visited = true;
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        visited = true;
     }
 
     public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
+        visited = true;
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
+        visited = true;
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        visited = true;
     }
 }

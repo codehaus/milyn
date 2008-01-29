@@ -19,7 +19,11 @@ package org.milyn.cdr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.classpath.ClasspathUtils;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.Filter;
+import org.milyn.delivery.condition.ConditionEvaluator;
+import org.milyn.delivery.condition.ExecutionContextConditionEvaluator;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
@@ -43,7 +47,6 @@ import java.util.*;
  * {@link org.milyn.delivery.dom.serialize.SerializationUnit}), some text or script resource, or perhaps
  * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).
  * <p/>
- * <p/>
  * <h2 id="restargeting">What is Resource Targeting?</h2>
  * Smooks works by "targeting" resources at message transformation/analysis processes.
  * It targets resources at <b>message profiles</b>, and then <b>message fragments</b>
@@ -58,7 +61,6 @@ import java.util.*;
  * {@link org.milyn.Smooks} instance and then use an {@link org.milyn.container.ExecutionContext}
  * instance that's not based on a profile (see {@link org.milyn.Smooks#createExecutionContext()}).  This is
  * definitely the easiest way to start using Smooks.
- * <p/>
  * <p/>
  * <h2 id="restargeting">Resource Targeting Configurations</h2>
  * Smooks can be manually configured (through code), but the easiest way of working is through XML.  The follwoing
@@ -98,8 +100,6 @@ import java.util.*;
  *      &lt;/resource-config&gt;
  * &lt;/smooks-resource-list&gt;</i></pre>
  * <p/>
- * <p/>
- * <p/>
  * <h3 id="attribdefs">Attribute Definitions</h3>
  * <ul>
  * <li><b id="useragent">target-profile</b>: A list of 1 or more {@link ProfileTargetingExpression profile targeting expressions}.
@@ -122,13 +122,6 @@ import java.util.*;
  * <li>"$document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
  * or document root node fragment.</li>
  * <li>Targeting a specific {@link org.milyn.xml.SmooksXMLReader} at a specific profile.</li>
- * <!-- li><u>The requesting useragent's markup definition i.e. DTD</u>.  Currently Smooks only support
- * "Element Content Spec" based selectors, identified by the "xmldef:elcspec:" prefix.  Supported
- * values are "xmldef:elcspec:<b>empty</b>", "xmldef:elcspec:<b>not-empty</b>", "xmldef:elcspec:<b>any</b>",
- * "xmldef:elcspec:<b>not-any</b>", "xmldef:elcspec:<b>mixed</b>", "xmldef:elcspec:<b>not-mixed</b>",
- * "xmldef:elcspec:<b>pcdata</b>", "xmldef:elcspec:<b>not-pcdata</b>".
- * We hope to be able expand this to support more DTD based selection criteria.  See {@link org.milyn.dtd.DTDStore}.
- * </li -->
  * </ol>
  * <p/>
  * </li>
@@ -138,6 +131,9 @@ import java.util.*;
  * is targeted at all namespces.
  * </li>
  * </ul>
+ * <p/>
+ * <h2 id="conditions">Resource Targeting Configurations</h2>
+ * 
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @see SmooksResourceConfigurationSortComparator
@@ -204,6 +200,10 @@ public class SmooksResourceConfiguration {
      * The resource.
      */
     private String resource;
+    /**
+     * Condition evaluator used in resource targeting.
+     */
+    private ConditionEvaluator conditionEvaluator;
     /**
      * The type of the resource.  "class", "groovy", "xsl" etc....
      */
@@ -306,6 +306,7 @@ public class SmooksResourceConfiguration {
         clone.parameters = parameters;
         clone.parameterCount = parameterCount;
         clone.namespaceURI = namespaceURI;
+        clone.conditionEvaluator = conditionEvaluator;
 
         return clone;
     }
@@ -469,6 +470,22 @@ public class SmooksResourceConfiguration {
      */
     public String getResource() {
         return resource;
+    }
+
+    /**
+     * Set the condition evaluator to be used in targeting of this resource.
+     * @param conditionEvaluator The {@link ConditionEvaluator}, or null if no condition is to be used.
+     */
+    public void setConditionEvaluator(ConditionEvaluator conditionEvaluator) {
+        this.conditionEvaluator = conditionEvaluator;
+    }
+
+    /**
+     * Get the condition evaluator used in targeting of this resource.
+     * @return The {@link ConditionEvaluator}, or null if no condition is specified.
+     */
+    public ConditionEvaluator getConditionEvaluator() {
+        return conditionEvaluator;
     }
 
     /**
@@ -985,6 +1002,9 @@ public class SmooksResourceConfiguration {
      * @return True if this configuration is targeted at the supplied element, otherwise false.
      */
     public boolean isTargetedAtElement(Element element) {
+        if(!assertConditionTrue()) {
+            return false;
+        }
 
         if (!isTargetedAtNamespace(element.getNamespaceURI())) {
             if (logger.isDebugEnabled()) {
@@ -1014,6 +1034,9 @@ public class SmooksResourceConfiguration {
      * @return True if this configuration is targeted at the supplied element, otherwise false.
      */
     public boolean isTargetedAtElement(SAXElement element) {
+        if(!assertConditionTrue()) {
+            return false;
+        }
 
         if (!isTargetedAtNamespace(element.getName().getNamespaceURI())) {
             if (logger.isDebugEnabled()) {
@@ -1031,5 +1054,20 @@ public class SmooksResourceConfiguration {
         }
 
         return true;
+    }
+
+    private boolean assertConditionTrue() {
+        if(conditionEvaluator == null) {
+            return true;
+        }
+        
+        if(conditionEvaluator instanceof ExecutionContextConditionEvaluator) {
+            ExecutionContextConditionEvaluator evaluator = (ExecutionContextConditionEvaluator) conditionEvaluator;
+            ExecutionContext execContext = Filter.getCurrentExecutionContext();
+
+            return evaluator.eval(execContext);
+        }
+
+        throw new UnsupportedOperationException("Unsupported ConditionEvaluator type '" + conditionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextConditionEvaluator.class.getName() + "' implementations.");
     }
 }
