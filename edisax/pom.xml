@@ -43,12 +43,6 @@
                         <groupId>stax</groupId>
                         <artifactId>stax</artifactId>
                         <version>1.1.2-dev</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>xmlbeans</groupId>
-                                <artifactId>xmlbeans-jsr173-api</artifactId>
-                            </exclusion>
-                        </exclusions>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -59,6 +53,10 @@
         <repository>
             <id>milyn</id>
             <url>http://dist.codehaus.org</url>
+        </repository>
+        <repository>
+            <id>it.su.se</id>
+            <url>http://maven.it.su.se/it.su.se/maven2</url>
         </repository>
     </repositories>
 
