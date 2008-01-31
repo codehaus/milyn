@@ -24,8 +24,13 @@ import java.io.Serializable;
  * @author tfennelly
  */
 public interface Profile extends Serializable {
+    
+    /**
+     * The default profile name.
+     */
+    String DEFAULT_PROFILE = Profile.class.getName() + "#default_profile";
 
-	/**
+    /**
 	 * Get the profile name.
 	 * 
 	 * @return The profile name.

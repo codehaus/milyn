@@ -90,6 +90,8 @@ public class SmooksResourceConfigurationStore {
         configLists.add(defaultList);
         
         registerInstalledHandlerFactories();
+        registerInstalledResources("null-dom.cdrl");
+        registerInstalledResources("null-sax.cdrl");
         registerInstalledResources("installed-param-decoders.cdrl");
         registerInstalledResources("installed-serializers.cdrl");
 
@@ -118,6 +120,7 @@ public class SmooksResourceConfigurationStore {
 
     private void addHandlerFactoryConfig(Class handlerFactory, String type) {
         SmooksResourceConfiguration res = new SmooksResourceConfiguration(CDU_CREATOR);
+        res.setTargetProfile("*");
         res.setResource(handlerFactory.getName());
         res.setParameter(ContentHandlerFactory.PARAM_RESTYPE, type);
         defaultList.add(res);

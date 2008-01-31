@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,7 +59,11 @@ public class JavaSourceTest extends TestCase {
         assertEquals(expected, result.toString());
     }
 
-    private static List<Object> SOURCE_1 = Arrays.asList(new Object[] {new MyBean1()});
+    private static List<Object> SOURCE_1;
+    static {
+        SOURCE_1 = new ArrayList();
+        SOURCE_1.add(new MyBean1());
+    }
     private static String EXPECTED_1 = "<org.milyn.delivery.java.MyBean1><prop1>true</prop1><prop2>hello</prop2><prop3>1111</prop3><mybean2><prop5>true</prop5><prop6>hello</prop6></mybean2></org.milyn.delivery.java.MyBean1>";
 
     private static List<Object> SOURCE_2 = Arrays.asList(new Object[] {new MyBean2(), new MyBean2()});

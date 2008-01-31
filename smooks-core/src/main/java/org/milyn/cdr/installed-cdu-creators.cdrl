@@ -5,7 +5,7 @@
 	installed in Smooks.
 -->
 
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-selector="cdu-creator"> 
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-selector="cdu-creator" default-target-profile="*"> 
 
 	<resource-config>
 	    <resource type="class">org.milyn.delivery.JavaContentHandlerFactory</resource>

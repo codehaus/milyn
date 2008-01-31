@@ -34,7 +34,7 @@ import java.util.List;
 public class XStreamXMLReader implements JavaXMLReader {
 
     @ConfigParam(defaultVal = "true")
-    private boolean includeEnclosingDocument;
+    private boolean includeEnclosingDocument = true;
 
     private SaxWriter xstreamReader;
 
