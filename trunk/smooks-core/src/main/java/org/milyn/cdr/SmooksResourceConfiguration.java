@@ -29,6 +29,7 @@ import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
+import org.milyn.profile.Profile;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -235,7 +236,7 @@ public class SmooksResourceConfiguration {
      */
     public SmooksResourceConfiguration() {
         setSelector("none");
-        setTargetProfile("*");
+        setTargetProfile(Profile.DEFAULT_PROFILE);
     }
 
     /**
@@ -251,7 +252,7 @@ public class SmooksResourceConfiguration {
      */
     public SmooksResourceConfiguration(String selector) {
         setSelector(selector);
-        setTargetProfile("*");
+        setTargetProfile(Profile.DEFAULT_PROFILE);
     }
 
     /**
@@ -266,7 +267,7 @@ public class SmooksResourceConfiguration {
      * @see #setParameter(String, String)
      */
     public SmooksResourceConfiguration(String selector, String resource) {
-        this(selector, "*", resource);
+        this(selector, Profile.DEFAULT_PROFILE, resource);
     }
 
     /**
@@ -386,7 +387,7 @@ public class SmooksResourceConfiguration {
     public void setTargetProfile(String targetProfile) {
         if (targetProfile == null || targetProfile.trim().equals("")) {
             // Default the target profile to everything if not specified.
-            targetProfile = "*";
+            targetProfile = Profile.DEFAULT_PROFILE;
         }
         this.targetProfile = targetProfile;
         parseTargetingExpressions(targetProfile);

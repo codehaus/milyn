@@ -32,6 +32,7 @@ import org.milyn.event.ExecutionEventListener;
 import org.milyn.net.URIUtil;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
+import org.milyn.profile.Profile;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
 
@@ -214,7 +215,7 @@ public class Smooks {
      * @return Execution context instance.
      */
     public ExecutionContext createExecutionContext() {
-        return new StandaloneExecutionContext(StandaloneApplicationContext.OPEN_PROFILE_NAME, context);
+        return new StandaloneExecutionContext(Profile.DEFAULT_PROFILE, context);
     }
 
     /**

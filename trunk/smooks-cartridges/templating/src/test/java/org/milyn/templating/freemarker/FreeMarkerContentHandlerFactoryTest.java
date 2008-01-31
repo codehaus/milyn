@@ -44,20 +44,13 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
     public void testFreeMarkerTrans_01(String config) throws SAXException, IOException {
         Smooks smooks = new Smooks("/org/milyn/templating/freemarker/" + config);
 
-        // Configure Smooks
-        SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
-
         test_ftl(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
         // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
         test_ftl(smooks, "<c x='xvalueonc1' />", "<mybean>xvalueonc1</mybean>");
     }
 
     public void testFreeMarkerTrans_02() throws SAXException, IOException {
-        Smooks smooks = new Smooks();
-
-        // Configure Smooks
-        SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
-        smooks.addConfigurations("test-configs.cdrl", getClass().getResourceAsStream("test-configs-02.cdrl"));
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-02.cdrl"));
 
         test_ftl(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
         // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
@@ -107,7 +100,7 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
 
     private void test_ftl(Smooks smooks, String input, String expected) {
         InputStream stream = new ByteArrayInputStream(input.getBytes());
-        ExecutionContext context = smooks.createExecutionContext("useragent");
+        ExecutionContext context = smooks.createExecutionContext();
         String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
 
         assertEquals(expected, result);

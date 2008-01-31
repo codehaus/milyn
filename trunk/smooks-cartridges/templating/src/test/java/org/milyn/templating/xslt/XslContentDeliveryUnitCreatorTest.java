@@ -41,16 +41,15 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 
 	public void testXslUnitTrans_filebased_replace() {
 		Smooks smooks = new Smooks();
-		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename", "org/milyn/templating/xslt/xsltransunit.xsl");
+		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "org/milyn/templating/xslt/xsltransunit.xsl");
 		String transResult = null;
 
         System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
-		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
 		SmooksUtil.registerResource(res, smooks);
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
-            ExecutionContext context = smooks.createExecutionContext("devicename");
+            ExecutionContext context = smooks.createExecutionContext();
 			transResult = SmooksUtil.filterAndSerialize(context, stream, smooks);
 		} catch (SmooksException e) {
 			e.printStackTrace();
@@ -68,7 +67,7 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 	
 	public void testXslUnitTrans_parambased(String action, String expectedFileName) {
 		Smooks smooks = new Smooks();
-		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "devicename", "<z id=\"{@id}\">Content from template!!</z>");
+		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "<z id=\"{@id}\">Content from template!!</z>");
 		String transResult = null;
 
 		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
@@ -76,12 +75,11 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
 		res.setResourceType("xsl");
         res.setParameter(XslContentHandlerFactory.IS_XSLT_TEMPLATELET, "true");
 		res.setParameter("action", action);
-		SmooksUtil.registerProfileSet(new DefaultProfileSet("devicename"), smooks);
 		SmooksUtil.registerResource(res, smooks);
 		
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
-            ExecutionContext context = smooks.createExecutionContext("devicename");
+            ExecutionContext context = smooks.createExecutionContext();
 			transResult = SmooksUtil.filterAndSerialize(context, stream, smooks);
 		} catch (SmooksException e) {
 			e.printStackTrace();

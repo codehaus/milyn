@@ -26,7 +26,7 @@ import org.milyn.delivery.dom.MockContentDeliveryConfig;
 import org.milyn.util.IteratorEnumeration;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.DefaultProfileSet;
-import org.milyn.container.standalone.StandaloneApplicationContext;
+import org.milyn.profile.Profile;
 import org.milyn.event.ExecutionEventListener;
 
 /**
@@ -37,7 +37,7 @@ public class MockExecutionContext implements ExecutionContext {
 
 	public String contextPath;
 	public URI docSource;
-	public ProfileSet profileSet = new DefaultProfileSet(StandaloneApplicationContext.OPEN_PROFILE_NAME);
+	public ProfileSet profileSet = new DefaultProfileSet(Profile.DEFAULT_PROFILE);
 	public ContentDeliveryConfig deliveryConfig = new MockContentDeliveryConfig();
 	public MockApplicationContext context = new MockApplicationContext();
 	private Hashtable attributes = new Hashtable();

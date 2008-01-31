@@ -34,13 +34,7 @@ import org.milyn.resource.URIResourceLocator;
  */
 public class StandaloneApplicationContext implements ApplicationContext {
 
-    /**
-     * The open profile is a special profile for {@link org.milyn.container.ExecutionContext}
-     * instances that are not interested in using profiles.
-     */
-    public static final String OPEN_PROFILE_NAME = Profile.class.getName() + "#OPEN_PROFILE_NAME";
-
-	private Hashtable attributes = new Hashtable();
+    private Hashtable attributes = new Hashtable();
 	private ContainerResourceLocator resourceLocator;	
 	private SmooksResourceConfigurationStore resStore;
 	private DefaultProfileStore profileStore = new DefaultProfileStore();
@@ -55,7 +49,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
         ((URIResourceLocator)resourceLocator).setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
         resStore = new SmooksResourceConfigurationStore(this);
         // Add the open profile...
-        profileStore.addProfileSet(new DefaultProfileSet(OPEN_PROFILE_NAME));
+        profileStore.addProfileSet(new DefaultProfileSet(Profile.DEFAULT_PROFILE));
     }
 
 	/* (non-Javadoc)
