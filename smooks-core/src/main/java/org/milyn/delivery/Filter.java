@@ -42,6 +42,9 @@ public abstract class Filter {
      */
     private static final ThreadLocal<ExecutionContext> execThreadLocal = new ThreadLocal<ExecutionContext>();
 
+    public static final String CLOSE_INPUT = "close.input";
+    public static final String CLOSE_OUTPUT = "close.output";
+
     /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
      * to the supplied {@link javax.xml.transform.Result} instance.

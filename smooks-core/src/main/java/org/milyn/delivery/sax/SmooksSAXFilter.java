@@ -16,6 +16,7 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.SmooksException;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.FilterResult;
@@ -36,9 +37,13 @@ import java.io.Writer;
 public class SmooksSAXFilter extends Filter {
     
     private ExecutionContext executionContext;
+    private boolean closeInput;
+    private boolean closeOutput;
 
     public SmooksSAXFilter(ExecutionContext executionContext) {
         this.executionContext = executionContext;
+        closeInput = ParameterAccessor.getBoolParameter(Filter.CLOSE_INPUT, true, executionContext.getDeliveryConfig());
+        closeOutput = ParameterAccessor.getBoolParameter(Filter.CLOSE_OUTPUT, true, executionContext.getDeliveryConfig());
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
@@ -60,13 +65,19 @@ public class SmooksSAXFilter extends Filter {
             try {
                 writer.flush();
             } finally {
-                writer.close();
+                if(closeOutput) {
+                    writer.close();
+                }
             }
         } catch (Exception e) {
             throw new SmooksException("Failed to filter source.", e);
         } finally {
-            close(source);
-            close(result);
+            if(closeInput) {
+                close(source);
+            }
+            if(closeOutput) {
+                close(result);
+            }
         }
     }
 }

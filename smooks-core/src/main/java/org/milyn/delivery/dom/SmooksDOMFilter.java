@@ -22,6 +22,7 @@ import org.milyn.SmooksException;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
 import org.milyn.delivery.dom.serialize.Serializer;
@@ -153,6 +154,8 @@ public class SmooksDOMFilter extends Filter {
      * Event Listener.
      */
     private ExecutionEventListener eventListener;
+    private boolean closeInput;
+    private boolean closeOutput;
 
     /**
 	 * Public constructor.
@@ -168,6 +171,8 @@ public class SmooksDOMFilter extends Filter {
 		this.executionContext = executionContext;
         deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
         eventListener = executionContext.getEventListener();
+        closeInput = ParameterAccessor.getBoolParameter(Filter.CLOSE_INPUT, true, executionContext.getDeliveryConfig());
+        closeOutput = ParameterAccessor.getBoolParameter(Filter.CLOSE_OUTPUT, true, executionContext.getDeliveryConfig());
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
@@ -205,7 +210,9 @@ public class SmooksDOMFilter extends Filter {
                     try {
                         writer.flush();
                     } finally {
-                        writer.close();
+                        if(closeOutput) {
+                            writer.close();
+                        }
                     }
                 } catch (IOException e) {
                     logger.error("Error writing result to output stream.", e);
@@ -214,8 +221,12 @@ public class SmooksDOMFilter extends Filter {
                 ((DOMResult) result).setNode(resultNode);
             }
         } finally {
-            close(source);
-            close(result);
+            if(closeInput) {
+                close(source);
+            }
+            if(closeOutput) {
+                close(result);
+            }
         }
     }
 
