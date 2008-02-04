@@ -37,13 +37,13 @@ import java.io.Writer;
 public class SmooksSAXFilter extends Filter {
     
     private ExecutionContext executionContext;
-    private boolean closeInput;
-    private boolean closeOutput;
+    private boolean closeSource;
+    private boolean closeResult;
 
     public SmooksSAXFilter(ExecutionContext executionContext) {
         this.executionContext = executionContext;
-        closeInput = ParameterAccessor.getBoolParameter(Filter.CLOSE_INPUT, true, executionContext.getDeliveryConfig());
-        closeOutput = ParameterAccessor.getBoolParameter(Filter.CLOSE_OUTPUT, true, executionContext.getDeliveryConfig());
+        closeSource = ParameterAccessor.getBoolParameter(Filter.CLOSE_SOURCE, true, executionContext.getDeliveryConfig());
+        closeResult = ParameterAccessor.getBoolParameter(Filter.CLOSE_RESULT, true, executionContext.getDeliveryConfig());
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
@@ -62,20 +62,13 @@ public class SmooksSAXFilter extends Filter {
             SAXParser parser = new SAXParser(executionContext);
 
             parser.parse(reader, writer);
-            try {
-                writer.flush();
-            } finally {
-                if(closeOutput) {
-                    writer.close();
-                }
-            }
         } catch (Exception e) {
             throw new SmooksException("Failed to filter source.", e);
         } finally {
-            if(closeInput) {
+            if(closeSource) {
                 close(source);
             }
-            if(closeOutput) {
+            if(closeResult) {
                 close(result);
             }
         }

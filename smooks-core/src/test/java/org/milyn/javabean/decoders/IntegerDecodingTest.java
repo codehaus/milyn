@@ -16,6 +16,7 @@
 package org.milyn.javabean.decoders;
 
 import junit.framework.TestCase;
+import org.milyn.javabean.DataDecodeException;
 
 /**
  * Tests for the Calendar and Date decoders.
@@ -25,16 +26,16 @@ import junit.framework.TestCase;
 public class IntegerDecodingTest extends TestCase {
 	private IntegerDecoder decoder = new IntegerDecoder();
 
-    public void test_CalendarDecoder_empty_data_string() {
-        Object decode = decoder.decode( "" );
-        assertTrue( decode instanceof Integer);
-        assertEquals( new Integer(0), (Integer)decode);
-    }
-    
-    public void test_CalendarDecoder_null_data_string() {
-        Object decode = decoder.decode( null );
-        assertEquals( new Integer(0), (Integer)decode);
+    public void test_empty_ok_value() {
+        assertEquals(new Integer(1), decoder.decode("1"));
     }
 
-
+    public void test_empty_data_string() {
+        try {
+            decoder.decode("");
+            fail("Expected DataDecodeException");
+        } catch (DataDecodeException e) {
+            assertEquals("Failed to decode Integer value ''.", e.getMessage());
+        }
+    }
 }
