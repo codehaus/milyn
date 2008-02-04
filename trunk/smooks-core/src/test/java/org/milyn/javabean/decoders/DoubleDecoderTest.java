@@ -16,6 +16,7 @@
 package org.milyn.javabean.decoders;
 
 import junit.framework.TestCase;
+import org.milyn.javabean.DataDecodeException;
 
 /**
  * Tests for the DoubleDecoder
@@ -25,16 +26,16 @@ import junit.framework.TestCase;
 public class DoubleDecoderTest extends TestCase {
 	private DoubleDecoder decoder = new DoubleDecoder();
 
+    public void test_empty_ok_value() {
+        assertEquals(new Double(1.0d), decoder.decode("1.0"));
+    }
+
     public void test_empty_data_string() {
-        Object decode = decoder.decode( "" );
-        assertTrue( decode instanceof Double);
-        assertEquals( new Double(0), (Double)decode);
+        try {
+            decoder.decode("");
+            fail("Expected DataDecodeException");
+        } catch (DataDecodeException e) {
+            assertEquals("Failed to decode Double value ''.", e.getMessage());
+        }
     }
-    
-    public void test_null_data_string() {
-        Object decode = decoder.decode( null );
-        assertEquals( new Double(0.0), (Double)decode);
-    }
-
-
 }
