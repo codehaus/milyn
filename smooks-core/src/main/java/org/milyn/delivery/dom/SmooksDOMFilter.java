@@ -207,6 +207,7 @@ public class SmooksDOMFilter extends Filter {
                 
                 try {
                     serialize(resultNode, writer);
+                    writer.flush();
                 } catch (IOException e) {
                     logger.error("Error writing result to output stream.", e);
                 }
