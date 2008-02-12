@@ -178,9 +178,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
         // If we need to create the bean setter method instance...
         if (!checkedForSetterMethod && propertySetterMethod == null) {
-            if(setterMethod != null) {
+            if(setterMethod != null && !setterMethod.trim().equals("")) {
                 propertySetterMethod = createPropertySetterMethod(bean, setterMethod, dataObject.getClass());
-            } else if(property != null) {
+            } else if(property != null && !property.trim().equals("")) {
                 propertySetterMethod = createPropertySetterMethod(bean, BeanUtils.toSetterName(property), dataObject.getClass());
             }
             checkedForSetterMethod = true;
