@@ -42,23 +42,42 @@ import java.util.Map;
 public class MVELExpressionEvaluator implements ExecutionContextConditionEvaluator {
 
     private static Log logger = LogFactory.getLog(MVELExpressionEvaluator.class);
-    private String conditionExpression;
+    private String expression;
     private Serializable compiled;
 
-    public void setExpression(String conditionExpression) throws SmooksConfigurationException {
-        this.conditionExpression = conditionExpression.trim();
-        compiled = MVEL.compileExpression(this.conditionExpression);
+    public void setExpression(String expression) throws SmooksConfigurationException {
+        this.expression = expression.trim();
+        compiled = MVEL.compileExpression(this.expression);
+    }
+
+    public String getExpression() {
+        return expression;
     }
 
     public boolean eval(ExecutionContext context) {
         Map beans = BeanAccessor.getBeanMap(context);
+        return eval(beans);
+    }
+
+    public boolean eval(Map beans) {
         try {
             return (Boolean) MVEL.executeExpression(compiled, beans);
         } catch(Exception e) {
             if(logger.isDebugEnabled()) {
-                logger.debug("Error evaluating MVEL expression '" + conditionExpression + "' against bean Map contents: " + beans, e);
+                logger.debug("Error evaluating MVEL expression '" + expression + "' against bean Map contents: " + beans, e);
             }
             return false;
+        }
+    }
+
+    public Object getValue(Map beans) {
+        try {
+            return MVEL.executeExpression(compiled, beans);
+        } catch(Exception e) {
+            if(logger.isDebugEnabled()) {
+                logger.debug("Error evaluating MVEL expression '" + expression + "' against bean Map contents: " + beans, e);
+            }
+            return null;
         }
     }
 }
