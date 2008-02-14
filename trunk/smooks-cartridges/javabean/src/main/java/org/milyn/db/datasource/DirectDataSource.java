@@ -60,7 +60,7 @@ public class DirectDataSource extends AbstractDataSource {
         return datasourceName;
     }
 
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {        
         return DriverManager.getConnection(url, username, password);
     }
 

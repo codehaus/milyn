@@ -17,11 +17,15 @@ package org.milyn.delivery.condition;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.expression.ExecutionContextExpressionEvaluator;
+import org.milyn.expression.ExpressionEvaluationException;
+
+import java.util.Map;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class TestExecutionContextConditionEvaluator implements ExecutionContextConditionEvaluator {
+public class TestExecutionContextExpressionEvaluator implements ExecutionContextExpressionEvaluator {
 
     public String condition;
     public boolean evalResult = true;
@@ -32,8 +36,20 @@ public class TestExecutionContextConditionEvaluator implements ExecutionContextC
         evalResult = conditionExpression.trim().equals("true");
     }
 
+    public boolean eval(Map beans) throws ExpressionEvaluationException {
+        return false;
+    }
+
+    public Object getValue(Map beans) throws ExpressionEvaluationException {
+        return null;
+    }
+
     public boolean eval(ExecutionContext context) {
-        TestExecutionContextConditionEvaluator.context = context;
+        TestExecutionContextExpressionEvaluator.context = context;
         return evalResult;
+    }
+
+    public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
+        return null;
     }
 }

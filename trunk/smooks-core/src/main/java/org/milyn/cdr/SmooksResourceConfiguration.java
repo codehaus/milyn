@@ -22,8 +22,8 @@ import org.milyn.classpath.ClasspathUtils;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.Filter;
-import org.milyn.delivery.condition.ConditionEvaluator;
-import org.milyn.delivery.condition.ExecutionContextConditionEvaluator;
+import org.milyn.expression.ExpressionEvaluator;
+import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
@@ -204,7 +204,7 @@ public class SmooksResourceConfiguration {
     /**
      * Condition evaluator used in resource targeting.
      */
-    private ConditionEvaluator conditionEvaluator;
+    private ExpressionEvaluator expressionEvaluator;
     /**
      * The type of the resource.  "class", "groovy", "xsl" etc....
      */
@@ -307,7 +307,7 @@ public class SmooksResourceConfiguration {
         clone.parameters = parameters;
         clone.parameterCount = parameterCount;
         clone.namespaceURI = namespaceURI;
-        clone.conditionEvaluator = conditionEvaluator;
+        clone.expressionEvaluator = expressionEvaluator;
 
         return clone;
     }
@@ -475,18 +475,18 @@ public class SmooksResourceConfiguration {
 
     /**
      * Set the condition evaluator to be used in targeting of this resource.
-     * @param conditionEvaluator The {@link ConditionEvaluator}, or null if no condition is to be used.
+     * @param expressionEvaluator The {@link org.milyn.expression.ExpressionEvaluator}, or null if no condition is to be used.
      */
-    public void setConditionEvaluator(ConditionEvaluator conditionEvaluator) {
-        this.conditionEvaluator = conditionEvaluator;
+    public void setConditionEvaluator(ExpressionEvaluator expressionEvaluator) {
+        this.expressionEvaluator = expressionEvaluator;
     }
 
     /**
      * Get the condition evaluator used in targeting of this resource.
-     * @return The {@link ConditionEvaluator}, or null if no condition is specified.
+     * @return The {@link org.milyn.expression.ExpressionEvaluator}, or null if no condition is specified.
      */
-    public ConditionEvaluator getConditionEvaluator() {
-        return conditionEvaluator;
+    public ExpressionEvaluator getConditionEvaluator() {
+        return expressionEvaluator;
     }
 
     /**
@@ -1058,17 +1058,17 @@ public class SmooksResourceConfiguration {
     }
 
     private boolean assertConditionTrue() {
-        if(conditionEvaluator == null) {
+        if(expressionEvaluator == null) {
             return true;
         }
         
-        if(conditionEvaluator instanceof ExecutionContextConditionEvaluator) {
-            ExecutionContextConditionEvaluator evaluator = (ExecutionContextConditionEvaluator) conditionEvaluator;
+        if(expressionEvaluator instanceof ExecutionContextExpressionEvaluator) {
+            ExecutionContextExpressionEvaluator evaluator = (ExecutionContextExpressionEvaluator) expressionEvaluator;
             ExecutionContext execContext = Filter.getCurrentExecutionContext();
 
             return evaluator.eval(execContext);
         }
 
-        throw new UnsupportedOperationException("Unsupported ConditionEvaluator type '" + conditionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextConditionEvaluator.class.getName() + "' implementations.");
+        throw new UnsupportedOperationException("Unsupported ExpressionEvaluator type '" + expressionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextExpressionEvaluator.class.getName() + "' implementations.");
     }
 }

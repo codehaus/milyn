@@ -13,24 +13,22 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean.condition;
+package org.milyn.expression;
 
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
-import org.w3c.dom.Element;
 
 /**
+ * Expression evaluation exception.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DOMVisitor implements DOMElementVisitor {
+public class ExpressionEvaluationException extends SmooksException {
 
-    public static boolean visited = false;
-
-    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
+    public ExpressionEvaluationException(String message) {
+        super(message);
     }
 
-    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-        visited = true;
+    public ExpressionEvaluationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

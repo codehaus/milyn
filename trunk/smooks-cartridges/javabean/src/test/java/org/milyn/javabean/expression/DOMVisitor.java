@@ -13,21 +13,24 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.condition;
+package org.milyn.javabean.expression;
 
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.container.ExecutionContext;
+import org.milyn.SmooksException;
+import org.w3c.dom.Element;
 
 /**
- * {@link org.milyn.container.ExecutionContext} based condition evaluator.
- * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface ExecutionContextConditionEvaluator extends ConditionEvaluator {
+public class DOMVisitor implements DOMElementVisitor {
 
-    /**
-     * Evaluate a condition based on the supplied {@link org.milyn.container.ExecutionContext}.
-     * @param context The context.
-     * @return True if the condition evaluates successfully, otherwise false.
-     */
-    public boolean eval(ExecutionContext context);
+    public static boolean visited = false;
+
+    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
+    }
+
+    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+        visited = true;
+    }
 }

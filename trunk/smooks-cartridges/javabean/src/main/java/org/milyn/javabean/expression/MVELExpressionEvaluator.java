@@ -13,13 +13,12 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean.condition;
+package org.milyn.javabean.expression;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.condition.ExecutionContextConditionEvaluator;
+import org.milyn.expression.ExecutionContextExpressionEvaluator;
+import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.javabean.BeanAccessor;
 import org.mvel.MVEL;
 
@@ -39,11 +38,17 @@ import java.util.Map;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MVELExpressionEvaluator implements ExecutionContextConditionEvaluator {
+public class MVELExpressionEvaluator implements ExecutionContextExpressionEvaluator {
 
-    private static Log logger = LogFactory.getLog(MVELExpressionEvaluator.class);
     private String expression;
     private Serializable compiled;
+
+    public MVELExpressionEvaluator() {
+    }
+
+    public MVELExpressionEvaluator(String expression) throws SmooksConfigurationException {
+        setExpression(expression);
+    }
 
     public void setExpression(String expression) throws SmooksConfigurationException {
         this.expression = expression.trim();
@@ -54,30 +59,28 @@ public class MVELExpressionEvaluator implements ExecutionContextConditionEvaluat
         return expression;
     }
 
-    public boolean eval(ExecutionContext context) {
+    public boolean eval(ExecutionContext context) throws ExpressionEvaluationException {
         Map beans = BeanAccessor.getBeanMap(context);
         return eval(beans);
     }
 
-    public boolean eval(Map beans) {
-        try {
-            return (Boolean) MVEL.executeExpression(compiled, beans);
-        } catch(Exception e) {
-            if(logger.isDebugEnabled()) {
-                logger.debug("Error evaluating MVEL expression '" + expression + "' against bean Map contents: " + beans, e);
-            }
-            return false;
-        }
+    public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
+        Map beans = BeanAccessor.getBeanMap(context);
+        return getValue(beans);
     }
 
-    public Object getValue(Map beans) {
+    public boolean eval(Map beans) throws ExpressionEvaluationException {
+        return (Boolean) getValue(beans);
+    }
+
+    public Object getValue(Map beans) throws ExpressionEvaluationException {
         try {
             return MVEL.executeExpression(compiled, beans);
         } catch(Exception e) {
-            if(logger.isDebugEnabled()) {
-                logger.debug("Error evaluating MVEL expression '" + expression + "' against bean Map contents: " + beans, e);
-            }
-            return null;
+            throw new ExpressionEvaluationException("Error evaluating MVEL expression '" + expression + "' against bean Map contents: " + beans + ". " +
+                    "Common issues include:" +
+                    "\n\t\t1. Referencing variables not bound to the input Map (bean context etc). In this case add an assertion in the expression." +
+                    "\n\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.", e);
         }
     }
 }

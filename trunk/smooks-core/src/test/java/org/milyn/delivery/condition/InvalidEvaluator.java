@@ -16,17 +16,29 @@
 package org.milyn.delivery.condition;
 
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.expression.ExpressionEvaluator;
+import org.milyn.expression.ExpressionEvaluationException;
+
+import java.util.Map;
 
 /**
  * Invalid evaluator.
  * <p/>
- * ConditionEvaluator is an abstract interface, subtyped by different evaluator
+ * ExpressionEvaluator is an abstract interface, subtyped by different evaluator
  * types.  At time of writing we only supported evaluator type was
- * ExecutionContextConditionEvaluator.
+ * ExecutionContextExpressionEvaluator.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class InvalidEvaluator implements ConditionEvaluator {
+public class InvalidEvaluator implements ExpressionEvaluator {
     public void setExpression(String conditionExpression) throws SmooksConfigurationException {
+    }
+
+    public boolean eval(Map beans) throws ExpressionEvaluationException {
+        return false;
+    }
+
+    public Object getValue(Map beans) throws ExpressionEvaluationException {
+        return null;
     }
 }
