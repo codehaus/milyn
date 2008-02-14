@@ -19,7 +19,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.util.DollarBraceDecoder;
 import org.milyn.xml.XmlUtil;
-import org.milyn.javabean.condition.MVELExpressionEvaluator;
+import org.milyn.javabean.expression.MVELExpressionEvaluator;
 import org.mvel.TemplateInterpreter;
 
 import java.sql.*;
@@ -62,7 +62,7 @@ public class StatementExec {
     private void intitialiseStatementExpressions(List<String> statementExecFields) {
         for (String statementExecField : statementExecFields) {
             MVELExpressionEvaluator expression = new MVELExpressionEvaluator();
-            expression.setExpression("return " + statementExecField);
+            expression.setExpression(statementExecField);
             statementExpressionEvaluators.add(expression);
         }
     }

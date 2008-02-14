@@ -17,6 +17,7 @@ package org.milyn.delivery.condition;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.SAXAndDOMVisitor;
@@ -33,13 +34,13 @@ public class ConditionEvaluatorTest extends TestCase {
 
     public void test_Factory() {
         try {
-            ConditionEvaluator.Factory.createInstance(InvalidEvaluator.class.getName(), "blah");
+            ExpressionEvaluator.Factory.createInstance(InvalidEvaluator.class.getName(), "blah");
             fail("Expected SmooksConfigurationException");
         } catch(SmooksConfigurationException e) {
-            assertEquals("Unsupported ConditionEvaluator type 'org.milyn.delivery.condition.InvalidEvaluator'.  Currently only support 'org.milyn.delivery.condition.ExecutionContextConditionEvaluator' implementations.", e.getMessage());
+            assertEquals("Unsupported ExpressionEvaluator type 'org.milyn.delivery.condition.InvalidEvaluator'.  Currently only support 'org.milyn.expression.ExecutionContextExpressionEvaluator' implementations.", e.getMessage());
         }
 
-        TestExecutionContextConditionEvaluator evaluator = (TestExecutionContextConditionEvaluator) ConditionEvaluator.Factory.createInstance(TestExecutionContextConditionEvaluator.class.getName(), "blah");
+        TestExecutionContextExpressionEvaluator evaluator = (TestExecutionContextExpressionEvaluator) ExpressionEvaluator.Factory.createInstance(TestExecutionContextExpressionEvaluator.class.getName(), "blah");
         assertNotNull(evaluator.condition);
     }
 
@@ -51,14 +52,14 @@ public class ConditionEvaluatorTest extends TestCase {
         smooks = new Smooks(getClass().getResourceAsStream("test-config-DOM-01.xml"));
         execContext = smooks.createExecutionContext();
         smooks.filter(new StreamSource(new StringReader("<a/>")), null, execContext);
-        assertEquals(execContext, TestExecutionContextConditionEvaluator.context);
+        assertEquals(execContext, TestExecutionContextExpressionEvaluator.context);
         assertTrue(SAXAndDOMVisitor.visited);
 
         SAXAndDOMVisitor.visited = false;
         smooks = new Smooks(getClass().getResourceAsStream("test-config-DOM-02.xml"));
         execContext = smooks.createExecutionContext();
         smooks.filter(new StreamSource(new StringReader("<a/>")), null, execContext);
-        assertEquals(execContext, TestExecutionContextConditionEvaluator.context);
+        assertEquals(execContext, TestExecutionContextExpressionEvaluator.context);
         assertFalse(SAXAndDOMVisitor.visited);
     }
 
@@ -70,14 +71,14 @@ public class ConditionEvaluatorTest extends TestCase {
         smooks = new Smooks(getClass().getResourceAsStream("test-config-SAX-01.xml"));
         execContext = smooks.createExecutionContext();
         smooks.filter(new StreamSource(new StringReader("<a/>")), null, execContext);
-        assertEquals(execContext, TestExecutionContextConditionEvaluator.context);
+        assertEquals(execContext, TestExecutionContextExpressionEvaluator.context);
         assertTrue(SAXAndDOMVisitor.visited);
 
         SAXAndDOMVisitor.visited = false;
         smooks = new Smooks(getClass().getResourceAsStream("test-config-SAX-02.xml"));
         execContext = smooks.createExecutionContext();
         smooks.filter(new StreamSource(new StringReader("<a/>")), null, execContext);
-        assertEquals(execContext, TestExecutionContextConditionEvaluator.context);
+        assertEquals(execContext, TestExecutionContextExpressionEvaluator.context);
         assertFalse(SAXAndDOMVisitor.visited);
     }
 }

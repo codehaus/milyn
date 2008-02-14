@@ -3,7 +3,7 @@
 
     <resource-config selector="a">
         <resource>org.milyn.delivery.SAXAndDOMVisitor</resource>
-        <condition evaluator="org.milyn.delivery.condition.TestExecutionContextConditionEvaluator">false</condition>
+        <condition evaluator="org.milyn.delivery.condition.TestExecutionContextExpressionEvaluator">false</condition>
     </resource-config>
 
 </smooks-resource-list>

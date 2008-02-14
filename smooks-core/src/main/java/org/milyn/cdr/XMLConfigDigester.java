@@ -18,7 +18,7 @@ package org.milyn.cdr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.delivery.condition.ConditionEvaluator;
+import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.io.StreamUtils;
 import org.milyn.net.URIUtil;
 import org.milyn.profile.DefaultProfileSet;
@@ -222,7 +222,7 @@ public final class XMLConfigDigester {
             if(conditionElement != null) {
                 String evaluatorClassName = conditionElement.getAttribute("evaluator");
                 if(evaluatorClassName == null) {
-                    throw new SAXException("smooks-resource/condition must specify an 'evaluator' attribute.  This attribute specifies the " + ConditionEvaluator.class.getName() + " implementation class used to evaluate the condition expression.");
+                    throw new SAXException("smooks-resource/condition must specify an 'evaluator' attribute.  This attribute specifies the " + ExpressionEvaluator.class.getName() + " implementation class used to evaluate the condition expression.");
                 }
 
                 String evaluatorConditionExpression = DomUtils.getAllText(conditionElement, true);
@@ -231,9 +231,9 @@ public final class XMLConfigDigester {
                 }
 
                 // And construct it...
-                ConditionEvaluator evaluator = ConditionEvaluator.Factory.createInstance(evaluatorClassName, evaluatorConditionExpression);
+                ExpressionEvaluator evaluator = ExpressionEvaluator.Factory.createInstance(evaluatorClassName, evaluatorConditionExpression);
 
-                // We have a valid ConditionEvaluator, so set it on the resource...
+                // We have a valid ExpressionEvaluator, so set it on the resource...
                 resourceConfig.setConditionEvaluator(evaluator);
             }
         } catch (IllegalArgumentException e) {

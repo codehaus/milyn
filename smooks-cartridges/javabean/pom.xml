@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.codehaus</groupId>
             <artifactId>mvel</artifactId>
-            <version>1.2.20-java1.5</version>
+            <version>1.2.22-java1.5</version>
         </dependency>
 
         <dependency>
