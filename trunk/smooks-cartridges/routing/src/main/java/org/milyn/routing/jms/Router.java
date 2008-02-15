@@ -56,11 +56,12 @@ import org.w3c.dom.Element;
  * <pre>
  * &lt;resource-config selector="orderItems"&gt;
  *    &lt;resource&gt;org.milyn.routing.jms.Router&lt;/resource&gt;
- *    &lt;param name="executeBefore"&gt;true&lt;/param&gt;
- *    &lt;param name="beanId">beanId&lt;/param&gt;
+ *    &lt;param name="destination"&gt;/queue/smooksRouterQueue&lt;/param&gt;
  * &lt;/resource-config&gt;
  *	....
  * Optional parameters:
+ *    &lt;param name="beanId">beanId&lt;/param&gt;
+ *    &lt;param name="executeBefore"&gt;true&lt;/param&gt;
  *    &lt;param name="jndiContextFactory"&gt;ConnectionFactory&lt;/param&gt;
  *    &lt;param name="jndiProviderUrl"&gt;jnp://localhost:1099&lt;/param&gt;
  *    &lt;param name="jndiNamingFactory"&gt;org.jboss.naming:java.naming.factory.url.pkgs=org.jnp.interfaces&lt;/param&gt;
@@ -73,9 +74,9 @@ import org.w3c.dom.Element;
  *    &lt;param name="acknowledgeMode"&gt;AUTO_ACKNOWLEDGE&lt;/param&gt;
  *    &lt;param name="transacted"&gt;false&lt;/param&gt;
  *    &lt;param name="messageType"&gt;ObjectMessage&lt;/param&gt;
- *    &lt;param name="destination"&gt;/queue/smooksRouterQueue&lt;/param&gt;
  * </pre>
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
+ * @since 1.0
  *
  */
 public class Router implements DOMElementVisitor, SAXElementVisitor
