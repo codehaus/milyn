@@ -25,7 +25,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
-import org.milyn.delivery.FilterLifecycleEvent;
+import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.delivery.FilterResult;
 import org.milyn.delivery.FilterSource;
 import org.milyn.event.ExecutionEventListener;
@@ -258,18 +258,18 @@ public class Smooks {
         ExecutionEventListener eventListener = executionContext.getEventListener();
 
         try {
-            if(eventListener != null) {
-                eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.STARTED));
-            }
-
-            Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
-
-            // Attach the source and result to the context...
-            FilterSource.setSource(source, executionContext);
-            FilterResult.setResult(result, executionContext);
-
             Filter.setCurrentExecutionContext(executionContext);
             try {
+                if(eventListener != null) {
+                    eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.STARTED));
+                }
+
+                Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
+
+                // Attach the source and result to the context...
+                FilterSource.setSource(source, executionContext);
+                FilterResult.setResult(result, executionContext);
+
                 contentFilter.doFilter(source, result);
             } finally {
                 Filter.removeCurrentExecutionContext();

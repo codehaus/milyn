@@ -16,12 +16,15 @@
 package example;
 
 import junit.framework.TestCase;
-
-import java.io.IOException;
-import java.io.ByteArrayInputStream;
-
-import org.xml.sax.SAXException;
+import org.milyn.Smooks;
+import org.milyn.event.ExecutionReportGenerator;
 import org.milyn.io.StreamUtils;
+import org.xml.sax.SAXException;
+
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -35,5 +38,13 @@ public class ModelTransformTest extends TestCase {
 
         transRes = smooksMain.runSmooksTransform(Main.inputMessage);
         assertTrue("Expected:\n" + new String(expected_res) + ". \nGot:\n" + transRes, StreamUtils.compareCharStreams(new ByteArrayInputStream(expected_res), new ByteArrayInputStream(transRes.getBytes())));
+    }
+
+    public void test_report() throws IOException, SAXException {
+        Smooks smooks = new Smooks("smooks-config.xml");
+        StringWriter outWriter = new StringWriter();
+
+        ExecutionReportGenerator.generateReport(smooks, new StreamSource(new ByteArrayInputStream(Main.inputMessage)), outWriter, false, false);
+        System.out.println(outWriter);
     }
 }

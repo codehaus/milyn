@@ -16,12 +16,12 @@
 
 package org.milyn.delivery;
 
-import com.sun.swing.internal.plaf.synth.resources.synth;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.*;
 import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.Phase;
@@ -31,6 +31,8 @@ import org.milyn.delivery.sax.SAXContentDeliveryConfig;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
+import org.milyn.event.ExecutionEventListener;
+import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.profile.ProfileSet;
 
 import java.io.ByteArrayInputStream;
@@ -59,7 +61,7 @@ public class ContentDeliveryConfigBuilder {
 	 * Container context.
 	 */
 	private ApplicationContext applicationContext;
-	/**
+    /**
 	 * XML selector content spec definition prefix
 	 */
 	private static final String ELCSPEC_PREFIX = "elcspec:";
@@ -67,22 +69,22 @@ public class ContentDeliveryConfigBuilder {
      * An unsorted list of SmooksResourceConfiguration.
      */
     private List<SmooksResourceConfiguration> resourceConfigsList = new ArrayList<SmooksResourceConfiguration>();
-	/**
+    /**
 	 * Table (by element) of sorted SmooksResourceConfiguration instances keyed by selector value. Each table entry
 	 * contains a List of SmooksResourceConfiguration instances.
 	 */
 	private LinkedHashMap<String, List<SmooksResourceConfiguration>> resourceConfigTable = new LinkedHashMap<String, List<SmooksResourceConfiguration>>();
-	/**
+    /**
 	 * Table of AssemblyUnit instances keyed by selector. Each table entry
 	 * contains a single {@link org.milyn.delivery.dom.DOMElementVisitor} instances.
 	 */
 	private ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnitTable = new ContentHandlerConfigMapTable<DOMElementVisitor>();
-	/**
+    /**
      * Table of Processing Unit instances keyed by selector. Each table entry
      * contains a single {@link org.milyn.delivery.dom.DOMElementVisitor} instances.
 	 */
 	private ContentHandlerConfigMapTable<DOMElementVisitor> processingUnitTable = new ContentHandlerConfigMapTable<DOMElementVisitor>();
-	/**
+    /**
 	 * Table of SerializationUnit instances keyed by selector. Each table entry
 	 * contains a single SerializationUnit instances.
 	 */
@@ -92,15 +94,19 @@ public class ContentDeliveryConfigBuilder {
      * contains a single SAXElementVisitor instances.
      */
     private ContentHandlerConfigMapTable<SAXElementVisitor> saxVisitors = new ContentHandlerConfigMapTable<SAXElementVisitor>();
-	/**
+    /**
+     * Config builder events list.
+     */
+    private List<ConfigBuilderEvent> configBuilderEvents = new ArrayList<ConfigBuilderEvent>();
+
+    /**
 	 * DTD for the associated device.
 	 */
 	private DTDObjectContainer dtd;
-
     private int elementHandlerCount = 0;
     private int saxElementHandlerCount = 0;
-    private int domElementHandlerCount = 0;
 
+    private int domElementHandlerCount = 0;
     /**
      * Stream filter type config parameter.
      */
@@ -173,26 +179,31 @@ public class ContentDeliveryConfigBuilder {
     private ContentDeliveryConfig createConfig() {
         StreamFilterType filterType = getStreamFilterType();
 
+        configBuilderEvents.add(new ConfigBuilderEvent("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics()));
+        configBuilderEvents.add(new ConfigBuilderEvent("Using Stream Filter Type: " + filterType));
+
         if(filterType == StreamFilterType.DOM) {
             DOMContentDeliveryConfig domConfig = new DOMContentDeliveryConfig();
 
-            logger.info("Using the DOM Stream Filter.");
+            logger.debug("Using the DOM Stream Filter.");
             domConfig.setAssemblyUnits(assemblyUnitTable);
             domConfig.setProcessingUnits(processingUnitTable);
             domConfig.setSerailizationUnits(serializationUnitTable);
             domConfig.setApplicationContext(applicationContext);
             domConfig.setSmooksResourceConfigurations(resourceConfigTable);
             domConfig.setDtd(dtd);
+            domConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
 
             return domConfig;
         } else {
             SAXContentDeliveryConfig saxConfig = new SAXContentDeliveryConfig();
 
-            logger.info("Using the SAX Stream Filter.");
+            logger.debug("Using the SAX Stream Filter.");
             saxConfig.setSaxVisitors(saxVisitors);
             saxConfig.setApplicationContext(applicationContext);
             saxConfig.setSmooksResourceConfigurations(resourceConfigTable);
             saxConfig.setDtd(dtd);
+            saxConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
 
             return saxConfig;
         }
@@ -317,7 +328,7 @@ public class ContentDeliveryConfigBuilder {
 		sortSmooksResourceConfigurations(resourceConfigTable);
 
         // Extract the ContentDeliveryUnits and build the tables
-        extractContentDeliveryUnits();
+        extractContentHandlers();
 
         if(logger.isDebugEnabled()) {
             logResourceConfig();
@@ -426,26 +437,29 @@ public class ContentDeliveryConfigBuilder {
 	 * on each element.  Ordered by specificity.
 	 */
 	private void sortSmooksResourceConfigurations(Map<String, List<SmooksResourceConfiguration>> table) {
-		if(!table.isEmpty()) {
-			Iterator tableEntrySet = table.entrySet().iterator();
+        Parameter sortParam = ParameterAccessor.getParameter("sort.resources", table);
+        if(sortParam != null && sortParam.getValue().trim().equalsIgnoreCase("true")) {
+            if(!table.isEmpty()) {
+                Iterator tableEntrySet = table.entrySet().iterator();
 
-			while(tableEntrySet.hasNext()) {
-				Map.Entry entry = (Map.Entry)tableEntrySet.next();
-				List markupElSmooksResourceConfigurations = (List)entry.getValue();
-				SmooksResourceConfiguration[] resourceConfigs = (SmooksResourceConfiguration[])markupElSmooksResourceConfigurations.toArray(new SmooksResourceConfiguration[markupElSmooksResourceConfigurations.size()]);
-				SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(profileSet);
+                while(tableEntrySet.hasNext()) {
+                    Map.Entry entry = (Map.Entry)tableEntrySet.next();
+                    List markupElSmooksResourceConfigurations = (List)entry.getValue();
+                    SmooksResourceConfiguration[] resourceConfigs = (SmooksResourceConfiguration[])markupElSmooksResourceConfigurations.toArray(new SmooksResourceConfiguration[markupElSmooksResourceConfigurations.size()]);
+                    SmooksResourceConfigurationSortComparator sortComparator = new SmooksResourceConfigurationSortComparator(profileSet);
 
-				Arrays.sort(resourceConfigs, sortComparator);
-				entry.setValue(new Vector(Arrays.asList(resourceConfigs)));
-			}
-		}
-	}
+                    Arrays.sort(resourceConfigs, sortComparator);
+                    entry.setValue(new Vector(Arrays.asList(resourceConfigs)));
+                }
+            }
+        }
+    }
 
     /**
-	 * Extract the ContentDeliveryUnits from the SmooksResourceConfiguration table and add them to
+	 * Extract the ContentHandler instances from the SmooksResourceConfiguration table and add them to
 	 * their respective tables.
 	 */
-	private void extractContentDeliveryUnits() {
+	private void extractContentHandlers() {
 		ContentHandlerExtractionStrategy cduStrategy = new ContentHandlerExtractionStrategy(applicationContext);
 		SmooksResourceConfigurationTableIterator tableIterator = new SmooksResourceConfigurationTableIterator(cduStrategy);
 
@@ -483,6 +497,10 @@ public class ContentDeliveryConfigBuilder {
 
 		throw new IllegalStateException("Unsupported DTD spec definition [" + string + "]");
 	}
+
+    private void logExecutionEvent(SmooksResourceConfiguration resourceConfig, String message) {
+        configBuilderEvents.add(new ConfigBuilderEvent(resourceConfig, message));
+    }
 
     /**
 	 * ContentHandler extraction strategy.
@@ -528,14 +546,21 @@ public class ContentDeliveryConfigBuilder {
             // If we have a creator but it's the JavaContentHandlerFactory we ignore it because
             // we know the class in question does not implement ContentHandler.  We know because
             // we tried this above.
-            if(creator != null && !(creator instanceof JavaContentHandlerFactory)) {
-				try {
-					return addCDU(elementName, resourceConfig, creator);
-				} catch (InstantiationException e) {
-					logger.warn("ContentHandler creation failure.", e);
-				}
+            if(creator != null) {
+                if(!(creator instanceof JavaContentHandlerFactory)) {
+                    try {
+                        return addCDU(elementName, resourceConfig, creator);
+                    } catch (InstantiationException e) {
+                        logger.warn("ContentHandler creation failure.", e);
+                    }
+                }
             } else {
-				// Just ignore it - something else will use it (hopefully)            	
+				// Just ignore it - something else will use it (hopefully)
+                if(restype != null) {
+                    logExecutionEvent(resourceConfig, "Unable to create ContentHandler class instance for resource.  " +
+                            "This is probably because there's no " + ContentHandlerFactory.class.getSimpleName()  + " implementation for resource " +
+                            "type '" + restype + "' available on the classpath.");
+                }
             }
 
             return false;
@@ -579,12 +604,16 @@ public class ContentDeliveryConfigBuilder {
 			try {
 				contentHandler = handlerFactory.create(resourceConfig);
 			} catch(Throwable thrown) {
-				if(logger.isDebugEnabled()) {
-                    logger.warn("ContentHandlerFactory [" + handlerFactory.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "].", thrown);
+                String message = "ContentHandlerFactory [" + handlerFactory.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. ";
+
+                if(logger.isDebugEnabled()) {
+                    logger.warn(message, thrown);
                 } else {
-                    logger.warn("ContentHandlerFactory [" + handlerFactory.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. " + thrown.getMessage());
+                    logger.warn(message + thrown.getMessage());
 				}
-				return false;
+                configBuilderEvents.add(new ConfigBuilderEvent(resourceConfig, message, thrown));
+                
+                return false;
 			}
 
             if(contentHandler instanceof SAXElementVisitor || contentHandler instanceof DOMElementVisitor || contentHandler instanceof SerializationUnit) {
@@ -593,6 +622,7 @@ public class ContentDeliveryConfigBuilder {
                 if(contentHandler instanceof SAXElementVisitor) {
                     saxElementHandlerCount++;
                     saxVisitors.addMapping(elementName, resourceConfig, (SAXElementVisitor) contentHandler);
+                    logExecutionEvent(resourceConfig, "Added as a " + SAXElementVisitor.class.getSimpleName() + " resource.");
                 }
 
                 if(contentHandler instanceof DOMElementVisitor || contentHandler instanceof SerializationUnit) {
@@ -604,17 +634,21 @@ public class ContentDeliveryConfigBuilder {
                         if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
                             // It's an assembly unit...
                             assemblyUnitTable.addMapping(elementName, resourceConfig, (DOMElementVisitor) contentHandler);
+                            logExecutionEvent(resourceConfig, "Added as a " + DOMElementVisitor.class.getSimpleName() + " Assembly Phase resource.");
                         } else if (visitPhase.equalsIgnoreCase(VisitPhase.ASSEMBLY.toString())) {
                             // It's an assembly unit...
                             assemblyUnitTable.addMapping(elementName, resourceConfig, (DOMElementVisitor) contentHandler);
+                            logExecutionEvent(resourceConfig, "Added as a " + DOMElementVisitor.class.getSimpleName() + " Assembly Phase resource.");
                         } else {
                             // It's a processing unit...
                             processingUnitTable.addMapping(elementName, resourceConfig, (DOMElementVisitor) contentHandler);
+                            logExecutionEvent(resourceConfig, "Added as a " + DOMElementVisitor.class.getSimpleName() + " Processing Phase resource.");
                         }
                     }
 
                     if(contentHandler instanceof SerializationUnit) {
                         serializationUnitTable.addMapping(elementName, resourceConfig, (SerializationUnit) contentHandler);
+                        logExecutionEvent(resourceConfig, "Added as a DOM " + SerializationUnit.class.getSimpleName() + " resource.");
                     }
                 }
             } else if(!(contentHandler instanceof ConfigurationExpander)) {

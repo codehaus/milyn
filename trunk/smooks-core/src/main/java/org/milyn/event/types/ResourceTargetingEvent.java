@@ -13,10 +13,12 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery;
+package org.milyn.event.types;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.event.ExecutionEvent;
+import org.milyn.event.ElementProcessingEvent;
+import org.milyn.event.ResourceBasedEvent;
+import org.milyn.delivery.VisitSequence;
 
 import java.util.Arrays;
 
@@ -25,30 +27,35 @@ import java.util.Arrays;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ResourceTargetingEvent<T> implements ExecutionEvent {
+public class ResourceTargetingEvent extends ElementProcessingEvent implements ResourceBasedEvent {
 
-    private T target;
     private SmooksResourceConfiguration resourceConfig;
     private Object[] metadata;
+    private VisitSequence sequence;
 
     /**
      * Event constructor.
-     * @param target The resource target.
+     * @param element The element ({@link org.milyn.delivery.sax.SAXElement}/{@link org.w3c.dom.Element})
+     * being targeted by the resource.
      * @param resourceConfig The resource configuration.
      * @param metadata Optional event metadata.
      */
-    public ResourceTargetingEvent(T target, SmooksResourceConfiguration resourceConfig, Object... metadata) {
-        this.target = target;
+    public ResourceTargetingEvent(Object element, SmooksResourceConfiguration resourceConfig, Object... metadata) {
+        super(element);
         this.resourceConfig = resourceConfig;
         this.metadata = metadata;
     }
 
     /**
-     * Get the event target.
-     * @return The event target.
+     * Event constructor.
+     * @param element The element ({@link org.milyn.delivery.sax.SAXElement}/{@link org.w3c.dom.Element})
+     * being targeted by the resource.
+     * @param resourceConfig The resource configuration.
+     * @param metadata Optional event metadata.
      */
-    public T getTarget() {
-        return target;
+    public ResourceTargetingEvent(Object element, SmooksResourceConfiguration resourceConfig, VisitSequence sequence, Object... metadata) {
+        this(element, resourceConfig, metadata);
+        this.sequence = sequence;
     }
 
     /**
@@ -78,12 +85,16 @@ public class ResourceTargetingEvent<T> implements ExecutionEvent {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("Target: ").append(target).append(". ");
+        builder.append("Target: ").append(getElement()).append(". ");
         builder.append("Resource: ").append(resourceConfig).append(". ");
         if(metadata != null) {
             builder.append("Event Metadata: ").append(Arrays.asList(metadata)).append(".");
         }
 
         return builder.toString();
+    }
+
+    public VisitSequence getSequence() {
+        return sequence;
     }
 }

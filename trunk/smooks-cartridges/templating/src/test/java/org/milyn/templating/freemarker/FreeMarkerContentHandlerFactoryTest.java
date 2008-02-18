@@ -20,7 +20,7 @@ import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.java.JavaSource;
-import org.milyn.profile.DefaultProfileSet;
+import org.milyn.event.ExecutionReportGenerator;
 import org.milyn.templating.MyBean;
 import org.xml.sax.SAXException;
 
@@ -96,6 +96,12 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         input = new StringReader("<c x='xvalueonc1' />");
         smooks.filter(new StreamSource(input), null, context);
         assertEquals("<mybean>xvalueonc1</mybean>", context.getAttribute("mybeanTemplate"));
+    }
+
+    public void testX() throws IOException, SAXException {
+        StringWriter output = new StringWriter();
+        ExecutionReportGenerator.generateReport("/org/milyn/templating/freemarker/test-configs-04.cdrl", new StreamSource(new StringReader("<a><b><c x='xvalueonc2' /></b></a>")), output, false, false);
+        System.out.println(output);
     }
 
     private void test_ftl(Smooks smooks, String input, String expected) {

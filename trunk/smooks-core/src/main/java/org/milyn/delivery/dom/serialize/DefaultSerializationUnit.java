@@ -18,6 +18,7 @@ package org.milyn.delivery.dom.serialize;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.io.StringWriter;
 
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
@@ -41,10 +42,17 @@ public class DefaultSerializationUnit implements SerializationUnit {
     @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
     private boolean closeEmptyElements = false;
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
+     * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)
+     */
+    public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
+        writeElementStart(element, writer);
+    }
+
+    /* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)
 	 */
-	public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
+	public void writeElementStart(Element element, Writer writer) throws IOException {
 		writer.write((int)'<');
         writer.write(element.getTagName());
         writeAttributes(element.getAttributes(), writer);
@@ -80,7 +88,14 @@ public class DefaultSerializationUnit implements SerializationUnit {
 			writer.write(enclosingChar);
 		}
 	}
-	
+
+    /* (non-Javadoc)
+     * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer)
+     */
+    public void writeElementEnd(Element element, Writer writer) throws IOException {
+        writeElementEnd(element, writer, null);
+    }
+
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer)
 	 */

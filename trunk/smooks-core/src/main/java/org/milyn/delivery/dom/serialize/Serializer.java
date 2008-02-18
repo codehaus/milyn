@@ -25,7 +25,9 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
-import org.milyn.delivery.ResourceTargetingEvent;
+import org.milyn.event.types.ResourceTargetingEvent;
+import org.milyn.event.types.ElementPresentEvent;
+import org.milyn.event.types.DOMFilterLifecycleEvent;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.xml.DocType;
 import org.milyn.xml.DomUtils;
@@ -97,7 +99,8 @@ public class Serializer {
 		defaultSUs = serializationUnits.getMappings("*");
 		if(defaultSUs == null) {
 			SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
-			defaultSUs = new Vector();
+            resourceConfig.setDefaultResource(true);
+            defaultSUs = new Vector();
 			defaultSUs.add(new ContentHandlerConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
 		}
 	}
@@ -120,7 +123,12 @@ public class Serializer {
 			throw new IllegalArgumentException("null 'writer' arg passed in method call.");
 		} 
 
-		if(node instanceof Document) {
+        // Register the DOM phase events...
+        if(eventListener != null) {
+            eventListener.onEvent(new DOMFilterLifecycleEvent(DOMFilterLifecycleEvent.DOMEventType.SERIALIZATION_STARTED));
+        }
+
+        if(node instanceof Document) {
 			Document doc = (Document)node;
 			Element rootElement = doc.getDocumentElement();
 
@@ -247,9 +255,14 @@ public class Serializer {
 		String elementName = DomUtils.getName(element);
         List<ContentHandlerConfigMap<SerializationUnit>> elementSUs;
 
+        // Register the "presence" of the element...
+        if(eventListener != null) {
+            eventListener.onEvent(new ElementPresentEvent(element));
+        }
+        
         if(isRoot) {
             // The document as a whole (root node) can also be targeted through the "$document" selector.
-            elementSUs = serializationUnits.getMappings(new String[] {elementName, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR});
+            elementSUs = serializationUnits.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
         } else {
             elementSUs = serializationUnits.getMappings(elementName);
         }

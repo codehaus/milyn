@@ -13,36 +13,40 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery;
+package org.milyn.event.types;
 
 import org.milyn.event.ExecutionEvent;
 
 /**
- * Smooks filter Lifecycle event.
- * 
+ * Smooks DOM filter Lifecycle event.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
- * @see EventType
+ * @see org.milyn.event.types.DOMFilterLifecycleEvent.DOMEventType
  */
-public class FilterLifecycleEvent implements ExecutionEvent {
+public class DOMFilterLifecycleEvent extends FilterLifecycleEvent {
 
-    public static enum EventType {
+    public static enum DOMEventType {
         /**
          * The filtering process has started.
          */
-        STARTED, 
+        ASSEMBLY_STARTED,
         /**
          * The filtering process has finished.
          */
-        FINISHED,
+        PROCESSING_STARTED,
+        /**
+         * The filtering process has finished.
+         */
+        SERIALIZATION_STARTED,
     }
 
-    private EventType eventType;
+    private DOMEventType eventType;
 
-    public FilterLifecycleEvent(EventType eventType) {
+    public DOMFilterLifecycleEvent(DOMEventType eventType) {
         this.eventType = eventType;
     }
 
-    public EventType getEventType() {
+    public DOMEventType getDOMEventType() {
         return eventType;
     }
 

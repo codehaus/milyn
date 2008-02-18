@@ -223,6 +223,12 @@ public class SmooksResourceConfiguration {
      * should only be applied.
      */
     private String namespaceURI;
+    /**
+     * Flag indicating whether or not the resource is a default applied resource
+     * e.g. {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit} or
+     * {@link org.milyn.delivery.sax.DefaultSAXElementVisitor}.
+     */
+    private boolean defaultResource = false;
 
     /**
      * Public default constructor.
@@ -299,6 +305,7 @@ public class SmooksResourceConfiguration {
         clone.selector = selector;
         clone.contextualSelector = contextualSelector;
         clone.targetProfile = targetProfile;
+        clone.defaultResource = defaultResource;
         clone.profileTargetingExpressionStrings = profileTargetingExpressionStrings;
         clone.profileTargetingExpressions = profileTargetingExpressions;
         clone.resource = resource;
@@ -487,6 +494,32 @@ public class SmooksResourceConfiguration {
      */
     public ExpressionEvaluator getConditionEvaluator() {
         return expressionEvaluator;
+    }
+
+    /**
+     * Is this resource config a default applied resource.
+     * <p/>
+     * Some resources (e.g. {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit} or
+     * {@link org.milyn.delivery.sax.DefaultSAXElementVisitor}) are applied by default when no other
+     * resources are targeted at an element.
+     * 
+     * @return True if this is a default applied resource, otherwise false.
+     */
+    public boolean isDefaultResource() {
+        return defaultResource;
+    }
+
+    /**
+     * Set this resource config as a default applied resource.
+     * <p/>
+     * Some resources (e.g. {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit} or
+     * {@link org.milyn.delivery.sax.DefaultSAXElementVisitor}) are applied by default when no other
+     * resources are targeted at an element.
+     *
+     * @param defaultResource True if this is a default applied resource, otherwise false.
+     */
+    public void setDefaultResource(boolean defaultResource) {
+        this.defaultResource = defaultResource;
     }
 
     /**
@@ -859,6 +892,7 @@ public class SmooksResourceConfiguration {
             if (resource.equals(className)) {
                 logger.debug("Resource path [" + resource + "] looks as though it may be a Java resource reference.  If so, this class is not available on the classpath.");
             }
+
             return null;
         }
     }

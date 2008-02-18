@@ -8,7 +8,7 @@ About This Example:
     XML produced by Smooks when supplied a JavaSource.  You could add additional resource
     configurations to the smooks-config.xml to perform additional transformations on the
     default XML.  See the "java-to-java" example as an example of how to perform aditional
-    transforms on the XML event stream produced by a JavaSource input source.
+    transforms on the XML eventPresentEvent stream produced by a JavaSource input source.
 
     See:
         1. The "Main" class in src/main/java/example/Main.java.

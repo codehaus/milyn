@@ -75,4 +75,16 @@ public abstract class SAXUtil {
             addXPathElement(parent, builder);
         }
     }
+
+    public static int getDepth(SAXElement element) {
+        int depth = 0;
+
+        SAXElement parent = element.getParent();
+        while(parent != null) {
+            depth++;
+            parent = parent.getParent();
+        }
+
+        return depth;
+    }
 }

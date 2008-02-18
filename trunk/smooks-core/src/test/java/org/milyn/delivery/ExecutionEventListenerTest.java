@@ -20,6 +20,8 @@ import org.milyn.Smooks;
 import org.milyn.io.NullWriter;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.BasicExecutionEventListener;
+import org.milyn.event.types.FilterLifecycleEvent;
+import org.milyn.event.types.ResourceTargetingEvent;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
@@ -35,14 +37,14 @@ public class ExecutionEventListenerTest extends TestCase {
         BasicExecutionEventListener eventListener = new BasicExecutionEventListener();
 
         testListener(eventListener, "smooks-config-dom.xml", "test-data-01.xml");
-        assertEquals(14, eventListener.getEvents().size());
+        assertEquals(41, eventListener.getEvents().size());
     }
 
     public void test_01_sax() throws IOException, SAXException {
         BasicExecutionEventListener eventListener = new BasicExecutionEventListener();
 
         testListener(eventListener, "smooks-config-sax.xml", "test-data-01.xml");
-        assertEquals(8, eventListener.getEvents().size());
+        assertEquals(26, eventListener.getEvents().size());
     }
 
     public void test_02_dom() throws IOException, SAXException {
@@ -58,7 +60,7 @@ public class ExecutionEventListenerTest extends TestCase {
 
         eventListener.setFilterEvents(ResourceTargetingEvent.class);
         testListener(eventListener, "smooks-config-dom.xml", "test-data-01.xml");
-        assertEquals(12, eventListener.getEvents().size());
+        assertEquals(10, eventListener.getEvents().size());
     }
 
     public void test_04_dom() throws IOException, SAXException {
@@ -66,7 +68,7 @@ public class ExecutionEventListenerTest extends TestCase {
 
         eventListener.setFilterEvents(FilterLifecycleEvent.class, ResourceTargetingEvent.class);
         testListener(eventListener, "smooks-config-dom.xml", "test-data-01.xml");
-        assertEquals(14, eventListener.getEvents().size());
+        assertEquals(12, eventListener.getEvents().size());
     }
 
     private void testListener(BasicExecutionEventListener eventListener, String config, String sourceFile) throws IOException, SAXException {

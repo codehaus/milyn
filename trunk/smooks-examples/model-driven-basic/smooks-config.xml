@@ -2,6 +2,13 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
     <!--
+    Use a FreeMarker template to perform the model driven transformation.  You can also inline the template here.
+    -->
+    <resource-config selector="$document">
+        <resource>/example/templates/HistoryTrans.ftl</resource>
+    </resource-config>
+
+    <!--
     Configure the History bean creation and population.
     -->
     <resource-config selector="history">
@@ -47,13 +54,6 @@
         <param name="1">Dublin</param>
         <param name="2">Belfast</param>
         <param name="3">Cork</param>
-    </resource-config>
-
-    <!--
-    Use a FreeMarker template to perform the model driven transformation.  You can also inline the template here.
-    -->
-    <resource-config selector="$document">
-        <resource>/example/templates/HistoryTrans.ftl</resource>
     </resource-config>
 
 </smooks-resource-list>

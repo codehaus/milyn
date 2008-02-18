@@ -208,4 +208,8 @@ public class SAXElement {
     public SAXElement getParent() {
         return parent;
     }
+
+    public String toString() {
+        return getName().toString();
+    }
 }

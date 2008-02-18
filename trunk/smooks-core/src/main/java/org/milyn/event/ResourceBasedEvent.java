@@ -13,14 +13,16 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery;
+package org.milyn.event;
+
+import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
- * Smooks visit event.
- *
+ * Smooks resource based event.
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public enum VisitEvent {
-    BEFORE,
-    AFTER,
+public interface ResourceBasedEvent {
+
+    public SmooksResourceConfiguration getResourceConfig();
 }

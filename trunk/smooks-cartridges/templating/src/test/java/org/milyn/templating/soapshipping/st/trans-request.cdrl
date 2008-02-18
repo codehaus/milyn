@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-target-profile="shipping-request">
 
+    <!--
+        Use a StringTemplate template to perform the transformation.
+        We're transforming the "trackingNumber" element...
+    -->
+    <resource-config selector="trackingNumber">
+        <resource>/org/milyn/templating/soapshipping/st/TrackingNumberIn.st</resource>
+    </resource-config>
+
 	<!--
 		Configure the TrackingNumber bean creation and population...
 	-->
@@ -14,13 +22,5 @@
             <binding property="shipmentNumber" selector="trackingNumber shipmentNumber" />
         </param>
 	</resource-config>
-		
-	<!--
-		Use a StringTemplate template to perform the transformation.
-		We're transforming the "trackingNumber" element...
-	-->
-	<resource-config selector="trackingNumber">
-        <resource>/org/milyn/templating/soapshipping/st/TrackingNumberIn.st</resource>
-    </resource-config>
-	
+
 </smooks-resource-list>
