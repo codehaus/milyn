@@ -17,7 +17,7 @@ package example;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.event.ExecutionReportGenerator;
+import org.milyn.event.report.FlatExecutionReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
@@ -44,7 +44,7 @@ public class ModelTransformTest extends TestCase {
         Smooks smooks = new Smooks("smooks-config.xml");
         StringWriter outWriter = new StringWriter();
 
-        ExecutionReportGenerator.generateReport(smooks, new StreamSource(new ByteArrayInputStream(Main.inputMessage)), outWriter, false, false);
+        FlatExecutionReportGenerator.generateReport(smooks, new StreamSource(new ByteArrayInputStream(Main.inputMessage)), outWriter, false, false);
         System.out.println(outWriter);
     }
 }
