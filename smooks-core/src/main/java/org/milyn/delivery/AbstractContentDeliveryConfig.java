@@ -18,6 +18,7 @@ package org.milyn.delivery;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ApplicationContext;
 import org.milyn.dtd.DTDStore;
+import org.milyn.event.types.ConfigBuilderEvent;
 
 import java.util.*;
 
@@ -46,6 +47,10 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
      * DTD for the associated device.
      */
     private DTDStore.DTDObjectContainer dtd;
+    /**
+     * Config builder events list.
+     */
+    private List<ConfigBuilderEvent> configBuilderEvents = new ArrayList<ConfigBuilderEvent>();
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -126,5 +131,9 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
 
     public void setDtd(DTDStore.DTDObjectContainer dtd) {
         this.dtd = dtd;
+    }
+
+    public List<ConfigBuilderEvent> getConfigBuilderEvents() {
+        return configBuilderEvents;
     }
 }

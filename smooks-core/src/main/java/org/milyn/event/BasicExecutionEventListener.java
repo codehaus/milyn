@@ -65,7 +65,7 @@ public class BasicExecutionEventListener implements ExecutionEventListener {
      * @param event The {@link ExecutionEvent}.
      */
     public void onEvent(ExecutionEvent event) {
-        if(filterEvents != null && !filterEvents.contains(event.getClass())) {
+        if(ignoreEvent(event)) {
             // Don't capture this event...
             return;
         }
@@ -75,6 +75,10 @@ public class BasicExecutionEventListener implements ExecutionEventListener {
         } else {
             logger.warn("Invalid call to onEvent method.  null 'event' arg.");
         }
+    }
+
+    protected boolean ignoreEvent(ExecutionEvent event) {
+        return (filterEvents != null && !filterEvents.contains(event.getClass()));
     }
 
     /**

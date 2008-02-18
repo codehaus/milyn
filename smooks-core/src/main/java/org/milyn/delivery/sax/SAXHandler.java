@@ -17,13 +17,18 @@ package org.milyn.delivery.sax;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.cdr.ParameterAccessor;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.event.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
-import org.milyn.delivery.ResourceTargetingEvent;
+import org.milyn.delivery.Filter;
+import org.milyn.delivery.VisitSequence;
+import org.milyn.event.ExecutionEventListener;
+import org.milyn.event.types.ElementPresentEvent;
+import org.milyn.event.types.ElementVisitEvent;
+import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.xml.DocType;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
@@ -50,6 +55,7 @@ public class SAXHandler extends DefaultHandler2 {
     private ContentHandlerConfigMapTable<SAXElementVisitor> saxVisitors;
     private List<ContentHandlerConfigMap<SAXElementVisitor>> defaultVisitors;
     private ExecutionEventListener eventListener;
+    private boolean reverseVisitOrderOnVisitAfter;
 
     public SAXHandler(ExecutionContext execContext, Writer writer) {
         this.execContext = execContext;
@@ -61,9 +67,13 @@ public class SAXHandler extends DefaultHandler2 {
         if(defaultMappings != null && !defaultMappings.isEmpty()) {
             defaultVisitors = defaultMappings;
         } else {
+            SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementVisitor.class.getName());
+            resource.setDefaultResource(true);
             defaultVisitors = new ArrayList<ContentHandlerConfigMap<SAXElementVisitor>>();
-            defaultVisitors.add(new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), new SmooksResourceConfiguration("*")));
+            defaultVisitors.add(new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), resource));
         }
+
+        reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, execContext.getDeliveryConfig());
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
@@ -91,10 +101,15 @@ public class SAXHandler extends DefaultHandler2 {
             element.setWriter(writer);
         }
 
+        // Register the "presence" of the element...
+        if(eventListener != null) {
+            eventListener.onEvent(new ElementPresentEvent(element));
+        }
+
         List<ContentHandlerConfigMap<SAXElementVisitor>> mappings;
         String elementName = element.getName().getLocalPart();
         if(isRoot) {
-            mappings = saxVisitors.getMappings(new String[] {elementName, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR});
+            mappings = saxVisitors.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
         } else {
             mappings = saxVisitors.getMappings(elementName);
         }
@@ -125,7 +140,8 @@ public class SAXHandler extends DefaultHandler2 {
                 if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                     // Register the targeting event.  No need to register this event again on the visitAfter...
                     if(eventListener != null) {
-                        eventListener.onEvent(new ResourceTargetingEvent(element, mapping.getResourceConfig()));
+                        eventListener.onEvent(new ResourceTargetingEvent(element, mapping.getResourceConfig(), VisitSequence.BEFORE));
+                        eventListener.onEvent(new ElementVisitEvent(element, mapping.getResourceConfig(), VisitSequence.BEFORE));
                     }
                     applied = true;
                     mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
@@ -140,19 +156,37 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-        for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
-            try {
-                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                    mapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
-                }
-            } catch(Throwable t) {
-                logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the visitAfter event.", t);
+
+        if(reverseVisitOrderOnVisitAfter) {
+            // We work through the mappings in reverse order on the end element event...
+            int mappingCount = currentProcessor.mappings.size();
+            ContentHandlerConfigMap<SAXElementVisitor> mapping;
+            for(int i = mappingCount - 1; i >= 0; i--) {
+                mapping = currentProcessor.mappings.get(i);
+                visitAfter(mapping);
             }
-            flushCurrentWriter();
+        } else {
+            for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
+                visitAfter(mapping);
+            }
         }
         if(!elementProcessorStack.isEmpty()) {
             currentProcessor = elementProcessorStack.pop();
         }
+    }
+
+    private void visitAfter(ContentHandlerConfigMap<SAXElementVisitor> mapping) {
+        try {
+            if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                if(eventListener != null) {
+                    eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, mapping.getResourceConfig(), VisitSequence.AFTER));
+                }
+                mapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
+            }
+        } catch(Throwable t) {
+            logger.error("Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the visitAfter event.", t);
+        }
+        flushCurrentWriter();
     }
 
     private SAXText textWrapper = new SAXText();

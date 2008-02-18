@@ -22,6 +22,7 @@ import java.util.Map;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.dtd.DTDStore;
 import org.milyn.container.ExecutionContext;
+import org.milyn.event.types.ConfigBuilderEvent;
 
 /**
  * Content delivery configuration.
@@ -87,4 +88,11 @@ public interface ContentDeliveryConfig {
 	 * @return The DTD ({@link org.milyn.dtd.DTDStore.DTDObjectContainer}) for this delivery context.
 	 */
 	public abstract DTDStore.DTDObjectContainer getDTD();
+
+    /**
+     * Get the list of Execution Events generated during the build of
+     * the configuration.
+     * @return The list of events.
+     */
+    public abstract List<ConfigBuilderEvent> getConfigBuilderEvents();
 }

@@ -852,7 +852,19 @@ public abstract class DomUtils {
 		return xpathToken;
 	}
 
-	/**
+    public static int getDepth(Element element) {
+        Node parent = element.getParentNode();
+        int depth = 0;
+
+        while(parent != null && parent.getNodeType() == Node.ELEMENT_NODE) {
+            depth++;
+            parent = parent.getParentNode();
+        }
+
+        return depth;
+    }
+
+    /**
 	 * Get the combined text from all the text, comment and cdata DOM nodes
 	 * contained within the supplied parent element. 
 	 * @param parent The parent DOM element.

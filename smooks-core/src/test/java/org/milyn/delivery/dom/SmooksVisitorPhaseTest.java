@@ -74,6 +74,6 @@ public class SmooksVisitorPhaseTest extends TestCase {
         System.out.println(outputWriter.toString());
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("testxml1-expected.xml"));
         assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(outputWriter.toString().getBytes())));
-        assertEquals(13, eventListener.getEvents().size());
+        assertEquals(33, eventListener.getEvents().size());
     }
 }
