@@ -17,7 +17,7 @@ package org.milyn.event;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.event.report.FlatExecutionReportGenerator;
+import org.milyn.event.report.FlatReportGenerator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
@@ -56,7 +56,7 @@ public class ExecutionReportGeneratorTest extends TestCase {
 
     private String runBasicTest(Smooks smooks, ExecutionContext execContext) {
         StringWriter reportWriter = new StringWriter();
-        FlatExecutionReportGenerator reportGenerator = new FlatExecutionReportGenerator(reportWriter, false, false);
+        FlatReportGenerator reportGenerator = new FlatReportGenerator(reportWriter, false, false);
 
         execContext.setEventListener(reportGenerator);
         smooks.filter(new StreamSource(getClass().getResourceAsStream("test-data-01.xml")), new StreamResult(new StringWriter()), execContext);

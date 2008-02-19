@@ -50,6 +50,33 @@ public abstract class StreamUtils {
 		return bytesOut.toByteArray();
 	}
 
+    public static byte[] readFile(File file) throws IOException {
+        AssertArgument.isNotNull(file, "file");
+
+        InputStream stream = new FileInputStream(file);
+        try {
+            return readStream(stream);
+        } finally {
+            stream.close();
+        }
+    }
+
+    public static void writeFile(File file, byte[] data) throws IOException {
+        AssertArgument.isNotNull(file, "file");
+        AssertArgument.isNotNull(data, "data");
+
+        OutputStream stream = new FileOutputStream(file);
+        try {
+            stream.write(data);
+        } finally {
+            try {
+                stream.flush();
+            } finally {
+                stream.close();
+            }
+        }
+    }
+
     public static String readStream(Reader stream) throws IOException {
         AssertArgument.isNotNull(stream, "stream");
 

@@ -159,4 +159,8 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	public void removeAttribute(Object key) {
 		attributes.remove(key);
 	}
+
+    public String toString() {
+        return attributes.toString();
+    }
 }
