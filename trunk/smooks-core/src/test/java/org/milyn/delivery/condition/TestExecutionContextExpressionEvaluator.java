@@ -36,6 +36,10 @@ public class TestExecutionContextExpressionEvaluator implements ExecutionContext
         evalResult = conditionExpression.trim().equals("true");
     }
 
+    public String getExpression() {
+        return condition;
+    }
+
     public boolean eval(Map beans) throws ExpressionEvaluationException {
         return false;
     }

@@ -26,16 +26,20 @@ import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.VisitSequence;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.WriterUtil;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
 import org.milyn.SmooksException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Element;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.io.IOException;
 import java.io.Writer;
+import java.io.StringWriter;
 
 /**
  * Abstract execution report generator.
@@ -43,7 +47,7 @@ import java.io.Writer;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public abstract class AbstractExecutionReportGenerator extends BasicExecutionEventListener {
-    private static Log logger = LogFactory.getLog(FlatExecutionReportGenerator.class);
+    private static Log logger = LogFactory.getLog(FlatReportGenerator.class);
     private Writer outputWriter;
     private List<ExecutionEvent> preProcessingEvents = new ArrayList<ExecutionEvent>();
     private List<ExecutionEvent> processingEvents = new ArrayList<ExecutionEvent>();
@@ -54,10 +58,27 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
     private boolean showDefaultAppliedResources = false;
     private static final String tabsBuffer = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 
+    /**
+     * Constructor.
+     * <p/>
+     * Special XML characrers are escaped.  Default applied resources ({@link org.milyn.delivery.sax.DefaultSAXElementVisitor}, {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit})
+     * are not output in the resource.
+     *
+     * @param outputWriter Report output writer.
+     * @see #AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)
+     */
     public AbstractExecutionReportGenerator(Writer outputWriter) {
         this.outputWriter = outputWriter;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param outputWriter                Report output writer.
+     * @param escapeXMLChars              True if special XML characters should encoded (entity encoded) in the report output e.g. rewrite '<' characters to '&lt;'.
+     * @param showDefaultAppliedResources True if default applied resources ({@link org.milyn.delivery.sax.DefaultSAXElementVisitor}, {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit})
+     *                                    are to be output in the resource, otherwise false.
+     */
     public AbstractExecutionReportGenerator(Writer outputWriter, boolean escapeXMLChars, boolean showDefaultAppliedResources) {
         this.outputWriter = outputWriter;
         this.escapeXMLChars = escapeXMLChars;
@@ -66,6 +87,10 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
 
     public Writer getOutputWriter() {
         return outputWriter;
+    }
+
+    public void setOutputWriter(Writer outputWriter) {
+        this.outputWriter = outputWriter;
     }
 
     public boolean isEscapeXMLChars() {
@@ -145,15 +170,24 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
                     // serialization phase...
                     outputReport();
                 }
+                outputWriter.write(event.toString() + "\n");
             } else if (event.getEventType() == FilterLifecycleEvent.EventType.STARTED) {
-                // Output the configuration builder events before we continue
-                // with the START...
+                // Output the start of the report...
+                outputStartReport();
+                // Output the configuration builder events...
                 outputConfigBuilderEvents(Filter.getCurrentExecutionContext().getDeliveryConfig().getConfigBuilderEvents());
+                toOutputWriter("\n");
+
+                reportWrapperStart();
+                outputWriter.write(event.toString() + "\n");
             } else if (event.getEventType() == FilterLifecycleEvent.EventType.FINISHED) {
                 // We're done now, output the last of it...
                 outputReport();
+                // Output the end of the report...
+                outputWriter.write(event.toString() + "\n");
+                reportWrapperEnd();
+                outputEndReport();
             }
-            outputWriter.write(event.toString() + "\n");
         } catch (IOException e) {
             throw new SmooksException("Failed to write report.", e);
         }
@@ -201,6 +235,7 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
 
         outputElementStart(reportNode);
         outputVisitEvents(reportNode, VisitSequence.BEFORE);
+        toOutputWriter("\n");
 
         children = reportNode.children;
         for (ReportNode child : children) {
@@ -209,26 +244,81 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
 
         outputElementEnd(reportNode);
         outputVisitEvents(reportNode, VisitSequence.AFTER);
+        toOutputWriter("\n");
     }
 
-    public abstract void outputElementStart(ReportNode node) throws IOException;
+    public void outputElementStart(ReportNode node) throws IOException {
+        Object elementObj = node.getElement();
+        StringWriter startWriter = new StringWriter();
 
-    public abstract void outputVisitEvents(ReportNode reportNode, VisitSequence visitSequence) throws IOException;
+        writeIndentTabs(node.getDepth());
+        if (elementObj instanceof Element) {
+            Element element = (Element) elementObj;
+            domSerializer.writeElementStart(element, startWriter);
+            xmlToOutputWriter(startWriter.toString());
+        } else if (elementObj instanceof SAXElement) {
+            SAXElement element = (SAXElement) elementObj;
+            WriterUtil.writeStartElement(element, startWriter);
+            xmlToOutputWriter(startWriter.toString());
+        }
+    }
+
+    public abstract void outputStartReport() throws IOException;
 
     public abstract void outputConfigBuilderEvents(List<ConfigBuilderEvent> events) throws IOException;
 
-    public abstract void outputElementEnd(ReportNode node) throws IOException;
+    public abstract void reportWrapperStart() throws IOException;
 
-    public void toOutputWriter(String text) throws IOException {
+    public abstract void reportWrapperEnd() throws IOException;
+
+    public abstract void outputVisitEvents(ReportNode reportNode, VisitSequence visitSequence) throws IOException;
+
+    public abstract void outputEndReport() throws IOException;
+
+    public void outputElementEnd(ReportNode node) throws IOException {
+        Object elementObj = node.getElement();
+        StringWriter startWriter = new StringWriter();
+
+        writeIndentTabs(node.getDepth());
+        if (elementObj instanceof Element) {
+            Element element = (Element) elementObj;
+            domSerializer.writeElementEnd(element, startWriter);
+            xmlToOutputWriter(startWriter.toString());
+        } else if (elementObj instanceof SAXElement) {
+            SAXElement element = (SAXElement) elementObj;
+            WriterUtil.writeEndElement(element, startWriter);
+            xmlToOutputWriter(startWriter.toString());
+        }
+    }
+
+    public void xmlToOutputWriter(String text) throws IOException {
         if (escapeXMLChars) {
-            text = text.replace("<", "&lt;");
-            text = text.replace(">", "&gt;");
+            text = escapeXML(text);
         }
         outputWriter.write(text);
     }
 
+    public static String escapeXML(String text) {
+        text = text.replace("&", "&amp;");
+        text = text.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+        text = text.replace("<", "&lt;");
+        text = text.replace(">", "&gt;");
+        text = text.replace("'", "&apos;");
+        text = text.replace("\"", "&quot;");
+        text = text.replace("\n", "<br/>");
+        return text;
+    }
+
+    public void toOutputWriter(String text) throws IOException {
+        outputWriter.write(text);
+    }
+
     public void writeIndentTabs(int numTabs) throws IOException {
-        outputWriter.write(tabsBuffer, 0, numTabs);
+        if (escapeXMLChars) {
+            outputWriter.write(tabsBuffer.substring(0, numTabs).replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
+        } else {
+            outputWriter.write(tabsBuffer, 0, numTabs);
+        }
     }
 
     private ReportNode getReportNode(Object element) {
@@ -243,8 +333,8 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
 
     public class ReportNode {
 
-        private FlatExecutionReportGenerator.ReportNode parent;
-        private List<FlatExecutionReportGenerator.ReportNode> children = new ArrayList<FlatExecutionReportGenerator.ReportNode>();
+        private FlatReportGenerator.ReportNode parent;
+        private List<FlatReportGenerator.ReportNode> children = new ArrayList<FlatReportGenerator.ReportNode>();
         private Object element;
         private int depth;
         private List<ExecutionEvent> elementProcessingEvents = new ArrayList<ExecutionEvent>();

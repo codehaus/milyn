@@ -29,9 +29,11 @@ import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
+import org.milyn.xml.XmlUtil;
 import org.milyn.profile.Profile;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.IOException;
@@ -216,7 +218,7 @@ public class SmooksResourceConfiguration {
     /**
      * SmooksResourceConfiguration parameters - String name and String value.
      */
-    private HashMap<String, Object> parameters;
+    private LinkedHashMap<String, Object> parameters;
     private int parameterCount;
     /**
      * The XML namespace of the tag to which this config
@@ -1104,5 +1106,62 @@ public class SmooksResourceConfiguration {
         }
 
         throw new UnsupportedOperationException("Unsupported ExpressionEvaluator type '" + expressionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextExpressionEvaluator.class.getName() + "' implementations.");
+    }
+
+    /**
+     * Generate an XML'ified description of this resource.
+     * @return XML'ified description of the resource.
+     */
+    public String toXML() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<resource-config selector=\"" + selector + "\"");
+        if(namespaceURI != null) {
+            builder.append(" selector-namespace=\"" + namespaceURI + "\"");
+        }
+        if(targetProfile != null && !targetProfile.equals(Profile.DEFAULT_PROFILE)) {
+            builder.append(" target-profile=\"" + targetProfile + "\"");
+        }
+        builder.append("\">\n");
+
+        if(resource != null) {
+            String resourceStartEl;
+            if(resourceType != null) {
+                resourceStartEl = "<resource type=\"" + resourceType + "\">";
+            } else {
+                resourceStartEl = "<resource>";
+            }
+            if(resource.length() < 300) {
+                builder.append("\t" + resourceStartEl + resource + "</resource>\n");
+            } else {
+                builder.append("\t" + resourceStartEl + resource.substring(0, 300) + " ... more</resource>\n");
+            }
+        }
+
+        if(expressionEvaluator != null) {
+            builder.append("\t<condition evaluator=\"" + expressionEvaluator.getClass().getName() + "\">" + expressionEvaluator.getExpression() + "</condition>\n");            
+        }
+
+        if(parameters != null) {
+            Set<String> paramNames = parameters.keySet();
+            for (String paramName : paramNames) {
+                List params = getParameters(paramName);
+                for (Object param : params) {
+                    Element element = ((Parameter) param).getXml();
+                    String value;
+                    
+                    if(element != null) {
+                        value = XmlUtil.serialize(element.getChildNodes());
+                    } else {
+                        value = ((Parameter) param).getValue();
+                    }
+                    builder.append("\t<param name=\"" + paramName + "\">" + value + "</param>\n");
+                }
+            }
+        }
+
+        builder.append("</resource-config>");
+
+        return builder.toString();
     }
 }

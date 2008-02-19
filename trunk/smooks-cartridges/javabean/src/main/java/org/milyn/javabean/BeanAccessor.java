@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class BeanAccessor {
     
-    private static final String BEAN_MAP_REQUEST_KEY = BeanAccessor.class.getName() + "#BEAN_MAP_REQUEST_KEY";
+    private static final String CONTEXT_KEY = BeanAccessor.class.getName() + "#CONTEXT_KEY";
 
     private Map<String, Object> beans;
     private Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
@@ -107,7 +107,7 @@ public class BeanAccessor {
     }
 
     private static BeanAccessor getAccessor(ExecutionContext executionContext) {
-        BeanAccessor accessor = (BeanAccessor) executionContext.getAttribute(BEAN_MAP_REQUEST_KEY);
+        BeanAccessor accessor = (BeanAccessor) executionContext.getAttribute(CONTEXT_KEY);
 
         if(accessor == null) {
             Result result = FilterResult.getResult(executionContext);
@@ -137,7 +137,7 @@ public class BeanAccessor {
                 accessor = new BeanAccessor();
             }
 
-            executionContext.setAttribute(BEAN_MAP_REQUEST_KEY, accessor);
+            executionContext.setAttribute(CONTEXT_KEY, accessor);
         }
 
         return accessor;
@@ -224,6 +224,14 @@ public class BeanAccessor {
             for (String association : associations) {
                 beans.remove(association);
             }
+        }
+    }
+
+    public String toString() {
+        if(beans != null) {
+            return beans.toString();
+        } else {
+            return "{}";
         }
     }
 }

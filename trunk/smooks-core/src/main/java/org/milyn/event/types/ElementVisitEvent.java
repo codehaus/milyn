@@ -16,6 +16,7 @@
 package org.milyn.event.types;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.delivery.Filter;
 import org.milyn.delivery.VisitSequence;
 import org.milyn.event.ElementProcessingEvent;
 import org.milyn.event.ResourceBasedEvent;
@@ -29,11 +30,13 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
     
     private SmooksResourceConfiguration resourceConfig;
     private VisitSequence sequence;
+    private String executionContextState;
 
     public ElementVisitEvent(Object element, SmooksResourceConfiguration resourceConfig, VisitSequence sequence) {
         super(element);
         this.resourceConfig = resourceConfig;
         this.sequence = sequence;
+        executionContextState = Filter.getCurrentExecutionContext().toString();
     }
 
     public SmooksResourceConfiguration getResourceConfig() {
@@ -42,5 +45,9 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
 
     public VisitSequence getSequence() {
         return sequence;
+    }
+
+    public String getExecutionContextState() {
+        return executionContextState;
     }
 }

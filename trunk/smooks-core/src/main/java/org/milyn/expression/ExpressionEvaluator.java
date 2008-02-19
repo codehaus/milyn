@@ -35,6 +35,12 @@ public interface ExpressionEvaluator {
     public void setExpression(String expression) throws SmooksConfigurationException;
 
     /**
+     * Get the String representation of the active expression on the evaluator instance.
+     * @return The active expression String representation.
+     */
+    public String getExpression();
+
+    /**
      * Evaluate a conditional expression against the supplied Map variable.
      * @param beans Expression evaluation variables.
      * @return True if the expression evaluates to true, otherwise false.

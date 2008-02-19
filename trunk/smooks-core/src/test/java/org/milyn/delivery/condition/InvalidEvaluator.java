@@ -34,6 +34,10 @@ public class InvalidEvaluator implements ExpressionEvaluator {
     public void setExpression(String conditionExpression) throws SmooksConfigurationException {
     }
 
+    public String getExpression() {
+        return null;
+    }
+
     public boolean eval(Map beans) throws ExpressionEvaluationException {
         return false;
     }
