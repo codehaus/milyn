@@ -125,6 +125,12 @@ public class StatementExec {
         }
     }
 
+    public void executeJoinedStatement(Connection dbConnection, List<Map<String, Object>> resultSet) throws SQLException {
+        for (Map<String, Object> row : resultSet) {
+            executeJoinedStatement(dbConnection, row);
+        }
+    }
+
     public void executeJoinedStatement(Connection dbConnection, Map<String, Object> beanMap) throws SQLException {
         if (getStatementType() == StatementType.QUERY) {
             executeJoinedQuery(dbConnection, beanMap);
