@@ -91,7 +91,7 @@ public class SQLExecutor  implements SAXElementVisitor, DOMElementVisitor {
         }
     }
 
-    private void executeSQL(ExecutionContext executionContext) {
+    private void executeSQL(ExecutionContext executionContext) throws SmooksException {
         Connection connection = AbstractDataSource.getConnection(datasource, executionContext);
         Map beans = BeanAccessor.getBeanMap(executionContext);
 
@@ -108,7 +108,22 @@ public class SQLExecutor  implements SAXElementVisitor, DOMElementVisitor {
                     statementExec.executeJoinedQuery(connection, beans, resultMap);
                     beans.put(resultSetName, resultMap);
                 } else {
-                    statementExec.executeJoinedUpdate(connection, beans);
+                    if(resultSetName == null) {
+                        statementExec.executeJoinedUpdate(connection, beans);
+                    } else {
+                        Object resultSetObj = beans.get(resultSetName);
+
+                        if(resultSetObj != null) {
+                            try {
+                                List<Map<String, Object>> resultSet = (List<Map<String, Object>>) resultSetObj;
+                                statementExec.executeJoinedStatement(connection, resultSet);
+                            } catch(ClassCastException e) {
+                                throw new SmooksException("Cannot execute joined statement '" + statementExec.getStatement() + "' on ResultSet '" + resultSetName + "'.  Must be of type 'List<Map<String, Object>>'.  Is of type '" + resultSetObj.getClass().getName() + "'.");
+                            }
+                        } else {
+                            throw new SmooksException("Cannot execute joined statement '" + statementExec.getStatement() + "' on ResultSet '" + resultSetName + "'.  ResultSet not found in ExecutionContext.");
+                        }
+                    }
                 }
             }
         } catch (SQLException e) {

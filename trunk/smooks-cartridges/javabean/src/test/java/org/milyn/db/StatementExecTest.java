@@ -91,7 +91,6 @@ public class StatementExecTest extends TestCase {
         assertEquals(expected, resultSet2.toString());
     }
 
-
     public void test_joined_insert_update() throws SQLException {
         Connection connection = hsqlServer.getConnection();
         Map<String, Object> beanMap = new HashMap<String, Object>();
@@ -113,5 +112,35 @@ public class StatementExecTest extends TestCase {
         orderBean.put("prod", 5555);
         exec3.executeJoinedStatement(connection, beanMap);
         assertEquals("{ORDERNUMBER=10, CUSTOMERNUMBER=2, PRODUCTCODE=5555}", exec1.executeUnjoinedQuery(connection).get(3).toString());
+    }
+
+    public void test_bulk_insert() throws SQLException {
+        Connection connection = hsqlServer.getConnection();
+        List<Map<String, Object>> orders =  new ArrayList<Map<String, Object>>();
+        Map<String, Object> beanMap = new HashMap<String, Object>();
+
+        addOrder(orders, 10, 2, 444);
+        addOrder(orders, 11, 1, 555);
+        addOrder(orders, 12, 2, 666);
+        beanMap.put("orders", orders);
+
+        StatementExec exec1 = new StatementExec("select * from ORDERS");
+        StatementExec exec2 = new StatementExec("insert into ORDERS (ORDERNUMBER, CUSTOMERNUMBER, PRODUCTCODE) values (${id}, ${cust}, ${prod})");
+
+        assertEquals(3, exec1.executeUnjoinedQuery(connection).size());
+        exec2.executeJoinedStatement(connection, orders);
+        assertEquals(6, exec1.executeUnjoinedQuery(connection).size());
+        assertEquals("{ORDERNUMBER=10, CUSTOMERNUMBER=2, PRODUCTCODE=444}", exec1.executeUnjoinedQuery(connection).get(3).toString());
+        assertEquals("{ORDERNUMBER=11, CUSTOMERNUMBER=1, PRODUCTCODE=555}", exec1.executeUnjoinedQuery(connection).get(4).toString());
+        assertEquals("{ORDERNUMBER=12, CUSTOMERNUMBER=2, PRODUCTCODE=666}", exec1.executeUnjoinedQuery(connection).get(5).toString());
+    }
+
+    private void addOrder(List<Map<String, Object>> orders, int id, int customerId, int productId) {
+        Map<String, Object> orderBean = new HashMap<String, Object>();
+
+        orders.add(orderBean);
+        orderBean.put("id", id);
+        orderBean.put("cust", customerId);
+        orderBean.put("prod", productId);
     }
 }
