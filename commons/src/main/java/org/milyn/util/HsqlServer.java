@@ -1,14 +1,14 @@
 package org.milyn.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hsqldb.Server;
 import org.hsqldb.jdbcDriver;
 import org.milyn.io.StreamUtils;
-import org.milyn.util.ClassUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,6 +19,8 @@ import java.sql.Statement;
  */
 public class HsqlServer {
 
+    private static Log logger = LogFactory.getLog(HsqlServer.class);
+
     private Server hsqlServer;
 
     private String url;
@@ -28,14 +30,14 @@ public class HsqlServer {
     private Connection connection;
 
     public HsqlServer(final int port) throws Exception {
-        final String databaseName = "milyn-test-" + port;
+        final String databaseName = "milyn-hsql-" + port;
 
+        url = "jdbc:hsqldb:hsql://localhost:" + port + "/" + databaseName;
+        logger.info("Starting Hypersonic Database '" + url + "'.");
         new Thread() {
             public void run() {
                 Server server = new Server();
-                server.setLogWriter(new PrintWriter(System.out));
-                server.setErrWriter(new PrintWriter(System.err));
-                server.setDatabasePath(0, "target");
+                server.setDatabasePath(0, "target/hsql/" + databaseName);
                 server.setDatabaseName(0, databaseName);
                 server.setNoSystemExit( true );
                 server.setSilent( true );
@@ -49,7 +51,6 @@ public class HsqlServer {
         }
 
         DriverManager.registerDriver(new jdbcDriver());
-        url = "jdbc:hsqldb:hsql://localhost:" + port + "/" + databaseName;
         connection = DriverManager.getConnection(url, username, password);
     }
 

@@ -34,10 +34,11 @@ import java.sql.SQLException;
  */
 public abstract class AbstractDataSource implements SAXElementVisitor, DOMElementVisitor {
 
-    private static final String CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#connection:";
+    private static final String DS_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#datasource:";
+    private static final String CONNECTION_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#connection:";
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        bindConnection(executionContext);
+        bind(executionContext);
     }
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -47,48 +48,58 @@ public abstract class AbstractDataSource implements SAXElementVisitor, DOMElemen
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        unbindConnection(executionContext);
+        unbind(executionContext);
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        bindConnection(executionContext);
+        bind(executionContext);
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-        unbindConnection(executionContext);
+        unbind(executionContext);
     }
 
-    private void bindConnection(ExecutionContext executionContext) {
-        try {
-            Connection connection = getConnection();
-            connection.setAutoCommit(isAutoCommit());
-            executionContext.setAttribute(CONTEXT_KEY_PREFIX + getName(), connection);
-        } catch (SQLException e) {
-            throw new SmooksException("Unable to bind DataSource '" + getName() + "'.", e);
-        }
+    private void bind(ExecutionContext executionContext) {
+        executionContext.setAttribute(DS_CONTEXT_KEY_PREFIX + getName(), this);
     }
 
-    private void unbindConnection(ExecutionContext executionContext) {
+    private void unbind(ExecutionContext executionContext) {
         try {
-            Connection connection = getConnection(getName(), executionContext);
-            try {
-                if(!isAutoCommit()) {
-                    connection.commit();
+            Connection connection = (Connection) executionContext.getAttribute(CONNECTION_CONTEXT_KEY_PREFIX + getName());
+            if(connection != null) {
+                try {
+                    if(!isAutoCommit()) {
+                        connection.commit();
+                    }
+                } finally {
+                    executionContext.removeAttribute(CONNECTION_CONTEXT_KEY_PREFIX + getName());
+                    connection.close();
                 }
-            } finally {
-                executionContext.removeAttribute(CONTEXT_KEY_PREFIX + getName());
-                connection.close();
             }
         } catch (SQLException e) {
             throw new SmooksException("Unable to unbind DataSource '" + getName() + "'.");
+        } finally {
+            executionContext.removeAttribute(DS_CONTEXT_KEY_PREFIX + getName());
         }
     }
 
-    public static Connection getConnection(String dataSourceName, ExecutionContext executionContext) {
-        Connection connection = (Connection) executionContext.getAttribute(CONTEXT_KEY_PREFIX + dataSourceName);
+    public static Connection getConnection(String dataSourceName, ExecutionContext executionContext) throws SmooksException {
+        Connection connection = (Connection) executionContext.getAttribute(CONNECTION_CONTEXT_KEY_PREFIX + dataSourceName);
 
         if(connection == null) {
-            throw new SmooksException("Connection to DataSource '" + dataSourceName + "' not bound to context.  Configure an '" + AbstractDataSource.class.getName() +  "' implementation and target it at '$document'.");
+            AbstractDataSource datasource = (AbstractDataSource) executionContext.getAttribute(DS_CONTEXT_KEY_PREFIX + dataSourceName);
+
+            if(datasource == null) {
+                throw new SmooksException("DataSource '" + dataSourceName + "' not bound to context.  Configure an '" + AbstractDataSource.class.getName() +  "' implementation and target it at '$document'.");
+            }
+
+            try {
+                connection = datasource.getConnection();
+                connection.setAutoCommit(datasource.isAutoCommit());
+            } catch (SQLException e) {
+                throw new SmooksException("Unable to open connection to dataSource '" + dataSourceName + "'.", e);
+            }
+            executionContext.setAttribute(CONNECTION_CONTEXT_KEY_PREFIX + dataSourceName, connection);
         }
 
         return connection;

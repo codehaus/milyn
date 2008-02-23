@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <!--
+    Filter the message using the SAX Filter (i.e. not DOM, so no
+    intermediate DOM, so we can process huge messages...
+    -->
+    <resource-config selector="global-parameters">
+        <param name="stream.filter.type">SAX</param>
+    </resource-config>
+
+    <!--
+    Define the EDI stream parser for the orders message...
+    -->
+    <import file="edi-orders-parser.xml" />
+
+    <!--
+    Define the Database Datasource(s)...
+    -->
+    <import file="datasources.xml"/>
+
+    <!--
+    Define the Data Bindings.  This is to bind the order and orderItem data into the ExecutionContext so it
+    can be used by the SQLExecutor for performing the inserts...
+    -->
+    <import file="bindings.xml"/>
+
+    <!-- ==================================================================================
+    Now define the SQLExecutor resource that will use the data bound from the EDI message
+    into the virtual data model defined in bindings.xml...
+    =================================================================================== -->
+
+    <!-- Assert whether it's an insert or update.  Need to do this just before we do the
+         insert/update, which is triggered to happen just after the customer-details are processed... -->
+    <resource-config selector="customer-details">
+        <resource>org.milyn.db.SQLExecutor</resource>
+        <param name="executeBefore">true</param>
+        <param name="datasource">DBExtractTransformLoadDS</param>
+        <param name="statement">select ORDERNUMBER from ORDERS where ORDERNUMBER = ${order.orderNum}</param>
+        <param name="resultSetName">orderExistsRS</param>
+    </resource-config>
+
+    <!-- If it's an insert (orderExistsRS.isEmpty()), insert the order at the end of the customer-details i.e. just before we process the order items... -->
+    <resource-config selector="customer-details">
+        <resource>org.milyn.db.SQLExecutor</resource>
+        <condition evaluator="org.milyn.javabean.expression.MVELExpressionEvaluator">orderExistsRS.isEmpty()</condition>
+        <param name="executeBefore">false</param>
+        <param name="datasource">DBExtractTransformLoadDS</param>
+        <param name="statement">INSERT INTO ORDERS VALUES(${order.orderNum}, ${order.customerUname}, ${order.status}, ${order.net}, ${order.total}, ${message.date})</param>
+    </resource-config>
+
+    <!-- And insert each orderItem... -->
+    <resource-config selector="order-item">
+        <resource>org.milyn.db.SQLExecutor</resource>
+        <condition evaluator="org.milyn.javabean.expression.MVELExpressionEvaluator">orderExistsRS.isEmpty()</condition>
+        <param name="executeBefore">false</param>
+        <param name="datasource">DBExtractTransformLoadDS</param>
+        <param name="statement">INSERT INTO ORDERITEMS VALUES (${order.orderNum}, ${orderItem.quantity}, ${orderItem.productId}, ${orderItem.title}, ${orderItem.price})</param>
+    </resource-config>
+
+    <!-- Ignoring updates for now!! -->
+
+</smooks-resource-list>

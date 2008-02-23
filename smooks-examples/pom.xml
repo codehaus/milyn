@@ -32,6 +32,7 @@
         <module>sj-testimonial</module>
         <module>mule-esb-integration</module>
         <module>servlet</module>
+        <module>db-extract-transform-load</module>
     </modules>
 
     <properties>
