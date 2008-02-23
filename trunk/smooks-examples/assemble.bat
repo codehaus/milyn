@@ -6,6 +6,10 @@ pushd csv-to-xml
 call mvn assembly:assembly
 popd
 
+pushd db-extract-transform-load
+call mvn assembly:assembly
+popd
+
 pushd edi-to-java
 call mvn assembly:assembly
 popd
