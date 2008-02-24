@@ -96,13 +96,13 @@
         <param name="setOn">rollingstock</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.Schedule</param>
         <param name="bindings">
+            <binding property="departureStation" type="String" selector="rollingstock departureSignature" />
             <binding property="departureDate" type="Date" selector="rollingstock departureDate" />
             <binding property="departureTime" type="Time" selector="rollingstock departureTime" />
             <binding property="destination" type="String" selector="rollingstock destinationSignature" />
-            <binding property="departureStation" type="String" selector="rollingstock departureSignature" />
         </param>
     </resource-config>
-    
+
     <resource-config selector="rollingstocks rollingstock">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">vehicles</param>
@@ -127,7 +127,7 @@
             <binding property="positionInTrainAssembly" type="Boolean" selector="vehicle positionInTrainAssembly" />
         </param>
     </resource-config>
-    
+
     <resource-config selector="rollingstock vehicle">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">schedule</param>
@@ -140,14 +140,14 @@
             <binding property="destination" type="String" selector="vehicle destination" />
         </param>
     </resource-config>
-    
+
     <resource-config selector="rollingstock vehicle">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">weight</param>
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
         <param name="bindings">
-            <binding property="weight" type="Double" selector="vehicle weight" />
+            <binding property="weight" type="Double" selector="vehicle weight" default="0" />
         </param>
     </resource-config>
     
@@ -157,7 +157,7 @@
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
         <param name="bindings">
-            <binding property="weight" type="Double" selector="vehicle dynamicWeight" />
+            <binding property="weight" type="Double" selector="vehicle dynamicWeight" default="0" />
         </param>
     </resource-config>
     
@@ -167,7 +167,7 @@
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Weight</param>
         <param name="bindings">
-            <binding property="weight" type="Double" selector="vehicle brakeWeight" />
+            <binding property="weight" type="Double" selector="vehicle brakeWeight" default="0" />
         </param>
     </resource-config>
     
@@ -177,7 +177,7 @@
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Length</param>
         <param name="bindings">
-            <binding property="length" type="Double" selector="vehicle length" />
+            <binding property="length" type="Double" selector="vehicle length" default="0" />
         </param>
     </resource-config>
     
@@ -187,7 +187,7 @@
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.types.Speed</param>
         <param name="bindings">
-            <binding property="speed" type="Double" selector="vehicle speed" />
+            <binding property="speed" type="Double" selector="vehicle speed" default="0" />
         </param>
     </resource-config>
     
@@ -233,10 +233,10 @@
         <param name="setOn">vehicle</param>
         <param name="beanClass">se.sj.ipl.rollingstock.domain.PassengerCarConfiguration</param>
         <param name="bindings">
-            <binding property="class1" type="Integer" selector="vehicle class1" />
-            <binding property="class2" type="Integer" selector="vehicle class2" />
-            <binding property="couchette" type="Integer" selector="vehicle couchette" />
-            <binding property="compartments" type="Integer" selector="vehicle compartments" />
+            <binding property="class1" type="Integer" selector="vehicle class1" default="0" />
+            <binding property="class2" type="Integer" selector="vehicle class2" default="0" />
+            <binding property="couchette" type="Integer" selector="vehicle couchette" default="0" />
+            <binding property="compartments" type="Integer" selector="vehicle compartments" default="0" />
         </param>
     </resource-config>
     

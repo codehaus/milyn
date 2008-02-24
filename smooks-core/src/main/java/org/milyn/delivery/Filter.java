@@ -45,6 +45,7 @@ public abstract class Filter {
     public static final String CLOSE_SOURCE = "close.source";
     public static final String CLOSE_RESULT = "close.result";
     public static final String REVERSE_VISIT_ORDER_ON_VISIT_AFTER = "reverse.visit.order.on.visit.after";    
+    public static final String TERMINATE_ON_VISITOR_EXCEPTION = "terminate.on.visitor.exception";    
 
     /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result

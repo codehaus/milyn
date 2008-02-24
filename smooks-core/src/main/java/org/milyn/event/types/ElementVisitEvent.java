@@ -31,12 +31,18 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
     private SmooksResourceConfiguration resourceConfig;
     private VisitSequence sequence;
     private String executionContextState;
+    private Throwable error;
 
     public ElementVisitEvent(Object element, SmooksResourceConfiguration resourceConfig, VisitSequence sequence) {
         super(element);
         this.resourceConfig = resourceConfig;
         this.sequence = sequence;
         executionContextState = Filter.getCurrentExecutionContext().toString();
+    }
+
+    public ElementVisitEvent(Object element, SmooksResourceConfiguration resourceConfig, VisitSequence sequence, Throwable error) {
+        this(element, resourceConfig, sequence);
+        this.error = error;
     }
 
     public SmooksResourceConfiguration getResourceConfig() {
@@ -49,5 +55,9 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
 
     public String getExecutionContextState() {
         return executionContextState;
+    }
+
+    public Throwable getError() {
+        return error;
     }
 }

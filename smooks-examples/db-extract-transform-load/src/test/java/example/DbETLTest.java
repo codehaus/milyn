@@ -16,15 +16,14 @@
 package example;
 
 import junit.framework.TestCase;
+import org.milyn.Smooks;
 import org.milyn.event.report.FlatReportGenerator;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
-import java.io.IOException;
-import java.util.Map;
+import java.io.*;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -54,8 +53,50 @@ public class DbETLTest extends TestCase {
         }
     }
 
+
+
     public static void main(String[] args) throws IOException, SAXException {
-        printReport("edi-orders-parser.xml");
+        //printReport("edi-orders-parser.xml");
+        //writeBigFile();
+        //eatBigFile();
+    }
+
+    private static void eatBigFile() throws IOException, SAXException {
+        Smooks smooks = new Smooks("./smooks-configs/smooks-config.xml");
+        FileReader reader = new FileReader("/zap/big-edi.edi");
+
+        try {
+            long start = System.currentTimeMillis();
+            smooks.filter(new StreamSource(reader), null, smooks.createExecutionContext());
+            System.out.println("Took: " + (System.currentTimeMillis() - start));
+        } finally {
+            reader.close();
+        }
+    }
+
+    private static void writeBigFile() throws IOException {
+        FileWriter writer = new FileWriter("/zap/big-edi.edi");
+
+        try {
+            writer.write("MLS*Wed Nov 15 13:45:28 EST 2006\n");
+
+            String toadd = "HDR*1*0*59.97*64.92*4.95\n" +
+                    "CUS*user1*Harry^Fletcher*SD\n" +
+                    "ORD*1*1*364*The 40-Year-Old Virgin*28.98\n" +
+                    "ORD*2*1*299*Pulp Fiction*30.99\n" +
+                    "HDR*2*0*81.30*91.06*9.76\n" +
+                    "CUS*user2*George^Hook*SD\n" +
+                    "ORD*3*2*983*Gone with The Wind*25.80\n" +
+                    "ORD*4*3*299*Lethal Weapon 2*55.50\n";
+
+            for(int i = 0; i < 2015748; i++) {
+                writer.write(toadd);
+                writer.flush();
+            }
+        } finally {
+            writer.flush();
+            writer.close();
+        }
     }
 
     private static void printReport(String config) throws IOException, SAXException {

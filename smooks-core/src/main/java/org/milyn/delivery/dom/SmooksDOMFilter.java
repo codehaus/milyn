@@ -161,6 +161,7 @@ public class SmooksDOMFilter extends Filter {
     private boolean closeSource;
     private boolean closeResult;
     private boolean reverseVisitOrderOnVisitAfter;
+    private boolean terminateOnVisitorException;
 
     /**
      * Public constructor.
@@ -177,9 +178,11 @@ public class SmooksDOMFilter extends Filter {
         this.executionContext = executionContext;
         deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
         eventListener = executionContext.getEventListener();
+
         closeSource = ParameterAccessor.getBoolParameter(Filter.CLOSE_SOURCE, true, executionContext.getDeliveryConfig());
         closeResult = ParameterAccessor.getBoolParameter(Filter.CLOSE_RESULT, true, executionContext.getDeliveryConfig());
         reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, executionContext.getDeliveryConfig());
+        terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
@@ -375,7 +378,8 @@ public class SmooksDOMFilter extends Filter {
                     }
                     assemblyUnit.visitBefore(element, executionContext);
                 } catch (Throwable e) {
-                    logger.error("(Assembly) visitBefore failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
+                    String errorMsg = "(Assembly) visitBefore failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
+                    processVisitorException(element, e, configMap.getResourceConfig(), VisitSequence.BEFORE, errorMsg);
                 }
             }
         }
@@ -422,7 +426,8 @@ public class SmooksDOMFilter extends Filter {
             }
             assemblyUnit.visitAfter(element, executionContext);
         } catch (Throwable e) {
-            logger.error("(Assembly) visitAfter failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
+            String errorMsg = "(Assembly) visitAfter failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
+            processVisitorException(element, e, configMap.getResourceConfig(), VisitSequence.AFTER, errorMsg);
         }
     }
 
@@ -633,18 +638,25 @@ public class SmooksDOMFilter extends Filter {
                     processingUnit.visitAfter(element, executionContext);
                 }
             } catch (Throwable e) {
-                logger.error("Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", e);
+                String errorMsg = "Failed to apply processing unit [" + processingUnit.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
+                processVisitorException(element, e, configMap.getResourceConfig(), VisitSequence.BEFORE, errorMsg);
             }
         }
     }
+
+    private void processVisitorException(Element element, Throwable error, SmooksResourceConfiguration resourceConfig, VisitSequence visitSequence, String errorMsg) throws SmooksException {
+        if (eventListener != null) {
+            eventListener.onEvent(new ElementVisitEvent(element, resourceConfig, visitSequence, error));
+        }
+
+        if(terminateOnVisitorException) {
+            if(error instanceof SmooksException) {
+                throw (SmooksException) error;
+            } else {
+                throw new SmooksException(errorMsg, error);
+            }
+        } else {
+            logger.error(errorMsg, error);
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-

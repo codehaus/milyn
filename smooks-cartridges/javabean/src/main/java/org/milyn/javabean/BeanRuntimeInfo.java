@@ -67,9 +67,10 @@ public class BeanRuntimeInfo {
 
     public static void recordBeanRuntimeInfo(String beanId, BeanRuntimeInfo beanRuntimeInfo, ApplicationContext appContext) {
         Map<String, BeanRuntimeInfo> runtimeInfoMap = getRuntimeInfoMap(appContext);
+        BeanRuntimeInfo existingBeanConfig = runtimeInfoMap.get(beanId);
 
-        if(runtimeInfoMap.containsKey(beanId)) {
-            throw new SmooksConfigurationException("Multiple configurations present with beanId='" + beanId + "'.");
+        if(existingBeanConfig != null && !beanRuntimeInfo.equals(existingBeanConfig)) {
+            throw new SmooksConfigurationException("Multiple configurations present with beanId='" + beanId + "', but the bean runtime infos are not equal i.e bean classes etc are different.  Use a different beanId and the 'setOnMethod' config if needed.");
         }
 
         runtimeInfoMap.put(beanId, beanRuntimeInfo);
@@ -114,5 +115,30 @@ public class BeanRuntimeInfo {
 
     public void setArrayType(Class arrayType) {
         this.arrayType = arrayType;
+    }
+
+    public boolean equals(Object obj) {
+        if(obj == null) {
+            return false;
+        }
+        if(obj == this) {
+            return true;
+        }
+        if(!(obj instanceof BeanRuntimeInfo)) {
+            return false;
+        }
+
+        BeanRuntimeInfo beanInfo = (BeanRuntimeInfo) obj;
+        if(beanInfo.getArrayType() != getArrayType()) {
+            return false;
+        }
+        if(beanInfo.getClassification() != getClassification()) {
+            return false;
+        }
+        if(beanInfo.getPopulateType() != getPopulateType()) {
+            return false;
+        }
+
+        return true;
     }
 }
