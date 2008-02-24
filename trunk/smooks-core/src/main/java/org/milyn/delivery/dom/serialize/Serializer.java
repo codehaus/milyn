@@ -20,17 +20,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
+import org.milyn.delivery.Filter;
 import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.DOMFilterLifecycleEvent;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.xml.DocType;
 import org.milyn.xml.DomUtils;
+import org.milyn.SmooksException;
 import org.w3c.dom.*;
 
 import java.io.IOException;
@@ -76,6 +79,7 @@ public class Serializer {
      * Event Listener.
      */
     private ExecutionEventListener eventListener;
+    private boolean terminateOnVisitorException;
 
     /**
 	 * Public constructor.
@@ -103,6 +107,7 @@ public class Serializer {
             defaultSUs = new Vector();
 			defaultSUs.add(new ContentHandlerConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
 		}
+        terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
 	}
 	
 	/**
@@ -241,7 +246,17 @@ public class Serializer {
 			}
 			elementSU.writeElementEnd(element, writer, executionContext);
 		} catch(Throwable thrown) {
-			logger.error("Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", thrown);
+            String error = "Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
+
+            if(terminateOnVisitorException) {
+                if(thrown instanceof SmooksException) {
+                    throw (SmooksException) thrown;
+                } else {
+                    throw new SmooksException(error, thrown);
+                }
+            } else {
+                logger.error(error, thrown);
+            }
 		}
 	}
 

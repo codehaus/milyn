@@ -603,7 +603,9 @@ public class ContentDeliveryConfigBuilder {
 			// Create the ContentHandler.
 			try {
 				contentHandler = handlerFactory.create(resourceConfig);
-			} catch(Throwable thrown) {
+            } catch(SmooksConfigurationException e) {
+                throw e;
+            } catch(Throwable thrown) {
                 String message = "ContentHandlerFactory [" + handlerFactory.getClass().getName()  + "] unable to create resource processing instance for resource [" + resourceConfig + "]. ";
 
                 if(logger.isDebugEnabled()) {
