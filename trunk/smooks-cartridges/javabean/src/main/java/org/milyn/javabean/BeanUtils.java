@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-abstract class BeanUtils {
+public abstract class BeanUtils {
 
     private static Log logger = LogFactory.getLog(BeanUtils.class);
 
