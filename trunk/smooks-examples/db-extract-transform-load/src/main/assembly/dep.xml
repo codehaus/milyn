@@ -7,6 +7,7 @@
         <fileSet>
             <includes>
                 <include>README.TXT</include>
+                <include>smooks-configs/*</include>
                 <include>*.xml</include>
                 <include>input-message.*</include>
                 <include>*.script</include>
