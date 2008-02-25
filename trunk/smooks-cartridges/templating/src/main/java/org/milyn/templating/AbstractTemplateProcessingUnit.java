@@ -54,12 +54,8 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         try {
             loadTemplate(config);
-        } catch (IOException e) {
-            logger.error("Error loading Templating resource: " + config, e);
-            throw new SmooksConfigurationException("Unable to read template.", e);
-        } catch (TransformerConfigurationException e) {
-            logger.error("Error loading Templating resource: " + config, e);
-            throw new SmooksConfigurationException("Unable to configure template engine.", e);
+        } catch (Exception e) {
+            throw new SmooksConfigurationException("Error loading Templating resource: " + config, e);
         }
     }
 	
@@ -184,19 +180,19 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         }
 	}
 
-    public void visitBefore(Element element, ExecutionContext executionContext) {
+    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         if(visitBefore) {
             visit(element, executionContext);
         }
     }
 
-    public void visitAfter(Element element, ExecutionContext executionContext) {
+    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
         if(!visitBefore) {
             visit(element, executionContext);
         }
     }
 
-    protected abstract void visit(Element element, ExecutionContext executionContext);
+    protected abstract void visit(Element element, ExecutionContext executionContext) throws SmooksException;
 
     public static class ActionDecoder implements DataDecoder {
         public Object decode(String data) throws DataDecodeException {

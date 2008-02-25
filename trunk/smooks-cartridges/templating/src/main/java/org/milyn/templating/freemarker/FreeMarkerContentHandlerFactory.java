@@ -48,6 +48,7 @@ import java.util.Map;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
+ *          5. be bound to ("bindto") an ExecutionContext variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter</i>&lt;/param&gt;
  *
@@ -59,6 +60,9 @@ import java.util.Map;
  *     &lt;!-- (Optional) Template encoding.
  *          Default "UTF-8".--&gt;
  *     &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
+ *
+ *     &lt;!-- (Optional) bindId when "action" is "bindto".
+ *     &lt;param name="<b>bindId</b>"&gt;<i>xxxx</i>&lt;/param&gt;
  *
  * &lt;/resource-config&gt;
  * </pre>
@@ -127,7 +131,7 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
             this.config = config;
         }
 
-        protected void visit(Element element, ExecutionContext executionContext) {
+        protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
             // Apply the template...
             String templatingResult;
             try {
@@ -135,11 +139,9 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
                 applyTemplate(executionContext, writer);
                 templatingResult = writer.toString();
             } catch (TemplateException e) {
-                logger.warn("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
-                return;
+                throw new SmooksException("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
             } catch (IOException e) {
-                logger.warn("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
-                return;
+                throw new SmooksException("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
             }
 
             Node resultNode;
