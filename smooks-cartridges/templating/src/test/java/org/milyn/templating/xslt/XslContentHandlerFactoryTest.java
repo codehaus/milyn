@@ -16,28 +16,26 @@
 
 package org.milyn.templating.xslt;
 
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.StringReader;
-
-import org.milyn.SmooksException;
+import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
-import org.milyn.container.ExecutionContext;
-import org.milyn.profile.DefaultProfileSet;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ExecutionContext;
 import org.milyn.templating.util.CharUtils;
 import org.xml.sax.SAXException;
 
-import junit.framework.TestCase;
-
 import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 
 /**
  * 
  * @author tfennelly
  */
-public class XslContentDeliveryUnitCreatorTest extends TestCase {
+public class XslContentHandlerFactoryTest extends TestCase {
 
 	public void testXslUnitTrans_filebased_replace() {
 		Smooks smooks = new Smooks();
@@ -102,5 +100,16 @@ public class XslContentDeliveryUnitCreatorTest extends TestCase {
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
         assertEquals("<bind/>", context.getAttribute("mybeanTemplate"));
+    }
+
+    public void test_badxsl() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("bad-xsl-config.xml"));
+
+        try {
+            smooks.filter(new StreamSource(new StringReader("<doc/>")), null, smooks.createExecutionContext());
+            fail("Expected SmooksConfigurationException.");
+        } catch(SmooksConfigurationException e) {
+            assertEquals("Error loading Templating resource: Target Profile: [[org.milyn.profile.profile#default_profile]], Selector: [$document], Selector Namespace URI: [null], Resource: [/org/milyn/templating/xslt/bad-stylesheet.xsl], Num Params: [0]", e.getMessage());
+        }
     }
 }
