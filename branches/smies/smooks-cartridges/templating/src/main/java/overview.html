@@ -1,0 +1,33 @@
+<html>
+    <head></head>
+    <body>
+    	Smooks node-level templating Cartridge.
+
+		<h1>Overview</h1>
+		This Cartridge provides DOM node-level templating capabilities within
+		Smooks.  This allows template based transformations (node-level) to be 
+		used in Smooks.
+		<p/>
+		Supported templating frameworks:
+		<ul>
+			<li><a href="org/milyn/templating/stringtemplate/package-summary.html">StringTemplate</a></li>
+			<li><a href="org/milyn/templating/xslt/package-summary.html">XSLT</a></li>
+		</ul>
+		<h2>Registering the CDU Creators</h2>
+		In order to use the functionality of this Cartridge, you need to register the 
+		Content Handler Creator resources for the supported template types.  You
+		can do this one of 2 ways:
+		<ul>
+			<li><b>SmooksStandalone</b>: Through code using the "registerCDUCreators" method of 
+				<a href="org/milyn/templating/TemplatingUtils.html">TemplatingUtils</a> class.</li>
+			<li><b>SmooksServletFilter</b>: By getting the "templating-cdu-creators-<i>X.X</i>.cdrl" .cdrl file from
+				<a href="http://milyn.codehaus.org/downloads">Milyn Downloads</a> (Cartridges dependencies) and
+				registering it in the smooks-cdr.lst file.  See the Smooks Servlet Filter
+				<a href="http://milyn.codehaus.org/Smooks+Servlet+Filter">Deployment Configuration Documentation</a>.
+			</li>
+		</ul>
+		<h2>Using This Cartridge</h2>
+		See <a href="http://milyn.codehaus.org/Tutorials">Milyn Tutorials</a> for examples
+		of using the templating solutions provided in this Cartridge.
+    </body>
+</html>
