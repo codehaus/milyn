@@ -7,6 +7,7 @@ public class OrderItem {
     private long productId;
     private Integer quantity;
     private double price;
+    private Order order;
 
     public long getProductId() {
         return productId;
@@ -31,4 +32,14 @@ public class OrderItem {
     public void setPrice(double price) {
         this.price = price;
     }
+
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+
 }

@@ -5,13 +5,19 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">order</param>
         <param name="beanClass">org.milyn.javabean.Order</param>
+        <param name="bindings">
+        	<binding property="header" selector="${header}" />
+        	<binding property="orderItems" selector="${orderItems}" />
+		</param>
     </resource-config>
 
     <resource-config selector="header" selector-namespace="http://x">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">org.milyn.javabean.Header</param>
-        <param name="setOn">order</param>
+        <!-- param name="setOn">order</param -->
         <param name="bindings">
+        	<binding property="order" selector="${order}" />
+
             <binding property="date" type="OrderDateLong" selector="header date" selector-namespace="http://y" />
             <binding property="customerNumber" type="Long" selector="header customer @number" />
             <binding property="customerName" selector="header customer" />
@@ -23,13 +29,15 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">orderItems</param>
         <param name="beanClass">org.milyn.javabean.OrderItem[]</param>
-        <param name="setOn">order</param>
+        <param name="bindings">
+        	<binding selector="${orderItem}" />
+        </param>
     </resource-config>
 
     <resource-config selector="order-item">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">org.milyn.javabean.OrderItem</param>
-        <param name="setOn">orderItems</param>
+        <!-- param name="setOn">orderItems</param -->
         <param name="bindings">
             <binding property="productId" type="Long" selector="order-item product" />
             <binding property="quantity" type="Integer" selector="order-item quantity" />
