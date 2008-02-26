@@ -63,7 +63,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
     private boolean addToList;
 
     @ConfigParam(use=ConfigParam.Use.OPTIONAL)
-    private String setOn; // The name of the bean on which to set this bean    
+    private String setOn; // The name of the bean on which to set this bean
 
     @Config
     private SmooksResourceConfiguration config;
@@ -190,9 +190,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
         try {
             if (setOnBeanSetterMethod == null) {
                 if (!addToList) {
-                    setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
+                    createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
                 } else {
-                    setOnBeanSetterMethod = createBeanSetterMethod(setOnBean, setOnMethod, List.class);
+                    createBeanSetterMethod(setOnBean, setOnMethod, List.class);
                 }
             }
             if(logger.isDebugEnabled()) {
