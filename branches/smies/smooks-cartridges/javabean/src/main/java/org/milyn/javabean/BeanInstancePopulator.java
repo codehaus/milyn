@@ -224,7 +224,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     @SuppressWarnings("unchecked")
-	public void visitBefore(ExecutionContext executionContext) {
+	private void visitBefore(ExecutionContext executionContext) {
     	if(beanBinding) {
     		Object bean = BeanAccessor.getBean(selectedBeanId, executionContext);
     		if(bean == null) {
@@ -237,25 +237,25 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	}
 	}
 
-    public void visitAfter(ExecutionContext executionContext) {
+    private void visitAfter(ExecutionContext executionContext) {
 		if(beanBinding && registeredBeanObserver) {
-			
+
 			BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
 
 			if(addToList) {
-				
+
 				setPropertyList(executionContext);
-				
+
 			} else if(getSelectedBeanRuntimeInfo().getClassification() == Classification.ARRAY_COLLECTION ) {
-				
+
 				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
 
 				selectedBean = BeanUtils.convertListToArray((List)selectedBean, getSelectedBeanRuntimeInfo().getArrayType());
 
 				populateAndSetPropertyValue(property, selectedBean, executionContext);
-				
+
 			}
-			
+
 		}
 
 	}
