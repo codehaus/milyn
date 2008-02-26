@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -33,11 +33,14 @@ import java.util.*;
  * @author tfennelly
  */
 public class BeanAccessor {
-    
+
     private static final String CONTEXT_KEY = BeanAccessor.class.getName() + "#CONTEXT_KEY";
 
     private Map<String, Object> beans;
     private Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
+
+    private Map<String, Map<String, BeanObserver>> beanObservers = new HashMap<String, Map<String, BeanObserver>>();
+
 
     /**
      * Public default constructor.
@@ -50,7 +53,7 @@ public class BeanAccessor {
      * Public constructor.
      * <p/>
      * Creates an accessor based on the supplied result Map.
-     * 
+     *
      * @param resultMap The result Map.
      */
     public BeanAccessor(Map<String, Object> resultMap) {
@@ -77,7 +80,7 @@ public class BeanAccessor {
 
         Map beans = getBeanMap(executionContext);
         Object bean = beans.get(beanId);
-        
+
         return bean;
     }
 
@@ -102,7 +105,7 @@ public class BeanAccessor {
         }
 
         BeanAccessor accessor = getAccessor(executionContext);
-        
+
         return accessor.beans;
     }
 
@@ -194,17 +197,37 @@ public class BeanAccessor {
             }
         }
 
+        accessor.notifyObservers(executionContext, beanId, bean);
+
         // Set the bean on the bean map...
         accessor.beans.put(beanId, bean);
     }
 
     public static void associateLifecycles(ExecutionContext executionContext, String parentBean, String childBean, boolean addToList) {
         BeanAccessor accessor = getAccessor(executionContext);
-        List<String> associations = accessor.lifecycleAssociations.get(parentBean);
 
+        //Is this correct?
         if(addToList) {
             childBean += "List";
         }
+
+        accessor.associateLifecycles(parentBean, childBean);
+    }
+
+    public static void registerBeanObserver(ExecutionContext executionContext, String beanId, String registrantId, BeanObserver binder) {
+    	BeanAccessor accessor = getAccessor(executionContext);
+
+    	accessor.registerBeanObserver(beanId, registrantId, binder);
+    }
+
+    public static void unregisterBeanObserver(ExecutionContext executionContext, String beanId, String registrantId) {
+    	BeanAccessor accessor = getAccessor(executionContext);
+
+    	accessor.unregisterBeanObserver(beanId, registrantId);
+    }
+
+    private void associateLifecycles(String parentBean, String childBean) {
+        List<String> associations = lifecycleAssociations.get(parentBean);
 
         if(associations != null) {
             if(!associations.contains(childBean)) {
@@ -213,7 +236,7 @@ public class BeanAccessor {
         } else {
             associations = new ArrayList<String>();
             associations.add(childBean);
-            accessor.lifecycleAssociations.put(parentBean, associations);
+            lifecycleAssociations.put(parentBean, associations);
         }
     }
 
@@ -225,6 +248,55 @@ public class BeanAccessor {
                 beans.remove(association);
             }
         }
+    }
+
+
+
+    public void registerBeanObserver(String beanId, String registrantId, BeanObserver binder) {
+
+    	Map<String, BeanObserver> observers = beanObservers.get(beanId);
+    	if(observers == null) {
+    		observers = new HashMap<String, BeanObserver>(1);
+
+    		beanObservers.put(beanId, observers);
+    	}
+
+    	observers.put(registrantId, binder);
+
+    }
+
+    public void unregisterBeanObserver(String beanId, String registrantId) {
+
+    	if(beanObservers.containsKey(beanId)) {
+
+    		Map<String, BeanObserver> observers = beanObservers.get(beanId);
+    		observers.remove(registrantId);
+
+    		if(observers.size() == 0) {
+    			beanObservers.remove(beanId);
+    		}
+    	}
+
+    }
+
+    private void notifyObservers(ExecutionContext executionContext, String beanId, Object bean) {
+
+    	if(beanObservers.containsKey(beanId)) {
+
+    		Map<String, BeanObserver> observers = beanObservers.get(beanId);
+
+    		for(BeanObserver observer : observers.values()) {
+
+    			String observerBeanId = observer.getBeanId();
+
+    			associateLifecycles(observerBeanId, beanId);
+
+    			observer.beanRegistrationNotify(executionContext, bean);
+
+    		}
+
+    	}
+
     }
 
     public String toString() {
