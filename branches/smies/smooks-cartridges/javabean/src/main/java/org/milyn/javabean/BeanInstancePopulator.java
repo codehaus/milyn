@@ -89,6 +89,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private SmooksResourceConfiguration config;
 
     private BeanRuntimeInfo beanRuntimeInfo;
+    private BeanRuntimeInfo selectedBeanRuntimeInfo;
+
     private Method propertySetterMethod;
     private boolean checkedForSetterMethod;
     private boolean isAttribute = true;
@@ -236,14 +238,24 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 	}
 
     public void visitAfter(ExecutionContext executionContext) {
-		if(beanBinding) {
-			if(registeredBeanObserver) {
-				BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
+		if(beanBinding && registeredBeanObserver) {
+			
+			BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
 
-				if(addToList) {
-					setPropertyList(executionContext);
-				}
+			if(addToList) {
+				
+				setPropertyList(executionContext);
+				
+			} else if(getSelectedBeanRuntimeInfo().getClassification() == Classification.ARRAY_COLLECTION ) {
+				
+				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
+
+				selectedBean = BeanUtils.convertListToArray((List)selectedBean, getSelectedBeanRuntimeInfo().getArrayType());
+
+				populateAndSetPropertyValue(property, selectedBean, executionContext);
+				
 			}
+			
 		}
 
 	}
@@ -267,22 +279,17 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         // Set the data on the bean...
         try {
             if(propertySetterMethod != null) {
-            	if(addToList) {
-            		List beanList = (List) BeanAccessor.getBean(getId(), executionContext);
-            		propertySetterMethod.invoke(bean, beanList);
-            	} else {
-            		propertySetterMethod.invoke(bean, dataObject);
-            	}
+            	propertySetterMethod.invoke(bean, dataObject);
+
             } else if(beanType == Classification.MAP_COLLECTION) {
                 ((Map)bean).put(mapPropertyName, dataObject);
             } else if(beanType == Classification.ARRAY_COLLECTION || beanType == Classification.COLLECTION_COLLECTION) {
                 ((List)bean).add(dataObject);
             } else if(propertySetterMethod == null) {
-                Class dataClz = addToList ? List.class :  dataObject.getClass();
             	if(setterMethod != null) {
-                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataClz.getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
                 } else if(property != null) {
-                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataClz.getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
                 }
             }
         } catch (IllegalAccessException e) {
@@ -397,8 +404,21 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     		}
 			beanList.add(obj);
 		} else {
-			populateAndSetPropertyValue(property, obj, executionContext);
+			Classification beanType = getSelectedBeanRuntimeInfo().getClassification();
+
+			if(beanType == Classification.ARRAY_COLLECTION ) {
+				BeanAccessor.addBean(getId(), obj, executionContext, false);
+			} else {
+				populateAndSetPropertyValue(property, obj, executionContext);
+			}
 		}
+	}
+
+	private BeanRuntimeInfo getSelectedBeanRuntimeInfo() {
+		if(selectedBeanRuntimeInfo == null) {
+			selectedBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(selectedBeanId, appContext);
+		}
+		return selectedBeanRuntimeInfo;
 	}
 
 	/* (non-Javadoc)
