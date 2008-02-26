@@ -355,18 +355,22 @@ public class BeanPopulator implements ConfigurationExpander {
             resourceConfig.setParameter("valueAttributeName", attributeNameProperty);
         }
 
-
+        type = DomUtils.getAttributeValue(bindingConfig, "type");
+        defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
         if(selectedBeanId == null ) {
-
         	// Set the data type...
-        	type = DomUtils.getAttributeValue(bindingConfig, "type");
         	resourceConfig.setParameter("type", (type != null?type:"String"));
 
-        	// Set the default value...
-            defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
             if(defaultVal != null) {
                 resourceConfig.setParameter("default", defaultVal);
             }
+        } else {
+        	if(type != null) {
+        		throw new SmooksConfigurationException("The 'type' attribute isn't a allowed when binding a bean: " + bindingConfig);
+        	}
+        	if(defaultVal != null) {
+        		throw new SmooksConfigurationException("The 'default' attribute isn't a allowed when binding a bean: " + bindingConfig);
+        	}
         }
 
         resourceConfig.setTargetProfile(config.getTargetProfile());
@@ -379,8 +383,11 @@ public class BeanPopulator implements ConfigurationExpander {
         resourceConfig.setSelectorNamespaceURI(selectorNamespace);
 
         addToList =  DomUtils.getAttributeValue(bindingConfig, "addToList");
-        if(addToList != null) {
+        if(selectedBeanId != null && addToList != null) {
         	 resourceConfig.setParameter("addToList", addToList);
+        } else if(selectedBeanId == null && addToList != null) {
+        	//TODO: let the exception description make more sense...
+        	throw new SmooksConfigurationException("The 'addToList' attribute isn't a allowed when not binding a bean: " + bindingConfig);
         }
 
         return resourceConfig;
