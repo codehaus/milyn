@@ -21,9 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksResourceConfigurationList;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
+import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.xml.DomUtils;
@@ -32,6 +35,7 @@ import org.w3c.dom.NodeList;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -156,9 +160,19 @@ public class BeanPopulator implements ConfigurationExpander {
     @ConfigParam(name="beanClass", defaultVal = ConfigParam.NULL)
     private String beanClassName;
 
+    //For backward compatability
+    @ConfigParam(defaultVal = "false")
+    private boolean addToList;
+
+    @ConfigParam(use=ConfigParam.Use.OPTIONAL)
+    private String setOn; // The name of the bean on which to set this bean
+    
     @Config
     private SmooksResourceConfiguration config;
 
+    @AppContext
+    private ApplicationContext appContext;
+    
     /*******************************************************************************************************
      *  Common Methods.
      *******************************************************************************************************/
@@ -187,21 +201,22 @@ public class BeanPopulator implements ConfigurationExpander {
         if (config.getStringParameter("setterName") != null) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
-
+        
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].");
     }
-
+    
     public List<SmooksResourceConfiguration> expandConfigurations() throws SmooksConfigurationException {
         List<SmooksResourceConfiguration> resources = new ArrayList<SmooksResourceConfiguration>();
 
         List<String> beanBindings = new ArrayList<String>();
 
         buildInstanceCreatorConfig(resources);
-        processBindingConfigs(resources);
+        buildBindingConfigs(resources);
 
         return resources;
     }
 
+    
     private void buildInstanceCreatorConfig(List<SmooksResourceConfiguration> resources) {
         SmooksResourceConfiguration resource = (SmooksResourceConfiguration) config.clone();
 
@@ -210,14 +225,16 @@ public class BeanPopulator implements ConfigurationExpander {
         resource.setParameter("beanId", beanId);
         resource.removeParameter("beanClass");
         resource.setParameter("beanClass", beanClassName);
-
+        
         // Reset the resource...
         resource.setResource(BeanInstanceCreator.class.getName());
 
         resources.add(resource);
     }
+    
+    
 
-    private void processBindingConfigs(List<SmooksResourceConfiguration> resources) {
+    private void buildBindingConfigs(List<SmooksResourceConfiguration> resources) {
         Parameter bindingsParam = config.getParameter("bindings");
 
         if (bindingsParam != null) {

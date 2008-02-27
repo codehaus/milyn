@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksResourceConfigurationList;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -39,6 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -91,6 +93,14 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
 
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
+        	
+        	if(logger.isWarnEnabled()) {
+        		logger.warn("The setOn parameter is deprecated. It is " +
+        				"possible that it will be removed in the next major release. " +
+        				"It is better to use the bean binding method " +
+        				"(bean binding = binding with a ${beanId} selector notation)");
+        	}
+        	
             setOnBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(setOn, appContext);
             if(setOnBeanRuntimeInfo == null) {
                 throw new SmooksConfigurationException("Parent bean '" + setOn + "' must be defined before bean '" + beanId + "'.");
@@ -141,7 +151,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
         }
     }
 
-    private void createAndSetBean(ExecutionContext executionContext) {
+    @SuppressWarnings("deprecation")
+	private void createAndSetBean(ExecutionContext executionContext) {
         Object bean;
         bean = createBeanInstance();
 

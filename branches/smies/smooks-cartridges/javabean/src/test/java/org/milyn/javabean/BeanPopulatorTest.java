@@ -140,47 +140,47 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_populate_Order() throws SAXException, IOException, InterruptedException {
-        test_populate_Order("order-01-smooks-config.xml");
-        test_populate_Order("order-01-smooks-config-sax.xml");
-        test_populate_Order("order-01-smooks-config-arrays.xml");
+        test_populate_Order("order-01-smooks-config.xml", true);
+        test_populate_Order("order-01-smooks-config-sax.xml", true);
+        test_populate_Order("order-01-smooks-config-arrays.xml", true);
+        
+        //Backward compatibility tests
+        test_populate_Order("order-01-smooks-config-setOn.xml", false);
+        test_populate_Order("order-01-smooks-config-sax-setOn.xml", false);
+        test_populate_Order("order-01-smooks-config-arrays-setOn.xml", false);        
     }
 
-    public void test_populate_Order(String configName) throws SAXException, IOException, InterruptedException {
-    	Writer reportWriter = createWriter("target/test/report/report-"+ configName +".html");
-    	try {
-	        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
-	        Smooks smooks = new Smooks(packagePath + "/" + configName);
-	        ExecutionContext executionContext = smooks.createExecutionContext();
+    public void test_populate_Order(String configName, boolean parentBinding) throws SAXException, IOException, InterruptedException {
+    	
+        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
+        Smooks smooks = new Smooks(packagePath + "/" + configName);
+        ExecutionContext executionContext = smooks.createExecutionContext();
 
-			final ExecutionEventListener eventListener = new HtmlReportGenerator(reportWriter, true);
+        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
+        JavaResult result = new JavaResult();
 
-			executionContext.setEventListener(eventListener);
+        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
-	        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
-	        JavaResult result = new JavaResult();
+        Order order = (Order) result.getBean("order");
 
-	        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        assertNotNull(order);
+        assertNotNull(order.getHeader());
 
-	        Order order = (Order) result.getBean("order");
+        assertEquals(1163616328000L, order.getHeader().getDate().getTime());
+        assertEquals("Joe", order.getHeader().getCustomerName());
+        assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
+        
+        if(parentBinding) {
+        	assertNotNull(order.getHeader().getOrder());
+        }
+        
+        assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
 
-	        assertNotNull(order);
-	        assertNotNull(order.getHeader());
-
-	        assertEquals(1163616328000L, order.getHeader().getDate().getTime());
-	        assertEquals("Joe", order.getHeader().getCustomerName());
-	        assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
-
-	        assertNotNull(order.getHeader().getOrder());
-
-	        assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
-
-	        testOrderItems(order);
-    	} finally {
-    		reportWriter.close();
-    	}
+        testOrderItems(order, parentBinding);
+    	
     }
 
-    private void testOrderItems(Order order) {
+    private void testOrderItems(Order order, boolean parentBinding) {
         List<OrderItem> orderItems = order.getOrderItems();
         OrderItem[] orderItemsArray = order.getOrderItemsArray();
 
@@ -197,7 +197,7 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals(111, orderItem.getProductId());
         assertEquals(new Integer(2), orderItem.getQuantity());
 
-        if(orderItemsArray == null) {
+        if(parentBinding && orderItemsArray == null) {
         	assertNotNull(orderItem.getOrder());
         }
 
@@ -206,7 +206,7 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals(222, orderItem.getProductId());
         assertEquals(new Integer(7), orderItem.getQuantity());
 
-        if(orderItemsArray == null) {
+        if(parentBinding && orderItemsArray == null) {
         	assertNotNull(orderItem.getOrder());
         }
     }
@@ -232,20 +232,4 @@ public class BeanPopulatorTest extends TestCase {
     private void callZ(Number[] nums) {
     }
 
-    private Writer createWriter(final String filename) {
-		try {
-			File file = new File(filename);
-
-			file.mkdirs();
-			if(file.exists()) {
-				file.delete();
-			}
-
-			file.createNewFile();
-
-			return new BufferedWriter(new FileWriter(file));
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
 }

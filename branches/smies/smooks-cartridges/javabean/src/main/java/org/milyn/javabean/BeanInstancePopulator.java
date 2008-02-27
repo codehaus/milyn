@@ -107,12 +107,21 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @Initialize
     public void initialize() throws SmooksConfigurationException {
         beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
+        beanBinding = selectedBeanId != null;
         isAttribute = (valueAttributeName != null);
-
-        if (setterMethod == null && property == null && beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION) {
-            throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
+        
+        
+        if (setterMethod == null && property == null ) {
+        	if(beanBinding && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+        		property = selectedBeanId;
+        		if(addToList && !property.endsWith("s")) {
+        			property += "s";
+                }
+        	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
+        		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
                     "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
                     "  Bean is type '" + beanRuntimeInfo.getPopulateType().getName() + "'.");
+        	}
         }
 
         if(beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION && property != null) {
@@ -121,8 +130,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
                 mapKeyAttribute = property.substring(1);
             }
         }
-
-        beanBinding = selectedBeanId != null;
 
         buildId();
 
@@ -139,10 +146,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	}
     	if(setterMethod != null) {
     		idBuilder.append("#")
-    				 .append(setterMethod);
+    				 .append(setterMethod)
+    				 .append("()");
     	}
-    	if(addToList) {
-    		idBuilder.append("List");
+    	if(selectedBeanId != null) {
+    		idBuilder.append("#")
+    				.append(selectedBeanId);
     	}
 
     	id = idBuilder.toString();
@@ -239,8 +248,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private void visitAfter(ExecutionContext executionContext) {
 		if(beanBinding && registeredBeanObserver) {
-
-			BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
+			
+			//>> Unregistering of the observer can't be done here. Maybe it observers beans that
+			//>> are located after the closing tag. The next element of this type will overwrite the
+			//>> current observer
+			//
+			//BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
 
 			if(addToList) {
 
@@ -398,16 +411,16 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 			if(beanList == null) {
 				beanList = new ArrayList(1);
 
-    			BeanAccessor.addBean(getId(), beanList, executionContext, false);
+    			BeanAccessor.addBean(executionContext, getId(), beanList);
 
-    			BeanAccessor.associateLifecycles(executionContext, beanId, getId(), false);
+    			BeanAccessor.associateLifecycles(executionContext, beanId, getId());
     		}
 			beanList.add(obj);
 		} else {
 			Classification beanType = getSelectedBeanRuntimeInfo().getClassification();
 
 			if(beanType == Classification.ARRAY_COLLECTION ) {
-				BeanAccessor.addBean(getId(), obj, executionContext, false);
+				BeanAccessor.addBean(executionContext, getId(), obj);
 			} else {
 				populateAndSetPropertyValue(property, obj, executionContext);
 			}

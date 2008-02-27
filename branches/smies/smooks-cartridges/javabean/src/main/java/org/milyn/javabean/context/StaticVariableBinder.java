@@ -95,7 +95,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
         if(params == null) {
             params = new HashMap();
-            BeanAccessor.addBean(STATVAR, params, executionContext, false);
+            BeanAccessor.addBean(executionContext, STATVAR, params);
         }
 
         params.put(parameter.getName(), parameter.getValue(executionContext.getDeliveryConfig()));

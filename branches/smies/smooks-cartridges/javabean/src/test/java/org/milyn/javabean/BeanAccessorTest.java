@@ -31,7 +31,8 @@ public class BeanAccessorTest extends TestCase {
     /*
      * Test method for 'org.milyn.javabean.BeanAccessor.getBean(String, ExecutionContext)'
      */
-    public void test_BeanAccessor() {
+    @SuppressWarnings("deprecation")
+	public void test_BeanAccessor() {
         MockExecutionContext request = new MockExecutionContext();
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
