@@ -14,7 +14,6 @@
     <resource-config selector="header" selector-namespace="http://x">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">org.milyn.javabean.Header</param>
-        <!-- param name="setOn">order</param -->
         <param name="bindings">
         	<binding property="order" selector="${order}" />
 
@@ -28,8 +27,6 @@
     <resource-config selector="order-item">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">org.milyn.javabean.OrderItem</param>
-        <!-- param name="addToList">true</param>
-        <param name="setOn">order</param -->
         <param name="bindings">
         	<binding property="order" selector="${order}" />
 
