@@ -16,6 +16,15 @@
 
 package org.milyn.javabean;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.FilterResult;
@@ -23,24 +32,22 @@ import org.milyn.delivery.FilterSource;
 import org.milyn.delivery.java.JavaResult;
 import org.milyn.delivery.java.JavaSource;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import java.util.*;
-
 /**
  * Bean Accessor.
  * <p/>
  * This class provides support for saving and accessing Javabean instance.
+ * 
  * @author tfennelly
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class BeanAccessor {
 
     private static final String CONTEXT_KEY = BeanAccessor.class.getName() + "#CONTEXT_KEY";
 
-    private Map<String, Object> beans;
-    private Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
+    private final Map<String, Object> beans;
+    private final Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
 
-    private Map<String, Map<String, BeanObserver>> beanObservers = new HashMap<String, Map<String, BeanObserver>>();
+    private final Map<String, Map<String, BeanObserver>> beanObservers = new HashMap<String, Map<String, BeanObserver>>();
 
 
     /**
@@ -79,7 +86,7 @@ public class BeanAccessor {
             throw new IllegalArgumentException("null 'request' arg in method call.");
         }
 
-        Map beans = getBeanMap(executionContext);
+        Map<String, Object> beans = getBeanMap(executionContext);
         Object bean = beans.get(beanId);
 
         return bean;
@@ -91,8 +98,9 @@ public class BeanAccessor {
      * @return The bean map associated with the supplied request.
      * @deprecated Use {@link #getBeanMap(org.milyn.container.ExecutionContext)}.
      */
-    public static HashMap getBeans(ExecutionContext executionContext) {
-        return (HashMap) getBeanMap(executionContext);
+    @Deprecated
+	public static HashMap<String, Object> getBeans(ExecutionContext executionContext) {
+        return (HashMap<String, Object>) getBeanMap(executionContext);
     }
 
     /**
@@ -100,7 +108,7 @@ public class BeanAccessor {
      * @param executionContext The execution context.
      * @return The bean map associated with the supplied request.
      */
-    public static Map getBeanMap(ExecutionContext executionContext) {
+    public static Map<String, Object> getBeanMap(ExecutionContext executionContext) {
         if(executionContext == null) {
             throw new IllegalArgumentException("null 'request' arg in method call.");
         }
@@ -116,7 +124,7 @@ public class BeanAccessor {
         if(accessor == null) {
             Result result = FilterResult.getResult(executionContext);
             Source source = FilterSource.getSource(executionContext);
-            Map beanMap = null;
+            Map<String, Object> beanMap = null;
 
             if(result instanceof JavaResult) {
                 JavaResult javaResult = (JavaResult) result;
@@ -124,7 +132,7 @@ public class BeanAccessor {
             }
             if(source instanceof JavaSource) {
                 JavaSource javaSource = (JavaSource) source;
-                Map sourceBeans = javaSource.getBeans();
+                Map<String, Object> sourceBeans = javaSource.getBeans();
 
                 if(sourceBeans != null) {
                     if(beanMap != null) {
@@ -171,7 +179,8 @@ public class BeanAccessor {
      * @deprecated Because of the new bean binding system, adding to a list this way is deprecated. 
      * 			   Use the {@link #addBean(String, Object, ExecutionContext)} method.
      */
-    @Deprecated
+    @SuppressWarnings("unchecked")
+	@Deprecated
     public static void addBean(String beanId, Object bean, ExecutionContext executionContext, boolean addToList) {
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNull(bean, "bean");
@@ -191,13 +200,13 @@ public class BeanAccessor {
 
             if(beanList == null) {
                 // Create the bean list and add it to the bean map...
-                beanList = new Vector();
+                beanList = new ArrayList<Object>();
                 accessor.beans.put(beanListId, beanList);
             } else if(!(beanList instanceof List)) {
                 throw new IllegalArgumentException("bean [" + beanId + "] list storage location [" + beanListId + "] is already in use and IS NOT a List (type=" + beanList.getClass().getName() + ").  Try explicitly setting the 'beanId' on one of these bean configs to avoid this name collision.");
             }
             // add the bean to the list...
-            ((List)beanList).add(bean);
+            ((List<Object>)beanList).add(bean);
         } else {
             Object currentBean = accessor.beans.get(beanId);
 

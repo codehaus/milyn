@@ -15,11 +15,11 @@
 */
 package org.milyn.javabean;
 
-import org.milyn.container.ApplicationContext;
-import org.milyn.cdr.SmooksConfigurationException;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.container.ApplicationContext;
 
 /**
  * Java bean runtime info.
@@ -33,7 +33,7 @@ public class BeanRuntimeInfo {
     /**
      * The basic type that's created and populated for the associated bean.
      */
-    private Class populateType;
+    private Class<?> populateType;
 
     /**
      * The bean classification.
@@ -48,7 +48,7 @@ public class BeanRuntimeInfo {
      * If the bean classification is an ARRAY_COLLECTION, this member specifies the
      * actual array type.
      */
-    private Class arrayType;
+    private Class<?> arrayType;
 
     /**
      * Bean type classification.
@@ -82,7 +82,8 @@ public class BeanRuntimeInfo {
         return runtimeInfoMap.get(beanId);
     }
 
-    private static Map<String, BeanRuntimeInfo> getRuntimeInfoMap(ApplicationContext appContext) {
+    @SuppressWarnings("unchecked")
+	private static Map<String, BeanRuntimeInfo> getRuntimeInfoMap(ApplicationContext appContext) {
         Map<String, BeanRuntimeInfo> runtimeInfoMap = (Map<String, BeanRuntimeInfo>) appContext.getAttribute(CONTEXT_KEY);
 
         if(runtimeInfoMap == null) {
@@ -93,11 +94,11 @@ public class BeanRuntimeInfo {
         return runtimeInfoMap;
     }
 
-    public Class getPopulateType() {
+    public Class<?> getPopulateType() {
         return populateType;
     }
 
-    public void setPopulateType(Class populateType) {
+    public void setPopulateType(Class<?> populateType) {
         this.populateType = populateType;
     }
 
@@ -109,15 +110,16 @@ public class BeanRuntimeInfo {
         this.classification = classification;
     }
 
-    public Class getArrayType() {
+    public Class<?> getArrayType() {
         return arrayType;
     }
 
-    public void setArrayType(Class arrayType) {
+    public void setArrayType(Class<?> arrayType) {
         this.arrayType = arrayType;
     }
 
-    public boolean equals(Object obj) {
+    @Override
+	public boolean equals(Object obj) {
         if(obj == null) {
             return false;
         }

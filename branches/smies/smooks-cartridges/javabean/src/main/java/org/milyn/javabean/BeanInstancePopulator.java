@@ -15,13 +15,20 @@
 */
 package org.milyn.javabean;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
-import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
 import org.milyn.container.ApplicationContext;
@@ -35,22 +42,13 @@ import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Bean instance populator visitor class.
  * <p/>
  * Targeted via {@link org.milyn.javabean.BeanPopulator} expansion configuration.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor, BeanObserver {
 
@@ -85,9 +83,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @AppContext
     private ApplicationContext appContext;
 
-    @Config
-    private SmooksResourceConfiguration config;
-
     private BeanRuntimeInfo beanRuntimeInfo;
     private BeanRuntimeInfo selectedBeanRuntimeInfo;
 
@@ -98,7 +93,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String mapKeyAttribute;
 
     private boolean beanBinding;
-    private boolean registeredBeanObserver = false;
 
     /**
      * Set the resource configuration on the bean populator.
@@ -232,14 +226,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	}
     }
 
-    @SuppressWarnings("unchecked")
+   
 	private void visitBefore(ExecutionContext executionContext) {
     	if(beanBinding) {
     		Object bean = BeanAccessor.getBean(selectedBeanId, executionContext);
     		if(bean == null) {
     			BeanAccessor.registerBeanObserver(executionContext, selectedBeanId, getId(), this);
 
-    			registeredBeanObserver = true;
     		} else {
     			populateAndSetPropertyValue(property, bean, executionContext);
     		}
@@ -247,9 +240,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 	}
 
     private void visitAfter(ExecutionContext executionContext) {
-		if(beanBinding && registeredBeanObserver) {
+		if(beanBinding) {
 			
-			//>> Unregistering of the observer can't be done here. Maybe it observers beans that
+			//>> Unregistering of the observer can't be done here. Maybe it observes beans that
 			//>> are located after the closing tag. The next element of this type will overwrite the
 			//>> current observer
 			//
@@ -263,7 +256,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
 
-				selectedBean = BeanUtils.convertListToArray((List)selectedBean, getSelectedBeanRuntimeInfo().getArrayType());
+				selectedBean = BeanUtils.convertListToArray((List<?>)selectedBean, getSelectedBeanRuntimeInfo().getArrayType());
 
 				populateAndSetPropertyValue(property, selectedBean, executionContext);
 
@@ -312,7 +305,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         }
     }
 
-    private void createPropertySetterMethod(Object bean, Class parameter) {
+    private void createPropertySetterMethod(Object bean, Class<?> parameter) {
 
     	if (!checkedForSetterMethod && propertySetterMethod == null) {
             String methodName = null;
@@ -367,7 +360,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized Method createPropertySetterMethod(Object bean, String setterName, Class setterParamType) {
+    private synchronized Method createPropertySetterMethod(Object bean, String setterName, Class<?> setterParamType) {
         if (propertySetterMethod == null) {
             propertySetterMethod = BeanUtils.createSetterMethod(setterName, bean, setterParamType);
         }
@@ -387,8 +380,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         return decoder.decode(dataString);
     }
 
-    private DataDecoder getDecoder(ExecutionContext executionContext) throws DataDecodeException {
-        List decoders = executionContext.getDeliveryConfig().getObjects("decoder:" + typeAlias);
+    
+	private DataDecoder getDecoder(ExecutionContext executionContext) throws DataDecodeException {
+		@SuppressWarnings("unchecked")
+		List decoders = executionContext.getDeliveryConfig().getObjects("decoder:" + typeAlias);
 
         if (decoders == null || decoders.isEmpty()) {
             decoder = DataDecoder.Factory.create(typeAlias);

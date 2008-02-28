@@ -15,12 +15,19 @@
 */
 package org.milyn.javabean;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksResourceConfigurationList;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -31,18 +38,9 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
-import org.milyn.javabean.BeanRuntimeInfo.Classification;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Bean instance creator visitor class.
@@ -55,6 +53,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
+    private static boolean WARNED_SETON_DEPRECATED = false;
+    
     @ConfigParam
     private String beanId;
 
@@ -94,11 +94,15 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
         	
-        	if(logger.isWarnEnabled()) {
+        	// We only warn once that the setOn is deprecated. We do it once because we 
+        	// don't want overflood the log with the same warning. 
+        	if(!WARNED_SETON_DEPRECATED && logger.isWarnEnabled()) {
         		logger.warn("The setOn parameter is deprecated. It is " +
         				"possible that it will be removed in the next major release. " +
         				"It is better to use the bean binding method " +
-        				"(bean binding = binding with a ${beanId} selector notation)");
+        				"(bean binding = binding with a ${beanId} selector notation). This warning is only given once.");
+        		
+        		WARNED_SETON_DEPRECATED = true;
         	}
         	
             setOnBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(setOn, appContext);
@@ -167,7 +171,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
         }
     }
 
-    private void setOn(ExecutionContext execContext) {
+    @SuppressWarnings("unchecked")
+	private void setOn(ExecutionContext execContext) {
         Object bean = BeanUtils.getBean(beanId, execContext);
         Object setOnBean = getSetOnTargetBean(execContext);
 
@@ -186,8 +191,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
                 setOnNonCollection(execContext, bean, setOnBean);
             } else if(!isSetOnMethodConfigured && (setOnBeanType == Classification.COLLECTION_COLLECTION ||
                                                 setOnBeanType == Classification.ARRAY_COLLECTION)) {
-                    // It's a Collection or array.  Arrays are always populated through a List...
-                    ((Collection)setOnBean).add(bean);
+                // It's a Collection or array.  Arrays are always populated through a List...
+            	((Collection)setOnBean).add(bean);
             } else if(!isSetOnMethodConfigured && setOnBeanType == Classification.MAP_COLLECTION) {
                 // It's a map...
                 ((Map)setOnBean).put(beanId, bean);
@@ -257,7 +262,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
      */
     private BeanRuntimeInfo resolveBeanRuntime(String beanClass) {
         BeanRuntimeInfo beanInfo = new BeanRuntimeInfo();
-        Class clazz;
+        Class<?> clazz;
 
         // If it's an array, we use a List and extract an array from it on the
         // visitAfter event....
@@ -295,7 +300,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
 
         // check for a default constructor.
         try {
-            clazz.getConstructor(null);
+            clazz.getConstructor();
         } catch (NoSuchMethodException e) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
         }
@@ -309,7 +314,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized Method createBeanSetterMethod(Object bean, String setterName, Class type) {
+    private synchronized Method createBeanSetterMethod(Object bean, String setterName, Class<?> type) {
         if (setOnBeanSetterMethod == null) {
             setOnBeanSetterMethod = BeanUtils.createSetterMethod(setterName, bean, type);
 
