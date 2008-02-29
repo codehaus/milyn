@@ -41,8 +41,12 @@ public class ContentDeliveryConfigBuilderTest extends TestCase {
         SAXContentDeliveryConfig config = (SAXContentDeliveryConfig) execContext.getDeliveryConfig();
 
         // Should be 5: 4 configured + 1 auto-installed ContextObjectSerializationUnit 
-        assertEquals(5, config.getSaxVisitors().getCount());
-        assertTrue(config.getSaxVisitors().getMappings("b").get(0).getContentHandler() instanceof SAXVisitor01);
+        assertEquals(5, config.getVisitBefores().getCount());
+        assertTrue(config.getVisitBefores().getMappings("b").get(0).getContentHandler() instanceof SAXVisitor01);
+        assertTrue(config.getVisitBefores().getMappings("b").get(0).getContentHandler() instanceof SAXVisitor01);
+        assertEquals(5, config.getVisitAfters().getCount());
+        assertTrue(config.getVisitAfters().getMappings("b").get(0).getContentHandler() instanceof SAXVisitor01);
+        assertTrue(config.getVisitAfters().getMappings("b").get(0).getContentHandler() instanceof SAXVisitor01);
     }
 
     public void test_dom() throws IOException, SAXException {
@@ -52,9 +56,11 @@ public class ContentDeliveryConfigBuilderTest extends TestCase {
         assertTrue(execContext.getDeliveryConfig() instanceof DOMContentDeliveryConfig);
         DOMContentDeliveryConfig config = (DOMContentDeliveryConfig) execContext.getDeliveryConfig();
 
-        assertEquals(2, config.getProcessingUnits().getCount());
-        assertEquals(1, config.getAssemblyUnits().getCount());
-        assertEquals(2, config.getSerailizationUnits().getCount());
+        assertEquals(1, config.getAssemblyVisitBefores().getCount());
+        assertEquals(1, config.getAssemblyVisitAfters().getCount());
+        assertEquals(2, config.getProcessingVisitBefores().getCount());
+        assertEquals(2, config.getProcessingVisitAfters().getCount());
+        assertEquals(2, config.getSerailizationVisitors().getCount());
     }
 
     public void test_dom_sax_1() throws IOException, SAXException {

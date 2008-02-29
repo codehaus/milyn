@@ -13,18 +13,25 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.sax;
+package org.milyn.delivery.dom;
 
-import org.milyn.SmooksException;
+import org.w3c.dom.Element;
 import org.milyn.container.ExecutionContext;
+import org.milyn.SmooksException;
 import org.milyn.delivery.ContentHandler;
 
-import java.io.IOException;
-
 /**
- * SAX Element Visitor.
- * 
+ * DOM Visit after events.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface SAXElementVisitor extends SAXVisitBefore, SAXVisitChildren, SAXVisitAfter {
+public interface DOMVisitAfter extends ContentHandler {
+    /**
+     * Visit the supplied element <b>after</b> visiting its child elements.
+     *
+     * @param element          The DOM element being visited.
+     * @param executionContext Request relative instance.
+     * @throws org.milyn.SmooksException Element processing failure.
+     */
+    void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException;
 }

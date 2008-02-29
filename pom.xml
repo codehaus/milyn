@@ -39,7 +39,7 @@
         <module>smooks-core</module>
         <module>magger</module>
         <module>tinak</module>
-        <!-- module>edisax</module -->
+        <module>edisax</module>
         <module>smooks-cartridges</module>
         <module>smooks-examples</module>
     </modules>

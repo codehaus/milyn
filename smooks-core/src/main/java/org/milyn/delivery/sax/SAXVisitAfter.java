@@ -15,16 +15,25 @@
 */
 package org.milyn.delivery.sax;
 
-import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.SmooksException;
 import org.milyn.delivery.ContentHandler;
 
 import java.io.IOException;
 
 /**
- * SAX Element Visitor.
- * 
+ * SAX Visit after events.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface SAXElementVisitor extends SAXVisitBefore, SAXVisitChildren, SAXVisitAfter {
+public interface SAXVisitAfter extends ContentHandler {
+    /**
+     * Visit the supplied element <b>after</b> visiting its child elements.
+     *
+     * @param element          The SAX element being visited.
+     * @param executionContext Execution context.
+     * @throws org.milyn.SmooksException Event processing failure.
+     * @throws java.io.IOException     Error writing event to output writer.
+     */
+    void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException;
 }

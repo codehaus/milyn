@@ -28,32 +28,52 @@ import org.milyn.container.ExecutionContext;
  */
 public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
-    private ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits;
-    private ContentHandlerConfigMapTable<DOMElementVisitor> processingUnits;
-    private ContentHandlerConfigMapTable<SerializationUnit> serailizationUnits;
+    private ContentHandlerConfigMapTable<DOMVisitBefore> assemblyVisitBefores;
+    private ContentHandlerConfigMapTable<DOMVisitAfter> assemblyVisitAfters;
 
-    public ContentHandlerConfigMapTable<DOMElementVisitor> getAssemblyUnits() {
-        return assemblyUnits;
+    private ContentHandlerConfigMapTable<DOMVisitBefore> processingVisitBefores;
+    private ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters;
+
+    private ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors;
+
+    public ContentHandlerConfigMapTable<DOMVisitBefore> getAssemblyVisitBefores() {
+        return assemblyVisitBefores;
     }
 
-    public void setAssemblyUnits(ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits) {
-        this.assemblyUnits = assemblyUnits;
+    public void setAssemblyVisitBefores(ContentHandlerConfigMapTable<DOMVisitBefore> assemblyVisitBefores) {
+        this.assemblyVisitBefores = assemblyVisitBefores;
     }
 
-    public ContentHandlerConfigMapTable<DOMElementVisitor> getProcessingUnits() {
-        return processingUnits;
+    public ContentHandlerConfigMapTable<DOMVisitAfter> getAssemblyVisitAfters() {
+        return assemblyVisitAfters;
     }
 
-    public void setProcessingUnits(ContentHandlerConfigMapTable<DOMElementVisitor> processingUnits) {
-        this.processingUnits = processingUnits;
+    public void setAssemblyVisitAfters(ContentHandlerConfigMapTable<DOMVisitAfter> assemblyVisitAfters) {
+        this.assemblyVisitAfters = assemblyVisitAfters;
     }
 
-    public ContentHandlerConfigMapTable<SerializationUnit> getSerailizationUnits() {
-        return serailizationUnits;
+    public ContentHandlerConfigMapTable<DOMVisitBefore> getProcessingVisitBefores() {
+        return processingVisitBefores;
     }
 
-    public void setSerailizationUnits(ContentHandlerConfigMapTable<SerializationUnit> serailizationUnits) {
-        this.serailizationUnits = serailizationUnits;
+    public void setProcessingVisitBefores(ContentHandlerConfigMapTable<DOMVisitBefore> processingVisitBefores) {
+        this.processingVisitBefores = processingVisitBefores;
+    }
+
+    public ContentHandlerConfigMapTable<DOMVisitAfter> getProcessingVisitAfters() {
+        return processingVisitAfters;
+    }
+
+    public void setProcessingVisitAfters(ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters) {
+        this.processingVisitAfters = processingVisitAfters;
+    }
+
+    public ContentHandlerConfigMapTable<SerializationUnit> getSerailizationVisitors() {
+        return serailizationVisitors;
+    }
+
+    public void setSerailizationVisitors(ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors) {
+        this.serailizationVisitors = serailizationVisitors;
     }
 
     public Filter newFilter(ExecutionContext executionContext) {

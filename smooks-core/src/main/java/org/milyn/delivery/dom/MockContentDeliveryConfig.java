@@ -28,16 +28,20 @@ import java.util.*;
 public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
 
     private Map<String, List<SmooksResourceConfiguration>> resourceConfigTable = new LinkedHashMap<String, List<SmooksResourceConfiguration>>();
-	public ContentHandlerConfigMapTable assemblyUnits = new ContentHandlerConfigMapTable();
-	public ContentHandlerConfigMapTable processingSets = new ContentHandlerConfigMapTable();
+	public ContentHandlerConfigMapTable assemblyBefores = new ContentHandlerConfigMapTable();
+    public ContentHandlerConfigMapTable assemblyAfters = new ContentHandlerConfigMapTable();
+    public ContentHandlerConfigMapTable processingBefores = new ContentHandlerConfigMapTable();
+    public ContentHandlerConfigMapTable processingAfters = new ContentHandlerConfigMapTable();
     public ContentHandlerConfigMapTable serializationUnits = new ContentHandlerConfigMapTable();
 	public Map objectsHash = new LinkedHashMap();
 
     public MockContentDeliveryConfig() {
         setSmooksResourceConfigurations(resourceConfigTable);
-        setAssemblyUnits(assemblyUnits);
-        setProcessingUnits(processingSets);
-        setSerailizationUnits(serializationUnits);
+        setAssemblyVisitBefores(assemblyBefores);
+        setAssemblyVisitAfters(assemblyAfters);
+        setProcessingVisitBefores(processingBefores);
+        setProcessingVisitAfters(processingAfters);
+        setSerailizationVisitors(serializationUnits);
     }
 
 	/* (non-Javadoc)
