@@ -22,10 +22,12 @@ import java.util.List;
  *
  */
 public class A {
-	
+
 	private List<B> bList;
-	
+
 	private B b;
+
+	private B[] bArray;
 
 	/**
 	 * @return the bList
@@ -42,6 +44,20 @@ public class A {
 	}
 
 	/**
+	 * @return the bList
+	 */
+	public B[]  getBArray() {
+		return bArray;
+	}
+
+	/**
+	 * @param list the bList to set
+	 */
+	public void setBArray(B[] array) {
+		bArray = array;
+	}
+
+	/**
 	 * @return the b
 	 */
 	public B getB() {
@@ -54,5 +70,5 @@ public class A {
 	public void setB(B b) {
 		this.b = b;
 	}
-	
+
 }

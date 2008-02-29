@@ -122,6 +122,8 @@ public abstract class BeanUtils {
 
         // Get the bean instance from the request.  If there is non, it's a bad config!!
         bean = BeanAccessor.getBean(beanId, execContext);
+
+        // TODO: Is this comment usefull??
         if (logger.isDebugEnabled()) {
             logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  One already exists.");
         }

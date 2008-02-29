@@ -246,8 +246,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
 
-				selectedBean = BeanUtils.convertListToArray((List<?>)selectedBean, getSelectedBeanRuntimeInfo().getArrayType());
-
 				populateAndSetPropertyValue(property, selectedBean, executionContext);
 
 			}

@@ -20,9 +20,9 @@ package org.milyn.javabean;
  *
  */
 public class B {
-	
+
 	String value;
-	
+
 	private A a;
 
 	/**

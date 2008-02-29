@@ -36,7 +36,7 @@ import org.milyn.delivery.java.JavaSource;
  * Bean Accessor.
  * <p/>
  * This class provides support for saving and accessing Javabean instance.
- * 
+ *
  * @author tfennelly
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
@@ -154,7 +154,7 @@ public class BeanAccessor {
 
         return accessor;
     }
-    
+
     /**
      * Add a bean instance to the specified request under the specified beanId.
      *
@@ -165,7 +165,7 @@ public class BeanAccessor {
     public static void addBean(ExecutionContext executionContext, String beanId, Object bean) {
     	addBean(beanId, bean, executionContext, false);
     }
-    
+
     /**
      * Add a bean instance to the specified request under the specified beanId.
      * <p/>
@@ -176,7 +176,7 @@ public class BeanAccessor {
      * @param bean The bean instance to be stored.
      * @param executionContext The execution context within which the bean is created.
      * @param addToList Is the bean to be added to a bean list.
-     * @deprecated Because of the new bean binding system, adding to a list this way is deprecated. 
+     * @deprecated Because of the new bean binding system, adding to a list this way is deprecated.
      * 			   Use the {@link #addBean(String, Object, ExecutionContext)} method.
      */
     @SuppressWarnings("unchecked")
@@ -207,54 +207,55 @@ public class BeanAccessor {
             }
             // add the bean to the list...
             ((List<Object>)beanList).add(bean);
-        } else {
-            Object currentBean = accessor.beans.get(beanId);
-
-            if(currentBean instanceof List) {
-                throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and IS a List.  Arg 'addToList' set to false - this is inconsistent!!");
-            }
         }
+//        } else {
+//            Object currentBean = accessor.beans.get(beanId);
+//
+//            if(currentBean instanceof List) {
+//                throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and IS a List.  Arg 'addToList' set to false - this is inconsistent!!");
+//            }
+//        }
 
         // Set the bean on the bean map...
         accessor.beans.put(beanId, bean);
-        
-        accessor.notifyObservers(executionContext, beanId, bean);        
+
+        accessor.notifyObservers(executionContext, beanId, bean);
     }
-    
-    
+
+
     /**
      * Associates the lifeCycle of the childBean with the parentBean. When the parentBean gets overwritten via the
      * addBean method then the associated child beans will get removed from the bean map.
-     * 
+     *
      * @param executionContext The execution context within which the beans are located.
      * @param parentBean The bean that controlles the lifecycle of its childs
      * @param childBean The bean that will be associated to the parent
      * @param addToList Is the child added to a bean list.
-     * 
+     *
      */
     public static void associateLifecycles(ExecutionContext executionContext, String parentBean, String childBean) {
     	AssertArgument.isNotNull(executionContext, "executionContext");
-    	
+
     	BeanAccessor accessor = getAccessor(executionContext);
 
     	accessor.associateLifecycles(parentBean, childBean);
-    }	
-    
+    }
+
     /**
      * Associates the lifeCycle of the childBean with the parentBean. When the parentBean gets overwritten via the
      * addBean method then the associated child beans will get removed from the bean map.
-     * 
+     *
      * @param executionContext The execution context within which the beans are located.
      * @param parentBean The bean that controlles the lifecycle of its childs
      * @param childBean The bean that will be associated to the parent
      * @param addToList Is the child added to a bean list.
-     * @deprecated Because of the new bean binding system, adding to a list this way is deprecated. 
+     * @deprecated Because of the new bean binding system, adding to a list this way is deprecated.
      * 			   Use the {@link #associateLifecycles(ExecutionContext, String, String)} method.
      */
     @Deprecated
     public static void associateLifecycles(ExecutionContext executionContext, String parentBean, String childBean, boolean addToList) {
     	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
-    	
+
     	if(addToList) {
             childBean += "List";
         }
@@ -263,9 +264,9 @@ public class BeanAccessor {
     }
 
     /**
-     * Registers an observer which observers when a bean gets added. 
-     * 
-     * 
+     * Registers an observer which observers when a bean gets added.
+     *
+     *
      * @param executionContext The execution context in which the observer is registered
      * @param beanId The bean id for which the observer is registered
      * @param observerId The id of the observer. This is used to unregister the observer
@@ -273,22 +274,22 @@ public class BeanAccessor {
      */
     public static void registerBeanObserver(ExecutionContext executionContext, String beanId, String observerId, BeanObserver observer) {
     	AssertArgument.isNotNull(executionContext, "executionContext");
-    	
+
     	BeanAccessor accessor = getAccessor(executionContext);
 
     	accessor.registerBeanObserver(beanId, observerId, observer);
     }
-    
+
     /**
-     * Unregisters a bean observer  
-     * 
+     * Unregisters a bean observer
+     *
      * @param executionContext The execution context in which the observer is registered
      * @param beanId The bean id for which the observer is registered
      * @param observerId The id of the observer to unregister
      */
     public static void unregisterBeanObserver(ExecutionContext executionContext, String beanId, String observerId) {
     	AssertArgument.isNotNull(executionContext, "executionContext");
-    	
+
     	BeanAccessor accessor = getAccessor(executionContext);
 
     	accessor.unregisterBeanObserver(beanId, observerId);
@@ -306,12 +307,12 @@ public class BeanAccessor {
             return "{}";
         }
     }
-    
+
     private void registerBeanObserver(String beanId, String observerId, BeanObserver observer) {
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
     	AssertArgument.isNotNull(observer, "observer");
-    	
+
     	Map<String, BeanObserver> observers = beanObservers.get(beanId);
     	if(observers == null) {
     		observers = new HashMap<String, BeanObserver>(1);
@@ -326,7 +327,7 @@ public class BeanAccessor {
     private void unregisterBeanObserver(String beanId, String observerId) {
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
-    	
+
     	if(beanObservers.containsKey(beanId)) {
 
     		Map<String, BeanObserver> observers = beanObservers.get(beanId);
@@ -342,7 +343,7 @@ public class BeanAccessor {
     private void associateLifecycles(String parentBean, String childBean) {
     	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
     	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
-    	
+
     	List<String> associations = lifecycleAssociations.get(parentBean);
 
         if(associations != null) {
@@ -365,7 +366,7 @@ public class BeanAccessor {
             }
         }
     }
-    
+
     private void notifyObservers(ExecutionContext executionContext, String beanId, Object bean) {
 
     	if(beanObservers.containsKey(beanId)) {
@@ -384,5 +385,5 @@ public class BeanAccessor {
 
     	}
 
-    }    
+    }
 }

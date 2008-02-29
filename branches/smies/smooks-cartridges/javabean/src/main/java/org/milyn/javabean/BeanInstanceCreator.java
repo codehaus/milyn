@@ -54,7 +54,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
     private static boolean WARNED_SETON_DEPRECATED = false;
-    
+
     @ConfigParam
     private String beanId;
 
@@ -93,18 +93,18 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
 
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
-        	
-        	// We only warn once that the setOn is deprecated. We do it once because we 
-        	// don't want overflood the log with the same warning. 
+
+        	// We only warn once that the setOn is deprecated. We do it once because we
+        	// don't want overflood the log with the same warning.
         	if(!WARNED_SETON_DEPRECATED && logger.isWarnEnabled()) {
         		logger.warn("The setOn parameter is deprecated. It is " +
         				"possible that it will be removed in the next major release. " +
         				"It is better to use the bean binding method " +
         				"(bean binding = binding with a ${beanId} selector notation). This warning is only given once.");
-        		
+
         		WARNED_SETON_DEPRECATED = true;
         	}
-        	
+
             setOnBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(setOn, appContext);
             if(setOnBeanRuntimeInfo == null) {
                 throw new SmooksConfigurationException("Parent bean '" + setOn + "' must be defined before bean '" + beanId + "'.");
@@ -134,9 +134,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-        if (setOn != null) {
-            setOn(executionContext);
-        }
+    	visitAfter(executionContext);
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -150,9 +148,38 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        if (setOn != null) {
-            setOn(executionContext);
-        }
+    	visitAfter(executionContext);
+    }
+
+    private void visitAfter(ExecutionContext executionContext) {
+    	Classification thisBeanType = beanRuntimeInfo.getClassification();
+
+    	boolean isArray = (thisBeanType == Classification.ARRAY_COLLECTION);
+    	boolean isSetOn = (setOn != null);
+
+    	if(isArray || isSetOn) {
+	    	Object bean  = BeanUtils.getBean(beanId, executionContext);
+
+	    	if(isArray) {
+	    		// This bean is an array, we need to convert the List used to create it into
+	            // an array of that type, and add that array to the BeanAccessor, overwriting the list
+
+	    		bean = convert(bean, executionContext);
+	    	}
+	    	if (isSetOn) {
+
+	            setOn(bean, executionContext);
+	        }
+    	}
+    }
+
+    private Object convert(Object bean, ExecutionContext executionContext) {
+
+        bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
+
+        BeanAccessor.addBean(executionContext, beanId, bean);
+
+    	return bean;
     }
 
     @SuppressWarnings("deprecation")
@@ -172,23 +199,18 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
     }
 
     @SuppressWarnings("unchecked")
-	private void setOn(ExecutionContext execContext) {
-        Object bean = BeanUtils.getBean(beanId, execContext);
-        Object setOnBean = getSetOnTargetBean(execContext);
+	private void setOn(Object bean, ExecutionContext executionContext) {
+        Object setOnBean = getSetOnTargetBean(executionContext);
 
         if (setOnBean != null) {
-            Classification thisBeanType = beanRuntimeInfo.getClassification();
+
             Classification setOnBeanType = setOnBeanRuntimeInfo.getClassification();
 
-            // If this bean is an array, we need to convert the List used to create it into
-            // an array of that type, and set that array as the bean on the setOnBean...
-            if(thisBeanType == Classification.ARRAY_COLLECTION) {
-                bean = BeanUtils.convertListToArray((List)bean, beanRuntimeInfo.getArrayType());
-            }
+
 
             // Set the bean instance on another bean. Supports creating an object graph
             if(setOnBeanType == Classification.NON_COLLECTION) {
-                setOnNonCollection(execContext, bean, setOnBean);
+                setOnNonCollection(executionContext, bean, setOnBean);
             } else if(!isSetOnMethodConfigured && (setOnBeanType == Classification.COLLECTION_COLLECTION ||
                                                 setOnBeanType == Classification.ARRAY_COLLECTION)) {
                 // It's a Collection or array.  Arrays are always populated through a List...

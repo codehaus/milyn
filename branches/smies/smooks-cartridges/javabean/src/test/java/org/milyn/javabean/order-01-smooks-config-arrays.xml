@@ -35,6 +35,7 @@
 
     <resource-config selector="order-item">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">orderItem</param>
         <param name="beanClass">org.milyn.javabean.OrderItem</param>
         <param name="bindings">
             <binding property="productId" type="Long" selector="order-item product" />

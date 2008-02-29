@@ -50,13 +50,19 @@ public class BeanBindingPopulatorTest extends TestCase {
 	private static final Log logger = LogFactory.getLog(BeanBindingPopulatorTest.class);
 
 	public void test_01_hierarchically() throws IOException, SAXException {
-        test_01("bb-01-smooks-config.xml", "bb-01-hierarchically.xml");
-        test_01("bb-01-smooks-config-sax.xml", "bb-01-hierarchically.xml");
+		String xml = "bb-01-hierarchically.xml";
+
+        test_01_list("bb-01-smooks-config.xml", xml);
+        test_01_list("bb-01-smooks-config-sax.xml", xml);
+		test_01_array("bb-01-smooks-config-array.xml", xml);
 	}
 
 	public void test_01_flat() throws IOException, SAXException {
-        test_01("bb-01-smooks-config.xml", "bb-01-flat.xml");
-        test_01("bb-01-smooks-config-sax.xml", "bb-01-flat.xml");
+		String xml = "bb-01-flat.xml";
+
+		test_01_list("bb-01-smooks-config.xml", xml);
+		test_01_list("bb-01-smooks-config-sax.xml", xml);
+		//test_01_array("bb-01-smooks-config-array.xml", xml);
 	}
 
 	/**
@@ -65,7 +71,7 @@ public class BeanBindingPopulatorTest extends TestCase {
 	 * @throws IOException
 	 * @throws SAXException
 	 */
-	private void test_01(String configFile, String dataFile)
+	private void test_01_list(String configFile, String dataFile)
 			throws IOException, SAXException {
 		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configFile);
@@ -103,6 +109,57 @@ public class BeanBindingPopulatorTest extends TestCase {
 			assertEquals(3, a2.getBList().size());
 			assertEquals("b4", a2.getBList().get(0).getValue());
 			assertEquals(a2, a2.getBList().get(0).getA());
+
+        } finally {
+        	closeWriter(reportWriter);
+        }
+
+	}
+
+	/**
+	 * @param configFile
+	 * @param dataFile
+	 * @throws IOException
+	 * @throws SAXException
+	 */
+	private void test_01_array(String configFile, String dataFile)
+			throws IOException, SAXException {
+		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
+        Smooks smooks = new Smooks(packagePath + "/" + configFile);
+        ExecutionContext executionContext = smooks.createExecutionContext();
+
+        Writer reportWriter = null;
+
+        try {
+	        if(REPORT_EXECUTION) {
+	        	reportWriter = createWriter("target/test/report/report-"+ configFile + "-" + dataFile + ".html");
+
+	        	final ExecutionEventListener eventListener = new HtmlReportGenerator(reportWriter, true);
+	        	executionContext.setEventListener(eventListener);
+	        }
+
+	    	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
+	    	JavaResult result = new JavaResult();
+
+	        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+
+	        @SuppressWarnings("unchecked")
+	        A[] as = (A[]) result.getBean("root");
+
+	        assertNotNull(as);
+	        assertEquals(2, as.length);
+
+			A a1 = as[0];
+			assertNotNull(a1.getBArray());
+			assertEquals(3, a1.getBArray().length);
+			assertEquals("b1", a1.getBArray()[0].getValue());
+			assertEquals(a1, a1.getBArray()[0].getA());
+
+			A a2 = as[1];
+			assertNotNull(a2.getBArray());
+			assertEquals(3, a2.getBArray().length);
+			assertEquals("b4", a2.getBArray()[0].getValue());
+			assertEquals(a2, a2.getBArray()[0].getA());
 
         } finally {
         	closeWriter(reportWriter);
