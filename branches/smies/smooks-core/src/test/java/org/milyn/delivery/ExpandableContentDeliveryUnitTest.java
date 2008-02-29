@@ -17,12 +17,14 @@ package org.milyn.delivery;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
+import org.milyn.delivery.dom.DOMVisitAfter;
+import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
-import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -41,15 +43,21 @@ public class ExpandableContentDeliveryUnitTest extends TestCase {
         ExecutionContext context = smooks.createExecutionContext();
 
         DOMContentDeliveryConfig config = (DOMContentDeliveryConfig) context.getDeliveryConfig();
-        ContentHandlerConfigMapTable<DOMElementVisitor> assemblyUnits = config.getAssemblyUnits();
-        ContentHandlerConfigMapTable<DOMElementVisitor> processingUnits = config.getProcessingUnits();
-        ContentHandlerConfigMapTable<SerializationUnit> serializationUnits = config.getSerailizationUnits();
+        ContentHandlerConfigMapTable<DOMVisitBefore> assemblyVisitBefores = config.getAssemblyVisitBefores();
+        ContentHandlerConfigMapTable<DOMVisitAfter> assemblyVisitAfters = config.getAssemblyVisitAfters();
+        ContentHandlerConfigMapTable<DOMVisitBefore> processingVisitBefores = config.getProcessingVisitBefores();
+        ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters = config.getProcessingVisitAfters();
+        ContentHandlerConfigMapTable<SerializationUnit> serializationUnits = config.getSerailizationVisitors();
 
-        assertEquals(1, assemblyUnits.getCount());
-        assertTrue(assemblyUnits.getMappings("a").get(0).getContentHandler() instanceof Assembly1);
+        assertEquals(1, assemblyVisitBefores.getCount());
+        assertTrue(assemblyVisitBefores.getMappings("a").get(0).getContentHandler() instanceof Assembly1);
+        assertEquals(1, assemblyVisitAfters.getCount());
+        assertTrue(assemblyVisitAfters.getMappings("a").get(0).getContentHandler() instanceof Assembly1);
 
-        assertEquals(2, processingUnits.getCount());
-        assertTrue(processingUnits.getMappings("b").get(0).getContentHandler() instanceof Processing1);
+        assertEquals(2, processingVisitBefores.getCount());
+        assertTrue(processingVisitBefores.getMappings("b").get(0).getContentHandler() instanceof Processing1);
+        assertEquals(2, processingVisitAfters.getCount());
+        assertTrue(processingVisitAfters.getMappings("b").get(0).getContentHandler() instanceof Processing1);
 
         assertEquals(2, serializationUnits.getCount());
         assertTrue(serializationUnits.getMappings("c").get(0).getContentHandler() instanceof DefaultSerializationUnit);

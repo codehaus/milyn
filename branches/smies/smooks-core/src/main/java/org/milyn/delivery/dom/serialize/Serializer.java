@@ -98,7 +98,7 @@ public class Serializer {
 		// Get the delivery context for the device.
 		deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 		// Initialise the serializationUnits member
-		serializationUnits = deliveryConfig.getSerailizationUnits();
+		serializationUnits = deliveryConfig.getSerailizationVisitors();
 		// Set the default SerializationUnit
 		defaultSUs = serializationUnits.getMappings("*");
 		if(defaultSUs == null) {
