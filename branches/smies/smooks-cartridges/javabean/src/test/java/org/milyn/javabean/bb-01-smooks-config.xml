@@ -15,8 +15,17 @@
         <param name="beanId">a</param>
         <param name="beanClass">org.milyn.javabean.A</param>
         <param name="bindings">
-        	<binding property="bList" addToList="true" selector="${b}" />
+        	<binding property="bList" selector="${bList}" />
 		</param>
+    </resource-config>
+
+    <resource-config selector="a">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">bList</param>
+        <param name="beanClass">java.util.ArrayList</param>
+        <param name="bindings">
+            <binding selector="${b}" />
+        </param>
     </resource-config>
 
     <resource-config selector="b">

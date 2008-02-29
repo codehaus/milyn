@@ -159,7 +159,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
     @Config
     private SmooksResourceConfiguration config;
-    
+
     /*******************************************************************************************************
      *  Common Methods.
      *******************************************************************************************************/
@@ -188,10 +188,10 @@ public class BeanPopulator implements ConfigurationExpander {
         if (config.getStringParameter("setterName") != null) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
-        
+
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].");
     }
-    
+
     public List<SmooksResourceConfiguration> expandConfigurations() throws SmooksConfigurationException {
         List<SmooksResourceConfiguration> resources = new ArrayList<SmooksResourceConfiguration>();
 
@@ -201,7 +201,7 @@ public class BeanPopulator implements ConfigurationExpander {
         return resources;
     }
 
-    
+
     private void buildInstanceCreatorConfig(List<SmooksResourceConfiguration> resources) {
         SmooksResourceConfiguration resource = (SmooksResourceConfiguration) config.clone();
 
@@ -210,14 +210,14 @@ public class BeanPopulator implements ConfigurationExpander {
         resource.setParameter("beanId", beanId);
         resource.removeParameter("beanClass");
         resource.setParameter("beanClass", beanClassName);
-        
+
         // Reset the resource...
         resource.setResource(BeanInstanceCreator.class.getName());
 
         resources.add(resource);
     }
-    
-    
+
+
 
     private void buildBindingConfigs(List<SmooksResourceConfiguration> resources) {
         Parameter bindingsParam = config.getParameter("bindings");
@@ -253,7 +253,6 @@ public class BeanPopulator implements ConfigurationExpander {
         String type;
         String defaultVal;
         String selectedBeanId = null;
-        String addToList;
 
         // Make sure there's both 'selector' and 'property' attributes...
         selector = getSelectorAttr(bindingConfig);
@@ -322,13 +321,6 @@ public class BeanPopulator implements ConfigurationExpander {
             selectorNamespace = config.getSelectorNamespaceURI();
         }
         resourceConfig.setSelectorNamespaceURI(selectorNamespace);
-
-        addToList =  DomUtils.getAttributeValue(bindingConfig, "addToList");
-        if(selectedBeanId != null && addToList != null) {
-        	 resourceConfig.setParameter("addToList", addToList);
-        } else if(selectedBeanId == null && addToList != null) {
-        	throw new SmooksConfigurationException("The 'addToList' attribute isn't a allowed when not binding a bean: " + bindingConfig);
-        }
 
         return resourceConfig;
     }

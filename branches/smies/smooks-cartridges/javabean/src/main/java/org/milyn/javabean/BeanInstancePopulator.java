@@ -20,7 +20,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,9 +76,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @ConfigParam(name="default", defaultVal = ConfigParam.NULL)
     private String defaultVal;
 
-    @ConfigParam(defaultVal = "false")
-    private boolean addToList;
-
     @AppContext
     private ApplicationContext appContext;
 
@@ -103,14 +99,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
         beanBinding = selectedBeanId != null;
         isAttribute = (valueAttributeName != null);
-        
-        
+
+
         if (setterMethod == null && property == null ) {
         	if(beanBinding && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
         		property = selectedBeanId;
-        		if(addToList && !property.endsWith("s")) {
-        			property += "s";
-                }
         	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
         		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
                     "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
@@ -184,13 +177,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     	visitBefore(executionContext);
-    	if(!isAttribute) {
+    	if(!beanBinding && !isAttribute) {
             element.setCache(new StringWriter());
         }
     }
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-        if(!isAttribute) {
+        if(!beanBinding && !isAttribute) {
             childText.toWriter((Writer) element.getCache());
         }
     }
@@ -226,11 +219,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	}
     }
 
-   
+
 	private void visitBefore(ExecutionContext executionContext) {
     	if(beanBinding) {
     		Object bean = BeanAccessor.getBean(selectedBeanId, executionContext);
     		if(bean == null) {
+
     			BeanAccessor.registerBeanObserver(executionContext, selectedBeanId, getId(), this);
 
     		} else {
@@ -241,18 +235,14 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private void visitAfter(ExecutionContext executionContext) {
 		if(beanBinding) {
-			
+
 			//>> Unregistering of the observer can't be done here. Maybe it observes beans that
 			//>> are located after the closing tag. The next element of this type will overwrite the
 			//>> current observer
 			//
 			//BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
 
-			if(addToList) {
-
-				setPropertyList(executionContext);
-
-			} else if(getSelectedBeanRuntimeInfo().getClassification() == Classification.ARRAY_COLLECTION ) {
+			if(getSelectedBeanRuntimeInfo().getClassification() == Classification.ARRAY_COLLECTION ) {
 
 				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
 
@@ -323,37 +313,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         }
     }
 
-    @SuppressWarnings("unchecked")
-	private void setPropertyList(ExecutionContext executionContext) {
-        Object bean = BeanUtils.getBean(beanId, executionContext);
-
-        List beanList = (List) BeanAccessor.getBean(getId(), executionContext);
-
-        if(beanList != null) {
-        	// If we need to create the bean setter method instance...
-        	createPropertySetterMethod(bean, List.class);
-
-	        // Set the data on the bean...
-	        try {
-	            if(propertySetterMethod != null) {
-
-	        		propertySetterMethod.invoke(bean, beanList);
-
-	            } else {
-	            	if(setterMethod != null) {
-	                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + List.class.getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
-	                } else if(property != null) {
-	                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + List.class.getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
-	                }
-	            }
-	        } catch (IllegalAccessException e) {
-	            throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
-	        } catch (InvocationTargetException e) {
-	            throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
-	        }
-        }
-    }
-
     /**
      * Create the bean setter method instance for this visitor.
      *
@@ -380,7 +339,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         return decoder.decode(dataString);
     }
 
-    
+
 	private DataDecoder getDecoder(ExecutionContext executionContext) throws DataDecodeException {
 		@SuppressWarnings("unchecked")
 		List decoders = executionContext.getDeliveryConfig().getObjects("decoder:" + typeAlias);
@@ -401,25 +360,15 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 	 */
 	@SuppressWarnings("unchecked")
 	public void beanRegistrationNotify(ExecutionContext executionContext, Object obj) {
-		if(addToList) {
-			List beanList = (List) BeanAccessor.getBean(getId(), executionContext);
-			if(beanList == null) {
-				beanList = new ArrayList(1);
 
-    			BeanAccessor.addBean(executionContext, getId(), beanList);
+		Classification beanType = getSelectedBeanRuntimeInfo().getClassification();
 
-    			BeanAccessor.associateLifecycles(executionContext, beanId, getId());
-    		}
-			beanList.add(obj);
+		if(beanType == Classification.ARRAY_COLLECTION ) {
+			BeanAccessor.addBean(executionContext, getId(), obj);
 		} else {
-			Classification beanType = getSelectedBeanRuntimeInfo().getClassification();
-
-			if(beanType == Classification.ARRAY_COLLECTION ) {
-				BeanAccessor.addBean(executionContext, getId(), obj);
-			} else {
-				populateAndSetPropertyValue(property, obj, executionContext);
-			}
+			populateAndSetPropertyValue(property, obj, executionContext);
 		}
+
 	}
 
 	private BeanRuntimeInfo getSelectedBeanRuntimeInfo() {

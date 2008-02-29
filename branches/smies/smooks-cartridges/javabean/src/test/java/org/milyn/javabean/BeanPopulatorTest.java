@@ -16,32 +16,29 @@
 
 package org.milyn.javabean;
 
-import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.delivery.java.JavaResult;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.Configurator;
-import org.milyn.container.MockApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.io.StreamUtils;
-import org.milyn.util.ClassUtil;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.Writer;
-import java.text.ParseException;
-import java.util.*;
+import junit.framework.TestCase;
+
+import org.milyn.Smooks;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ExecutionContext;
+import org.milyn.container.MockApplicationContext;
+import org.milyn.delivery.java.JavaResult;
+import org.milyn.io.StreamUtils;
+import org.milyn.util.ClassUtil;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -143,15 +140,15 @@ public class BeanPopulatorTest extends TestCase {
         test_populate_Order("order-01-smooks-config.xml", true);
         test_populate_Order("order-01-smooks-config-sax.xml", true);
         test_populate_Order("order-01-smooks-config-arrays.xml", true);
-        
+
         //Backward compatibility tests
         test_populate_Order("order-01-smooks-config-setOn.xml", false);
         test_populate_Order("order-01-smooks-config-sax-setOn.xml", false);
-        test_populate_Order("order-01-smooks-config-arrays-setOn.xml", false);        
+        test_populate_Order("order-01-smooks-config-arrays-setOn.xml", false);
     }
 
     public void test_populate_Order(String configName, boolean parentBinding) throws SAXException, IOException, InterruptedException {
-    	
+
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
         ExecutionContext executionContext = smooks.createExecutionContext();
@@ -169,15 +166,15 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals(1163616328000L, order.getHeader().getDate().getTime());
         assertEquals("Joe", order.getHeader().getCustomerName());
         assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
-        
+
         if(parentBinding) {
         	assertNotNull(order.getHeader().getOrder());
         }
-        
+
         assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
 
         testOrderItems(order, parentBinding);
-    	
+
     }
 
     private void testOrderItems(Order order, boolean parentBinding) {

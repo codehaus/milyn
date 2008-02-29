@@ -7,7 +7,7 @@
         <param name="beanClass">org.milyn.javabean.Order</param>
         <param name="bindings">
         	<binding property="header" selector="${header}" />
-        	<binding property="orderItems" addToList="true" selector="${orderItem}" />
+        	<binding property="orderItems" selector="${orderItemList}" />
 		</param>
     </resource-config>
 
@@ -21,6 +21,15 @@
             <binding property="customerNumber" type="Long" selector="header customer @number" />
             <binding property="customerName" selector="header customer" />
             <binding property="privatePerson" type="Boolean" selector="header privatePerson" default="true" />
+        </param>
+    </resource-config>
+
+    <resource-config selector="order">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">orderItemList</param>
+        <param name="beanClass">java.util.ArrayList</param>
+        <param name="bindings">
+        	<binding selector="${orderItem}" />
         </param>
     </resource-config>
 
