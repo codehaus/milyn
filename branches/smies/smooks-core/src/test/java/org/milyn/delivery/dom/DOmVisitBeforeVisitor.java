@@ -22,7 +22,7 @@ import org.w3c.dom.Element;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DMVisitBeforeVisitor implements DOMVisitBefore {
+public class DOmVisitBeforeVisitor implements DOMVisitBefore {
 
     public static boolean visited = false;
 
