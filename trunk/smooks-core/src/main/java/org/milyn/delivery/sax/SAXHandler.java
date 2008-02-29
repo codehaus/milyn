@@ -29,7 +29,6 @@ import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.xml.DocType;
-import org.milyn.xml.DomUtils;
 import org.milyn.SmooksException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -54,8 +53,12 @@ public class SAXHandler extends DefaultHandler2 {
     private Stack<ElementProcessor> elementProcessorStack = new Stack<ElementProcessor>();
     private ElementProcessor currentProcessor = null;
     private TextType currentTextType = TextType.TEXT;
-    private ContentHandlerConfigMapTable<SAXElementVisitor> saxVisitors;
-    private List<ContentHandlerConfigMap<SAXElementVisitor>> defaultVisitors;
+    private ContentHandlerConfigMapTable<SAXVisitBefore> visitBeforesMap;
+    private ContentHandlerConfigMapTable<SAXVisitChildren> childVisitorsMap;
+    private ContentHandlerConfigMapTable<SAXVisitAfter> visitAftersMap;
+    private List<ContentHandlerConfigMap<SAXVisitBefore>> defaultVisitBeforesMap;
+    private List<ContentHandlerConfigMap<SAXVisitChildren>> defaultChildVisitorsMap;
+    private List<ContentHandlerConfigMap<SAXVisitAfter>> defaultVisitAftersMap;
     private ExecutionEventListener eventListener;
     private boolean reverseVisitOrderOnVisitAfter;
     private boolean terminateOnVisitorException;
@@ -64,16 +67,30 @@ public class SAXHandler extends DefaultHandler2 {
         this.execContext = execContext;
         this.writer = writer;
         eventListener = execContext.getEventListener();
-        saxVisitors = ((SAXContentDeliveryConfig)execContext.getDeliveryConfig()).getSaxVisitors();
+        visitBeforesMap = ((SAXContentDeliveryConfig)execContext.getDeliveryConfig()).getVisitBefores();
+        childVisitorsMap = ((SAXContentDeliveryConfig)execContext.getDeliveryConfig()).getChildVisitors();
+        visitAftersMap = ((SAXContentDeliveryConfig)execContext.getDeliveryConfig()).getVisitAfters();
 
-        List<ContentHandlerConfigMap<SAXElementVisitor>> defaultMappings = saxVisitors.getMappings("*");
-        if(defaultMappings != null && !defaultMappings.isEmpty()) {
-            defaultVisitors = defaultMappings;
-        } else {
+        defaultVisitBeforesMap = visitBeforesMap.getMappings("*");
+        defaultChildVisitorsMap = childVisitorsMap.getMappings("*");
+        defaultVisitAftersMap = visitAftersMap.getMappings("*");
+        if(defaultVisitBeforesMap == null || defaultVisitBeforesMap.isEmpty()) {
             SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementVisitor.class.getName());
             resource.setDefaultResource(true);
-            defaultVisitors = new ArrayList<ContentHandlerConfigMap<SAXElementVisitor>>();
-            defaultVisitors.add(new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), resource));
+            defaultVisitBeforesMap = new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>();
+            defaultVisitBeforesMap.add(new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), resource));
+        }
+        if(defaultChildVisitorsMap == null || defaultChildVisitorsMap.isEmpty()) {
+            SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementVisitor.class.getName());
+            resource.setDefaultResource(true);
+            defaultChildVisitorsMap = new ArrayList<ContentHandlerConfigMap<SAXVisitChildren>>();
+            defaultChildVisitorsMap.add(new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), resource));
+        }
+        if(defaultVisitAftersMap == null || defaultVisitAftersMap.isEmpty()) {
+            SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementVisitor.class.getName());
+            resource.setDefaultResource(true);
+            defaultVisitAftersMap = new ArrayList<ContentHandlerConfigMap<SAXVisitAfter>>();
+            defaultVisitAftersMap.add(new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), resource));
         }
 
         reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, execContext.getDeliveryConfig());
@@ -89,17 +106,7 @@ public class SAXHandler extends DefaultHandler2 {
             // based on this start event...
             element = new SAXElement(namespaceURI, localName, qName, atts, currentProcessor.element);
             element.setWriter(currentProcessor.element.getWriter());
-            for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
-                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                    try {
-                        mapping.getContentHandler().onChildElement(currentProcessor.element, element, execContext);
-                    } catch(Throwable t) {
-                        String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildElement event.";
-                        processVisitorException(currentProcessor.element, t, mapping.getResourceConfig(), VisitSequence.AFTER, errorMsg);
-                    }
-                    flushCurrentWriter();
-                }
-            }
+            visitChildren(element);
             elementProcessorStack.push(currentProcessor);
         } else {
             element = new SAXElement(namespaceURI, localName, qName, atts, null);
@@ -111,36 +118,69 @@ public class SAXHandler extends DefaultHandler2 {
             eventListener.onEvent(new ElementPresentEvent(element));
         }
 
-        List<ContentHandlerConfigMap<SAXElementVisitor>> mappings;
         String elementName = element.getName().getLocalPart();
+        List<ContentHandlerConfigMap<SAXVisitBefore>> visitBefores;
+        List<ContentHandlerConfigMap<SAXVisitChildren>> childVisitors;
+        List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters;
         if(isRoot) {
-            mappings = saxVisitors.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
+            visitBefores = visitBeforesMap.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
+            childVisitors = childVisitorsMap.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
+            visitAfters = visitAftersMap.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
         } else {
-            mappings = saxVisitors.getMappings(elementName);
+            visitBefores = visitBeforesMap.getMappings(elementName);
+            childVisitors = childVisitorsMap.getMappings(elementName);
+            visitAfters = visitAftersMap.getMappings(elementName);
         }
 
-        if(mappings == null || mappings.isEmpty()) {
-            visitBefore(element, defaultVisitors);
-            return;
+        if(visitBefores == null || visitBefores.isEmpty()) {
+            visitBefores = defaultVisitBeforesMap;
+        }
+        if(childVisitors == null || childVisitors.isEmpty()) {
+            childVisitors = defaultChildVisitorsMap;
+        }
+        if(visitAfters == null || visitAfters.isEmpty()) {
+            visitAfters = defaultVisitAftersMap;
         }
 
-        if(!visitBefore(element, mappings)) {
+        if(!visitBefore(element, visitBefores, childVisitors, visitAfters)) {
             // If none of the configured resource are applied to the targeted element e.g. due to the
             // context of the element, we switch it to use the default visitir set...
-            visitBefore(element, defaultVisitors);
+            visitBefore(element, defaultVisitBeforesMap, defaultChildVisitorsMap, defaultVisitAftersMap);
         }
     }
 
-    private boolean visitBefore(SAXElement element, List<ContentHandlerConfigMap<SAXElementVisitor>> mappings) {
+    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+
+        if(reverseVisitOrderOnVisitAfter) {
+            // We work through the mappings in reverse order on the end element event...
+            int mappingCount = currentProcessor.afterMappings.size();
+            ContentHandlerConfigMap<SAXVisitAfter> mapping;
+            for(int i = mappingCount - 1; i >= 0; i--) {
+                mapping = currentProcessor.afterMappings.get(i);
+                visitAfter(mapping);
+            }
+        } else {
+            for(ContentHandlerConfigMap<SAXVisitAfter> mapping : currentProcessor.afterMappings) {
+                visitAfter(mapping);
+            }
+        }
+        if(!elementProcessorStack.isEmpty()) {
+            currentProcessor = elementProcessorStack.pop();
+        }
+    }
+
+    private boolean visitBefore(SAXElement element, List<ContentHandlerConfigMap<SAXVisitBefore>> beforeMappings, List<ContentHandlerConfigMap<SAXVisitChildren>> childMappings, List<ContentHandlerConfigMap<SAXVisitAfter>> afterMappings) {
         boolean applied = false;
 
         // Now create the new "current" processor...
         currentProcessor = new ElementProcessor();
         currentProcessor.element = element;
-        currentProcessor.mappings = mappings;
+        currentProcessor.beforeMappings = beforeMappings;
+        currentProcessor.childMappings = childMappings;
+        currentProcessor.afterMappings = afterMappings;
 
         // And visit it with the targeted visitor...
-        for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
+        for(ContentHandlerConfigMap<SAXVisitBefore> mapping : currentProcessor.beforeMappings) {
             try {
                 if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                     // Register the targeting event.  No need to register this event again on the visitAfter...
@@ -161,37 +201,33 @@ public class SAXHandler extends DefaultHandler2 {
         return applied;
     }
 
-    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-
-        if(reverseVisitOrderOnVisitAfter) {
-            // We work through the mappings in reverse order on the end element event...
-            int mappingCount = currentProcessor.mappings.size();
-            ContentHandlerConfigMap<SAXElementVisitor> mapping;
-            for(int i = mappingCount - 1; i >= 0; i--) {
-                mapping = currentProcessor.mappings.get(i);
-                visitAfter(mapping);
+    private void visitChildren(SAXElement element) {
+        if(currentProcessor.childMappings != null) {
+            for(ContentHandlerConfigMap<SAXVisitChildren> mapping : currentProcessor.childMappings) {
+                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                    try {
+                        mapping.getContentHandler().onChildElement(currentProcessor.element, element, execContext);
+                    } catch(Throwable t) {
+                        String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildElement event.";
+                        processVisitorException(currentProcessor.element, t, mapping.getResourceConfig(), VisitSequence.AFTER, errorMsg);
+                    }
+                    flushCurrentWriter();
+                }
             }
-        } else {
-            for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
-                visitAfter(mapping);
-            }
-        }
-        if(!elementProcessorStack.isEmpty()) {
-            currentProcessor = elementProcessorStack.pop();
         }
     }
 
-    private void visitAfter(ContentHandlerConfigMap<SAXElementVisitor> mapping) {
+    private void visitAfter(ContentHandlerConfigMap<SAXVisitAfter> afterMapping) {
         try {
-            if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+            if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                 if(eventListener != null) {
-                    eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, mapping.getResourceConfig(), VisitSequence.AFTER));
+                    eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, afterMapping.getResourceConfig(), VisitSequence.AFTER));
                 }
-                mapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
+                afterMapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
             }
         } catch(Throwable t) {
-            String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the visitAfter event.";
-            processVisitorException(currentProcessor.element, t, mapping.getResourceConfig(), VisitSequence.AFTER, errorMsg);
+            String errorMsg = "Error in '" + afterMapping.getContentHandler().getClass().getName() + "' while processing the visitAfter event.";
+            processVisitorException(currentProcessor.element, t, afterMapping.getResourceConfig(), VisitSequence.AFTER, errorMsg);
         }
         flushCurrentWriter();
     }
@@ -199,7 +235,7 @@ public class SAXHandler extends DefaultHandler2 {
     private SAXText textWrapper = new SAXText();
     public void characters(char[] ch, int start, int length) throws SAXException {
         if(currentProcessor != null) {
-            for(ContentHandlerConfigMap<SAXElementVisitor> mapping : currentProcessor.mappings) {
+            for(ContentHandlerConfigMap<SAXVisitChildren> mapping : currentProcessor.childMappings) {
                 try {
                     if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {                        
                         textWrapper.setText(ch, start, length, currentTextType);
@@ -268,7 +304,9 @@ public class SAXHandler extends DefaultHandler2 {
 
     private class ElementProcessor {
         private SAXElement element;
-        private List<ContentHandlerConfigMap<SAXElementVisitor>> mappings;
+        private List<ContentHandlerConfigMap<SAXVisitBefore>> beforeMappings;
+        private List<ContentHandlerConfigMap<SAXVisitChildren>> childMappings;
+        private List<ContentHandlerConfigMap<SAXVisitAfter>> afterMappings;
     }
 
     private void processVisitorException(SAXElement element, Throwable error, SmooksResourceConfiguration resourceConfig, VisitSequence visitSequence, String errorMsg) throws SmooksException {

@@ -15,16 +15,19 @@
 */
 package org.milyn.delivery.sax;
 
-import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentHandler;
+import org.milyn.SmooksException;
 
 import java.io.IOException;
 
 /**
- * SAX Element Visitor.
- * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface SAXElementVisitor extends SAXVisitBefore, SAXVisitChildren, SAXVisitAfter {
+public class SAXVisitAfterVisitor implements SAXVisitAfter {
+
+    public static boolean visited = false;
+
+    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        visited = true;
+    }
 }
