@@ -23,6 +23,7 @@ import java.util.Hashtable;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.ExecutionEventListener;
+import org.milyn.event.report.ReportConfiguration;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;
@@ -41,6 +42,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	private String contentEncoding;
     private ApplicationContext context;
     private ExecutionEventListener executionListener;
+    private ReportConfiguration reportConfig;
 
     /**
 	 * Public Constructor.
@@ -137,6 +139,14 @@ public class StandaloneExecutionContext implements ExecutionContext {
 
     public ExecutionEventListener getEventListener() {
         return executionListener;
+    }
+
+    public void setReportConfiguration(ReportConfiguration reportConfig) {
+        this.reportConfig = reportConfig;
+    }
+
+    public ReportConfiguration getReportConfiguration() {
+        return reportConfig;
     }
 
     /* (non-Javadoc)

@@ -155,15 +155,19 @@ public class TypePopCheckBean {
         string.append(charVal + ", ");
 
         string.append(integerVal + ", ");
-        string.append(dateVal.getTime() + ", ");
+        string.append((dateVal != null?dateVal.getTime():"null") + ", ");
 
         // Primitive Arrays...
-        string.append(intValArray[0] + ", ");
-        string.append(intValArray[1] + ", ");
-        string.append(intValArray[2] + ", ");
+        if(intValArray != null) {
+            string.append(intValArray[0] + ", ");
+            string.append(intValArray[1] + ", ");
+            string.append(intValArray[2] + ", ");
+        }
 
         // Object Arrays...
-        string.append(Arrays.asList(integerValArray) + ", ");
+        if(integerValArray != null) {
+            string.append(Arrays.asList(integerValArray) + ", ");
+        }
 
         // List...
         string.append(integerValList + ", ");

@@ -36,21 +36,21 @@ public class VisitorEventsTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config3.xml"));
 
         smooks.filter(new StreamSource(new StringReader("<x/>")), null, smooks.createExecutionContext());
-        assertFalse(DOMVisitBeforeVisitor.visited);
-        assertFalse(DOMVisitAfterVisitor.visited);
+        assertFalse(VisitBeforeDOMVisitor.visited);
+        assertFalse(VisitAfterDOMVisitor.visited);
         reset();
         smooks.filter(new StreamSource(new StringReader("<a/>")), null, smooks.createExecutionContext());
-        assertTrue(DOMVisitBeforeVisitor.visited);
-        assertFalse(DOMVisitAfterVisitor.visited);
+        assertTrue(VisitBeforeDOMVisitor.visited);
+        assertFalse(VisitAfterDOMVisitor.visited);
         reset();
         smooks.filter(new StreamSource(new StringReader("<a><b/></a>")), null, smooks.createExecutionContext());
-        assertTrue(DOMVisitBeforeVisitor.visited);
-        assertTrue(DOMVisitAfterVisitor.visited);
-        assertEquals("Hi There!", DOMVisitAfterVisitor.staticInjectedParam);
+        assertTrue(VisitBeforeDOMVisitor.visited);
+        assertTrue(VisitAfterDOMVisitor.visited);
+        assertEquals("Hi There!", VisitAfterDOMVisitor.staticInjectedParam);
     }
 
     private void reset() {
-        DOMVisitBeforeVisitor.visited = false;
-        DOMVisitAfterVisitor.visited = false;
+        VisitBeforeDOMVisitor.visited = false;
+        VisitAfterDOMVisitor.visited = false;
     }
 }

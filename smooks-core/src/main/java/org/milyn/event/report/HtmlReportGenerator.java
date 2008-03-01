@@ -26,6 +26,7 @@ import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.io.StreamUtils;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
@@ -223,7 +224,7 @@ public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
      * @throws java.io.IOException      See {@link org.milyn.Smooks#Smooks(String)}.
      * @throws org.xml.sax.SAXException See {@link org.milyn.Smooks#Smooks(String)}.
      */
-    public static void generateReport(Smooks smooks, Source source, File outputFile, boolean showDefaultAppliedResources) throws IOException {
+    public static void generateReport(Smooks smooks, Source source, Result result, File outputFile, boolean showDefaultAppliedResources) throws IOException {
         AssertArgument.isNotNull(smooks, "smooks");
         AssertArgument.isNotNull(source, "source");
         AssertArgument.isNotNull(outputFile, "outputFile");
@@ -234,7 +235,7 @@ public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
 
         FileWriter outputWriter = new FileWriter(outputFile);
         try {
-            generateReport(smooks, source, outputWriter, showDefaultAppliedResources);
+            generateReport(smooks, source, result, outputWriter, showDefaultAppliedResources);
         } finally {
             try {
                 outputWriter.flush();
@@ -255,13 +256,18 @@ public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
      * @throws java.io.IOException      See {@link org.milyn.Smooks#Smooks(String)}.
      * @throws org.xml.sax.SAXException See {@link org.milyn.Smooks#Smooks(String)}.
      */
-    public static void generateReport(Smooks smooks, Source source, Writer outputWriter, boolean showDefaultAppliedResources) {
+    public static void generateReport(Smooks smooks, Source source, Result result, Writer outputWriter, boolean showDefaultAppliedResources) {
         ExecutionContext execContext = smooks.createExecutionContext();
         HtmlReportGenerator reportGenerator = new HtmlReportGenerator(outputWriter, showDefaultAppliedResources);
 
         reportGenerator.setFilterEvents(ConfigBuilderEvent.class, ElementVisitEvent.class);
         execContext.setEventListener(reportGenerator);
-        smooks.filter(source, new StreamResult(new StringWriter()), execContext);
+
+        if(result == null) {
+            smooks.filter(source, new StreamResult(new StringWriter()), execContext);
+        } else {
+            smooks.filter(source, result, execContext);
+        }
     }
 
     private File getNextOutputFile() {
