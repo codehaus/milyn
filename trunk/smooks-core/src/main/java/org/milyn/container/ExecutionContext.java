@@ -16,11 +16,12 @@
 
 package org.milyn.container;
 
-import java.net.URI;
-
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.profile.ProfileSet;
 import org.milyn.event.ExecutionEventListener;
+import org.milyn.event.report.ReportConfiguration;
+import org.milyn.profile.ProfileSet;
+
+import java.net.URI;
 
 /**
  * Smooks execution context interface definition.
@@ -114,4 +115,16 @@ public interface ExecutionContext extends BoundAttributeStore {
      * @see #setEventListener(ExecutionEventListener) 
      */
     public abstract ExecutionEventListener getEventListener();
+
+    /**
+     * Set the report configuration if an execution report is required.
+     * @param reportConfig Execution report configuration.
+     */
+    public abstract void setReportConfiguration(ReportConfiguration reportConfig);
+
+    /**
+     * Get the execution report configuration.
+     * @return Execution report configuration, or null if none configured.
+     */
+    public abstract ReportConfiguration getReportConfiguration();
 }

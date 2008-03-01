@@ -18,15 +18,21 @@ package org.milyn.delivery.dom;
 import org.w3c.dom.Element;
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
+import org.milyn.cdr.annotation.ConfigParam;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DOMVisitBeforeVisitor implements DOMVisitBefore {
+public class VisitAfterDOMVisitor implements DOMVisitAfter {
 
     public static boolean visited = false;
+    public static String staticInjectedParam;
 
-    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
+    @ConfigParam
+    private String injectedParam;
+
+    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
         visited = true;
+        staticInjectedParam = injectedParam;
     }
 }

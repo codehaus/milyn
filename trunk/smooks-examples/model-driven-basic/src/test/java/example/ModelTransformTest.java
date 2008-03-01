@@ -45,7 +45,7 @@ public class ModelTransformTest extends TestCase {
         Smooks smooks = new Smooks("smooks-config.xml");
         StringWriter outWriter = new StringWriter();
 
-        HtmlReportGenerator.generateReport(smooks, new StreamSource(new ByteArrayInputStream(Main.inputMessage)), new File("/zap/report.html"), false);
+        HtmlReportGenerator.generateReport(smooks, new StreamSource(new ByteArrayInputStream(Main.inputMessage)), null, new File("/zap/report.html"), false);
         System.out.println(outWriter);
     }
 }

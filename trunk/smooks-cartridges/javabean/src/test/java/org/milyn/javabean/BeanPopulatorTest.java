@@ -18,6 +18,9 @@ package org.milyn.javabean;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.event.report.HtmlReportGenerator;
+import org.milyn.event.report.ReportConfiguration;
+import org.milyn.event.report.ReportType;
 import org.milyn.delivery.java.JavaResult;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -30,9 +33,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
@@ -74,6 +75,7 @@ public class BeanPopulatorTest extends TestCase {
     public void test_TypePopCheckBean(String configName) throws ParseException, IOException, SAXException {
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
+
         ExecutionContext executionContext = smooks.createExecutionContext();
         JavaResult result = new JavaResult();
 

@@ -13,26 +13,20 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.dom;
-
-import org.w3c.dom.Element;
-import org.milyn.container.ExecutionContext;
-import org.milyn.SmooksException;
-import org.milyn.cdr.annotation.ConfigParam;
+package org.milyn.event.report;
 
 /**
+ * Smooks Execution Report type.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DOMVisitAfterVisitor implements DOMVisitAfter {
-
-    public static boolean visited = false;
-    public static String staticInjectedParam;
-
-    @ConfigParam
-    private String injectedParam;
-
-    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-        visited = true;
-        staticInjectedParam = injectedParam;
-    }
+public enum ReportType {
+    /**
+     * Flat Report.
+     */
+    FLAT,
+    /**
+     * Html Report.
+     */
+    HTML
 }
