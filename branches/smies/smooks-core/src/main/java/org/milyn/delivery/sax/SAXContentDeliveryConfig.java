@@ -15,15 +15,13 @@
 */
 package org.milyn.delivery.sax;
 
-import org.milyn.delivery.AbstractContentDeliveryConfig;
-import org.milyn.delivery.Filter;
-import org.milyn.delivery.ContentHandlerConfigMapTable;
-import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.AbstractContentDeliveryConfig;
+import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.delivery.ContentHandlerConfigMapTable;
+import org.milyn.delivery.Filter;
 
-import java.util.Map;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * SAX specific {@link org.milyn.delivery.ContentDeliveryConfig} implementation.
@@ -36,6 +34,8 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private ContentHandlerConfigMapTable<SAXVisitChildren> childVisitors = new ContentHandlerConfigMapTable<SAXVisitChildren>();
     private ContentHandlerConfigMapTable<SAXVisitAfter> visitAfters;
 
+    private Map<String, SAXElementVisitorMap> optimizedVisitorConfig = new HashMap<String, SAXElementVisitorMap>();
+
     public ContentHandlerConfigMapTable<SAXVisitBefore> getVisitBefores() {
         return visitBefores;
     }
@@ -44,11 +44,89 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         this.visitBefores = visitBefores;
     }
 
-    public void setChildVisitors() {
+    public ContentHandlerConfigMapTable<SAXVisitChildren> getChildVisitors() {
+        return childVisitors;
+    }
+
+    public ContentHandlerConfigMapTable<SAXVisitAfter> getVisitAfters() {
+        return visitAfters;
+    }
+
+    public void setVisitAfters(ContentHandlerConfigMapTable<SAXVisitAfter> visitAfters) {
+        this.visitAfters = visitAfters;
+    }
+
+    public Map<String, SAXElementVisitorMap> getOptimizedVisitorConfig() {
+        return optimizedVisitorConfig;
+    }
+
+    public Filter newFilter(ExecutionContext executionContext) {
+        return new SmooksSAXFilter(executionContext);
+    }
+
+    public void optimizeConfig() {
         if(visitBefores == null || visitAfters == null) {
             throw new IllegalStateException("Illegal call to setChildVisitors() before setVisitBefores() and setVisitAfters() are called.");
         }
 
+        extractChildVisitors();
+
+        // Now extract the before, child and after visitors for all configured elements...
+        Set<String> elementNames = new HashSet();
+        elementNames.addAll(visitBefores.getTable().keySet());
+        elementNames.addAll(visitAfters.getTable().keySet());
+
+        for (String elementName : elementNames) {
+            SAXElementVisitorMap entry = new SAXElementVisitorMap();
+
+            entry.setVisitBefores(visitBefores.getTable().get(elementName));
+            entry.setChildVisitors(childVisitors.getTable().get(elementName));
+            entry.setVisitAfters(visitAfters.getTable().get(elementName));
+            optimizedVisitorConfig.put(elementName, entry);
+        }
+    }
+
+    public SAXElementVisitorMap getCombinedOptimizedConfig(String[] elementNames) {
+        SAXElementVisitorMap combinedConfig = new SAXElementVisitorMap();
+
+        combinedConfig.setVisitBefores(new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>());
+        combinedConfig.setChildVisitors(new ArrayList<ContentHandlerConfigMap<SAXVisitChildren>>());
+        combinedConfig.setVisitAfters(new ArrayList<ContentHandlerConfigMap<SAXVisitAfter>>());
+        
+        for(String elementName : elementNames) {
+            SAXElementVisitorMap elementConfig = optimizedVisitorConfig.get(elementName.toLowerCase());
+
+            if(elementConfig != null) {
+                List<ContentHandlerConfigMap<SAXVisitBefore>> elementVisitBefores = elementConfig.getVisitBefores();
+                List<ContentHandlerConfigMap<SAXVisitChildren>> elementChildVisitors = elementConfig.getChildVisitors();
+                List<ContentHandlerConfigMap<SAXVisitAfter>> elementVisitAfteres = elementConfig.getVisitAfters();
+
+                if(elementVisitBefores != null) {
+                    combinedConfig.getVisitBefores().addAll(elementVisitBefores);
+                }
+                if(elementChildVisitors != null) {
+                    combinedConfig.getChildVisitors().addAll(elementChildVisitors);
+                }
+                if(elementVisitAfteres != null) {
+                    combinedConfig.getVisitAfters().addAll(elementVisitAfteres);
+                }
+            }
+        }
+
+        if(combinedConfig.getVisitBefores().isEmpty()) {
+            combinedConfig.setVisitBefores(null);
+        }
+        if(combinedConfig.getChildVisitors().isEmpty()) {
+            combinedConfig.setChildVisitors(null);
+        }
+        if(combinedConfig.getVisitAfters().isEmpty()) {
+            combinedConfig.setVisitAfters(null);
+        }
+
+        return combinedConfig;
+    }
+
+    private void extractChildVisitors() {
         // Need to extract the child visitor impls from the visitBefores and the visitAfters.  Need to make sure that we don't add
         // the same handler twice - handlers can impl both SAXVisitBefore and SAXVisitAfter. So, we don't add child handlers from the
         // visitBefores if they also impl SAXVisitAfter (avoiding adding where it impls both).  We add from the visitafters list
@@ -62,7 +140,7 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
                 SAXVisitBefore handler = elementMapping.getContentHandler();
 
                 // Wanna make sure we don't add the same handler twice, so if it also impls SAXVisitAfter, leave
-                // that until we process the SAXVisitAfter handlers
+                // that until we process the SAXVisitAfter handlers...
                 if(handler instanceof SAXVisitChildren && !(handler instanceof SAXVisitAfter)) {
                     childVisitors.addMapping(selector, elementMapping.getResourceConfig(), (SAXVisitChildren) handler);
                 }
@@ -81,21 +159,5 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
                 }
             }
         }
-    }
-
-    public ContentHandlerConfigMapTable<SAXVisitChildren> getChildVisitors() {
-        return childVisitors;
-    }
-
-    public ContentHandlerConfigMapTable<SAXVisitAfter> getVisitAfters() {
-        return visitAfters;
-    }
-
-    public void setVisitAfters(ContentHandlerConfigMapTable<SAXVisitAfter> visitAfters) {
-        this.visitAfters = visitAfters;
-    }
-
-    public Filter newFilter(ExecutionContext executionContext) {
-        return new SmooksSAXFilter(executionContext);
     }
 }

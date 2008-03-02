@@ -206,11 +206,11 @@ public class ContentDeliveryConfigBuilder {
             logger.debug("Using the SAX Stream Filter.");
             saxConfig.setVisitBefores(saxVisitBefores);
             saxConfig.setVisitAfters(saxVisitAfters);
-            saxConfig.setChildVisitors();
             saxConfig.setApplicationContext(applicationContext);
             saxConfig.setSmooksResourceConfigurations(resourceConfigTable);
             saxConfig.setDtd(dtd);
             saxConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
+            saxConfig.optimizeConfig();
 
             return saxConfig;
         }
