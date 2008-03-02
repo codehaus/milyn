@@ -16,6 +16,7 @@
 package org.milyn.javabean.decoders;
 
 import java.util.Date;
+import java.util.Locale;
 
 import junit.framework.TestCase;
 
@@ -23,7 +24,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Tests for the Calendar and Date decoders.
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class DateDecoderTest extends TestCase {
@@ -33,7 +34,9 @@ public class DateDecoderTest extends TestCase {
         SmooksResourceConfiguration config;
 
         config = new SmooksResourceConfiguration();
-        config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
+        config.setParameter(DateDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
+	    config.setParameter(DateDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setParameter(DateDecoder.LOCALE_COUNTRY_CODE, "IE");
         decoder.setConfiguration(config);
 
         Date date_a = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
@@ -41,5 +44,9 @@ public class DateDecoderTest extends TestCase {
         Date date_b = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
         assertNotSame(date_a, date_b);
     }
-    
+
+    public void setUp() {
+		Locale.setDefault( new Locale("de", "DE") );
+	}
+
 }
