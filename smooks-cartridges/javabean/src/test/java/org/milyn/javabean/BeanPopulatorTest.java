@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -68,6 +68,7 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_TypePopCheckBean() throws ParseException, IOException, SAXException {
+
         test_TypePopCheckBean("type-pop-check-bean-smooks-config.xml");
         test_TypePopCheckBean("type-pop-check-bean-smooks-config-sax.xml");
     }
@@ -90,7 +91,7 @@ public class BeanPopulatorTest extends TestCase {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
         MockExecutionContext request = new MockExecutionContext();
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), XmlUtil.VALIDATION_TYPE.NONE, true);
-        
+
         config.setParameter("beanId", "userBean");
         config.setParameter("beanClass", MyGoodBean.class.getName());
         config.setParameter("attributeName", "phoneNumber");
@@ -107,7 +108,7 @@ public class BeanPopulatorTest extends TestCase {
     */
 
     public void test_visit_2() throws SAXException, IOException {
-        test_visit_userBean("compressed-config.xml");        
+        test_visit_userBean("compressed-config.xml");
     }
 
     public void test_visit_userBean(String configName) throws SAXException, IOException {
@@ -196,5 +197,11 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     private void callZ(Number[] nums) {
+    }
+
+    public void setUp()
+    {
+    	// just a assure we are testing with other locales
+		Locale.setDefault( new Locale("de","DE") );
     }
 }
