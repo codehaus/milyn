@@ -15,15 +15,13 @@
 */
 package org.milyn.javabean.decoders;
 
-import org.milyn.javabean.DataDecoder;
-import org.milyn.javabean.DataDecodeException;
-import org.milyn.javabean.DecodeType;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
-
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DecodeType;
 
 /**
  * {@link java.util.Date} data decoder.
@@ -36,22 +34,12 @@ import java.util.Date;
  * standard as used by the XML Schema type "<a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a>".
  * <p/>
  * This decoder is synchronized on its underlying {@link SimpleDateFormat} instance.
+ * @see {@link LocaleAwareDateDecoder}
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @DecodeType(Date.class)
-public class DateDecoder implements DataDecoder {
-
-    public static final String FORMAT_CONFIG_KEY = "format";
-    public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-
-    private String format = DEFAULT_DATE_FORMAT;
-    private SimpleDateFormat decoder = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-        format = resourceConfig.getStringParameter(FORMAT_CONFIG_KEY, DEFAULT_DATE_FORMAT);
-        decoder = new SimpleDateFormat(format.trim());
-    }
+public class DateDecoder extends LocaleAwareDateDecoder implements DataDecoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {

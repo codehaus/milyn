@@ -15,6 +15,7 @@
 */
 package org.milyn.javabean.decoders;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -24,64 +25,51 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Tests for the Calendar and Date decoders.
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
 public class CalendarDecoderTest extends TestCase {
-	
-	private CalendarDecoder decoder;
-	private String languageCode;
-	private String countryCode;
-	
+
 	public void test_CalendarDecoder() {
 	    SmooksResourceConfiguration config = new SmooksResourceConfiguration();
 	    config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
+
+	    CalendarDecoder decoder = new CalendarDecoder();
+	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
 	    decoder.setConfiguration(config);
 
 	    Calendar cal_a = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
 	    assertEquals(1163616328000L, cal_a.getTimeInMillis());
-	    assertEquals("Eastern Standard Time", cal_a.getTimeZone().getDisplayName());
+	    assertEquals("Eastern Standard Time", cal_a.getTimeZone().getDisplayName( new Locale("en", "IE") ) );
 	    Calendar cal_b = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
 	    assertNotSame(cal_a, cal_b);
 	}
 
-	public void test_locale_default() {
-	    final Locale locale = decoder.getLocale( null , null );
-	    assertEquals(Locale.getDefault(),locale);
-	}
+	public void test_CalendarDecoder_with_swedish_local() throws ParseException {
+		final String dateFormat = "EEE MMM dd HH:mm:ss z yyyy";
+		final String dateString = "sö mar 02 15:25:07 CET 2008";
 
-	public void test_locale_languageCode() {
-	    final Locale locale = decoder.getLocale( languageCode, null );
-	    assertEquals(new Locale(languageCode), locale);
-	}
+	    SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+	    CalendarDecoder decoder = new CalendarDecoder();
 
-	public void test_locale_languageCode_and_coutryCode() {
-	    final Locale locale = decoder.getLocale( languageCode, countryCode );
-	    assertEquals(new Locale(languageCode, countryCode), locale);
-	}
-
-	public void test_CalendarDecoder_with_locale() {
-	    SmooksResourceConfiguration config;
-
-	    config = new SmooksResourceConfiguration();
-	    config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
-	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "se");
+	    config.setParameter(CalendarDecoder.FORMAT, dateFormat );
+	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "sv");
 	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "SE");
 	    decoder.setConfiguration(config);
 
-	    Calendar cal_a = (Calendar) decoder.decode("Wed Nov 15 13:45:28 CET 2006");
-	    assertEquals("Central European Time", cal_a.getTimeZone().getDisplayName());
-	    Calendar cal_b = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
-	    assertEquals("Eastern Standard Time", cal_b.getTimeZone().getDisplayName());
-	    assertNotSame(cal_a.getTimeZone().getID(), cal_b.getTimeZone().getID());
+	    Calendar cal_a = (Calendar) decoder.decode( dateString );
+	    assertEquals("Europe/Stockholm", cal_a.getTimeZone().getID() );
+	    assertEquals("Centraleuropeisk tid", cal_a.getTimeZone().getDisplayName( new Locale("sv", "SE") ) );
+
+	    Calendar cal_b = (Calendar) decoder.decode( dateString );
+	    assertNotSame(cal_a, cal_b);
 	}
-	
+
 	public void setUp() {
-		Locale.setDefault( new Locale("ga_IE") );
-	    decoder = new CalendarDecoder();
-	    languageCode = "sv";
-	    countryCode = "SE";
+		Locale.setDefault( new Locale("de", "DE") );
+		//Locale.setDefault( new Locale("ga", "IE") );
 	}
 
 }
