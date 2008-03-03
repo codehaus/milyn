@@ -208,25 +208,4 @@ public class BeanPopulatorTest extends TestCase {
         }
     }
 
-    public void test_arrays() {
-        int[] ints = new int[] {};
-        Integer[] integers = new Integer[] {};
-
-        callX(ints);
-        callY(integers);
-        callZ(integers);
-    }
-
-    private void callX(int[] ints) {
-    }
-
-    private void callY(Integer[] integers) {
-        if(integers instanceof Number[]) {
-            System.out.println("Yep!!");
-        }
-    }
-
-    private void callZ(Number[] nums) {
-    }
-
 }

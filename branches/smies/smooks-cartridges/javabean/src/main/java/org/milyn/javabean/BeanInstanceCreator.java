@@ -58,7 +58,7 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
     private static boolean WARNED_SETON_DEPRECATED = false;
 
     private String id;
-    
+
     @ConfigParam
     private String beanId;
 
@@ -93,10 +93,10 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
     @Initialize
     public void initialize() throws SmooksConfigurationException {
     	buildId();
-    	
+
     	beanRuntimeInfo = resolveBeanRuntime(beanClassName);
         BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, beanRuntimeInfo, appContext);
-        
+
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
 
@@ -140,11 +140,11 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
     	idBuilder.append(BeanInstanceCreator.class.getName());
     	idBuilder.append("#");
     	idBuilder.append(beanId);
-    	
+
 
     	id = idBuilder.toString();
     }
-    
+
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         createAndSetBean(executionContext);
     }
@@ -156,14 +156,14 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.lifecycle.BeanLifecycleObserver#notifyBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanLifecycleEvent)
 	 */
-	public void notifyBeanLifecycleEvent(BeanLifecycleEvent event) {
+	public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
 		if(logger.isDebugEnabled()) {
 			logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
-			
+
 		}
 		if(event.getLifecycle() == BeanLifecycle.END) {
 			ExecutionContext executionContext = event.getExecutionContext();
-			
+
 			Classification thisBeanType = beanRuntimeInfo.getClassification();
 
 	    	boolean isArray = (thisBeanType == Classification.ARRAY_COLLECTION);
@@ -183,7 +183,7 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
 		            setOn(bean, executionContext);
 		        }
 	    	}
-	    	
+
 	    	BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.END, event.getBeanId(), getId());
 		}
 	}
@@ -201,18 +201,23 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
 	private void createAndSetBean(ExecutionContext executionContext) {
         Object bean;
         bean = createBeanInstance();
-        
+
         if (setOn != null) {
             // Need to associate the 2 bean lifecycles...
             BeanAccessor.associateLifecycles(executionContext, setOn, beanId, addToList);
         }
 
         BeanAccessor.addBean(beanId, bean, executionContext, addToList);
+
+        if(setOn != null || beanRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
+        	BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), this);
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug("Bean [" + beanId + "] instance created.");
         }
-        BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), this);
-        
+
+
     }
 
     @SuppressWarnings("unchecked")
@@ -364,11 +369,11 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
 
         return setOnBeanSetterMethod;
     }
-    
+
     private String getId() {
 		return id;
 	}
-    
+
     /* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -390,6 +395,6 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
 		}
 		BeanInstanceCreator other = (BeanInstanceCreator) obj;
 		return getId().equals(other.getId());
-	}    
+	}
 
 }

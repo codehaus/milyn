@@ -52,7 +52,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
-public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor, BeanLifecycleObserver {
+public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);
 
@@ -100,7 +100,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @Initialize
     public void initialize() throws SmooksConfigurationException {
     	buildId();
-    	
+
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
         beanBinding = selectedBeanId != null;
         isAttribute = (valueAttributeName != null);
@@ -154,7 +154,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-    	visitAfter(executionContext);
     	if(!beanBinding) {
 
 	    	String dataString;
@@ -197,8 +196,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    	visitAfter(executionContext);
-
     	if(!beanBinding) {
     		String dataString;
 
@@ -229,36 +226,72 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	if(beanBinding) {
     		Object bean = BeanAccessor.getBean(selectedBeanId, executionContext);
     		if(bean == null) {
-    			
-    			//TODO: Determine when to unregister this event!
-    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.BEGIN, selectedBeanId, getId(), this);
 
+    			// Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
+    			// we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
+    			// and not the list representation. So we register and observer wo looks for the change from the list to the array
+    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.BEGIN, selectedBeanId, getId(), new BeanLifecycleObserver(){
+
+    				public void onBeanLifecycleEvent(
+    						BeanLifecycleEvent event) {
+
+    					if(logger.isDebugEnabled()) {
+    						logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
+
+    					}
+
+    					ExecutionContext executionContext = event.getExecutionContext();
+    					Object bean = event.getBean();
+
+    					Classification selectedBeanType = getSelectedBeanRuntimeInfo().getClassification();
+
+						BeanAccessor.associateLifecycles(executionContext, beanId, event.getBeanId());
+
+						if(selectedBeanType == Classification.ARRAY_COLLECTION ) {
+
+							// Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
+							// can then set this array
+							BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId(), new BeanLifecycleObserver() {
+								public void onBeanLifecycleEvent(
+										BeanLifecycleEvent event) {
+
+									if(logger.isDebugEnabled()) {
+										logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
+
+									}
+
+									ExecutionContext executionContext = event.getExecutionContext();
+
+									populateAndSetPropertyValue(property, event.getBean(), executionContext);
+
+									BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId());
+
+								}
+							});
+
+						} else {
+							populateAndSetPropertyValue(property, bean, executionContext);
+						}
+
+    				}
+
+    			});
+
+    			// Unregister the observers at then end of this beans lifecycle
+    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), new BeanLifecycleObserver(){
+    				public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
+
+    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.BEGIN, selectedBeanId, getId());
+    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.END, beanId, getId());
+
+    				}
+    			});
     		} else {
     			populateAndSetPropertyValue(property, bean, executionContext);
     		}
     	}
 	}
 
-    private void visitAfter(ExecutionContext executionContext) {
-		if(beanBinding) {
-
-			//>> Unregistering of the observer can't be done here. Maybe it observes beans that
-			//>> are located after the closing tag. The next element of this type will overwrite the
-			//>> current observer
-			//
-			//BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
-
-//			if(getSelectedBeanRuntimeInfo().getClassification() == Classification.ARRAY_COLLECTION ) {
-//
-//				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
-//
-//				populateAndSetPropertyValue(property, selectedBean, executionContext);
-//
-//			}
-
-		}
-
-	}
 
     private void populateAndSetPropertyValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {
 
@@ -359,37 +392,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         return decoder;
     }
 
-    /* (non-Javadoc)
-	 * @see org.milyn.javabean.BeanObserver#bind(java.lang.Object)
-	 */
-	public void notifyBeanLifecycleEvent(BeanLifecycleEvent event) {
-		if(logger.isDebugEnabled()) {
-			logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
-			
-		}
-
-		ExecutionContext executionContext = event.getExecutionContext();
-		Object bean = event.getBean();
-		
-		Classification selectedBeanType = getSelectedBeanRuntimeInfo().getClassification();
-		
-		if(event.getLifecycle() == BeanLifecycle.BEGIN) {
-			BeanAccessor.associateLifecycles(executionContext, beanId, event.getBeanId());
-			
-			if(selectedBeanType == Classification.ARRAY_COLLECTION ) {
-				
-				BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId(), this);
-			} else {
-				populateAndSetPropertyValue(property, bean, executionContext);
-			}
-		} else if(event.getLifecycle() == BeanLifecycle.CHANGE) {
-			
-			populateAndSetPropertyValue(property, bean, executionContext);
-				
-			BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId());
-			
-		}
-	}
 
 	private BeanRuntimeInfo getSelectedBeanRuntimeInfo() {
 		if(selectedBeanRuntimeInfo == null) {
@@ -431,4 +433,5 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 		BeanInstancePopulator other = (BeanInstancePopulator) obj;
 		return getId().equals(other.getId());
 	}
+
 }

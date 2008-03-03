@@ -22,6 +22,6 @@ package org.milyn.javabean.lifecycle;
  */
 public interface BeanLifecycleObserver {
 	
-	void notifyBeanLifecycleEvent(BeanLifecycleEvent event);
+	void onBeanLifecycleEvent(BeanLifecycleEvent event);
 	
 }
