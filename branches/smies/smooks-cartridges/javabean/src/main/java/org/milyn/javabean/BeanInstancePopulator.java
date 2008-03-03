@@ -38,6 +38,9 @@ import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.lifecycle.BeanLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -49,7 +52,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
-public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor, BeanObserver {
+public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor, BeanLifecycleObserver {
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);
 
@@ -96,7 +99,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      */
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-        beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
+    	buildId();
+    	
+    	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
         beanBinding = selectedBeanId != null;
         isAttribute = (valueAttributeName != null);
 
@@ -118,13 +123,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             }
         }
 
-        buildId();
-
         logger.debug("Bean Instance Populator created for [" + beanId + "].  property=" + property);
     }
 
     private void buildId() {
     	StringBuilder idBuilder = new StringBuilder();
+    	idBuilder.append(BeanInstancePopulator.class.getName());
+    	idBuilder.append("#");
     	idBuilder.append(beanId);
 
     	if(property != null) {
@@ -224,8 +229,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	if(beanBinding) {
     		Object bean = BeanAccessor.getBean(selectedBeanId, executionContext);
     		if(bean == null) {
-
-    			BeanAccessor.registerBeanObserver(executionContext, selectedBeanId, getId(), this);
+    			
+    			//TODO: Determine when to unregister this event!
+    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.BEGIN, selectedBeanId, getId(), this);
 
     		} else {
     			populateAndSetPropertyValue(property, bean, executionContext);
@@ -242,13 +248,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 			//
 			//BeanAccessor.unregisterBeanObserver(executionContext, selectedBeanId, getId());
 
-			if(getSelectedBeanRuntimeInfo().getClassification() == Classification.ARRAY_COLLECTION ) {
-
-				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
-
-				populateAndSetPropertyValue(property, selectedBean, executionContext);
-
-			}
+//			if(getSelectedBeanRuntimeInfo().getClassification() == Classification.ARRAY_COLLECTION ) {
+//
+//				Object selectedBean = BeanAccessor.getBean(getId(), executionContext);
+//
+//				populateAndSetPropertyValue(property, selectedBean, executionContext);
+//
+//			}
 
 		}
 
@@ -356,17 +362,33 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     /* (non-Javadoc)
 	 * @see org.milyn.javabean.BeanObserver#bind(java.lang.Object)
 	 */
-	@SuppressWarnings("unchecked")
-	public void beanRegistrationNotify(ExecutionContext executionContext, Object obj) {
-
-		Classification beanType = getSelectedBeanRuntimeInfo().getClassification();
-
-		if(beanType == Classification.ARRAY_COLLECTION ) {
-			BeanAccessor.addBean(executionContext, getId(), obj);
-		} else {
-			populateAndSetPropertyValue(property, obj, executionContext);
+	public void notifyBeanLifecycleEvent(BeanLifecycleEvent event) {
+		if(logger.isDebugEnabled()) {
+			logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
+			
 		}
 
+		ExecutionContext executionContext = event.getExecutionContext();
+		Object bean = event.getBean();
+		
+		Classification selectedBeanType = getSelectedBeanRuntimeInfo().getClassification();
+		
+		if(event.getLifecycle() == BeanLifecycle.BEGIN) {
+			BeanAccessor.associateLifecycles(executionContext, beanId, event.getBeanId());
+			
+			if(selectedBeanType == Classification.ARRAY_COLLECTION ) {
+				
+				BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId(), this);
+			} else {
+				populateAndSetPropertyValue(property, bean, executionContext);
+			}
+		} else if(event.getLifecycle() == BeanLifecycle.CHANGE) {
+			
+			populateAndSetPropertyValue(property, bean, executionContext);
+				
+			BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId());
+			
+		}
 	}
 
 	private BeanRuntimeInfo getSelectedBeanRuntimeInfo() {

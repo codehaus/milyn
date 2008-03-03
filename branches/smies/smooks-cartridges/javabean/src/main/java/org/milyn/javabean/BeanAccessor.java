@@ -31,6 +31,9 @@ import org.milyn.delivery.FilterResult;
 import org.milyn.delivery.FilterSource;
 import org.milyn.delivery.java.JavaResult;
 import org.milyn.delivery.java.JavaSource;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.lifecycle.BeanLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 
 /**
  * Bean Accessor.
@@ -44,17 +47,21 @@ public class BeanAccessor {
 
     private static final String CONTEXT_KEY = BeanAccessor.class.getName() + "#CONTEXT_KEY";
 
+    private final ExecutionContext executionContext;
+    
     private final Map<String, Object> beans;
     private final Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
 
-    private final Map<String, Map<String, BeanObserver>> beanObservers = new HashMap<String, Map<String, BeanObserver>>();
+    private final Map<String, Map<String, BeanLifecycleObserver>> lifecycleBeginObservers = new HashMap<String, Map<String, BeanLifecycleObserver>>();
+    private final Map<String, Map<String, BeanLifecycleObserver>> lifecycleEndObservers = new HashMap<String, Map<String, BeanLifecycleObserver>>();
+    private final Map<String, Map<String, BeanLifecycleObserver>> lifecycleChangeObservers = new HashMap<String, Map<String, BeanLifecycleObserver>>();
 
 
     /**
      * Public default constructor.
      */
-    public BeanAccessor() {
-        beans = new LinkedHashMap<String, Object>();
+    public BeanAccessor(ExecutionContext executionContext) {
+    	this(executionContext, new LinkedHashMap<String, Object>());
     }
 
     /**
@@ -64,7 +71,8 @@ public class BeanAccessor {
      *
      * @param resultMap The result Map.
      */
-    public BeanAccessor(Map<String, Object> resultMap) {
+    public BeanAccessor(ExecutionContext executionContext, Map<String, Object> resultMap) {
+    	this.executionContext = executionContext;
         beans = resultMap;
     }
 
@@ -144,9 +152,9 @@ public class BeanAccessor {
             }
 
             if(beanMap != null) {
-                accessor = new BeanAccessor(beanMap);
+                accessor = new BeanAccessor(executionContext, beanMap);
             } else {
-                accessor = new BeanAccessor();
+                accessor = new BeanAccessor(executionContext);
             }
 
             executionContext.setAttribute(CONTEXT_KEY, accessor);
@@ -188,8 +196,14 @@ public class BeanAccessor {
 
         BeanAccessor accessor = getAccessor(executionContext);
 
-        accessor.cleanAssociatedLifecycleBeans(beanId);
-
+        // We don't call removeBean directly because we will replace the bean later on. Deleting
+        // it is not necessary then.
+        if(accessor.beans.containsKey(beanId)) {
+    		accessor.cleanAssociatedLifecycleBeans(beanId);
+    		
+    		accessor.endLifecycle(beanId);
+    	}
+        
         if(addToList) {
             // Beans that are added to lists take up 2 locations in the bean map... 1 for the current bean
             // instance (keyed under beanId) and one for the bean list (keyed under beanId + "List").
@@ -202,24 +216,46 @@ public class BeanAccessor {
                 // Create the bean list and add it to the bean map...
                 beanList = new ArrayList<Object>();
                 accessor.beans.put(beanListId, beanList);
+                
+                //add = true;
             } else if(!(beanList instanceof List)) {
                 throw new IllegalArgumentException("bean [" + beanId + "] list storage location [" + beanListId + "] is already in use and IS NOT a List (type=" + beanList.getClass().getName() + ").  Try explicitly setting the 'beanId' on one of these bean configs to avoid this name collision.");
             }
             // add the bean to the list...
             ((List<Object>)beanList).add(bean);
         }
-//        } else {
-//            Object currentBean = accessor.beans.get(beanId);
-//
-//            if(currentBean instanceof List) {
-//                throw new IllegalArgumentException("bean [" + beanId + "] already exists on request and IS a List.  Arg 'addToList' set to false - this is inconsistent!!");
-//            }
-//        }
+
 
         // Set the bean on the bean map...
         accessor.beans.put(beanId, bean);
 
-        accessor.notifyObservers(executionContext, beanId, bean);
+        accessor.notifyObservers(BeanLifecycle.BEGIN, beanId, bean);
+        
+    }
+    
+    /**
+     * Changes a bean object of the given beanId. The difference to addBean is that the
+     * bean must exist, the associated beans aren't removed and the observers of the 
+     * {@link BeanLifecycle#CHANGE} event are notified.  
+     *
+     * @param executionContext The execution context within which the bean is created.
+     * @param beanId The beanId under which the bean is to be stored.
+     * @param bean The bean instance to be stored.
+     */
+    public static void changeBean(ExecutionContext executionContext, String beanId, Object bean) {
+    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+    	AssertArgument.isNotNull(bean, "bean");
+    	AssertArgument.isNotNull(executionContext, "executionContext");
+    	
+    	BeanAccessor accessor = getAccessor(executionContext);
+    	
+    	if(accessor.beans.containsKey(beanId)) {
+    		accessor.beans.put(beanId, bean);
+    		
+    		accessor.notifyObservers(BeanLifecycle.CHANGE, beanId, bean);
+    	} else {
+    		throw new IllegalStateException("The bean '" + beanId + "' can't be replaces because it doesn't exits in the map.");
+    	}
     }
 
 
@@ -235,6 +271,8 @@ public class BeanAccessor {
      */
     public static void associateLifecycles(ExecutionContext executionContext, String parentBean, String childBean) {
     	AssertArgument.isNotNull(executionContext, "executionContext");
+    	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
+    	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
 
     	BeanAccessor accessor = getAccessor(executionContext);
 
@@ -254,7 +292,10 @@ public class BeanAccessor {
      */
     @Deprecated
     public static void associateLifecycles(ExecutionContext executionContext, String parentBean, String childBean, boolean addToList) {
+    	AssertArgument.isNotNull(executionContext, "executionContext");
+    	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
     	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
+    	
 
     	if(addToList) {
             childBean += "List";
@@ -264,6 +305,19 @@ public class BeanAccessor {
     }
 
     /**
+     * Ends the lifecycles of all the beans
+     *
+     * @param executionContext The execution context of the bean Accessor
+     */
+    public static void endAllLifecycles(ExecutionContext executionContext) {
+    	AssertArgument.isNotNull(executionContext, "executionContext");
+
+    	BeanAccessor accessor = getAccessor(executionContext);
+
+    	accessor.endAllLifecycles();
+    }
+    
+    /**
      * Registers an observer which observers when a bean gets added.
      *
      *
@@ -272,12 +326,12 @@ public class BeanAccessor {
      * @param observerId The id of the observer. This is used to unregister the observer
      * @param observer The actual BeanObserver object
      */
-    public static void registerBeanObserver(ExecutionContext executionContext, String beanId, String observerId, BeanObserver observer) {
+    public static void registerBeanLifecycleObserver(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, String observerId, BeanLifecycleObserver observer) {
     	AssertArgument.isNotNull(executionContext, "executionContext");
 
     	BeanAccessor accessor = getAccessor(executionContext);
 
-    	accessor.registerBeanObserver(beanId, observerId, observer);
+    	accessor.registerBeanLifecycleObserver(lifecycle, beanId, observerId, observer);
     }
 
     /**
@@ -287,12 +341,12 @@ public class BeanAccessor {
      * @param beanId The bean id for which the observer is registered
      * @param observerId The id of the observer to unregister
      */
-    public static void unregisterBeanObserver(ExecutionContext executionContext, String beanId, String observerId) {
+    public static void unregisterBeanLifecycleObserver(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, String observerId) {
     	AssertArgument.isNotNull(executionContext, "executionContext");
 
     	BeanAccessor accessor = getAccessor(executionContext);
 
-    	accessor.unregisterBeanObserver(beanId, observerId);
+    	accessor.unregisterBeanLifecycleObserver(lifecycle, beanId, observerId);
     }
 
     /*
@@ -301,40 +355,43 @@ public class BeanAccessor {
      */
     @Override
     public String toString() {
-        if(beans != null) {
-            return beans.toString();
-        } else {
-            return "{}";
-        }
+    	return beans.toString();
     }
 
-    private void registerBeanObserver(String beanId, String observerId, BeanObserver observer) {
+
+    private void registerBeanLifecycleObserver(BeanLifecycle lifecycle, String beanId, String observerId, BeanLifecycleObserver observer) {
+    	AssertArgument.isNotNull(lifecycle, "lifecycle");
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
     	AssertArgument.isNotNull(observer, "observer");
+    	
+    	Map<String, Map<String, BeanLifecycleObserver>> observerMap = getObserversMap(lifecycle);
 
-    	Map<String, BeanObserver> observers = beanObservers.get(beanId);
+    	Map<String, BeanLifecycleObserver> observers = observerMap.get(beanId);
     	if(observers == null) {
-    		observers = new HashMap<String, BeanObserver>(1);
+    		observers = new HashMap<String, BeanLifecycleObserver>(1);
 
-    		beanObservers.put(beanId, observers);
+    		observerMap.put(beanId, observers);
     	}
 
     	observers.put(observerId, observer);
 
     }
 
-    private void unregisterBeanObserver(String beanId, String observerId) {
+    private void unregisterBeanLifecycleObserver(BeanLifecycle lifecycle, String beanId, String observerId) {
+    	AssertArgument.isNotNull(lifecycle, "lifecycle");
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
+    	
+    	Map<String, Map<String, BeanLifecycleObserver>> observerMap = getObserversMap(lifecycle);
+    	
+    	if(observerMap.containsKey(beanId)) {
 
-    	if(beanObservers.containsKey(beanId)) {
-
-    		Map<String, BeanObserver> observers = beanObservers.get(beanId);
+    		Map<String, BeanLifecycleObserver> observers = observerMap.get(beanId);
     		observers.remove(observerId);
 
     		if(observers.size() == 0) {
-    			beanObservers.remove(beanId);
+    			observerMap.remove(beanId);
     		}
     	}
 
@@ -351,7 +408,7 @@ public class BeanAccessor {
                 associations.add(childBean);
             }
         } else {
-            associations = new ArrayList<String>();
+            associations = new ArrayList<String>(1);
             associations.add(childBean);
             lifecycleAssociations.put(parentBean, associations);
         }
@@ -362,28 +419,80 @@ public class BeanAccessor {
 
         if(associations != null) {
             for (String association : associations) {
-                beans.remove(association);
+            	removeBean(association);
             }
+            lifecycleAssociations.remove(parentBean);
         }
+        
+    }
+    
+    private void removeBean(String beanId) {
+    	cleanAssociatedLifecycleBeans(beanId);
+    	
+    	endLifecycle(beanId);
+    	
+    	beans.remove(beanId);
+    }
+    
+    private void endAllLifecycles() {
+    	
+    	List<String> keyList = new ArrayList<String>(beans.size());
+    	for(String beanId: beans.keySet()) {
+    		keyList.add(beanId);
+    	}
+    	
+    	for(int i = keyList.size()-1; i >= 0; i--) {
+    		endLifecycle(keyList.get(i));
+    	}
+    	
+    }
+    
+    private void endLifecycle(String beanId) {
+    	notifyObservers(BeanLifecycle.END, beanId);
+    	
     }
 
-    private void notifyObservers(ExecutionContext executionContext, String beanId, Object bean) {
+    private void notifyObservers(BeanLifecycle lifecycle, String beanId) {
+    	notifyObservers(lifecycle, beanId, null);
+    }
+    
+    private void notifyObservers(BeanLifecycle lifecycle, String beanId, Object bean) {
 
-    	if(beanObservers.containsKey(beanId)) {
+    	Map<String, Map<String, BeanLifecycleObserver>> observersMap = getObserversMap(lifecycle);
+    	
+    	if(observersMap.containsKey(beanId)) {
 
-    		Map<String, BeanObserver> observers = beanObservers.get(beanId);
+    		Map<String, BeanLifecycleObserver> observers = observersMap.get(beanId);
 
-    		for(BeanObserver observer : observers.values()) {
+    		if(observers.size() > 0) {
+    			BeanLifecycleEvent event = new BeanLifecycleEvent(executionContext, lifecycle, beanId, bean);
+    			
+    			for(BeanLifecycleObserver observer : observers.values()) {
 
-    			String observerBeanId = observer.getBeanId();
+        			observer.notifyBeanLifecycleEvent(event);
 
-    			associateLifecycles(observerBeanId, beanId);
-
-    			observer.beanRegistrationNotify(executionContext, bean);
-
+        		}
     		}
+    		
 
     	}
 
+    }
+    
+    private Map<String, Map<String, BeanLifecycleObserver>> getObserversMap(BeanLifecycle lifecycle) {
+    	
+    	//We do a switch here for performance reasons. I think that this is faster then doing some map lookup.
+    	switch(lifecycle) {
+    	case BEGIN:
+    		return lifecycleBeginObservers;
+    	case CHANGE:
+    		return lifecycleChangeObservers;
+    	case END:
+    		return lifecycleEndObservers;
+    	default:
+    		throw new IllegalArgumentException("lifecycle not supported");	
+    	}
+    	
+    	
     }
 }

@@ -34,11 +34,13 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.lifecycle.BeanLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
 
@@ -49,12 +51,14 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor {
+public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, BeanLifecycleObserver {
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
     private static boolean WARNED_SETON_DEPRECATED = false;
 
+    private String id;
+    
     @ConfigParam
     private String beanId;
 
@@ -88,9 +92,11 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
      */
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-        beanRuntimeInfo = resolveBeanRuntime(beanClassName);
+    	buildId();
+    	
+    	beanRuntimeInfo = resolveBeanRuntime(beanClassName);
         BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, beanRuntimeInfo, appContext);
-
+        
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
 
@@ -129,55 +135,64 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
         logger.debug("BeanInstanceCreator created for [" + beanId + ":" + beanClassName + "].");
     }
 
+    private void buildId() {
+    	StringBuilder idBuilder = new StringBuilder();
+    	idBuilder.append(BeanInstanceCreator.class.getName());
+    	idBuilder.append("#");
+    	idBuilder.append(beanId);
+    	
+
+    	id = idBuilder.toString();
+    }
+    
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         createAndSetBean(executionContext);
-    }
-
-    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-    	visitAfter(executionContext);
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         createAndSetBean(executionContext);
     }
 
-    public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.lifecycle.BeanLifecycleObserver#notifyBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanLifecycleEvent)
+	 */
+	public void notifyBeanLifecycleEvent(BeanLifecycleEvent event) {
+		if(logger.isDebugEnabled()) {
+			logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
+			
+		}
+		if(event.getLifecycle() == BeanLifecycle.END) {
+			ExecutionContext executionContext = event.getExecutionContext();
+			
+			Classification thisBeanType = beanRuntimeInfo.getClassification();
 
-    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
+	    	boolean isArray = (thisBeanType == Classification.ARRAY_COLLECTION);
+	    	boolean isSetOn = (setOn != null);
 
-    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    	visitAfter(executionContext);
-    }
+	    	if(isArray || isSetOn) {
+		    	Object bean  = BeanUtils.getBean(beanId, executionContext);
 
-    private void visitAfter(ExecutionContext executionContext) {
-    	Classification thisBeanType = beanRuntimeInfo.getClassification();
+		    	if(isArray) {
+		    		// This bean is an array, we need to convert the List used to create it into
+		            // an array of that type, and add that array to the BeanAccessor, overwriting the list
 
-    	boolean isArray = (thisBeanType == Classification.ARRAY_COLLECTION);
-    	boolean isSetOn = (setOn != null);
+		    		bean = convert(bean, executionContext);
+		    	}
+		    	if (isSetOn) {
 
-    	if(isArray || isSetOn) {
-	    	Object bean  = BeanUtils.getBean(beanId, executionContext);
-
-	    	if(isArray) {
-	    		// This bean is an array, we need to convert the List used to create it into
-	            // an array of that type, and add that array to the BeanAccessor, overwriting the list
-
-	    		bean = convert(bean, executionContext);
+		            setOn(bean, executionContext);
+		        }
 	    	}
-	    	if (isSetOn) {
-
-	            setOn(bean, executionContext);
-	        }
-    	}
-    }
+	    	
+	    	BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.END, event.getBeanId(), getId());
+		}
+	}
 
     private Object convert(Object bean, ExecutionContext executionContext) {
 
         bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
 
-        BeanAccessor.addBean(executionContext, beanId, bean);
+        BeanAccessor.changeBean(executionContext, beanId, bean);
 
     	return bean;
     }
@@ -186,7 +201,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
 	private void createAndSetBean(ExecutionContext executionContext) {
         Object bean;
         bean = createBeanInstance();
-
+        
         if (setOn != null) {
             // Need to associate the 2 bean lifecycles...
             BeanAccessor.associateLifecycles(executionContext, setOn, beanId, addToList);
@@ -196,6 +211,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
         if (logger.isDebugEnabled()) {
             logger.debug("Bean [" + beanId + "] instance created.");
         }
+        BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), this);
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -347,4 +364,32 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXElementVisitor
 
         return setOnBeanSetterMethod;
     }
+    
+    private String getId() {
+		return id;
+	}
+    
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return getId().hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof BeanInstanceCreator == false) {
+			return false;
+		}
+		if(obj == this) {
+			return true;
+		}
+		BeanInstanceCreator other = (BeanInstanceCreator) obj;
+		return getId().equals(other.getId());
+	}    
+
 }

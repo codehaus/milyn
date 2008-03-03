@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
  */
 public class BeanBindingPopulatorTest extends TestCase {
 
-	private static boolean REPORT_EXECUTION = false;
+	private static boolean REPORT_EXECUTION = true;
 
 	private static final Log logger = LogFactory.getLog(BeanBindingPopulatorTest.class);
 
@@ -62,7 +62,7 @@ public class BeanBindingPopulatorTest extends TestCase {
 
 		test_01_list("bb-01-smooks-config.xml", xml);
 		test_01_list("bb-01-smooks-config-sax.xml", xml);
-		//test_01_array("bb-01-smooks-config-array.xml", xml);
+		test_01_array("bb-01-smooks-config-array.xml", xml);
 	}
 
 	/**

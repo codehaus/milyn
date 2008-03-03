@@ -25,11 +25,14 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
+import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.dom.VisitPhase;
+import org.milyn.javabean.lifecycle.BeanLifecycleEnder;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -151,6 +154,8 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
+    private static final String APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED = BeanPopulator.class.getName() + "#LIFECYCLE_ENDER_CREATED";
+    
     @ConfigParam(defaultVal = ConfigParam.NULL)
     private String beanId;
 
@@ -159,6 +164,9 @@ public class BeanPopulator implements ConfigurationExpander {
 
     @Config
     private SmooksResourceConfiguration config;
+    
+    @AppContext
+    private ApplicationContext appContext;
 
     /*******************************************************************************************************
      *  Common Methods.
@@ -197,10 +205,10 @@ public class BeanPopulator implements ConfigurationExpander {
 
         buildInstanceCreatorConfig(resources);
         buildBindingConfigs(resources);
-
+        buildBeanLifecycleEnderConfig(resources);
+        
         return resources;
-    }
-
+    } 
 
     private void buildInstanceCreatorConfig(List<SmooksResourceConfiguration> resources) {
         SmooksResourceConfiguration resource = (SmooksResourceConfiguration) config.clone();
@@ -325,6 +333,22 @@ public class BeanPopulator implements ConfigurationExpander {
         return resourceConfig;
     }
 
+    private void buildBeanLifecycleEnderConfig(List<SmooksResourceConfiguration> resources) {
+    	
+    	Boolean created = (Boolean)appContext.getAttribute(APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED);
+    	if(created == null || !created) {
+    		
+    		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("$document", BeanLifecycleEnder.class.getName());
+            resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
+            resourceConfig.setTargetProfile("*");
+    		
+            resources.add(resourceConfig);
+            
+    		appContext.setAttribute(APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED, Boolean.TRUE);
+    	}
+    	
+    }
+    
     private String getSelectorProperty(String selector) {
         StringBuffer selectorProp = new StringBuffer();
         String[] selectorTokens = selector.split(" ");

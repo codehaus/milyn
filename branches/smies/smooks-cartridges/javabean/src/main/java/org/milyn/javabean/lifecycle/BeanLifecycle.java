@@ -13,18 +13,16 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean;
-
-import org.milyn.container.ExecutionContext;
+package org.milyn.javabean.lifecycle;
 
 /**
- * <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface BeanObserver {
+public enum BeanLifecycle {
 	
-	String getBeanId();
-	
-	void beanRegistrationNotify(ExecutionContext executionContext, Object obj);
+	BEGIN,
+	CHANGE,
+	END;
 	
 }
