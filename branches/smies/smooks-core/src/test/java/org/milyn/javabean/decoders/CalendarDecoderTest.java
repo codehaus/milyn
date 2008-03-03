@@ -15,9 +15,13 @@
 */
 package org.milyn.javabean.decoders;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -49,7 +53,7 @@ public class CalendarDecoderTest extends TestCase {
 
 	public void test_CalendarDecoder_with_swedish_local() throws ParseException {
 		final String dateFormat = "EEE MMM dd HH:mm:ss z yyyy";
-		final String dateString = "sö mar 02 15:25:07 CET 2008";
+		final String dateString = "ti mar 04 15:25:07 CET 2008";
 
 	    SmooksResourceConfiguration config = new SmooksResourceConfiguration();
 	    CalendarDecoder decoder = new CalendarDecoder();
@@ -57,20 +61,36 @@ public class CalendarDecoderTest extends TestCase {
 	    config.setParameter(CalendarDecoder.FORMAT, dateFormat );
 	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "sv");
 	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "SE");
+	    config.setParameter(CalendarDecoder.VERIFY_LOCALE, "true");
 	    decoder.setConfiguration(config);
 
 	    Calendar cal_a = (Calendar) decoder.decode( dateString );
-	    assertEquals("Europe/Stockholm", cal_a.getTimeZone().getID() );
 	    assertEquals("Centraleuropeisk tid", cal_a.getTimeZone().getDisplayName( new Locale("sv", "SE") ) );
 
 	    Calendar cal_b = (Calendar) decoder.decode( dateString );
 	    assertNotSame(cal_a, cal_b);
 	}
 
-	public void setUp() {
-		Locale.setDefault( new Locale("de", "DE") );
-		//Locale.setDefault( new Locale("ga", "IE") );
+    private Locale defaultLocale;
+    private TimeZone defaultTimeZone;
+    private String defaultEncoding;
+
+    public void setUp() {
+        defaultEncoding = System.getProperty("file.encoding");
+        System.setProperty("file.encoding", "UTF-8");
+
+        defaultLocale = Locale.getDefault();
+        Locale.setDefault( new Locale("de", "DE") );
+
+        defaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("ECT"));
 	}
 
+    protected void tearDown() throws Exception {
+        // Reset the defaults...
+        System.setProperty("file.encoding",defaultEncoding);
+        Locale.setDefault(defaultLocale);
+        TimeZone.setDefault(defaultTimeZone);
+    }
 }
 

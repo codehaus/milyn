@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -156,10 +157,10 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static final String APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED = BeanPopulator.class.getName() + "#LIFECYCLE_ENDER_CREATED";
     
-    @ConfigParam(defaultVal = ConfigParam.NULL)
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String beanId;
 
-    @ConfigParam(name="beanClass", defaultVal = ConfigParam.NULL)
+    @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
 
     @Config

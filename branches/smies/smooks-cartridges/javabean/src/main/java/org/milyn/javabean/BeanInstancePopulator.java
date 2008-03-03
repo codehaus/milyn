@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
@@ -61,22 +62,22 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @ConfigParam
     private String beanId;
 
-    @ConfigParam(defaultVal = ConfigParam.NULL)
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String selectedBeanId;
 
-    @ConfigParam(defaultVal = ConfigParam.NULL)
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
 
-    @ConfigParam(defaultVal = ConfigParam.NULL)
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String setterMethod;
 
-    @ConfigParam(defaultVal = ConfigParam.NULL)
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String valueAttributeName;
 
-    @ConfigParam(name="type", defaultVal = ConfigParam.NULL)
+    @ConfigParam(name="type", defaultVal = AnnotationConstants.NULL_STRING)
     private String typeAlias;
 
-    @ConfigParam(name="default", defaultVal = ConfigParam.NULL)
+    @ConfigParam(name="default", defaultVal = AnnotationConstants.NULL_STRING)
     private String defaultVal;
 
     @AppContext
