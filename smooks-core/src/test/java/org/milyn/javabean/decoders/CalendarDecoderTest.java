@@ -51,7 +51,7 @@ public class CalendarDecoderTest extends TestCase {
 	    assertNotSame(cal_a, cal_b);
 	}
 
-	public void x_test_CalendarDecoder_with_swedish_local() throws ParseException {
+	public void test_CalendarDecoder_with_swedish_local() throws ParseException {
 		final String dateFormat = "EEE MMM dd HH:mm:ss z yyyy";
 		final String dateString = "ti mar 04 15:25:07 CET 2008";
 
