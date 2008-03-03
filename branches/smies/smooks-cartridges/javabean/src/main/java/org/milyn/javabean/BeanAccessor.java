@@ -82,14 +82,26 @@ public class BeanAccessor {
      * @param executionContext The request on which the bean instance is stored.
      * @return The bean instance, or null if no such bean instance exists on the supplied
      * request.
+     * @deprecated use the {@link #getBean(ExecutionContext, String)}
      */
+    @Deprecated
     public static Object getBean(String beanId, ExecutionContext executionContext) {
-        if(beanId == null) {
-            throw new IllegalArgumentException("null 'beanId' arg in method call.");
-        }
-        if(executionContext == null) {
-            throw new IllegalArgumentException("null 'request' arg in method call.");
-        }
+        return getBean(executionContext, beanId);
+    }
+
+    /**
+     * Get the current bean, specified by the supplied beanId, from the supplied request.
+     * <p/>
+     * If the specified beanId refers to a bean instance list, this method returns the
+     * last (current) bean from the list.
+     * @param beanId Bean Identifier.
+     * @param executionContext The request on which the bean instance is stored.
+     * @return The bean instance, or null if no such bean instance exists on the supplied
+     * request.
+     */
+    public static Object getBean(ExecutionContext executionContext, String beanId) {
+        AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+        AssertArgument.isNotNull(executionContext, "executionContext");
 
         Map<String, Object> beans = getBeanMap(executionContext);
         Object bean = beans.get(beanId);
