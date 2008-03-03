@@ -52,7 +52,7 @@ public @interface ConfigParam {
      * the name defaults to the name of the field.
      * @return The paramater name.
      */
-    public String name() default NULL;
+    public String name() default AnnotationConstants.NULL_STRING;
 
     /**
      * Paramater required or optional.
@@ -70,14 +70,14 @@ public @interface ConfigParam {
      *
      * @return The default paramater value (un-decoded).
      */
-    public String defaultVal() default UNASSIGNED;
+    public String defaultVal() default AnnotationConstants.UNASSIGNED;
 
     /**
      * Paramater choice values.
      *
      * @return List of valid choices (un-decoded).
      */
-    public String[] choice() default NULL;
+    public String[] choice() default AnnotationConstants.NULL_STRING;
 
     /**
      * The {@link DataDecoder} class to use when decoding the paramater value.
@@ -99,7 +99,4 @@ public @interface ConfigParam {
          */
         OPTIONAL,
     }
-
-    public static final String NULL = "##NULL";
-    public static final String UNASSIGNED = "org.milyn.cdr.annotation.ConfigParam##UNASSIGNED";
 }

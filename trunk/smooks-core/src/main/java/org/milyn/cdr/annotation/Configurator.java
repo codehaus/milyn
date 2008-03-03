@@ -140,12 +140,13 @@ public class Configurator {
         }
     }
 
+    @VisitIf(param = "", value = "", defaultVal = "")
     private static void applyConfigParam(ConfigParam configParam, Member member, Class type, ContentHandler instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         String name = configParam.name();
         String paramValue;
 
         // Work out the property name, if not specified via the annotation....
-        if(ConfigParam.NULL.equals(name)) {
+        if(AnnotationConstants.NULL_STRING.equals(name)) {
             // "name" not defined.  Use the field/method name...
             if(member instanceof Method) {
                 name = getPropertyName((Method)member);
@@ -164,13 +165,13 @@ public class Configurator {
 
         if(paramValue == null) {
             paramValue = configParam.defaultVal();
-            if(ConfigParam.NULL.equals(paramValue)) {
+            if(AnnotationConstants.NULL_STRING.equals(paramValue)) {
                 // A null default was assigned...
                 String[] choices = configParam.choice();
-                assertValidChoice(choices, name, ConfigParam.NULL);
+                assertValidChoice(choices, name, AnnotationConstants.NULL_STRING);
                 setMember(member, instance, null);
                 return;
-            } else if(ConfigParam.UNASSIGNED.equals(paramValue)) {
+            } else if(AnnotationConstants.UNASSIGNED.equals(paramValue)) {
                 // No default was assigned...
                 paramValue = null;
             }
@@ -214,7 +215,7 @@ public class Configurator {
     private static void assertValidChoice(String[] choices, String name, String paramValue) throws SmooksConfigurationException {
         if(choices == null || choices.length == 0) {
             throw new RuntimeException("Unexpected annotation default choice value.  Should not be null or empty.  Code may have changed incompatibly.");
-        } else if(choices.length == 1 && ConfigParam.NULL.equals(choices[0])) {
+        } else if(choices.length == 1 && AnnotationConstants.NULL_STRING.equals(choices[0])) {
             // A choice wasn't specified on the paramater config.
             return;
         } else {

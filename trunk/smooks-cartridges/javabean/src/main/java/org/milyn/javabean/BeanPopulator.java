@@ -24,6 +24,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
+import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.xml.DomUtils;
@@ -150,10 +151,10 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
-    @ConfigParam(defaultVal = ConfigParam.NULL)
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String beanId;
 
-    @ConfigParam(name="beanClass", defaultVal = ConfigParam.NULL)
+    @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
 
     @Config
