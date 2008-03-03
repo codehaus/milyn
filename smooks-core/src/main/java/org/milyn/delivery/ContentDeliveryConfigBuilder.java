@@ -20,16 +20,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.*;
+import org.milyn.cdr.annotation.VisitIf;
+import org.milyn.cdr.annotation.VisitIfNot;
 import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.dom.*;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
-import org.milyn.delivery.sax.*;
+import org.milyn.delivery.sax.SAXContentDeliveryConfig;
+import org.milyn.delivery.sax.SAXVisitAfter;
+import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.profile.ProfileSet;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -210,6 +215,7 @@ public class ContentDeliveryConfigBuilder {
             saxConfig.setSmooksResourceConfigurations(resourceConfigTable);
             saxConfig.setDtd(dtd);
             saxConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
+            
             saxConfig.optimizeConfig();
 
             return saxConfig;
@@ -642,10 +648,10 @@ public class ContentDeliveryConfigBuilder {
 
                 if(isSAXContentHandler(contentHandler)) {
                     saxElementHandlerCount++;
-                    if(contentHandler instanceof SAXVisitBefore) {
+                    if(contentHandler instanceof SAXVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
                         saxVisitBefores.addMapping(elementName, resourceConfig, (SAXVisitBefore) contentHandler);
                     }
-                    if(contentHandler instanceof SAXVisitAfter) {
+                    if(contentHandler instanceof SAXVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
                         saxVisitAfters.addMapping(elementName, resourceConfig, (SAXVisitAfter) contentHandler);
                     }
                     logExecutionEvent(resourceConfig, "Added as a SAX resource.");
@@ -663,28 +669,28 @@ public class ContentDeliveryConfigBuilder {
 
                         if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
                             // It's an assembly unit...
-                            if(contentHandler instanceof DOMVisitBefore) {
+                            if(contentHandler instanceof DOMVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
                                 assemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
                             }
-                            if(contentHandler instanceof DOMVisitAfter) {
+                            if(contentHandler instanceof DOMVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
                                 assemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
                             }
                             logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
                         } else if (visitPhase.equalsIgnoreCase(VisitPhase.ASSEMBLY.toString())) {
                             // It's an assembly unit...
-                            if(contentHandler instanceof DOMVisitBefore) {
+                            if(contentHandler instanceof DOMVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
                                 assemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
                             }
-                            if(contentHandler instanceof DOMVisitAfter) {
+                            if(contentHandler instanceof DOMVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
                                 assemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
                             }
                             logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
                         } else {
                             // It's a processing unit...
-                            if(contentHandler instanceof DOMVisitBefore) {
+                            if(contentHandler instanceof DOMVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
                                 processingVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
                             }
-                            if(contentHandler instanceof DOMVisitAfter) {
+                            if(contentHandler instanceof DOMVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
                                 processingVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
                             }
                             logExecutionEvent(resourceConfig, "Added as a DOM Processing Phase resource.");
@@ -774,4 +780,80 @@ public class ContentDeliveryConfigBuilder {
 		 */
 		public void applyStrategy(String elementName, SmooksResourceConfiguration unitDef);
 	}
+
+    protected static boolean visitBeforeAnnotationsOK(SmooksResourceConfiguration resourceConfig, ContentHandler contentHandler) {
+        Class<? extends ContentHandler> handlerClass = contentHandler.getClass();
+
+        try {
+            if(contentHandler instanceof SAXVisitBefore) {
+                Method interfaceMethod = SAXVisitBefore.class.getMethods()[0];
+                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+
+                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
+                    return false;
+                }
+            }
+            if(contentHandler instanceof DOMVisitBefore) {
+                Method interfaceMethod = DOMVisitBefore.class.getMethods()[0];
+                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+
+                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
+                    return false;
+                }
+            }
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("Unexpected runtime exception. If the class implements the interface, then it should implement the interface methods, unless it's abstract.", e);
+        }
+
+        return true;
+    }
+
+    protected static boolean visitAfterAnnotationsOK(SmooksResourceConfiguration resourceConfig, ContentHandler contentHandler) {
+        Class<? extends ContentHandler> handlerClass = contentHandler.getClass();
+
+        try {
+            if(contentHandler instanceof SAXVisitAfter) {
+                Method interfaceMethod = SAXVisitAfter.class.getMethods()[0];
+                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+
+                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
+                    return false;
+                }
+            }
+            if(contentHandler instanceof DOMVisitAfter) {
+                Method interfaceMethod = DOMVisitAfter.class.getMethods()[0];
+                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+
+                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
+                    return false;
+                }
+            }
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("Unexpected runtime exception. If the class implements the interface, then it should implement the interface methods, unless it's abstract.", e);
+        }
+
+        return true;
+    }
+
+    private static boolean visitAnnotationsOK(SmooksResourceConfiguration resourceConfig, Class<? extends ContentHandler> handlerClass, Method handlerVisitMethod) {
+        VisitIf visitIf = handlerVisitMethod.getAnnotation(VisitIf.class);
+        VisitIfNot visitIfNot = handlerVisitMethod.getAnnotation(VisitIfNot.class);
+
+        if(visitIf != null) {
+            String paramVal = resourceConfig.getStringParameter(visitIf.param(), visitIf.defaultVal());
+            if(!paramVal.equals(visitIf.value())) {
+                logger.debug("Not calling '" + handlerVisitMethod.toString() + "' on handler '" + handlerClass + "'. <param> '" + visitIf.param() + "' value equals '" + paramVal + "' and not '" + visitIf.value() + "'.");
+                return false;
+            }
+        }
+        if(visitIfNot != null) {
+            String paramVal = resourceConfig.getStringParameter(visitIfNot.param(), visitIfNot.defaultVal());
+            if(paramVal.equals(visitIfNot.value())) {
+                logger.debug("Not calling '" + handlerVisitMethod.toString() + "' on handler '" + handlerClass + "'. <param> '" + visitIfNot.param() + "' value equals '" + paramVal + "'.");
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
