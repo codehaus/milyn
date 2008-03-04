@@ -25,6 +25,8 @@ import java.util.Map;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.FilterResult;
@@ -45,6 +47,8 @@ import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
  */
 public class BeanAccessor {
 
+	private static final Log logger = LogFactory.getLog(BeanAccessor.class);
+
     private static final String CONTEXT_KEY = BeanAccessor.class.getName() + "#CONTEXT_KEY";
 
     private final ExecutionContext executionContext;
@@ -52,7 +56,12 @@ public class BeanAccessor {
     private final Map<String, Object> beans;
     private final Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
 
-    private final Map<BeanLifecycle, Map<String, Map<String, BeanLifecycleObserver>>> lifecycleObservers = new HashMap<BeanLifecycle, Map<String, Map<String, BeanLifecycleObserver>>>();
+    private final Map<BeanLifecycle, Map<String, Map<String, ObserverContext>>> lifecycleObservers = new HashMap<BeanLifecycle, Map<String, Map<String, ObserverContext>>>();
+
+
+    private boolean notifyingObservers = false;
+    private int notificationLevel = 0;
+    private final List<ObserverContext> unregisterObservers = new ArrayList<ObserverContext>();
 
     /**
      * Public default constructor.
@@ -367,23 +376,33 @@ public class BeanAccessor {
     	return beans.toString();
     }
 
-
     private void registerBeanLifecycleObserver(BeanLifecycle lifecycle, String beanId, String observerId, BeanLifecycleObserver observer) {
     	AssertArgument.isNotNull(lifecycle, "lifecycle");
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
     	AssertArgument.isNotNull(observer, "observer");
 
-    	Map<String, Map<String, BeanLifecycleObserver>> observerMap = getObserversMap(lifecycle);
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Registering observer '" + observerId + "' for lifecycle '" + lifecycle + "' watching '" + beanId + "'");
+    	}
 
-    	Map<String, BeanLifecycleObserver> observers = observerMap.get(beanId);
+    	Map<String, Map<String, ObserverContext>> observerMap = getObserversMap(lifecycle);
+
+    	Map<String, ObserverContext> observers = observerMap.get(beanId);
     	if(observers == null) {
-    		observers = new LinkedHashMap<String, BeanLifecycleObserver>(1);
+    		observers = new LinkedHashMap<String, ObserverContext>();
+
 
     		observerMap.put(beanId, observers);
     	}
 
-    	observers.put(observerId, observer);
+    	ObserverContext context = new ObserverContext();
+		context.beanId = beanId;
+		context.lifecycle = lifecycle;
+		context.observer = observer;
+		context.observerId = observerId;
+
+    	observers.put(observerId, context);
 
     }
 
@@ -392,23 +411,68 @@ public class BeanAccessor {
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
 
-    	Map<String, Map<String, BeanLifecycleObserver>> observerMap = getObserversMap(lifecycle);
-
-    	if(observerMap.containsKey(beanId)) {
-
-    		Map<String, BeanLifecycleObserver> observers = observerMap.get(beanId);
-    		observers.remove(observerId);
-
-    		if(observers.size() == 0) {
-    			observerMap.remove(beanId);
-    		}
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Unregistering observer '" + observerId + "' from lifecycle '" + lifecycle + "' watching '" + beanId + "'");
     	}
 
+    	Map<String, Map<String, ObserverContext>> observerMap = getObserversMap(lifecycle);
+
+    	if(observerMap.containsKey(beanId)) {
+    		Map<String, ObserverContext> observers = observerMap.get(beanId);
+
+    		//  It is possible that an observer unregisters himself
+			//	or another of the same lifecycle, observering the same beanId.
+			//  We can't let it change the map itself while it is iterating. That would cause an
+			//	exception. If we see that the notifyingObservers is true then we mark the
+    		//  observerContext as disabled and put it in the unregisterObservers list
+    		//  so that we can remove them when it is safe to do so.
+    		if(notifyingObservers) {
+
+    			if(logger.isDebugEnabled()) {
+    				logger.debug("Notification is busy. Disabling observer context and putting it in the unregisterObserver list.");
+    			}
+
+	    		ObserverContext context = observers.get(observerId);
+
+	    		if(context != null) {
+	    			context.enabled = false;
+
+	    			unregisterObservers.add(context);
+	    		}
+	    	} else {
+
+	    		observers.remove(observerId);
+
+	    		if(observers.size() == 0) {
+	    			observerMap.remove(beanId);
+	    		}
+
+	    	}
+    	}
+    }
+
+    private void cleanUnregisteredObservers() {
+
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Cleaning the unregisterObservers list");
+    	}
+
+    	for(ObserverContext context : unregisterObservers) {
+
+    		if(!context.enabled) {
+    			unregisterBeanLifecycleObserver(context.lifecycle, context.beanId, context.observerId);
+    		}
+    	}
+    	unregisterObservers.clear();
     }
 
     private void associateLifecycles(String parentBean, String childBean) {
     	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
     	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
+
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Associating lifecycle of the parent '" + parentBean + "' with the child '" + childBean + "'");
+    	}
 
     	List<String> associations = lifecycleAssociations.get(parentBean);
 
@@ -424,7 +488,11 @@ public class BeanAccessor {
     }
 
     private void cleanAssociatedLifecycleBeans(String parentBean) {
-        List<String> associations = lifecycleAssociations.get(parentBean);
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Cleaning Associated lifecycles of the bean '" + parentBean + "'");
+    	}
+
+    	List<String> associations = lifecycleAssociations.get(parentBean);
 
         if(associations != null) {
             for (String association : associations) {
@@ -436,6 +504,10 @@ public class BeanAccessor {
     }
 
     private void removeBean(String beanId) {
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Removing bean '" + beanId + "'");
+    	}
+
     	cleanAssociatedLifecycleBeans(beanId);
 
     	endLifecycle(beanId);
@@ -444,6 +516,9 @@ public class BeanAccessor {
     }
 
     private void endAllLifecycles() {
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Ending all lifecycles");
+    	}
 
     	List<String> keyList = new ArrayList<String>(beans.size());
     	for(String beanId: beans.keySet()) {
@@ -457,6 +532,10 @@ public class BeanAccessor {
     }
 
     private void endLifecycle(String beanId) {
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Ending lifecycle of bean '" + beanId + "'");
+    	}
+
     	notifyObservers(BeanLifecycle.END, beanId);
 
     }
@@ -467,21 +546,46 @@ public class BeanAccessor {
 
     private void notifyObservers(BeanLifecycle lifecycle, String beanId, Object bean) {
 
-    	Map<String, Map<String, BeanLifecycleObserver>> observersMap = getObserversMap(lifecycle);
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Notifying observers of lifecycle '" + lifecycle + "' watching bean '" + beanId  + "'");
+    	}
+
+    	Map<String, Map<String, ObserverContext>> observersMap = getObserversMap(lifecycle);
 
     	if(observersMap.containsKey(beanId)) {
 
-    		Map<String, BeanLifecycleObserver> observers = observersMap.get(beanId);
+    		Map<String, ObserverContext> observers = observersMap.get(beanId);
 
     		if(observers.size() > 0) {
+    			notificationLevel++;
+
     			BeanLifecycleEvent event = new BeanLifecycleEvent(executionContext, lifecycle, beanId, bean);
 
-    			List<BeanLifecycleObserver> observerList = new ArrayList<BeanLifecycleObserver>(observers.values());
-    			for(BeanLifecycleObserver observer : observerList) {
+    			try {
 
-        			observer.onBeanLifecycleEvent(event);
+    				notifyingObservers = true;
 
-        		}
+	    			for(ObserverContext context : observers.values()) {
+	    				logger.info("Notifying observer:" + context.observer);
+
+	    				if(context.enabled) {
+	    					context.observer.onBeanLifecycleEvent(event);
+	    				}
+	        		}
+
+    			} finally {
+    				notificationLevel--;
+
+    				if(notificationLevel == 0) {
+	    				notifyingObservers = false;
+
+	    				if(unregisterObservers.size() > 0) {
+
+	    					cleanUnregisteredObservers();
+	    				}
+    				}
+    			}
+
     		}
 
 
@@ -489,16 +593,36 @@ public class BeanAccessor {
 
     }
 
-    private Map<String, Map<String, BeanLifecycleObserver>> getObserversMap(BeanLifecycle lifecycle) {
+    private Map<String, Map<String, ObserverContext>> getObserversMap(BeanLifecycle lifecycle) {
 
-    	Map<String, Map<String, BeanLifecycleObserver>> lifecycleObserverMap = lifecycleObservers.get(lifecycle);
+    	Map<String, Map<String, ObserverContext>> lifecycleObserverMap = lifecycleObservers.get(lifecycle);
 
     	if(lifecycleObserverMap == null) {
-    		lifecycleObserverMap = new HashMap<String, Map<String,BeanLifecycleObserver>>();
+    		lifecycleObserverMap = new HashMap<String, Map<String,ObserverContext>>();
 
     		lifecycleObservers.put(lifecycle, lifecycleObserverMap);
     	}
 
     	return lifecycleObserverMap;
+    }
+
+    /**
+     * The context around on observer. The enabled property indicates
+     * if this observer is enabled and can be notified.
+     *
+     * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+     */
+    private class ObserverContext {
+
+    	BeanLifecycle lifecycle;
+
+    	String beanId;
+
+    	String observerId;
+
+    	boolean enabled = true;
+
+    	BeanLifecycleObserver observer;
+
     }
 }

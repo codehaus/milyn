@@ -225,7 +225,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 	private void visitBefore(ExecutionContext executionContext) {
     	if(beanBinding) {
-    		Object bean = BeanAccessor.getBean(selectedBeanId, executionContext);
+    		Object bean = BeanAccessor.getBean(executionContext, selectedBeanId);
     		if(bean == null) {
 
     			// Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
@@ -268,6 +268,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 									BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId());
 
 								}
+
+								@Override
+								public String toString() {
+									return BeanInstancePopulator.this.toString() + " change observer";
+								}
 							});
 
 						} else {
@@ -275,6 +280,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 						}
 
     				}
+
+    				@Override
+					public String toString() {
+						return BeanInstancePopulator.this.toString() + " begin observer";
+					}
 
     			});
 
@@ -286,6 +296,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.END, beanId, getId());
 
     				}
+
+    				@Override
+					public String toString() {
+						return BeanInstancePopulator.this.toString() + " end observer";
+					}
     			});
     		} else {
     			populateAndSetPropertyValue(property, bean, executionContext);
@@ -418,6 +433,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 	@Override
 	public int hashCode() {
 		return getId().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return getId();
 	}
 
 	/* (non-Javadoc)

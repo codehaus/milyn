@@ -374,6 +374,11 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
 		return id;
 	}
 
+    @Override
+    public String toString() {
+    	return getId();
+    }
+
     /* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
