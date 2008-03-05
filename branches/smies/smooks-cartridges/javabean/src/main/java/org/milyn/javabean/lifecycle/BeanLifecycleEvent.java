@@ -66,7 +66,7 @@ public class BeanLifecycleEvent {
 	 */
 	public Object getBean() {
 		if(!searchedForBean) {
-			bean = BeanAccessor.getBean(beanId, executionContext);		
+			bean = BeanAccessor.getBean(executionContext, beanId);		
 			
 			searchedForBean = true;
 		}

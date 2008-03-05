@@ -123,8 +123,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
                 mapKeyAttribute = property.substring(1);
             }
         }
-
-        logger.debug("Bean Instance Populator created for [" + beanId + "].  property=" + property);
+        
+        if(logger.isDebugEnabled()) {
+        	logger.debug("Bean Instance Populator created for [" + beanId + "].  property=" + property);
+        }
     }
 
     private void buildId() {
@@ -231,15 +233,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     			// Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
     			// we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
     			// and not the list representation. So we register and observer wo looks for the change from the list to the array
-    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.BEGIN, selectedBeanId, getId(), new BeanLifecycleObserver(){
+    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.BEGIN, selectedBeanId, getId(), false, new BeanLifecycleObserver(){
 
     				public void onBeanLifecycleEvent(
     						BeanLifecycleEvent event) {
-
-    					if(logger.isDebugEnabled()) {
-    						logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
-
-    					}
 
     					ExecutionContext executionContext = event.getExecutionContext();
     					Object bean = event.getBean();
@@ -252,56 +249,34 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 							// Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
 							// can then set this array
-							BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId(), new BeanLifecycleObserver() {
+							BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId(), true, new BeanLifecycleObserver() {
 								public void onBeanLifecycleEvent(
 										BeanLifecycleEvent event) {
-
-									if(logger.isDebugEnabled()) {
-										logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
-
-									}
+			
 
 									ExecutionContext executionContext = event.getExecutionContext();
 
 									populateAndSetPropertyValue(property, event.getBean(), executionContext);
 
-									BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId());
-
-								}
-
-								@Override
-								public String toString() {
-									return BeanInstancePopulator.this.toString() + " change observer";
 								}
 							});
 
 						} else {
 							populateAndSetPropertyValue(property, bean, executionContext);
 						}
-
     				}
-
-    				@Override
-					public String toString() {
-						return BeanInstancePopulator.this.toString() + " begin observer";
-					}
 
     			});
 
     			// Unregister the observers at then end of this beans lifecycle
-    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), new BeanLifecycleObserver(){
-    				public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
-
-    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.BEGIN, selectedBeanId, getId());
-    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.END, beanId, getId());
-
-    				}
-
-    				@Override
-					public String toString() {
-						return BeanInstancePopulator.this.toString() + " end observer";
-					}
-    			});
+    			// Still not sure if this is necessary. I have disabled it for now because it takes a lot of performance
+//    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), true, new BeanLifecycleObserver(){
+//    				public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
+//
+//    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.BEGIN, selectedBeanId, getId());
+//    					
+//    				}
+//    			});
     		} else {
     			populateAndSetPropertyValue(property, bean, executionContext);
     		}
@@ -425,34 +400,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 	private String getId() {
 		return id;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return getId().hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return getId();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof BeanInstancePopulator == false) {
-			return false;
-		}
-		if(obj == this) {
-			return true;
-		}
-		BeanInstancePopulator other = (BeanInstancePopulator) obj;
-		return getId().equals(other.getId());
 	}
 
 }

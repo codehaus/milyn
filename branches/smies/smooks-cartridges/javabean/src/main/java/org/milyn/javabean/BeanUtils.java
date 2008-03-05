@@ -121,12 +121,8 @@ public abstract class BeanUtils {
         Object bean;
 
         // Get the bean instance from the request.  If there is non, it's a bad config!!
-        bean = BeanAccessor.getBean(beanId, execContext);
+        bean = BeanAccessor.getBean(execContext, beanId);
 
-        // TODO: Is this comment usefull??
-        if (logger.isDebugEnabled()) {
-            logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  One already exists.");
-        }
         if (bean == null) {
             throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");
         }

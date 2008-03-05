@@ -51,7 +51,7 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, BeanLifecycleObserver {
+public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
@@ -132,7 +132,9 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
             }
         }
 
-        logger.debug("BeanInstanceCreator created for [" + beanId + ":" + beanClassName + "].");
+        if(logger.isDebugEnabled()) {
+        	logger.debug("BeanInstanceCreator created for [" + beanId + ":" + beanClassName + "].");
+        }
     }
 
     private void buildId() {
@@ -153,41 +155,7 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
         createAndSetBean(executionContext);
     }
 
-	/* (non-Javadoc)
-	 * @see org.milyn.javabean.lifecycle.BeanLifecycleObserver#notifyBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanLifecycleEvent)
-	 */
-	public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
-		if(logger.isDebugEnabled()) {
-			logger.debug("Bean lifecycle notification. Observer: '" + getId() + "'. Event: '" + event + "'");
-
-		}
-		if(event.getLifecycle() == BeanLifecycle.END) {
-			ExecutionContext executionContext = event.getExecutionContext();
-
-			Classification thisBeanType = beanRuntimeInfo.getClassification();
-
-	    	boolean isArray = (thisBeanType == Classification.ARRAY_COLLECTION);
-	    	boolean isSetOn = (setOn != null);
-
-	    	if(isArray || isSetOn) {
-		    	Object bean  = BeanUtils.getBean(beanId, executionContext);
-
-		    	if(isArray) {
-		    		// This bean is an array, we need to convert the List used to create it into
-		            // an array of that type, and add that array to the BeanAccessor, overwriting the list
-
-		    		bean = convert(bean, executionContext);
-		    	}
-		    	if (isSetOn) {
-
-		            setOn(bean, executionContext);
-		        }
-	    	}
-
-	    	BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.END, event.getBeanId(), getId());
-		}
-	}
-
+	
     private Object convert(Object bean, ExecutionContext executionContext) {
 
         bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
@@ -210,7 +178,42 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
         BeanAccessor.addBean(beanId, bean, executionContext, addToList);
 
         if(setOn != null || beanRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
-        	BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), this);
+        	BeanAccessor.registerBeanLifecycleObserver(
+        			executionContext, BeanLifecycle.END, beanId, getId(), true, new BeanLifecycleObserver() {
+        		
+        		/* (non-Javadoc)
+        		 * @see org.milyn.javabean.lifecycle.BeanLifecycleObserver#notifyBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanLifecycleEvent)
+        		 */
+        		public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
+        	
+    				ExecutionContext executionContext = event.getExecutionContext();
+
+    				Classification thisBeanType = beanRuntimeInfo.getClassification();
+
+    		    	boolean isArray = (thisBeanType == Classification.ARRAY_COLLECTION);
+    		    	boolean isSetOn = (setOn != null);
+
+    		    	if(isArray || isSetOn) {
+    			    	Object bean  = BeanUtils.getBean(beanId, executionContext);
+
+    			    	if(isArray) {
+    			    		// This bean is an array, we need to convert the List used to create it into
+    			            // an array of that type, and add that array to the BeanAccessor, overwriting the list
+
+    			    		bean = convert(bean, executionContext);
+    			    	}
+    			    	if (isSetOn) {
+
+    			            setOn(bean, executionContext);
+    			        }
+    		    	}
+
+    		    	BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.END, event.getBeanId(), getId());
+    			
+        		}
+
+        		
+        	});
         }
 
         if (logger.isDebugEnabled()) {
@@ -241,7 +244,7 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
                 // It's a map...
                 ((Map)setOnBean).put(beanId, bean);
             }
-        } else {
+        } else if(logger.isErrorEnabled()) {
             logger.error("Failed to set bean '" + beanId + "' on parent bean '" + setOn + "'.  Failed to find bean '" + setOn + "'.");
         }
     }
@@ -261,7 +264,7 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
             if (!addToList) {
                 setOnBeanSetterMethod.invoke(setOnBean, bean);
             } else {
-                Object beanList = BeanAccessor.getBean(beanId + "List", execContext);
+                Object beanList = BeanAccessor.getBean(execContext, beanId + "List");
                 setOnBeanSetterMethod.invoke(setOnBean, beanList);
             }
         } catch (IllegalAccessException e) {
@@ -378,28 +381,5 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore, Bean
     public String toString() {
     	return getId();
     }
-
-    /* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return getId().hashCode();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof BeanInstanceCreator == false) {
-			return false;
-		}
-		if(obj == this) {
-			return true;
-		}
-		BeanInstanceCreator other = (BeanInstanceCreator) obj;
-		return getId().equals(other.getId());
-	}
 
 }
