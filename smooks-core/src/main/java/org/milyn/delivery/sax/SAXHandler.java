@@ -24,6 +24,7 @@ import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.VisitSequence;
 import org.milyn.event.ExecutionEventListener;
+import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
@@ -60,12 +61,12 @@ public class SAXHandler extends DefaultHandler2 {
     private boolean reverseVisitOrderOnVisitAfter;
     private boolean terminateOnVisitorException;
 
-    public SAXHandler(ExecutionContext execContext, Writer writer) {
-        this.execContext = execContext;
+    public SAXHandler(ExecutionContext executionContext, Writer writer) {
+        this.execContext = executionContext;
         this.writer = writer;
-        eventListener = execContext.getEventListener();
+        eventListener = executionContext.getEventListener();
 
-        deliveryConfig = ((SAXContentDeliveryConfig)execContext.getDeliveryConfig());
+        deliveryConfig = ((SAXContentDeliveryConfig)executionContext.getDeliveryConfig());
         visitorConfigMap = deliveryConfig.getOptimizedVisitorConfig();
         defaultVisitorConfig = visitorConfigMap.get("*");
         if(defaultVisitorConfig == null) {
@@ -84,9 +85,9 @@ public class SAXHandler extends DefaultHandler2 {
             defaultVisitorConfig.getVisitAfters().add(defaultHandlerMapping);
         }
 
-        reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, execContext.getDeliveryConfig());
-        if(execContext.getReportConfiguration() == null) {
-            terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, execContext.getDeliveryConfig());
+        reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, executionContext.getDeliveryConfig());
+        if(!(executionContext.getEventListener() instanceof AbstractReportGenerator)) {
+            terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
         } else {
             terminateOnVisitorException = false;
         }

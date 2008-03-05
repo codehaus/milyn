@@ -37,7 +37,7 @@ import java.util.List;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
+public class HtmlReportGenerator extends AbstractReportGenerator {
 
     private File subfilesDir;
     private int subfileCounter = 0;
@@ -45,26 +45,12 @@ public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
     private File styleFile;
     private File jscriptFile;
 
-    /**
-     * Constructor.
-     *
-     * @param outputWriter See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}
-     * @see AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)
-     */
     public HtmlReportGenerator(Writer outputWriter) {
-        super(outputWriter);
-        createSubfilesDir();
+        this(new ReportConfiguration(outputWriter));
     }
 
-    /**
-     * Constructor.
-     *
-     * @param outputWriter                See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}
-     * @param showDefaultAppliedResources See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}
-     * @see AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)
-     */
-    public HtmlReportGenerator(Writer outputWriter, boolean showDefaultAppliedResources) {
-        super(outputWriter, true, showDefaultAppliedResources);
+    protected HtmlReportGenerator(ReportConfiguration reportConfiguration) {
+        super(reportConfiguration);
         createSubfilesDir();
         styleFile = new File(subfilesDir, "style.css");
         jscriptFile = new File(subfilesDir, "jscript.js");
@@ -136,8 +122,8 @@ public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
     private Writer baseWriter;
     public void reportWrapperStart() throws IOException {
         toOutputWriter(getTemplate("report-wrapper-start.html"));
-        baseWriter = getOutputWriter();
-        setOutputWriter(new StringWriter());
+        baseWriter = getReportConfiguration().getOutputWriter();
+        getReportConfiguration().setOutputWriter(new StringWriter());
     }
 
     public void reportWrapperEnd() throws IOException {
@@ -147,7 +133,7 @@ public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
         reportBody = reportBody.replace("\n", "<br/>");
         baseWriter.write(reportBody);
 
-        setOutputWriter(baseWriter);
+        getReportConfiguration().setOutputWriter(baseWriter);
         toOutputWriter(getTemplate("report-wrapper-end.html"));
     }
 
@@ -211,63 +197,6 @@ public class HtmlReportGenerator extends AbstractExecutionReportGenerator {
     public void outputEndReport() throws IOException {
         // Output the report footer...
         toOutputWriter(getTemplate("report-footer.html"));
-    }
-
-    /**
-     * Generate an execution report using the specified Smooks instance and the supplied
-     * message source.
-     *
-     * @param smooks                      Smooks instance.
-     * @param source                      Smooks filter source.  See {@link org.milyn.Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.ExecutionContext)}.
-     * @param outputFile                  Report output file.
-     * @param showDefaultAppliedResources See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}.
-     * @throws java.io.IOException      See {@link org.milyn.Smooks#Smooks(String)}.
-     * @throws org.xml.sax.SAXException See {@link org.milyn.Smooks#Smooks(String)}.
-     */
-    public static void generateReport(Smooks smooks, Source source, Result result, File outputFile, boolean showDefaultAppliedResources) throws IOException {
-        AssertArgument.isNotNull(smooks, "smooks");
-        AssertArgument.isNotNull(source, "source");
-        AssertArgument.isNotNull(outputFile, "outputFile");
-
-        if (outputFile.isDirectory()) {
-            throw new IllegalArgumentException("Sorry, file '" + outputFile.getAbsolutePath() + "' is a directory.");
-        }
-
-        FileWriter outputWriter = new FileWriter(outputFile);
-        try {
-            generateReport(smooks, source, result, outputWriter, showDefaultAppliedResources);
-        } finally {
-            try {
-                outputWriter.flush();
-            } finally {
-                outputWriter.close();
-            }
-        }
-    }
-
-    /**
-     * Generate an execution report using the specified Smooks instance and the supplied
-     * message source.
-     *
-     * @param smooks                      Smooks instance.
-     * @param source                      Smooks filter source.  See {@link org.milyn.Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.ExecutionContext)}.
-     * @param outputWriter                Report output writer.
-     * @param showDefaultAppliedResources See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}.
-     * @throws java.io.IOException      See {@link org.milyn.Smooks#Smooks(String)}.
-     * @throws org.xml.sax.SAXException See {@link org.milyn.Smooks#Smooks(String)}.
-     */
-    public static void generateReport(Smooks smooks, Source source, Result result, Writer outputWriter, boolean showDefaultAppliedResources) {
-        ExecutionContext execContext = smooks.createExecutionContext();
-        HtmlReportGenerator reportGenerator = new HtmlReportGenerator(outputWriter, showDefaultAppliedResources);
-
-        reportGenerator.setFilterEvents(ConfigBuilderEvent.class, ElementVisitEvent.class);
-        execContext.setEventListener(reportGenerator);
-
-        if(result == null) {
-            smooks.filter(source, new StreamResult(new StringWriter()), execContext);
-        } else {
-            smooks.filter(source, result, execContext);
-        }
     }
 
     private File getNextOutputFile() {

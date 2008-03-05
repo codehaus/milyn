@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.report.ReportConfiguration;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;
@@ -67,10 +66,6 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
      * Execution Listener.
      */
     private ExecutionEventListener executionListener;
-    /**
-     * Report config.
-     */
-    private ReportConfiguration reportConfig;
 
     /**
 	 * Public Constructor.
@@ -173,14 +168,6 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 
     public ExecutionEventListener getEventListener() {
         return executionListener;
-    }
-
-    public void setReportConfiguration(ReportConfiguration reportConfig) {
-        this.reportConfig = reportConfig;
-    }
-
-    public ReportConfiguration getReportConfiguration() {
-        return reportConfig;
     }
 
     /* (non-Javadoc)

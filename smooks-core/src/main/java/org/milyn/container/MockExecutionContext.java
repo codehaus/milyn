@@ -47,7 +47,6 @@ public class MockExecutionContext implements ExecutionContext {
 	public Hashtable elementListTable = new Hashtable();
     private String contentEncoding;
     private ExecutionEventListener executionListener;
-    private ReportConfiguration reportConfig;
 
     public void setDocumentSource(URI docSource) {
         this.docSource = docSource;
@@ -115,14 +114,6 @@ public class MockExecutionContext implements ExecutionContext {
 
     public ExecutionEventListener getEventListener() {
         return executionListener;
-    }
-
-    public void setReportConfiguration(ReportConfiguration reportConfig) {
-        this.reportConfig = reportConfig;
-    }
-
-    public ReportConfiguration getReportConfiguration() {
-        return reportConfig;
     }
 
     /* (non-Javadoc)

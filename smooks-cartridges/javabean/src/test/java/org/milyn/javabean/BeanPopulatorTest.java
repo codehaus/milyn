@@ -18,9 +18,6 @@ package org.milyn.javabean;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.event.report.ReportConfiguration;
-import org.milyn.event.report.ReportType;
 import org.milyn.delivery.java.JavaResult;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
