@@ -98,10 +98,4 @@ public class DbETLTest extends TestCase {
             writer.close();
         }
     }
-
-    private static void printReport(String config) throws IOException, SAXException {
-        StringWriter writer = new StringWriter();
-        FlatReportGenerator.generateReport("./smooks-configs/" + config, new StreamSource(new ByteArrayInputStream(Main.messageIn)), writer, false, false);
-        System.out.println(writer);
-    }
 }

@@ -15,19 +15,12 @@
 */
 package org.milyn.event.report;
 
-import org.milyn.Smooks;
-import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.VisitSequence;
 import org.milyn.event.types.*;
 import org.milyn.event.ExecutionEvent;
-import org.xml.sax.SAXException;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
@@ -36,28 +29,14 @@ import java.util.List;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class FlatReportGenerator extends AbstractExecutionReportGenerator {
+public class FlatReportGenerator extends AbstractReportGenerator {
 
-    /**
-     * Constructor.
-     *
-     * @param outputWriter See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}
-     * @see AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)
-     */
     public FlatReportGenerator(Writer outputWriter) {
-        super(outputWriter);
+        this(new ReportConfiguration(outputWriter));
     }
 
-    /**
-     * Constructor.
-     *
-     * @param outputWriter                See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}
-     * @param escapeXMLChars              See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}
-     * @param showDefaultAppliedResources See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}
-     * @see AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)
-     */
-    public FlatReportGenerator(Writer outputWriter, boolean escapeXMLChars, boolean showDefaultAppliedResources) {
-        super(outputWriter, escapeXMLChars, showDefaultAppliedResources);
+    public FlatReportGenerator(ReportConfiguration reportConfiguration) {
+        super(reportConfiguration);
     }
 
     public void outputStartReport() throws IOException {
@@ -109,47 +88,4 @@ public class FlatReportGenerator extends AbstractExecutionReportGenerator {
 
     public void outputEndReport() throws IOException {
     }
-
-    /**
-     * Generate an execution report for the specified Smooks configuration from the supplied
-     * message source.
-     *
-     * @param smooksConfigPath            Smooks resource path.  See {@link Smooks#Smooks(String)}.
-     * @param source                      Smooks filter source.  See {@link Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.ExecutionContext)}.
-     * @param outputWriter                Report output writer.
-     * @param escapeXMLChars              See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}.
-     * @param showDefaultAppliedResources See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}.
-     * @throws IOException  See {@link Smooks#Smooks(String)}.
-     * @throws SAXException See {@link Smooks#Smooks(String)}.
-     */
-    public static void generateReport(String smooksConfigPath, Source source, Writer outputWriter, boolean escapeXMLChars, boolean showDefaultAppliedResources) throws IOException, SAXException {
-        Smooks smooks = new Smooks(smooksConfigPath);
-        generateReport(smooks, source, outputWriter, escapeXMLChars, showDefaultAppliedResources);
-    }
-
-    /**
-     * Generate an execution report using the specified Smooks instance and the supplied
-     * message source.
-     *
-     * @param smooks                      Smooks instance.
-     * @param source                      Smooks filter source.  See {@link Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.ExecutionContext)}.
-     * @param outputWriter                Report output writer.
-     * @param escapeXMLChars              See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}.
-     * @param showDefaultAppliedResources See {@link AbstractExecutionReportGenerator#AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)}.
-     * @throws IOException  See {@link Smooks#Smooks(String)}.
-     * @throws SAXException See {@link Smooks#Smooks(String)}.
-     */
-    public static void generateReport(Smooks smooks, Source source, Writer outputWriter, boolean escapeXMLChars, boolean showDefaultAppliedResources) {
-        AssertArgument.isNotNull(smooks, "smooks");
-        AssertArgument.isNotNull(source, "source");
-        AssertArgument.isNotNull(outputWriter, "outputWriter");
-
-        ExecutionContext execContext = smooks.createExecutionContext();
-        FlatReportGenerator reportGenerator = new FlatReportGenerator(outputWriter, escapeXMLChars, showDefaultAppliedResources);
-
-        reportGenerator.setFilterEvents(ConfigBuilderEvent.class, ElementVisitEvent.class);
-        execContext.setEventListener(reportGenerator);
-        smooks.filter(source, new StreamResult(new StringWriter()), execContext);
-    }
-
 }

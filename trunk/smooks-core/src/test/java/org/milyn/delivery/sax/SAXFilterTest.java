@@ -18,6 +18,7 @@ package org.milyn.delivery.sax;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
+import org.milyn.event.report.FlatReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
@@ -213,5 +214,18 @@ public class SAXFilterTest extends TestCase {
         assertTrue(SAXVisitAfterAndChildrenVisitor.onChildText);
         assertTrue(SAXVisitAfterAndChildrenVisitor.onChildElement);
         SAXVisitAfterAndChildrenVisitor.reset();
+    }
+
+    public void test_report() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-04.xml"));
+        ExecutionContext executionContext = smooks.createExecutionContext();
+        StringWriter reportWriter = new StringWriter();
+
+        executionContext.setEventListener(new FlatReportGenerator(reportWriter));
+        smooks.filter(new StreamSource(new StringReader("<c/>")), null, executionContext);
+
+        assertTrue(StreamUtils.compareCharStreams(
+                getClass().getResourceAsStream("report-expected.txt"),
+                new ByteArrayInputStream(reportWriter.toString().getBytes())));
     }
 }
