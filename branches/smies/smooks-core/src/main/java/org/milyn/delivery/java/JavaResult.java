@@ -15,12 +15,14 @@
 */
 package org.milyn.delivery.java;
 
-import org.milyn.assertion.AssertArgument;
-import org.milyn.delivery.FilterResult;
-
-import javax.xml.transform.Result;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import javax.xml.transform.Result;
+
+import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.FilterResult;
 
 /**
  * Java filtration/transformation result.
@@ -39,8 +41,20 @@ public class JavaResult extends FilterResult {
      * Public default constructor.
      */
     public JavaResult() {
-        resultMap = new LinkedHashMap<String, Object>();
+        this(false);
     }
+    
+    /**
+     * Public default constructor.
+     */
+    public JavaResult(boolean preserveOrder) {
+    	if(preserveOrder) {
+    		resultMap = new LinkedHashMap<String, Object>();
+    	} else {
+    		resultMap = new HashMap<String, Object>();
+    	}
+    }
+    
 
     /**
      * Public constructor.
