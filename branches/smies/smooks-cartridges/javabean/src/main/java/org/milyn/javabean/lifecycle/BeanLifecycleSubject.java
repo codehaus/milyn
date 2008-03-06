@@ -59,8 +59,6 @@ public class BeanLifecycleSubject {
 
     @SuppressWarnings("unchecked")
 	public void notifyObservers(Object bean) {
-    	AssertArgument.isNotNull(bean, "bean");
-    	
     	if(observers.size() > 0) {
 
 			BeanLifecycleEvent event = new BeanLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
