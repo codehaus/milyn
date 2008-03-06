@@ -155,7 +155,7 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
         createAndSetBean(executionContext);
     }
 
-	
+
     private Object convert(Object bean, ExecutionContext executionContext) {
 
         bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
@@ -178,14 +178,14 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
         BeanAccessor.addBean(beanId, bean, executionContext, addToList);
 
         if(setOn != null || beanRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
-        	BeanAccessor.registerBeanLifecycleObserver(
-        			executionContext, BeanLifecycle.END, beanId, getId(), true, new BeanLifecycleObserver() {
-        		
+        	BeanAccessor.addBeanLifecycleObserver(
+        			executionContext, beanId, BeanLifecycle.END, getId(), true, new BeanLifecycleObserver() {
+
         		/* (non-Javadoc)
         		 * @see org.milyn.javabean.lifecycle.BeanLifecycleObserver#notifyBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanLifecycleEvent)
         		 */
         		public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
-        	
+
     				ExecutionContext executionContext = event.getExecutionContext();
 
     				Classification thisBeanType = beanRuntimeInfo.getClassification();
@@ -208,11 +208,8 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
     			        }
     		    	}
 
-    		    	BeanAccessor.unregisterBeanLifecycleObserver(executionContext, BeanLifecycle.END, event.getBeanId(), getId());
-    			
         		}
 
-        		
         	});
         }
 

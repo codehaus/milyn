@@ -174,7 +174,7 @@ public class BeanAccessorTest extends TestCase {
         final Object bean2 = new MyGoodBean();
 
         MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean1", "observer1", false, observer);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
 
         //Add first time
         BeanAccessor.addBean(request, "bean1", bean1);
@@ -199,7 +199,7 @@ public class BeanAccessorTest extends TestCase {
 
         //register override
         MockBeanLifecycleObserver observer2 = new MockBeanLifecycleObserver();
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean1", "observer1", false, observer2);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer2);
 
         BeanAccessor.addBean(request, "bean1", bean1);
 
@@ -209,8 +209,8 @@ public class BeanAccessorTest extends TestCase {
         observer2.reset();
 
         //multi observers
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean1", "observer1", false, observer);
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean1", "observer2", false, observer2);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer2", false, observer2);
 
         BeanAccessor.addBean(request, "bean1", bean1);
 
@@ -221,7 +221,7 @@ public class BeanAccessorTest extends TestCase {
         observer2.reset();
 
         //unregister one
-        BeanAccessor.unregisterBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean1", "observer2");
+        BeanAccessor.removeBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer2");
 
         BeanAccessor.addBean(request, "bean1", bean1);
 
@@ -231,14 +231,14 @@ public class BeanAccessorTest extends TestCase {
         observer.reset();
 
         //unregister last
-        BeanAccessor.unregisterBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean1", "observer1");
+        BeanAccessor.removeBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer1");
 
         BeanAccessor.addBean(request, "bean1", bean1);
 
         assertFalse(observer.isFired());
         assertFalse(observer2.isFired());
 
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean1", "observer2", false, new BeanLifecycleObserver() {
+        BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer2", false, new BeanLifecycleObserver() {
 
         	public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
         		assertEquals(request, event.getExecutionContext());
@@ -264,7 +264,7 @@ public class BeanAccessorTest extends TestCase {
         Object childChild = new MyGoodBean();
 
         MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "parent", "observer", false, observer);
+        BeanAccessor.addBeanLifecycleObserver(request, "parent", BeanLifecycle.END, "observer", false, observer);
 
         //Add first time
         BeanAccessor.addBean(request, "parent", parent);
@@ -291,9 +291,9 @@ public class BeanAccessorTest extends TestCase {
         MockBeanLifecycleObserver observerChild2 = new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerChildChild = new MockBeanLifecycleObserver();
 
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "child", "observerChild", false, observerChild);
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "child2", "observerChild", false, observerChild2);
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "childChild", "observerChildChild", false, observerChildChild);
+        BeanAccessor.addBeanLifecycleObserver(request, "child", BeanLifecycle.END, "observerChild", false, observerChild);
+        BeanAccessor.addBeanLifecycleObserver(request, "child2", BeanLifecycle.END, "observerChild", false, observerChild2);
+        BeanAccessor.addBeanLifecycleObserver(request, "childChild", BeanLifecycle.END, "observerChildChild", false, observerChildChild);
 
         BeanAccessor.associateLifecycles(request, "parent", "child");
         BeanAccessor.associateLifecycles(request, "parent", "child2");
@@ -314,9 +314,9 @@ public class BeanAccessorTest extends TestCase {
         MockBeanLifecycleObserver observerBean2 = new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerBean3 = new MockBeanLifecycleObserver();
 
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "bean1", "observerBean1", false, observerBean1);
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "bean2", "observerBean2", false, observerBean2);
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "bean3", "observerBean3", false, observerBean3);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.END, "observerBean1", false, observerBean1);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean2", BeanLifecycle.END, "observerBean2", false, observerBean2);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean3", BeanLifecycle.END, "observerBean3", false, observerBean3);
 
         BeanAccessor.addBean(request, "bean1", bean1);
         BeanAccessor.addBean(request, "bean2", bean2);
@@ -341,15 +341,15 @@ public class BeanAccessorTest extends TestCase {
         MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerEnd = new MockBeanLifecycleObserver();
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.CHANGE, "bean", "observerChange", false, observerChange);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean", BeanLifecycle.CHANGE, "observerChange", false, observerChange);
 
         //Add first time
         BeanAccessor.addBean(request, "bean", bean);
 
         assertFalse(observerChange.isFired());
 
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.BEGIN, "bean", "observerBegin", false, observerBegin);
-        BeanAccessor.registerBeanLifecycleObserver(request, BeanLifecycle.END, "bean", "observerEnd", false, observerEnd);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean", BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
+        BeanAccessor.addBeanLifecycleObserver(request, "bean", BeanLifecycle.END, "observerEnd", false, observerEnd);
 
         //now do the change
         BeanAccessor.changeBean(request, "bean", bean);

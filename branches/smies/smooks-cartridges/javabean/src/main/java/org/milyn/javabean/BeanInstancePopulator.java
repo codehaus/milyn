@@ -123,7 +123,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
                 mapKeyAttribute = property.substring(1);
             }
         }
-        
+
         if(logger.isDebugEnabled()) {
         	logger.debug("Bean Instance Populator created for [" + beanId + "].  property=" + property);
         }
@@ -233,7 +233,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     			// Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
     			// we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
     			// and not the list representation. So we register and observer wo looks for the change from the list to the array
-    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.BEGIN, selectedBeanId, getId(), false, new BeanLifecycleObserver(){
+    			BeanAccessor.addBeanLifecycleObserver(executionContext, selectedBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
 
     				public void onBeanLifecycleEvent(
     						BeanLifecycleEvent event) {
@@ -249,10 +249,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 							// Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
 							// can then set this array
-							BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.CHANGE, event.getBeanId(), getId(), true, new BeanLifecycleObserver() {
+							BeanAccessor.addBeanLifecycleObserver(executionContext, event.getBeanId(), BeanLifecycle.CHANGE, getId(), true, new BeanLifecycleObserver() {
 								public void onBeanLifecycleEvent(
 										BeanLifecycleEvent event) {
-			
+
 
 									ExecutionContext executionContext = event.getExecutionContext();
 
@@ -274,7 +274,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 //    				public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
 //
 //    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.BEGIN, selectedBeanId, getId());
-//    					
+//
 //    				}
 //    			});
     		} else {
