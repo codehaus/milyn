@@ -3,6 +3,7 @@ package org.milyn.javabean.lifecycle;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 
 public class BeanLifecycleSubject {
@@ -16,13 +17,20 @@ public class BeanLifecycleSubject {
     private final ExecutionContext executionContext;
 
     public BeanLifecycleSubject(ExecutionContext executionContext, BeanLifecycle beanLifecycle, String beanId) {
+    	AssertArgument.isNotNull(executionContext, "executionContext");
+    	AssertArgument.isNotNull(beanLifecycle, "beanLifecycle");
+    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+    	
     	this.beanLifecycle = beanLifecycle;
     	this.executionContext = executionContext;
 		this.beanId = beanId;
 	}
 
     public void addObserver(String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
-
+    	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
+    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+    	AssertArgument.isNotNull(observer, "observer");
+    	
     	removeObserver(observerId);
 
     	ObserverContext observerContext = new ObserverContext();
@@ -35,7 +43,8 @@ public class BeanLifecycleSubject {
     }
 
     public void removeObserver(String observerId) {
-
+    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+    	
     	boolean found = false;
     	for (int i = 0; !found && i < observers.size(); i++) {
     		ObserverContext observerContext = observers.get(i);
@@ -50,7 +59,8 @@ public class BeanLifecycleSubject {
 
     @SuppressWarnings("unchecked")
 	public void notifyObservers(Object bean) {
-
+    	AssertArgument.isNotNull(bean, "bean");
+    	
     	if(observers.size() > 0) {
 
 			BeanLifecycleEvent event = new BeanLifecycleEvent(executionContext, beanLifecycle, beanId, bean);

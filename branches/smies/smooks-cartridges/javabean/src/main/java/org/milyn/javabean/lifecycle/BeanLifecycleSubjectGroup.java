@@ -1,5 +1,6 @@
 package org.milyn.javabean.lifecycle;
 
+import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 
 public class BeanLifecycleSubjectGroup {
@@ -18,7 +19,9 @@ public class BeanLifecycleSubjectGroup {
 	 * @param beanId
 	 */
 	public BeanLifecycleSubjectGroup(ExecutionContext executionContext, String beanId) {
-		super();
+		AssertArgument.isNotNull(executionContext, "executionContext");
+    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+    	
 		this.executionContext = executionContext;
 		this.beanId = beanId;
 
