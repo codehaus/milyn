@@ -39,7 +39,7 @@ public class BeanLifecycleSubject {
     	observerContext.notifyOnce = notifyOnce;
 
     	observers.add(observerContext);
-
+    	
     }
 
     public void removeObserver(String observerId) {
@@ -61,12 +61,11 @@ public class BeanLifecycleSubject {
 	public void notifyObservers(Object bean) {
     	if(observers.size() > 0) {
 
-			BeanLifecycleEvent event = new BeanLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
-
 			List<ObserverContext> observersClone = (List<ObserverContext>) observers.clone();
-			for(ObserverContext observerContext: observersClone) {
-
-				observerContext.observer.onBeanLifecycleEvent(event);
+			for(int i = 0; i < observersClone.size(); i++) {
+				ObserverContext observerContext = observersClone.get(i);
+				
+				observerContext.observer.onBeanLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
 
 				if(observerContext.notifyOnce) {
 					removeObserver(observerContext.observerId);
@@ -74,22 +73,6 @@ public class BeanLifecycleSubject {
 
     		}
     	}
-
-    }
-
-    /**
-     * The context around on observer. The enabled property indicates
-     * if this observer is enabled and can be notified.
-     *
-     * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
-     */
-    public class ObserverContext {
-
-    	String observerId;
-
-    	boolean notifyOnce = false;
-
-    	BeanLifecycleObserver observer;
 
     }
 
@@ -113,4 +96,21 @@ public class BeanLifecycleSubject {
 	public ExecutionContext getExecutionContext() {
 		return executionContext;
 	}
+
+    /**
+     * The context around on observer. The enabled property indicates
+     * if this observer is enabled and can be notified.
+     *
+     * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+     */
+    public class ObserverContext {
+
+    	String observerId;
+
+    	boolean notifyOnce = false;
+
+    	BeanLifecycleObserver observer;
+
+    }
+	
 }

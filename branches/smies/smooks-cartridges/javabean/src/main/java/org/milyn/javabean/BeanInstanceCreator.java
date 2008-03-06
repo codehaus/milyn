@@ -39,7 +39,6 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
@@ -184,9 +183,7 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
         		/* (non-Javadoc)
         		 * @see org.milyn.javabean.lifecycle.BeanLifecycleObserver#notifyBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanLifecycleEvent)
         		 */
-        		public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
-
-    				ExecutionContext executionContext = event.getExecutionContext();
+        		public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object beanObj) {
 
     				Classification thisBeanType = beanRuntimeInfo.getClassification();
 

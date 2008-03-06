@@ -425,19 +425,14 @@ public class BeanAccessor {
 
 
     private void addBeanLifecycleObserver(String beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
-    	AssertArgument.isNotNull(lifecycle, "lifecycle");
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-    	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
-    	AssertArgument.isNotNull(observer, "observer");
 
     	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, true);
     	subjectGroup.addObserver(lifecycle, observerId, notifyOnce, observer);
     }
 
     private void removeBeanLifecycleObserver(String beanId, BeanLifecycle lifecycle,String observerId) {
-    	AssertArgument.isNotNull(lifecycle, "lifecycle");
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-    	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
 
     	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
 
@@ -465,6 +460,7 @@ public class BeanAccessor {
     		subjectGroup = new BeanLifecycleSubjectGroup(executionContext, beanId);
 
     		beanLifecycleSubjectGroups.put(beanId, subjectGroup);
+    		    		
     	}
 
     	return subjectGroup;

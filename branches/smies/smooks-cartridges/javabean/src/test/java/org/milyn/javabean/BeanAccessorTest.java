@@ -20,9 +20,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 
 /**
@@ -240,11 +240,11 @@ public class BeanAccessorTest extends TestCase {
 
         BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.BEGIN, "observer2", false, new BeanLifecycleObserver() {
 
-        	public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
-        		assertEquals(request, event.getExecutionContext());
-        		assertEquals(BeanLifecycle.BEGIN, event.getLifecycle());
-        		assertEquals("bean1", event.getBeanId());
-        		assertEquals(bean1, event.getBean());
+        	public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
+        		assertEquals(request, executionContext);
+        		assertEquals(BeanLifecycle.BEGIN, lifecycle);
+        		assertEquals("bean1", beanId);
+        		assertEquals(bean1, bean);
         	}
 
         });
@@ -401,7 +401,7 @@ public class BeanAccessorTest extends TestCase {
 
     	private boolean fired = false;
 
-    	public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
+    	public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
     		fired = true;
     	}
 

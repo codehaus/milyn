@@ -89,7 +89,7 @@ public class BeanPopulatorTest extends TestCase {
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
         ExecutionContext executionContext = smooks.createExecutionContext();
-        JavaResult result = new JavaResult();
+        JavaResult result = new JavaResult(true);
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result, executionContext);
 

@@ -40,7 +40,6 @@ import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -235,28 +234,20 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     			// and not the list representation. So we register and observer wo looks for the change from the list to the array
     			BeanAccessor.addBeanLifecycleObserver(executionContext, selectedBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
 
-    				public void onBeanLifecycleEvent(
-    						BeanLifecycleEvent event) {
-
-    					ExecutionContext executionContext = event.getExecutionContext();
-    					Object bean = event.getBean();
+    				public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
     					Classification selectedBeanType = getSelectedBeanRuntimeInfo().getClassification();
 
-						BeanAccessor.associateLifecycles(executionContext, beanId, event.getBeanId());
+						BeanAccessor.associateLifecycles(executionContext, beanId, targetBeanId);
 
 						if(selectedBeanType == Classification.ARRAY_COLLECTION ) {
 
 							// Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
 							// can then set this array
-							BeanAccessor.addBeanLifecycleObserver(executionContext, event.getBeanId(), BeanLifecycle.CHANGE, getId(), true, new BeanLifecycleObserver() {
-								public void onBeanLifecycleEvent(
-										BeanLifecycleEvent event) {
+							BeanAccessor.addBeanLifecycleObserver(executionContext, targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanLifecycleObserver() {
+								public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
-
-									ExecutionContext executionContext = event.getExecutionContext();
-
-									populateAndSetPropertyValue(property, event.getBean(), executionContext);
+									populateAndSetPropertyValue(property, bean, executionContext);
 
 								}
 							});

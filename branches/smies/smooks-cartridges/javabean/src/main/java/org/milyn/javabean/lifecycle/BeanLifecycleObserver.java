@@ -15,6 +15,8 @@
 */
 package org.milyn.javabean.lifecycle;
 
+import org.milyn.container.ExecutionContext;
+
 
 /**
  * <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
@@ -22,6 +24,6 @@ package org.milyn.javabean.lifecycle;
  */
 public interface BeanLifecycleObserver {
 	
-	void onBeanLifecycleEvent(BeanLifecycleEvent event);
+	void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean);
 	
 }
