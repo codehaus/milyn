@@ -164,6 +164,8 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
         }
 
         public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+            // Acquire the writer for this SAX element...
+            element.getWriter(this);
         }
 
         public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -175,7 +177,7 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
         public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
             try {
                 if(getAction() == Action.REPLACE) {
-                    Writer writer = element.getWriter();
+                    Writer writer = element.getWriter(this);
                     applyTemplate(executionContext, writer);
                 } else if(getAction() == Action.BIND_TO) {
                     String bindId = getBindId();

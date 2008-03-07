@@ -25,15 +25,15 @@ import java.io.Writer;
 /**
  * Element details as described by the SAX even model API.
  * <p/>
- * {@link org.milyn.delivery.sax.SAXElementVisitor} implementations will be passed
+ * {@link org.milyn.delivery.sax.SAXVisitor} implementations will be passed
  * an instance of this class for each of the event methods of
- * {@link org.milyn.delivery.sax.SAXElementVisitor}.
+ * {@link org.milyn.delivery.sax.SAXVisitor} implementations.
  * <p/>
  * <h3 id="element_cache_object">Element Cache Object</h3>
  * This class supports the concept of a "cache" object which can be get and set through
- * the {@link #getCache()} and {@link #setCache(Object)}.  The cache object can be used by
- * {@link org.milyn.delivery.sax.SAXElementVisitor} implementations to store information
- * between calls to the {@link org.milyn.delivery.sax.SAXElementVisitor} event methods.
+ * the {@link #getCache()} and {@link #setCache(Object)} methods.  The cache object can be used by
+ * {@link org.milyn.delivery.sax.SAXVisitor} implementations to store information
+ * between calls to the {@link org.milyn.delivery.sax.SAXVisitor} event methods.
  * <p/>
  * Obviously we could have implemented this cache as a straightforward {@link java.util.Map},
  * but that forces you to do silly things in situations where you wish to (for example)
@@ -41,15 +41,26 @@ import java.io.Writer;
  * <p/>
  * <h3 id="element-writing">Element Writing/Serialization</h3>
  * Each SAXElement instance has a {@link Writer writer} set on it.
- * {@link org.milyn.delivery.sax.SAXElementVisitor} implementations can take care of
+ * {@link org.milyn.delivery.sax.SAXVisitor} implementations can take care of
  * serializing the elements at which they are targeted themselves.  Alternatively, they
  * can use the {@link org.milyn.delivery.sax.WriterUtil} class.
  * <p/>
- * {@link org.milyn.delivery.sax.SAXElementVisitor} can also control the serialization
- * of their "child elements" by {@link #setWriter(java.io.Writer) setting the writter}
+ * {@link org.milyn.delivery.sax.SAXVisitor} implementations can also control the serialization
+ * of their "child elements" by {@link #setWriter(java.io.Writer, SAXVisitor) setting the writter}
  * on the SAXElement instance they receive.  This works because Smooks passes the
  * writer instance that's set on a SAXElement instance to all of the SAXElement
  * instances created for child elements.
+ * <p/>
+ * Only one {@link SAXVisitor} can have access to the {@link java.io.Writer writer}
+ * for any individual {@link SAXElement}.  The first visitor to request access to
+ * the writer via the {@link SAXElement#getWriter(SAXVisitor)} method "owns" the writer
+ * for that element.  Any other visitors requesting access to get or change the writer
+ * will result in a {@link SAXWriterAccessException} being thrown.  In this situation,
+ * you need to restructure the offending Smooks configuration and eliminate one of the
+ * visitors attempting to gain access to the writer.  If developing a new visitor,
+ * you probably need to change the visitor to also implement the {@link SAXVisitBefore}
+ * interface and use that event method to acquire ownership of the element writer
+ * through a call to {@link SAXElement#getWriter(SAXVisitor)}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -127,9 +138,13 @@ public class SAXElement {
      * <p/>
      * See <a href="#element-writing">element writing</a>.
      *
+     * @param visitor The visitor requesting access to element writer.
      * @return The element writer.
+     * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
      */
-    public Writer getWriter() {
+    public Writer getWriter(SAXVisitor visitor) throws SAXWriterAccessException {
+        // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
+        // within the SAXHandler.
         return writer;
     }
 
@@ -139,8 +154,12 @@ public class SAXElement {
      * See <a href="#element-writing">element writing</a>.
      *
      * @param writer The element writer.
+     * @param visitor The visitor requesting to set the element writer.
+     * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
      */
-    public void setWriter(Writer writer) {
+    public void setWriter(Writer writer, SAXVisitor visitor) throws SAXWriterAccessException {
+        // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
+        // within the SAXHandler.
         this.writer = writer;
     }
 

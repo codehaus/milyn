@@ -15,25 +15,20 @@
 */
 package org.milyn.delivery.sax;
 
-import org.milyn.container.ExecutionContext;
+import junit.framework.TestCase;
 import org.milyn.SmooksException;
-import org.milyn.delivery.ContentHandler;
+import org.milyn.container.ExecutionContext;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * SAX Visit before events.
- *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface SAXVisitBefore extends SAXVisitor {
-    /**
-     * Visit the supplied element <b>before</b> visiting its child elements.
-     *
-     * @param element          The SAX element being visited.
-     * @param executionContext Execution context.
-     * @throws org.milyn.SmooksException Event processing failure.
-     * @throws java.io.IOException     Error writing event to output writer.
-     */
-    void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException;
+public class SAXVisitorWriter02 implements SAXVisitAfter {
+
+    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        element.getWriter(this);
+    }
 }
