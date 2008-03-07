@@ -6,6 +6,11 @@
         <param name="beanId">data</param>
         <param name="beanClass">org.milyn.javabean.TypePopCheckBean</param>
         <param name="bindings">
+        	<binding selector="${intValArray}" />
+        	<binding selector="${integerValArray}" />
+        	<binding selector="${integerValList}" />
+        	<binding selector="${integerValMap}" />
+        	
             <binding property="intVal" type="Integer" selector="data intVal" />
             <binding property="longVal" type="Long" selector="data longVal" />
             <binding property="boolVal" type="Boolean" selector="data boolVal" />
@@ -28,7 +33,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">intValArray</param>
         <param name="beanClass">int[]</param>
-        <param name="setOn">data</param>
         <param name="bindings">
             <binding type="Integer" selector="data intValArray intVal" />
         </param>
@@ -38,7 +42,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">integerValArray</param>
         <param name="beanClass">java.lang.Integer[]</param>
-        <param name="setOn">data</param>
         <param name="bindings">
             <binding type="Integer" selector="integerValArray integerVal" />
         </param>
@@ -48,7 +51,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">integerValList</param>
         <param name="beanClass">java.util.ArrayList</param>
-        <param name="setOn">data</param>
         <param name="bindings">
             <binding type="Integer" selector="integerValList integerVal" />
         </param>
@@ -58,8 +60,9 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">integerValMap</param>
         <param name="beanClass">java.util.LinkedHashMap</param>
-        <param name="setOn">data</param>
         <param name="bindings">
+        	<binding selector="${mixedMap}" />
+        	
             <binding               type="Integer" selector="integerValMap byelement *" />
             <binding property="@x" type="Integer" selector="integerValMap byattribute integerVal" />
         </param>
@@ -69,8 +72,9 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">mixedMap</param>
         <param name="beanClass">java.util.LinkedHashMap</param>
-        <param name="setOn">integerValMap</param>
         <param name="bindings">
+        	<binding selector="${mixedIntValArray}" />
+        	
             <binding property="intVal" type="Integer" selector="mixedMap intVal" />
             <binding property="longVal" type="Long" selector="mixedMap longVal" />
             <binding property="boolVal" type="Boolean" selector="mixedMap boolVal" />
@@ -85,7 +89,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">mixedIntValArray</param>
         <param name="beanClass">java.util.ArrayList</param>
-        <param name="setOn">mixedMap</param>
         <param name="bindings">
             <binding type="Integer" selector="mixedMap intValArray intVal" />
         </param>

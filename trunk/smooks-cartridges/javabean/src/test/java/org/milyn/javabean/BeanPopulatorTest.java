@@ -16,29 +16,45 @@
 
 package org.milyn.javabean;
 
-import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.delivery.java.JavaResult;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.Configurator;
-import org.milyn.container.MockApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.io.StreamUtils;
-import org.milyn.util.ClassUtil;
-import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.text.ParseException;
-import java.util.*;
+
+import junit.framework.TestCase;
+
+import org.milyn.Smooks;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ExecutionContext;
+import org.milyn.container.MockApplicationContext;
+import org.milyn.delivery.java.JavaResult;
+import org.milyn.io.StreamUtils;
+import org.milyn.util.ClassUtil;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author tfennelly
  */
 public class BeanPopulatorTest extends TestCase {
+
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+
+		Locale.setDefault(Locale.US);
+	}
 
     public void testConstructorConfigValidation() {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
@@ -65,7 +81,6 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_TypePopCheckBean() throws ParseException, IOException, SAXException {
-
         test_TypePopCheckBean("type-pop-check-bean-smooks-config.xml");
         test_TypePopCheckBean("type-pop-check-bean-smooks-config-sax.xml");
     }
@@ -73,9 +88,8 @@ public class BeanPopulatorTest extends TestCase {
     public void test_TypePopCheckBean(String configName) throws ParseException, IOException, SAXException {
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
-
         ExecutionContext executionContext = smooks.createExecutionContext();
-        JavaResult result = new JavaResult();
+        JavaResult result = new JavaResult(true);
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result, executionContext);
 
@@ -123,16 +137,22 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_populate_Order() throws SAXException, IOException, InterruptedException {
-        test_populate_Order("order-01-smooks-config.xml");
-        test_populate_Order("order-01-smooks-config-sax.xml");
-        test_populate_Order("order-01-smooks-config-arrays.xml");
+        test_populate_Order("order-01-smooks-config.xml", true);
+        test_populate_Order("order-01-smooks-config-sax.xml", true);
+        test_populate_Order("order-01-smooks-config-arrays.xml", true);
+
+        //Backward compatibility tests
+        test_populate_Order("order-01-smooks-config-setOn.xml", false);
+        test_populate_Order("order-01-smooks-config-sax-setOn.xml", false);
+        test_populate_Order("order-01-smooks-config-arrays-setOn.xml", false);
     }
 
-    public void test_populate_Order(String configName) throws SAXException, IOException, InterruptedException {
+    public void test_populate_Order(String configName, boolean parentBinding) throws SAXException, IOException, InterruptedException {
 
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
         ExecutionContext executionContext = smooks.createExecutionContext();
+
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
         JavaResult result = new JavaResult();
 
@@ -147,12 +167,17 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals("Joe", order.getHeader().getCustomerName());
         assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
 
+        if(parentBinding) {
+        	assertNotNull(order.getHeader().getOrder());
+        }
+
         assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
 
-        testOrderItems(order);
+        testOrderItems(order, parentBinding);
+
     }
 
-    private void testOrderItems(Order order) {
+    private void testOrderItems(Order order, boolean parentBinding) {
         List<OrderItem> orderItems = order.getOrderItems();
         OrderItem[] orderItemsArray = order.getOrderItemsArray();
 
@@ -169,36 +194,18 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals(111, orderItem.getProductId());
         assertEquals(new Integer(2), orderItem.getQuantity());
 
+        if(parentBinding && orderItemsArray == null) {
+        	assertNotNull(orderItem.getOrder());
+        }
+
         orderItem = orderItems.get(1);
         assertEquals(5.20d, orderItem.getPrice());
         assertEquals(222, orderItem.getProductId());
         assertEquals(new Integer(7), orderItem.getQuantity());
-    }
 
-    public void test_arrays() {
-        int[] ints = new int[] {};
-        Integer[] integers = new Integer[] {};
-
-        callX(ints);
-        callY(integers);
-        callZ(integers);
-    }
-
-    private void callX(int[] ints) {
-    }
-
-    private void callY(Integer[] integers) {
-        if(integers instanceof Number[]) {
-            System.out.println("Yep!!");
+        if(parentBinding && orderItemsArray == null) {
+        	assertNotNull(orderItem.getOrder());
         }
     }
 
-    private void callZ(Number[] nums) {
-    }
-
-    public void setUp()
-    {
-    	// just a assure we are testing with other locales
-		Locale.setDefault( new Locale("de","DE") );
-    }
 }

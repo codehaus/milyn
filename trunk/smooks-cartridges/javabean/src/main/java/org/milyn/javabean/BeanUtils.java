@@ -15,15 +15,15 @@
 */
 package org.milyn.javabean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.container.ExecutionContext;
-import org.milyn.assertion.AssertArgument;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.container.ExecutionContext;
 
 /**
  * Bean utility methods.
@@ -41,7 +41,7 @@ public abstract class BeanUtils {
      * @param setterParamType
      * @return The bean setter method.
      */
-    public static Method createSetterMethod(String setterName, Object bean, Class setterParamType) {
+    public static Method createSetterMethod(String setterName, Object bean, Class<?> setterParamType) {
         Method beanSetterMethod = getMethod(setterName, bean, setterParamType);
 
         // Try it as a list...
@@ -81,13 +81,13 @@ public abstract class BeanUtils {
         return beanSetterMethod;
     }
 
-    private static Method getMethod(String setterName, Object bean, Class setterParamType) {
+    private static Method getMethod(String setterName, Object bean, Class<?> setterParamType) {
         Method[] methods = bean.getClass().getMethods();
         Method beanSetterMethod = null;
 
         for(Method method : methods) {
             if(method.getName().equals(setterName)) {
-                Class[] params = method.getParameterTypes();
+                Class<?>[] params = method.getParameterTypes();
                 if(params != null && params.length == 1 && params[0].isAssignableFrom(setterParamType)) {
                     beanSetterMethod = method;
                     break;
@@ -121,10 +121,8 @@ public abstract class BeanUtils {
         Object bean;
 
         // Get the bean instance from the request.  If there is non, it's a bad config!!
-        bean = BeanAccessor.getBean(beanId, execContext);
-        if (logger.isDebugEnabled()) {
-            logger.debug("Not creating a new bean instance for beanId [" + beanId + "].  One already exists.");
-        }
+        bean = BeanAccessor.getBean(execContext, beanId);
+
         if (bean == null) {
             throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");
         }
@@ -138,7 +136,7 @@ public abstract class BeanUtils {
      * @param arrayClass The array type.
      * @return The array.
      */
-    public static Object convertListToArray(List list, Class arrayClass) {
+    public static Object convertListToArray(List<?> list, Class<?> arrayClass) {
         AssertArgument.isNotNull(list, "list");
         AssertArgument.isNotNull(arrayClass, "arrayClass");
 
