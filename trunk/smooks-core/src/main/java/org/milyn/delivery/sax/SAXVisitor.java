@@ -22,18 +22,9 @@ import org.milyn.delivery.ContentHandler;
 import java.io.IOException;
 
 /**
- * SAX Visit before events.
+ * SAX Visitor.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface SAXVisitBefore extends SAXVisitor {
-    /**
-     * Visit the supplied element <b>before</b> visiting its child elements.
-     *
-     * @param element          The SAX element being visited.
-     * @param executionContext Execution context.
-     * @throws org.milyn.SmooksException Event processing failure.
-     * @throws java.io.IOException     Error writing event to output writer.
-     */
-    void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException;
+public interface SAXVisitor extends ContentHandler {
 }

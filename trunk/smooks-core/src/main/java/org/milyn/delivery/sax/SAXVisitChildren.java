@@ -26,7 +26,7 @@ import java.io.IOException;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface SAXVisitChildren extends ContentHandler {
+public interface SAXVisitChildren extends SAXVisitor {
     /**
      * Process the onChildText event for the targeted element.
      * <p/>

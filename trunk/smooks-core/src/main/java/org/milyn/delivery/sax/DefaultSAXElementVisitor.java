@@ -26,13 +26,14 @@ import java.io.IOException;
 public class DefaultSAXElementVisitor implements SAXElementVisitor {
     
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        // Do nothing here... see is there any child text/elements first...
-        //System.out.println("");
+        // Do nothing here apart from acquiring ownership of the element writer.
+        // See is there any child text/elements first...
+        element.getWriter(this);
     }
 
     public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
         writeStartElement(element);
-        text.toWriter(element.getWriter());
+        text.toWriter(element.getWriter(this));
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -48,16 +49,16 @@ public class DefaultSAXElementVisitor implements SAXElementVisitor {
         // We set a flag in the cache so as to mark the fact that the start element has been writen
         if(element.getCache() == null) {
             element.setCache(true);
-            WriterUtil.writeStartElement(element, element.getWriter());
+            WriterUtil.writeStartElement(element, element.getWriter(this));
         }
     }
 
     private void writeEndElement(SAXElement element) throws IOException {
         if(element.getCache() == null) {
             // It's an empty element...
-            WriterUtil.writeEmptyElement(element, element.getWriter());
+            WriterUtil.writeEmptyElement(element, element.getWriter(this));
         } else {
-            WriterUtil.writeEndElement(element, element.getWriter());
+            WriterUtil.writeEndElement(element, element.getWriter(this));
         }
     }
 }
