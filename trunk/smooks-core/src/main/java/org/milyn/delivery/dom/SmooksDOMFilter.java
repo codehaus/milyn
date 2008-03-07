@@ -410,12 +410,12 @@ public class SmooksDOMFilter extends Filter {
         // Revisit the element with its assembly units after visiting its child content.
         if (elementVisitAfters != null && !elementVisitAfters.isEmpty()) {
             if (reverseVisitOrderOnVisitAfter) {
-                for (int i = elementVisitBefores.size() - 1; i >= 0; i--) {
+                for (int i = elementVisitAfters.size() - 1; i >= 0; i--) {
                     ContentHandlerConfigMap<DOMVisitAfter> configMap = elementVisitAfters.get(i);
                     applyAssemblyAfter(element, configMap);
                 }
             } else {
-                for (int i = 0; i < elementVisitBefores.size(); i++) {
+                for (int i = 0; i < elementVisitAfters.size(); i++) {
                     ContentHandlerConfigMap<DOMVisitAfter> configMap = elementVisitAfters.get(i);
                     applyAssemblyAfter(element, configMap);
                 }
