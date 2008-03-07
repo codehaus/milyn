@@ -15,6 +15,11 @@
 */
 package org.milyn.javabean.context;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.milyn.SmooksException;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -26,11 +31,6 @@ import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanAccessor;
 import org.w3c.dom.Element;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Static variable binding visitor.
@@ -88,14 +88,14 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
         Map params = null;
 
         try {
-            params = (Map) BeanAccessor.getBean(STATVAR, executionContext);
+            params = (Map) BeanAccessor.getBean(executionContext, STATVAR);
         } catch(ClassCastException e) {
             throw new SmooksException("Illegal use of reserved beanId '" + STATVAR + "'.  Must be a Map.  Is a " + params.getClass().getName(), e);
         }
 
         if(params == null) {
             params = new HashMap();
-            BeanAccessor.addBean(STATVAR, params, executionContext, false);
+            BeanAccessor.addBean(executionContext, STATVAR, params);
         }
 
         params.put(parameter.getName(), parameter.getValue(executionContext.getDeliveryConfig()));

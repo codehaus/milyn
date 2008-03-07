@@ -3,44 +3,47 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.javabean;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AnnotationConstants;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Initialize;
-import org.milyn.cdr.annotation.AnnotationConstants;
+import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.dom.VisitPhase;
+import org.milyn.javabean.lifecycle.BeanLifecycleEnder;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Javabean Populator.
  * <h2>Sample Configuration</h2>
  * Populate an <b><code>Order</code></b> bean with <b><code>Header</code></b> and <b><code>OrderItem</code></b>
  * beans (OrderItems added to a list).
- * 
+ *
  * <h4>Input XML</h4>
  * <pre>
  * &lt;order&gt;
@@ -146,11 +149,14 @@ import java.util.List;
  * To trigger this visitor during the Assembly Phase, simply set the "VisitPhase" param to "ASSEMBLY".
  *
  * @author tfennelly
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
+    private static final String APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED = BeanPopulator.class.getName() + "#LIFECYCLE_ENDER_CREATED";
+    
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String beanId;
 
@@ -159,6 +165,9 @@ public class BeanPopulator implements ConfigurationExpander {
 
     @Config
     private SmooksResourceConfiguration config;
+    
+    @AppContext
+    private ApplicationContext appContext;
 
     /*******************************************************************************************************
      *  Common Methods.
@@ -196,10 +205,11 @@ public class BeanPopulator implements ConfigurationExpander {
         List<SmooksResourceConfiguration> resources = new ArrayList<SmooksResourceConfiguration>();
 
         buildInstanceCreatorConfig(resources);
-        buildInstancePopulatorConfigs(resources);
-
+        buildBindingConfigs(resources);
+        buildBeanLifecycleEnderConfig(resources);
+        
         return resources;
-    }
+    } 
 
     private void buildInstanceCreatorConfig(List<SmooksResourceConfiguration> resources) {
         SmooksResourceConfiguration resource = (SmooksResourceConfiguration) config.clone();
@@ -216,7 +226,9 @@ public class BeanPopulator implements ConfigurationExpander {
         resources.add(resource);
     }
 
-    private void buildInstancePopulatorConfigs(List<SmooksResourceConfiguration> resources) {
+
+
+    private void buildBindingConfigs(List<SmooksResourceConfiguration> resources) {
         Parameter bindingsParam = config.getParameter("bindings");
 
         if (bindingsParam != null) {
@@ -227,7 +239,10 @@ public class BeanPopulator implements ConfigurationExpander {
 
                 try {
                     for (int i = 0; bindings != null && i < bindings.getLength(); i++) {
-                        resources.add(buildInstancePopulatorConfig((Element)bindings.item(i)));
+                    	Element node = (Element)bindings.item(i);
+
+                    	resources.add(buildInstancePopulatorConfig(node));
+
                     }
                 } catch (IOException e) {
                     throw new SmooksConfigurationException("Failed to read binding configuration for " + config, e);
@@ -246,12 +261,20 @@ public class BeanPopulator implements ConfigurationExpander {
         String setterMethod;
         String type;
         String defaultVal;
+        String selectedBeanId = null;
 
         // Make sure there's both 'selector' and 'property' attributes...
-        selector = DomUtils.getAttributeValue(bindingConfig, "selector");
-        if (selector == null) {
-            throw new SmooksConfigurationException("Binding configuration must contain a 'selector' key: " + bindingConfig);
+        selector = getSelectorAttr(bindingConfig);
+
+        //Check if we get a bean binding, if so then we need to change the selector to selector of current config so that the
+        //BeanInstanceCreator is called on that node instead of one off the child nodes.
+        //The targetBeanId indicates the beanId that should be selected
+        if(selector.startsWith("${") && selector.endsWith("}")) {
+        	selectedBeanId = selector.substring(2, selector.length() - 1);
+        	selector = config.getSelector();
         }
+
+
         setterMethod = DomUtils.getAttributeValue(bindingConfig, "setterMethod");
         property = DomUtils.getAttributeValue(bindingConfig, "property");
 
@@ -263,6 +286,10 @@ public class BeanPopulator implements ConfigurationExpander {
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, BeanInstancePopulator.class.getName());
         resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
         resourceConfig.setParameter("beanId", beanId);
+
+        if(selectedBeanId != null) {
+            resourceConfig.setParameter("selectedBeanId", selectedBeanId);
+        }
 
         if(setterMethod != null) {
             resourceConfig.setParameter("setterMethod", setterMethod);
@@ -277,9 +304,24 @@ public class BeanPopulator implements ConfigurationExpander {
             resourceConfig.setParameter("valueAttributeName", attributeNameProperty);
         }
 
-        // Set the data type...
         type = DomUtils.getAttributeValue(bindingConfig, "type");
-        resourceConfig.setParameter("type", (type != null?type:"String"));
+        defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
+        if(selectedBeanId == null ) {
+        	// Set the data type...
+        	resourceConfig.setParameter("type", (type != null?type:"String"));
+
+            if(defaultVal != null) {
+                resourceConfig.setParameter("default", defaultVal);
+            }
+        } else {
+        	if(type != null) {
+        		throw new SmooksConfigurationException("The 'type' attribute isn't a allowed when binding a bean: " + bindingConfig);
+        	}
+        	if(defaultVal != null) {
+        		throw new SmooksConfigurationException("The 'default' attribute isn't a allowed when binding a bean: " + bindingConfig);
+        	}
+        }
+
         resourceConfig.setTargetProfile(config.getTargetProfile());
 
         // Set the selector namespace...
@@ -289,15 +331,25 @@ public class BeanPopulator implements ConfigurationExpander {
         }
         resourceConfig.setSelectorNamespaceURI(selectorNamespace);
 
-        // Set the default value...
-        defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
-        if(defaultVal != null) {
-            resourceConfig.setParameter("default", defaultVal);
-        }
-
         return resourceConfig;
     }
 
+    private void buildBeanLifecycleEnderConfig(List<SmooksResourceConfiguration> resources) {
+    	
+    	Boolean created = (Boolean)appContext.getAttribute(APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED);
+    	if(created == null || !created) {
+    		
+    		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("$document", BeanLifecycleEnder.class.getName());
+            resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
+            resourceConfig.setTargetProfile("*");
+    		
+            resources.add(resourceConfig);
+            
+    		appContext.setAttribute(APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED, Boolean.TRUE);
+    	}
+    	
+    }
+    
     private String getSelectorProperty(String selector) {
         StringBuffer selectorProp = new StringBuffer();
         String[] selectorTokens = selector.split(" ");
@@ -332,5 +384,13 @@ public class BeanPopulator implements ConfigurationExpander {
         simpleClassName.setCharAt(0, Character.toLowerCase(simpleClassName.charAt(0)));
 
         return simpleClassName.toString();
+    }
+
+    private String getSelectorAttr(Element bindingConfig) {
+    	String selector = DomUtils.getAttributeValue(bindingConfig, "selector");
+        if (selector == null) {
+            throw new SmooksConfigurationException("Binding configuration must contain a 'selector' key: " + bindingConfig);
+        }
+        return selector;
     }
 }
