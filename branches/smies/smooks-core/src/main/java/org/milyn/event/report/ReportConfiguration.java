@@ -18,10 +18,9 @@ package org.milyn.event.report;
 import org.milyn.event.ExecutionEvent;
 import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.event.types.ElementVisitEvent;
+import org.milyn.assertion.AssertArgument;
 
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Report generation configuration.
@@ -30,20 +29,19 @@ import java.util.List;
  */
 public class ReportConfiguration {
 
-    private ReportType type;
     private Writer outputWriter;
     private boolean escapeXMLChars = false;
     private boolean showDefaultAppliedResources = false;
     private Class<? extends ExecutionEvent>[] filterEvents;
 
-    public ReportConfiguration(ReportType type, Writer outputWriter) {
-        this.type = type;
+    public ReportConfiguration(Writer outputWriter) {
+        AssertArgument.isNotNull(outputWriter, "outputWriter");
         this.outputWriter = outputWriter;
-        setFilterEvents(ConfigBuilderEvent.class, ElementVisitEvent.class);
+        filterEvents = new Class[] {ConfigBuilderEvent.class, ElementVisitEvent.class};
     }
 
-    public ReportType getType() {
-        return type;
+    public void setOutputWriter(Writer outputWriter) {
+        this.outputWriter = outputWriter;
     }
 
     public Writer getOutputWriter() {

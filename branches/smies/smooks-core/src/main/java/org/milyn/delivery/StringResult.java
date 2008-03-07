@@ -13,20 +13,31 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.event.report;
+package org.milyn.delivery;
+
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
 
 /**
- * Smooks Execution Report type.
+ * Utility class for creating a String based {@link javax.xml.transform.stream.StreamResult}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public enum ReportType {
-    /**
-     * Flat Report.
-     */
-    FLAT,
-    /**
-     * Html Report.
-     */
-    HTML
+public class StringResult extends StreamResult {
+
+    StringWriter writer;
+
+    public StringResult() {
+        super();
+        writer = new StringWriter();
+        setWriter(writer);
+    }
+
+    public String getResult() {
+        return writer.toString();
+    }
+
+    public String toString() {
+        return getResult();
+    }
 }

@@ -115,16 +115,4 @@ public interface ExecutionContext extends BoundAttributeStore {
      * @see #setEventListener(ExecutionEventListener) 
      */
     public abstract ExecutionEventListener getEventListener();
-
-    /**
-     * Set the report configuration if an execution report is required.
-     * @param reportConfig Execution report configuration.
-     */
-    public abstract void setReportConfiguration(ReportConfiguration reportConfig);
-
-    /**
-     * Get the execution report configuration.
-     * @return Execution report configuration, or null if none configured.
-     */
-    public abstract ReportConfiguration getReportConfiguration();
 }

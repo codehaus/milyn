@@ -28,7 +28,6 @@ import org.milyn.delivery.Filter;
 import org.milyn.delivery.FilterResult;
 import org.milyn.delivery.FilterSource;
 import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.report.*;
 import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
 import org.milyn.profile.Profile;
@@ -256,25 +255,7 @@ public class Smooks {
         AssertArgument.isNotNull(source, "source");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
-        ReportConfiguration reportConfig = executionContext.getReportConfiguration();
         ExecutionEventListener eventListener = executionContext.getEventListener();
-
-        if(reportConfig != null && eventListener != null) {
-            throw new IllegalStateException("Inconsistent context state.  Cannot set a ReportConfiguration as well as an EventListener.");
-        }
-
-        if(reportConfig != null) {
-            AbstractExecutionReportGenerator reportGenerator;
-            
-            if(reportConfig.getType() == ReportType.FLAT) {
-                reportGenerator = new FlatReportGenerator(reportConfig.getOutputWriter(), reportConfig.escapeXMLChars(), reportConfig.showDefaultAppliedResources());
-            } else {
-                reportGenerator = new HtmlReportGenerator(reportConfig.getOutputWriter(), reportConfig.showDefaultAppliedResources());
-            }
-            reportGenerator.setFilterEvents(reportConfig.getFilterEvents());
-            eventListener = reportGenerator;
-            executionContext.setEventListener(eventListener);
-        }
 
         try {
             Filter.setCurrentExecutionContext(executionContext);

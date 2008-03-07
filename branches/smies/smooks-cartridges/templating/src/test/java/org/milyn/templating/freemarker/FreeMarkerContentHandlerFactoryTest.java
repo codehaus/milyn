@@ -98,12 +98,6 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         assertEquals("<mybean>xvalueonc1</mybean>", context.getAttribute("mybeanTemplate"));
     }
 
-    public void testX() throws IOException, SAXException {
-        StringWriter output = new StringWriter();
-        FlatReportGenerator.generateReport("/org/milyn/templating/freemarker/test-configs-04.cdrl", new StreamSource(new StringReader("<a><b><c x='xvalueonc2' /></b></a>")), output, false, false);
-        System.out.println(output);
-    }
-
     private void test_ftl(Smooks smooks, String input, String expected) {
         InputStream stream = new ByteArrayInputStream(input.getBytes());
         ExecutionContext context = smooks.createExecutionContext();

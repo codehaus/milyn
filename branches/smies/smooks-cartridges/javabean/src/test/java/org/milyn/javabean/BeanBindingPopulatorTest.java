@@ -15,13 +15,9 @@
 */
 package org.milyn.javabean;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.util.ArrayList;
 
 import javax.xml.transform.stream.StreamSource;
@@ -33,8 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.java.JavaResult;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
@@ -77,42 +71,29 @@ public class BeanBindingPopulatorTest extends TestCase {
         Smooks smooks = new Smooks(packagePath + "/" + configFile);
         ExecutionContext executionContext = smooks.createExecutionContext();
 
-        Writer reportWriter = null;
+    	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
+    	JavaResult result = new JavaResult();
 
-        try {
-	        if(REPORT_EXECUTION) {
-	        	reportWriter = createWriter("target/test/report/report-"+ configFile + "-" + dataFile + ".html");
+        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
-	        	final ExecutionEventListener eventListener = new HtmlReportGenerator(reportWriter, true);
-	        	executionContext.setEventListener(eventListener);
-	        }
+        @SuppressWarnings("unchecked")
+        ArrayList<A> as = (ArrayList<A>) result.getBean("root");
 
-	    	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
-	    	JavaResult result = new JavaResult();
+        assertNotNull(as);
+        assertEquals(2, as.size());
 
-	        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+		A a1 = as.get(0);
+		assertNotNull(a1.getBList());
+		assertEquals(3, a1.getBList().size());
+		assertEquals("b1", a1.getBList().get(0).getValue());
+		assertEquals(a1, a1.getBList().get(0).getA());
 
-	        @SuppressWarnings("unchecked")
-	        ArrayList<A> as = (ArrayList<A>) result.getBean("root");
+		A a2 = as.get(1);
+		assertNotNull(a2.getBList());
+		assertEquals(3, a2.getBList().size());
+		assertEquals("b4", a2.getBList().get(0).getValue());
+		assertEquals(a2, a2.getBList().get(0).getA());
 
-	        assertNotNull(as);
-	        assertEquals(2, as.size());
-
-			A a1 = as.get(0);
-			assertNotNull(a1.getBList());
-			assertEquals(3, a1.getBList().size());
-			assertEquals("b1", a1.getBList().get(0).getValue());
-			assertEquals(a1, a1.getBList().get(0).getA());
-
-			A a2 = as.get(1);
-			assertNotNull(a2.getBList());
-			assertEquals(3, a2.getBList().size());
-			assertEquals("b4", a2.getBList().get(0).getValue());
-			assertEquals(a2, a2.getBList().get(0).getA());
-
-        } finally {
-        	closeWriter(reportWriter);
-        }
 
 	}
 
@@ -128,70 +109,31 @@ public class BeanBindingPopulatorTest extends TestCase {
         Smooks smooks = new Smooks(packagePath + "/" + configFile);
         ExecutionContext executionContext = smooks.createExecutionContext();
 
-        Writer reportWriter = null;
 
-        try {
-	        if(REPORT_EXECUTION) {
-	        	reportWriter = createWriter("target/test/report/report-"+ configFile + "-" + dataFile + ".html");
+    	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
+    	JavaResult result = new JavaResult();
 
-	        	final ExecutionEventListener eventListener = new HtmlReportGenerator(reportWriter, true);
-	        	executionContext.setEventListener(eventListener);
-	        }
+        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
-	    	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
-	    	JavaResult result = new JavaResult();
+        @SuppressWarnings("unchecked")
+        A[] as = (A[]) result.getBean("root");
 
-	        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        assertNotNull(as);
+        assertEquals(2, as.length);
 
-	        @SuppressWarnings("unchecked")
-	        A[] as = (A[]) result.getBean("root");
+		A a1 = as[0];
+		assertNotNull(a1.getBArray());
+		assertEquals(3, a1.getBArray().length);
+		assertEquals("b1", a1.getBArray()[0].getValue());
+		assertEquals(a1, a1.getBArray()[0].getA());
 
-	        assertNotNull(as);
-	        assertEquals(2, as.length);
+		A a2 = as[1];
+		assertNotNull(a2.getBArray());
+		assertEquals(3, a2.getBArray().length);
+		assertEquals("b4", a2.getBArray()[0].getValue());
+		assertEquals(a2, a2.getBArray()[0].getA());
 
-			A a1 = as[0];
-			assertNotNull(a1.getBArray());
-			assertEquals(3, a1.getBArray().length);
-			assertEquals("b1", a1.getBArray()[0].getValue());
-			assertEquals(a1, a1.getBArray()[0].getA());
 
-			A a2 = as[1];
-			assertNotNull(a2.getBArray());
-			assertEquals(3, a2.getBArray().length);
-			assertEquals("b4", a2.getBArray()[0].getValue());
-			assertEquals(a2, a2.getBArray()[0].getA());
-
-        } finally {
-        	closeWriter(reportWriter);
-        }
-
-	}
-
-	private Writer createWriter(final String filepath) {
-
-		try {
-			File file = new File(filepath);
-
-			file.mkdirs();
-			if(file.exists()) {
-				file.delete();
-			}
-			file.createNewFile();
-
-			return new BufferedWriter(new FileWriter(file));
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private void closeWriter(Writer writer) {
-		try {
-			if(writer != null) {
-				writer.close();
-			}
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 

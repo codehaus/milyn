@@ -30,8 +30,6 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.WriterUtil;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
 import org.milyn.SmooksException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Element;
 
 import java.util.List;
@@ -46,59 +44,29 @@ import java.io.StringWriter;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public abstract class AbstractExecutionReportGenerator extends BasicExecutionEventListener {
-    private static Log logger = LogFactory.getLog(FlatReportGenerator.class);
-    private Writer outputWriter;
+public abstract class AbstractReportGenerator extends BasicExecutionEventListener {
+
+    private ReportConfiguration reportConfiguration;
+
     private List<ExecutionEvent> preProcessingEvents = new ArrayList<ExecutionEvent>();
     private List<ExecutionEvent> processingEvents = new ArrayList<ExecutionEvent>();
     private Stack<ReportNode> reportNodeStack = new Stack<ReportNode>();
     private List<ReportNode> allNodes = new ArrayList<ReportNode>();
     protected static final DefaultSerializationUnit domSerializer = new DefaultSerializationUnit();
-    private boolean escapeXMLChars = true;
-    private boolean showDefaultAppliedResources = false;
     private static final String tabsBuffer = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 
-    /**
-     * Constructor.
-     * <p/>
-     * Special XML characrers are escaped.  Default applied resources ({@link org.milyn.delivery.sax.DefaultSAXElementVisitor}, {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit})
-     * are not output in the resource.
-     *
-     * @param outputWriter Report output writer.
-     * @see #AbstractExecutionReportGenerator(java.io.Writer, boolean, boolean)
-     */
-    public AbstractExecutionReportGenerator(Writer outputWriter) {
-        this.outputWriter = outputWriter;
+    protected AbstractReportGenerator(ReportConfiguration reportConfiguration) {
+        AssertArgument.isNotNull(reportConfiguration, "reportConfiguration");
+        this.reportConfiguration = reportConfiguration;
+        setFilterEvents(reportConfiguration.getFilterEvents());
     }
 
-    /**
-     * Constructor.
-     *
-     * @param outputWriter                Report output writer.
-     * @param escapeXMLChars              True if special XML characters should encoded (entity encoded) in the report output e.g. rewrite '<' characters to '&lt;'.
-     * @param showDefaultAppliedResources True if default applied resources ({@link org.milyn.delivery.sax.DefaultSAXElementVisitor}, {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit})
-     *                                    are to be output in the resource, otherwise false.
-     */
-    public AbstractExecutionReportGenerator(Writer outputWriter, boolean escapeXMLChars, boolean showDefaultAppliedResources) {
-        this.outputWriter = outputWriter;
-        this.escapeXMLChars = escapeXMLChars;
-        this.showDefaultAppliedResources = showDefaultAppliedResources;
+    public ReportConfiguration getReportConfiguration() {
+        return reportConfiguration;
     }
 
     public Writer getOutputWriter() {
-        return outputWriter;
-    }
-
-    public void setOutputWriter(Writer outputWriter) {
-        this.outputWriter = outputWriter;
-    }
-
-    public boolean isEscapeXMLChars() {
-        return escapeXMLChars;
-    }
-
-    public boolean isShowDefaultAppliedResources() {
-        return showDefaultAppliedResources;
+        return reportConfiguration.getOutputWriter();
     }
 
     /**
@@ -121,7 +89,7 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
             allNodes.add(node);
             processNewElementEvent(node);
         } else {
-            if (!showDefaultAppliedResources) {
+            if (!reportConfiguration.showDefaultAppliedResources()) {
                 if (event instanceof ResourceBasedEvent) {
                     if (((ResourceBasedEvent) event).getResourceConfig().isDefaultResource()) {
                         // Ignore this event...
@@ -170,7 +138,7 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
                     // serialization phase...
                     outputReport();
                 }
-                outputWriter.write(event.toString() + "\n");
+                reportConfiguration.getOutputWriter().write(event.toString() + "\n");
             } else if (event.getEventType() == FilterLifecycleEvent.EventType.STARTED) {
                 // Output the start of the report...
                 outputStartReport();
@@ -179,12 +147,12 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
                 toOutputWriter("\n");
 
                 reportWrapperStart();
-                outputWriter.write(event.toString() + "\n");
+                reportConfiguration.getOutputWriter().write(event.toString() + "\n");
             } else if (event.getEventType() == FilterLifecycleEvent.EventType.FINISHED) {
                 // We're done now, output the last of it...
                 outputReport();
                 // Output the end of the report...
-                outputWriter.write(event.toString() + "\n");
+                reportConfiguration.getOutputWriter().write(event.toString() + "\n");
                 reportWrapperEnd();
                 outputEndReport();
             }
@@ -292,10 +260,10 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
     }
 
     public void xmlToOutputWriter(String text) throws IOException {
-        if (escapeXMLChars) {
+        if (reportConfiguration.escapeXMLChars()) {
             text = escapeXML(text);
         }
-        outputWriter.write(text);
+        reportConfiguration.getOutputWriter().write(text);
     }
 
     public static String escapeXML(String text) {
@@ -310,14 +278,14 @@ public abstract class AbstractExecutionReportGenerator extends BasicExecutionEve
     }
 
     public void toOutputWriter(String text) throws IOException {
-        outputWriter.write(text);
+        reportConfiguration.getOutputWriter().write(text);
     }
 
     public void writeIndentTabs(int numTabs) throws IOException {
-        if (escapeXMLChars) {
-            outputWriter.write(tabsBuffer.substring(0, numTabs).replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
+        if (reportConfiguration.escapeXMLChars()) {
+            reportConfiguration.getOutputWriter().write(tabsBuffer.substring(0, numTabs).replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
         } else {
-            outputWriter.write(tabsBuffer, 0, numTabs);
+            reportConfiguration.getOutputWriter().write(tabsBuffer, 0, numTabs);
         }
     }
 

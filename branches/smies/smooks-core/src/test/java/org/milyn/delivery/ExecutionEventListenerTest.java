@@ -44,7 +44,7 @@ public class ExecutionEventListenerTest extends TestCase {
         BasicExecutionEventListener eventListener = new BasicExecutionEventListener();
 
         testListener(eventListener, "smooks-config-sax.xml", "test-data-01.xml");
-        assertEquals(26, eventListener.getEvents().size());
+        assertEquals(35, eventListener.getEvents().size());
     }
 
     public void test_02_dom() throws IOException, SAXException {

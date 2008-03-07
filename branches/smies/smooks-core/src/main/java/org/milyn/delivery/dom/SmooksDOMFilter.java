@@ -27,6 +27,7 @@ import org.milyn.delivery.*;
 import org.milyn.delivery.dom.serialize.Serializer;
 import org.milyn.delivery.java.JavaSource;
 import org.milyn.event.ExecutionEventListener;
+import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.DOMFilterLifecycleEvent;
 import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.ElementVisitEvent;
@@ -186,7 +187,7 @@ public class SmooksDOMFilter extends Filter {
         closeSource = ParameterAccessor.getBoolParameter(Filter.CLOSE_SOURCE, true, executionContext.getDeliveryConfig());
         closeResult = ParameterAccessor.getBoolParameter(Filter.CLOSE_RESULT, true, executionContext.getDeliveryConfig());
         reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, executionContext.getDeliveryConfig());
-        if(executionContext.getReportConfiguration() == null) {
+        if(!(executionContext.getEventListener() instanceof AbstractReportGenerator)) {
             terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
         } else {
             terminateOnVisitorException = false;
