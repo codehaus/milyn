@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <resource-config selector="global-parameters">
+		<param name="stream.filter.type">DOM</param>
+	</resource-config>
+
+     <resource-config selector="$document">
+        <resource>org.milyn.routing.file.FileRouter</resource>
+        <param name="beanId">order</param>
+        <param name="destinationDirectory">target/</param>
+        <param name="destinationFilePrefix">test-</param>
+        <param name="destinationFileSuffix">.txt-</param>
+    </resource-config>
+
+</smooks-resource-list>
