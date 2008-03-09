@@ -16,8 +16,6 @@
 
 package org.milyn.delivery;
 
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Content Handler interface definition.

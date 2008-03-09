@@ -1,7 +1,6 @@
 package org.milyn.cdr;
 
 import junit.framework.TestCase;
-import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.profile.DefaultProfileSet;
 
 public class SmooksResourceConfigurationSortComparatorTest extends TestCase {

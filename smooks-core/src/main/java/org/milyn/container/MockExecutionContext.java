@@ -28,7 +28,6 @@ import org.milyn.profile.ProfileSet;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.profile.Profile;
 import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.report.ReportConfiguration;
 
 /**
  * 

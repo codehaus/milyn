@@ -15,10 +15,7 @@
 */
 package org.milyn.event.report;
 
-import org.milyn.Smooks;
-import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.VisitSequence;
 import org.milyn.event.ExecutionEvent;
 import org.milyn.event.types.ConfigBuilderEvent;
@@ -26,9 +23,6 @@ import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.io.StreamUtils;
 
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.List;
 

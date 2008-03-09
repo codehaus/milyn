@@ -15,8 +15,6 @@
 */
 package org.milyn.event.types;
 
-import org.milyn.event.ExecutionEvent;
-
 /**
  * Smooks DOM filter Lifecycle event.
  *

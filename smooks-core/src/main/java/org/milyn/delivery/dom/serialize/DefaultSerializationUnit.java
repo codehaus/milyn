@@ -18,7 +18,6 @@ package org.milyn.delivery.dom.serialize;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.io.StringWriter;
 
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;

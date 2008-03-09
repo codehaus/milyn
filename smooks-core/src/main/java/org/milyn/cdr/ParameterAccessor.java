@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;

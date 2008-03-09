@@ -17,7 +17,6 @@ package org.milyn.delivery.sax;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
-import org.milyn.delivery.ContentHandler;
 
 import java.io.IOException;
 
