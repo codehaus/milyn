@@ -19,7 +19,6 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
-import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;

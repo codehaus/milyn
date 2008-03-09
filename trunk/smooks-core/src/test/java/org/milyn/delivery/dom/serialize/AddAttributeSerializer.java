@@ -15,7 +15,6 @@
 */
 package org.milyn.delivery.dom.serialize;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.w3c.dom.NamedNodeMap;
 
 import java.io.Writer;

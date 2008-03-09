@@ -15,8 +15,6 @@
 */
 package org.milyn.delivery.java;
 
-import java.util.Date;
-
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */

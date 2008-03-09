@@ -21,7 +21,6 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.sax.TextType;
 import org.w3c.dom.Element;
 
 import java.io.IOException;

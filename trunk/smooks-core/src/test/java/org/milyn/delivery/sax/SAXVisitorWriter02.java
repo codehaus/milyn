@@ -15,13 +15,10 @@
 */
 package org.milyn.delivery.sax;
 
-import junit.framework.TestCase;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

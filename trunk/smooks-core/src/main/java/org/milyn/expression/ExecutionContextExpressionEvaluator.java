@@ -17,7 +17,6 @@ package org.milyn.expression;
 
 import org.milyn.container.ExecutionContext;
 
-import java.util.Map;
 
 /**
  * {@link org.milyn.container.ExecutionContext} based expression evaluator.

@@ -18,7 +18,6 @@ package org.milyn.delivery.sax;
 import junit.framework.TestCase;
 import org.xml.sax.ext.Attributes2Impl;
 
-import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

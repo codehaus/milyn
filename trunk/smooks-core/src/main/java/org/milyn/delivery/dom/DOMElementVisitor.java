@@ -16,11 +16,6 @@
 
 package org.milyn.delivery.dom;
 
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentHandler;
-import org.milyn.SmooksException;
-import org.w3c.dom.Element;
-
 /**
  * Element <b>Visitor</b> (GoF) interface for DOM.
  * <p/>

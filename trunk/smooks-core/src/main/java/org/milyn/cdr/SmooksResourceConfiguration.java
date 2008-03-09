@@ -33,7 +33,6 @@ import org.milyn.xml.XmlUtil;
 import org.milyn.profile.Profile;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.io.IOException;

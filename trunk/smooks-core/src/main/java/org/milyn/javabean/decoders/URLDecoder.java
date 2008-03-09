@@ -18,11 +18,7 @@ package org.milyn.javabean.decoders;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DecodeType;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.MalformedURLException;
 

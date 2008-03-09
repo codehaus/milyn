@@ -18,7 +18,6 @@ package org.milyn.container;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.report.ReportConfiguration;
 import org.milyn.profile.ProfileSet;
 
 import java.net.URI;
