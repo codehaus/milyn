@@ -33,7 +33,7 @@
    <!-- Limit categories -->
 
    <category name="org.milyn">
-      <priority value="info"/>
+      <priority value="fatal"/>
    </category>
 
    <!-- ======================= -->
