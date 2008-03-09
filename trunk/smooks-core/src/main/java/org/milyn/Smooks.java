@@ -275,6 +275,8 @@ public class Smooks {
                 Filter.removeCurrentExecutionContext();
             }
         } finally {
+        	//	re-check if an event listener has be added.
+            eventListener = executionContext.getEventListener();
             if(eventListener != null) {
                 eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.FINISHED));
             }

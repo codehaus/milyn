@@ -14,7 +14,6 @@
  */
 package org.milyn.routing.jms;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -24,10 +23,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 import javax.naming.Context;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.custommonkey.xmlunit.Diff;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -36,10 +33,8 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.delivery.sax.SAXElement;
-import org.milyn.javabean.BeanAccessor;
+import org.milyn.routing.util.RouterTestHelper;
 import org.mockejb.jndi.MockContextFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import com.mockrunner.mock.ejb.EJBMockObjectFactory;
@@ -48,77 +43,48 @@ import com.mockrunner.mock.jms.MockQueue;
 import com.mockrunner.mock.jms.MockQueueConnectionFactory;
 
 /**
- * Unit test for the Router class
+ * Unit test for the JMSRouter class
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public class RouterTest
+public class JMSRouterTest
 {
 	private String selector = "x";
-	private SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, Router.class.getName());
+	private SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
 	private String queueName = "queue/testQueue";
 
 	private static MockQueue queue;
 	private static MockQueueConnectionFactory connectionFactory;
 
 	@Test( expected = SmooksConfigurationException.class )
-	public void config_validation_missing_destinationType()
+	public void configureWithMissingDestinationType()
 	{
-        Configurator.configure( new Router(), config, new MockApplicationContext() );
+        Configurator.configure( new JMSRouter(), config, new MockApplicationContext() );
 	}
 
 	@Test
-	public void visitAfter_textMessage() throws ParserConfigurationException, JMSException, SAXException, IOException
-	{
-		final String expectedXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><testelement/>";
-        config.setParameter( "destinationName", queueName );
-
-        Router router = new Router();
-        Configurator.configure( router, config, new MockApplicationContext() );
-
-        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-        Element element = document.createElement( "testelement" );
-        router.visitAfter( element , new MockExecutionContext() );
-
-        Message message = queue.getMessage();
-        assertTrue ( message instanceof TextMessage );
-
-        TextMessage textMessage = (TextMessage) message;
-        Diff diff = new Diff(expectedXML, textMessage.getText() );
-        assertXMLEqual( diff, true );
-	}
-
-	@Test
-	public void visitAfter_textMessage_beanId() throws ParserConfigurationException, JMSException, SAXException, IOException
+	public void visitAfter() throws ParserConfigurationException, JMSException, SAXException, IOException
 	{
 		final String beanId = "beanId";
-		final String address = "Fleminggatan";
-		final String name = "Daniel";
-		final String phoneNumber = "555-555-5555";
-    	final String expectedString = "TestBean [name:" + name + ", address:" + address + ", phoneNumber:" + phoneNumber + "]";
+		final TestBean bean = RouterTestHelper.createBean();
 
-		TestBean bean = new TestBean();
-		bean.setAddress( address );
-		bean.setName( name );
-		bean.setPhoneNumber( phoneNumber );
-
-		final boolean addToList = false;
-        MockExecutionContext executionContext = new MockExecutionContext();
-        BeanAccessor.addBean( beanId, bean, executionContext, addToList );
+        final MockExecutionContext executionContext = RouterTestHelper.createExecutionContext( beanId, bean );
 
         config.setParameter( "destinationName", queueName );
         config.setParameter( "beanId", beanId );
-        Router router = new Router();
+        final JMSRouter router = new JMSRouter();
         Configurator.configure( router, config, new MockApplicationContext() );
 
         router.visitAfter( (SAXElement)null, executionContext );
 
-        Message message = queue.getMessage();
-        assertTrue ( message instanceof TextMessage );
+        final Message message = queue.getMessage();
+        assertTrue ( "Message in queue should have been of type TextMessage",
+        		message instanceof TextMessage );
 
-        TextMessage textMessage = (TextMessage) message;
-        assertEquals( expectedString, textMessage.getText() );
+        final TextMessage textMessage = (TextMessage) message;
+        assertEquals( "Content of bean was not the same as the content of the TextMessage",
+        		bean.toString(), textMessage.getText() );
 	}
 
 	@Test
@@ -127,9 +93,11 @@ public class RouterTest
 		final String contextFactory = "org.jnp.interfaces.NamingContextFactory";
 		setManadatoryProperties( config );
         config.setParameter( "jndiContextFactory", contextFactory );
-        Router router = new Router();
+        final JMSRouter router = new JMSRouter();
         Configurator.configure( router, config, new MockApplicationContext() );
-        assertEquals( contextFactory, router.getJndiContectFactory() );
+
+        assertEquals( "ContextFactory did not match the one set on the Router",
+        		contextFactory, router.getJndiContectFactory() );
 	}
 
 	@Test
@@ -138,30 +106,33 @@ public class RouterTest
 		final String providerUrl = "jnp://localhost:1099";
 		setManadatoryProperties( config );
         config.setParameter( "jndiProviderUrl", providerUrl );
-        Router router = new Router();
+        final JMSRouter router = new JMSRouter();
         Configurator.configure( router, config, new MockApplicationContext() );
-        assertEquals( providerUrl, router.getJndiProviderUrl() );
+
+        assertEquals( "ProviderURL did not match the one set on the Router",
+        		providerUrl, router.getJndiProviderUrl() );
 	}
 
 	@Test
 	public void setJndiNamingFactoryUrl()
 	{
-		final String namingFactoryUrl = "org.jboss.naming:java.naming.factory.url.pkgs=org.jnp.interfaces";
+		final String namingFactoryUrlPkgs = "org.jboss.naming:org.jnp.interfaces";
 
 		setManadatoryProperties( config );
-        config.setParameter( "jndiNamingFactoryUrl", namingFactoryUrl );
-        Router router = new Router();
+        config.setParameter( "jndiNamingFactoryUrl", namingFactoryUrlPkgs );
+        final JMSRouter router = new JMSRouter();
         Configurator.configure( router, config, new MockApplicationContext() );
-        assertEquals( namingFactoryUrl, router.getJndiNamingFactoryUrl() );
-	}
 
+        assertEquals( "NamingFactoryUrlPkg did not match the one set on the Router",
+        		namingFactoryUrlPkgs, router.getJndiNamingFactoryUrl() );
+	}
 
 	@BeforeClass
 	public static void setUpInitialContext() throws Exception
     {
-        EJBMockObjectFactory mockObjectFactory = new EJBMockObjectFactory();
-        Context context = mockObjectFactory.getContext();
-        JMSMockObjectFactory jmsObjectFactory = new JMSMockObjectFactory();
+        final EJBMockObjectFactory mockObjectFactory = new EJBMockObjectFactory();
+        final Context context = mockObjectFactory.getContext();
+        final JMSMockObjectFactory jmsObjectFactory = new JMSMockObjectFactory();
 		connectionFactory = jmsObjectFactory.getMockQueueConnectionFactory();
         context.bind("ConnectionFactory",  connectionFactory);
         queue = jmsObjectFactory.getDestinationManager().createQueue("testQueue");
