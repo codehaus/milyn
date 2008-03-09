@@ -12,11 +12,11 @@
    </appender>
 
    <category name="org.milyn">
-      <priority value="error"/>
+      <priority value="fatal"/>
    </category>
 
    <category name="org.milyn.routing">
-      <priority value="debug"/>
+      <priority value="fatal"/>
    </category>
 
    <category name="com.mockrunner">
