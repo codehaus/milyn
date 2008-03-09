@@ -16,6 +16,9 @@
 package org.milyn.delivery.dom;
 
 import junit.framework.TestCase;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.io.StreamUtils;
 import org.milyn.delivery.ContentHandlerConfigMap;
@@ -36,6 +39,8 @@ import java.util.List;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class SmooksVisitorPhaseTest extends TestCase {
+	
+	Log log = LogFactory.getLog( SmooksVisitorPhaseTest.class );
 
     public void test_phase_selection() throws IOException, SAXException {
         Smooks smooks = new Smooks();
@@ -79,7 +84,7 @@ public class SmooksVisitorPhaseTest extends TestCase {
         executionContext.setEventListener(eventListener);
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml1.xml")), new StreamResult(outputWriter), executionContext);
 
-        System.out.println(outputWriter.toString());
+        log.debug(outputWriter.toString());
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("testxml1-expected.xml"));
         assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(outputWriter.toString().getBytes())));
         assertEquals(36, eventListener.getEvents().size());

@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockExecutionContext;
@@ -35,6 +37,7 @@ import junit.framework.TestCase;
  * @author tfennelly
  */
 public class SerializerTest extends TestCase {
+	Log log = LogFactory.getLog( SerializerTest.class );
 
 	/*
 	 * @see TestCase#setUp()
@@ -73,7 +76,7 @@ public class SerializerTest extends TestCase {
 			serializer.serailize(writer);
 			writer.flush();
 			byte[] actualBytes = output.toByteArray();
-			System.out.print(new String(actualBytes));
+			log.debug(new String(actualBytes));
 			boolean areEqual = CharUtils.compareCharStreams(getClass().getResourceAsStream("testmarkup.xxml.ser_1"), new ByteArrayInputStream(actualBytes));
 			assertTrue("Unexpected Serialization result failure.", areEqual);
 		} catch (Exception e) {
