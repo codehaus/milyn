@@ -14,13 +14,11 @@
  */
 package org.milyn.routing.file;
 
-import static org.milyn.event.types.FilterLifecycleEvent.EventType.FINISHED;
-import static org.milyn.event.types.FilterLifecycleEvent.EventType.STARTED;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,9 +34,6 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
-import org.milyn.event.ExecutionEvent;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.file.naming.DefaultNamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategy;
@@ -62,7 +57,7 @@ import org.w3c.dom.Element;
  * @since 1.0
  *
  */
-public class FileRouter implements DOMElementVisitor, SAXElementVisitor, ExecutionEventListener
+public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 {
 	/**
 	 * 	Key used in ExecutionContexts attribute map.
@@ -102,12 +97,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
     /*
      * 	Writer that appends to file
      */
-    private BufferedWriter writer;
-
-    /*
-     *	The generated filename. Directory is not included
-     */
-    private String destFileName;
+    //private BufferedWriter writer;
 
     /*
      * 	File object of the destination directory
@@ -127,9 +117,6 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
     	{
     		throw new SmooksException ( "Destination directory [" + destDirName + "] does not exist or is not a directory.");
     	}
-		log.debug( "Destination directory [ " + destDirName + "]" );
-
-    	createFileWriter();
 	}
 
 	//	Vistor methods
@@ -168,27 +155,6 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
 		//	NoOp
 	}
 
-	//	Lifecycle
-
-	/**
-	 * This method handles filter started and filter finished events.
-	 */
-	public void onEvent( final ExecutionEvent event )
-	{
-		if ( event instanceof FilterLifecycleEvent )
-		{
-			final FilterLifecycleEvent lifeCycleEvent = (FilterLifecycleEvent) event;
-			if ( lifeCycleEvent.getEventType() == STARTED )
-			{
-				createFileWriter();
-			}
-			if ( lifeCycleEvent.getEventType() == FINISHED )
-			{
-				closeFileWriter();
-			}
-		}
-	}
-
 	//	protected
 
 	/**
@@ -215,15 +181,14 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
 	 */
 	private void visit( final ExecutionContext execContext ) throws SmooksException
 	{
-		/*
-		 * 	Registering for started and finished events.
-		 */
-		execContext.setEventListener( this );
-
+		Writer writer = null;
+    	final String filePattern = generateFilePattern();
 		try
 		{
-			execContext.setAttribute( FILE_NAME_ATTR, destFileName );
-            final Object bean = BeanAccessor.getBean( beanId, execContext );
+        	final File file = new File( destDir, filePattern );
+			writer = createFileWriter( file );
+			execContext.setAttribute( FILE_NAME_ATTR, file.getAbsolutePath() );
+            final Object bean = BeanAccessor.getBean( execContext, beanId );
             if ( bean == null )
             {
             	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
@@ -234,23 +199,20 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
 		}
 		catch (IOException e)
 		{
-    		final String errorMsg = "IOException while trying to append to file [" + destFileName + "]";
+    		final String errorMsg = "IOException while trying to append to file [" + destDir + "/" + filePattern + "]";
     		throw new SmooksException( errorMsg, e );
+		}
+		finally
+		{
+			closeFileWriter( writer );
 		}
 	}
 
-	private void createFileWriter()
+	private Writer createFileWriter( final File file )
 	{
         try
 		{
-        	if ( writer == null )
-        	{
-            	final String filePattern = namingStrategy.generateFileName( destFilePrefix,  destFileSuffix );
-            	final File file = new File( destDir, filePattern );
-            	destFileName = file.getAbsolutePath();
-        		log.debug( "Creating Writer. DestinationFileName : " + destFileName );
-    			writer = new BufferedWriter( new FileWriter( file, true));
-        	}
+			return new BufferedWriter( new FileWriter( file, true));
 		}
         catch (IOException e)
 		{
@@ -258,8 +220,13 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
     		throw new SmooksConfigurationException( errorMsg, e );
 		}
 	}
+	
+	private String generateFilePattern()
+	{
+    	return namingStrategy.generateFileName( destFilePrefix,  destFileSuffix );
+	}
 
-	private void closeFileWriter()
+	private void closeFileWriter( final Writer writer )
 	{
     	log.debug( "Closing FileWriter");
 		if ( writer != null )
@@ -270,7 +237,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
 			}
 			catch (IOException e)
 			{
-        		final String errorMsg = "IOException while trying to flush writer to file [" + destFileName + "]";
+        		final String errorMsg = "IOException while trying to flush writer to file";
         		throw new SmooksConfigurationException( errorMsg, e );
 			}
 
@@ -280,12 +247,8 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
 			}
 			catch (IOException e)
 			{
-        		final String errorMsg = "IOException while trying to close writer to  file [" + destFileName + "]";
+        		final String errorMsg = "IOException while trying to close writer to  file";
         		throw new SmooksConfigurationException( errorMsg, e );
-			}
-			finally
-			{
-				writer = null;
 			}
 		}
 	}
