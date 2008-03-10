@@ -32,7 +32,6 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.routing.jms.TestBean;
 import org.milyn.routing.util.RouterTestHelper;
 import org.w3c.dom.Element;
@@ -72,15 +71,12 @@ public class FileRouterTest
 	public void onEventShouldCallCreateFileWriter()
 	{
         configureFileRouter( beanId, tmpDir, prefix, suffix, router );
-		router.onEvent( new FilterLifecycleEvent( FilterLifecycleEvent.EventType.STARTED ) );
-		router.onEvent( new FilterLifecycleEvent( FilterLifecycleEvent.EventType.FINISHED ) );
 	}
 
 	@Test
 	public void visitAfter() throws ParserConfigurationException, FileNotFoundException, IOException
 	{
         configureFileRouter( beanId, tmpDir, prefix, suffix, router );
-		router.onEvent( new FilterLifecycleEvent( FilterLifecycleEvent.EventType.STARTED ) );
 
         router.visitAfter( (Element)null , execContext );
 
@@ -92,7 +88,6 @@ public class FileRouterTest
         outputFile.deleteOnExit();
 
         assertEquals( testbean.toString(), getFileContent( outputFile ) );
-		router.onEvent( new FilterLifecycleEvent( FilterLifecycleEvent.EventType.FINISHED ) );
 	}
 
 	@Before
