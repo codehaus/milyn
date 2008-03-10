@@ -48,8 +48,7 @@ public class FileRouterTest
 	private MockExecutionContext execContext;
 	private FileRouter router;
 	private String beanId = "dummyId";
-	private String prefix = "App-1";
-	private String suffix = ".txt";
+	private String filenamePattern = "App-1";
 	private String tmpDir;
 	private TestBean testbean;
 
@@ -57,26 +56,26 @@ public class FileRouterTest
 	public void initializeMissingDirname()
 	{
         Configurator.configure( new FileRouter( ), config, new MockApplicationContext() );
-        configureFileRouter( beanId, null, prefix, suffix, router );
+        configureFileRouter( beanId, null, filenamePattern, router );
 	}
 
 	@Test ( expected = SmooksConfigurationException.class )
 	public void initializeNonExistingDirname()
 	{
         Configurator.configure( new FileRouter( ), config, new MockApplicationContext() );
-        configureFileRouter( beanId, "/kddg/", prefix, suffix, router );
+        configureFileRouter( beanId, "/kddg/", filenamePattern, router );
 	}
 
 	@Test
 	public void onEventShouldCallCreateFileWriter()
 	{
-        configureFileRouter( beanId, tmpDir, prefix, suffix, router );
+        configureFileRouter( beanId, tmpDir, filenamePattern, router );
 	}
 
 	@Test
 	public void visitAfter() throws ParserConfigurationException, FileNotFoundException, IOException
 	{
-        configureFileRouter( beanId, tmpDir, prefix, suffix, router );
+        configureFileRouter( beanId, tmpDir, filenamePattern, router );
 
         router.visitAfter( (Element)null , execContext );
 
@@ -104,14 +103,12 @@ public class FileRouterTest
 	private void configureFileRouter(
 			final String beanId,
 			final String destinationDir,
-			final String prefix,
-			final String suffix,
+			final String filenamePattern,
 			final FileRouter router)
 	{
         config.setParameter( "beanId", beanId );
         config.setParameter( "destinationDirectory", destinationDir );
-		config.setParameter( "destinationFilePrefix", prefix );
-		config.setParameter( "destinationFileSuffix", suffix );
+		config.setParameter( "fileNamePattern", filenamePattern );
         Configurator.configure( router, config, new MockApplicationContext() );
 	}
 

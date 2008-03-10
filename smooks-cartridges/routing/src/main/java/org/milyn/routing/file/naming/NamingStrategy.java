@@ -15,6 +15,7 @@
 
 package org.milyn.routing.file.naming;
 
+
 /**
  * Strategy for file name generation.
  *
@@ -23,5 +24,6 @@ package org.milyn.routing.file.naming;
  */
 public interface NamingStrategy
 {
-	String generateFileName( String prefix, String suffix);
+	String generateFileName( final String filePattern, final Object object ) throws NamingStrategyException;
+	
 }

@@ -32,12 +32,11 @@ public class DefaultNamingStrategy implements NamingStrategy
 	 * Will generate a String with the format
 	 * <prefix><name><VMID.toString()><suffix>
 	 */
-	public String generateFileName( String prefix, String suffix )
+	public String generateFileName( final String fileNamePattern, final Object object )
 	{
 		final StringBuilder sb = new StringBuilder();
-		appendString( sb, prefix );
+		appendString( sb, fileNamePattern );
 		appendString( sb, new VMID().toString() );
-		appendString( sb, suffix );
 
 		return sb.toString();
 	}
