@@ -37,6 +37,7 @@ import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.file.naming.DefaultNamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategy;
+import org.milyn.routing.file.naming.NamingStrategyException;
 import org.w3c.dom.Element;
 
 /**
@@ -49,8 +50,7 @@ import org.w3c.dom.Element;
  * &lt;resource-config selector="orderItems"&gt;
  *    &lt;resource&gt;org.milyn.routing.file.FileRouter&lt;/resource&gt;
  *    &lt;param name="destinationDirectory">dir&lt;/param&gt;
- *    &lt;param name="destinationPrefix">prefix&lt;/param&gt;
- *    &lt;param name="destinationSuffix">suffix&lt;/param&gt;
+ *    &lt;param name="fileNamePattern">${orderid}&lt;/param&gt;
  * &lt;/resource-config&gt;
  * </pre>
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
@@ -78,14 +78,8 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	/*
 	 * 	File prefix for the created file
 	 */
-	@ConfigParam ( name = "destinationFilePrefix", use = Use.REQUIRED )
-	private String destFilePrefix;
-
-	/*
-	 * 	File suffix for the created file
-	 */
-	@ConfigParam ( name = "destinationFileSuffix", use = Use.REQUIRED )
-	private String destFileSuffix;
+	@ConfigParam ( name = "fileNamePattern", use = Use.REQUIRED )
+	private String fileNamePattern;
 
 	/*
 	 * 	BeanId is a key that is used to look up a bean
@@ -95,14 +89,9 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
     private String beanId;
 
     /*
-     * 	Writer that appends to file
-     */
-    //private BufferedWriter writer;
-
-    /*
      * 	File object of the destination directory
      */
-    private File destDir;
+    private File destinationDir;
 
     /*
      * Naming strategy for generating the file pattern for output files.
@@ -112,8 +101,8 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	@Initialize
 	public void initialize()
 	{
-		destDir = new File ( destDirName );
-    	if ( !destDir.exists() || !destDir.isDirectory() )
+		destinationDir = new File ( destDirName );
+    	if ( !destinationDir.exists() || !destinationDir.isDirectory() )
     	{
     		throw new SmooksException ( "Destination directory [" + destDirName + "] does not exist or is not a directory.");
     	}
@@ -156,18 +145,16 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	}
 
 	//	protected
-
-	/**
-	 * Will delegate to the current NamingStrategy but it's also possible
-	 * to directly sublass and override only this method.
-	 *
-	 * @param prefix
-	 * @param suffix
-	 * @return String	name of the file that will be used during this transform
-	 */
-	protected String generateFileName( final String prefix, final String suffix )
+	protected String generateFilePattern( final Object object )
 	{
-    	return namingStrategy.generateFileName( destFilePrefix,  destFileSuffix );
+    	try
+		{
+			return namingStrategy.generateFileName( fileNamePattern, object );
+		} 
+    	catch (NamingStrategyException e)
+		{
+    		throw new SmooksException( e.getMessage(), e );
+		}
 	}
 
 	//	private
@@ -181,25 +168,27 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	 */
 	private void visit( final ExecutionContext execContext ) throws SmooksException
 	{
+        final Object bean = BeanAccessor.getBean( execContext, beanId );
+        if ( bean == null )
+        {
+        	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
+        }
+        
+		final String fileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( bean );
+		
+		//	Set the absolute file name in the context for retrieval by the calling client
+		execContext.setAttribute( FILE_NAME_ATTR, fileName );
+        
 		Writer writer = null;
-    	final String filePattern = generateFilePattern();
 		try
 		{
-        	final File file = new File( destDir, filePattern );
-			writer = createFileWriter( file );
-			execContext.setAttribute( FILE_NAME_ATTR, file.getAbsolutePath() );
-            final Object bean = BeanAccessor.getBean( execContext, beanId );
-            if ( bean == null )
-            {
-            	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
-            }
-
+			writer = createFileWriter( fileName );
 			writer.write( bean.toString() );
 			writer.flush();
 		}
 		catch (IOException e)
 		{
-    		final String errorMsg = "IOException while trying to append to file [" + destDir + "/" + filePattern + "]";
+    		final String errorMsg = "IOException while trying to append to file [" + destinationDir + "/" + fileNamePattern + "]";
     		throw new SmooksException( errorMsg, e );
 		}
 		finally
@@ -208,23 +197,19 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 	}
 
-	private Writer createFileWriter( final File file )
+	private Writer createFileWriter( final String fileName )
 	{
         try
 		{
-			return new BufferedWriter( new FileWriter( file, true));
+			return new BufferedWriter( new FileWriter( fileName, true));
 		}
         catch (IOException e)
 		{
-    		final String errorMsg = "IOException while trying to create file [" + destFilePrefix + "]";
+    		final String errorMsg = "IOException while trying to create file [" + fileNamePattern + "]";
     		throw new SmooksConfigurationException( errorMsg, e );
 		}
 	}
 	
-	private String generateFilePattern()
-	{
-    	return namingStrategy.generateFileName( destFilePrefix,  destFileSuffix );
-	}
 
 	private void closeFileWriter( final Writer writer )
 	{

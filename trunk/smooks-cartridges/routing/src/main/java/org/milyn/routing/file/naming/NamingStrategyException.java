@@ -1,43 +1,48 @@
 /*
  * Milyn - Copyright (C) 2006
- *
+ * 
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License (version 2.1) as published
  * by the Free Software Foundation.
- *
+ * 
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.
- *
+ * 
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
 package org.milyn.routing.file.naming;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 /**
- * Test for class DefaultNamingStrategy
- *
- * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
+ * Exception indicating a NamingStrategyException
+ * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
-public class DefaultNamingStrategyTest
+public class NamingStrategyException extends Exception
 {
-	private String pattern = "prefix-";
 
-	DefaultNamingStrategy strategy = new DefaultNamingStrategy();
+	private static final long serialVersionUID = 1L;
 
-	@Test
-	public void generateFileName()
+	public NamingStrategyException()
 	{
-		String generateFileName = strategy.generateFileName( pattern, null );
-		System.out.println(generateFileName);
+		super();
+	}
 
-		assertTrue( generateFileName.startsWith( pattern ) );
+	public NamingStrategyException(String message, Throwable cause)
+	{
+		super( message, cause );
+	}
+
+	public NamingStrategyException(String message)
+	{
+		super( message );
+	}
+
+	public NamingStrategyException(Throwable cause)
+	{
+		super( cause );
 	}
 
 }
