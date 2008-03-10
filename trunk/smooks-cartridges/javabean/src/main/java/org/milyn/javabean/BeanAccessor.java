@@ -18,9 +18,11 @@ package org.milyn.javabean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -50,6 +52,7 @@ public class BeanAccessor {
     private final ExecutionContext executionContext;
 
     private final Map<String, Object> beans;
+    
     private final Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
 
     private final Map<String, BeanLifecycleSubjectGroup> beanLifecycleSubjectGroups = new HashMap<String, BeanLifecycleSubjectGroup>();
@@ -210,7 +213,7 @@ public class BeanAccessor {
         if(accessor.beans.containsKey(beanId)) {
     		accessor.cleanAssociatedLifecycleBeans(beanId);
 
-    		accessor.endLifecycle(beanId);
+    		accessor.endLifecycle(beanId, false);
     	}
 
         if(addToList) {
@@ -233,8 +236,7 @@ public class BeanAccessor {
             // add the bean to the list...
             ((List<Object>)beanList).add(bean);
         }
-
-
+   
         // Set the bean on the bean map...
         accessor.beans.put(beanId, bean);
 
@@ -282,10 +284,11 @@ public class BeanAccessor {
     	AssertArgument.isNotNull(executionContext, "executionContext");
     	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
     	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
-
+    	
     	BeanAccessor accessor = getAccessor(executionContext);
 
     	accessor.associateLifecycles(parentBean, childBean);
+    	
     }
 
     /**
@@ -383,25 +386,57 @@ public class BeanAccessor {
     private void removeBean(String beanId) {
     	cleanAssociatedLifecycleBeans(beanId);
 
-    	endLifecycle(beanId);
+    	endLifecycle(beanId, false);
 
     	beans.remove(beanId);
     }
 
     private void endAllLifecycles() {
-    	List<String> keyList = new ArrayList<String>(beans.size());
-    	for(String beanId: beans.keySet()) {
-    		keyList.add(beanId);
+    	
+    	if(beans instanceof LinkedHashMap) {
+	    	List<String> keyList = new ArrayList<String>(beans.size());
+	    	for(String beanId: beans.keySet()) {
+	    		keyList.add(beanId);
+	    	}
+	
+	    	for(int i = keyList.size()-1; i >= 0; i--) {
+	    		endLifecycle(keyList.get(i), false);
+	    	}
+    	} else {
+    		// Ends lifecycle associations in a hierarchicly way, so
+    		// that childs always get ended before there parents.
+    		// TODO: This is really ugly! Can't this be done better?
+    		Set<String> rootParents = new HashSet<String>();
+    		Set<String> childs = new HashSet<String>();
+    		for(List<String> childList : lifecycleAssociations.values()) {
+    			childs.addAll(childList);
+    		}
+    		for(String parent : lifecycleAssociations.keySet()) {
+    			if(!childs.contains(parent)) {
+    				rootParents.add(parent);
+    			}
+    		}
+    		
+    		for(String rootParent : rootParents) {
+    			endLifecycle(rootParent, true);
+    		}
+    		
     	}
-
-    	for(int i = keyList.size()-1; i >= 0; i--) {
-    		endLifecycle(keyList.get(i));
-    	}
-
+    	
     }
+    
+    private void endLifecycle(String beanId, boolean associatedBeans) {
+    	
+    	if(associatedBeans) {
+    		List<String> associations = lifecycleAssociations.get(beanId);
 
-    private void endLifecycle(String beanId) {
-
+            if(associations != null) {
+                for (String association : associations) {
+                	endLifecycle(association, true);
+                }
+            }
+    	}
+    	
     	notifyObservers(BeanLifecycle.END, beanId);
 
     }
