@@ -61,6 +61,8 @@
     <resource-config selector="decoder:OrderDateLong">
         <resource>org.milyn.javabean.decoders.DateDecoder</resource>
         <param name="format">EEE MMM dd HH:mm:ss z yyyy</param>
+        <param name="locale-language">en</param>
+        <param name="locale-country">IE</param>
     </resource-config>
 
 </smooks-resource-list>

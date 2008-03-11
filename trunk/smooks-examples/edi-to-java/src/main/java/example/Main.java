@@ -15,17 +15,23 @@
 */
 package example;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Locale;
+
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.container.ExecutionContext;
+import org.milyn.io.StreamUtils;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.xml.XmlUtil;
-import org.milyn.io.StreamUtils;
-import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.dom.DOMResult;
-import java.io.*;
 
 /**
  * Simple example main class.
@@ -35,7 +41,7 @@ public class Main {
 
     private static byte[] messageIn = readInputMessage();
 
-    private Smooks smooks;
+    private final Smooks smooks;
 
     protected Main() throws IOException, SAXException {
         // Instantiate Smooks with the config...
@@ -43,10 +49,16 @@ public class Main {
     }
 
     protected String runSmooksTransform(ExecutionContext executionContext) throws IOException, SAXException, SmooksException {
-        // Filter the input message to the outputWriter, using the execution context...
+    	
+    	Locale defaultLocale = Locale.getDefault();
+    	Locale.setDefault(new Locale("en", "IE"));
+    	
+    	// Filter the input message to the outputWriter, using the execution context...
         DOMResult domResult = new DOMResult();
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
 
+        Locale.setDefault(defaultLocale);
+        
         return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
     }
 

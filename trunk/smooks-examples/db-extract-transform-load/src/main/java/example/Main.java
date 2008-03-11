@@ -15,22 +15,26 @@
 */
 package example;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.transform.stream.StreamSource;
+
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.container.ExecutionContext;
 import org.milyn.db.StatementExec;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.HsqlServer;
-import org.milyn.xml.XmlUtil;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Simple example main class.
@@ -70,8 +74,13 @@ public class Main {
     }
 
     protected void runSmooksTransform() throws IOException, SAXException, SmooksException {
-        Smooks smooks = new Smooks("./smooks-configs/smooks-config.xml");
+    	Locale defaultLocale = Locale.getDefault();
+    	Locale.setDefault(new Locale("en", "IE"));
+    	
+    	Smooks smooks = new Smooks("./smooks-configs/smooks-config.xml");
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, smooks.createExecutionContext());
+        
+        Locale.setDefault(defaultLocale);
     }
 
     public void printOrders() throws SQLException {

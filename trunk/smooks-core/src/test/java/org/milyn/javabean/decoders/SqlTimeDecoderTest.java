@@ -15,10 +15,11 @@
 */
 package org.milyn.javabean.decoders;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
-
 import java.sql.Time;
+
 import junit.framework.TestCase;
+
+import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Tests for the SqlTimeDecoder class
@@ -28,10 +29,13 @@ import junit.framework.TestCase;
 public class SqlTimeDecoderTest extends TestCase {
 
     public void test_DateDecoder() {
-        SqlTimeDecoder decoder = new SqlTimeDecoder();
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
         
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
         config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
+        
+        SqlTimeDecoder decoder = new SqlTimeDecoder();
+        config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
         decoder.setConfiguration(config);
 
         Object object = decoder.decode("Wed Nov 15 13:45:28 EST 2006");
@@ -42,4 +46,5 @@ public class SqlTimeDecoderTest extends TestCase {
         Time date_b = (Time) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
         assertNotSame(time_a, date_b);
     }
+    
 }

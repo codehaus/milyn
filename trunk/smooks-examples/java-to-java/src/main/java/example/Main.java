@@ -15,8 +15,10 @@
 */
 package example;
 
-import example.srcmodel.Order;
-import example.trgmodel.LineOrder;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
@@ -24,9 +26,8 @@ import org.milyn.delivery.java.JavaResult;
 import org.milyn.delivery.java.JavaSource;
 import org.xml.sax.SAXException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import example.srcmodel.Order;
+import example.trgmodel.LineOrder;
 
 /**
  * Simple example main class.
