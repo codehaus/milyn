@@ -47,25 +47,4 @@ public class FreeMarkerNamingStrategyTest
 		return root;
 	}
 	
-	private static class Order
-	{
-		private int nr;
-		
-		public Order( int nr )
-		{
-			this.nr = nr;
-		}
-
-		public int getNr()
-		{
-			return nr;
-		}
-
-		public void setNr( int nr )
-		{
-			this.nr = nr;
-		}
-		
-	}
-
 }
