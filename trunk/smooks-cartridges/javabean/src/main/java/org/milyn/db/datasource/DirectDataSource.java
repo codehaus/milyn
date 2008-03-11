@@ -16,7 +16,7 @@
 package org.milyn.db.datasource;
 
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.util.ClassUtil;
 
 import java.sql.Connection;

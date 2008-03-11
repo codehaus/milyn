@@ -12,7 +12,7 @@
 
     <resource-config selector="a">
         <resource>org.milyn.javabean.expression.DOMVisitor</resource>
-        <condition evaluator="org.milyn.javabean.expression.MVELExpressionEvaluator">
+        <condition evaluator="org.milyn.javabean.expression.BeanMapExpressionEvaluator">
             <!--
             !aBean.containsKey("a") || aBean.a == "hello"
             -->

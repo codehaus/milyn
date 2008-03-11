@@ -15,14 +15,6 @@
 */
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -31,17 +23,26 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Bean instance creator visitor class.
@@ -50,6 +51,7 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
+@VisitBeforeReport(condition = "true", template = "BeanInstanceCreatorReport.mvel")
 public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);

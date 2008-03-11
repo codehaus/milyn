@@ -15,14 +15,6 @@
 */
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -30,19 +22,29 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Bean instance populator visitor class.
@@ -52,6 +54,8 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
+@VisitBeforeReport(condition = "true", template = "BeanInstancePopulatorReport_Before.mvel")
+@VisitAfterReport(condition = "true", template = "BeanInstancePopulatorReport_After.mvel")
 public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);

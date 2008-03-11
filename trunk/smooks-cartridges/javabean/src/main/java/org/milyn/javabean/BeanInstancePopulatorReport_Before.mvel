@@ -1,0 +1,4 @@
+@if{resource.parameters.containsKey('bindBeanId')} Creating lifecycle association for binding bean @{resource.parameters.bindBeanId} onto property @{resource.parameters.property} of bean @{resource.parameters.beanId}.  Actual binding occurs later!
+@elseif{resource.parameters.containsKey('valueAttributeName')} Extracting value from attribute @{resource.parameters.valueAttributeName} and binding it on property @{resource.parameters.property} (type @{resource.parameters.type}) of bean @{resource.parameters.beanId}.
+@elseif{!resource.parameters.containsKey('valueAttributeName')} Extracting element data and binding it on property @{resource.parameters.property} (type @{resource.parameters.type}) of bean @{resource.parameters.beanId}.
+@end{}

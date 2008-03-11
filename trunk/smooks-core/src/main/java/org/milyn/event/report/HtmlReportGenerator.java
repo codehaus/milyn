@@ -17,6 +17,7 @@ package org.milyn.event.report;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.VisitSequence;
+import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.event.ExecutionEvent;
 import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.event.types.ElementVisitEvent;
@@ -43,8 +44,32 @@ public class HtmlReportGenerator extends AbstractReportGenerator {
         this(new ReportConfiguration(outputWriter));
     }
 
+    public HtmlReportGenerator(String outputFile) throws IOException {
+        super(new ReportConfiguration(createOutputWriter(outputFile)));
+
+        File file = new File(outputFile);
+        if(file.getParentFile() != null) {
+            getReportConfiguration().setTempOutDir(file.getParentFile());
+        }
+        
+        getReportConfiguration().setEscapeXMLChars(true);
+        createSubfilesDir();
+        styleFile = new File(subfilesDir, "style.css");
+        jscriptFile = new File(subfilesDir, "jscript.js");
+    }
+
+    private static Writer createOutputWriter(String outputFile) throws IOException {
+        File file = new File(outputFile);
+        if(file.getParentFile() != null) {
+            file.getParentFile().mkdirs();
+        }
+
+        return new FileWriter(file);
+    }
+
     protected HtmlReportGenerator(ReportConfiguration reportConfiguration) {
         super(reportConfiguration);
+        reportConfiguration.setEscapeXMLChars(true);
         createSubfilesDir();
         styleFile = new File(subfilesDir, "style.css");
         jscriptFile = new File(subfilesDir, "jscript.js");
@@ -161,16 +186,16 @@ public class HtmlReportGenerator extends AbstractReportGenerator {
                     } else if (event instanceof ElementVisitEvent) {
                         ElementVisitEvent visitEvent = (ElementVisitEvent) event;
                         if (visitEvent.getSequence() == visitSequence) {
-                            SmooksResourceConfiguration config = ((ElementVisitEvent) event).getResourceConfig();
+                            ContentHandlerConfigMap configMapping = ((ElementVisitEvent) event).getConfigMapping();
 
                             nodeOutputWriter.write("<tr>\n");
                             nodeOutputWriter.write("<td class=\"field\">Resource</td>\n");
-                            nodeOutputWriter.write("<td class=\"value\"><a href=\"\" onmouseover=\"showresource('" + escapeXML(escapeXML(config.toXML())) + "');\" onmouseout=\"hidetrail();\">" + config.getResource() + "</a></td>\n");
+                            nodeOutputWriter.write("<td class=\"value\"><a href=\"\" onmouseover=\"showresource('" + escapeXML(escapeXML(configMapping.getResourceConfig().toXML())) + "');\" onmouseout=\"hidetrail();\">" + configMapping.getContentHandler().getClass().getName() + "</a></td>\n");
                             nodeOutputWriter.write("</tr>\n");
 
                             nodeOutputWriter.write("<tr>\n");
-                            nodeOutputWriter.write("<td class=\"field\">ExecutionContext State (Before Visit)</td>\n");
-                            nodeOutputWriter.write("<td class=\"value\">" + escapeXML(visitEvent.getExecutionContextState()) + "</td>\n");
+                            nodeOutputWriter.write("<td class=\"field\">Event Report</td>\n");
+                            nodeOutputWriter.write("<td class=\"value\">" + escapeXML(visitEvent.getReportText()) + "</td>\n");
                             nodeOutputWriter.write("</tr>\n");
                         }
                     }
@@ -199,7 +224,7 @@ public class HtmlReportGenerator extends AbstractReportGenerator {
     }
 
     private void createSubfilesDir() {
-        subfilesDir = new File(System.getProperty("java.io.tmpdir") + "/" + System.currentTimeMillis());
+        subfilesDir = getReportConfiguration().getTempOutDir();
         subfilesDir.mkdirs();
     }
 

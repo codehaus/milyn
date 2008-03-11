@@ -217,7 +217,7 @@ public class SmooksResourceConfiguration {
     /**
      * SmooksResourceConfiguration parameters - String name and String value.
      */
-    private LinkedHashMap<String, Object> parameters;
+    private LinkedHashMap<String, Object> parameters = new LinkedHashMap<String, Object>();
     private int parameterCount;
     /**
      * The XML namespace of the tag to which this config
@@ -312,7 +312,9 @@ public class SmooksResourceConfiguration {
         clone.resource = resource;
         clone.resourceType = resourceType;
         clone.isXmlDef = isXmlDef;
-        clone.parameters = parameters;
+        if(parameters != null) {
+            clone.parameters = (LinkedHashMap<String, Object>) parameters.clone();
+        }
         clone.parameterCount = parameterCount;
         clone.namespaceURI = namespaceURI;
         clone.expressionEvaluator = expressionEvaluator;
@@ -678,11 +680,20 @@ public class SmooksResourceConfiguration {
     }
 
     /**
+     * Get the param map associated with this configuration.
+     * @return The configuration parameters.  The Map value is either a
+     * {@link Parameter} or parameter list (List&lt;{@link Parameter}&gt;).
+     */
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
+
+    /**
      * Get all {@link Parameter parameter} values set on this configuration.
      *
      * @return {@link Parameter} value {@link List}, or null if not set.
      */
-    public List getParameters() {
+    public List getParameterList() {
         if (parameters == null) {
             return null;
         }

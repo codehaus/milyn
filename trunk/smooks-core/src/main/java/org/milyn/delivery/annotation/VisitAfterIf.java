@@ -18,21 +18,21 @@ package org.milyn.delivery.annotation;
 import java.lang.annotation.*;
 
 /**
- * Resource Type annotation.
- * <p/>
- * Used on {@link org.milyn.delivery.ContentHandlerFactory} implementations for specifying the type of resource
- * processed.
+ * Visit If annotation.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Resource {
+@Target({ElementType.TYPE})
+public abstract @interface VisitAfterIf {
 
     /**
-     * Resource type value.
-     * @return
+     * The {@link org.milyn.cdr.SmooksResourceConfiguration} condition that
+     * must evaluate to true in order for the visitAfter method to be called.
+     *
+     * @return An inline <a href="http://mvel.codehaus.org/">MVEL</a> expression,
+     * or a reference to a file resource on the classpath.
      */
-    public String type();
+    public abstract String condition();
 }

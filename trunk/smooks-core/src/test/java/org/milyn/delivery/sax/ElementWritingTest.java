@@ -42,6 +42,7 @@ public class ElementWritingTest extends TestCase {
 
     public void test_default_writing() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("DefaultWritingTest.xml"));
+
         StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
         StringResult stringResult = new StringResult();
 

@@ -17,8 +17,6 @@ package org.milyn.expression;
 
 import org.milyn.cdr.SmooksConfigurationException;
 
-import java.util.Map;
-
 /**
  * Abstract expression evaluator interface.
  *  
@@ -41,20 +39,20 @@ public interface ExpressionEvaluator {
     public String getExpression();
 
     /**
-     * Evaluate a conditional expression against the supplied Map variable.
-     * @param beans Expression evaluation variables.
+     * Evaluate a conditional expression against the supplied object (can be a Map).
+     * @param contextObject The object against which the expression is to be evaluated.
      * @return True if the expression evaluates to true, otherwise false.
      * @throws ExpressionEvaluationException Invalid expression evaluation condition (implementation specific).
      */
-    public boolean eval(Map beans) throws ExpressionEvaluationException;
+    public boolean eval(Object contextObject) throws ExpressionEvaluationException;
 
     /**
      * Evaluate an expression against the supplied Map variable, returning the eval result.
-     * @param beans Expression evaluation variables.
+     * @param contextObject
      * @return Expression evaluation result.
      * @throws ExpressionEvaluationException Invalid expression evaluation (implementation specific).
      */
-    public Object getValue(Map beans) throws ExpressionEvaluationException;
+    public Object getValue(Object contextObject) throws ExpressionEvaluationException;
 
     /**
      * Factory method for creating ExpressionEvaluator instances.

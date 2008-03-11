@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.cdr.annotation;
+package org.milyn.delivery.annotation;
 
 import java.lang.annotation.*;
 

@@ -155,6 +155,10 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
                 reportConfiguration.getOutputWriter().write(event.toString() + "\n");
                 reportWrapperEnd();
                 outputEndReport();
+                reportConfiguration.getOutputWriter().flush();
+                if(reportConfiguration.autoCloseWriter()) {
+                    reportConfiguration.getOutputWriter().close();
+                }
             }
         } catch (IOException e) {
             throw new SmooksException("Failed to write report.", e);

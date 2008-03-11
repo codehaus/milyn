@@ -13,35 +13,23 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.cdr.annotation;
+package org.milyn.event.report.annotation;
+
+import org.milyn.cdr.annotation.AnnotationConstants;
 
 import java.lang.annotation.*;
 
 /**
+ * Visit before report annotation.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public abstract @interface VisitIf {
+@Target({ElementType.TYPE})
+public abstract @interface VisitBeforeReport {
 
-    /**
-     * The name of the parameter to be tested.
-     * @return The name of the resource paramater to be tested.
-     */
-    public String param();
+    public abstract String condition();
 
-    /**
-     * The value of the parameter to be tested.
-     * @return The value of the resource paramater to be tested.
-     */
-    public String value();
-
-
-    /**
-     * The default value of the parameter to be tested, if not specified.
-     * @return The default value of the resource paramater to be tested, if not specified.
-     */
-    public String defaultVal();
-
+    public abstract String template() default AnnotationConstants.NULL_STRING;
 }

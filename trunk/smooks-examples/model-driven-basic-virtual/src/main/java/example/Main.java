@@ -17,12 +17,14 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.io.StreamUtils;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.StringResult;
+import org.milyn.delivery.StringSource;
+import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 
 /**
@@ -43,16 +45,20 @@ public class Main {
      * @param message The request/response input message.
      * @return The transformed request/response.
      */
-    protected String runSmooksTransform(byte[] message) {
+    protected String runSmooksTransform(byte[] message) throws IOException {
 
         // Create an exec context for the target profile....
         ExecutionContext executionContext = smooks.createExecutionContext();
-        CharArrayWriter outputWriter = new CharArrayWriter();
+        StringSource stringSource = new StringSource(new String(message));
+        StringResult stringResult = new StringResult();
+
+        // Configure the execution context to generate a report...
+        executionContext.setEventListener(new HtmlReportGenerator("target/report/index.html"));
 
         // Filter the message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(message)), new StreamResult(outputWriter), executionContext);
+        smooks.filter(stringSource, stringResult, executionContext);
 
-        return outputWriter.toString();
+        return stringResult.toString();
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

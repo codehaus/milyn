@@ -13,26 +13,18 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.annotation;
+package org.milyn.delivery;
 
-import java.lang.annotation.*;
+import org.milyn.container.ExecutionContext;
+import org.milyn.SmooksException;
+import org.milyn.delivery.ContentHandler;
+
+import java.io.IOException;
 
 /**
- * Resource Type annotation.
- * <p/>
- * Used on {@link org.milyn.delivery.ContentHandlerFactory} implementations for specifying the type of resource
- * processed.
+ * Abstract Visitor interface.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Resource {
-
-    /**
-     * Resource type value.
-     * @return
-     */
-    public String type();
+public interface Visitor extends ContentHandler {
 }

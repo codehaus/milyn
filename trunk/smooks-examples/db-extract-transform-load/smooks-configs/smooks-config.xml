@@ -43,7 +43,7 @@
     <!-- If it's an insert (orderExistsRS.isEmpty()), insert the order at the end of the customer-details i.e. just before we process the order items... -->
     <resource-config selector="customer-details">
         <resource>org.milyn.db.SQLExecutor</resource>
-        <condition evaluator="org.milyn.javabean.expression.MVELExpressionEvaluator">orderExistsRS.isEmpty()</condition>
+        <condition evaluator="org.milyn.javabean.expression.BeanMapExpressionEvaluator">orderExistsRS.isEmpty()</condition>
         <param name="executeBefore">false</param>
         <param name="datasource">DBExtractTransformLoadDS</param>
         <param name="statement">INSERT INTO ORDERS VALUES(${order.orderNum}, ${order.customerUname}, ${order.status}, ${order.net}, ${order.total}, ${message.date})</param>
@@ -52,7 +52,7 @@
     <!-- And insert each orderItem... -->
     <resource-config selector="order-item">
         <resource>org.milyn.db.SQLExecutor</resource>
-        <condition evaluator="org.milyn.javabean.expression.MVELExpressionEvaluator">orderExistsRS.isEmpty()</condition>
+        <condition evaluator="org.milyn.javabean.expression.BeanMapExpressionEvaluator">orderExistsRS.isEmpty()</condition>
         <param name="executeBefore">false</param>
         <param name="datasource">DBExtractTransformLoadDS</param>
         <param name="statement">INSERT INTO ORDERITEMS VALUES (${order.orderNum}, ${orderItem.quantity}, ${orderItem.productId}, ${orderItem.title}, ${orderItem.price})</param>

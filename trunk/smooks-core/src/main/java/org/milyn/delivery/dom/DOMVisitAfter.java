@@ -25,7 +25,7 @@ import org.milyn.delivery.ContentHandler;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface DOMVisitAfter extends ContentHandler {
+public interface DOMVisitAfter extends DOMVisitor {
     /**
      * Visit the supplied element <b>after</b> visiting its child elements.
      *

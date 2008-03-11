@@ -18,9 +18,9 @@ package org.milyn.db;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.util.DollarBraceDecoder;
+import org.milyn.util.MVELTemplate;
 import org.milyn.xml.XmlUtil;
-import org.milyn.javabean.expression.MVELExpressionEvaluator;
-import org.mvel.TemplateInterpreter;
+import org.milyn.javabean.expression.BeanMapExpressionEvaluator;
 
 import java.sql.*;
 import java.util.*;
@@ -35,7 +35,7 @@ public class StatementExec {
     private String statement;
     private StatementType statementType;
     private boolean isJoin;
-    private List<MVELExpressionEvaluator> statementExpressionEvaluators = new ArrayList<MVELExpressionEvaluator>();
+    private List<BeanMapExpressionEvaluator> statementExpressionEvaluators = new ArrayList<BeanMapExpressionEvaluator>();
     private MVELTemplate updateStatementTemplate;
 
     public StatementExec(String statementString) throws SmooksConfigurationException {
@@ -61,7 +61,7 @@ public class StatementExec {
 
     private void intitialiseStatementExpressions(List<String> statementExecFields) {
         for (String statementExecField : statementExecFields) {
-            MVELExpressionEvaluator expression = new MVELExpressionEvaluator();
+            BeanMapExpressionEvaluator expression = new BeanMapExpressionEvaluator();
             expression.setExpression(statementExecField);
             statementExpressionEvaluators.add(expression);
         }
@@ -221,22 +221,4 @@ public class StatementExec {
         }
     }
 
-    private class MVELTemplate {
-
-        private String template;
-        private TemplateInterpreter interpreter;
-
-        public MVELTemplate(String template) {
-            AssertArgument.isNotNullAndNotEmpty(template, "template");
-            this.template = template.replace("${", "@{");
-        }
-
-        public String getTemplate() {
-            return template;
-        }
-
-        public String apply(Map params) {
-            return (String) TemplateInterpreter.eval(template, params);
-        }
-    }
 }
