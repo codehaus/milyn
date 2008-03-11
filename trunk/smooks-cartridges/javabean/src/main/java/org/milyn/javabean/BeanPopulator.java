@@ -209,7 +209,7 @@ public class BeanPopulator implements ConfigurationExpander {
         buildBeanLifecycleEnderConfig(resources);
         
         return resources;
-    } 
+    }
 
     private void buildInstanceCreatorConfig(List<SmooksResourceConfiguration> resources) {
         SmooksResourceConfiguration resource = (SmooksResourceConfiguration) config.clone();
@@ -261,7 +261,7 @@ public class BeanPopulator implements ConfigurationExpander {
         String setterMethod;
         String type;
         String defaultVal;
-        String selectedBeanId = null;
+        String bindBeanId = null;
 
         // Make sure there's both 'selector' and 'property' attributes...
         selector = getSelectorAttr(bindingConfig);
@@ -270,7 +270,7 @@ public class BeanPopulator implements ConfigurationExpander {
         //BeanInstanceCreator is called on that node instead of one off the child nodes.
         //The targetBeanId indicates the beanId that should be selected
         if(selector.startsWith("${") && selector.endsWith("}")) {
-        	selectedBeanId = selector.substring(2, selector.length() - 1);
+        	bindBeanId = selector.substring(2, selector.length() - 1);
         	selector = config.getSelector();
         }
 
@@ -287,8 +287,8 @@ public class BeanPopulator implements ConfigurationExpander {
         resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
         resourceConfig.setParameter("beanId", beanId);
 
-        if(selectedBeanId != null) {
-            resourceConfig.setParameter("selectedBeanId", selectedBeanId);
+        if(bindBeanId != null) {
+            resourceConfig.setParameter("bindBeanId", bindBeanId);
         }
 
         if(setterMethod != null) {
@@ -306,7 +306,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         type = DomUtils.getAttributeValue(bindingConfig, "type");
         defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
-        if(selectedBeanId == null ) {
+        if(bindBeanId == null ) {
         	// Set the data type...
         	resourceConfig.setParameter("type", (type != null?type:"String"));
 

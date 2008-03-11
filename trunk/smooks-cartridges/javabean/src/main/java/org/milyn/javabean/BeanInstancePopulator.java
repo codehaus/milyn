@@ -62,7 +62,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String beanId;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private String selectedBeanId;
+    private String bindBeanId;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -102,13 +102,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	buildId();
 
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
-        beanBinding = selectedBeanId != null;
+        beanBinding = bindBeanId != null;
         isAttribute = (valueAttributeName != null);
 
 
         if (setterMethod == null && property == null ) {
         	if(beanBinding && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
-        		property = selectedBeanId;
+        		property = bindBeanId;
         	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
         		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
                     "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
@@ -143,9 +143,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     				 .append(setterMethod)
     				 .append("()");
     	}
-    	if(selectedBeanId != null) {
+    	if(bindBeanId != null) {
     		idBuilder.append("#")
-    				.append(selectedBeanId);
+    				.append(bindBeanId);
     	}
 
     	id = idBuilder.toString();
@@ -226,13 +226,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 	private void visitBefore(ExecutionContext executionContext) {
     	if(beanBinding) {
-    		Object bean = BeanAccessor.getBean(executionContext, selectedBeanId);
+    		Object bean = BeanAccessor.getBean(executionContext, bindBeanId);
     		if(bean == null) {
 
     			// Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
     			// we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
     			// and not the list representation. So we register and observer wo looks for the change from the list to the array
-    			BeanAccessor.addBeanLifecycleObserver(executionContext, selectedBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
+    			BeanAccessor.addBeanLifecycleObserver(executionContext, bindBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
 
     				public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
@@ -264,7 +264,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 //    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), true, new BeanLifecycleObserver(){
 //    				public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
 //
-//    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.BEGIN, selectedBeanId, getId());
+//    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.BEGIN, bindBeanId, getId());
 //
 //    				}
 //    			});
@@ -377,7 +377,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 	private BeanRuntimeInfo getSelectedBeanRuntimeInfo() {
 		if(selectedBeanRuntimeInfo == null) {
-			selectedBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(selectedBeanId, appContext);
+			selectedBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(bindBeanId, appContext);
 		}
 		return selectedBeanRuntimeInfo;
 	}
