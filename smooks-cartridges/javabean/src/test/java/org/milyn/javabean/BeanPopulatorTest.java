@@ -137,24 +137,24 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_populate_Order() throws SAXException, IOException, InterruptedException {
-        test_populate_Order("order-01-smooks-config.xml", true);
-        test_populate_Order("order-01-smooks-config-sax.xml", true);
-        test_populate_Order("order-01-smooks-config-arrays.xml", true);
+        test_populate_Order("order-01-smooks-config.xml", true, false);
+        test_populate_Order("order-01-smooks-config-sax.xml", true, false);
+        test_populate_Order("order-01-smooks-config-arrays.xml", true, false);
 
         //Backward compatibility tests
-        test_populate_Order("order-01-smooks-config-setOn.xml", false);
-        test_populate_Order("order-01-smooks-config-sax-setOn.xml", false);
-        test_populate_Order("order-01-smooks-config-arrays-setOn.xml", false);
+        test_populate_Order("order-01-smooks-config-setOn.xml", false, false);
+        test_populate_Order("order-01-smooks-config-sax-setOn.xml", false, false);
+        test_populate_Order("order-01-smooks-config-arrays-setOn.xml", false, false);
     }
 
-    public void test_populate_Order(String configName, boolean parentBinding) throws SAXException, IOException, InterruptedException {
+    public void test_populate_Order(String configName, boolean parentBinding, boolean orderdResult) throws SAXException, IOException, InterruptedException {
 
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
         ExecutionContext executionContext = smooks.createExecutionContext();
 
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
-        JavaResult result = new JavaResult();
+        JavaResult result = new JavaResult(orderdResult);
 
         smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
