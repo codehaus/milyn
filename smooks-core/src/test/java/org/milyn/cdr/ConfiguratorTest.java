@@ -17,7 +17,8 @@ package org.milyn.cdr;
 
 import junit.framework.TestCase;
 import org.milyn.delivery.ContentHandler;
-import org.milyn.cdr.annotation.Initialize;
+import org.milyn.delivery.annotation.Initialize;
+import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.cdr.annotation.*;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.javabean.decoders.IntegerDecoder;

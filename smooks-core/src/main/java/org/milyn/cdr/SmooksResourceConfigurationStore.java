@@ -353,7 +353,7 @@ public class SmooksResourceConfigurationStore {
     }
 
     /**
-     * Close this resource configuration store, {@link org.milyn.cdr.annotation.Uninitialize uninitializing}
+     * Close this resource configuration store, {@link org.milyn.delivery.annotation.Uninitialize uninitializing}
      * all {@link org.milyn.delivery.ContentHandler ContentHandlers} allocated from this store instance.
      */
     public void close() {

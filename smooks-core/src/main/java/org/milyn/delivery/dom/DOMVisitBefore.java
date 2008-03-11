@@ -25,7 +25,7 @@ import org.milyn.delivery.ContentHandler;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface DOMVisitBefore  extends ContentHandler {
+public interface DOMVisitBefore  extends DOMVisitor {
     /**
      * Visit the supplied element <b>before</b> visiting its child elements.
      *

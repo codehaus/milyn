@@ -20,9 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.*;
-import org.milyn.cdr.annotation.VisitIf;
-import org.milyn.cdr.annotation.VisitIfNot;
 import org.milyn.container.ApplicationContext;
+import org.milyn.delivery.annotation.VisitAfterIf;
+import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.*;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.delivery.sax.SAXContentDeliveryConfig;
@@ -31,10 +31,10 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.milyn.event.types.ConfigBuilderEvent;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.profile.ProfileSet;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -783,26 +783,13 @@ public class ContentDeliveryConfigBuilder {
 
     protected static boolean visitBeforeAnnotationsOK(SmooksResourceConfiguration resourceConfig, ContentHandler contentHandler) {
         Class<? extends ContentHandler> handlerClass = contentHandler.getClass();
+        VisitBeforeIf visitBeforeIf = handlerClass.getAnnotation(VisitBeforeIf.class);
 
-        try {
-            if(contentHandler instanceof SAXVisitBefore) {
-                Method interfaceMethod = SAXVisitBefore.class.getMethods()[0];
-                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+        if(visitBeforeIf != null) {
+            MVELExpressionEvaluator conditionEval = new MVELExpressionEvaluator();
 
-                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
-                    return false;
-                }
-            }
-            if(contentHandler instanceof DOMVisitBefore) {
-                Method interfaceMethod = DOMVisitBefore.class.getMethods()[0];
-                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
-
-                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
-                    return false;
-                }
-            }
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException("Unexpected runtime exception. If the class implements the interface, then it should implement the interface methods, unless it's abstract.", e);
+            conditionEval.setExpression(visitBeforeIf.condition());
+            return conditionEval.eval(resourceConfig);
         }
 
         return true;
@@ -810,48 +797,13 @@ public class ContentDeliveryConfigBuilder {
 
     protected static boolean visitAfterAnnotationsOK(SmooksResourceConfiguration resourceConfig, ContentHandler contentHandler) {
         Class<? extends ContentHandler> handlerClass = contentHandler.getClass();
+        VisitAfterIf visitAfterIf = handlerClass.getAnnotation(VisitAfterIf.class);
 
-        try {
-            if(contentHandler instanceof SAXVisitAfter) {
-                Method interfaceMethod = SAXVisitAfter.class.getMethods()[0];
-                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
+        if(visitAfterIf != null) {
+            MVELExpressionEvaluator conditionEval = new MVELExpressionEvaluator();
 
-                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
-                    return false;
-                }
-            }
-            if(contentHandler instanceof DOMVisitAfter) {
-                Method interfaceMethod = DOMVisitAfter.class.getMethods()[0];
-                Method handlerVisitBeforeMethod = handlerClass.getMethod(interfaceMethod.getName(), interfaceMethod.getParameterTypes());
-
-                if(!visitAnnotationsOK(resourceConfig, handlerClass, handlerVisitBeforeMethod)) {
-                    return false;
-                }
-            }
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException("Unexpected runtime exception. If the class implements the interface, then it should implement the interface methods, unless it's abstract.", e);
-        }
-
-        return true;
-    }
-
-    private static boolean visitAnnotationsOK(SmooksResourceConfiguration resourceConfig, Class<? extends ContentHandler> handlerClass, Method handlerVisitMethod) {
-        VisitIf visitIf = handlerVisitMethod.getAnnotation(VisitIf.class);
-        VisitIfNot visitIfNot = handlerVisitMethod.getAnnotation(VisitIfNot.class);
-
-        if(visitIf != null) {
-            String paramVal = resourceConfig.getStringParameter(visitIf.param(), visitIf.defaultVal());
-            if(!paramVal.equals(visitIf.value())) {
-                logger.debug("Not calling '" + handlerVisitMethod.toString() + "' on handler '" + handlerClass + "'. <param> '" + visitIf.param() + "' value equals '" + paramVal + "' and not '" + visitIf.value() + "'.");
-                return false;
-            }
-        }
-        if(visitIfNot != null) {
-            String paramVal = resourceConfig.getStringParameter(visitIfNot.param(), visitIfNot.defaultVal());
-            if(paramVal.equals(visitIfNot.value())) {
-                logger.debug("Not calling '" + handlerVisitMethod.toString() + "' on handler '" + handlerClass + "'. <param> '" + visitIfNot.param() + "' value equals '" + paramVal + "'.");
-                return false;
-            }
+            conditionEval.setExpression(visitAfterIf.condition());
+            return conditionEval.eval(resourceConfig);
         }
 
         return true;

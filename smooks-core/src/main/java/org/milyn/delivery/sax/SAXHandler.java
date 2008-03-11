@@ -144,11 +144,11 @@ public class SAXHandler extends DefaultHandler2 {
 
         if(isDefaultSerializerOwnedWriter()) {
             try {
-                if(eventListener != null) {
-                    eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, defaultSerializerMapping.getResourceConfig(), VisitSequence.AFTER));
-                }
                 defaultSerializer.visitAfter(currentProcessor.element, execContext);
                 flushCurrentWriter();
+                if(eventListener != null) {
+                    eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, defaultSerializerMapping, VisitSequence.AFTER));
+                }
             } catch (IOException e) {
                 throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
             }
@@ -174,16 +174,16 @@ public class SAXHandler extends DefaultHandler2 {
                 for(ContentHandlerConfigMap<SAXVisitBefore> mapping : visitBeforeMappings) {
                     try {
                         if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                            mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                             // Register the targeting event.  No need to register this event again on the visitAfter...
                             if(eventListener != null) {
                                 eventListener.onEvent(new ResourceTargetingEvent(element, mapping.getResourceConfig(), VisitSequence.BEFORE));
-                                eventListener.onEvent(new ElementVisitEvent(element, mapping.getResourceConfig(), VisitSequence.BEFORE));
+                                eventListener.onEvent(new ElementVisitEvent(element, mapping, VisitSequence.BEFORE));
                             }
-                            mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                         }
                     } catch(Throwable t) {
                         String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the visitBefore event.";
-                        processVisitorException(currentProcessor.element, t, mapping.getResourceConfig(), VisitSequence.BEFORE, errorMsg);
+                        processVisitorException(currentProcessor.element, t, mapping, VisitSequence.BEFORE, errorMsg);
                     }
                     flushCurrentWriter();
                 }
@@ -192,11 +192,11 @@ public class SAXHandler extends DefaultHandler2 {
 
         if(isDefaultSerializerOwnedWriter()) {
             try {
-                if(eventListener != null) {
-                    eventListener.onEvent(new ElementVisitEvent(element, defaultSerializerMapping.getResourceConfig(), VisitSequence.BEFORE));
-                }
                 defaultSerializer.visitBefore(currentProcessor.element, execContext);
                 flushCurrentWriter();
+                if(eventListener != null) {
+                    eventListener.onEvent(new ElementVisitEvent(element, defaultSerializerMapping, VisitSequence.BEFORE));
+                }
             } catch (IOException e) {
                 throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
             }
@@ -214,7 +214,7 @@ public class SAXHandler extends DefaultHandler2 {
                             mapping.getContentHandler().onChildElement(currentProcessor.element, childElement, execContext);
                         } catch(Throwable t) {
                             String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildElement event.";
-                            processVisitorException(currentProcessor.element, t, mapping.getResourceConfig(), VisitSequence.AFTER, errorMsg);
+                            processVisitorException(currentProcessor.element, t, mapping, VisitSequence.AFTER, errorMsg);
                         }
                         flushCurrentWriter();
                     }
@@ -235,14 +235,14 @@ public class SAXHandler extends DefaultHandler2 {
     private void visitAfter(ContentHandlerConfigMap<SAXVisitAfter> afterMapping) {
         try {
             if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                if(eventListener != null) {
-                    eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, afterMapping.getResourceConfig(), VisitSequence.AFTER));
-                }
                 afterMapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
+                if(eventListener != null) {
+                    eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, afterMapping, VisitSequence.AFTER));
+                }
             }
         } catch(Throwable t) {
             String errorMsg = "Error in '" + afterMapping.getContentHandler().getClass().getName() + "' while processing the visitAfter event.";
-            processVisitorException(currentProcessor.element, t, afterMapping.getResourceConfig(), VisitSequence.AFTER, errorMsg);
+            processVisitorException(currentProcessor.element, t, afterMapping, VisitSequence.AFTER, errorMsg);
         }
         flushCurrentWriter();
     }
@@ -262,7 +262,7 @@ public class SAXHandler extends DefaultHandler2 {
                             }
                         } catch(Throwable t) {
                             String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildText event.";
-                            processVisitorException(currentProcessor.element, t, mapping.getResourceConfig(), VisitSequence.AFTER, errorMsg);
+                            processVisitorException(currentProcessor.element, t, mapping, VisitSequence.AFTER, errorMsg);
                         }
                         flushCurrentWriter();
                     }
@@ -342,9 +342,9 @@ public class SAXHandler extends DefaultHandler2 {
         public SAXElementVisitorMap elementVisitorConfig;
     }
 
-    private void processVisitorException(SAXElement element, Throwable error, SmooksResourceConfiguration resourceConfig, VisitSequence visitSequence, String errorMsg) throws SmooksException {
+    private void processVisitorException(SAXElement element, Throwable error, ContentHandlerConfigMap configMapping, VisitSequence visitSequence, String errorMsg) throws SmooksException {
         if (eventListener != null) {
-            eventListener.onEvent(new ElementVisitEvent(element, resourceConfig, visitSequence, error));
+            eventListener.onEvent(new ElementVisitEvent(element, configMapping, visitSequence, error));
         }
 
         if(terminateOnVisitorException) {

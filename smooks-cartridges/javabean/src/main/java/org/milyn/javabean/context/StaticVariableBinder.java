@@ -71,7 +71,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     }
 
     private void bindParamaters(ExecutionContext executionContext) {
-        List params = config.getParameters();
+        List params = config.getParameterList();
 
         for (Object parameter : params) {
             // It's either an object, or list of objects...

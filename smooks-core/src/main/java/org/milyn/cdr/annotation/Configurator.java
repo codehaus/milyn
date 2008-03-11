@@ -22,6 +22,8 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.annotation.Initialize;
+import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 
@@ -140,7 +142,6 @@ public class Configurator {
         }
     }
 
-    @VisitIf(param = "", value = "", defaultVal = "")
     private static void applyConfigParam(ConfigParam configParam, Member member, Class type, ContentHandler instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         String name = configParam.name();
         String paramValue;

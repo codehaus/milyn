@@ -13,35 +13,26 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.cdr.annotation;
+package org.milyn.delivery.annotation;
 
 import java.lang.annotation.*;
 
 /**
+ * Visit If annotation.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public abstract @interface VisitIfNot {
+@Target({ElementType.TYPE})
+public abstract @interface VisitBeforeIf {
 
     /**
-     * The name of the parameter to be tested.
-     * @return The name of the resource paramater to be tested.
+     * The {@link org.milyn.cdr.SmooksResourceConfiguration} condition that
+     * must evaluate to true in order for the visitBefore method to be called.
+     * 
+     * @return An inline <a href="http://mvel.codehaus.org/">MVEL</a> expression,
+     * or a reference to a file resource on the classpath.
      */
-    public abstract String param();
-
-    /**
-     * The value of the parameter to be tested.
-     * @return The value of the resource paramater to be tested.
-     */
-    public abstract String value();
-
-
-    /**
-     * The default value of the parameter to be tested, if not specified.
-     * @return The default value of the resource paramater to be tested, if not specified.
-     */
-    public abstract String defaultVal();
-
+    public String condition();
 }

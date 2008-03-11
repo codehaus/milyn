@@ -18,7 +18,7 @@ package org.milyn.db;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.container.ExecutionContext;
 import org.milyn.db.datasource.AbstractDataSource;
 import org.milyn.delivery.sax.SAXElement;

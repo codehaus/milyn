@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.javabean.expression.MVELExpressionEvaluator;
+import org.milyn.javabean.expression.BeanMapExpressionEvaluator;
 import org.xml.sax.SAXException;
 
 /**
@@ -39,8 +39,8 @@ public class StaticVariableBinderTest extends TestCase {
 
         smooks.filter(new StreamSource(new StringReader("<x/>")), null, execContext);
         //assertEquals("{statvar={variable3=Hi Var3, variable1=Hi Var1, variable2=Hi Var2}}", BeanAccessor.getBeanMap(execContext).toString());
-        assertEquals("Hi Var1", new MVELExpressionEvaluator("statvar.variable1").getValue(BeanAccessor.getBeanMap(execContext)));
-        assertEquals("Hi Var2", new MVELExpressionEvaluator("statvar.variable2").getValue(BeanAccessor.getBeanMap(execContext)));
-        assertEquals("Hi Var3", new MVELExpressionEvaluator("statvar.variable3").getValue(BeanAccessor.getBeanMap(execContext)));
+        assertEquals("Hi Var1", new BeanMapExpressionEvaluator("statvar.variable1").getValue(BeanAccessor.getBeanMap(execContext)));
+        assertEquals("Hi Var2", new BeanMapExpressionEvaluator("statvar.variable2").getValue(BeanAccessor.getBeanMap(execContext)));
+        assertEquals("Hi Var3", new BeanMapExpressionEvaluator("statvar.variable3").getValue(BeanAccessor.getBeanMap(execContext)));
     }
 }

@@ -17,10 +17,10 @@ package org.milyn.delivery;
 
 import junit.framework.TestCase;
 import org.milyn.SmooksException;
-import org.milyn.cdr.annotation.VisitIf;
-import org.milyn.cdr.annotation.VisitIfNot;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.VisitAfterIf;
+import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
@@ -41,12 +41,13 @@ public class VisitIfAndIfNotTest extends TestCase {
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "true");
         assertTrue(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
-        assertFalse(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor2()));
+
+        resourceConfig = new SmooksResourceConfiguration ();
+        assertFalse(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
 
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "false");
         assertFalse(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
-        assertTrue(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor2()));
     }
 
     public void test_sax_visitAfter() {
@@ -54,100 +55,29 @@ public class VisitIfAndIfNotTest extends TestCase {
 
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "true");
-        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
-        assertFalse(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor2()));
-
-        resourceConfig = new SmooksResourceConfiguration ();
-        resourceConfig.setParameter("visitBefore", "false");
         assertFalse(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
-        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor2()));
-    }
-
-    public void test_dom_visitBefore() {
-        SmooksResourceConfiguration resourceConfig;
 
         resourceConfig = new SmooksResourceConfiguration ();
-        resourceConfig.setParameter("visitBefore", "true");
-        assertTrue(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MyDOMVisitBeforeVisitor1()));
-        assertFalse(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MyDOMVisitBeforeVisitor2()));
+        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
 
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "false");
-        assertFalse(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MyDOMVisitBeforeVisitor1()));
-        assertTrue(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MyDOMVisitBeforeVisitor2()));
-    }
-
-    public void test_dom_visitAfter() {
-        SmooksResourceConfiguration resourceConfig;
-
-        resourceConfig = new SmooksResourceConfiguration ();
-        resourceConfig.setParameter("visitBefore", "true");
-        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MyDOMVisitAfterVisitor1()));
-        assertFalse(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MyDOMVisitAfterVisitor2()));
-
-        resourceConfig = new SmooksResourceConfiguration ();
-        resourceConfig.setParameter("visitBefore", "false");
-        assertFalse(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MyDOMVisitAfterVisitor1()));
-        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MyDOMVisitAfterVisitor2()));
+        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
     }
 
     /* ====================================================================================================
              Test classes - visitor impls
        ==================================================================================================== */
 
+    @VisitBeforeIf(condition = "parameters.containsKey('visitBefore') && parameters.visitBefore.value == 'true'")
     private class MySAXVisitBeforeVisitor1 implements SAXVisitBefore {
-
-        @VisitIf(param = "visitBefore", value = "true", defaultVal = "true")
         public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         }
     }
 
-    private class MySAXVisitBeforeVisitor2 implements SAXVisitBefore {        
-
-        @VisitIfNot(param = "visitBefore", value = "true", defaultVal = "true")
-        public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        }
-    }
-
+    @VisitAfterIf(condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
     private class MySAXVisitAfterVisitor1 implements SAXVisitAfter {
-
-        @VisitIf(param = "visitBefore", value = "true", defaultVal = "true")
         public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        }
-    }
-
-    private class MySAXVisitAfterVisitor2 implements SAXVisitAfter {
-
-        @VisitIfNot(param = "visitBefore", value = "true", defaultVal = "true")
-        public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        }
-    }
-
-    private class MyDOMVisitBeforeVisitor1 implements DOMVisitBefore {
-
-        @VisitIf(param = "visitBefore", value = "true", defaultVal = "true")
-        public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        }
-    }
-
-    private class MyDOMVisitBeforeVisitor2 implements DOMVisitBefore {
-
-        @VisitIfNot(param = "visitBefore", value = "true", defaultVal = "true")
-        public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        }
-    }
-
-    private class MyDOMVisitAfterVisitor1 implements DOMVisitAfter {
-
-        @VisitIf(param = "visitBefore", value = "true", defaultVal = "true")
-        public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-        }
-    }
-
-    private class MyDOMVisitAfterVisitor2 implements DOMVisitAfter {
-
-        @VisitIfNot(param = "visitBefore", value = "true", defaultVal = "true")
-        public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
         }
     }
 }

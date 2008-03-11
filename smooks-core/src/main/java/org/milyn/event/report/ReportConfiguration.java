@@ -15,11 +15,13 @@
 */
 package org.milyn.event.report;
 
+import org.milyn.assertion.AssertArgument;
 import org.milyn.event.ExecutionEvent;
 import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.event.types.ElementVisitEvent;
-import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksConfigurationException;
 
+import java.io.File;
 import java.io.Writer;
 
 /**
@@ -33,6 +35,8 @@ public class ReportConfiguration {
     private boolean escapeXMLChars = false;
     private boolean showDefaultAppliedResources = false;
     private Class<? extends ExecutionEvent>[] filterEvents;
+    private boolean autoCloseWriter = true;
+    private File tempOutDir = new File(System.getProperty("java.io.tmpdir"));
 
     public ReportConfiguration(Writer outputWriter) {
         AssertArgument.isNotNull(outputWriter, "outputWriter");
@@ -79,5 +83,31 @@ public class ReportConfiguration {
 
     public Class<? extends ExecutionEvent>[] getFilterEvents() {
         return filterEvents;
+    }
+
+    public boolean autoCloseWriter() {
+        return autoCloseWriter;
+    }
+
+    /**
+     * Should the writer be closed automatically after the report is completed.
+     * <p/>
+     * Default true.
+     *
+     * @param autoCloseWriter True if the writer is to be closed, otherwise false.
+     */
+    public void setAutoCloseWriter(boolean autoCloseWriter) {
+        this.autoCloseWriter = autoCloseWriter;
+    }
+
+    public File getTempOutDir() {
+        if(tempOutDir == null) {
+            throw new SmooksConfigurationException("Temp OutDir not set.");
+        }
+        return tempOutDir;
+    }
+
+    public void setTempOutDir(File tempOutDir) {
+        this.tempOutDir = tempOutDir;
     }
 }

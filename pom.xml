@@ -32,6 +32,7 @@
         <commons_lang.version>2.1</commons_lang.version>
         <nekohtml.version>0.9.5</nekohtml.version>
         <dtdparser.version>1.21</dtdparser.version>
+        <freemarker.version>2.3.1</freemarker.version>
     </properties>
 
     <modules>

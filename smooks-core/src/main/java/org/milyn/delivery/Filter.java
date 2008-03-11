@@ -40,6 +40,10 @@ public abstract class Filter {
     /**
      * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
      */
+    private static final ThreadLocal<Filter> filterThreadLocal = new ThreadLocal<Filter>();
+    /**
+     * The Threadlocal storage instance for the ExecutionContext associated with the "current" Filter associated with the thread.
+     */
     private static final ThreadLocal<ExecutionContext> execThreadLocal = new ThreadLocal<ExecutionContext>();
 
     public static final String CLOSE_SOURCE = "close.source";
@@ -57,6 +61,35 @@ public abstract class Filter {
      * @throws SmooksException Failed to filter.
      */
     public abstract void doFilter(Source source, Result result) throws SmooksException;
+
+    /**
+     * Get the {@link Filter} instance for the current thread.
+     *
+     * @return The thread-bound {@link Filter} instance.
+     */
+    public static Filter getFilter() {
+        Filter filter = Filter.filterThreadLocal.get();
+        if(filter == null) {
+            throw new IllegalStateException("Call to getFilter() before the filter is set for the Thread.  This method can only be called within the context of a Smooks execution, which sets the filter.");
+        }
+        return filter;
+    }
+
+    /**
+     * Set the {@link Filter} instance for the current thread.
+     *
+     * @param filter The thread-bound {@link Filter} instance.
+     */
+    public static void setFilter(Filter filter) {
+        Filter.filterThreadLocal.set(filter);
+    }
+
+    /**
+     * Remove the {@link Filter} bound to the current thread.
+     */
+    public static void removeCurrentFilter() {
+        Filter.filterThreadLocal.remove();
+    }
 
     /**
      * Get the {@link org.milyn.container.ExecutionContext} instance bound to the current thread.

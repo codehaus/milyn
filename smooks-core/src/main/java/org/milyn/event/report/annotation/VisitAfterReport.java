@@ -13,26 +13,23 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.annotation;
+package org.milyn.event.report.annotation;
+
+import org.milyn.cdr.annotation.AnnotationConstants;
 
 import java.lang.annotation.*;
 
 /**
- * Resource Type annotation.
- * <p/>
- * Used on {@link org.milyn.delivery.ContentHandlerFactory} implementations for specifying the type of resource
- * processed.
+ * Visit after report annotation.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Resource {
+@Target({ElementType.TYPE})
+public abstract @interface VisitAfterReport {
 
-    /**
-     * Resource type value.
-     * @return
-     */
-    public String type();
+    public abstract String condition();
+
+    public abstract String template() default AnnotationConstants.NULL_STRING;
 }

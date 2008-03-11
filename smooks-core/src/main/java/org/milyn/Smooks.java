@@ -264,13 +264,18 @@ public class Smooks {
                     eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.STARTED));
                 }
 
-                Filter contentFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
+                Filter messageFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
 
-                // Attach the source and result to the context...
-                FilterSource.setSource(source, executionContext);
-                FilterResult.setResult(result, executionContext);
+                Filter.setFilter(messageFilter);
+                try {
+                    // Attach the source and result to the context...
+                    FilterSource.setSource(source, executionContext);
+                    FilterResult.setResult(result, executionContext);
 
-                contentFilter.doFilter(source, result);
+                    messageFilter.doFilter(source, result);
+                } finally {
+                    Filter.removeCurrentFilter();
+                }
             } finally {
                 Filter.removeCurrentExecutionContext();
             }
@@ -294,7 +299,7 @@ public class Smooks {
     /**
      * Close this Smooks instance and all associated resources.
      * <p/>
-     * Should result in the {@link org.milyn.cdr.annotation.Uninitialize uninitialization}
+     * Should result in the {@link org.milyn.delivery.annotation.Uninitialize uninitialization}
      * of all allocated {@link org.milyn.delivery.ContentHandler} instances.
      */
     public void close() {

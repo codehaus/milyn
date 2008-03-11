@@ -19,8 +19,6 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
 
-import java.util.Map;
-
 /**
  * Invalid evaluator.
  * <p/>
@@ -38,11 +36,11 @@ public class InvalidEvaluator implements ExpressionEvaluator {
         return null;
     }
 
-    public boolean eval(Map beans) throws ExpressionEvaluationException {
+    public boolean eval(Object contextObject) throws ExpressionEvaluationException {
         return false;
     }
 
-    public Object getValue(Map beans) throws ExpressionEvaluationException {
+    public Object getValue(Object contextObject) throws ExpressionEvaluationException {
         return null;
     }
 }

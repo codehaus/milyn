@@ -29,7 +29,7 @@ import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.dom.VisitPhase;
@@ -219,6 +219,9 @@ public class BeanPopulator implements ConfigurationExpander {
         resource.setParameter("beanId", beanId);
         resource.removeParameter("beanClass");
         resource.setParameter("beanClass", beanClassName);
+
+        // Remove the bindings param...
+        resource.removeParameter("bindings");
 
         // Reset the resource...
         resource.setResource(BeanInstanceCreator.class.getName());

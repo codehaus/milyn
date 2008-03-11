@@ -388,13 +388,13 @@ public class SmooksDOMFilter extends Filter {
                     if (logger.isDebugEnabled()) {
                         logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
                     }
-                    if (eventListener != null) {
-                        eventListener.onEvent(new ElementVisitEvent(element, configMap.getResourceConfig(), VisitSequence.BEFORE));
-                    }
                     assemblyUnit.visitBefore(element, executionContext);
+                    if (eventListener != null) {
+                        eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.BEFORE));
+                    }
                 } catch (Throwable e) {
                     String errorMsg = "(Assembly) visitBefore failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-                    processVisitorException(element, e, configMap.getResourceConfig(), VisitSequence.BEFORE, errorMsg);
+                    processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
                 }
             }
         }
@@ -436,13 +436,13 @@ public class SmooksDOMFilter extends Filter {
             if (logger.isDebugEnabled()) {
                 logger.debug("(Assembly) Calling visitAfter on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
             }
-            if (eventListener != null) {
-                eventListener.onEvent(new ElementVisitEvent(element, configMap.getResourceConfig(), VisitSequence.AFTER));
-            }
             visitAfter.visitAfter(element, executionContext);
+            if (eventListener != null) {
+                eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.AFTER));
+            }
         } catch (Throwable e) {
             String errorMsg = "(Assembly) visitAfter failed [" + visitAfter.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-            processVisitorException(element, e, configMap.getResourceConfig(), VisitSequence.AFTER, errorMsg);
+            processVisitorException(element, e, configMap, VisitSequence.AFTER, errorMsg);
         }
     }
 
@@ -654,13 +654,13 @@ public class SmooksDOMFilter extends Filter {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "] before applying resources to its child elements.");
                     }
-                    if (eventListener != null) {
-                        eventListener.onEvent(new ElementVisitEvent(element, configMap.getResourceConfig(), VisitSequence.BEFORE));
-                    }
                     visitor.visitBefore(element, executionContext);
+                    if (eventListener != null) {
+                        eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.BEFORE));
+                    }
                 } catch (Throwable e) {
                     String errorMsg = "Failed to apply processing unit [" + visitor.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-                    processVisitorException(element, e, configMap.getResourceConfig(), VisitSequence.BEFORE, errorMsg);
+                    processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
                 }
             } else {
                 DOMVisitAfter visitor = (DOMVisitAfter) configMap.getContentHandler();
@@ -668,21 +668,21 @@ public class SmooksDOMFilter extends Filter {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "] after applying resources to its child elements.");
                     }
-                    if (eventListener != null) {
-                        eventListener.onEvent(new ElementVisitEvent(element, configMap.getResourceConfig(), VisitSequence.AFTER));
-                    }
                     visitor.visitAfter(element, executionContext);
+                    if (eventListener != null) {
+                        eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.AFTER));
+                    }
                 } catch (Throwable e) {
                     String errorMsg = "Failed to apply processing unit [" + visitor.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-                    processVisitorException(element, e, configMap.getResourceConfig(), VisitSequence.BEFORE, errorMsg);
+                    processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
                 }
             }
         }
     }
 
-    private void processVisitorException(Element element, Throwable error, SmooksResourceConfiguration resourceConfig, VisitSequence visitSequence, String errorMsg) throws SmooksException {
+    private void processVisitorException(Element element, Throwable error, ContentHandlerConfigMap configMapping, VisitSequence visitSequence, String errorMsg) throws SmooksException {
         if (eventListener != null) {
-            eventListener.onEvent(new ElementVisitEvent(element, resourceConfig, visitSequence, error));
+            eventListener.onEvent(new ElementVisitEvent(element, configMapping, visitSequence, error));
         }
 
         if(terminateOnVisitorException) {

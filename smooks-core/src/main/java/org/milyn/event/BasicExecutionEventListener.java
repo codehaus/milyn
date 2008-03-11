@@ -17,7 +17,18 @@ package org.milyn.event;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.VisitSequence;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.event.types.ElementVisitEvent;
+import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.io.StreamUtils;
+import org.milyn.util.ClassUtil;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +89,33 @@ public class BasicExecutionEventListener implements ExecutionEventListener {
     }
 
     protected boolean ignoreEvent(ExecutionEvent event) {
-        return (filterEvents != null && !filterEvents.contains(event.getClass()));
+        if(filterEvents != null && !filterEvents.contains(event.getClass())) {
+            return true;
+        }
+
+        if(event instanceof ElementVisitEvent) {
+            ElementVisitEvent visitEvent = (ElementVisitEvent) event;
+            ContentHandler handler = visitEvent.getConfigMapping().getContentHandler();
+            if(visitEvent.getSequence() == VisitSequence.BEFORE) {
+                VisitBeforeReport reportAnnotation = handler.getClass().getAnnotation(VisitBeforeReport.class);
+                if(reportAnnotation != null) {
+                    return !evalReportCondition(visitEvent, reportAnnotation.condition());
+                }
+            } else {
+                VisitAfterReport reportAnnotation = handler.getClass().getAnnotation(VisitAfterReport.class);
+                if(reportAnnotation != null) {
+                    return !evalReportCondition(visitEvent, reportAnnotation.condition());
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean evalReportCondition(ElementVisitEvent visitEvent, String condition) {
+        MVELExpressionEvaluator conditionEval = new MVELExpressionEvaluator();
+        conditionEval.setExpression(condition);
+        return conditionEval.eval(visitEvent.getResourceConfig());
     }
 
     /**

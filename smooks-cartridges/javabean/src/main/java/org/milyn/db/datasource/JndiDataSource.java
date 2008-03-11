@@ -17,7 +17,7 @@ package org.milyn.db.datasource;
 
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
+import org.milyn.delivery.annotation.Initialize;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
