@@ -403,19 +403,10 @@ public class BeanAccessor {
 	    		endLifecycle(keyList.get(i), false);
 	    	}
     	} else {
+    		
     		// Ends lifecycle associations in a hierarchicly way, so
     		// that childs always get ended before there parents.
-    		// TODO: This is really ugly! Can't this be done better?
-    		Set<String> rootParents = new HashSet<String>();
-    		Set<String> childs = new HashSet<String>();
-    		for(List<String> childList : lifecycleAssociations.values()) {
-    			childs.addAll(childList);
-    		}
-    		for(String parent : lifecycleAssociations.keySet()) {
-    			if(!childs.contains(parent)) {
-    				rootParents.add(parent);
-    			}
-    		}
+    		Set<String> rootParents = getRootLifecycleAssociations();
     		
     		for(String rootParent : rootParents) {
     			endLifecycle(rootParent, true);
@@ -424,6 +415,29 @@ public class BeanAccessor {
     	}
     	
     }
+
+	/**
+	 * @return
+	 */
+	private Set<String> getRootLifecycleAssociations() {
+		Set<String> rootParents = new HashSet<String>();
+		for(String parent : lifecycleAssociations.keySet()) {
+			boolean found = false;
+			
+			for(List<String> childs : lifecycleAssociations.values()) {
+				found = childs.contains(parent);
+				if(found) {
+					break;
+				}
+			}
+		
+			if(!found) {
+				rootParents.add(parent);
+			}
+		}
+		return rootParents;
+	}
+    
     
     private void endLifecycle(String beanId, boolean associatedBeans) {
     	
