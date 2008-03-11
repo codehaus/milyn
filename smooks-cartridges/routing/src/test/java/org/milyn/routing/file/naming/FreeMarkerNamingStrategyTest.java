@@ -17,6 +17,8 @@ package org.milyn.routing.file.naming;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.HashMap;
+
 import org.junit.Test;
 
 /**
@@ -30,10 +32,19 @@ public class FreeMarkerNamingStrategyTest
 	@Test
 	public void test() throws NamingStrategyException
 	{
+		HashMap<String,Object> root = createOrder( 40 );
 		FreeMarkerNamingStrategy strategy = new FreeMarkerNamingStrategy();
-		String generateFileName = strategy.generateFileName( "{order.nr}", new Order(40) );
-		System.out.println(generateFileName);
+		String generateFileName = strategy.generateFileName( "${order.nr}", root );
 		assertNotNull( generateFileName );
+	}
+	
+	private HashMap<String,Object> createOrder( final int nr )
+	{
+		HashMap<String,Object> root = new HashMap<String,Object>();
+		HashMap<String, Object> order = new HashMap<String,Object>();
+		order.put( "nr", "40" );
+		root.put("order", order );
+		return root;
 	}
 	
 	private static class Order
