@@ -15,6 +15,14 @@
 */
 package org.milyn.javabean;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -26,23 +34,17 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
-import org.milyn.delivery.dom.DOMVisitBefore;
+import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Bean instance creator visitor class.
@@ -51,8 +53,9 @@ import java.util.Map;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@VisitBeforeReport(condition = "true", template = "BeanInstanceCreatorReport.mvel")
-public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
+@VisitBeforeReport(condition = "true", template = "BeanInstanceCreatorReport_Before.mvel")
+@VisitAfterReport(condition = "parameters.setOn != null", template = "BeanInstanceCreatorReport_After.mvel") 
+public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
@@ -155,6 +158,29 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         createAndSetBean(executionContext);
     }
+    
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
+	 */
+	public void visitAfter(Element element, ExecutionContext executionContext)
+			throws SmooksException {
+		
+		if (setOn != null) {
+            setOn(executionContext);
+        }
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
+	 */
+	public void visitAfter(SAXElement element, ExecutionContext executionContext)
+			throws SmooksException, IOException {
+		
+		if (setOn != null) {
+            setOn(executionContext);
+        }
+	}   
 
 
     private Object convert(Object bean, ExecutionContext executionContext) {
@@ -178,34 +204,20 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
 
         BeanAccessor.addBean(beanId, bean, executionContext, addToList);
 
-        if(setOn != null || beanRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
+        if(setOn == null && beanRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
         	BeanAccessor.addBeanLifecycleObserver(
         			executionContext, beanId, BeanLifecycle.END, getId(), true, new BeanLifecycleObserver() {
 
-        		/* (non-Javadoc)
-        		 * @see org.milyn.javabean.lifecycle.BeanLifecycleObserver#notifyBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanLifecycleEvent)
+        		/**
+        		 * Converts the internal list to the permanent Array
         		 */
         		public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object beanObj) {
-
-    				Classification thisBeanType = beanRuntimeInfo.getClassification();
-
-    		    	boolean isArray = (thisBeanType == Classification.ARRAY_COLLECTION);
-    		    	boolean isSetOn = (setOn != null);
-
-    		    	if(isArray || isSetOn) {
-    			    	Object bean  = BeanUtils.getBean(beanId, executionContext);
-
-    			    	if(isArray) {
-    			    		// This bean is an array, we need to convert the List used to create it into
-    			            // an array of that type, and add that array to the BeanAccessor, overwriting the list
-
-    			    		bean = convert(bean, executionContext);
-    			    	}
-    			    	if (isSetOn) {
-
-    			            setOn(bean, executionContext);
-    			        }
-    		    	}
+    				
+			    	Object bean  = BeanUtils.getBean(beanId, executionContext);
+			    	
+			    	// This bean is an array, we need to convert the List used to create it into
+			        // an array of that type, and add that array to the BeanAccessor, overwriting the list
+			    	bean = convert(bean, executionContext);
 
         		}
 
@@ -220,14 +232,18 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
     }
 
     @SuppressWarnings("unchecked")
-	private void setOn(Object bean, ExecutionContext executionContext) {
-        Object setOnBean = getSetOnTargetBean(executionContext);
+	private void setOn(ExecutionContext executionContext) {
+    	Object bean  = BeanUtils.getBean(beanId, executionContext);
+    	Object setOnBean = getSetOnTargetBean(executionContext);
 
         if (setOnBean != null) {
-
+        	
+        	Classification thisBeanType = beanRuntimeInfo.getClassification();
             Classification setOnBeanType = setOnBeanRuntimeInfo.getClassification();
-
-
+            
+            if(thisBeanType == Classification.ARRAY_COLLECTION) {
+            	bean = convert(bean, executionContext);
+            }
 
             // Set the bean instance on another bean. Supports creating an object graph
             if(setOnBeanType == Classification.NON_COLLECTION) {
@@ -377,5 +393,6 @@ public class BeanInstanceCreator implements DOMVisitBefore, SAXVisitBefore {
     public String toString() {
     	return getId();
     }
+
 
 }

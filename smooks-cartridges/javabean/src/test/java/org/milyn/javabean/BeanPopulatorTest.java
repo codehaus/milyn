@@ -46,6 +46,8 @@ import org.xml.sax.SAXException;
  */
 public class BeanPopulatorTest extends TestCase {
 
+	private Locale defaultLocale; 
+	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -53,7 +55,18 @@ public class BeanPopulatorTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		Locale.setDefault(Locale.US);
+		defaultLocale = Locale.getDefault();
+		Locale.setDefault(new Locale("en", "IE"));
+	}
+	
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#tearDown()
+	 */
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		
+		Locale.setDefault(defaultLocale);
 	}
 
     public void testConstructorConfigValidation() {
