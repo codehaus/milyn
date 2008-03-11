@@ -35,7 +35,8 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.routing.file.naming.DefaultNamingStrategy;
+import org.milyn.routing.file.naming.UniqueFileNamingStrategy;
+import org.milyn.routing.file.naming.FreeMarkerNamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategyException;
 import org.w3c.dom.Element;
@@ -96,7 +97,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
     /*
      * Naming strategy for generating the file pattern for output files.
      */
-    private NamingStrategy namingStrategy = new DefaultNamingStrategy();
+    private NamingStrategy namingStrategy = new FreeMarkerNamingStrategy();
 
 	@Initialize
 	public void initialize()

@@ -25,11 +25,11 @@ import org.junit.Test;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public class DefaultNamingStrategyTest
+public class UniqueFileNamingStrategyTest
 {
 	private String pattern = "prefix-";
 
-	DefaultNamingStrategy strategy = new DefaultNamingStrategy();
+	UniqueFileNamingStrategy strategy = new UniqueFileNamingStrategy();
 
 	@Test
 	public void generateFileName()

@@ -26,7 +26,7 @@ import java.rmi.dgc.VMID;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public class DefaultNamingStrategy implements NamingStrategy
+public class UniqueFileNamingStrategy implements NamingStrategy
 {
 	/**
 	 * Will generate a String with the format
