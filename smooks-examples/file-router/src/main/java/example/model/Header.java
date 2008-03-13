@@ -51,6 +51,6 @@ public class Header {
 
     public String toString()
     {
-    	return "Header [customerName:" + customerName + ", customerNumber:" + customerNumber + "]";
+    	return "[header: customerName:" + customerName + ", customerNumber:" + customerNumber + "]";
     }
 }

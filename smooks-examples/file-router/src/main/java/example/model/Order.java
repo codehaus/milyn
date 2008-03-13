@@ -16,6 +16,7 @@
 package example.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +28,9 @@ public class Order {
 
     public Order() {
         header = new Header();
+        header.setCustomerName( "Daniel" );
+        header.setCustomerNumber( 1l );
+        header.setDate( new Date() );
         orderItems =  new ArrayList<OrderItem>();
         orderItems.add(new OrderItem());
         orderItems.add(new OrderItem());
@@ -59,6 +63,6 @@ public class Order {
 
     public String toString()
     {
-    	return "Order [" + header + ", " + orderItems + "]";
+    	return "[Order : " + header + ", " + orderItems + "]";
     }
 }
