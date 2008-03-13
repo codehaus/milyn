@@ -31,12 +31,12 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
-public class FreeMarkerNamingStrategyTest
+public class TemplatedNamingStrategyTest
 {
 	@Test
 	public void test() throws NamingStrategyException, SAXException, IOException, ParserConfigurationException
 	{
-		FreeMarkerNamingStrategy strategy = new FreeMarkerNamingStrategy();
+		TemplatedNamingStrategy strategy = new TemplatedNamingStrategy();
 		Order order = new Order();
 		order.setNr( 40 );
 		String generateFileName = strategy.generateFileName( "OrderId-${nr}.txt", order );

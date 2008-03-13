@@ -35,20 +35,21 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.routing.file.naming.FreeMarkerNamingStrategy;
+import org.milyn.routing.file.naming.TemplatedNamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategyException;
 import org.w3c.dom.Element;
 
 /**
  * <p/>
- * Router is a Visitor for DOM or SAX elements. It appends the content
+ * FileRouter is a Visitor for DOM or SAX elements. It appends the content
  * to the configured destination file.
  * </p>
  * Example configuration:
  * <pre>
  * &lt;resource-config selector="orderItems"&gt;
  *    &lt;resource&gt;org.milyn.routing.file.FileRouter&lt;/resource&gt;
+ *    &lt;param name="beanId">beanId&lt;/param&gt;
  *    &lt;param name="destinationDirectory">dir&lt;/param&gt;
  *    &lt;param name="fileNamePattern">${orderid}&lt;/param&gt;
  * &lt;/resource-config&gt;
@@ -98,7 +99,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
     /*
      * Naming strategy for generating the file pattern for output files.
      */
-    private NamingStrategy namingStrategy = new FreeMarkerNamingStrategy();
+    private NamingStrategy namingStrategy = new TemplatedNamingStrategy();
 
 	@Initialize
 	public void initialize()

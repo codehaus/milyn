@@ -28,7 +28,7 @@ import freemarker.template.TemplateException;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
-public class FreeMarkerNamingStrategy implements NamingStrategy
+public class TemplatedNamingStrategy implements NamingStrategy
 {
 	/**
 	 * 
