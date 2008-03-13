@@ -52,20 +52,18 @@ public class FileRouterTest
 	private String tmpDir;
 	private TestBean testbean;
 
-	@Test ( expected = SmooksConfigurationException.class )
+	@Test ( expected = IllegalArgumentException.class )
 	public void initializeMissingDirname()
 	{
-        Configurator.configure( new FileRouter( ), config, new MockApplicationContext() );
         configureFileRouter( beanId, null, filenamePattern, router );
 	}
 
 	@Test ( expected = SmooksConfigurationException.class )
 	public void initializeNonExistingDirname()
 	{
-        Configurator.configure( new FileRouter( ), config, new MockApplicationContext() );
         configureFileRouter( beanId, "/kddg/", filenamePattern, router );
 	}
-
+	
 	@Test
 	public void onEventShouldCallCreateFileWriter()
 	{
