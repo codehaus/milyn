@@ -19,8 +19,8 @@ public final class RouterTestHelper
 
 	public static TestBean createBean()
 	{
-		final String address = "Fleminggatan";
 		final String name = "Daniel";
+		final String address = "Fleminggatan";
 		final String phoneNumber = "555-555-5555";
 
 		final TestBean bean = new TestBean();

@@ -16,7 +16,7 @@
    </category>
 
    <category name="org.milyn.routing">
-      <priority value="fatal"/>
+      <priority value="info"/>
    </category>
 
    <category name="com.mockrunner">

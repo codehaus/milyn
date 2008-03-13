@@ -48,7 +48,7 @@ public class FileRouterTest
 	private MockExecutionContext execContext;
 	private FileRouter router;
 	private String beanId = "dummyId";
-	private String filenamePattern = "App-1";
+	private String filenamePattern = "${name}";
 	private String tmpDir;
 	private TestBean testbean;
 
