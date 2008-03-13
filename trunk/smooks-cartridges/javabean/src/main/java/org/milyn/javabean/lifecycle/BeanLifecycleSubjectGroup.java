@@ -7,8 +7,6 @@ public class BeanLifecycleSubjectGroup {
 
 	private final BeanLifecycleSubject beginLifecycleNotifier;
 
-	private final BeanLifecycleSubject endLifecycleNotifier;
-
 	private final BeanLifecycleSubject changeLifecycleNotifier;
 
 	private final String beanId;
@@ -26,7 +24,6 @@ public class BeanLifecycleSubjectGroup {
 		this.beanId = beanId;
 
 		beginLifecycleNotifier = new BeanLifecycleSubject(executionContext, BeanLifecycle.BEGIN, beanId);
-		endLifecycleNotifier = new BeanLifecycleSubject(executionContext, BeanLifecycle.END, beanId);
 		changeLifecycleNotifier = new BeanLifecycleSubject(executionContext, BeanLifecycle.CHANGE, beanId);
 	}
 
@@ -50,8 +47,6 @@ public class BeanLifecycleSubjectGroup {
     	switch (lifecycle) {
 		case BEGIN:
 			return beginLifecycleNotifier;
-		case END:
-			return endLifecycleNotifier;
 		case CHANGE:
 			return changeLifecycleNotifier;
 

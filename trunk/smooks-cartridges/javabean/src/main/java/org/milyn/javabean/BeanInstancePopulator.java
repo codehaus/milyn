@@ -15,6 +15,14 @@
 */
 package org.milyn.javabean;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -37,14 +45,6 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Bean instance populator visitor class.
@@ -263,15 +263,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     			});
 
-    			// Unregister the observers at then end of this beans lifecycle
-    			// Still not sure if this is necessary. I have disabled it for now because it takes a lot of performance
-//    			BeanAccessor.registerBeanLifecycleObserver(executionContext, BeanLifecycle.END, beanId, getId(), true, new BeanLifecycleObserver(){
-//    				public void onBeanLifecycleEvent(BeanLifecycleEvent event) {
-//
-//    					BeanAccessor.unregisterBeanLifecycleObserver(event.getExecutionContext(), BeanLifecycle.BEGIN, bindBeanId, getId());
-//
-//    				}
-//    			});
+    			
     		} else {
     			populateAndSetPropertyValue(property, bean, executionContext);
     		}
