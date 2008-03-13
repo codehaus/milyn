@@ -6,7 +6,7 @@
 		<artifactId>smooks-examples</artifactId>
 		<version>1.1-SNAPSHOT</version>
 	</parent>
-    <name>Milyn Smooks Example - Mule ESB Integratoin</name>
+    <name>Milyn Smooks Example - Mule ESB Integration</name>
 	<groupId>milyn</groupId>
 	<artifactId>milyn-smooks-example-mule-esb-integration</artifactId>
 	<version>1.0</version>
