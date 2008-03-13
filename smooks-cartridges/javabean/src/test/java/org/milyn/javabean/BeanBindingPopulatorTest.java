@@ -39,11 +39,11 @@ import org.xml.sax.SAXException;
  */
 public class BeanBindingPopulatorTest extends TestCase {
 
-	private static boolean REPORT_EXECUTION = false;
-
 	private static final Log logger = LogFactory.getLog(BeanBindingPopulatorTest.class);
 
 	public void test_01_hierarchically() throws IOException, SAXException {
+		logger.debug("Testing hierarchically xml");
+		
 		String xml = "bb-01-hierarchically.xml";
 
         test_01_list("bb-01-smooks-config.xml", xml);
@@ -52,11 +52,12 @@ public class BeanBindingPopulatorTest extends TestCase {
 	}
 
 	public void test_01_flat() throws IOException, SAXException {
+		logger.debug("Testing flat xml");
+		
 		String xml = "bb-01-flat.xml";
 
 		test_01_list("bb-01-smooks-config.xml", xml);
 		test_01_list("bb-01-smooks-config-sax.xml", xml);
-		test_01_array("bb-01-smooks-config-array.xml", xml);
 	}
 
 	/**

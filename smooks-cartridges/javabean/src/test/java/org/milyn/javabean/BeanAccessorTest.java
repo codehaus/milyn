@@ -251,84 +251,7 @@ public class BeanAccessorTest extends TestCase {
 
 	}
 
-	/**
-	 * replace with easy mock framework for more control
-	 *
-	 * Test adding and replacing a bean
-	 */
-	public void test_bean_lifecycle_end_observers_associates() {
-		MockExecutionContext request = new MockExecutionContext();
-        Object parent = new MyGoodBean();
-        Object child = new MyGoodBean();
-        Object child2 = new MyGoodBean();
-        Object childChild = new MyGoodBean();
-
-        MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
-        BeanAccessor.addBeanLifecycleObserver(request, "parent", BeanLifecycle.END, "observer", false, observer);
-
-        //Add first time
-        BeanAccessor.addBean(request, "parent", parent);
-
-        assertFalse(observer.isFired());
-
-        //Add second time
-        BeanAccessor.addBean(request, "parent", parent);
-
-        assertTrue(observer.isFired());
-
-        observer.reset();
-
-        //Add another bean
-        BeanAccessor.addBean(request, "child", child);
-
-        assertFalse(observer.isFired());
-
-        //Test cascading event mechanism
-        BeanAccessor.addBean(request, "child2", child2);
-        BeanAccessor.addBean(request, "childChild", childChild);
-
-        MockBeanLifecycleObserver observerChild = new MockBeanLifecycleObserver();
-        MockBeanLifecycleObserver observerChild2 = new MockBeanLifecycleObserver();
-        MockBeanLifecycleObserver observerChildChild = new MockBeanLifecycleObserver();
-
-        BeanAccessor.addBeanLifecycleObserver(request, "child", BeanLifecycle.END, "observerChild", false, observerChild);
-        BeanAccessor.addBeanLifecycleObserver(request, "child2", BeanLifecycle.END, "observerChild", false, observerChild2);
-        BeanAccessor.addBeanLifecycleObserver(request, "childChild", BeanLifecycle.END, "observerChildChild", false, observerChildChild);
-
-        BeanAccessor.associateLifecycles(request, "parent", "child");
-        BeanAccessor.associateLifecycles(request, "parent", "child2");
-        BeanAccessor.associateLifecycles(request, "child", "childChild");
-
-        BeanAccessor.addBean(request, "parent", parent);
-
-        assertTrue(observer.isFired());
-        assertTrue(observerChild.isFired());
-        assertTrue(observerChild2.isFired());
-        assertTrue(observerChildChild.isFired());
-
-        Object bean1 = new MyGoodBean();
-        Object bean2 = new MyGoodBean();
-        Object bean3 = new MyGoodBean();
-
-        MockBeanLifecycleObserver observerBean1 = new MockBeanLifecycleObserver();
-        MockBeanLifecycleObserver observerBean2 = new MockBeanLifecycleObserver();
-        MockBeanLifecycleObserver observerBean3 = new MockBeanLifecycleObserver();
-
-        BeanAccessor.addBeanLifecycleObserver(request, "bean1", BeanLifecycle.END, "observerBean1", false, observerBean1);
-        BeanAccessor.addBeanLifecycleObserver(request, "bean2", BeanLifecycle.END, "observerBean2", false, observerBean2);
-        BeanAccessor.addBeanLifecycleObserver(request, "bean3", BeanLifecycle.END, "observerBean3", false, observerBean3);
-
-        BeanAccessor.addBean(request, "bean1", bean1);
-        BeanAccessor.addBean(request, "bean2", bean2);
-        BeanAccessor.addBean(request, "bean3", bean3);
-
-        BeanAccessor.endAllLifecycles(request);
-
-        assertTrue(observerBean1.isFired());
-        assertTrue(observerBean2.isFired());
-        assertTrue(observerBean3.isFired());
-
-	}
+	
 	/**
 	 * replace with easy mock framework for more control
 	 *
@@ -340,7 +263,6 @@ public class BeanAccessorTest extends TestCase {
 
         MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
-        MockBeanLifecycleObserver observerEnd = new MockBeanLifecycleObserver();
         BeanAccessor.addBeanLifecycleObserver(request, "bean", BeanLifecycle.CHANGE, "observerChange", false, observerChange);
 
         //Add first time
@@ -349,15 +271,13 @@ public class BeanAccessorTest extends TestCase {
         assertFalse(observerChange.isFired());
 
         BeanAccessor.addBeanLifecycleObserver(request, "bean", BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
-        BeanAccessor.addBeanLifecycleObserver(request, "bean", BeanLifecycle.END, "observerEnd", false, observerEnd);
-
+        
         //now do the change
         BeanAccessor.changeBean(request, "bean", bean);
 
         assertTrue(observerChange.isFired());
         assertFalse(observerBegin.isFired());
-        assertFalse(observerEnd.isFired());
-
+        
 	}
 
     /**

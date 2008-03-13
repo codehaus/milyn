@@ -29,11 +29,10 @@ import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.delivery.annotation.Initialize;
 import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.VisitPhase;
-import org.milyn.javabean.lifecycle.BeanLifecycleEnder;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -206,7 +205,6 @@ public class BeanPopulator implements ConfigurationExpander {
 
         buildInstanceCreatorConfig(resources);
         buildBindingConfigs(resources);
-        buildBeanLifecycleEnderConfig(resources);
         
         return resources;
     }
@@ -337,22 +335,6 @@ public class BeanPopulator implements ConfigurationExpander {
         return resourceConfig;
     }
 
-    private void buildBeanLifecycleEnderConfig(List<SmooksResourceConfiguration> resources) {
-    	
-    	Boolean created = (Boolean)appContext.getAttribute(APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED);
-    	if(created == null || !created) {
-    		
-    		SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("$document", BeanLifecycleEnder.class.getName());
-            resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
-            resourceConfig.setTargetProfile("*");
-    		
-            resources.add(resourceConfig);
-            
-    		appContext.setAttribute(APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED, Boolean.TRUE);
-    	}
-    	
-    }
-    
     private String getSelectorProperty(String selector) {
         StringBuffer selectorProp = new StringBuffer();
         String[] selectorTokens = selector.split(" ");

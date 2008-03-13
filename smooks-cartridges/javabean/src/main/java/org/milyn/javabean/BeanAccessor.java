@@ -208,13 +208,8 @@ public class BeanAccessor {
 
         BeanAccessor accessor = getAccessor(executionContext);
 
-        // We don't call removeBean directly because we will replace the bean later on. Deleting
-        // it is not necessary then.
-        if(accessor.beans.containsKey(beanId)) {
-    		accessor.cleanAssociatedLifecycleBeans(beanId);
-
-    		accessor.endLifecycle(beanId, false);
-    	}
+        accessor.cleanAssociatedLifecycleBeans(beanId);
+    
 
         if(addToList) {
             // Beans that are added to lists take up 2 locations in the bean map... 1 for the current bean
@@ -317,19 +312,6 @@ public class BeanAccessor {
     }
 
     /**
-     * Ends the lifecycles of all the beans
-     *
-     * @param executionContext The execution context of the bean Accessor
-     */
-    public static void endAllLifecycles(ExecutionContext executionContext) {
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-
-    	BeanAccessor accessor = getAccessor(executionContext);
-
-    	accessor.endAllLifecycles();
-    }
-
-    /**
      * Registers an observer which observers when a bean gets added.
      *
      *
@@ -386,34 +368,8 @@ public class BeanAccessor {
     private void removeBean(String beanId) {
     	cleanAssociatedLifecycleBeans(beanId);
 
-    	endLifecycle(beanId, false);
-
+    	
     	beans.remove(beanId);
-    }
-
-    private void endAllLifecycles() {
-    	
-    	if(beans instanceof LinkedHashMap) {
-	    	List<String> keyList = new ArrayList<String>(beans.size());
-	    	for(String beanId: beans.keySet()) {
-	    		keyList.add(beanId);
-	    	}
-	
-	    	for(int i = keyList.size()-1; i >= 0; i--) {
-	    		endLifecycle(keyList.get(i), false);
-	    	}
-    	} else {
-    		
-    		// Ends lifecycle associations in a hierarchicly way, so
-    		// that childs always get ended before there parents.
-    		Set<String> rootParents = getRootLifecycleAssociations();
-    		
-    		for(String rootParent : rootParents) {
-    			endLifecycle(rootParent, true);
-    		}
-    		
-    	}
-    	
     }
 
 	/**
@@ -439,22 +395,7 @@ public class BeanAccessor {
 	}
     
     
-    private void endLifecycle(String beanId, boolean associatedBeans) {
-    	
-    	if(associatedBeans) {
-    		List<String> associations = lifecycleAssociations.get(beanId);
-
-            if(associations != null) {
-                for (String association : associations) {
-                	endLifecycle(association, true);
-                }
-            }
-    	}
-    	
-    	notifyObservers(BeanLifecycle.END, beanId);
-
-    }
-
+    
     private void associateLifecycles(String parentBean, String childBean) {
     	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
     	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
