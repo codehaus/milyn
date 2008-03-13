@@ -17,11 +17,9 @@ package example;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.io.Writer;
 
 import javax.xml.transform.stream.StreamResult;
 
@@ -29,7 +27,6 @@ import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.java.JavaSource;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.file.FileRouter;
@@ -48,19 +45,15 @@ public class Main
     {
         final Smooks smooks = new Smooks("smooks-config.xml");
         final ExecutionContext executionContext = smooks.createExecutionContext();
-        BeanAccessor.addBean( "order", order, executionContext, false );
+        BeanAccessor.addBean( executionContext, "order", order );
 
-        final Writer reportWriter = new FileWriter("smooks-report.html");
         try
         {
-            executionContext.setEventListener(new HtmlReportGenerator(reportWriter));
             final StringWriter writer = new StringWriter();
             smooks.filter(new JavaSource(order), new StreamResult(writer), executionContext);
         }
         finally
         {
-        	reportWriter.flush();
-        	reportWriter.close();
         }
         return (String)executionContext.getAttribute( FileRouter.FILE_NAME_ATTR );
     }
