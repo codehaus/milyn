@@ -33,12 +33,11 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
-import org.milyn.cdr.annotation.Uninitialize;
-import org.milyn.cdr.annotation.VisitIf;
-import org.milyn.cdr.annotation.VisitIfNot;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Uninitialize;
+import org.milyn.delivery.annotation.VisitAfterIf;
+import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
@@ -82,6 +81,8 @@ import org.w3c.dom.Element;
  * @since 1.0
  *
  */
+@VisitAfterIf(	condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
+@VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
 public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 {
 	/*
@@ -133,13 +134,11 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 
 	//	Vistor methods
 
-    @VisitIfNot(param = "visitBefore", value = "true", defaultVal = "true")
     public void visitAfter( final Element element, final ExecutionContext execContext ) throws SmooksException
 	{
 		visit( execContext );
 	}
 
-    @VisitIf(param = "visitBefore", value = "true", defaultVal = "true")
 	public void visitBefore( final Element element, final ExecutionContext execContext ) throws SmooksException
 	{
 		visit( execContext );
@@ -172,7 +171,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 
 	//	Lifecycle
 
-	@Initialize
+	@org.milyn.delivery.annotation.Initialize
     public void initialize() throws SmooksConfigurationException
     {
     	log.info( " initializing JMSRouter..." );

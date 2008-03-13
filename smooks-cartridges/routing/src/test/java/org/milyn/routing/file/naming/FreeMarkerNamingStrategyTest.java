@@ -15,11 +15,15 @@
 
 package org.milyn.routing.file.naming;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test for FreeMarkerNamingStrategy
@@ -30,21 +34,14 @@ import org.junit.Test;
 public class FreeMarkerNamingStrategyTest
 {
 	@Test
-	public void test() throws NamingStrategyException
+	public void test() throws NamingStrategyException, SAXException, IOException, ParserConfigurationException
 	{
-		HashMap<String,Object> root = createOrder( 40 );
 		FreeMarkerNamingStrategy strategy = new FreeMarkerNamingStrategy();
-		String generateFileName = strategy.generateFileName( "${order.nr}", root );
+		Order order = new Order();
+		order.setNr( 40 );
+		String generateFileName = strategy.generateFileName( "OrderId-${nr}.txt", order );
 		assertNotNull( generateFileName );
-	}
-	
-	private HashMap<String,Object> createOrder( final int nr )
-	{
-		HashMap<String,Object> root = new HashMap<String,Object>();
-		HashMap<String, Object> order = new HashMap<String,Object>();
-		order.put( "nr", "40" );
-		root.put("order", order );
-		return root;
+		assertEquals( "OrderId-40.txt", generateFileName );
 	}
 	
 }

@@ -25,17 +25,16 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.Initialize;
-import org.milyn.cdr.annotation.VisitIf;
-import org.milyn.cdr.annotation.VisitIfNot;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
+import org.milyn.delivery.annotation.VisitAfterIf;
+import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.routing.file.naming.UniqueFileNamingStrategy;
 import org.milyn.routing.file.naming.FreeMarkerNamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategyException;
@@ -58,6 +57,8 @@ import org.w3c.dom.Element;
  * @since 1.0
  *
  */
+@VisitAfterIf(	condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
+@VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
 public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 {
 	/**
@@ -111,25 +112,21 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 
 	//	Vistor methods
 
-    @VisitIfNot(param = "visitBefore", value = "true", defaultVal = "true")
 	public void visitAfter( final Element element, final ExecutionContext execContext ) throws SmooksException
 	{
 		visit( execContext );
 	}
 
-    @VisitIf(param = "visitBefore", value = "true", defaultVal = "true")
 	public void visitBefore( final Element element, final ExecutionContext execContext ) throws SmooksException
 	{
 		visit( execContext );
 	}
 
-    @VisitIfNot(param = "visitBefore", value = "true", defaultVal = "true")
 	public void visitAfter( final SAXElement saxElement, final ExecutionContext execContext ) throws SmooksException, IOException
 	{
 		visit( execContext );
 	}
 
-    @VisitIf(param = "visitBefore", value = "true", defaultVal = "true")
 	public void visitBefore( final SAXElement saxElement, final ExecutionContext execContext ) throws SmooksException, IOException
 	{
 		visit( execContext );
@@ -176,6 +173,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
         }
         
 		final String fileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( bean );
+		log.info( "FileName : " + fileName );
 		
 		//	Set the absolute file name in the context for retrieval by the calling client
 		execContext.setAttribute( FILE_NAME_ATTR, fileName );
