@@ -52,7 +52,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @VisitBeforeReport(condition = "true", template = "BeanInstanceCreatorReport_Before.mvel")
-@VisitAfterReport(condition = "true", template = "BeanInstanceCreatorReport_After.mvel")
+@VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass[0].value.endsWith('[]')", template = "BeanInstanceCreatorReport_After.mvel")
 public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);

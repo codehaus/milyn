@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.java.JavaResult;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
@@ -39,11 +40,11 @@ import org.xml.sax.SAXException;
  */
 public class BeanBindingPopulatorTest extends TestCase {
 
+	private static boolean REPORT_EXECUTION = false;
+
 	private static final Log logger = LogFactory.getLog(BeanBindingPopulatorTest.class);
 
 	public void test_01_hierarchically() throws IOException, SAXException {
-		logger.debug("Testing hierarchically xml");
-		
 		String xml = "bb-01-hierarchically.xml";
 
         test_01_list("bb-01-smooks-config.xml", xml);
@@ -52,8 +53,6 @@ public class BeanBindingPopulatorTest extends TestCase {
 	}
 
 	public void test_01_flat() throws IOException, SAXException {
-		logger.debug("Testing flat xml");
-		
 		String xml = "bb-01-flat.xml";
 
 		test_01_list("bb-01-smooks-config.xml", xml);
@@ -71,7 +70,11 @@ public class BeanBindingPopulatorTest extends TestCase {
 		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configFile);
         ExecutionContext executionContext = smooks.createExecutionContext();
-
+        
+        if(REPORT_EXECUTION) {
+        	executionContext.setEventListener(new HtmlReportGenerator("target/report/" + dataFile + "-" + configFile + "/index.html"));
+        }
+        
     	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
     	JavaResult result = new JavaResult();
 
@@ -109,8 +112,11 @@ public class BeanBindingPopulatorTest extends TestCase {
 		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configFile);
         ExecutionContext executionContext = smooks.createExecutionContext();
-
-
+    
+        if(REPORT_EXECUTION) {
+        	executionContext.setEventListener(new HtmlReportGenerator("target/report/" + dataFile + "-" + configFile + "/index.html"));
+        }
+        
     	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
     	JavaResult result = new JavaResult();
 
