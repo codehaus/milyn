@@ -16,6 +16,8 @@ package org.milyn.routing.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,7 +67,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	/**
 	 * 	Key used in ExecutionContexts attribute map.
 	 */
-	public static final Object FILE_NAME_ATTR = "FileName";
+    public static final String FILE_NAMES_CONTEXT_KEY = FileRouter.class.getName() + "#CONTEXT_KEY";
 
 	/*
 	 * 	Log
@@ -182,10 +184,9 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
         }
         
 		final String fileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( bean );
-		log.info( "FileName : " + fileName );
 		
-		//	Set the absolute file name in the context for retrieval by the calling client
-		execContext.setAttribute( FILE_NAME_ATTR, fileName );
+		//	Add the absolute file name in the context for retrieval by the calling client
+		setFileNameInContext( fileName, execContext );
         
 		OutputStrategy outputStrategy = null;
 		try
@@ -204,6 +205,27 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 			if ( outputStrategy != null )
 				outputStrategy.close();
 		}
+	}
+	
+	private void setFileNameInContext( final String fileName, final ExecutionContext execContext )
+	{
+		Object obj = execContext.getAttribute( FILE_NAMES_CONTEXT_KEY );
+		List<String> fileNames = null;;
+		if ( obj == null )
+		{
+			fileNames = new ArrayList<String>();
+			fileNames.add( fileName );
+		}
+		else
+		{
+			fileNames = (List<String>) obj;
+			if ( !fileNames.contains( fileName ) );
+			{
+				fileNames.add( fileName );
+			}
+		}
+		log.info( "FileNames :" + fileNames );
+		execContext.setAttribute( FILE_NAMES_CONTEXT_KEY, fileNames );
 	}
 
 }
