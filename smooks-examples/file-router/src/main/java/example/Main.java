@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.StringWriter;
 
 import javax.xml.transform.stream.StreamResult;
@@ -58,7 +59,7 @@ public class Main
         return (String)executionContext.getAttribute( FileRouter.FILE_NAME_ATTR );
     }
 
-    public static void main(String[] args) throws IOException, SAXException, SmooksException, InterruptedException
+    public static void main(String[] args) throws IOException, SAXException, SmooksException, InterruptedException, ClassNotFoundException
     {
         final Main smooksMain = new Main();
         final Order order = new Order();
@@ -74,7 +75,7 @@ public class Main
         System.out.println("\n\n");
         System.out.println( "Transformed and appended to file : " + fileName );
         System.out.println( "File contents :");
-        System.out.println( new String( StreamUtils.readStream(new FileInputStream( fileName ) ) ) );
+        System.out.println( new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
         System.out.println("\n\n");
         pause("That's it ");
     }
