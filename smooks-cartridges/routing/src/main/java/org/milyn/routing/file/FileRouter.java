@@ -14,16 +14,12 @@
  */
 package org.milyn.routing.file;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
@@ -35,9 +31,11 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.routing.file.naming.TemplatedNamingStrategy;
+import org.milyn.routing.file.io.OutputStrategy;
+import org.milyn.routing.file.io.OutputStrategyFactory;
 import org.milyn.routing.file.naming.NamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategyException;
+import org.milyn.routing.file.naming.TemplatedNamingStrategy;
 import org.w3c.dom.Element;
 
 /**
@@ -53,6 +51,8 @@ import org.w3c.dom.Element;
  *    &lt;param name="destinationDirectory">dir&lt;/param&gt;
  *    &lt;param name="fileNamePattern">${orderid}&lt;/param&gt;
  * &lt;/resource-config&gt;
+ * Optional parameters:
+ *    &lt;param name="encoding"&gt;UTF-8&lt;/param&gt;
  * </pre>
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  * @since 1.0
@@ -68,7 +68,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	public static final Object FILE_NAME_ATTR = "FileName";
 
 	/*
-	 * 	Logger
+	 * 	Log
 	 */
 	private final Log log = LogFactory.getLog( FileRouter.class );
 
@@ -92,6 +92,13 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
     private String beanId;
 
     /*
+     *	Character encoding to be used when writing character
+     * 	output
+     */
+    @ConfigParam( use = ConfigParam.Use.OPTIONAL, defaultVal = "UTF-8" )
+	private String encoding;
+    
+    /*
      * 	File object of the destination directory
      */
     private File destinationDir;
@@ -100,6 +107,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
      * Naming strategy for generating the file pattern for output files.
      */
     private NamingStrategy namingStrategy = new TemplatedNamingStrategy();
+
 
 	@Initialize
 	public void initialize()
@@ -155,7 +163,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
     		throw new SmooksException( e.getMessage(), e );
 		}
 	}
-
+	
 	//	private
 
 	/**
@@ -179,12 +187,12 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 		//	Set the absolute file name in the context for retrieval by the calling client
 		execContext.setAttribute( FILE_NAME_ATTR, fileName );
         
-		Writer writer = null;
+		OutputStrategy outputStrategy = null;
 		try
 		{
-			writer = createFileWriter( fileName );
-			writer.write( bean.toString() );
-			writer.flush();
+    		outputStrategy = OutputStrategyFactory.getInstance().createStrategy( fileName, bean );
+			outputStrategy.write( bean, encoding );
+			outputStrategy.flush();
 		}
 		catch (IOException e)
 		{
@@ -193,48 +201,8 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 		finally
 		{
-			closeFileWriter( writer );
-		}
-	}
-
-	private Writer createFileWriter( final String fileName )
-	{
-        try
-		{
-			return new BufferedWriter( new FileWriter( fileName, true));
-		}
-        catch (IOException e)
-		{
-    		final String errorMsg = "IOException while trying to create file [" + fileNamePattern + "]";
-    		throw new SmooksConfigurationException( errorMsg, e );
-		}
-	}
-	
-
-	private void closeFileWriter( final Writer writer )
-	{
-    	log.debug( "Closing FileWriter");
-		if ( writer != null )
-		{
-			try
-			{
-				writer.flush();
-			}
-			catch (IOException e)
-			{
-        		final String errorMsg = "IOException while trying to flush writer to file";
-        		throw new SmooksConfigurationException( errorMsg, e );
-			}
-
-			try
-			{
-				writer.close();
-			}
-			catch (IOException e)
-			{
-        		final String errorMsg = "IOException while trying to close writer to  file";
-        		throw new SmooksConfigurationException( errorMsg, e );
-			}
+			if ( outputStrategy != null )
+				outputStrategy.close();
 		}
 	}
 

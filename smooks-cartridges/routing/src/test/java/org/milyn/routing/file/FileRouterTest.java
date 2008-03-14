@@ -17,11 +17,11 @@ package org.milyn.routing.file;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -71,7 +71,7 @@ public class FileRouterTest
 	}
 
 	@Test
-	public void visitAfter() throws ParserConfigurationException, FileNotFoundException, IOException
+	public void visitAfter() throws ParserConfigurationException, FileNotFoundException, IOException, ClassNotFoundException
 	{
         configureFileRouter( beanId, tmpDir, filenamePattern, router );
 
@@ -84,9 +84,9 @@ public class FileRouterTest
         assertTrue( outputFile.exists() );
         outputFile.deleteOnExit();
 
-        assertEquals( testbean.toString(), getFileContent( outputFile ) );
+        assertEquals( testbean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
 	}
-
+	
 	@Before
 	public void setup()
 	{
@@ -108,29 +108,6 @@ public class FileRouterTest
         config.setParameter( "destinationDirectory", destinationDir );
 		config.setParameter( "fileNamePattern", filenamePattern );
         Configurator.configure( router, config, new MockApplicationContext() );
-	}
-
-	private String getFileContent(final File file ) throws IOException
-	{
-		BufferedReader reader = null;
-		try
-		{
-			reader = new BufferedReader( new FileReader( file ) );
-            String str=null;
-            StringBuilder sb = new StringBuilder();
-            while ( (str = reader.readLine()) != null )
-            {
-            	sb.append( str );
-            }
-            return sb.toString();
-		}
-		finally
-		{
-			if ( reader != null )
-			{
-				reader.close();
-			}
-		}
 	}
 
 }
