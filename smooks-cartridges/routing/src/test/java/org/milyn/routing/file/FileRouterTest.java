@@ -22,19 +22,28 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.StringWriter;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.delivery.java.JavaSource;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.TestBean;
 import org.milyn.routing.util.RouterTestHelper;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test for the FileRouter
@@ -77,14 +86,29 @@ public class FileRouterTest
 
         router.visitAfter( (Element)null , execContext );
 
-        Object fileName = execContext.getAttribute( FileRouter.FILE_NAME_ATTR );
-        assertTrue( fileName instanceof String );
-
-        File outputFile = new File( (String)fileName );
+        Object fileName = execContext.getAttribute( FileRouter.FILE_NAMES_CONTEXT_KEY );
+        assertTrue( fileName instanceof List );
+        List<String> fileNames = (List<String>) fileName;
+        File outputFile = new File( fileNames.get( 0 ) );
         assertTrue( outputFile.exists() );
         outputFile.deleteOnExit();
 
         assertEquals( testbean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
+	}
+	
+	@Test
+	public void filter() throws IOException, SAXException
+	{
+		Smooks smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
+		ExecutionContext executionContext = smooks.createExecutionContext();
+		TestBean bean = new TestBean();
+		bean.setName( "Daniel" );
+        BeanAccessor.addBean( executionContext, "testBean", bean );
+        
+        final StringWriter writer = new StringWriter();
+        smooks.filter(new JavaSource(bean), new StreamResult(writer), executionContext);
+        Object fileName = executionContext.getAttribute( FileRouter.FILE_NAMES_CONTEXT_KEY );
+        System.out.println( "FileNames " + fileName );
 	}
 	
 	@Before
