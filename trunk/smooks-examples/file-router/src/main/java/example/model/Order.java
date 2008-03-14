@@ -15,6 +15,7 @@
 */
 package example.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,8 +23,13 @@ import java.util.List;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Order {
-    private Header header;
+public class Order implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private Header header;
     private List<OrderItem> orderItems;
 
     public Order() {

@@ -15,13 +15,18 @@
 */
 package example.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Header {
-    private Date date;
+public class Header implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Date date;
     private Long customerNumber;
     private String customerName;
 
