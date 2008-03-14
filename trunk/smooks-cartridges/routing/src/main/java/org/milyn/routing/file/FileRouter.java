@@ -15,9 +15,8 @@
 package org.milyn.routing.file;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,13 +44,23 @@ import org.w3c.dom.Element;
  * FileRouter is a Visitor for DOM or SAX elements. It appends the content
  * to the configured destination file.
  * </p>
+ * The name of the output file(s) is determined by a NamingStrategy, the
+ * default being {@link TemplatedNamingStrategy}
+ * </p>
+ * As the number of files produced by a single transformation could be 
+ * quite large the filename are not stored in memory.<br> 
+ * Instead they are appended to a file. This is simple a list of the file names created
+ * during the transformation. <br>
+ * The name of this file containing the list of file will have the same
+ * as the naming strategy with the ".lst" (list) suffix.
+ * </p> 
  * Example configuration:
  * <pre>
  * &lt;resource-config selector="orderItems"&gt;
  *    &lt;resource&gt;org.milyn.routing.file.FileRouter&lt;/resource&gt;
  *    &lt;param name="beanId">beanId&lt;/param&gt;
  *    &lt;param name="destinationDirectory">dir&lt;/param&gt;
- *    &lt;param name="fileNamePattern">${orderid}&lt;/param&gt;
+ *    &lt;param name="fileNamePattern">${orderid}-${customName}.txt&lt;/param&gt;
  * &lt;/resource-config&gt;
  * Optional parameters:
  *    &lt;param name="encoding"&gt;UTF-8&lt;/param&gt;
@@ -64,15 +73,16 @@ import org.w3c.dom.Element;
 @VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
 public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 {
-	/**
-	 * 	Key used in ExecutionContexts attribute map.
-	 */
-    public static final String FILE_NAMES_CONTEXT_KEY = FileRouter.class.getName() + "#CONTEXT_KEY";
-
 	/*
 	 * 	Log
 	 */
+    @SuppressWarnings( "unused" )
 	private final Log log = LogFactory.getLog( FileRouter.class );
+    
+    /*
+     * 	System line separator
+     */
+	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 
 	/*
 	 * 	Name of directory where files will be created.
@@ -185,15 +195,13 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
         
 		final String fileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( bean );
 		
-		//	Add the absolute file name in the context for retrieval by the calling client
-		setFileNameInContext( fileName, execContext );
-        
 		OutputStrategy outputStrategy = null;
 		try
 		{
     		outputStrategy = OutputStrategyFactory.getInstance().createStrategy( fileName, bean );
 			outputStrategy.write( bean, encoding );
 			outputStrategy.flush();
+    		addFileToFileList( fileName, execContext );
 		}
 		catch (IOException e)
 		{
@@ -207,25 +215,29 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 	}
 	
-	private void setFileNameInContext( final String fileName, final ExecutionContext execContext )
+	private void addFileToFileList( final String transformedFileName, final ExecutionContext execContext ) throws IOException
 	{
-		Object obj = execContext.getAttribute( FILE_NAMES_CONTEXT_KEY );
-		List<String> fileNames = null;;
-		if ( obj == null )
+		String fileNamesList = FileListAccessor.getFileName( execContext );
+		if ( fileNamesList == null )
 		{
-			fileNames = new ArrayList<String>();
-			fileNames.add( fileName );
+    		fileNamesList = transformedFileName + ".lst";
+    		FileListAccessor.setFileName( fileNamesList, execContext );
 		}
-		else
+		
+		FileWriter writer = null;
+		try
 		{
-			fileNames = (List<String>) obj;
-			if ( !fileNames.contains( fileName ) );
+			writer = new FileWriter( fileNamesList, true );
+			writer.write( transformedFileName + LINE_SEPARATOR );
+		} 
+		finally
+		{
+			if ( writer != null )
 			{
-				fileNames.add( fileName );
+				writer.close();
 			}
 		}
-		log.info( "FileNames :" + fileNames );
-		execContext.setAttribute( FILE_NAMES_CONTEXT_KEY, fileNames );
+		
 	}
 
 }

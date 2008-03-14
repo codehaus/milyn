@@ -15,6 +15,7 @@
 package org.milyn.routing.file;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -29,7 +30,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -86,9 +86,12 @@ public class FileRouterTest
 
         router.visitAfter( (Element)null , execContext );
 
-        Object fileName = execContext.getAttribute( FileRouter.FILE_NAMES_CONTEXT_KEY );
-        assertTrue( fileName instanceof List );
-        List<String> fileNames = (List<String>) fileName;
+        String fileName = FileListAccessor.getFileName( execContext );
+        assertNotNull( fileName );
+        
+        List<String> fileNames = FileListAccessor.getFileList( execContext ); 
+        System.out.println(fileNames);
+        
         File outputFile = new File( fileNames.get( 0 ) );
         assertTrue( outputFile.exists() );
         outputFile.deleteOnExit();
@@ -97,7 +100,7 @@ public class FileRouterTest
 	}
 	
 	@Test
-	public void filter() throws IOException, SAXException
+	public void filter() throws IOException, SAXException, ClassNotFoundException
 	{
 		Smooks smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
 		ExecutionContext executionContext = smooks.createExecutionContext();
@@ -107,8 +110,13 @@ public class FileRouterTest
         
         final StringWriter writer = new StringWriter();
         smooks.filter(new JavaSource(bean), new StreamResult(writer), executionContext);
-        Object fileName = executionContext.getAttribute( FileRouter.FILE_NAMES_CONTEXT_KEY );
-        System.out.println( "FileNames " + fileName );
+        
+        List<String> fileNames = FileListAccessor.getFileList( executionContext ); 
+        File outputFile = new File( fileNames.get( 0 ) );
+        assertTrue( outputFile.exists() );
+        outputFile.deleteOnExit();
+
+        assertEquals( bean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
 	}
 	
 	@Before
@@ -133,5 +141,5 @@ public class FileRouterTest
 		config.setParameter( "fileNamePattern", filenamePattern );
         Configurator.configure( router, config, new MockApplicationContext() );
 	}
-
+	
 }

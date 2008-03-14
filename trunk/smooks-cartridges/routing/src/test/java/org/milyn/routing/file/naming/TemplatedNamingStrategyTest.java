@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 /**
- * Unit test for FreeMarkerNamingStrategy
+ * Unit test for TemplatedNamingStrategy
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
