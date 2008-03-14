@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.StringWriter;
+import java.util.List;
 
 import javax.xml.transform.stream.StreamResult;
 
@@ -56,7 +57,8 @@ public class Main
         finally
         {
         }
-        return (String)executionContext.getAttribute( FileRouter.FILE_NAME_ATTR );
+        List<String> fileNames = (List<String>) executionContext.getAttribute( FileRouter.FILE_NAMES_CONTEXT_KEY );
+        return fileNames.get( 0 );
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException, InterruptedException, ClassNotFoundException
