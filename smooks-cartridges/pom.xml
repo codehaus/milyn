@@ -55,7 +55,7 @@
         <module>scripting</module>
         <module>servlet</module>
         <module>templating</module>        
-        <!-- module>routing</module -->
+        <module>routing</module>
         <!-- module>perfcomp</module -->
     </modules>
 
