@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -30,6 +33,8 @@ import freemarker.template.TemplateException;
  */
 public class TemplatedNamingStrategy implements NamingStrategy
 {
+	private Log log = LogFactory.getLog( TemplatedNamingStrategy.class );
+	
 	/**
 	 * 
 	 * @param template	- FreeMarker template
@@ -41,6 +46,7 @@ public class TemplatedNamingStrategy implements NamingStrategy
 	{
 		try
 		{
+			log.info( "template : " + templateString + ", dataModel(" + dataModel.getClass().getName() + ") : " + dataModel );
 			Template template = new Template("free-marker-template", new StringReader( templateString ), new Configuration());
 			StringWriter writer = new StringWriter();
 			template.process( dataModel, writer );

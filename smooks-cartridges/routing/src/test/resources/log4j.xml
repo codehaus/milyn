@@ -12,7 +12,7 @@
    </appender>
 
    <category name="org.milyn">
-      <priority value="fatal"/>
+      <priority value="info"/>
    </category>
 
    <category name="org.milyn.routing">
