@@ -31,6 +31,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.java.JavaSource;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.routing.file.FileListAccessor;
 import org.milyn.routing.file.FileRouter;
 import org.xml.sax.SAXException;
 
@@ -57,7 +58,9 @@ public class Main
         finally
         {
         }
-        List<String> fileNames = (List<String>) executionContext.getAttribute( FileRouter.FILE_NAMES_CONTEXT_KEY );
+        System.out.println("\n\n");
+        System.out.println( "Transformed and appended file name to file : " + FileListAccessor.getFileName( executionContext ) );
+        List<String> fileNames = (List<String>) FileListAccessor.getFileList( executionContext );
         return fileNames.get( 0 );
     }
 
@@ -75,7 +78,6 @@ public class Main
         pause("Press 'enter' to display the transformed message...");
         String fileName = smooksMain.runSmooksTransform(order);
         System.out.println("\n\n");
-        System.out.println( "Transformed and appended to file : " + fileName );
         System.out.println( "File contents :");
         System.out.println( new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
         System.out.println("\n\n");
