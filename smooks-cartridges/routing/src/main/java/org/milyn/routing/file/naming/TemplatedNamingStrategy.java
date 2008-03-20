@@ -44,11 +44,14 @@ public class TemplatedNamingStrategy implements NamingStrategy
 	 */
 	public String generateFileName( final String templateString, final Object dataModel ) throws NamingStrategyException 
 	{
+		StringReader reader = null;
 		try
 		{
-			log.info( "template : " + templateString + ", dataModel(" + dataModel.getClass().getName() + ") : " + dataModel );
-			Template template = new Template("free-marker-template", new StringReader( templateString ), new Configuration());
-			StringWriter writer = new StringWriter();
+			log.debug( "template : " + templateString + ", dataModel(" + dataModel.getClass().getName() + ") : " + dataModel );
+			reader = new StringReader( templateString );
+			final Template template = new Template("free-marker-template", reader, new Configuration());
+			
+			final StringWriter writer = new StringWriter();
 			template.process( dataModel, writer );
 			return writer.toString();
 		} 
@@ -61,6 +64,13 @@ public class TemplatedNamingStrategy implements NamingStrategy
 		{
 			final String errorMsg = "TempalateException while trying to process the FreeMarker template";
 			throw new NamingStrategyException( errorMsg, e );
+		}
+		finally
+		{
+			if ( reader != null )
+				reader.close();
+			
+    		//	no need to close a StringWriter, that has not effect.
 		}
 	}
 
