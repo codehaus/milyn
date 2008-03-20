@@ -44,11 +44,11 @@ import org.milyn.container.ExecutionContext;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
-public class AbstractContainerPlugin
+public class PayloadProcessor
 {
 	private Smooks smooks;
 	
-	public AbstractContainerPlugin( final Smooks smooks )
+	public PayloadProcessor( final Smooks smooks )
 	{
 		this.smooks = smooks;
 	}

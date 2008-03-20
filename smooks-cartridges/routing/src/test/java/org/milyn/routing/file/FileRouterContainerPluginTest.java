@@ -23,8 +23,8 @@ import java.io.IOException;
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.plugin.AbstractContainerPlugin;
-import org.milyn.container.plugin.ResultType;
+import org.milyn.container.plugin.PayloadProcessor;
+import org.milyn.delivery.java.JavaResult;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.TestBean;
 import org.xml.sax.SAXException;
@@ -36,21 +36,21 @@ import org.xml.sax.SAXException;
  */
 public class FileRouterContainerPluginTest
 {
-    private AbstractContainerPlugin plugin = new FileRouterContainerPlugin();
-	
 	private static TestBean bean = new TestBean();
+	
 	
 	@Test
 	public void process() throws IOException, SAXException
 	{
 
 		Smooks smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
+        PayloadProcessor plugin = new FileRouterContainerPlugin( smooks );
 		ExecutionContext executionContext = smooks.createExecutionContext();
 		bean.setName( "Daniel" );
         BeanAccessor.addBean( executionContext, "testBean", bean );
-		plugin.setSmooksInstance( smooks );
 		
-        Object object = plugin.process( bean, ResultType.JAVA, executionContext );
+        Object object = plugin.process( bean, new JavaResult(), executionContext );
+        
         
 		assertNotNull( object );
 		assertTrue ( object instanceof String );
