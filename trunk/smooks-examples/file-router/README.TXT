@@ -1,6 +1,5 @@
 About This Example:
 ===================
-	[ Work in progress... ]
     This example illustrates how Smooks can be used to transform and then
 	route(append) the output to a file.
 
