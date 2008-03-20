@@ -39,21 +39,21 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
-public class AbstractContainerPluginTest
+public class PayloadProcessorTest
 {
 	private Smooks smooks;
 	
 	@Test ( expected = IllegalArgumentException.class )
 	public void process() throws IOException, SAXException
 	{
-    	AbstractContainerPlugin plugin = new MockAbstractContainerPlugin( smooks );
+    	PayloadProcessor plugin = new MockAbstractContainerPlugin( smooks );
 		plugin.process( null, smooks.createExecutionContext() );
 	}
 	
 	@Test
 	public void processSourceResult() throws IOException, SAXException
 	{
-    	AbstractContainerPlugin plugin = new MockAbstractContainerPlugin( smooks );
+    	PayloadProcessor plugin = new MockAbstractContainerPlugin( smooks );
 		SourceResult sourceResult = createSourceResult();
 		
 		Object object = plugin.process( sourceResult, smooks.createExecutionContext() );
@@ -61,7 +61,7 @@ public class AbstractContainerPluginTest
 		assertTrue( object instanceof StreamResult );
 	}
 	
-	private static class MockAbstractContainerPlugin extends AbstractContainerPlugin
+	private static class MockAbstractContainerPlugin extends PayloadProcessor
 	{
 		public MockAbstractContainerPlugin(Smooks smooks)
 		{
