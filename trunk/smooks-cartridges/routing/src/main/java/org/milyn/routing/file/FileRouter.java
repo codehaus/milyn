@@ -17,6 +17,7 @@ package org.milyn.routing.file;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.dgc.VMID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -220,7 +221,7 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 		String fileNamesList = FileListAccessor.getFileName( execContext );
 		if ( fileNamesList == null )
 		{
-    		fileNamesList = transformedFileName + ".lst";
+    		fileNamesList = destDirName + File.separator + new VMID().toString() + ".lst";
     		FileListAccessor.setFileName( fileNamesList, execContext );
 		}
 		

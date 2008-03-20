@@ -29,6 +29,7 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamResult;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.milyn.Smooks;
@@ -90,13 +91,13 @@ public class FileRouterTest
         assertNotNull( fileName );
         
         List<String> fileNames = FileListAccessor.getFileList( execContext ); 
-        System.out.println(fileNames);
         
         File outputFile = new File( fileNames.get( 0 ) );
         assertTrue( outputFile.exists() );
         outputFile.deleteOnExit();
 
         assertEquals( testbean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
+        
 	}
 	
 	@Test
@@ -117,6 +118,9 @@ public class FileRouterTest
         outputFile.deleteOnExit();
 
         assertEquals( bean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
+        
+        String fileName = FileListAccessor.getFileName( executionContext );
+        new File( fileName ).deleteOnExit();
 	}
 	
 	@Before
@@ -128,6 +132,16 @@ public class FileRouterTest
 		assertTrue( new File( tmpDir ).exists() );
 		testbean = RouterTestHelper.createBean();
         execContext = RouterTestHelper.createExecutionContext( beanId, testbean );
+	}
+	
+	@After
+	public void tearDown()
+	{
+        String fileName = FileListAccessor.getFileName( execContext );
+        if ( fileName != null )
+        {
+            new File( fileName ).deleteOnExit();
+        }
 	}
 
 	private void configureFileRouter(
