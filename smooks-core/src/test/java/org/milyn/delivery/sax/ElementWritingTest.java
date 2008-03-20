@@ -55,4 +55,37 @@ public class ElementWritingTest extends TestCase {
         assertTrue(SAXVisitAfterAndChildrenVisitor.onChildText);
         assertTrue(SAXVisitAfterVisitor.visited);
     }
+
+    public void test_default_writing_off_no_serializers() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("DefaultWritingOff_No_Serializers_Test.xml"));
+
+        StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
+        StringResult stringResult = new StringResult();
+
+        smooks.filter(stringSource, stringResult, smooks.createExecutionContext());
+
+        // The "default.serialization.on" global param is set to "false" in the config, so
+        // nothing should get writen to the result because there are no configured
+        // serialization Visitors.
+        assertEquals("", stringResult.getResult());
+        
+        assertTrue(SAXVisitBeforeVisitor.visited);
+        assertTrue(SAXVisitAfterVisitor.visited);
+    }
+
+    public void test_default_writing_off_one_serializer() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("DefaultWritingOff_One_Serializer_Test.xml"));
+
+        StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
+        StringResult stringResult = new StringResult();
+
+        smooks.filter(stringSource, stringResult, smooks.createExecutionContext());
+
+        // The "default.serialization.on" global param is set to "false" in the config.
+        // There's just a single result writing visitor configured on the "c" element...
+        assertEquals("Smooks SAX Transforms!!", stringResult.getResult());
+
+        assertTrue(SAXVisitBeforeVisitor.visited);
+        assertTrue(SAXVisitAfterVisitor.visited);
+    }
 }

@@ -95,4 +95,10 @@ public interface ContentDeliveryConfig {
      * @return The list of events.
      */
     public abstract List<ConfigBuilderEvent> getConfigBuilderEvents();
+
+    /**
+     * Is default serialization on..
+     * @return True if default serialization is on, otherwise false.
+     */
+    public abstract boolean isDefaultSerializationOn();
 }

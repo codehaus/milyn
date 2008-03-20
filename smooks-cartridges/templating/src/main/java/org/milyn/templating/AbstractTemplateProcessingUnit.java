@@ -34,6 +34,7 @@ import java.nio.charset.Charset;
 public abstract class AbstractTemplateProcessingUnit implements DOMElementVisitor {
 
     private Log logger = LogFactory.getLog(getClass());
+    private static boolean legactVisitBeforeParamWarn = false;
 
     protected enum Action {
         REPLACE,
@@ -43,7 +44,7 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         BIND_TO,
     }
 
-    private boolean visitBefore;
+    private boolean applyTemplateBefore;
 
     private Action action;
 
@@ -57,13 +58,25 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
         } catch (Exception e) {
             throw new SmooksConfigurationException("Error loading Templating resource: " + config, e);
         }
+        String visitBefore = config.getStringParameter("visitBefore");
+        if(visitBefore != null) {
+            if(!legactVisitBeforeParamWarn) {
+                logger.warn("Templating <param> 'visitBefore' deprecated.  Use 'applyTemplateBefore'.");
+                legactVisitBeforeParamWarn = true;
+            }
+            this.applyTemplateBefore = visitBefore.equalsIgnoreCase("true");
+        }
     }
 	
 	protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
 
     @ConfigParam(defaultVal = "false")
-    public void setVisitBefore(boolean visitBefore) {
-        this.visitBefore = visitBefore;
+    public void setApplyTemplateBefore(boolean applyTemplateBefore) {
+        this.applyTemplateBefore = applyTemplateBefore;
+    }
+
+    public boolean applyTemplateBefore() {
+        return applyTemplateBefore;
     }
 
     @ConfigParam(name = "action", defaultVal = "replace", choice = {"replace", "addto", "insertbefore", "insertafter", "bindto"}, decoder = ActionDecoder.class)
@@ -181,13 +194,13 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
 	}
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        if(visitBefore) {
+        if(applyTemplateBefore) {
             visit(element, executionContext);
         }
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-        if(!visitBefore) {
+        if(!applyTemplateBefore) {
             visit(element, executionContext);
         }
     }

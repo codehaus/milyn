@@ -1,49 +1,161 @@
-body {
-    font-family: Arial, Helvetica, san-serif;
-    background-color: RGB( 220, 220, 220 );
-    padding: 10 10 10 20;
+
+/*--------------------------------------------------
+  REQUIRED to hide the non-active tab content.
+  But do not hide them in the print stylesheet!
+  --------------------------------------------------*/
+.tabberlive .tabbertabhide {
+    display: none;
 }
 
-.indented {
-    padding: 10 10 10 20;
+/*--------------------------------------------------
+  .tabber = before the tabber interface is set up
+  .tabberlive = after the tabber interface is set up
+  --------------------------------------------------*/
+.tabber {
 }
 
-a:link, a:visited {
-    color: blue;
+.tabberlive {
+    margin-top: 1em;
 }
 
-table.event {
-    width: 100%;
-    border: 1px solid black;
+/*--------------------------------------------------
+  ul.tabbernav = the tab navigation list
+  li.tabberactive = the active tab
+  --------------------------------------------------*/
+ul.tabbernav {
+    margin: 0;
+    padding: 3px 0;
+    border-bottom: 1px solid #778;
+    font: bold 12px Verdana, sans-serif;
+}
+
+ul.tabbernav li {
+    list-style: none;
+    margin: 0;
+    display: inline;
+}
+
+ul.tabbernav li a {
+    padding: 3px 0.5em;
+    margin-left: 3px;
+    border: 1px solid #778;
+    border-bottom: none;
+    background: #DDE;
+    text-decoration: none;
+}
+
+ul.tabbernav li a:link {
+    color: #448;
+}
+
+ul.tabbernav li a:visited {
+    color: #667;
+}
+
+ul.tabbernav li a:hover {
+    color: #000;
+    background: #AAE;
+    border-color: #227;
+}
+
+ul.tabbernav li.tabberactive a {
+    background-color: #fff;
+    border-bottom: 1px solid #fff;
+}
+
+ul.tabbernav li.tabberactive a:hover {
+    color: #000;
     background: white;
-    font-family: Courier, Arial, Helvetica, san-serif;
+    border-bottom: 1px solid white;
 }
 
-td.field {
-    width: 100;
-    background: RGB( 220, 200, 150 );
+/*--------------------------------------------------
+  .tabbertab = the tab content
+  Add style only after the tabber interface is set up (.tabberlive)
+  --------------------------------------------------*/
+.tabberlive .tabbertab {
+    padding: 5px;
+    border: 1px solid #aaa;
+    border-top: 0;
+
+    /* If you don't want the tab size changing whenever a tab is changed
+you can set a fixed height */
+
+/* height:200px; */
+
+    /* If you set a fix height set overflow to auto and you will get a
+ scrollbar when necessary */
+
+/* overflow:auto; */
 }
 
-td.value {
-    background: #f5f5f5;
-    font-size: 7pt;
+/* If desired, hide the heading since a heading is provided by the tab */
+.tabberlive .tabbertab h2 {
+    display: none;
 }
 
-div.srccontent {
-    border: 1px dashed black;
-    padding: 10 10 10 10;
-    margin-left: 20;
-    background: white;
-    font-family: Courier, Arial, Helvetica, san-serif;
+.tabberlive .tabbertab h3 {
+    display: none;
 }
 
-#trailimageid {
-    font-size: 0.75em;
-    position: absolute;
-    visibility: hidden;
-    left: 0px;
-    top: 0px;
-    width: 850px;
-    height: 0px;
-    z-index: 100;
+/* Example of using an ID to set different styles for the tabs on the page */
+.tabberlive#tab1 {
+}
+
+.tabberlive#tab2 {
+}
+
+.tabberlive#outertab .tabbertab {
+    overflow: auto;
+}
+
+.tabberlive#outertab .tabbertab {
+    height: 650px;
+}
+
+#executetab {
+    position: relative;
+    background-color: rgb( 238, 233, 233 );
+}
+
+#left {
+    float: left;
+    height: 93%;
+    width: 27%;
+    margin: 1%;
+    border-style: groove;
+    background-color: white;
+    overflow: scroll;
+}
+
+#right {
+    position: relative;
+    float: right;
+    height: 93%;
+    margin: 1%;
+    width: 68%;
+}
+
+#righttop {
+    float: top;
+    height: 28%;
+    width: 97%;
+    border-style: groove;
+    background-color: white;
+    overflow: scroll;
+}
+
+#rightmiddle {
+    float: top;
+    height: 6%;
+    width: 97%;
+}
+
+#rightbottom {
+    float: bottom;
+    height: 65%;
+    width: 97%;
+    border-style: groove;
+    background-color: white;
+    overflow: scroll;
 }

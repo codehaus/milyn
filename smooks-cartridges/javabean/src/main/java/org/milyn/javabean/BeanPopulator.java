@@ -337,7 +337,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private String getSelectorProperty(String selector) {
         StringBuffer selectorProp = new StringBuffer();
-        String[] selectorTokens = selector.split(" ");
+        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
 
         for (String selectorToken : selectorTokens) {
             if (!selectorToken.trim().startsWith("@")) {
@@ -350,7 +350,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private String getAttributeNameProperty(String selector) {
         StringBuffer selectorProp = new StringBuffer();
-        String[] selectorTokens = selector.split(" ");
+        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
 
         for (String selectorToken : selectorTokens) {
             if (selectorToken.trim().startsWith("@")) {

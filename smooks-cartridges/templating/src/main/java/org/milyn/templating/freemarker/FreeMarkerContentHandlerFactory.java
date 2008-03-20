@@ -14,10 +14,7 @@ import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.delivery.sax.*;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.xml.DomUtils;
@@ -52,10 +49,10 @@ import java.util.Map;
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter</i>&lt;/param&gt;
  *
- *     &lt;!-- (Optional) Should the template be applied before (true) or
+ *     &lt;!-- (Optional - DOM Only) Should the template be applied before (true) or
  *             after (false) Smooks visits the child elements of the target element.
  *             Default "false".--&gt;
- *     &lt;param name="<b>visitBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
+ *     &lt;param name="<b>applyTemplateBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
  *
  *     &lt;!-- (Optional) Template encoding.
  *          Default "UTF-8".--&gt;
@@ -118,6 +115,7 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
 
         private Template template;
         private SmooksResourceConfiguration config;
+        private DefaultSAXElementSerializer targetWriter;
 
         protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {
             byte[] templateBytes = config.getBytes();
@@ -129,8 +127,19 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
                 templateReader.close();
             }
             this.config = config;
+
+            // We'll use the DefaultSAXElementSerializer to write out the targeted element
+            // where the action is not "replace" or "bindto".
+            targetWriter = new DefaultSAXElementSerializer();
+            targetWriter.setWriterOwner(this);
         }
 
+        /**
+         * Apply the template for DOM.
+         * @param element The targeted DOM Element.
+         * @param executionContext The Smooks execution context.
+         * @throws SmooksException Failed to apply template. See cause.
+         */
         protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
             // Apply the template...
             String templatingResult;
@@ -163,23 +172,81 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
             processTemplateAction(element, resultNode);
         }
 
+        /* ------------------------------------------------------------------------------------------------------------------------------------------
+           SAX Processing methods.
+           ------------------------------------------------------------------------------------------------------------------------------------------ */
+
         public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-            // Acquire the writer for this SAX element...
-            element.getWriter(this);
+            if(getAction() == Action.INSERT_BEFORE) {
+                // apply the template...
+                applyTemplate(element, executionContext);
+                // write the start of the element...
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitBefore(element, executionContext);
+                }
+            } else if(getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
+                // write the start of the element...
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitBefore(element, executionContext);
+                }
+            } else {
+                // Just acquire ownership of the writer...
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    element.getWriter(this);
+                }
+            }
         }
 
         public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
+            if(getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.onChildText(element, childText, executionContext);
+                }
+            }
         }
 
         public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
+            if(getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.onChildElement(element, childElement, executionContext);
+                }
+            }
         }
 
         public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+            if(getAction() == Action.ADDTO) {
+                if(!targetWriter.isStartWritten(element)) {
+                    if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                        targetWriter.writeStartElement(element);
+                    }
+                }
+                // apply the template...
+                applyTemplate(element, executionContext);
+                // write the end of the element...
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitAfter(element, executionContext);
+                }
+            } else if(getAction() == Action.INSERT_BEFORE) {
+                // write the end of the element...
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitAfter(element, executionContext);
+                }
+            } else if(getAction() == Action.INSERT_AFTER) {
+                // write the end of the element...
+                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitAfter(element, executionContext);
+                }
+                // apply the template...
+                applyTemplate(element, executionContext);
+            } else if(getAction() == Action.REPLACE || getAction() == Action.BIND_TO) {
+                // just apply the template...
+                applyTemplate(element, executionContext);
+            }
+        }
+
+        private void applyTemplate(SAXElement element, ExecutionContext executionContext) {
             try {
-                if(getAction() == Action.REPLACE) {
-                    Writer writer = element.getWriter(this);
-                    applyTemplate(executionContext, writer);
-                } else if(getAction() == Action.BIND_TO) {
+                if(getAction() == Action.BIND_TO) {
                     String bindId = getBindId();
 
                     if(bindId == null) {
@@ -189,7 +256,8 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
                     applyTemplate(executionContext, writer);
                     executionContext.setAttribute(bindId, writer.toString());
                 } else {
-                    throw new SmooksConfigurationException("Sorry, templating action '" + getAction() + "' not supported for SAX.  SAX processing only supports 'replace' and 'bindto' templating actions.");
+                    Writer writer = element.getWriter(this);
+                    applyTemplate(executionContext, writer);
                 }
             } catch (TemplateException e) {
                 logger.warn("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);

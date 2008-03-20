@@ -72,10 +72,10 @@ import java.util.*;
  * <pre>
  * <i>&lt;?xml version='1.0'?&gt;
  * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd"&gt;
- *      <b>&lt;resource-config <a href="#selector">selector</a>="order order-header"&gt;
+ *      <b>&lt;resource-config <a href="#selector">selector</a>="order/order-header"&gt;
  *          &lt;resource type="xsl"&gt;<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">/com/acme/transform/OrderHeaderTransformer.xsl</a>&lt;/resource&gt;
  *      &lt;/resource-config&gt;</b>
- *      <b>&lt;resource-config <a href="#selector">selector</a>="order-items order-item"&gt;
+ *      <b>&lt;resource-config <a href="#selector">selector</a>="order-items/order-item"&gt;
  *          &lt;resource&gt;{@link org.milyn.delivery.dom.DOMElementVisitor com.acme.transform.MyJavaOrderItemTransformer}&lt;/resource&gt;
  *      &lt;/resource-config&gt;</b>
  * &lt;/smooks-resource-list&gt;</i></pre>
@@ -89,14 +89,14 @@ import java.util.*;
  *          &lt;profile base-profile="message-exchange-1" sub-profiles="message-producer-A, message-consumer-B" /&gt;
  *          &lt;profile base-profile="message-exchange-2" sub-profiles="message-producer-A, message-consumer-C" /&gt;
  *      &lt;/profiles&gt;</b>
- * (1)  &lt;resource-config selector="order order-header" <b>target-profile="message-producer-A"</b>&gt;
+ * (1)  &lt;resource-config selector="order/order-header" <b>target-profile="message-producer-A"</b>&gt;
  *          &lt;resource&gt;com.acme.transform.AddIdentityInfo&lt;/resource&gt;
  *      &lt;/resource-config&gt;
- * (2)  &lt;resource-config selector="order-items order-item" <b>target-profile="message-consumer-B"</b>&gt;
+ * (2)  &lt;resource-config selector="order-items/order-item" <b>target-profile="message-consumer-B"</b>&gt;
  *          &lt;resource&gt;com.acme.transform.MyJavaOrderItemTransformer&lt;/resource&gt;
  *          &lt;param name="execution-param-X"&gt;param-value-forB&lt;/param&gt;
  *      &lt;/resource-config&gt;
- * (3)  &lt;resource-config selector="order-items order-item" <b>target-profile="message-consumer-C"</b>&gt;
+ * (3)  &lt;resource-config selector="order-items/order-item" <b>target-profile="message-consumer-C"</b>&gt;
  *          &lt;resource&gt;com.acme.transform.MyJavaOrderItemTransformer&lt;/resource&gt;
  *          &lt;param name="execution-param-X"&gt;param-value-forC&lt;/param&gt;
  *      &lt;/resource-config&gt;
@@ -112,14 +112,17 @@ import java.util.*;
  * <li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a resource configuration.
  * This is typically the message fragment name, but as mentioned above, not all resources are
  * transformation/analysis resources targeted at a message fragment - this is why we didn't call this attribute
- * "target-fragment".
+ * "target-fragment". This attribute supports a list of comma separated selectors, allowing you to target a
+ * single resource at multiple selector (e.g. fragments).
+ *
  * <br/>
  * Example selectors:
  * <ol>
  * <li><u>The target fragment name (e.g. for HTML - table, tr, pre etc)</u>.  This type of selector can
- * be contextual in a similar way to contextual selectors in CSS e.g. "td ol li" will target the
- * resource at all "li" elements nested inside an "ol" element, which is in turn nested inside
- * a "td" element.  See sample configurations above. Also supports wildcard based fragment selection ("*").
+ * be contextual e.g. "x/y/z" will target the
+ * resource at all "z" fragments nested inside a "y" fragment, which is in turn nested inside
+ * an "x" fragment.  Also supports CSS style selectors e.g. "td ol li".  See sample configurations above. 
+ * Also supports wildcard based fragment selection ("*").
  * </li>
  * <li>"$document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
  * or document root node fragment.</li>
@@ -227,7 +230,7 @@ public class SmooksResourceConfiguration {
     /**
      * Flag indicating whether or not the resource is a default applied resource
      * e.g. {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit} or
-     * {@link org.milyn.delivery.sax.DefaultSAXElementVisitor}.
+     * {@link org.milyn.delivery.sax.DefaultSAXElementSerializer}.
      */
     private boolean defaultResource = false;
 
@@ -350,10 +353,18 @@ public class SmooksResourceConfiguration {
         }
         this.selector = selector.toLowerCase().intern();
         isXmlDef = selector.startsWith(XML_DEF_PREFIX);
+        contextualSelector = parseSelector(this.selector);
+    }
 
-        // Parse the selector in case it's a contextual selector of the CSS
-        // form e.g. "TD UL LI"
-        contextualSelector = this.selector.split(" +");
+    public static String[] parseSelector(String selector) {
+        // Parse the selector in case it's a contextual selector...
+        if(selector.indexOf('/') != -1) {
+            // Parse it as e.g. "a/b/c" ...
+            return selector.split("/");
+        } else {
+            // Parse it as a CSS form selector e.g. "TD UL LI" ...
+            return selector.split(" +");
+        }
     }
 
     /**
@@ -503,7 +514,7 @@ public class SmooksResourceConfiguration {
      * Is this resource config a default applied resource.
      * <p/>
      * Some resources (e.g. {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit} or
-     * {@link org.milyn.delivery.sax.DefaultSAXElementVisitor}) are applied by default when no other
+     * {@link org.milyn.delivery.sax.DefaultSAXElementSerializer}) are applied by default when no other
      * resources are targeted at an element.
      * 
      * @return True if this is a default applied resource, otherwise false.
@@ -516,7 +527,7 @@ public class SmooksResourceConfiguration {
      * Set this resource config as a default applied resource.
      * <p/>
      * Some resources (e.g. {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit} or
-     * {@link org.milyn.delivery.sax.DefaultSAXElementVisitor}) are applied by default when no other
+     * {@link org.milyn.delivery.sax.DefaultSAXElementSerializer}) are applied by default when no other
      * resources are targeted at an element.
      *
      * @param defaultResource True if this is a default applied resource, otherwise false.

@@ -18,6 +18,8 @@ package org.milyn.delivery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.Smooks;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.NullReader;
 import org.milyn.io.NullWriter;
@@ -38,18 +40,39 @@ public abstract class Filter {
     private static Log logger = LogFactory.getLog(Filter.class);
 
     /**
+     * Stream filter type config parameter.
+     */
+    public static final String STREAM_FILTER_TYPE = "stream.filter.type";
+
+
+    /**
+     * Filter type enumeration.
+     */
+    public static enum StreamFilterType {
+        SAX,
+        DOM;
+
+    }
+
+    /**
      * The Threadlocal storage instance for the ExecutionContext associated with the "current" SmooksDOMFilter thread instance.
      */
     private static final ThreadLocal<Filter> filterThreadLocal = new ThreadLocal<Filter>();
+
     /**
      * The Threadlocal storage instance for the ExecutionContext associated with the "current" Filter associated with the thread.
      */
     private static final ThreadLocal<ExecutionContext> execThreadLocal = new ThreadLocal<ExecutionContext>();
 
     public static final String CLOSE_SOURCE = "close.source";
+
     public static final String CLOSE_RESULT = "close.result";
-    public static final String REVERSE_VISIT_ORDER_ON_VISIT_AFTER = "reverse.visit.order.on.visit.after";    
-    public static final String TERMINATE_ON_VISITOR_EXCEPTION = "terminate.on.visitor.exception";    
+
+    public static final String DEFAULT_SERIALIZATION_ON = "default.serialization.on";
+
+    public static final String REVERSE_VISIT_ORDER_ON_VISIT_AFTER = "reverse.visit.order.on.visit.after";
+
+    public static final String TERMINATE_ON_VISITOR_EXCEPTION = "terminate.on.visitor.exception";
 
     /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
@@ -61,6 +84,15 @@ public abstract class Filter {
      * @throws SmooksException Failed to filter.
      */
     public abstract void doFilter(Source source, Result result) throws SmooksException;
+
+    /**
+     * Set the default stream filter type on the supplied Smooks instance.
+     * @param smooks The Smooks instance.
+     * @param filterType The filter type.
+     */
+    public static void setFilterType(Smooks smooks, StreamFilterType filterType) {
+        ParameterAccessor.setParameter(STREAM_FILTER_TYPE, filterType.toString(), smooks);
+    }
 
     /**
      * Get the {@link Filter} instance for the current thread.
