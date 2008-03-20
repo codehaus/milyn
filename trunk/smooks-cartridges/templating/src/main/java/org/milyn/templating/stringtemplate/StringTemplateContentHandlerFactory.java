@@ -62,7 +62,7 @@ import java.util.Map;
  *     &lt;!-- (Optional) Should the template be applied before (true) or
  *             after (false) Smooks visits the child elements of the target element.
  *             Default "false".--&gt;
- *     &lt;param name="<b>visitBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
+ *     &lt;param name="<b>applyTemplateBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
  *
  *     &lt;!-- (Optional) Template encoding.
  *          Default "UTF-8".--&gt;

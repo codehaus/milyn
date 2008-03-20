@@ -115,18 +115,6 @@ public class ContentDeliveryConfigBuilder {
     private int saxElementHandlerCount = 0;
 
     private int domElementHandlerCount = 0;
-    /**
-     * Stream filter type config parameter.
-     */
-    public static final String STREAM_FILTER_TYPE = "stream.filter.type";
-
-    /**
-     * Filter type enumeration.
-     */
-    private static enum StreamFilterType {
-        SAX,
-        DOM
-    }
 
     /**
 	 * Private (hidden) constructor.
@@ -185,12 +173,12 @@ public class ContentDeliveryConfigBuilder {
 	}
 
     private ContentDeliveryConfig createConfig() {
-        StreamFilterType filterType = getStreamFilterType();
+        Filter.StreamFilterType filterType = getStreamFilterType();
 
         configBuilderEvents.add(new ConfigBuilderEvent("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics()));
         configBuilderEvents.add(new ConfigBuilderEvent("Using Stream Filter Type: " + filterType));
 
-        if(filterType == StreamFilterType.DOM) {
+        if(filterType == Filter.StreamFilterType.DOM) {
             DOMContentDeliveryConfig domConfig = new DOMContentDeliveryConfig();
 
             logger.debug("Using the DOM Stream Filter.");
@@ -222,8 +210,8 @@ public class ContentDeliveryConfigBuilder {
         }
     }
 
-    private StreamFilterType getStreamFilterType() {
-        StreamFilterType filterType;
+    private Filter.StreamFilterType getStreamFilterType() {
+        Filter.StreamFilterType filterType;
 
         if(logger.isDebugEnabled()) {
             logger.debug("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics());
@@ -231,28 +219,28 @@ public class ContentDeliveryConfigBuilder {
 
         if(saxElementHandlerCount == elementHandlerCount && domElementHandlerCount == elementHandlerCount) {
             // All element handlers support SAX and DOM... must select one then...
-            Parameter filterTypeParam = ParameterAccessor.getParameter(STREAM_FILTER_TYPE, resourceConfigTable);
+            Parameter filterTypeParam = ParameterAccessor.getParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
 
             if(filterTypeParam == null) {
-                filterType = StreamFilterType.DOM;
+                filterType = Filter.StreamFilterType.DOM;
                 logger.info("All configured XML Element Content Handler resource configurations can be " +
                         "applied using the SAX or DOM Stream Filter.  Defaulting to DOM Filter.  Set '" + ParameterAccessor.GLOBAL_PARAMETERS + ":"
-                        + STREAM_FILTER_TYPE + "'.  Turn on debug logging for more info.");
+                        + Filter.STREAM_FILTER_TYPE + "'.  Turn on debug logging for more info.");
                 logger.debug("You can explicitly select the Filter type as follows:\n" +
                         "\t\t<resource-config selector=\"" + ParameterAccessor.GLOBAL_PARAMETERS + "\">\n" +
-                        "\t\t\t<param name=\"" + STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
+                        "\t\t\t<param name=\"" + Filter.STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
                         "\t\t</resource-config>");
-            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.DOM.name())) {
-                filterType = StreamFilterType.DOM;
-            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.SAX.name())) {
-                filterType = StreamFilterType.SAX;
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(Filter.StreamFilterType.DOM.name())) {
+                filterType = Filter.StreamFilterType.DOM;
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(Filter.StreamFilterType.SAX.name())) {
+                filterType = Filter.StreamFilterType.SAX;
             } else {
-                throw new SmooksException("Invalid '" + STREAM_FILTER_TYPE + "' configuration parameter value of '" + filterTypeParam + "'.  Must be 'SAX' or 'DOM'.");
+                throw new SmooksException("Invalid '" + Filter.STREAM_FILTER_TYPE + "' configuration parameter value of '" + filterTypeParam + "'.  Must be 'SAX' or 'DOM'.");
             }
         } else if(domElementHandlerCount == elementHandlerCount) {
-            filterType = StreamFilterType.DOM;
+            filterType = Filter.StreamFilterType.DOM;
         } else if(saxElementHandlerCount == elementHandlerCount) {
-            filterType = StreamFilterType.SAX;
+            filterType = Filter.StreamFilterType.SAX;
         } else {
             throw new SmooksException("Ambiguous Resource Configuration set.  All Element Content Handlers must support processing on the SAX and/or DOM Filter:\n" + getResourceFilterCharacteristics());
         }

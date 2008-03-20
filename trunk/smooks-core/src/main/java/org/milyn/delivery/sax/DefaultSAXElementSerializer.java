@@ -21,19 +21,27 @@ import org.milyn.SmooksException;
 import java.io.IOException;
 
 /**
+ * Default Serializer for SAX Filtering.
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DefaultSAXElementVisitor implements SAXElementVisitor {
-    
+public class DefaultSAXElementSerializer implements SAXElementVisitor {
+
+    private SAXVisitor writerOwner = this;
+
+    public void setWriterOwner(SAXVisitor writerOwner) {
+        this.writerOwner = writerOwner;
+    }
+
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         // Do nothing here apart from acquiring ownership of the element writer.
         // See is there any child text/elements first...
-        element.getWriter(this);
+        element.getWriter(writerOwner);
     }
 
     public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
         writeStartElement(element);
-        text.toWriter(element.getWriter(this));
+        text.toWriter(element.getWriter(writerOwner));
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -45,20 +53,24 @@ public class DefaultSAXElementVisitor implements SAXElementVisitor {
         writeEndElement(element);
     }
 
-    private void writeStartElement(SAXElement element) throws IOException {
+    public void writeStartElement(SAXElement element) throws IOException {
         // We set a flag in the cache so as to mark the fact that the start element has been writen
-        if(element.getCache() == null) {
+        if(!isStartWritten(element)) {
             element.setCache(true);
-            WriterUtil.writeStartElement(element, element.getWriter(this));
+            WriterUtil.writeStartElement(element, element.getWriter(writerOwner));
         }
     }
 
     private void writeEndElement(SAXElement element) throws IOException {
-        if(element.getCache() == null) {
+        if(!isStartWritten(element)) {
             // It's an empty element...
-            WriterUtil.writeEmptyElement(element, element.getWriter(this));
+            WriterUtil.writeEmptyElement(element, element.getWriter(writerOwner));
         } else {
-            WriterUtil.writeEndElement(element, element.getWriter(this));
+            WriterUtil.writeEndElement(element, element.getWriter(writerOwner));
         }
+    }
+
+    public boolean isStartWritten(SAXElement element) {
+        return element.getCache() != null;
     }
 }

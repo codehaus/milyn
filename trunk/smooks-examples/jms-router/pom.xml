@@ -68,7 +68,7 @@
             <url>http://dist.codehaus.org</url>
         </repository>
         <repository>
-            <id>milyn</id>
+            <id>mvnrepository</id>
             <url>http://mvnrepository.com</url>
         </repository>
 		<repository>

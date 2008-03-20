@@ -71,7 +71,11 @@ public class Serializer {
 	 * Target content delivery context SerializationUnit definitions.
 	 */
 	private ContentHandlerConfigMapTable<SerializationUnit> serializationUnits;
-	/**
+    /**
+     * Turn default serialization on/off.  Default is "true".
+     */
+    private boolean defaultSerializationOn;
+    /**
 	 * Default SerializationUnit.
 	 */
 	private List defaultSUs;
@@ -100,13 +104,16 @@ public class Serializer {
 		// Initialise the serializationUnits member
 		serializationUnits = deliveryConfig.getSerailizationVisitors();
 		// Set the default SerializationUnit
-		defaultSUs = serializationUnits.getMappings("*");
-		if(defaultSUs == null) {
-			SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
-            resourceConfig.setDefaultResource(true);
-            defaultSUs = new Vector();
-			defaultSUs.add(new ContentHandlerConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
-		}
+        defaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, executionContext.getDeliveryConfig());
+        if(defaultSerializationOn) {
+            defaultSUs = serializationUnits.getMappings("*");
+            if(defaultSUs == null) {
+                SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
+                resourceConfig.setDefaultResource(true);
+                defaultSUs = new Vector();
+                defaultSUs.add(new ContentHandlerConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
+            }
+        }
         terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
 	}
 	
@@ -206,46 +213,54 @@ public class Serializer {
 
 		elementSU = getSerializationUnit(element, isRoot);
 		try {
-			elementSU.writeElementStart(element, writer, executionContext);
-	
-			if(children != null && children.getLength() > 0) {
+            if(elementSU != null) {
+                elementSU.writeElementStart(element, writer, executionContext);
+            }
+
+            if(children != null && children.getLength() > 0) {
 				int childCount = children.getLength();
 	
 				for(int i = 0; i < childCount; i++) {
 					Node childNode = children.item(i);
 					
-					switch(childNode.getNodeType()) {
-						case Node.CDATA_SECTION_NODE: {
-							elementSU.writeElementCDATA((CDATASection)childNode, writer, executionContext);
-							break;
-						}		
-						case Node.COMMENT_NODE: { 
-							elementSU.writeElementComment((Comment)childNode, writer, executionContext);
-							break;
-						}		
-						case Node.ELEMENT_NODE: { 
-							if(elementSU.writeChildElements()) {
-								recursiveDOMWrite((Element)childNode, writer, false);
-							}
-							break;
-						}		
-						case Node.ENTITY_REFERENCE_NODE: { 
-							elementSU.writeElementEntityRef((EntityReference)childNode, writer, executionContext);
-							break;
-						}		
-						case Node.TEXT_NODE: { 
-							elementSU.writeElementText((Text)childNode, writer, executionContext);
-							break;
-						}		
-						default: {
-							elementSU.writeElementNode(childNode, writer, executionContext);
-							break;
-						}
-					}
-				}
+                    if(elementSU != null) {
+                        switch(childNode.getNodeType()) {
+                            case Node.CDATA_SECTION_NODE: {
+                                elementSU.writeElementCDATA((CDATASection)childNode, writer, executionContext);
+                                break;
+                            }
+                            case Node.COMMENT_NODE: {
+                                elementSU.writeElementComment((Comment)childNode, writer, executionContext);
+                                break;
+                            }
+                            case Node.ELEMENT_NODE: {
+                                if(elementSU.writeChildElements()) {
+                                    recursiveDOMWrite((Element)childNode, writer, false);
+                                }
+                                break;
+                            }
+                            case Node.ENTITY_REFERENCE_NODE: {
+                                elementSU.writeElementEntityRef((EntityReference)childNode, writer, executionContext);
+                                break;
+                            }
+                            case Node.TEXT_NODE: {
+                                elementSU.writeElementText((Text)childNode, writer, executionContext);
+                                break;
+                            }
+                            default: {
+                                elementSU.writeElementNode(childNode, writer, executionContext);
+                                break;
+                            }
+                        }
+                    } else if(childNode.getNodeType() == Node.ELEMENT_NODE) {
+                        recursiveDOMWrite((Element)childNode, writer, false);
+                    }
+                }
 			}
-			elementSU.writeElementEnd(element, writer, executionContext);
-		} catch(Throwable thrown) {
+            if(elementSU != null) {
+    			elementSU.writeElementEnd(element, writer, executionContext);
+            }
+        } catch(Throwable thrown) {
             String error = "Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
 
             if(terminateOnVisitorException) {
@@ -285,30 +300,33 @@ public class Serializer {
         if(elementSUs == null || elementSUs.isEmpty()) {
 			elementSUs = defaultSUs;
 		}
-		int numSUs = elementSUs.size();
-		
-		for(int i = 0; i < numSUs; i++) {
-            ContentHandlerConfigMap configMap = elementSUs.get(i);
-            SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
-            // Make sure the serialization unit is targeted at this element.
-            if(!config.isTargetedAtElement(element)) {
-                continue;
-            }            
+        if(elementSUs != null) {
+            int numSUs = elementSUs.size();
 
-            // Register the targeting event...
-            if(eventListener != null) {
-                eventListener.onEvent(new ResourceTargetingEvent(element, config));
+            for(int i = 0; i < numSUs; i++) {
+                ContentHandlerConfigMap configMap = elementSUs.get(i);
+                SmooksResourceConfiguration config = configMap.getResourceConfig();
+
+                // Make sure the serialization unit is targeted at this element.
+                if(!config.isTargetedAtElement(element)) {
+                    continue;
+                }
+
+                // Register the targeting event...
+                if(eventListener != null) {
+                    eventListener.onEvent(new ResourceTargetingEvent(element, config));
+                }
+
+                if(logger.isDebugEnabled()) {
+                    logger.debug("Applying serialisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+                }
+
+                // This is the one, return it...
+                return (SerializationUnit)configMap.getContentHandler();
             }
-
-    		if(logger.isDebugEnabled()) {
-    			logger.debug("Applying serialisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
-    		}
-            
-            // This is the one, return it...
-            return (SerializationUnit)configMap.getContentHandler();
-		}
-		
-		throw new IllegalStateException("At least 1 SerializationUnit needs to be configured for an element. " + element.getTagName() + " has no configured SerializationUnit.");
+        }
+        
+        return null;
 	}
 }

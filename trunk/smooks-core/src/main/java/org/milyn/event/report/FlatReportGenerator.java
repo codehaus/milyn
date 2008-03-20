@@ -19,6 +19,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.VisitSequence;
 import org.milyn.event.types.*;
 import org.milyn.event.ExecutionEvent;
+import org.milyn.event.report.model.Report;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -39,53 +40,6 @@ public class FlatReportGenerator extends AbstractReportGenerator {
         super(reportConfiguration);
     }
 
-    public void outputStartReport() throws IOException {
-    }
-
-    public void outputConfigBuilderEvents(List<ConfigBuilderEvent> events) throws IOException {
-        for (ConfigBuilderEvent event : events) {
-            if(event.getResourceConfig() != null) {
-                toOutputWriter("Config Resource: [" + event.getResourceConfig() + "]\n");
-            }
-            if(event.getMessage() != null) {
-                toOutputWriter("Message: [" + event.getMessage() + "]\n");
-            }
-            if(event.getThrown() != null) {
-                toOutputWriter("Thrown: [" + event.getThrown().getMessage() + "]\n");
-            }
-            toOutputWriter("-----------------------------------------------------------------------------------\n");
-        }
-    }
-
-    public void reportWrapperStart() {
-    }
-
-    public void reportWrapperEnd() {
-    }
-
-    public void outputVisitEvents(ReportNode reportNode, VisitSequence visitSequence) throws IOException {
-        List<ExecutionEvent> events = reportNode.getElementProcessingEvents();
-        int numTabs = reportNode.getDepth() + 1;
-
-        for (ExecutionEvent event : events) {
-            if (event instanceof ResourceTargetingEvent) {
-                ResourceTargetingEvent targetEvent = (ResourceTargetingEvent) event;
-                if(targetEvent.getSequence() == null || targetEvent.getSequence() == visitSequence) {
-                    SmooksResourceConfiguration config = targetEvent.getResourceConfig();
-                    writeIndentTabs(numTabs);
-                    toOutputWriter("Target Resource Event: [" + config + "]\n");
-                }
-            } else if (event instanceof ElementVisitEvent) {
-                ElementVisitEvent visitEvent = (ElementVisitEvent) event;
-                if(visitEvent.getSequence() == visitSequence) {
-                    SmooksResourceConfiguration config = ((ElementVisitEvent) event).getResourceConfig();
-                    writeIndentTabs(numTabs);
-                    toOutputWriter("Visit Event (" + visitSequence + "): [" + config + "]\n");
-                }
-            }
-        }
-    }
-
-    public void outputEndReport() throws IOException {
+    public void applyTemplate(Report report) throws IOException {
     }
 }

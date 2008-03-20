@@ -31,12 +31,14 @@ import java.io.Writer;
  */
 public class ReportConfiguration {
 
+    public static File TEMP_DIR = new File(System.getProperty("java.io.tmpdir"));
+
     private Writer outputWriter;
     private boolean escapeXMLChars = false;
     private boolean showDefaultAppliedResources = false;
     private Class<? extends ExecutionEvent>[] filterEvents;
     private boolean autoCloseWriter = true;
-    private File tempOutDir = new File(System.getProperty("java.io.tmpdir"));
+    private File tempOutDir = TEMP_DIR;
 
     public ReportConfiguration(Writer outputWriter) {
         AssertArgument.isNotNull(outputWriter, "outputWriter");

@@ -15,29 +15,32 @@
 */
 package org.milyn.event.report;
 
-import org.milyn.event.BasicExecutionEventListener;
-import org.milyn.event.ExecutionEvent;
-import org.milyn.event.ResourceBasedEvent;
-import org.milyn.event.ElementProcessingEvent;
-import org.milyn.event.types.ElementPresentEvent;
-import org.milyn.event.types.FilterLifecycleEvent;
-import org.milyn.event.types.DOMFilterLifecycleEvent;
-import org.milyn.event.types.ConfigBuilderEvent;
+import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.VisitSequence;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.WriterUtil;
+import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
-import org.milyn.SmooksException;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.event.BasicExecutionEventListener;
+import org.milyn.event.ElementProcessingEvent;
+import org.milyn.event.ExecutionEvent;
+import org.milyn.event.ResourceBasedEvent;
+import org.milyn.event.report.model.DOMReport;
+import org.milyn.event.report.model.MessageNode;
+import org.milyn.event.report.model.Report;
+import org.milyn.event.report.model.ReportInfoNode;
+import org.milyn.event.types.*;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Stack;
 import java.io.IOException;
 import java.io.Writer;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * Abstract execution report generator.
@@ -48,12 +51,15 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
 
     private ReportConfiguration reportConfiguration;
 
+    private Report report;
+
+    private int messageNodeCounter = 0;
+    private int reportInfoNodeCounter = 0;
     private List<ExecutionEvent> preProcessingEvents = new ArrayList<ExecutionEvent>();
     private List<ExecutionEvent> processingEvents = new ArrayList<ExecutionEvent>();
     private Stack<ReportNode> reportNodeStack = new Stack<ReportNode>();
     private List<ReportNode> allNodes = new ArrayList<ReportNode>();
     protected static final DefaultSerializationUnit domSerializer = new DefaultSerializationUnit();
-    private static final String tabsBuffer = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
 
     protected AbstractReportGenerator(ReportConfiguration reportConfiguration) {
         AssertArgument.isNotNull(reportConfiguration, "reportConfiguration");
@@ -89,15 +95,6 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
             allNodes.add(node);
             processNewElementEvent(node);
         } else {
-            if (!reportConfiguration.showDefaultAppliedResources()) {
-                if (event instanceof ResourceBasedEvent) {
-                    if (((ResourceBasedEvent) event).getResourceConfig().isDefaultResource()) {
-                        // Ignore this event...
-                        return;
-                    }
-                }
-            }
-
             if (reportNodeStack.isEmpty()) {
                 // We haven't started to process the message/phase yet....
                 preProcessingEvents.add(event);
@@ -120,48 +117,70 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
             return false;
         } else if(event instanceof ElementPresentEvent) {
             return false;
+        } else if (event instanceof ResourceBasedEvent) {
+            if (!reportConfiguration.showDefaultAppliedResources()) {
+                return ((ResourceBasedEvent) event).getResourceConfig().isDefaultResource();
+            }
         }
 
         return super.ignoreEvent(event);
     }
 
     private void processLifecycleEvent(FilterLifecycleEvent event) {
-        try {
-            if (event instanceof DOMFilterLifecycleEvent) {
-                DOMFilterLifecycleEvent domEvent = (DOMFilterLifecycleEvent) event;
-                if (domEvent.getDOMEventType() == DOMFilterLifecycleEvent.DOMEventType.PROCESSING_STARTED) {
-                    // Assembly phase is done... output assembly report just at the start of the
-                    // processing phase...
-                    outputReport();
-                } else if (domEvent.getDOMEventType() == DOMFilterLifecycleEvent.DOMEventType.SERIALIZATION_STARTED) {
-                    // Processing phase is done (if it was)... output processing report just at the start of the
-                    // serialization phase...
-                    outputReport();
-                }
-                reportConfiguration.getOutputWriter().write(event.toString() + "\n");
-            } else if (event.getEventType() == FilterLifecycleEvent.EventType.STARTED) {
-                // Output the start of the report...
-                outputStartReport();
-                // Output the configuration builder events...
-                outputConfigBuilderEvents(Filter.getCurrentExecutionContext().getDeliveryConfig().getConfigBuilderEvents());
-                toOutputWriter("\n");
 
-                reportWrapperStart();
-                reportConfiguration.getOutputWriter().write(event.toString() + "\n");
-            } else if (event.getEventType() == FilterLifecycleEvent.EventType.FINISHED) {
-                // We're done now, output the last of it...
-                outputReport();
-                // Output the end of the report...
-                reportConfiguration.getOutputWriter().write(event.toString() + "\n");
-                reportWrapperEnd();
-                outputEndReport();
-                reportConfiguration.getOutputWriter().flush();
-                if(reportConfiguration.autoCloseWriter()) {
-                    reportConfiguration.getOutputWriter().close();
+        try {
+            if (event.getEventType() != FilterLifecycleEvent.EventType.FINISHED) {
+                ContentDeliveryConfig deliveryConfig = Filter.getCurrentExecutionContext().getDeliveryConfig();
+                if (event instanceof DOMFilterLifecycleEvent) {
+                    DOMFilterLifecycleEvent domEvent = (DOMFilterLifecycleEvent) event;
+                    if (domEvent.getDOMEventType() == DOMFilterLifecycleEvent.DOMEventType.PROCESSING_STARTED) {
+                        // Assembly phase is done... output assembly report just at the start of the
+                        // processing phase...
+                        mapMessageNodeVists(((DOMReport)report).getAssemblies());
+                    } else if (domEvent.getDOMEventType() == DOMFilterLifecycleEvent.DOMEventType.SERIALIZATION_STARTED) {
+                        // Processing phase is done (if it was)... output processing report just at the start of the
+                        // serialization phase...
+                        mapMessageNodeVists(report.getProcessings());
+                    }
+                } else if (event.getEventType() == FilterLifecycleEvent.EventType.STARTED) {
+                    if(deliveryConfig instanceof DOMContentDeliveryConfig) {
+                        report = new DOMReport();
+                    } else {
+                        report = new Report();
+                    }
+                    // Output the configuration builder events...
+                    mapConfigBuilderEvents(deliveryConfig.getConfigBuilderEvents());
                 }
+            } else {
+                processFinishEvent();
             }
         } catch (IOException e) {
             throw new SmooksException("Failed to write report.", e);
+        }
+    }
+
+    private void processFinishEvent() throws IOException {
+        if(report instanceof DOMReport) {
+            if(report.getProcessings().isEmpty()) {
+                mapMessageNodeVists(report.getProcessings());
+            } else {
+                mapMessageNodeVists(((DOMReport)report).getSerializations());
+            }
+        } else {
+            mapMessageNodeVists(report.getProcessings());
+        }
+
+        try {
+            applyTemplate(report);
+        } finally {
+            Writer writer = reportConfiguration.getOutputWriter();
+            try {
+                writer.flush();
+            } finally {
+                if(reportConfiguration.autoCloseWriter()) {
+                    writer.close();
+                }
+            }
         }
     }
 
@@ -190,9 +209,12 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
         }
     }
 
-    private void outputReport() throws IOException {
+    private void mapConfigBuilderEvents(List<ConfigBuilderEvent> configBuilderEvents) {
+    }
+
+    private void mapMessageNodeVists(List<MessageNode> visits) throws IOException {
         if (!allNodes.isEmpty()) {
-            outputNode(reportNodeStack.elementAt(0));
+            mapNode(reportNodeStack.elementAt(0), visits);
         }
 
         // And clear everything...
@@ -202,96 +224,64 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
         allNodes.clear();
     }
 
-    private void outputNode(ReportNode reportNode) throws IOException {
+    private void mapNode(ReportNode reportNode, List<MessageNode> visits) throws IOException {
         List<ReportNode> children;
+        MessageNode messageNode;
 
-        outputElementStart(reportNode);
-        outputVisitEvents(reportNode, VisitSequence.BEFORE);
-        toOutputWriter("\n");
+        messageNode = new MessageNode();
+        messageNode.setNodeId(messageNodeCounter);
+        messageNode.setElementName(reportNode.getElementName());
+        messageNode.setVisitBefore(true);
+        messageNode.setDepth(reportNode.getDepth());
+        mapNodeEvents(VisitSequence.BEFORE, reportNode, messageNode);
+        visits.add(messageNode);
+        messageNodeCounter++;
 
         children = reportNode.children;
         for (ReportNode child : children) {
-            outputNode(child);
+            mapNode(child, visits);
         }
 
-        outputElementEnd(reportNode);
-        outputVisitEvents(reportNode, VisitSequence.AFTER);
-        toOutputWriter("\n");
+        messageNode = new MessageNode();
+        messageNode.setNodeId(messageNodeCounter);
+        messageNode.setElementName(reportNode.getElementName());
+        messageNode.setVisitBefore(false);
+        messageNode.setDepth(reportNode.getDepth());
+        mapNodeEvents(VisitSequence.AFTER, reportNode, messageNode);
+        visits.add(messageNode);
+        messageNodeCounter++;
     }
 
-    public void outputElementStart(ReportNode node) throws IOException {
-        Object elementObj = node.getElement();
-        StringWriter startWriter = new StringWriter();
+    private void mapNodeEvents(VisitSequence visitSequence, ReportNode reportNode, MessageNode messageNode) {
+        List<ExecutionEvent> events = reportNode.getElementProcessingEvents();
 
-        writeIndentTabs(node.getDepth());
-        if (elementObj instanceof Element) {
-            Element element = (Element) elementObj;
-            domSerializer.writeElementStart(element, startWriter);
-            xmlToOutputWriter(startWriter.toString());
-        } else if (elementObj instanceof SAXElement) {
-            SAXElement element = (SAXElement) elementObj;
-            WriterUtil.writeStartElement(element, startWriter);
-            xmlToOutputWriter(startWriter.toString());
-        }
-    }
+        for (ExecutionEvent event : events) {
+            if (event instanceof ElementVisitEvent) {
+                ElementVisitEvent visitEvent = (ElementVisitEvent) event;
 
-    public abstract void outputStartReport() throws IOException;
+                if (visitEvent.getSequence() == visitSequence) {
+                    ReportInfoNode reportInfoNode = new ReportInfoNode();
+                    ContentHandlerConfigMap configMapping = ((ElementVisitEvent) event).getConfigMapping();
+                    StringBuilder detailBuilder = new StringBuilder();
 
-    public abstract void outputConfigBuilderEvents(List<ConfigBuilderEvent> events) throws IOException;
+                    messageNode.addExecInfoNode(reportInfoNode);
 
-    public abstract void reportWrapperStart() throws IOException;
+                    reportInfoNode.setNodeId(reportInfoNodeCounter);
+                    reportInfoNode.setSummary(configMapping.getContentHandler().getClass().getSimpleName());
+                    detailBuilder.append("Execution Details:\n");
+                    detailBuilder.append(visitEvent.getReportText());
+                    detailBuilder.append("\n\n");
+                    detailBuilder.append("Resource Configuration:\n");
+                    detailBuilder.append(configMapping.getResourceConfig().toXML());
+                    reportInfoNode.setDetail(detailBuilder.toString());
 
-    public abstract void reportWrapperEnd() throws IOException;
-
-    public abstract void outputVisitEvents(ReportNode reportNode, VisitSequence visitSequence) throws IOException;
-
-    public abstract void outputEndReport() throws IOException;
-
-    public void outputElementEnd(ReportNode node) throws IOException {
-        Object elementObj = node.getElement();
-        StringWriter startWriter = new StringWriter();
-
-        writeIndentTabs(node.getDepth());
-        if (elementObj instanceof Element) {
-            Element element = (Element) elementObj;
-            domSerializer.writeElementEnd(element, startWriter);
-            xmlToOutputWriter(startWriter.toString());
-        } else if (elementObj instanceof SAXElement) {
-            SAXElement element = (SAXElement) elementObj;
-            WriterUtil.writeEndElement(element, startWriter);
-            xmlToOutputWriter(startWriter.toString());
+                    reportInfoNodeCounter++;
+                }
+            }
         }
     }
 
-    public void xmlToOutputWriter(String text) throws IOException {
-        if (reportConfiguration.escapeXMLChars()) {
-            text = escapeXML(text);
-        }
-        reportConfiguration.getOutputWriter().write(text);
-    }
-
-    public static String escapeXML(String text) {
-        text = text.replace("&", "&amp;");
-        text = text.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-        text = text.replace("<", "&lt;");
-        text = text.replace(">", "&gt;");
-        text = text.replace("'", "&apos;");
-        text = text.replace("\"", "&quot;");
-        text = text.replace("\n", "<br/>");
-        return text;
-    }
-
-    public void toOutputWriter(String text) throws IOException {
-        reportConfiguration.getOutputWriter().write(text);
-    }
-
-    public void writeIndentTabs(int numTabs) throws IOException {
-        if (reportConfiguration.escapeXMLChars()) {
-            reportConfiguration.getOutputWriter().write(tabsBuffer.substring(0, numTabs).replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
-        } else {
-            reportConfiguration.getOutputWriter().write(tabsBuffer, 0, numTabs);
-        }
-    }
+    public abstract void applyTemplate(Report report) throws IOException;
 
     private ReportNode getReportNode(Object element) {
         for (ReportNode node : allNodes) {
@@ -305,8 +295,8 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
 
     public class ReportNode {
 
-        private FlatReportGenerator.ReportNode parent;
-        private List<FlatReportGenerator.ReportNode> children = new ArrayList<FlatReportGenerator.ReportNode>();
+        private ReportNode parent;
+        private List<ReportNode> children = new ArrayList<ReportNode>();
         private Object element;
         private int depth;
         private List<ExecutionEvent> elementProcessingEvents = new ArrayList<ExecutionEvent>();
@@ -314,6 +304,14 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
         public ReportNode(ElementPresentEvent eventPresentEvent) {
             this.element = eventPresentEvent.getElement();
             this.depth = eventPresentEvent.getDepth();
+        }
+
+        public String getElementName() {
+            if(element instanceof SAXElement) {
+                return ((SAXElement)element).getName().getLocalPart();
+            } else {
+                return DomUtils.getName((Element)element);
+            }
         }
 
         public String toString() {

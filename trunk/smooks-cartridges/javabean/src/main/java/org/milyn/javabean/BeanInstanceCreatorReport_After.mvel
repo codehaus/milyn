@@ -1,2 +1,1 @@
-@if{resource.parameters.beanClass[0].value.endsWith('[]')}Converting internal list to array (@{resource.parameters.beanClass}).@end{}
-@if{resource.parameters.containsKey('setOn')}Setting bean @{resource.parameters.beanId} on @{resource.parameters.setOn}.@end{}
+Instance Creator - After - FIXME!!

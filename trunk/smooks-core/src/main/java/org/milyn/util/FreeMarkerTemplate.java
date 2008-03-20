@@ -15,6 +15,10 @@
 */
 package org.milyn.util;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -35,17 +39,21 @@ public class FreeMarkerTemplate {
     private String templateText;
     private Template template;
 
-    public FreeMarkerTemplate(String templateText) {
-        AssertArgument.isNotNullAndNotEmpty(templateText, "template");
-        this.templateText = templateText;
+    public FreeMarkerTemplate(String templatePath, Class basePath) {
+        AssertArgument.isNotNullAndNotEmpty(templatePath, "template");
+        this.templateText = templatePath;
 
-        StringReader templateReader = new StringReader(templateText);
         try {
-            template = new Template("free-marker-template", templateReader, new Configuration());
+            Configuration configuration = new Configuration();
+
+            if(basePath != null) {
+                configuration.setClassForTemplateLoading(basePath, "");
+            }
+            // MultiTemplateLoader templateLoader = new MultiTemplateLoader(new TemplateLoader[] {new FileTemplateLoader(), new ClassTemplateLoader()});
+            // configuration.setTemplateLoader(templateLoader);
+            template = configuration.getTemplate(templatePath);
         } catch (IOException e) {
             throw new IllegalStateException("Unexpected IOException.", e);
-        } finally {
-            templateReader.close();
         }
     }
 

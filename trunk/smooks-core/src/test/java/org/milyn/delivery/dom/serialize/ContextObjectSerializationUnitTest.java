@@ -20,7 +20,7 @@ import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentDeliveryConfigBuilder;
+import org.milyn.delivery.Filter;
 import org.milyn.xml.Namespace;
 
 import java.io.ByteArrayInputStream;
@@ -34,7 +34,7 @@ public class ContextObjectSerializationUnitTest extends TestCase {
         Smooks smooks = new Smooks();
         ExecutionContext context;
 
-        ParameterAccessor.setParameter(ContentDeliveryConfigBuilder.STREAM_FILTER_TYPE, "DOM", smooks);
+        ParameterAccessor.setParameter(Filter.STREAM_FILTER_TYPE, "DOM", smooks);
 
         context = smooks.createExecutionContext();
         context.setAttribute("object-x", "Hi there!");

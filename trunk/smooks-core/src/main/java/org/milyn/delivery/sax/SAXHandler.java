@@ -56,7 +56,8 @@ public class SAXHandler extends DefaultHandler2 {
     private SAXContentDeliveryConfig deliveryConfig;
     private Map<String, SAXElementVisitorMap> visitorConfigMap;
     private SAXElementVisitorMap globalVisitorConfig;
-    private SAXElementVisitor defaultSerializer = new DefaultSAXElementVisitor();
+    private boolean defaultSerializationOn;
+    private SAXElementVisitor defaultSerializer = new DefaultSAXElementSerializer();
     private ContentHandlerConfigMap defaultSerializerMapping;
     private ExecutionEventListener eventListener;
     private boolean reverseVisitOrderOnVisitAfter;
@@ -72,9 +73,11 @@ public class SAXHandler extends DefaultHandler2 {
         globalVisitorConfig = visitorConfigMap.get("*");
 
         // Configure the default handler mapping...
-        SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementVisitor.class.getName());
+        SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementSerializer.class.getName());
         resource.setDefaultResource(true);
-        defaultSerializerMapping = new ContentHandlerConfigMap(new DefaultSAXElementVisitor(), resource);
+
+        defaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, executionContext.getDeliveryConfig());
+        defaultSerializerMapping = new ContentHandlerConfigMap(new DefaultSAXElementSerializer(), resource);
 
         reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, executionContext.getDeliveryConfig());
         if(!(executionContext.getEventListener() instanceof AbstractReportGenerator)) {
@@ -142,7 +145,7 @@ public class SAXHandler extends DefaultHandler2 {
             }
         }
 
-        if(isDefaultSerializerOwnedWriter()) {
+        if(applyDefaultSerialization()) {
             try {
                 defaultSerializer.visitAfter(currentProcessor.element, execContext);
                 flushCurrentWriter();
@@ -190,7 +193,7 @@ public class SAXHandler extends DefaultHandler2 {
             }
         }
 
-        if(isDefaultSerializerOwnedWriter()) {
+        if(applyDefaultSerialization()) {
             try {
                 defaultSerializer.visitBefore(currentProcessor.element, execContext);
                 flushCurrentWriter();
@@ -222,7 +225,7 @@ public class SAXHandler extends DefaultHandler2 {
             }
         }
 
-        if(isDefaultSerializerOwnedWriter()) {
+        if(applyDefaultSerialization()) {
             try {
                 defaultSerializer.onChildElement(currentProcessor.element, childElement, execContext);
                 flushCurrentWriter();
@@ -269,7 +272,7 @@ public class SAXHandler extends DefaultHandler2 {
                 }
             }
 
-            if(isDefaultSerializerOwnedWriter()) {
+            if(applyDefaultSerialization()) {
                 try {
                     textWrapper.setText(ch, start, length, currentTextType);
                     defaultSerializer.onChildText(currentProcessor.element, textWrapper, execContext);
@@ -281,7 +284,11 @@ public class SAXHandler extends DefaultHandler2 {
         }
     }
 
-    private boolean isDefaultSerializerOwnedWriter() {
+    private boolean applyDefaultSerialization() {
+        if(!defaultSerializationOn) {
+            return false;
+        }
+
         return (currentProcessor.element.writerOwner == defaultSerializer || currentProcessor.element.writerOwner == null);
     }
 

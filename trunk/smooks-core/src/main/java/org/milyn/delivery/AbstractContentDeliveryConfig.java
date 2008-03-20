@@ -16,6 +16,7 @@
 package org.milyn.delivery;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ApplicationContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.event.types.ConfigBuilderEvent;
@@ -51,6 +52,8 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
      * Config builder events list.
      */
     private List<ConfigBuilderEvent> configBuilderEvents = new ArrayList<ConfigBuilderEvent>();
+
+    private Boolean isDefaultSerializationOn = null;
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -135,5 +138,13 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
 
     public List<ConfigBuilderEvent> getConfigBuilderEvents() {
         return configBuilderEvents;
+    }
+
+    public boolean isDefaultSerializationOn() {
+        if(isDefaultSerializationOn == null) {
+            isDefaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, this);
+        }
+
+        return isDefaultSerializationOn;
     }
 }
