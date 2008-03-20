@@ -44,54 +44,40 @@ import org.milyn.container.ExecutionContext;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
-public abstract class AbstractContainerPlugin
+public class AbstractContainerPlugin
 {
-	private String mapBeanId;
-	
 	private Smooks smooks;
+	
+	public AbstractContainerPlugin( final Smooks smooks )
+	{
+		this.smooks = smooks;
+	}
 
 	/**
 	 * 	The process method does the actual Smooks filtering.
 	 * 
 	 * @param payload			- the payload that is to be filtered
-	 * @param resultType		- one of {@link ResultType}
 	 * @return Object			- Object type specific to the current Container
 	 * @throws SmooksException
 	 */
-	public final Object process( final Object payload, ResultType resultType, final ExecutionContext executionContext ) throws SmooksException
+	public final Object process( final Object payload, Result result, final ExecutionContext executionContext ) throws SmooksException
 	{
-        if(payload == null) 
-        {
-            return null;
-        }
+		AssertArgument.isNotNull( payload, "payload" );
         
-		Source source = null;
-        Result result = null;
-        
-        //	use Source and Result from SourceResult if applicable.
-		if ( payload instanceof SourceResult )
-		{
-			SourceResult sourceResult = (SourceResult) payload;
-    		source = sourceResult.getSource();
-			result = sourceResult.getResult();
-			resultType = ResultType.NOMAP;
-		}
-		else
-		{
-            // Configure the source...
-    		source = SourceFactory.getInstance().createSource( payload );
-    		// Configure the result...
-            result = ResultFactory.getInstance().createResult( resultType );
-		}
-
+		Source source = SourceFactory.getInstance().createSource( payload );
+		SourceResult sourceResult = new SourceResult( source, result ) ;
+		return process ( sourceResult, executionContext );
+	}
+	
+	public final Object process( final SourceResult sourceResult, final ExecutionContext executionContext ) throws SmooksException
+	{
+		AssertArgument.isNotNull( sourceResult, "sourceResult" );
         // Filter it through Smooks...
-        smooks.filter( source, result, executionContext );
-        
-        // Map the result back into the message...
-        Object retObject = ResultFactory.getInstance().mapResultToObject( result, resultType, mapBeanId );
-        
-		return packagePayload( retObject, executionContext );
+		Result result = sourceResult.getResult();
 		
+        smooks.filter( sourceResult.getSource(), result, executionContext );
+        
+		return packagePayload( result, executionContext );
 	}
 	
 	/**
@@ -101,29 +87,9 @@ public abstract class AbstractContainerPlugin
 	 * @return Object	- Object that wraps the result from the transformation in 
 	 * 					  Container specific manner.
 	 */
-	protected abstract Object packagePayload( final Object object, final ExecutionContext execContext );
-	
-	/**
-	 * 	Set the Smooks instance. Different containers will have 
-	 * 	different ways on managing Smooks instances.
-	 * 
-	 * @param smooks			- Smooks instance
-	 * @param executionContext	- Smooks ExecutionContext
-	 */
-	public void setSmooksInstance( final Smooks smooks ) throws SmooksException
+	protected Object packagePayload( final Object object, final ExecutionContext execContext )
 	{
-		AssertArgument.isNotNull( smooks, "smooks" );
-		this.smooks = smooks;
-	}
-
-	public String getMapBeanId()
-	{
-		return mapBeanId;
-	}
-
-	public void setMapBeanId( final String mapBeanId )
-	{
-		this.mapBeanId = mapBeanId;
+		return object;
 	}
 	
 }

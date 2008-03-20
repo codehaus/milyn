@@ -15,7 +15,9 @@
 
 package org.milyn.container.plugin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 /**
@@ -40,35 +41,31 @@ import org.xml.sax.SAXException;
  */
 public class AbstractContainerPluginTest
 {
-	private AbstractContainerPlugin plugin = new MockAbstractContainerPlugin();
 	private Smooks smooks;
 	
-	@Test
+	@Test ( expected = IllegalArgumentException.class )
 	public void process() throws IOException, SAXException
 	{
-		plugin.setSmooksInstance( smooks );
-		
-		Object object = plugin.process( null, ResultType.JAVA, smooks.createExecutionContext() );
-		assertNull( object );
+    	AbstractContainerPlugin plugin = new MockAbstractContainerPlugin( smooks );
+		plugin.process( null, smooks.createExecutionContext() );
 	}
 	
 	@Test
 	public void processSourceResult() throws IOException, SAXException
 	{
-		plugin.setSmooksInstance( smooks );
+    	AbstractContainerPlugin plugin = new MockAbstractContainerPlugin( smooks );
 		SourceResult sourceResult = createSourceResult();
 		
-		Object object = plugin.process( sourceResult, ResultType.JAVA, smooks.createExecutionContext() );
+		Object object = plugin.process( sourceResult, smooks.createExecutionContext() );
 		assertNotNull( object );
 		assertTrue( object instanceof StreamResult );
 	}
 	
 	private static class MockAbstractContainerPlugin extends AbstractContainerPlugin
 	{
-		@Override
-		protected Object packagePayload( Object object, ExecutionContext execContext )
+		public MockAbstractContainerPlugin(Smooks smooks)
 		{
-			return object;
+			super( smooks );
 		}
 
 		public Object process( Object payload, Result result ) throws SmooksException
