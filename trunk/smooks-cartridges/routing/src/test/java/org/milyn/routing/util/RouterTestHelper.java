@@ -13,7 +13,7 @@ public final class RouterTestHelper
 			final TestBean bean)
 	{
         final MockExecutionContext executionContext = new MockExecutionContext();
-        BeanAccessor.addBean( beanId, bean, executionContext, false );
+        BeanAccessor.addBean( executionContext, beanId, bean );
         return executionContext;
 	}
 

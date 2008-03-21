@@ -65,30 +65,27 @@ public class FileRouterTest
 	@Test ( expected = IllegalArgumentException.class )
 	public void initializeMissingDirname()
 	{
-        configureFileRouter( beanId, null, filenamePattern, router );
+        configureFileRouter( beanId, null, filenamePattern, null, router );
 	}
 
 	@Test ( expected = SmooksConfigurationException.class )
 	public void initializeNonExistingDirname()
 	{
-        configureFileRouter( beanId, "/kddg/", filenamePattern, router );
+        configureFileRouter( beanId, "/kddg/", filenamePattern, null, router );
 	}
 	
 	@Test
-	public void onEventShouldCallCreateFileWriter()
-	{
-        configureFileRouter( beanId, tmpDir, filenamePattern, router );
-	}
-
-	@Test
 	public void visitAfter() throws ParserConfigurationException, FileNotFoundException, IOException, ClassNotFoundException
 	{
-        configureFileRouter( beanId, tmpDir, filenamePattern, router );
+		final String listFileName = "testListFile";
+        configureFileRouter( beanId, tmpDir, filenamePattern, listFileName, router );
 
         router.visitAfter( (Element)null , execContext );
 
         String fileName = FileListAccessor.getFileName( execContext );
         assertNotNull( fileName );
+        File listFile = new File ( fileName );
+        assertEquals ( listFileName + ".lst", listFile.getName() );
         
         List<String> fileNames = FileListAccessor.getFileList( execContext ); 
         
@@ -97,7 +94,6 @@ public class FileRouterTest
         outputFile.deleteOnExit();
 
         assertEquals( testbean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
-        
 	}
 	
 	@Test
@@ -105,19 +101,17 @@ public class FileRouterTest
 	{
 		Smooks smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
 		ExecutionContext executionContext = smooks.createExecutionContext();
-		TestBean bean = new TestBean();
-		bean.setName( "Daniel" );
-        BeanAccessor.addBean( executionContext, "testBean", bean );
+        BeanAccessor.addBean( executionContext, "testBean", testbean );
         
         final StringWriter writer = new StringWriter();
-        smooks.filter(new JavaSource(bean), new StreamResult(writer), executionContext);
+        smooks.filter(new JavaSource(testbean), new StreamResult(writer), executionContext);
         
         List<String> fileNames = FileListAccessor.getFileList( executionContext ); 
         File outputFile = new File( fileNames.get( 0 ) );
         assertTrue( outputFile.exists() );
         outputFile.deleteOnExit();
 
-        assertEquals( bean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
+        assertEquals( testbean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
         
         String fileName = FileListAccessor.getFileName( executionContext );
         new File( fileName ).deleteOnExit();
@@ -148,11 +142,14 @@ public class FileRouterTest
 			final String beanId,
 			final String destinationDir,
 			final String filenamePattern,
+			final String listFileName,
 			final FileRouter router)
 	{
         config.setParameter( "beanId", beanId );
         config.setParameter( "destinationDirectory", destinationDir );
 		config.setParameter( "fileNamePattern", filenamePattern );
+		if ( listFileName != null )
+    		config.setParameter( "listFileName", listFileName );
         Configurator.configure( router, config, new MockApplicationContext() );
 	}
 	
