@@ -115,6 +115,12 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
      * 	File object of the destination directory
      */
     private File destinationDir;
+    
+	/*
+	 * 	File name for the list file 
+	 */
+	@ConfigParam ( name = "listFileName", use = Use.OPTIONAL )
+	private String listFileName;
 
     /*
      * Naming strategy for generating the file pattern for output files.
@@ -221,7 +227,18 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 		String fileNamesList = FileListAccessor.getFileName( execContext );
 		if ( fileNamesList == null )
 		{
-    		fileNamesList = destDirName + File.separator + new VMID().toString() + ".lst";
+			StringBuilder sb = new StringBuilder();
+			sb.append( destDirName ).append( File.separator );
+			if ( listFileName == null )
+			{
+				sb.append( new VMID().toString() );
+			}
+			else
+			{
+				sb.append( listFileName );
+			}
+			sb.append( ".lst" );
+			fileNamesList = sb.toString();
     		FileListAccessor.setFileName( fileNamesList, execContext );
 		}
 		
@@ -238,7 +255,6 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 				writer.close();
 			}
 		}
-		
 	}
 
 }

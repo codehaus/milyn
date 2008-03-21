@@ -38,7 +38,6 @@ public class FileRouterContainerPluginTest
 {
 	private static TestBean bean = new TestBean();
 	
-	
 	@Test
 	public void process() throws IOException, SAXException
 	{
@@ -50,7 +49,6 @@ public class FileRouterContainerPluginTest
         BeanAccessor.addBean( executionContext, "testBean", bean );
 		
         Object object = plugin.process( bean, new JavaResult(), executionContext );
-        
         
 		assertNotNull( object );
 		assertTrue ( object instanceof String );
