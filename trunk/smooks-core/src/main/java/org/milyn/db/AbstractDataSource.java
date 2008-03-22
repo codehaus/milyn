@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.db.datasource;
+package org.milyn.db;
 
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;

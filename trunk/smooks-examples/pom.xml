@@ -47,6 +47,7 @@
         <milyn.smooks.csv.version>${milyn.smooks.core.version}</milyn.smooks.csv.version>
         <milyn.smooks.edi.version>${milyn.smooks.core.version}</milyn.smooks.edi.version>
         <milyn.smooks.scripting.version>${milyn.smooks.core.version}</milyn.smooks.scripting.version>
+        <milyn.smooks.routing.version>${milyn.smooks.core.version}</milyn.smooks.routing.version>
     </properties>
 
     <dependencies>

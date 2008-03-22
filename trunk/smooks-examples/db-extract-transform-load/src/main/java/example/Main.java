@@ -33,7 +33,7 @@ import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.db.StatementExec;
+import org.milyn.routing.db.StatementExec;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.HsqlServer;
 import org.xml.sax.SAXException;

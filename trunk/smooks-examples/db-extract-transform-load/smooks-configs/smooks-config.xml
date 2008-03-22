@@ -33,7 +33,7 @@
     <!-- Assert whether it's an insert or update.  Need to do this just before we do the
          insert/update, which is triggered to happen just after the customer-details are processed... -->
     <resource-config selector="customer-details">
-        <resource>org.milyn.db.SQLExecutor</resource>
+        <resource>org.milyn.routing.db.SQLExecutor</resource>
         <param name="executeBefore">true</param>
         <param name="datasource">DBExtractTransformLoadDS</param>
         <param name="statement">select ORDERNUMBER from ORDERS where ORDERNUMBER = ${order.orderNum}</param>
@@ -42,7 +42,7 @@
 
     <!-- If it's an insert (orderExistsRS.isEmpty()), insert the order at the end of the customer-details i.e. just before we process the order items... -->
     <resource-config selector="customer-details">
-        <resource>org.milyn.db.SQLExecutor</resource>
+        <resource>org.milyn.routing.db.SQLExecutor</resource>
         <condition evaluator="org.milyn.javabean.expression.BeanMapExpressionEvaluator">orderExistsRS.isEmpty()</condition>
         <param name="executeBefore">false</param>
         <param name="datasource">DBExtractTransformLoadDS</param>
@@ -51,7 +51,7 @@
 
     <!-- And insert each orderItem... -->
     <resource-config selector="order-item">
-        <resource>org.milyn.db.SQLExecutor</resource>
+        <resource>org.milyn.routing.db.SQLExecutor</resource>
         <condition evaluator="org.milyn.javabean.expression.BeanMapExpressionEvaluator">orderExistsRS.isEmpty()</condition>
         <param name="executeBefore">false</param>
         <param name="datasource">DBExtractTransformLoadDS</param>

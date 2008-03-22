@@ -20,8 +20,8 @@
         </dependency>
         <dependency>
             <groupId>milyn</groupId>
-            <artifactId>milyn-smooks-javabean</artifactId>
-            <version>${milyn.smooks.javabean.version}</version>
+            <artifactId>milyn-smooks-routing</artifactId>
+            <version>${milyn.smooks.routing.version}</version>
         </dependency>
 
 	</dependencies>

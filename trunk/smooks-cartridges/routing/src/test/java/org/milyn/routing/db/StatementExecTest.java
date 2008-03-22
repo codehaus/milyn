@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.db;
+package org.milyn.routing.db;
 
 import junit.framework.TestCase;
 
