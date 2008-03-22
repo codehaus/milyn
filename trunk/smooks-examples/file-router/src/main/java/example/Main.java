@@ -26,17 +26,14 @@ import java.io.Writer;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.java.JavaSource;
 import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.file.FileListAccessor;
 import org.xml.sax.SAXException;
-
-import example.model.Order;
 
 /**
  * This is a simple example that demonstrates how Smooks can be 
@@ -49,21 +46,21 @@ public class Main
 {
 	private static final String LINE_SEP = System.getProperty( "line.separator" );
 	
-    protected void runSmooksTransform( final Object order) throws IOException, SAXException, ClassNotFoundException
+    protected void runSmooksTransform() throws IOException, SAXException, ClassNotFoundException
     {
-        final Smooks smooks = new Smooks("smooks-config.xml");
+        final Smooks smooks = new Smooks( "smooks-config.xml" );
         final ExecutionContext executionContext = smooks.createExecutionContext();
         
-        // 	manually inserting the Order bean into the execution context
-        BeanAccessor.addBean( executionContext, "order", order );
-
         //	generate a smooks-report.html
-    	Writer reportWriter = new FileWriter("smooks-report.html");
-    	executionContext.setEventListener(new HtmlReportGenerator(reportWriter));
+    	Writer reportWriter = new FileWriter( "smooks-report.html" );
+    	executionContext.setEventListener( new HtmlReportGenerator( reportWriter ) );
     	
+    	//	create the source and result 
+        final StreamSource source = new StreamSource( new FileInputStream( "input-message.xml" ) );
+        final StreamResult result = new StreamResult( new StringWriter() );
+        
     	//	perform the transform
-        final StringWriter writer = new StringWriter();
-        smooks.filter(new JavaSource(order), new StreamResult(writer), executionContext);
+        smooks.filter( source, result, executionContext );
         
         //	display the output from the transform
         System.out.println( LINE_SEP );
@@ -71,26 +68,21 @@ public class Main
         List<String> fileNames = (List<String>) FileListAccessor.getFileList( executionContext );
         for (String fileName : fileNames)
 		{
-            System.out.println( LINE_SEP );
-            System.out.println( "fileName : [" + fileName + "] content:" );
-            System.out.println( new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
-            System.out.println();
-			
+            System.out.println( "fileName :  [" + fileName + "]" );
+            // uncomment to see the contents of the file
+            //System.out.println( "Contents : " + new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
 		}
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException, InterruptedException, ClassNotFoundException
     {
         final Main smooksMain = new Main();
-        final Order order = new Order();
 
-        pause("Press 'enter' to display the input Order Object...");
         System.out.println( LINE_SEP );
-        System.out.println( order );
+        System.out.println("input-message.xml needs to be transformed and appended to a file");
         System.out.println( LINE_SEP );
-        System.out.println("This needs to be transformed and appended to a file");
         pause("Press 'enter' to display the transformed message...");
-        smooksMain.runSmooksTransform(order);
+        smooksMain.runSmooksTransform();
         System.out.println( LINE_SEP );
         pause("That's it ");
     }
