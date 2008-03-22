@@ -45,11 +45,7 @@ public class SourceFactory
 	public Source createSource( final Object from )
 	{
 		Source source;
-		if ( from instanceof SourceResult )
-		{
-			source = ( (SourceResult) from ).getSource();
-		}
-		else if( from instanceof String ) 
+		if( from instanceof String ) 
         {
             source = new StreamSource( new StringReader( ( String ) from ) );
         } 
