@@ -15,31 +15,21 @@
 
 package org.milyn.container.plugin;
 
+import java.io.StringWriter;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.StringResult;
 
 /**
- * AbstractContainerPlugin is the class that application containers, for 
- * example ESBs, should extend to provide Smooks support.
- * </p>
- * Usage:
- * <pre>
- * public class ContainerPlugin extends AbstractContainerPlugin
- * {
- *	@Override
- *	protected Object packagePayload( Object resultObject, ExecutionContext executionContext )
- *	{
- *		return resultObject;
- *	}
- * } 
- * </pre>	
- * The method packagePayload gives the container a chance to enrich the resultObject in
- * any way suitable. This is why the ExceutionContext is passed into this method.
+ * PayloadProcessor is the class that application containers, for 
+ * example ESBs, can use to simplify Smooks support.
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
@@ -54,42 +44,40 @@ public class PayloadProcessor
 	}
 
 	/**
-	 * 	The process method does the actual Smooks filtering.
-	 * 
-	 * @param payload			- the payload that is to be filtered
-	 * @return Object			- Object type specific to the current Container
+	 * The process method does the actual Smooks filtering.
+	 *  
+	 * @param payload			- the payload that is to be filtered. Can either be an Object (String, byte[],
+	 * 							  Reader, InputStream) or an instance of SourceResult.
+	 * @return Result			- javax.xml.transform.Result object, will either be the specified Result instance 
+	 * 							  specified in the passed-in SourceResult, or StringResult.
 	 * @throws SmooksException
 	 */
-	public final Object process( final Object payload, Result result, final ExecutionContext executionContext ) throws SmooksException
+	public final Result process( final Object payload, final ExecutionContext executionContext ) throws SmooksException
 	{
 		AssertArgument.isNotNull( payload, "payload" );
-        
-		Source source = SourceFactory.getInstance().createSource( payload );
-		SourceResult sourceResult = new SourceResult( source, result ) ;
-		return process ( sourceResult, executionContext );
-	}
-	
-	public final Object process( final SourceResult sourceResult, final ExecutionContext executionContext ) throws SmooksException
-	{
-		AssertArgument.isNotNull( sourceResult, "sourceResult" );
-        // Filter it through Smooks...
-		Result result = sourceResult.getResult();
 		
-        smooks.filter( sourceResult.getSource(), result, executionContext );
+		Source source = null;
+		Result result = new StringResult();
+		
+		if ( payload instanceof SourceResult )
+		{
+			SourceResult sourceResult = (SourceResult) payload;
+			source = sourceResult.getSource();
+			result = sourceResult.getResult();
+		}
+		else
+		{
+    		source = SourceFactory.getInstance().createSource( payload );
+		}
+		
+        // Filter it through Smooks...
+        smooks.filter( source, result, executionContext );
         
-		return packagePayload( result, executionContext );
+		return prepareResult( result, executionContext );
 	}
 	
-	/**
-	 * 	Create an object that matches the Containers transport.
-	 * 
-	 * @param object
-	 * @return Object	- Object that wraps the result from the transformation in 
-	 * 					  Container specific manner.
-	 */
-	protected Object packagePayload( final Object object, final ExecutionContext execContext )
+	protected Result prepareResult( final Result result, ExecutionContext executionContext )
 	{
-		return object;
+		return result;
 	}
-	
 }

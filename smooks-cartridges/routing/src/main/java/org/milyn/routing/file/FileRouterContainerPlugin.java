@@ -1,8 +1,13 @@
 package org.milyn.routing.file;
 
+import java.io.StringWriter;
+
+import javax.xml.transform.Result;
+
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.plugin.PayloadProcessor;
+import org.milyn.delivery.StringResult;
 
 public class FileRouterContainerPlugin extends PayloadProcessor
 {
@@ -10,13 +15,20 @@ public class FileRouterContainerPlugin extends PayloadProcessor
 	{
 		super( smooks );
 	}
-
+	
 	/**
-	 * 	Will retrieve the file name from the exeuction context.
+	 * Will retrieve the file name from the exeuction context.
 	 */
 	@Override
-	protected Object packagePayload( Object object, ExecutionContext execContext )
+	protected Result prepareResult( Result result, ExecutionContext executionContext )
 	{
-		return FileListAccessor.getFileName( execContext );
+		final String fileName =  FileListAccessor.getFileName( executionContext );
+		final StringResult stringResult = new StringResult();
+		StringWriter writer = new StringWriter();
+		writer.write( fileName );
+		
+		stringResult.setWriter( writer );
+		return stringResult;
 	}
+
 }

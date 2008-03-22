@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.plugin.PayloadProcessor;
-import org.milyn.delivery.java.JavaResult;
+import org.milyn.delivery.StringResult;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.TestBean;
 import org.xml.sax.SAXException;
@@ -43,17 +43,15 @@ public class FileRouterContainerPluginTest
 	{
 
 		Smooks smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
-        PayloadProcessor plugin = new FileRouterContainerPlugin( smooks );
+        PayloadProcessor processor = new FileRouterContainerPlugin( smooks );
 		ExecutionContext executionContext = smooks.createExecutionContext();
 		bean.setName( "Daniel" );
         BeanAccessor.addBean( executionContext, "testBean", bean );
 		
-        Object object = plugin.process( bean, new JavaResult(), executionContext );
+        Object object = processor.process( bean, executionContext );
         
 		assertNotNull( object );
-		assertTrue ( object instanceof String );
-		String fileName = (String) object;
-		System.out.println(fileName);
+		assertTrue ( object instanceof StringResult );
 	}
 	
 }

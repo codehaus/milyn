@@ -16,25 +16,22 @@
 package org.milyn.container.plugin;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.milyn.Smooks;
-import org.milyn.SmooksException;
 import org.xml.sax.SAXException;
 
 /**
- * Unit test for AbstractContainerPlugin 
+ * Unit test for PayloadProcessor 
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
@@ -42,36 +39,33 @@ import org.xml.sax.SAXException;
 public class PayloadProcessorTest
 {
 	private Smooks smooks;
+	private PayloadProcessor processor;
 	
 	@Test ( expected = IllegalArgumentException.class )
 	public void process() throws IOException, SAXException
 	{
-    	PayloadProcessor plugin = new MockAbstractContainerPlugin( smooks );
-		plugin.process( null, smooks.createExecutionContext() );
+		processor.process( null, smooks.createExecutionContext() );
 	}
 	
 	@Test
 	public void processSourceResult() throws IOException, SAXException
 	{
-    	PayloadProcessor plugin = new MockAbstractContainerPlugin( smooks );
 		SourceResult sourceResult = createSourceResult();
+		Object object = processor.process( sourceResult, smooks.createExecutionContext() );
 		
-		Object object = plugin.process( sourceResult, smooks.createExecutionContext() );
 		assertNotNull( object );
 		assertTrue( object instanceof StreamResult );
 	}
 	
-	private static class MockAbstractContainerPlugin extends PayloadProcessor
+	@Test
+	public void processObject()
 	{
-		public MockAbstractContainerPlugin(Smooks smooks)
-		{
-			super( smooks );
-		}
-
-		public Object process( Object payload, Result result ) throws SmooksException
-		{
-			return null;
-		}
+    	Object payload = "<testing/>";
+		Object object = processor.process( payload, smooks.createExecutionContext() );
+		
+		assertNotNull( object );
+		assertTrue( object instanceof StreamResult );
+		assertTrue( ((StreamResult)object).getWriter() instanceof StringWriter );
 	}
 	
 	private SourceResult createSourceResult()
@@ -85,7 +79,7 @@ public class PayloadProcessorTest
 	public void setup() throws IOException, SAXException
 	{
 		smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
-		
+    	processor = new PayloadProcessor( smooks );
 	}
 
 }

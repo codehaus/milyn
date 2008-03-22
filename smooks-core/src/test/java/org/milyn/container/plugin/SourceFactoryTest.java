@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -67,13 +66,4 @@ public class SourceFactoryTest
 		assertTrue( source instanceof StreamSource );
 	}
 	
-	@Test
-	public void getSourceSourceResult()
-	{
-		SourceResult sourceResult = new SourceResult( new StreamSource( "text" ), (Result)null );
-		Source source = factory.createSource( sourceResult );
-		assertNotNull( source );
-		assertTrue( source instanceof StreamSource );
-	}
-
 }
