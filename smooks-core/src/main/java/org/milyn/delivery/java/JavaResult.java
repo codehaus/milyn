@@ -15,14 +15,16 @@
 */
 package org.milyn.delivery.java;
 
+import com.thoughtworks.xstream.XStream;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.FilterResult;
+
+import javax.xml.transform.Result;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import javax.xml.transform.Result;
-
-import org.milyn.assertion.AssertArgument;
-import org.milyn.delivery.FilterResult;
+import java.util.Set;
 
 /**
  * Java filtration/transformation result.
@@ -93,5 +95,27 @@ public class JavaResult extends FilterResult {
      */
     public void setResultMap(Map<String, Object> resultMap) {
         this.resultMap = resultMap;
+    }
+
+    /**
+     * XML Serialized form of the bean Map associate with the
+     * result instance.
+     * @return XML Serialized form of the bean Map associate with the
+     * result instance.
+     */
+    public String toString() {
+        StringWriter stringBuilder = new StringWriter();
+        XStream xstream = new XStream();
+
+        if(resultMap != null && !resultMap.isEmpty()) {
+            Set<Map.Entry<String, Object>> entries = resultMap.entrySet();
+
+            for (Map.Entry<String, Object> entry : entries) {
+                stringBuilder.write(entry.getKey() + ":\n");
+                stringBuilder.write(xstream.toXML(entry.getValue()) + "\n\n");
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }

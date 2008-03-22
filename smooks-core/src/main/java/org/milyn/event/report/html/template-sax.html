@@ -48,9 +48,14 @@
 			</div>
 		</div>
 		
-		<div class="tabbertab" title="Result">
-            TODO!!
-		</div>
+        <div class="tabbertab" title="Result">
+            <div id="result-summary">
+                ${report.result.summary}
+            </div>
+            <div id="result-detail">
+                <pre><@htmlEscape>${report.result.detail}</@htmlEscape></pre>
+            </div>
+        </div>
 	</div>
 	
 	</body>

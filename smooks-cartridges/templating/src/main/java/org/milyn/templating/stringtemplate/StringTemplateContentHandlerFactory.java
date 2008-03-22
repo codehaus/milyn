@@ -29,6 +29,8 @@ import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.xml.DomUtils;
+import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.event.report.annotation.VisitAfterReport;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -84,10 +86,12 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
      * @param resourceConfig The SmooksResourceConfiguration for the StringTemplate.
      * @return The StringTemplate {@link org.milyn.delivery.ContentHandler} instance.
 	 */
-	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
+	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
         try {
-            return Configurator.configure(new StringTemplateProcessingUnit(), resourceConfig);
+            return Configurator.configure(new StringTemplateTemplateProcessor(), resourceConfig);
         } catch (SmooksConfigurationException e) {
+            throw e;
+        } catch (Exception e) {
 			InstantiationException instanceException = new InstantiationException("StringTemplate ProcessingUnit resource [" + resourceConfig.getResource() + "] not loadable.  StringTemplate resource invalid.");
 			instanceException.initCause(e);
 			throw instanceException;
@@ -98,7 +102,9 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 	 * StringTemplate template application ProcessingUnit.
 	 * @author tfennelly
 	 */
-	private static class StringTemplateProcessingUnit extends AbstractTemplateProcessingUnit {
+    @VisitBeforeReport(condition = "false")
+    @VisitAfterReport(summary = "Applied StringTemplate Template.", detailTemplate = "reporting/StringTemplateTemplateProcessor_After.html")
+	private static class StringTemplateTemplateProcessor extends AbstractTemplateProcessingUnit {
 
         private StringTemplate template;
 

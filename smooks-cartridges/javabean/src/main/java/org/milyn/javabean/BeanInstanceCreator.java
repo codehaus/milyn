@@ -51,9 +51,12 @@ import org.w3c.dom.Element;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@VisitBeforeReport(condition = "true", template = "BeanInstanceCreatorReport_Before.mvel")
-@VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass[0].value.endsWith('[]')", template = "BeanInstanceCreatorReport_After.mvel")
-public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
+@VisitBeforeReport(summary = "Created <b>${resource.parameters.beanId!'undefined'}</b> bean instance.  Associated lifecycle if bound to another bean.",
+        detailTemplate = "reporting/BeanInstanceCreatorReport_Before.html")
+@VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
+        summary = "Ended bean lifecycle. Set bean on any targets.", 
+        detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
+public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 

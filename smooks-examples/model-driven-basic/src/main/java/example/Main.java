@@ -17,6 +17,7 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
@@ -43,11 +44,14 @@ public class Main {
      * @param message The request/response input message.
      * @return The transformed request/response.
      */
-    protected String runSmooksTransform(byte[] message) {
+    protected String runSmooksTransform(byte[] message) throws IOException {
 
         // Create an exec context for the target profile....
         ExecutionContext executionContext = smooks.createExecutionContext();
         CharArrayWriter outputWriter = new CharArrayWriter();
+
+        // Configure the execution context to generate a report...
+        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
         // Filter the message to the outputWriter, using the execution context...
         smooks.filter(new StreamSource(new ByteArrayInputStream(message)), new StreamResult(outputWriter), executionContext);

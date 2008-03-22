@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.java.JavaResult;
 import org.milyn.delivery.java.JavaSource;
@@ -48,6 +49,10 @@ public class Main {
         // JavaSource and JavaResult instance...
         JavaSource source = new JavaSource(srcOrder);
         JavaResult result = new JavaResult();
+
+        // Configure the execution context to generate a report...
+        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+
         smooks.filter(source, result, executionContext);
 
         return (LineOrder) result.getBean("lineOrder");

@@ -17,6 +17,7 @@
 package org.milyn.delivery;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.classpath.ClasspathUtils;
@@ -44,7 +45,7 @@ public class JavaContentHandlerFactory implements ContentHandlerFactory {
      * to be created.
      * @return Java {@link ContentHandler} instance.
 	 */
-	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
+	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
 		ContentHandler deliveryUnit = null;
         Exception exception = null;
         String className = null;

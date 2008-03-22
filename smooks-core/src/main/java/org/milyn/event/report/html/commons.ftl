@@ -1,14 +1,14 @@
 <#macro outputMessageNodes messageNodes>
     <#list messageNodes as messageNode>
         <#assign nodeDepth = messageNode.depth * 20>
-        <div style="padding-left: ${nodeDepth}px;">
+        <div id="messageNode-${messageNode.nodeId}" style="margin-left: ${nodeDepth}px;">
             <#if messageNode.visitBefore>
                 &lt;${messageNode.elementName}&gt;
             <#else>
                 &lt;/${messageNode.elementName}&gt;
             </#if>
             <#if (messageNode.execInfoNodes?size > 0)>
-                <a href='#' onclick="return selectElement('block-${messageNode.nodeId}');">*</a>
+                <a href='#' onclick="return selectElement('${messageNode.nodeId}');">*</a>
             </#if>
         </div>
     </#list>
@@ -16,10 +16,10 @@
 <#macro outputMessageSummaries messageNodes>
     <#list messageNodes as messageNode>
         <#if (messageNode.execInfoNodes?size > 0)>
-            <div id="block-${messageNode.nodeId}" style="display:none;" class="report-container">
+            <div id="block-${messageNode.nodeId}" style="display:none;">
                 <#list messageNode.execInfoNodes as execInfoNode>
-                <div>
-                    <a href='#' onclick="return selectVisitor('block-details-${execInfoNode.nodeId}');">${execInfoNode.summary}</a>
+                <div id="block-details-link-${execInfoNode.nodeId}">
+                    <a href='#' onclick="return selectVisitor('${execInfoNode.nodeId}');">${execInfoNode.summary}</a>
                 </div>
                 </#list>
             </div>
@@ -30,7 +30,17 @@
     <#list messageNodes as messageNode>
         <#if (messageNode.execInfoNodes?size > 0)>
             <#list messageNode.execInfoNodes as execInfoNode>
-                <div id="block-details-${execInfoNode.nodeId}" style="display:none;" class="report-container"><pre><@htmlEscape>${execInfoNode.detail}</@htmlEscape></pre></div>
+                <div id="block-details-${execInfoNode.nodeId}" style="display:none;">
+                <#if execInfoNode.detail??>
+                <b><u>Details:</u></b><br/>
+                ${execInfoNode.detail}
+                <p/>
+                </#if>
+                <b><u>Resource Configuration:</u></b>
+                <pre><@htmlEscape>${execInfoNode.resourceXML}</@htmlEscape></pre>
+                <p/>
+                <b><u>Execution Context State:</u></b> (After Visitor Execution)
+                <pre>${execInfoNode.contextState}</pre></div>
             </#list>
         </#if>
     </#list>

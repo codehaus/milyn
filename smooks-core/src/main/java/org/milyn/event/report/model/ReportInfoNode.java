@@ -24,6 +24,8 @@ public class ReportInfoNode {
     private int nodeId;
     private String summary;
     private String detail;
+    private String resourceXML;
+    private String contextState;
 
     public ReportInfoNode() {
     }
@@ -55,5 +57,21 @@ public class ReportInfoNode {
 
     public void setDetail(String detail) {
         this.detail = detail;
+    }
+
+    public String getResourceXML() {
+        return resourceXML;
+    }
+
+    public void setResourceXML(String resourceXML) {
+        this.resourceXML = resourceXML;
+    }
+
+    public String getContextState() {
+        return contextState;
+    }
+
+    public void setContextState(String contextState) {
+        this.contextState = contextState;
     }
 }

@@ -53,6 +53,10 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
     private String bindId;
 
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
+        if(config.getResource() == null) {
+            throw new SmooksConfigurationException("Templating resource undefuned in resource configuration: " + config);
+        }
+
         try {
             loadTemplate(config);
         } catch (Exception e) {

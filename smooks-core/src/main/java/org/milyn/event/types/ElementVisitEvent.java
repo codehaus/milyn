@@ -15,6 +15,8 @@
 */
 package org.milyn.event.types;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.container.ExecutionContext;
@@ -26,13 +28,10 @@ import org.milyn.event.ElementProcessingEvent;
 import org.milyn.event.ResourceBasedEvent;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.io.StreamUtils;
-import org.milyn.util.ClassUtil;
-import org.milyn.util.MVELTemplate;
+import org.milyn.util.FreeMarkerTemplate;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,20 +41,29 @@ import java.util.Map;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class ElementVisitEvent extends ElementProcessingEvent implements ResourceBasedEvent {
-    
+
+    private static Log logger = LogFactory.getLog(ElementVisitEvent.class);
+
     private ContentHandlerConfigMap configMapping;
     private VisitSequence sequence;
     private String executionContextState;
     private Throwable error;
-    private String reportText;
+    private String reportSummary;
+    private String reportDetail;
 
     public ElementVisitEvent(Object element, ContentHandlerConfigMap configMapping, VisitSequence sequence) {
         super(element);
         this.configMapping = configMapping;
         this.sequence = sequence;
         ExecutionContext executionContext = Filter.getCurrentExecutionContext();
-        executionContextState = executionContext.toString();
-        initReportText(executionContext);        
+        try {
+            executionContextState = executionContext.toString();
+        } catch (Exception e) {
+            StringWriter exceptionWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(exceptionWriter));
+            executionContextState = "Execution Context Serialization Failure:\n" + exceptionWriter.toString();
+        }
+        initReport(executionContext);
     }
 
     public ElementVisitEvent(Object element, ContentHandlerConfigMap configMapping, VisitSequence sequence, Throwable error) {
@@ -83,55 +91,59 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
         return error;
     }
 
-    public String getReportText() {
-        return reportText;
+    public String getReportSummary() {
+        return reportSummary;
     }
 
-    private void initReportText(ExecutionContext executionContext) {
+    public String getReportDetail() {
+        return reportDetail;
+    }
+
+    private void initReport(ExecutionContext executionContext) {
         ContentHandler handler = configMapping.getContentHandler();
-        if(getSequence() == VisitSequence.BEFORE) {
+        if (getSequence() == VisitSequence.BEFORE) {
             VisitBeforeReport reportAnnotation = handler.getClass().getAnnotation(VisitBeforeReport.class);
-            if(reportAnnotation != null) {
-                applyReportTemplate(reportAnnotation.template(), handler.getClass(), executionContext);
+            if (reportAnnotation != null) {
+                applyReportTemplates(reportAnnotation.summary(), reportAnnotation.detailTemplate(), handler.getClass(), executionContext);
             }
         } else {
             VisitAfterReport reportAnnotation = handler.getClass().getAnnotation(VisitAfterReport.class);
-            if(reportAnnotation != null) {
-                applyReportTemplate(reportAnnotation.template(), handler.getClass(), executionContext);
+            if (reportAnnotation != null) {
+                applyReportTemplates(reportAnnotation.summary(), reportAnnotation.detailTemplate(), handler.getClass(), executionContext);
             }
         }
 
-        if(reportText == null) {
+        if (reportDetail == null) {
             // No template ...
-            reportText = executionContextState;
+            reportDetail = executionContextState;
         }
     }
 
-    private void applyReportTemplate(String template, Class handlerClass, ExecutionContext executionContext) {
-        if(template == AnnotationConstants.NULL_STRING) {
-            // No template ...
-            return;
-        }
-
-        InputStream templateResourceStream = ClassUtil.getResourceAsStream(template, handlerClass);
-        if(templateResourceStream != null) {
-            try {
-                try {
-                    template = StreamUtils.readStream(new InputStreamReader(templateResourceStream, "UTF-8"));
-                } finally {
-                    templateResourceStream.close();
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException("Unexpected exception reading classpath resource '" + template + "'.", e);
-            }
-        }
-
-        MVELTemplate mvelTemplate = new MVELTemplate(template);
+    private void applyReportTemplates(String summary, String detailTemplate, Class handlerClass, ExecutionContext executionContext) {
         Map templateParams = new HashMap();
 
         templateParams.put("resource", configMapping.getResourceConfig());
         templateParams.put("execContext", executionContext);
         templateParams.put("event", this);
-         reportText = mvelTemplate.apply(templateParams);
+
+        if (!summary.equals(AnnotationConstants.NULL_STRING)) {
+            FreeMarkerTemplate template = new FreeMarkerTemplate(summary);
+            try {
+                reportSummary = template.apply(templateParams);
+            } catch (Exception e) {
+                reportSummary = "Report Template Summary Error: " + e.getMessage();
+                logger.error("Failed to apply Summary Template.", e);
+            }
+        }
+
+        if (!detailTemplate.equals(AnnotationConstants.NULL_STRING)) {
+            FreeMarkerTemplate template = new FreeMarkerTemplate(detailTemplate, handlerClass);
+            try {
+                reportDetail = template.apply(templateParams);
+            } catch (Exception e) {
+                reportSummary = "Report Template Detail Error: " + e.getMessage();
+                logger.error("Failed to apply Detail Template.", e);
+            }
+        }
     }
 }
