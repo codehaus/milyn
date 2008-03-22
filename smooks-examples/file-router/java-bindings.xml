@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <resource-config selector="global-parameters">
+        <param name="stream.filter.type">SAX</param>
+    </resource-config>
+
+    <!--
+    Create an "example.beans.OrderItem" bean instance when we visit the start of the <order-item> element.
+    Set the OrderItem instances on the "orderItem".
+    -->
+    <resource-config selector="order-item">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanClass">example.model.OrderItem</param>
+        <param name="beanId">orderItem</param>
+        <param name="bindings">
+            <binding property="productId" type="Long" selector="order-item product" />
+            <binding property="quantity" type="Integer" selector="order-item quantity" />
+            <binding property="price" type="Double" selector="order-item price" />
+        </param>
+    </resource-config>
+
+    <resource-config selector="decoder:OrderDateLong">
+        <resource>org.milyn.javabean.decoders.DateDecoder</resource>
+        <param name="format">EEE MMM dd HH:mm:ss z yyyy</param>
+        <param name="locale-language">en</param>
+        <param name="locale-country">IE</param>
+    </resource-config>
+
+</smooks-resource-list>
