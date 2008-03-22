@@ -51,13 +51,9 @@ public class Main
         final Smooks smooks = new Smooks( "smooks-config.xml" );
         final ExecutionContext executionContext = smooks.createExecutionContext();
         
-        //	generate a smooks-report.html
-    	Writer reportWriter = new FileWriter( "smooks-report.html" );
-    	executionContext.setEventListener( new HtmlReportGenerator( reportWriter ) );
-    	
     	//	create the source and result 
         final StreamSource source = new StreamSource( new FileInputStream( "input-message.xml" ) );
-        final StreamResult result = new StreamResult( new StringWriter() );
+        final StreamResult result = null;
         
     	//	perform the transform
         smooks.filter( source, result, executionContext );
@@ -65,13 +61,10 @@ public class Main
         //	display the output from the transform
         System.out.println( LINE_SEP );
         System.out.println( "List file : [" + FileListAccessor.getFileName( executionContext ) + "]" );
-        List<String> fileNames = (List<String>) FileListAccessor.getFileList( executionContext );
-        for (String fileName : fileNames)
-		{
-            System.out.println( "fileName :  [" + fileName + "]" );
-            // uncomment to see the contents of the file
-            //System.out.println( "Contents : " + new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
-		}
+        
+        //	uncomment to print the files
+        //printFiles( executionContext );
+        
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException, InterruptedException, ClassNotFoundException
@@ -85,6 +78,23 @@ public class Main
         smooksMain.runSmooksTransform();
         System.out.println( LINE_SEP );
         pause("That's it ");
+    }
+    
+    /*
+     * Can be used to print the list of files and their contents.
+     * Beware that this can cause memory issues as the whole list file will be
+     * read into memory. This method should only be used with smaller transforms.
+     */
+    private void printFiles( ExecutionContext executionContext ) throws IOException, ClassNotFoundException
+    {
+        List<String> fileNames = (List<String>) FileListAccessor.getFileList( executionContext );
+        System.out.println( "Contains [" + fileNames.size() + "] files");
+        
+        for (String fileName : fileNames)
+		{
+            System.out.println( "fileName :  [" + fileName + "]" );
+            System.out.println( "Contents : " + new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
+		}
     }
 
     private static void pause(String message) {
