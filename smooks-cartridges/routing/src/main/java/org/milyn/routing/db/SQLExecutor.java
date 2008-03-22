@@ -13,14 +13,14 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.db;
+package org.milyn.routing.db;
 
 import org.milyn.SmooksException;
+import org.milyn.db.AbstractDataSource;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.container.ExecutionContext;
-import org.milyn.db.datasource.AbstractDataSource;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
