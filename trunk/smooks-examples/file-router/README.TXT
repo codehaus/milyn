@@ -15,3 +15,7 @@ How to Run?
     Running:
         1. "mvn clean install"
         2. "mvn exec:java"
+
+	Monitoring (optional):
+		1. export MAVEN_OPTS=-Dcom.sun.management.jmxremote
+		2. "jconsole" 

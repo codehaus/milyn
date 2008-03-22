@@ -5,15 +5,15 @@
 		<param name="stream.filter.type">SAX</param>
 	</resource-config>
 
-	<!-- Import the java bindings -->
+    <!-- Import the java bindings -->
     <import file="java-bindings.xml" />
 
-     <resource-config selector="order-item">
+    <resource-config selector="order-item">
         <resource>org.milyn.routing.file.FileRouter</resource>
         <param name="beanId">orderItem</param>
         <param name="visitAfter">true</param>
         <param name="destinationDirectory">target</param>
         <param name="fileNamePattern">Product-${productId}.ser</param>
     </resource-config>
-
+    
 </smooks-resource-list>
