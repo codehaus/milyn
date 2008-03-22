@@ -113,8 +113,11 @@ public class FileRouterTest
 
         assertEquals( testbean, new ObjectInputStream( new FileInputStream( outputFile )).readObject());
         
-        String fileName = FileListAccessor.getFileName( executionContext );
-        new File( fileName ).deleteOnExit();
+		List<String> fileList = FileListAccessor.getFileList( executionContext );
+		for (String file : fileList)
+		{
+			new File( file ).delete();
+		}
 	}
 	
 	@Before

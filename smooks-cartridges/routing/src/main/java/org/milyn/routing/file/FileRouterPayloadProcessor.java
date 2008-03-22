@@ -9,9 +9,9 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.plugin.PayloadProcessor;
 import org.milyn.delivery.StringResult;
 
-public class FileRouterContainerPlugin extends PayloadProcessor
+public class FileRouterPayloadProcessor extends PayloadProcessor
 {
-	public FileRouterContainerPlugin(Smooks smooks)
+	public FileRouterPayloadProcessor(Smooks smooks)
 	{
 		super( smooks );
 	}
