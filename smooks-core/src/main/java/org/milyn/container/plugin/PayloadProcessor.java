@@ -15,11 +15,8 @@
 
 package org.milyn.container.plugin;
 
-import java.io.StringWriter;
-
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
