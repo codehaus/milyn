@@ -18,7 +18,9 @@ package org.milyn.routing.file;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 import org.milyn.Smooks;
@@ -34,7 +36,7 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
-public class FileRouterContainerPluginTest
+public class FileRouterPayloadProcessorTest
 {
 	private static TestBean bean = new TestBean();
 	
@@ -43,7 +45,7 @@ public class FileRouterContainerPluginTest
 	{
 
 		Smooks smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
-        PayloadProcessor processor = new FileRouterContainerPlugin( smooks );
+        PayloadProcessor processor = new FileRouterPayloadProcessor( smooks );
 		ExecutionContext executionContext = smooks.createExecutionContext();
 		bean.setName( "Daniel" );
         BeanAccessor.addBean( executionContext, "testBean", bean );
@@ -52,6 +54,12 @@ public class FileRouterContainerPluginTest
         
 		assertNotNull( object );
 		assertTrue ( object instanceof StringResult );
+		
+		List<String> fileList = FileListAccessor.getFileList( executionContext );
+		for (String file : fileList)
+		{
+			new File( file ).delete();
+		}
 	}
 	
 }
