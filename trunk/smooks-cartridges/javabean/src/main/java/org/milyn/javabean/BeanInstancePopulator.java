@@ -54,8 +54,12 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
-@VisitBeforeReport(condition = "true", template = "BeanInstancePopulatorReport_Before.mvel")
-@VisitAfterReport(condition = "true", template = "BeanInstancePopulatorReport_After.mvel")
+@VisitBeforeReport(condition = "parameters.containsKey('bindBeanId')",
+        summary = "Create bean lifecycle observer for bean <b>${resource.parameters.bindBeanId!'undefined'}</b>.",
+        detailTemplate = "reporting/BeanInstancePopulatorReport_Before.html")
+@VisitAfterReport(condition = "!parameters.containsKey('bindBeanId')",
+        summary = "Populating <b>${resource.parameters.beanId}</b> with a value from this element.",
+        detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
 public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);

@@ -22,6 +22,8 @@ import org.milyn.delivery.VisitSequence;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.event.types.ElementVisitEvent;
+import org.milyn.event.types.FilterLifecycleEvent;
+import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
@@ -89,6 +91,12 @@ public class BasicExecutionEventListener implements ExecutionEventListener {
     }
 
     protected boolean ignoreEvent(ExecutionEvent event) {
+        if(event instanceof FilterLifecycleEvent) {
+            return false;
+        } else if(event instanceof ElementPresentEvent) {
+            return false;
+        }
+
         if(filterEvents != null && !filterEvents.contains(event.getClass())) {
             return true;
         }

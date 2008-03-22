@@ -17,6 +17,7 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
@@ -38,6 +39,9 @@ public class Main {
         Smooks smooks = new Smooks("smooks-config.xml");
         ExecutionContext executionContext = smooks.createExecutionContext();
         StringWriter writer = new StringWriter();
+
+        // Configure the execution context to generate a report...
+        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
         smooks.filter(new StreamSource(new InputStreamReader(new ByteArrayInputStream(messageIn), "UTF-8")), new StreamResult(writer), executionContext);
 

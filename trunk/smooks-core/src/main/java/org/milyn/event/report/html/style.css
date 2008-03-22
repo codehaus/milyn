@@ -113,7 +113,7 @@ you can set a fixed height */
     height: 650px;
 }
 
-#executetab {
+.tabbertab {
     position: relative;
     background-color: rgb( 238, 233, 233 );
 }
@@ -121,7 +121,7 @@ you can set a fixed height */
 #left {
     float: left;
     height: 93%;
-    width: 27%;
+    width: 25%;
     margin: 1%;
     border-style: groove;
     background-color: white;
@@ -133,7 +133,7 @@ you can set a fixed height */
     float: right;
     height: 93%;
     margin: 1%;
-    width: 68%;
+    width: 65%;
 }
 
 #righttop {
@@ -158,4 +158,23 @@ you can set a fixed height */
     border-style: groove;
     background-color: white;
     overflow: scroll;
+}
+
+#result-summary {
+    float: top;
+    height: 10%;
+    border-style: groove;
+    background-color: white;
+    overflow: scroll;
+    margin: 1%;
+}
+
+
+#result-detail {
+    float: bottom;
+    height: 80%;
+    border-style: groove;
+    background-color: white;
+    overflow: scroll;
+    margin: 1%;
 }

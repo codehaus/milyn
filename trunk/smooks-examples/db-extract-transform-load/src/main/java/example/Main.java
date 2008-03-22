@@ -31,6 +31,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.container.ExecutionContext;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.db.StatementExec;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.HsqlServer;
@@ -78,7 +80,12 @@ public class Main {
     	Locale.setDefault(new Locale("en", "IE"));
     	
     	Smooks smooks = new Smooks("./smooks-configs/smooks-config.xml");
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, smooks.createExecutionContext());
+        ExecutionContext executionContext = smooks.createExecutionContext();
+
+        // Configure the execution context to generate a report...
+        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        
+        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, executionContext);
         
         Locale.setDefault(defaultLocale);
     }

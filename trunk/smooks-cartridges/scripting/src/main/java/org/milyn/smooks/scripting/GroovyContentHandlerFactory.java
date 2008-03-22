@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import groovy.lang.GroovyClassLoader;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
@@ -90,7 +91,7 @@ public class GroovyContentHandlerFactory implements ContentHandlerFactory {
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.ContentHandlerFactory#create(org.milyn.cdr.SmooksResourceConfiguration)
 	 */
-	public ContentHandler create(SmooksResourceConfiguration configuration) throws InstantiationException {
+	public ContentHandler create(SmooksResourceConfiguration configuration) throws SmooksConfigurationException, InstantiationException {
 		GroovyClassLoader groovyClassLoader = new GroovyClassLoader(getClass().getClassLoader());
 		
 		try {

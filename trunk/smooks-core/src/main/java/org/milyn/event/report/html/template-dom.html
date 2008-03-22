@@ -30,7 +30,7 @@
             TODO!!
         </div>
 		
-		<div id="executetab" class="tabbertab tabbertabdefault" title="Execution">
+		<div class="tabbertab tabbertabdefault" title="Execution">
 			<div id="left">
 				STARTED<br/>
                 ASSEMBLY_STARTED<br/>
@@ -58,7 +58,12 @@
 		</div>
 		
 		<div class="tabbertab" title="Result">
-            TODO!!
+            <div id="result-summary">
+                ${report.result.summary}
+            </div>
+            <div id="result-detail">
+                <pre><@htmlEscape>${report.result.detail}</@htmlEscape></pre>
+            </div>
 		</div>
 	</div>
 	

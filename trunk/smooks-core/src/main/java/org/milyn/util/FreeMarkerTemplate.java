@@ -25,9 +25,7 @@ import freemarker.template.TemplateException;
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 
 /**
  *  FreeMarker template.
@@ -39,8 +37,23 @@ public class FreeMarkerTemplate {
     private String templateText;
     private Template template;
 
+    public FreeMarkerTemplate(String templateText) {
+        AssertArgument.isNotNullAndNotEmpty(templateText, "templateText");
+        Reader templateReader = new StringReader(templateText);
+
+        try {
+            try {
+                template = new Template("free-marker-template", templateReader, new Configuration());
+            } finally {
+                templateReader.close();
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Unexpected IOException.", e);
+        }
+    }
+
     public FreeMarkerTemplate(String templatePath, Class basePath) {
-        AssertArgument.isNotNullAndNotEmpty(templatePath, "template");
+        AssertArgument.isNotNullAndNotEmpty(templatePath, "templatePath");
         this.templateText = templatePath;
 
         try {
@@ -49,8 +62,6 @@ public class FreeMarkerTemplate {
             if(basePath != null) {
                 configuration.setClassForTemplateLoading(basePath, "");
             }
-            // MultiTemplateLoader templateLoader = new MultiTemplateLoader(new TemplateLoader[] {new FileTemplateLoader(), new ClassTemplateLoader()});
-            // configuration.setTemplateLoader(templateLoader);
             template = configuration.getTemplate(templatePath);
         } catch (IOException e) {
             throw new IllegalStateException("Unexpected IOException.", e);

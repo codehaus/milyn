@@ -99,6 +99,13 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         assertEquals("<mybean>xvalueonc1</mybean>", context.getAttribute("mybeanTemplate"));
     }
 
+    public void test_template_include() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-include.cdrl"));
+
+        test_ftl(smooks, "<a><c/></a>",
+                         "<a><maintemplate><included>blah</included></maintemplate></a>");
+    }
+    
     public void testInsertBefore() throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-insert-before.cdrl"));
 

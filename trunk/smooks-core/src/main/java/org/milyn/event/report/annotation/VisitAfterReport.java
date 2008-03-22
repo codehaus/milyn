@@ -29,7 +29,9 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 public abstract @interface VisitAfterReport {
 
-    public abstract String condition();
+    public abstract String condition() default "true";
 
-    public abstract String template() default AnnotationConstants.NULL_STRING;
+    public abstract String summary() default AnnotationConstants.NULL_STRING;
+
+    public abstract String detailTemplate() default AnnotationConstants.NULL_STRING;
 }

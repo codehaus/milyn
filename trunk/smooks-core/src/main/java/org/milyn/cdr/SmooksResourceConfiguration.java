@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.net.URI;
 
 /**
  * Smooks Resource Targeting Configuration.
@@ -206,6 +207,11 @@ public class SmooksResourceConfiguration {
      */
     private String resource;
     /**
+     * Is this resource defined inline in the configuration, or is it
+     * referenced through a URI.
+     */
+    private boolean isInline = false;
+    /**
      * Condition evaluator used in resource targeting.
      */
     private ExpressionEvaluator expressionEvaluator;
@@ -313,6 +319,7 @@ public class SmooksResourceConfiguration {
         clone.profileTargetingExpressionStrings = profileTargetingExpressionStrings;
         clone.profileTargetingExpressions = profileTargetingExpressions;
         clone.resource = resource;
+        clone.isInline = isInline;
         clone.resourceType = resourceType;
         clone.isXmlDef = isXmlDef;
         if(parameters != null) {
@@ -389,6 +396,28 @@ public class SmooksResourceConfiguration {
      */
     public void setResource(String resource) {
         this.resource = resource;
+
+        if(resource != null) {
+            try {
+                // If the resource resolves as a valid URI, then it's not an inline resource.
+                new URI(resource);
+                isInline = false;
+            } catch (Exception e) {
+                isInline = true;
+            }
+        }
+    }
+
+    /**
+     * Is this resource defined inline in the configuration, or is it
+     * referenced through a URI.
+     * <p/>
+     * Note that this method also returns false if the resource is undefined (null).
+     *
+     * @return True if the resource is defined inline, otherwise false.
+     */
+    public boolean isInline() {
+        return isInline;
     }
 
     /**
@@ -732,7 +761,7 @@ public class SmooksResourceConfiguration {
         } else if (parameter instanceof Parameter) {
             Vector paramList = new Vector();
             paramList.add(parameter);
-            parameters.put(name, paramList);
+            //parameters.put(name, paramList);
             return paramList;
         }
 

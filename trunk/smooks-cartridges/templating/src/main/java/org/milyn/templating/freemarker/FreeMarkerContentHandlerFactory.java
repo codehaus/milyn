@@ -1,28 +1,11 @@
 package org.milyn.templating.freemarker;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
-import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
-import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
-import org.milyn.delivery.sax.*;
-import org.milyn.javabean.BeanAccessor;
-import org.milyn.templating.AbstractTemplateProcessingUnit;
-import org.milyn.xml.DomUtils;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import java.io.*;
-import java.util.Map;
 
 /**
  * FreeMarker {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
@@ -95,182 +78,16 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
      * @param resourceConfig The SmooksResourceConfiguration for the FreeMarker.
      * @return The FreeMarker {@link org.milyn.delivery.ContentHandler} instance.
 	 */
-	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
+	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
         try {
-            return Configurator.configure(new FreeMarkerProcessingUnit(), resourceConfig);
+            return Configurator.configure(new FreeMarkerTemplateProcessor(), resourceConfig);
         } catch (SmooksConfigurationException e) {
+            throw e;
+        } catch (Exception e) {
 			InstantiationException instanceException = new InstantiationException("FreeMarker resource [" + resourceConfig.getResource() + "] not loadable.  FreeMarker resource invalid.");
 			instanceException.initCause(e);
 			throw instanceException;
 		}
 	}
 
-	/**
-	 * <a href="http://freemarker.org/">FreeMarker</a> template application ProcessingUnit.
-	 * @author tfennelly
-	 */
-	private static class FreeMarkerProcessingUnit extends AbstractTemplateProcessingUnit implements SAXElementVisitor {
-
-        private static Log logger = LogFactory.getLog(FreeMarkerProcessingUnit.class);
-
-        private Template template;
-        private SmooksResourceConfiguration config;
-        private DefaultSAXElementSerializer targetWriter;
-
-        protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {
-            byte[] templateBytes = config.getBytes();
-            Reader templateReader = new InputStreamReader(new ByteArrayInputStream(templateBytes), getEncoding());
-
-            try {
-                template = new Template("free-marker-template", templateReader, new Configuration());
-            } finally {
-                templateReader.close();
-            }
-            this.config = config;
-
-            // We'll use the DefaultSAXElementSerializer to write out the targeted element
-            // where the action is not "replace" or "bindto".
-            targetWriter = new DefaultSAXElementSerializer();
-            targetWriter.setWriterOwner(this);
-        }
-
-        /**
-         * Apply the template for DOM.
-         * @param element The targeted DOM Element.
-         * @param executionContext The Smooks execution context.
-         * @throws SmooksException Failed to apply template. See cause.
-         */
-        protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
-            // Apply the template...
-            String templatingResult;
-            try {
-                Writer writer = new StringWriter();
-                applyTemplate(executionContext, writer);
-                templatingResult = writer.toString();
-            } catch (TemplateException e) {
-                throw new SmooksException("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
-            } catch (IOException e) {
-                throw new SmooksException("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
-            }
-
-            Node resultNode;
-            if(getAction() != Action.ADDTO && element == element.getOwnerDocument().getDocumentElement()) {
-                // We can't replace the root node with a text node (or insert before/after), so we need
-                // to replace the root node with a <context-object key="xxx" /> element and bind the result to the
-                // execution context under the specified key. The ContextObjectSerializationUnit will take
-                // care of the rest.
-
-                String key = "FreeMarkerObject:" + DomUtils.getXPath(element);
-                executionContext.setAttribute(key, templatingResult);
-                resultNode = ContextObjectSerializationUnit.createElement(element.getOwnerDocument(), key);
-            } else {
-                // Create the replacement DOM text node containing the applied template...
-                resultNode = element.getOwnerDocument().createTextNode(templatingResult);
-            }
-
-            // Process the templating action, supplying the templating result...
-            processTemplateAction(element, resultNode);
-        }
-
-        /* ------------------------------------------------------------------------------------------------------------------------------------------
-           SAX Processing methods.
-           ------------------------------------------------------------------------------------------------------------------------------------------ */
-
-        public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-            if(getAction() == Action.INSERT_BEFORE) {
-                // apply the template...
-                applyTemplate(element, executionContext);
-                // write the start of the element...
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.visitBefore(element, executionContext);
-                }
-            } else if(getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
-                // write the start of the element...
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.visitBefore(element, executionContext);
-                }
-            } else {
-                // Just acquire ownership of the writer...
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    element.getWriter(this);
-                }
-            }
-        }
-
-        public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-            if(getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.onChildText(element, childText, executionContext);
-                }
-            }
-        }
-
-        public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-            if(getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.onChildElement(element, childElement, executionContext);
-                }
-            }
-        }
-
-        public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-            if(getAction() == Action.ADDTO) {
-                if(!targetWriter.isStartWritten(element)) {
-                    if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                        targetWriter.writeStartElement(element);
-                    }
-                }
-                // apply the template...
-                applyTemplate(element, executionContext);
-                // write the end of the element...
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.visitAfter(element, executionContext);
-                }
-            } else if(getAction() == Action.INSERT_BEFORE) {
-                // write the end of the element...
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.visitAfter(element, executionContext);
-                }
-            } else if(getAction() == Action.INSERT_AFTER) {
-                // write the end of the element...
-                if(executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.visitAfter(element, executionContext);
-                }
-                // apply the template...
-                applyTemplate(element, executionContext);
-            } else if(getAction() == Action.REPLACE || getAction() == Action.BIND_TO) {
-                // just apply the template...
-                applyTemplate(element, executionContext);
-            }
-        }
-
-        private void applyTemplate(SAXElement element, ExecutionContext executionContext) {
-            try {
-                if(getAction() == Action.BIND_TO) {
-                    String bindId = getBindId();
-
-                    if(bindId == null) {
-                        throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
-                    }
-                    Writer writer = new StringWriter();
-                    applyTemplate(executionContext, writer);
-                    executionContext.setAttribute(bindId, writer.toString());
-                } else {
-                    Writer writer = element.getWriter(this);
-                    applyTemplate(executionContext, writer);
-                }
-            } catch (TemplateException e) {
-                logger.warn("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
-                return;
-            } catch (IOException e) {
-                logger.warn("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
-                return;
-            }
-        }
-
-        private void applyTemplate(ExecutionContext executionContext, Writer writer) throws TemplateException, IOException {
-            Map beans = BeanAccessor.getBeanMap(executionContext);
-            template.process(beans, writer);
-        }
-    }
 }

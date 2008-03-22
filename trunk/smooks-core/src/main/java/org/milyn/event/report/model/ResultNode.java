@@ -13,25 +13,31 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.event.report.annotation;
-
-import org.milyn.cdr.annotation.AnnotationConstants;
-
-import java.lang.annotation.*;
+package org.milyn.event.report.model;
 
 /**
- * Visit before report annotation.
- *
+ * Report result node.
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public abstract @interface VisitBeforeReport {
+public class ResultNode {
 
-    public abstract String condition() default "true";
+    private String summary;
+    private String detail;
 
-    public abstract String summary() default AnnotationConstants.NULL_STRING;
+    public String getSummary() {
+        return summary;
+    }
 
-    public abstract String detailTemplate() default AnnotationConstants.NULL_STRING;
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
 }

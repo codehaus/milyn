@@ -55,7 +55,9 @@ public class LineOrder {
         stringBuilder.append("Class: " + getClass().getName() + "\n");
         stringBuilder.append("\tcustomerId: " + customerId + "\n");
         stringBuilder.append("\tcustomerName: " + customerName + "\n");
-        stringBuilder.append("\tlineItems: " + Arrays.asList(lineItems));
+        if(lineItems != null) {
+            stringBuilder.append("\tlineItems: " + Arrays.asList(lineItems));
+        }
 
         return stringBuilder.toString();
     }

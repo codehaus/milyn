@@ -33,6 +33,8 @@ import org.milyn.xml.DomUtils;
 import org.milyn.xml.Namespace;
 import org.milyn.xml.XmlUtil;
 import org.milyn.SmooksException;
+import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.event.report.annotation.VisitAfterReport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -165,7 +167,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      * @return XSL {@link org.milyn.delivery.ContentHandler} instance.
      * @see org.milyn.delivery.JavaContentHandlerFactory
      */
-    public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws InstantiationException {
+    public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
         try {
             return Configurator.configure(new XslProcessingUnit(), resourceConfig);
         } catch(SmooksConfigurationException e) {
@@ -182,6 +184,8 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      *
      * @author tfennelly
      */
+    @VisitBeforeReport(condition = "false")
+    @VisitAfterReport(summary = "Applied XSL Template.", detailTemplate = "reporting/XslTemplateProcessor_After.html")
     private static class XslProcessingUnit extends AbstractTemplateProcessingUnit {
 
         /**
@@ -192,14 +196,6 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
          * Is this processor processing an XSLT <a href="#templatelets">Templatelet</a>.
          */
         private boolean isTemplatelet;
-        /**
-         * Configuration flag indicating whether the result is to be streamed back into the
-         * output tree, or readed to the DOM as Elements.  Streaming the result
-         * is more performant - but you can't perform further manipulations on the DOM.
-         * <p/>
-         * Default is "true".
-         */
-        private boolean streamResult;
         /**
          * Is the template application synchronized or not.
          * <p/>
@@ -212,15 +208,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
             byte[] xslBytes = resourceConfig.getBytes();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             StreamSource xslStreamSource;
-            boolean isInlineXSL;
-
-            try {
-                // If the resource resolves as a valid URI, then it's not an inline resource.
-                new URI(resourceConfig.getResource());
-                isInlineXSL = false;
-            } catch (Exception e) {
-                isInlineXSL = true;
-            }
+            boolean isInlineXSL = resourceConfig.isInline();
 
             // If it's not a full XSL template, we need to make it so by wrapping it.
             isTemplatelet = isTemplatelet(isInlineXSL, resourceConfig, new String(xslBytes));
@@ -237,7 +225,6 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
             xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), getEncoding()));
             transformerFactory.setErrorListener(new XslErrorListener(failOnWarning));
             xslTemplate = transformerFactory.newTemplates(xslStreamSource);
-            streamResult = resourceConfig.getBoolParameter("streamResult", true);
         }
 
         private boolean isTemplatelet(boolean inlineXSL, SmooksResourceConfiguration resourceConfig, String templateCode) {

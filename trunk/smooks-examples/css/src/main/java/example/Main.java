@@ -17,6 +17,7 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.css.CSSAccessor;
 import org.milyn.io.StreamUtils;
@@ -78,6 +79,9 @@ public class Main {
 
          // Create an exec context - no profiles....
         executionContext = smooks.createExecutionContext();
+
+        // Configure the execution context to generate a report...
+        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
         // Filter the input html through Smooks... we're only analysing...
         smooks.filter(new StreamSource(new ByteArrayInputStream(htmlIn)), new DOMResult(), executionContext);

@@ -52,7 +52,7 @@ public class ExecutionEventListenerTest extends TestCase {
 
         eventListener.setFilterEvents(FilterLifecycleEvent.class);
         testListener(eventListener, "smooks-config-dom.xml", "test-data-01.xml");
-        assertEquals(2, eventListener.getEvents().size());
+        assertEquals(23, eventListener.getEvents().size());
     }
 
     public void test_03_dom() throws IOException, SAXException {
@@ -60,7 +60,7 @@ public class ExecutionEventListenerTest extends TestCase {
 
         eventListener.setFilterEvents(ResourceTargetingEvent.class);
         testListener(eventListener, "smooks-config-dom.xml", "test-data-01.xml");
-        assertEquals(12, eventListener.getEvents().size());
+        assertEquals(35, eventListener.getEvents().size());
     }
 
     public void test_04_dom() throws IOException, SAXException {
@@ -68,7 +68,7 @@ public class ExecutionEventListenerTest extends TestCase {
 
         eventListener.setFilterEvents(FilterLifecycleEvent.class, ResourceTargetingEvent.class);
         testListener(eventListener, "smooks-config-dom.xml", "test-data-01.xml");
-        assertEquals(14, eventListener.getEvents().size());
+        assertEquals(35, eventListener.getEvents().size());
     }
 
     private void testListener(BasicExecutionEventListener eventListener, String config, String sourceFile) throws IOException, SAXException {

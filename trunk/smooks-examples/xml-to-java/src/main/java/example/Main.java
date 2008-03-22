@@ -17,6 +17,7 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.delivery.java.JavaResult;
 import org.milyn.io.StreamUtils;
 import org.milyn.container.ExecutionContext;
@@ -44,6 +45,9 @@ public class Main {
         ExecutionContext executionContext = smooks.createExecutionContext();
         // The result of this transform is a set of Java objects...
         JavaResult result = new JavaResult();
+
+        // Configure the execution context to generate a report...
+        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
         // Filter the input message to extract, using the execution context...
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
