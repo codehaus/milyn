@@ -35,15 +35,21 @@ import java.io.IOException;
 public class SAXParser extends AbstractParser {
 
     private static Log logger = LogFactory.getLog(SAXParser.class);
+    private SAXHandler saxHandler;
 
     public SAXParser(ExecutionContext execContext) {
         super(execContext);
     }
 
     protected void parse(Reader reader, Writer writer) throws SAXException, IOException {
-        SAXHandler saxHandler = new SAXHandler(getExecContext(), writer);
-        XMLReader saxReader = createXMLReader(saxHandler);
+        XMLReader saxReader;
 
+        saxHandler = new SAXHandler(getExecContext(), writer);
+        saxReader = createXMLReader(saxHandler);
         saxReader.parse(new InputSource(reader));
-    }                                                    
+    }
+
+    public void cleanup() {
+        saxHandler.cleanup();
+    }
 }

@@ -49,6 +49,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * Smooks DOM based content filtering class.
@@ -167,6 +168,11 @@ public class SmooksDOMFilter extends Filter {
      * Global process afters.
      */
     private List<ContentHandlerConfigMap<DOMVisitAfter>> globalProcessingAfters;
+    /**
+     * We need to capture all resources that implement ExecutionLifecycleCleanable so we can clean them
+     * up on execution end.
+     */
+    private ExecutionLifecycleCleanableList cleanupList;
 
     /**
      * Public constructor.
@@ -192,6 +198,8 @@ public class SmooksDOMFilter extends Filter {
         } else {
             terminateOnVisitorException = false;
         }
+
+        cleanupList = new ExecutionLifecycleCleanableList(executionContext);
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
@@ -241,6 +249,10 @@ public class SmooksDOMFilter extends Filter {
                 close(result);
             }
         }
+    }
+
+    public void cleanup() {
+        cleanupList.cleanup();
     }
 
     /**
@@ -388,6 +400,9 @@ public class SmooksDOMFilter extends Filter {
                     if (logger.isDebugEnabled()) {
                         logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
                     }
+                    if(configMap.isLifecycleCleanable()) {
+                        cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
+                    }
                     assemblyUnit.visitBefore(element, executionContext);
                     if (eventListener != null) {
                         eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.BEFORE));
@@ -435,6 +450,9 @@ public class SmooksDOMFilter extends Filter {
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("(Assembly) Calling visitAfter on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
+            }
+            if(configMap.isLifecycleCleanable()) {
+                cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
             }
             visitAfter.visitAfter(element, executionContext);
             if (eventListener != null) {
@@ -654,6 +672,9 @@ public class SmooksDOMFilter extends Filter {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "] before applying resources to its child elements.");
                     }
+                    if(configMap.isLifecycleCleanable()) {
+                        cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
+                    }
                     visitor.visitBefore(element, executionContext);
                     if (eventListener != null) {
                         eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.BEFORE));
@@ -667,6 +688,9 @@ public class SmooksDOMFilter extends Filter {
                 try {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Applying processing resource [" + config + "] to element [" + DomUtils.getXPath(element) + "] after applying resources to its child elements.");
+                    }
+                    if(configMap.isLifecycleCleanable()) {
+                        cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
                     }
                     visitor.visitAfter(element, executionContext);
                     if (eventListener != null) {

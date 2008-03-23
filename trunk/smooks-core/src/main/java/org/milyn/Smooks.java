@@ -247,6 +247,19 @@ public class Smooks {
      * @param source           The content Source.
      * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
      *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
+     * @throws SmooksException Failed to filter.
+     */
+    public void filter(Source source, Result result) throws SmooksException {
+        filter(source, result, createExecutionContext());
+    }
+
+    /**
+     * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
+     * to the supplied {@link javax.xml.transform.Result} instance.
+     *
+     * @param source           The content Source.
+     * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
+     *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
      * @param executionContext The {@link ExecutionContext} for this filter operation. See
      *                         {@link #createExecutionContext(String)}.
      * @throws SmooksException Failed to filter.
@@ -274,6 +287,7 @@ public class Smooks {
 
                     messageFilter.doFilter(source, result);
                 } finally {
+                    messageFilter.cleanup();
                     Filter.removeCurrentFilter();
                 }
             } finally {

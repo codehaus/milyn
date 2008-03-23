@@ -15,6 +15,7 @@
 */
 package org.milyn.delivery.sax;
 
+import com.sun.java_cup.internal.parser;
 import org.milyn.SmooksException;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
@@ -37,6 +38,7 @@ import java.io.Writer;
 public class SmooksSAXFilter extends Filter {
     
     private ExecutionContext executionContext;
+    private SAXParser parser;
     private boolean closeSource;
     private boolean closeResult;
 
@@ -44,6 +46,7 @@ public class SmooksSAXFilter extends Filter {
         this.executionContext = executionContext;
         closeSource = ParameterAccessor.getBoolParameter(Filter.CLOSE_SOURCE, true, executionContext.getDeliveryConfig());
         closeResult = ParameterAccessor.getBoolParameter(Filter.CLOSE_RESULT, true, executionContext.getDeliveryConfig());
+        parser = new SAXParser(executionContext);
     }
 
     public void doFilter(Source source, Result result) throws SmooksException {
@@ -58,8 +61,7 @@ public class SmooksSAXFilter extends Filter {
 
         try {
             Reader reader = getReader(source, executionContext);
-            Writer writer = getWriter(result, executionContext);
-            SAXParser parser = new SAXParser(executionContext);
+            Writer writer = getWriter(result, executionContext);            
 
             parser.parse(reader, writer);
             writer.flush();
@@ -73,5 +75,9 @@ public class SmooksSAXFilter extends Filter {
                 close(result);
             }
         }
+    }
+
+    public void cleanup() {
+        parser.cleanup();
     }
 }

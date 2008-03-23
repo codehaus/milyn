@@ -85,6 +85,12 @@ public abstract class Filter {
      */
     public abstract void doFilter(Source source, Result result) throws SmooksException;
 
+
+    /**
+     * Cleanup the Filter.
+     */
+    public abstract void cleanup();
+
     /**
      * Set the default stream filter type on the supplied Smooks instance.
      * @param smooks The Smooks instance.

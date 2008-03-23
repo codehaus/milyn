@@ -21,6 +21,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.ExecutionLifecycleCleanable;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.sql.SQLException;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public abstract class AbstractDataSource implements SAXElementVisitor, DOMElementVisitor {
+public abstract class AbstractDataSource implements SAXElementVisitor, DOMElementVisitor, ExecutionLifecycleCleanable {
 
     private static final String DS_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#datasource:";
     private static final String CONNECTION_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#connection:";
@@ -63,7 +64,14 @@ public abstract class AbstractDataSource implements SAXElementVisitor, DOMElemen
         executionContext.setAttribute(DS_CONTEXT_KEY_PREFIX + getName(), this);
     }
 
-    private void unbind(ExecutionContext executionContext) {
+    public void executeExecutionLifecycleCleanup(ExecutionContext executionContext) {
+        // This guarantees Datasource resource cleanup (at the end of an ExecutionContext lifecycle) in
+        // situations where the Smooks filter operation has terminated prematurely i.e. where the
+        // visitAfter event methods are not called...
+        unbind(executionContext);
+    }
+
+    protected void unbind(ExecutionContext executionContext) {
         try {
             Connection connection = (Connection) executionContext.getAttribute(CONNECTION_CONTEXT_KEY_PREFIX + getName());
             if(connection != null) {
