@@ -66,6 +66,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
      * Execution Listener.
      */
     private ExecutionEventListener executionListener;
+    private Throwable terminationError;
 
     /**
 	 * Public Constructor.
@@ -168,6 +169,14 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 
     public ExecutionEventListener getEventListener() {
         return executionListener;
+    }
+
+    public void setTerminationError(Throwable terminationError) {
+        this.terminationError = terminationError;
+    }
+
+    public Throwable getTerminationError() {
+        return terminationError;
     }
 
     /* (non-Javadoc)

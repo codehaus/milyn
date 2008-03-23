@@ -46,6 +46,7 @@ public class MockExecutionContext implements ExecutionContext {
 	public Hashtable elementListTable = new Hashtable();
     private String contentEncoding;
     private ExecutionEventListener executionListener;
+    private Throwable terminationError;
 
     public void setDocumentSource(URI docSource) {
         this.docSource = docSource;
@@ -113,6 +114,14 @@ public class MockExecutionContext implements ExecutionContext {
 
     public ExecutionEventListener getEventListener() {
         return executionListener;
+    }
+
+    public void setTerminationError(Throwable terminationError) {
+        this.terminationError = terminationError;
+    }
+
+    public Throwable getTerminationError() {
+        return terminationError;
     }
 
     /* (non-Javadoc)

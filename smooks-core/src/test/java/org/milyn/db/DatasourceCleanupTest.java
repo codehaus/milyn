@@ -39,13 +39,14 @@ public class DatasourceCleanupTest extends TestCase {
         // executeExecutionLifecycleCleanup event...
         smooks.filter(new StringSource("<a></a>"), null);
         assertEquals(2, MockDatasource.cleanupCallCount);
+        assertTrue(MockDatasource.committed);
     }
 
     public void test_exception() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("exception-ds-lifecycle.xml"));
 
         try {
-            smooks.filter(new StringSource("<a><b/></a>"), null);
+            smooks.filter(new StringSource("<a><b/><c/></a>"), null);
             fail("Expected exception...");
         } catch(SmooksException e) {
             // Expected
@@ -57,5 +58,6 @@ public class DatasourceCleanupTest extends TestCase {
         // visitor...
         assertTrue(ExceptionVisitor.exceptionThrown);
         assertEquals(1, MockDatasource.cleanupCallCount);
+        assertTrue(MockDatasource.rolledBack);
     }
 }

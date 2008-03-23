@@ -114,4 +114,22 @@ public interface ExecutionContext extends BoundAttributeStore {
      * @see #setEventListener(ExecutionEventListener) 
      */
     public abstract ExecutionEventListener getEventListener();
+
+    /**
+     * Set the error/exception that caused the filter operation associated with
+     * this ExecutionContext to terminate.
+     *
+     * @param terminationError The termination Error/Exception.
+     */
+    public abstract void  setTerminationError(Throwable terminationError);
+    
+
+    /**
+     * Set the error/exception that caused the filter operation associated with
+     * this ExecutionContext to terminate.
+     *
+     * @return The Error/Exception that caused the associated filter operation to
+     * terminate (if it did terminate), otherwise null.
+     */
+    public abstract Throwable getTerminationError();
 }

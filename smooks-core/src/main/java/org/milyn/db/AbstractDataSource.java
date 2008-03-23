@@ -77,7 +77,12 @@ public abstract class AbstractDataSource implements SAXElementVisitor, DOMElemen
             if(connection != null) {
                 try {
                     if(!isAutoCommit()) {
-                        connection.commit();
+                        // If there's no termination error on the context, commit, otherwise rollback...
+                        if(executionContext.getTerminationError() == null) {
+                            connection.commit();
+                        } else {
+                            connection.rollback();
+                        }
                     }
                 } finally {
                     executionContext.removeAttribute(CONNECTION_CONTEXT_KEY_PREFIX + getName());
