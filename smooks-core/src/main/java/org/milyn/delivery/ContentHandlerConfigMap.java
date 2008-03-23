@@ -29,6 +29,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 public class ContentHandlerConfigMap<T extends ContentHandler> {
 
     private T contentHandler;
+    private boolean isLifecycleCleanable;
     private SmooksResourceConfiguration resourceConfig;
 
     /**
@@ -39,6 +40,7 @@ public class ContentHandlerConfigMap<T extends ContentHandler> {
     public ContentHandlerConfigMap(T contentHandler, SmooksResourceConfiguration resourceConfig) {
         this.contentHandler = contentHandler;
         this.resourceConfig = resourceConfig;
+        isLifecycleCleanable = (contentHandler instanceof ExecutionLifecycleCleanable);
     }
 
     /**
@@ -55,5 +57,13 @@ public class ContentHandlerConfigMap<T extends ContentHandler> {
      */
     public SmooksResourceConfiguration getResourceConfig() {
         return resourceConfig;
+    }
+
+    /**
+     * Does the ContentHandler implement {@link ExecutionLifecycleCleanable}.
+     * @return True if the ContentHandler implements {@link ExecutionLifecycleCleanable}, otherwise false.
+     */
+    public boolean isLifecycleCleanable() {
+        return isLifecycleCleanable;
     }
 }

@@ -17,28 +17,27 @@ package org.milyn.delivery.sax;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentHandlerConfigMap;
-import org.milyn.delivery.Filter;
-import org.milyn.delivery.VisitSequence;
+import org.milyn.delivery.*;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.xml.DocType;
-import org.milyn.SmooksException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.Map;
+import java.util.Stack;
 
 /**
  * SAX Handler.
@@ -62,6 +61,7 @@ public class SAXHandler extends DefaultHandler2 {
     private ExecutionEventListener eventListener;
     private boolean reverseVisitOrderOnVisitAfter;
     private boolean terminateOnVisitorException;
+    private ExecutionLifecycleCleanableList cleanupList;
 
     public SAXHandler(ExecutionContext executionContext, Writer writer) {
         this.execContext = executionContext;
@@ -85,7 +85,13 @@ public class SAXHandler extends DefaultHandler2 {
         } else {
             terminateOnVisitorException = false;
         }
+
+        cleanupList = new ExecutionLifecycleCleanableList(executionContext);
     }
+
+    public void cleanup() {
+        cleanupList.cleanup();
+    }    
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         WriterManagedSAXElement element;
@@ -177,6 +183,9 @@ public class SAXHandler extends DefaultHandler2 {
                 for(ContentHandlerConfigMap<SAXVisitBefore> mapping : visitBeforeMappings) {
                     try {
                         if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                            if(mapping.isLifecycleCleanable()) {
+                                cleanupList.add((ExecutionLifecycleCleanable) mapping.getContentHandler());
+                            }
                             mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                             // Register the targeting event.  No need to register this event again on the visitAfter...
                             if(eventListener != null) {
@@ -238,6 +247,9 @@ public class SAXHandler extends DefaultHandler2 {
     private void visitAfter(ContentHandlerConfigMap<SAXVisitAfter> afterMapping) {
         try {
             if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                if(afterMapping.isLifecycleCleanable()) {
+                    cleanupList.add((ExecutionLifecycleCleanable) afterMapping.getContentHandler());
+                }
                 afterMapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
                 if(eventListener != null) {
                     eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, afterMapping, VisitSequence.AFTER));
