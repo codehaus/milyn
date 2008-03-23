@@ -12,6 +12,26 @@
     <artifactId>milyn-smooks-example-file-router</artifactId>
     <version>1.0</version>
 
+	<!-- uncomment to generate larger files
+	<build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <executable>java</executable>
+                    <mainClass>example.InputOrderGenerator</mainClass>
+					<arguments>
+						<argument>input-message.xml</argument>
+						<argument>10000</argument>
+					</arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+	-->
+
+
     <dependencies>
         <dependency>
             <groupId>milyn</groupId>
@@ -31,7 +51,7 @@
 
     </dependencies>
 
-    <repositories>
+	<repositories>
         <repository>
             <id>milyn</id>
             <url>http://dist.codehaus.org</url>

@@ -17,12 +17,9 @@ package example;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamResult;
@@ -31,7 +28,6 @@ import javax.xml.transform.stream.StreamSource;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.routing.file.FileListAccessor;
 import org.xml.sax.SAXException;
 
@@ -60,7 +56,7 @@ public class Main
         
         //	display the output from the transform
         System.out.println( LINE_SEP );
-        System.out.println( "List file : [" + FileListAccessor.getFileName( executionContext ) + "]" );
+        System.out.println( "List file : [" + FileListAccessor.getAllListFileNames( executionContext ) );
         
         //	uncomment to print the files
         //printFiles( executionContext );
@@ -85,15 +81,20 @@ public class Main
      * Beware that this can cause memory issues as the whole list file will be
      * read into memory. This method should only be used with smaller transforms.
      */
+    @SuppressWarnings ("unused")
     private void printFiles( ExecutionContext executionContext ) throws IOException, ClassNotFoundException
     {
-        List<String> fileNames = (List<String>) FileListAccessor.getFileList( executionContext );
-        System.out.println( "Contains [" + fileNames.size() + "] files");
-        
-        for (String fileName : fileNames)
+        List<String> allListFiles = FileListAccessor.getAllListFileNames( executionContext );
+        for (String listFile : allListFiles)
 		{
-            System.out.println( "fileName :  [" + fileName + "]" );
-            System.out.println( "Contents : " + new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
+            System.out.println( "ListFile [" + listFile + "]" );
+            List<String> fileNames = (List<String>) FileListAccessor.getFileList( executionContext, listFile );
+            System.out.println( "Contains [" + fileNames.size() + "] files");
+            for (String fileName : fileNames)
+    		{
+                System.out.println( "fileName :  [" + fileName + "]" );
+                System.out.println( "Contents : " + new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
+    		}
 		}
     }
 
