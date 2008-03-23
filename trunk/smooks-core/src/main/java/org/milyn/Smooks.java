@@ -286,6 +286,12 @@ public class Smooks {
                     FilterResult.setResult(result, executionContext);
 
                     messageFilter.doFilter(source, result);
+                } catch(SmooksException e) {
+                    executionContext.setTerminationError(e);
+                    throw e;
+                } catch (Throwable t) {
+                    executionContext.setTerminationError(t);
+                    throw new SmooksException("Smooks Filtering operation failed.", t);
                 } finally {
                     messageFilter.cleanup();
                     Filter.removeCurrentFilter();

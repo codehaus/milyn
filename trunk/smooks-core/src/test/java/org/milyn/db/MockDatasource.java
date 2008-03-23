@@ -28,15 +28,30 @@ import java.sql.SQLException;
  */
 public class MockDatasource extends AbstractDataSource {
 
+    public static boolean committed;
+    public static boolean rolledBack;
     public static int cleanupCallCount = 0;
+    public static final String MOCK_DS_NAME = "mockDS";
 
     public String getName() {
-        return "mockDS";
+        return MOCK_DS_NAME;
     }
 
     public Connection getConnection() throws SQLException {
         InvocationHandler handler = new InvocationHandler() {
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                if(method.getName().equals("commit")) {
+                    committed = true;
+                    return null;
+                } else if(method.getName().equals("rollback")) {
+                    rolledBack = true;
+                    return null;
+                } else if(method.getName().equals("setAutoCommit")) {
+                    return null;
+                } else if(method.getName().equals("close")) {
+                    return null;
+                }
+
                 throw new RuntimeException("Unexpected call to method: " + method);
             }
         };
@@ -47,10 +62,11 @@ public class MockDatasource extends AbstractDataSource {
     }
 
     public boolean isAutoCommit() {
-        return true;
+        return false;
     }
 
     protected void unbind(ExecutionContext executionContext) {
         cleanupCallCount++;
+        super.unbind(executionContext);
     }
 }

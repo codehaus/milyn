@@ -5,4 +5,8 @@
         <resource>org.milyn.db.MockDatasource</resource>
     </resource-config>
 
+    <resource-config selector="a">
+        <resource>org.milyn.db.DSConnectionUser</resource>
+    </resource-config>
+
 </smooks-resource-list>

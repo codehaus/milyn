@@ -41,6 +41,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	private String contentEncoding;
     private ApplicationContext context;
     private ExecutionEventListener executionListener;
+    private Throwable terminationError;
 
     /**
 	 * Public Constructor.
@@ -137,6 +138,14 @@ public class StandaloneExecutionContext implements ExecutionContext {
 
     public ExecutionEventListener getEventListener() {
         return executionListener;
+    }
+
+    public void setTerminationError(Throwable terminationError) {
+        this.terminationError = terminationError;
+    }
+
+    public Throwable getTerminationError() {
+        return terminationError;
     }
 
     /* (non-Javadoc)

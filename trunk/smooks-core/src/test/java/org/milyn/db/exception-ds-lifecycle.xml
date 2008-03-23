@@ -6,6 +6,10 @@
     </resource-config>
 
     <resource-config selector="b">
+        <resource>org.milyn.db.DSConnectionUser</resource>
+    </resource-config>
+
+    <resource-config selector="c">
         <resource>org.milyn.db.ExceptionVisitor</resource>
     </resource-config>
 
