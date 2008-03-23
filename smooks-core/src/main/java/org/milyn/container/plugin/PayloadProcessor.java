@@ -49,7 +49,7 @@ public class PayloadProcessor
 	 * 							  specified in the passed-in SourceResult, or StringResult.
 	 * @throws SmooksException
 	 */
-	public final Result process( final Object payload, final ExecutionContext executionContext ) throws SmooksException
+	public final Object process( final Object payload, final ExecutionContext executionContext ) throws SmooksException
 	{
 		AssertArgument.isNotNull( payload, "payload" );
 		
@@ -73,7 +73,7 @@ public class PayloadProcessor
 		return prepareResult( result, executionContext );
 	}
 	
-	protected Result prepareResult( final Result result, ExecutionContext executionContext )
+	protected Object prepareResult( final Result result, ExecutionContext executionContext )
 	{
 		return result;
 	}
