@@ -25,16 +25,14 @@ import java.io.StringWriter;
  */
 public class StringResult extends StreamResult {
 
-    StringWriter writer;
-
     public StringResult() {
         super();
-        writer = new StringWriter();
+        StringWriter writer = new StringWriter();
         setWriter(writer);
     }
 
     public String getResult() {
-        return writer.toString();
+        return getWriter().toString();
     }
 
     public String toString() {
