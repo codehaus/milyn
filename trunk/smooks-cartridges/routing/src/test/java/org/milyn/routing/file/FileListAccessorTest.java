@@ -17,6 +17,8 @@ package org.milyn.routing.file;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.milyn.container.MockExecutionContext;
@@ -42,8 +44,20 @@ public class FileListAccessorTest
 	{
 		final String expectedFileName = "testing.txt";
 		FileListAccessor.setFileName( expectedFileName , execContext );
-		String actualFileName = FileListAccessor.getFileName( execContext );
+		String actualFileName = FileListAccessor.getFileName( execContext, expectedFileName );
 		assertEquals( expectedFileName, actualFileName );
+	}
+	
+	@Test
+	public void getAllListFiles()
+	{
+		final String expectedFileName = "testing.txt";
+		final String expectedFileName2 = "testing2.txt";
+		FileListAccessor.setFileName( expectedFileName , execContext );
+		FileListAccessor.setFileName( expectedFileName2 , execContext );
+		List<String> list = FileListAccessor.getAllListFileNames( execContext );
+		assertNotNull( list );
+		assertTrue( list.size() == 2 );
 	}
 	
 	@Before

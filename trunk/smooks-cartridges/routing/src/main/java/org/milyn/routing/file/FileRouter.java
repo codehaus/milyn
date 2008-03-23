@@ -13,11 +13,9 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 package org.milyn.routing.file;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.rmi.dgc.VMID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +23,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ExecutionLifecycleCleanable;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
@@ -33,6 +32,7 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.routing.file.io.ObjectOutputStrategy;
 import org.milyn.routing.file.io.OutputStrategy;
 import org.milyn.routing.file.io.OutputStrategyFactory;
 import org.milyn.routing.file.naming.NamingStrategy;
@@ -72,8 +72,11 @@ import org.w3c.dom.Element;
  */
 @VisitAfterIf(	condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
 @VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
-public class FileRouter implements DOMElementVisitor, SAXElementVisitor
+public class FileRouter implements DOMElementVisitor, SAXElementVisitor, ExecutionLifecycleCleanable 
 {
+    public static final String ROUTE_TO_FILE_NAME_CONTEXT_KEY = FileRouter.class.getName() + "#routeToFileName:";
+    public static final String LISTFILE_WRITER_CONTEXT_KEY = FileRouter.class.getName() + "#listFileWriter:";
+    
 	/*
 	 * 	Log
 	 */
@@ -119,13 +122,14 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	/*
 	 * 	File name for the list file 
 	 */
-	@ConfigParam ( name = "listFileName", use = Use.OPTIONAL )
+	@ConfigParam ( name = "listFileName", use = Use.REQUIRED )
 	private String listFileName;
 
     /*
      * Naming strategy for generating the file pattern for output files.
      */
     private NamingStrategy namingStrategy = new TemplatedNamingStrategy();
+	private String generatedFileName;
 
 
 	@Initialize
@@ -140,34 +144,58 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 
 	//	Vistor methods
 
-	public void visitAfter( final Element element, final ExecutionContext execContext ) throws SmooksException
+	public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
 	{
-		visit( execContext );
+		visit( executionContext );
 	}
 
-	public void visitBefore( final Element element, final ExecutionContext execContext ) throws SmooksException
+	public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
 	{
-		visit( execContext );
+		visit( executionContext );
 	}
 
-	public void visitAfter( final SAXElement saxElement, final ExecutionContext execContext ) throws SmooksException, IOException
+	public void visitAfter( final SAXElement saxElement, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
-		visit( execContext );
+		visit( executionContext );
 	}
 
-	public void visitBefore( final SAXElement saxElement, final ExecutionContext execContext ) throws SmooksException, IOException
+	public void visitBefore( final SAXElement saxElement, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
-		visit( execContext );
+		visit( executionContext );
 	}
 
-	public void onChildElement( final SAXElement saxElement, final SAXElement arg1, final ExecutionContext execContext ) throws SmooksException, IOException
+	public void onChildElement( final SAXElement saxElement, final SAXElement arg1, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
 		//	NoOp
 	}
 
-	public void onChildText( final SAXElement saxElement, final SAXText saxText, final ExecutionContext execContext ) throws SmooksException, IOException
+	public void onChildText( final SAXElement saxElement, final SAXText saxText, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
 		//	NoOp
+	}
+	
+	public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
+	{
+		//	close output strategy
+		OutputStrategy outputStrategy = (ObjectOutputStrategy) executionContext.getAttribute( ROUTE_TO_FILE_NAME_CONTEXT_KEY + generatedFileName );
+		if ( outputStrategy != null )
+		{
+			outputStrategy.close();
+		}
+		
+		//	close list file writer
+		FileWriter writer = (FileWriter) executionContext.getAttribute( LISTFILE_WRITER_CONTEXT_KEY + listFileName );
+		if ( writer != null )
+		{
+			try
+			{
+				writer.close();
+			} 
+			catch (IOException e)
+			{
+				log.error( "IOException while closing writer: " + e  );
+			}
+		}
 	}
 
 	//	protected
@@ -184,31 +212,37 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 	}
 	
 	//	private
+	
 
 	/**
 	 * 	Extracts the bean identified by beanId and append that object
 	 * 	to the destination file.
 	 *
-	 * 	@param execContext
+	 * 	@param executionContext
 	 *  @throws SmooksException	if the bean cannot be found in the ExecutionContext
 	 */
-	private void visit( final ExecutionContext execContext ) throws SmooksException
+	private void visit( final ExecutionContext executionContext ) throws SmooksException
 	{
-        final Object bean = BeanAccessor.getBean( execContext, beanId );
+        final Object bean = BeanAccessor.getBean( executionContext, beanId );
         if ( bean == null )
         {
         	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
         }
         
-		final String fileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( bean );
+		generatedFileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( bean );
 		
-		OutputStrategy outputStrategy = null;
+		OutputStrategy outputStrategy = (ObjectOutputStrategy) executionContext.getAttribute( ROUTE_TO_FILE_NAME_CONTEXT_KEY + generatedFileName );
 		try
 		{
-    		outputStrategy = OutputStrategyFactory.getInstance().createStrategy( fileName, bean );
+			if ( outputStrategy == null )
+			{
+        		outputStrategy = OutputStrategyFactory.getInstance().createStrategy( generatedFileName, bean );
+        		executionContext.setAttribute( ROUTE_TO_FILE_NAME_CONTEXT_KEY + generatedFileName , outputStrategy );
+			}
+			
 			outputStrategy.write( bean, encoding );
 			outputStrategy.flush();
-    		addFileToFileList( fileName, execContext );
+    		addFileToFileList( generatedFileName, executionContext );
 		}
 		catch (IOException e)
 		{
@@ -222,39 +256,26 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 	}
 	
-	private void addFileToFileList( final String transformedFileName, final ExecutionContext execContext ) throws IOException
+	private void addFileToFileList( final String transformedFileName, final ExecutionContext executionContext ) throws IOException
 	{
-		String fileNamesList = FileListAccessor.getFileName( execContext );
-		if ( fileNamesList == null )
+		final String listFilePath = destDirName + File.separator + this.listFileName;
+		FileWriter writer = (FileWriter) executionContext.getAttribute( LISTFILE_WRITER_CONTEXT_KEY + listFilePath );
+		if ( writer == null )
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.append( destDirName ).append( File.separator );
-			if ( listFileName == null )
-			{
-				sb.append( new VMID().toString() );
-			}
-			else
-			{
-				sb.append( listFileName );
-			}
-			sb.append( ".lst" );
-			fileNamesList = sb.toString();
-    		FileListAccessor.setFileName( fileNamesList, execContext );
+			writer = new FileWriter( listFilePath, true );
+			//	set the Writer object in the execution context.
+			executionContext.setAttribute( LISTFILE_WRITER_CONTEXT_KEY + listFilePath, writer );
+			
+			//	set the list file name in the execution context
+			FileListAccessor.setFileName( listFilePath, executionContext );
 		}
 		
-		FileWriter writer = null;
-		try
-		{
-			writer = new FileWriter( fileNamesList, true );
-			writer.write( transformedFileName + LINE_SEPARATOR );
-		} 
-		finally
-		{
-			if ( writer != null )
-			{
-				writer.close();
-			}
-		}
+		log.debug( "writing to filelist file [" + listFilePath + "] fileName [" + transformedFileName + "]" );
+		writer.write( transformedFileName + LINE_SEPARATOR );
+		writer.flush();
 	}
+
+	
+	
 
 }

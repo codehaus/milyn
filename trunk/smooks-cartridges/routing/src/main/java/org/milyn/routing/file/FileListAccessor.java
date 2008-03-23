@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 
@@ -33,10 +35,13 @@ import org.milyn.container.ExecutionContext;
  */
 public class FileListAccessor
 {
+	static Log log = LogFactory.getLog(  FileListAccessor.class );
+	
 	/**
 	 * 	Key used in ExecutionContexts attribute map.
 	 */
-    public static final String FILE_NAME_CONTEXT_KEY = FileListAccessor.class.getName() + "#CONTEXT_KEY";
+    public static final String LIST_FILE_NAME_CONTEXT_KEY = FileListAccessor.class.getName() + "#listFileName:";
+    public static final String ALL_LIST_FILE_NAME_CONTEXT_KEY = FileListAccessor.class.getName() + "#allListFileName";
     
 	private FileListAccessor() { }
 	
@@ -48,36 +53,47 @@ public class FileListAccessor
 	 * @return String		- file name of the file containing the list of files or
 	 * 						  null if it has not been set.
 	 */
-	public static String getFileName( final ExecutionContext execContext )
+	public static String getFileName( final ExecutionContext execContext, final String listFileName )
 	{
-		return (String) execContext.getAttribute( FILE_NAME_CONTEXT_KEY );
+		return (String) execContext.getAttribute( LIST_FILE_NAME_CONTEXT_KEY + listFileName );
 	}
 	
 	/**
-	 * 	Sets the file name in the passed in ExecutionContext
+	 * 	Sets the file name in the passed in ExecutionContext. Note that the filename should be
+	 * 	specified with a path. This is so that the same filename can be used in multiple directories.
 	 * 
-	 * @param fileName 		- file name to set. Must not be null or an emply String.
+	 * @param listFileName 	- file name to set including path. Must not be null or an emply String.
 	 * @param execContext	- Smooks ExceutionContext
 	 */
-	public static void setFileName( final String fileName, final ExecutionContext execContext )
+	public static void setFileName( final String listFileName, final ExecutionContext execContext )
 	{
-		AssertArgument.isNotNullAndNotEmpty( fileName, "fileName" );
-		execContext.setAttribute( FILE_NAME_CONTEXT_KEY, fileName );
+		AssertArgument.isNotNullAndNotEmpty( listFileName, "fileName" );
+		execContext.setAttribute( LIST_FILE_NAME_CONTEXT_KEY + listFileName, listFileName );
+		
+		@SuppressWarnings ("unchecked")
+		List<String> allListFiles = (List<String>) execContext.getAttribute( ALL_LIST_FILE_NAME_CONTEXT_KEY );
+		if ( allListFiles == null  )
+		{
+			allListFiles = new ArrayList<String>();
+		}
+		allListFiles.add( listFileName );
+		execContext.setAttribute( ALL_LIST_FILE_NAME_CONTEXT_KEY , allListFiles );
 	}
 	
 	/**
 	 * 	Return the list of files contained in the passed in file "fromFile"
 	 * 
-	 * @param fromFile		- name of the file that contains the list of transformed files.
+	 * @param executionContext	- Smooks execution context
+	 * @param listFileNamePath	- path to list file 
 	 * @return List<String>	- where String is the absolute path to a file.
 	 * @throws IOException	- If the "fromFile" cannot be found or something else IO related goes wrong.
 	 */
-	public static List<String> getFileList( final ExecutionContext execContext ) throws IOException
+	public static List<String> getFileList( final ExecutionContext executionContext, String listFileNamePath ) throws IOException
 	{
 		BufferedReader reader = null;
 		try
 		{
-			String fileName = getFileName( execContext );
+			String fileName = getFileName( executionContext, listFileNamePath );
     		reader = new BufferedReader( new FileReader( fileName ) );
     		List<String> files = new ArrayList<String>();
     		String line = null;
@@ -94,6 +110,12 @@ public class FileListAccessor
 				reader.close();
 			}
 		}
+	}
+
+	@SuppressWarnings ( "unchecked" )
+	public static List<String> getAllListFileNames( final ExecutionContext executionContext )
+	{
+		return (List<String>) executionContext.getAttribute( ALL_LIST_FILE_NAME_CONTEXT_KEY );
 	}
 
 }

@@ -9,7 +9,8 @@
         <resource>org.milyn.routing.file.FileRouter</resource>
         <param name="beanId">testBean</param>
         <param name="visitAfter">true</param>
-        <param name="destinationDirectory">target/</param>
+        <param name="destinationDirectory">target</param>
+        <param name="listFileName">testFileList</param>
         <param name="fileNamePattern">${name}.txt</param>
     </resource-config>
     
@@ -17,7 +18,8 @@
         <resource>org.milyn.routing.file.FileRouter</resource>
         <param name="beanId">testBean</param>
         <param name="visitAfter">true</param>
-        <param name="destinationDirectory">target/</param>
+        <param name="destinationDirectory">target</param>
+        <param name="listFileName">testFileList2</param>
         <param name="fileNamePattern">${name}-2.txt</param>
     </resource-config>
 
