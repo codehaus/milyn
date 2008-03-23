@@ -26,12 +26,12 @@ import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.plugin.PayloadProcessor;
-import org.milyn.delivery.StringResult;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.TestBean;
 import org.xml.sax.SAXException;
 
 /**
+ * Unit test for FileRouterPayloadProcessor
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
@@ -43,7 +43,6 @@ public class FileRouterPayloadProcessorTest
 	@Test
 	public void process() throws IOException, SAXException
 	{
-
 		Smooks smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
         PayloadProcessor processor = new FileRouterPayloadProcessor( smooks );
 		ExecutionContext executionContext = smooks.createExecutionContext();
@@ -53,12 +52,20 @@ public class FileRouterPayloadProcessorTest
         Object object = processor.process( bean, executionContext );
         
 		assertNotNull( object );
-		assertTrue ( object instanceof StringResult );
+		assertTrue ( object instanceof List );
 		
-		List<String> fileList = FileListAccessor.getFileList( executionContext );
-		for (String file : fileList)
+		// clean up 
+		@SuppressWarnings ("unchecked")
+		List<String> allFilesList = (List<String>) object;
+		for (String fileList : allFilesList)
 		{
-			new File( file ).delete();
+			System.out.println( fileList );
+    		List<String> files = FileListAccessor.getFileList( executionContext, fileList );
+    		for (String file : files )
+    		{
+    			new File( file ).delete();
+    		}
+    		new File( fileList ).delete();
 		}
 	}
 	
