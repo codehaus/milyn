@@ -13,7 +13,17 @@
         <param name="beanId">orderItem</param>
         <param name="visitAfter">true</param>
         <param name="destinationDirectory">target</param>
+        <param name="listFileName">listFileName</param>
         <param name="fileNamePattern">Product-${productId}.ser</param>
+    </resource-config>
+
+    <resource-config selector="order-item">
+        <resource>org.milyn.routing.file.FileRouter</resource>
+        <param name="beanId">orderItem</param>
+        <param name="visitAfter">true</param>
+        <param name="destinationDirectory">target</param>
+        <param name="listFileName">listFileName2</param>
+        <param name="fileNamePattern">Product-backup-${productId}.ser</param>
     </resource-config>
     
 </smooks-resource-list>
