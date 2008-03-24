@@ -37,11 +37,15 @@ public class FileListAccessor
 {
 	static Log log = LogFactory.getLog(  FileListAccessor.class );
 	
-	/**
-	 * 	Key used in ExecutionContexts attribute map.
+	/*
+	 * 	Key for filenames used in ExecutionContexts attribute map.
 	 */
-    public static final String LIST_FILE_NAME_CONTEXT_KEY = FileListAccessor.class.getName() + "#listFileName:";
-    public static final String ALL_LIST_FILE_NAME_CONTEXT_KEY = FileListAccessor.class.getName() + "#allListFileName";
+    private static final String LIST_FILE_NAME_CONTEXT_KEY = FileListAccessor.class.getName() + "#listFileName:";
+    
+    /*
+	 * 	Keys for the entry containing the file lists (used in ExecutionContexts attribute map )
+     */
+    private static final String ALL_LIST_FILE_NAME_CONTEXT_KEY = FileListAccessor.class.getName() + "#allListFileName";
     
 	private FileListAccessor() { }
 	
@@ -76,7 +80,12 @@ public class FileListAccessor
 		{
 			allListFiles = new ArrayList<String>();
 		}
-		allListFiles.add( listFileName );
+		
+		//	no need to have duplicates
+		if ( !allListFiles.contains( listFileName ))
+		{
+    		allListFiles.add( listFileName );
+		}
 		execContext.setAttribute( ALL_LIST_FILE_NAME_CONTEXT_KEY , allListFiles );
 	}
 	
@@ -84,16 +93,16 @@ public class FileListAccessor
 	 * 	Return the list of files contained in the passed in file "fromFile"
 	 * 
 	 * @param executionContext	- Smooks execution context
-	 * @param listFileNamePath	- path to list file 
+	 * @param fromFile	- path to list file 
 	 * @return List<String>	- where String is the absolute path to a file.
 	 * @throws IOException	- If the "fromFile" cannot be found or something else IO related goes wrong.
 	 */
-	public static List<String> getFileList( final ExecutionContext executionContext, String listFileNamePath ) throws IOException
+	public static List<String> getFileList( final ExecutionContext executionContext, String fromFile ) throws IOException
 	{
 		BufferedReader reader = null;
 		try
 		{
-			String fileName = getFileName( executionContext, listFileNamePath );
+			String fileName = getFileName( executionContext, fromFile );
     		reader = new BufferedReader( new FileReader( fileName ) );
     		List<String> files = new ArrayList<String>();
     		String line = null;

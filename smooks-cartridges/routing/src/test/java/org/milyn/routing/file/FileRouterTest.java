@@ -31,7 +31,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -77,7 +76,6 @@ public class FileRouterTest
 	}
 	
 	@Test
-	@Ignore
 	public void visitAfter() throws ParserConfigurationException, FileNotFoundException, IOException, ClassNotFoundException
 	{
 		final String listFileName = "testListFile";
