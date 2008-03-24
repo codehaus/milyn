@@ -36,26 +36,17 @@ public class FileListAccessorTest
 	@Test ( expected = IllegalArgumentException.class )
 	public void setFileNameNegative()
 	{
-		FileListAccessor.setFileName( null, execContext );
+		FileListAccessor.addListFileName( null, execContext );
 	}
 	
 	@Test
-	public void getFileName()
-	{
-		final String expectedFileName = "testing.txt";
-		FileListAccessor.setFileName( expectedFileName , execContext );
-		String actualFileName = FileListAccessor.getFileName( execContext, expectedFileName );
-		assertEquals( expectedFileName, actualFileName );
-	}
-	
-	@Test
-	public void getAllListFiles()
+	public void addAndGetListFiles()
 	{
 		final String expectedFileName = "testing.txt";
 		final String expectedFileName2 = "testing2.txt";
-		FileListAccessor.setFileName( expectedFileName , execContext );
-		FileListAccessor.setFileName( expectedFileName2 , execContext );
-		List<String> list = FileListAccessor.getAllListFileNames( execContext );
+		FileListAccessor.addListFileName( expectedFileName , execContext );
+		FileListAccessor.addListFileName( expectedFileName2 , execContext );
+		List<String> list = FileListAccessor.getListFileNames( execContext );
 		assertNotNull( list );
 		assertTrue( list.size() == 2 );
 	}

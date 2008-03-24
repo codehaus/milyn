@@ -15,6 +15,11 @@
             <price>5.20</price>
         </order-item>
         <order-item>
+            <product>222</product>
+            <quantity>7</quantity>
+            <price>5.20</price>
+        </order-item>
+        <order-item>
             <product>333</product>
             <quantity>1</quantity>
             <price>9.99</price>

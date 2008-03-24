@@ -13,7 +13,7 @@
         <param name="beanId">orderItem</param>
         <param name="visitAfter">true</param>
         <param name="destinationDirectory">target</param>
-        <param name="listFileName">listFileName</param>
+        <param name="listFileName">Order-${productId}.lst</param>
         <param name="fileNamePattern">Product-${productId}.ser</param>
     </resource-config>
 
@@ -22,7 +22,7 @@
         <param name="beanId">orderItem</param>
         <param name="visitAfter">true</param>
         <param name="destinationDirectory">target</param>
-        <param name="listFileName">listFileName2</param>
+        <param name="listFileName">OrderFiles.lst</param>
         <param name="fileNamePattern">Product-backup-${productId}.ser</param>
     </resource-config>
     

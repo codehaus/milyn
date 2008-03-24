@@ -15,7 +15,6 @@
 package org.milyn.routing.file;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -59,7 +58,7 @@ public class FileRouterTest
 	private FileRouter router;
 	private String beanId = "dummyId";
 	private String filenamePattern = "${name}";
-	private String listFileName = "testListFileName";
+	private String listFileName = "orders-${name}.lst";
 	private String destinationDir;
 	private TestBean testbean;
 
@@ -85,9 +84,7 @@ public class FileRouterTest
         
         final String listFilePath = destinationDir + File.separator + listFileName;
 
-        String fileName = FileListAccessor.getFileName( execContext, listFilePath );
-        assertNotNull( fileName );
-        File listFile = new File ( fileName );
+        File listFile = new File ( listFileName );
         assertEquals ( listFileName, listFile.getName() );
         
         List<String> fileNames = FileListAccessor.getFileList( execContext, listFilePath ); 
@@ -146,12 +143,10 @@ public class FileRouterTest
 	@After
 	public void tearDown()
 	{
-        String fileName = FileListAccessor.getFileName( execContext, listFileName );
-        if ( fileName != null )
+        if ( listFileName != null )
         {
-            new File( fileName ).delete();
+            new File( listFileName ).delete();
         }
-        new File ( listFileName ).delete();
 	}
 
 	private void configureFileRouter(

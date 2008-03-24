@@ -56,7 +56,7 @@ public class Main
         
         //	display the output from the transform
         System.out.println( LINE_SEP );
-        System.out.println( "List file : [" + FileListAccessor.getAllListFileNames( executionContext ) );
+        System.out.println( "List file : [" + FileListAccessor.getListFileNames( executionContext ) );
         
         //	uncomment to print the files
         //printFiles( executionContext );
@@ -84,7 +84,7 @@ public class Main
     @SuppressWarnings ("unused")
     private void printFiles( ExecutionContext executionContext ) throws IOException, ClassNotFoundException
     {
-        List<String> allListFiles = FileListAccessor.getAllListFileNames( executionContext );
+        List<String> allListFiles = FileListAccessor.getListFileNames( executionContext );
         for (String listFile : allListFiles)
 		{
             System.out.println( "ListFile [" + listFile + "]" );

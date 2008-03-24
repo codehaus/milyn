@@ -39,7 +39,7 @@ public class FileRouterPayloadProcessor extends PayloadProcessor
 	@Override
 	protected Object prepareResult( Result result, ExecutionContext executionContext )
 	{
-		return FileListAccessor.getAllListFileNames( executionContext );
+		return FileListAccessor.getListFileNames( executionContext );
 	}
 
 }
