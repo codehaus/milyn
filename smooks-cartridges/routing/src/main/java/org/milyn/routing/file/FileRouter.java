@@ -13,13 +13,6 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 package org.milyn.routing.file;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,24 +26,30 @@ import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.SAXVisitAfter;
+import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.file.naming.NamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategyException;
 import org.milyn.routing.file.naming.TemplatedNamingStrategy;
 import org.w3c.dom.Element;
 
+import java.io.*;
+
 /**
- * FileRouter is a Visitor for DOM or SAX elements which appends the content
- * to the configured destination file.
+ * FileRouter is a fragment Visitor (DOM/SAX) that can be used to route
+ * context beans ({@link org.milyn.javabean.BeanAccessor} beans) to file. 
  * <p/>
  * The name of the output file(s) is determined by a NamingStrategy, the
- * default being {@link TemplatedNamingStrategy}
+ * default being {@link TemplatedNamingStrategy}.  The beans being routed can
+ * be the result of a "bindto" templating operation (see Templating Cartridge),
+ * allowing you to perform <b>splitting</b>, <b>transformation</b> and <b>routing</b> of huge
+ * messages.
  * <p/>
- * As the number of files produced by a single transformation could be
- * quite large the filename are not stored in memory.<br> 
- * Instead they are appended to a file. This file contains the names of files created
+ * As the number of files produced by a single transformation can be
+ * quite large, the filename are not stored in memory.<br>
+ * Instead, they are appended to a file. This file contains the names of files created
  * during the transformation. <br>
  * <p/>
  * Example configuration:
@@ -80,7 +79,7 @@ import org.w3c.dom.Element;
  */
 @VisitAfterIf(	condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
 @VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
-public class FileRouter implements DOMElementVisitor, SAXElementVisitor, ExecutionLifecycleCleanable 
+public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, ExecutionLifecycleCleanable 
 {
 	/*
 	 * Part of the key used for storing the writer (for the listfile) in the exeution context
@@ -147,37 +146,27 @@ public class FileRouter implements DOMElementVisitor, SAXElementVisitor, Executi
 
 	//	Vistor methods
 
-	public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
+    public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
+    {
+        visit( executionContext );
+    }
+
+    public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
 	{
 		visit( executionContext );
 	}
 
-	public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
+    public void visitBefore( final SAXElement saxElement, final ExecutionContext executionContext ) throws SmooksException, IOException
+    {
+        visit( executionContext );
+    }
+
+    public void visitAfter( final SAXElement saxElement, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
 		visit( executionContext );
 	}
 
-	public void visitAfter( final SAXElement saxElement, final ExecutionContext executionContext ) throws SmooksException, IOException
-	{
-		visit( executionContext );
-	}
-
-	public void visitBefore( final SAXElement saxElement, final ExecutionContext executionContext ) throws SmooksException, IOException
-	{
-		visit( executionContext );
-	}
-
-	public void onChildElement( final SAXElement saxElement, final SAXElement arg1, final ExecutionContext executionContext ) throws SmooksException, IOException
-	{
-		//	NoOp
-	}
-
-	public void onChildText( final SAXElement saxElement, final SAXText saxText, final ExecutionContext executionContext ) throws SmooksException, IOException
-	{
-		//	NoOp
-	}
-	
-	public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
+    public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
 	{
 		//	close list file writer
 		FileWriter writer = (FileWriter) executionContext.getAttribute( LISTFILE_WRITER_CONTEXT_KEY + listFileName );
