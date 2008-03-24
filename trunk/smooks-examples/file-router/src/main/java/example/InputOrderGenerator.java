@@ -61,7 +61,8 @@ public class InputOrderGenerator
 		System.out.print("Generating " + file.getName() + ".");
 		for ( int i = 1 ; i < nrOfOrderItems ; i ++ )
 		{
-    		System.out.print(".");
+			if ( i % 1000 == 0 )
+        		System.out.print(".");
     		writer.write( "<order-item>" + LINE_SEP );
     		writer.write( "<product>" + i + "</product>" + LINE_SEP );
     		writer.write( "<quantity>2</quantity>" + LINE_SEP );
