@@ -27,7 +27,7 @@ import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.io.StreamUtils;
-import org.milyn.templating.AbstractTemplateProcessingUnit;
+import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Namespace;
@@ -47,7 +47,6 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 
 
 /**
@@ -73,7 +72,7 @@ import java.net.URI;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
- *          5. be bound to ("bindto") an ExecutionContext variable named by the "bindId" param.
+ *          5. be bound to ("bindto") a {@link org.milyn.javabean.BeanAccessor} variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter/bindto</i>&lt;/param&gt;
  *
@@ -169,7 +168,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      */
     public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
         try {
-            return Configurator.configure(new XslProcessingUnit(), resourceConfig);
+            return Configurator.configure(new XslProcessor(), resourceConfig);
         } catch(SmooksConfigurationException e) {
             throw e;
         } catch (Exception e) {
@@ -186,7 +185,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      */
     @VisitBeforeReport(condition = "false")
     @VisitAfterReport(summary = "Applied XSL Template.", detailTemplate = "reporting/XslTemplateProcessor_After.html")
-    private static class XslProcessingUnit extends AbstractTemplateProcessingUnit {
+    private static class XslProcessor extends AbstractTemplateProcessor {
 
         /**
          * XSL template to be applied to the visited element.
@@ -277,7 +276,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
 
             if(getAction() == Action.BIND_TO) {
                 // For bindTo actions, we need to serialize the content and supply is as a Text DOM node.
-                // AbstractTemplateProcessingUnit will look after the rest, by extracting the content from the
+                // AbstractTemplateProcessor will look after the rest, by extracting the content from the
                 // Text node and attaching it to the ExecutionContext...
                 String serializedContent = XmlUtil.serialize(children);
                 Text textNode = element.getOwnerDocument().createTextNode(serializedContent);

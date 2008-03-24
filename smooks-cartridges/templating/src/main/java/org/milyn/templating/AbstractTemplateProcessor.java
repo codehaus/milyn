@@ -1,3 +1,18 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
 package org.milyn.templating;
 
 import org.apache.commons.logging.Log;
@@ -10,6 +25,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.xml.DomUtils;
@@ -31,7 +47,7 @@ import java.nio.charset.Charset;
  * See implementations.
  * @author tfennelly
  */
-public abstract class AbstractTemplateProcessingUnit implements DOMElementVisitor {
+public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 
     private Log logger = LogFactory.getLog(getClass());
     private static boolean legactVisitBeforeParamWarn = false;
@@ -183,12 +199,12 @@ public abstract class AbstractTemplateProcessingUnit implements DOMElementVisito
                 throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
             } else if(node.getNodeType() == Node.TEXT_NODE) {
                 ExecutionContext context = Filter.getCurrentExecutionContext();
-                context.setAttribute(bindId, node.getTextContent());
+                BeanAccessor.addBean(context, bindId, node.getTextContent());
             } else if(node.getNodeType() == Node.ELEMENT_NODE && ContextObjectSerializationUnit.isContextObjectElement((Element) node)) {
                 String contextKey = ContextObjectSerializationUnit.getContextKey((Element) node);
                 ExecutionContext context = Filter.getCurrentExecutionContext();
                 
-                context.setAttribute(bindId, context.getAttribute(contextKey));
+                BeanAccessor.addBean(context, bindId, context.getAttribute(contextKey));
             } else {
                 throw new SmooksException("Unsupported 'bindTo' templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
             }

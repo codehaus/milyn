@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
@@ -94,12 +95,12 @@ public class XslContentHandlerFactoryTest extends TestCase {
         input = new StringReader("<a><b><c/></b></a>");
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<bind/>", context.getAttribute("mybeanTemplate"));
+        assertEquals("<bind/>", BeanAccessor.getBean(context, "mybeanTemplate"));
 
         input = new StringReader("<c/>");
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<bind/>", context.getAttribute("mybeanTemplate"));
+        assertEquals("<bind/>", BeanAccessor.getBean(context, "mybeanTemplate"));
     }
 
     public void test_badxsl() throws IOException, SAXException {
