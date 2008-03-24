@@ -42,18 +42,17 @@ import org.milyn.routing.file.naming.TemplatedNamingStrategy;
 import org.w3c.dom.Element;
 
 /**
- * <p/>
  * FileRouter is a Visitor for DOM or SAX elements which appends the content
  * to the configured destination file.
- * </p>
+ * <p/>
  * The name of the output file(s) is determined by a NamingStrategy, the
  * default being {@link TemplatedNamingStrategy}
- * </p>
- * As the number of files produced by a single transformation could be 
+ * <p/>
+ * As the number of files produced by a single transformation could be
  * quite large the filename are not stored in memory.<br> 
  * Instead they are appended to a file. This file contains the names of files created
  * during the transformation. <br>
- * </p> 
+ * <p/>
  * Example configuration:
  * <pre>
  * &lt;resource-config selector="orderItems"&gt;
