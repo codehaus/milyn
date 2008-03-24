@@ -33,7 +33,7 @@ import org.milyn.delivery.sax.*;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.templating.AbstractTemplateProcessingUnit;
+import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,7 +49,7 @@ import java.util.Map;
  */
 @VisitBeforeReport(condition = "false")
 @VisitAfterReport(summary = "Applied FreeMarker Template.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_After.html")
-public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessingUnit implements SAXElementVisitor {
+public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(FreeMarkerTemplateProcessor.class);
 
@@ -204,7 +204,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessingUnit 
                 }
                 Writer writer = new StringWriter();
                 applyTemplate(executionContext, writer);
-                executionContext.setAttribute(bindId, writer.toString());
+                BeanAccessor.addBean(executionContext, bindId, writer.toString());
             } else {
                 Writer writer = element.getWriter(this);
                 applyTemplate(executionContext, writer);

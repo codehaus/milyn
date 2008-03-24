@@ -27,7 +27,7 @@ import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.templating.AbstractTemplateProcessingUnit;
+import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.xml.DomUtils;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.event.report.annotation.VisitAfterReport;
@@ -57,7 +57,7 @@ import java.util.Map;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
- *          5. be bound to ("bindto") an ExecutionContext variable named by the "bindId" param.
+ *          5. be bound to ("bindto") a {@link BeanAccessor} variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter</i>&lt;/param&gt;
  *
@@ -104,7 +104,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 	 */
     @VisitBeforeReport(condition = "false")
     @VisitAfterReport(summary = "Applied StringTemplate Template.", detailTemplate = "reporting/StringTemplateTemplateProcessor_After.html")
-	private static class StringTemplateTemplateProcessor extends AbstractTemplateProcessingUnit {
+	private static class StringTemplateTemplateProcessor extends AbstractTemplateProcessor {
 
         private StringTemplate template;
 

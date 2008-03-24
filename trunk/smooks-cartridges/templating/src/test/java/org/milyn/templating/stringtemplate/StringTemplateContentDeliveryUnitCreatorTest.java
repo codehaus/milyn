@@ -23,6 +23,7 @@ import java.io.StringReader;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.xml.sax.SAXException;
@@ -61,11 +62,11 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<mybean>xvalueonc2</mybean>", context.getAttribute("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc2</mybean>", BeanAccessor.getBean(context, "mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc2' />");
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<mybean>xvalueonc2</mybean>", context.getAttribute("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc2</mybean>", BeanAccessor.getBean(context, "mybeanTemplate"));
     }
 }

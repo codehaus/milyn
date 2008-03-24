@@ -22,6 +22,7 @@ import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.java.JavaSource;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.MyBean;
 import org.xml.sax.SAXException;
 
@@ -91,12 +92,12 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<mybean>xvalueonc2</mybean>", context.getAttribute("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc2</mybean>", BeanAccessor.getBean(context, "mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc1' />");
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<mybean>xvalueonc1</mybean>", context.getAttribute("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc1</mybean>", BeanAccessor.getBean(context, "mybeanTemplate"));
     }
 
     public void test_template_include() throws SAXException, IOException {
