@@ -31,7 +31,7 @@ import org.milyn.Smooks;
 import org.xml.sax.SAXException;
 
 /**
- * Unit test for PayloadProcessor 
+ * Unit test for PayloadProcessor. 
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
