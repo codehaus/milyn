@@ -15,63 +15,32 @@
 
 package org.milyn.routing.file.naming;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import org.milyn.util.FreeMarkerTemplate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
+ * TemplatedNamingStrategy uses FreeMarker to generate a file name from
+ * the passed in <code>templateString</code> and the <code>dataModel</code>
+ * <p/>
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
 public class TemplatedNamingStrategy implements NamingStrategy
 {
-	private Log log = LogFactory.getLog( TemplatedNamingStrategy.class );
-	
 	/**
+	 * Generates a file name by delegating to {@link FreeMarkerTemplate }
 	 * 
-	 * @param template	- FreeMarker template
-	 * @param dataModel	- FreeMarker data model
+	 * @param <code>template</code>		- FreeMarker template
+	 * @param <code>dataModel</code>	- FreeMarker data model
 	 * @throws NamingStrategyException 
 	 * @throws TemplateException 
 	 */
 	public String generateFileName( final String templateString, final Object dataModel ) throws NamingStrategyException 
 	{
-		StringReader reader = null;
-		try
-		{
-			log.debug( "template : " + templateString + ", dataModel(" + dataModel.getClass().getName() + ") : " + dataModel );
-			reader = new StringReader( templateString );
-			final Template template = new Template("free-marker-template", reader, new Configuration());
-			
-			final StringWriter writer = new StringWriter();
-			template.process( dataModel, writer );
-			return writer.toString();
-		} 
-		catch (IOException e)
-		{
-			final String errorMsg = "IOException while trying to create a new FreeMarker Template";
-			throw new NamingStrategyException( errorMsg, e );
-		} 
-		catch (TemplateException e)
-		{
-			final String errorMsg = "TempalateException while trying to process the FreeMarker template";
-			throw new NamingStrategyException( errorMsg, e );
-		}
-		finally
-		{
-			if ( reader != null )
-				reader.close();
-			
-    		//	no need to close a StringWriter, that has not effect.
-		}
+        FreeMarkerTemplate template = new FreeMarkerTemplate( templateString );
+        return template.apply( dataModel );
 	}
 
 }

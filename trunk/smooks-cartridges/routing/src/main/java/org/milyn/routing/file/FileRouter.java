@@ -20,13 +20,11 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ExecutionLifecycleCleanable;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.javabean.BeanAccessor;
@@ -79,13 +77,8 @@ import java.io.*;
  */
 @VisitAfterIf(	condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
 @VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
-public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, ExecutionLifecycleCleanable 
+public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter
 {
-	/*
-	 * Part of the key used for storing the writer (for the listfile) in the exeution context
-	 */
-    private static final String LISTFILE_WRITER_CONTEXT_KEY = FileRouter.class.getName() + "#listFileWriter:";
-    
     @SuppressWarnings( "unused" )
 	private final Log log = LogFactory.getLog( FileRouter.class );
     
@@ -166,25 +159,8 @@ public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 		visit( executionContext );
 	}
 
-    public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
-	{
-		//	close list file writer
-		FileWriter writer = (FileWriter) executionContext.getAttribute( LISTFILE_WRITER_CONTEXT_KEY + listFileName );
-		if ( writer != null )
-		{
-			try
-			{
-				writer.close();
-			} 
-			catch (IOException e)
-			{
-				log.error( "IOException while closing writer: " + e  );
-			}
-		}
-	}
-
 	//	protected
-	protected String generateFilePattern( final Object bean )
+	protected String generateFilePattern( final String fileNamePattern, final Object bean )
 	{
     	try
 		{
@@ -214,7 +190,7 @@ public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
         	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
         }
         
-		String generatedFileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( bean );
+		String generatedFileName = destinationDir.getAbsolutePath() + File.separator + generateFilePattern( fileNamePattern, bean );
 		
 		OutputStream out = null;
 		try
@@ -237,7 +213,7 @@ public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 			}
 			out.flush();
 			
-    		addFileToFileList( generatedFileName, executionContext );
+    		addFileToFileList( generatedFileName, executionContext, bean );
 		}
 		catch (IOException e)
 		{
@@ -269,10 +245,13 @@ public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	 * @param executionContext		- The Smooks ExecutionContext
 	 * @throws IOException
 	 */
-	private void addFileToFileList( final String transformedFileName, final ExecutionContext executionContext ) throws IOException
+	private void addFileToFileList( 
+			final String transformedFileName, 
+			final ExecutionContext executionContext,
+			final Object bean) throws IOException
 	{
-		final String listFilePath = destDirName + File.separator + this.listFileName;
-		FileListAccessor.setFileName( listFilePath, executionContext );
+		final String listFilePath = destDirName + File.separator + generateFilePattern( listFileName, bean );
+		FileListAccessor.addListFileName( listFilePath, executionContext );
 		
 		log.debug( "writing to filelist file [" + listFilePath + "] fileName [" + transformedFileName + "]" );
 		
