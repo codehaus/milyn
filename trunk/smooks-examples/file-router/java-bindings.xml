@@ -5,14 +5,38 @@
         <param name="stream.filter.type">SAX</param>
     </resource-config>
 
-    <!--
-    Create an "example.beans.OrderItem" bean instance when we visit the start of the <order-item> element.
-    Set the OrderItem instances on the "orderItem".
-    -->
+	 <resource-config selector="order">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">order</param>
+        <param name="beanClass">example.model.Order</param>
+        <param name="bindings">
+            <binding property="orderId" type="Integer" selector="orderId" />
+        </param>
+    </resource-config>
+
+    <resource-config selector="order">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">orderItems</param>
+        <param name="beanClass">java.util.ArrayList</param>
+        <param name="setOn">order</param>
+    </resource-config>
+
+    <resource-config selector="header">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">header</param>
+        <param name="beanClass">example.model.Header</param>
+        <param name="setOn">order</param>
+        <param name="bindings">
+            <binding property="date" type="OrderDateLong" selector="header date" />
+            <binding property="customerNumber" type="Long" selector="header customer @number" />
+            <binding property="customerName" selector="header customer" />
+        </param>
+    </resource-config>
+
     <resource-config selector="order-item">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">example.model.OrderItem</param>
-        <param name="beanId">orderItem</param>
+        <param name="setOn">orderItems</param>
         <param name="bindings">
             <binding property="productId" type="Long" selector="order-item product" />
             <binding property="quantity" type="Integer" selector="order-item quantity" />

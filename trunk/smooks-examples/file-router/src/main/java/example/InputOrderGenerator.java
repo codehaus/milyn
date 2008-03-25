@@ -52,17 +52,16 @@ public class InputOrderGenerator
 		deleteFile( file );
 		FileWriter writer = new FileWriter( file, true );
 		writer.write( "<order>" + LINE_SEP );
+		writer.write( "<orderId>99</orderId>" + LINE_SEP );
 		writer.write( "<header>" + LINE_SEP);
 		writer.write( "<date>Wed Nov 15 13:45:28 EST 2006</date>" + LINE_SEP );
 		writer.write( "<customer number=\"123\">Joe</customer>" + LINE_SEP );
 		writer.write( "</header>" + LINE_SEP);
 		writer.flush();
 		writer.write( "<order-items>" + LINE_SEP );
-		System.out.print("Generating " + file.getName() + ".");
+		System.out.print("Generating " + file.getName() + "...");
 		for ( int i = 1 ; i < nrOfOrderItems ; i ++ )
 		{
-			if ( i % 1000 == 0 )
-        		System.out.print(".");
     		writer.write( "<order-item>" + LINE_SEP );
     		writer.write( "<product>" + i + "</product>" + LINE_SEP );
     		writer.write( "<quantity>2</quantity>" + LINE_SEP );
@@ -73,6 +72,28 @@ public class InputOrderGenerator
 		writer.write( "</order-items>" + LINE_SEP);
 		writer.write( "</order>" + LINE_SEP );
 		writer.close();
+		System.out.println();
+		System.out.println("Generated " + file.getName() + " size = [" + getFileLength( file ) + "]" );
+	}
+	
+	private static String getFileLength( final File file )
+	{
+		long fileLength = file.length();
+		int digits = String.valueOf( fileLength ).length();
+		if ( digits < 4 )
+		{
+    		return fileLength + " Byte(s)";
+		}
+		else if ( digits >= 4 && digits <= 6 )
+		{
+    		return fileLength / 1024 + " KB";
+		}
+		else if ( digits >= 7 && digits <= 9 )
+		{
+    		return fileLength / (1024 * 1024 ) + " MB";
+		}
+		else
+    		return fileLength / (1024 * 1024 * 1024 ) + " GB";
 	}
 	
 	private static void deleteFile( final File file ) throws IOException

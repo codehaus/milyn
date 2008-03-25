@@ -12,7 +12,7 @@
 	</appender>
 
 	<logger name="example">
-		<level value="info"/>
+		<level value="debug"/>
 		<appender-ref ref="console"/>
 	</logger>
 
