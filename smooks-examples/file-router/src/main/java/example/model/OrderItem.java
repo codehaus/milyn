@@ -21,9 +21,7 @@ import java.io.Serializable;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class OrderItem implements Serializable {
-    /**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	private long productId;
     private Integer quantity;

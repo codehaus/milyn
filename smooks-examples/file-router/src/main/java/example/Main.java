@@ -59,12 +59,18 @@ public class Main
         System.out.println( "List file : [" + FileListAccessor.getListFileNames( executionContext ) );
         
         //	uncomment to print the files
-        //printFiles( executionContext );
+        printFiles( executionContext );
         
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException, InterruptedException, ClassNotFoundException
     {
+		String fileName = "input-message.xml";
+		System.out.println(fileName);
+		System.out.println();
+		String nrofLineItems = pause("Please specify nr of order-items to generate >");
+		InputOrderGenerator.main( new String[] { fileName, nrofLineItems } );
+    	
         final Main smooksMain = new Main();
 
         System.out.println( LINE_SEP );
@@ -98,17 +104,18 @@ public class Main
 		}
     }
 
-    private static void pause(String message) {
+    private static String pause(String message) {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
             System.out.print("> " + message);
-            in.readLine();
+            return in.readLine();
         } 
         catch (IOException e) 
         {
         	e.printStackTrace();
         }
         System.out.println( LINE_SEP );
+		return null;
     }
 
 }

@@ -16,39 +16,20 @@
 package example.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class Order implements Serializable {
-    /**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 	
+	private int orderId;
 	private Header header;
     private List<OrderItem> orderItems;
 
-    public Order() {
-        header = new Header();
-        header.setCustomerName( "Daniel" );
-        header.setCustomerNumber( 1l );
-        header.setDate( new Date() );
-        orderItems =  new ArrayList<OrderItem>();
-        orderItems.add(new OrderItem());
-        orderItems.add(new OrderItem());
-
-        orderItems.get(0).setProductId(111);
-        orderItems.get(0).setQuantity(2);
-        orderItems.get(0).setPrice(10.99);
-
-        orderItems.get(1).setProductId(222);
-        orderItems.get(1).setQuantity(4);
-        orderItems.get(1).setPrice(25.50);
-    }
+    public Order() { }
 
 
     public Header getHeader() {
@@ -69,6 +50,18 @@ public class Order implements Serializable {
 
     public String toString()
     {
-    	return "[Order : " + header + ", " + orderItems + "]";
+    	return "[Order orderId : " + orderId + ", " + header + ", " + orderItems + "]";
     }
+
+
+	public int getOrderId()
+	{
+		return orderId;
+	}
+
+
+	public void setOrderId( int orderId )
+	{
+		this.orderId = orderId;
+	}
 }
