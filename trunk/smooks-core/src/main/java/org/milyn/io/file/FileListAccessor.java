@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.routing.file;
+package org.milyn.io.file;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -47,12 +47,12 @@ public class FileListAccessor
 	 *  Note that the filename should be specified with a path. This is so that the same filename can be used 
 	 *  in multiple directories.
 	 * 
-	 * @param listFileName 	- list file name to add to the context
+	 * @param fileName 	- list file name to add to the context
 	 * @param execContext	- Smooks ExceutionContext
 	 */
-	public static void addListFileName( final String listFileName, final ExecutionContext execContext )
+	public static void addFileName( final String fileName, final ExecutionContext execContext )
 	{
-		AssertArgument.isNotNullAndNotEmpty( listFileName, "fileName" );
+		AssertArgument.isNotNullAndNotEmpty( fileName, "fileName" );
 		
 		@SuppressWarnings ("unchecked")
 		List<String> allListFiles = (List<String>) execContext.getAttribute( ALL_LIST_FILE_NAME_CONTEXT_KEY );
@@ -62,9 +62,9 @@ public class FileListAccessor
 		}
 		
 		//	no need to have duplicates
-		if ( !allListFiles.contains( listFileName ))
+		if ( !allListFiles.contains( fileName ))
 		{
-    		allListFiles.add( listFileName );
+    		allListFiles.add( fileName );
 		}
 		
 		execContext.setAttribute( ALL_LIST_FILE_NAME_CONTEXT_KEY , allListFiles );
