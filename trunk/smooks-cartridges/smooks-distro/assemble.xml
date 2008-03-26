@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="assemble" name="Assembly">
+
+    <property name="version" value="smooks-1.0-SNAPSHOT"/>
+    <property name="targetdir" value="target/${version}"/>
+
+    <target name="assemble">
+        <condition property="iswindows">
+            <os family="windows"/>
+        </condition>
+
+        <antcall target="windows-assemble"/>
+        <antcall target="non-windows-assemble"/>
+    </target>
+
+    <target if="iswindows" name="windows-assemble">
+        <exec dir="../../" executable="mvn.bat">
+            <arg line="clean install javadoc:javadoc"/>
+        </exec>
+
+        <exec dir="../../" executable="mvn.bat">
+            <arg line="idea:clean eclipse:clean"/>
+        </exec>
+        <exec dir="../../smooks-examples" executable="mvn.bat">
+            <arg line="clean"/>
+        </exec>
+        <exec dir="./" executable="mvn.bat">
+            <arg line="project-info-reports:dependencies"/>
+        </exec>
+
+        <mkdir dir="${targetdir}"/>
+        <mkdir dir="${targetdir}/docs/javadoc"/>
+
+        <copy todir="${targetdir}">
+            <fileset dir="./">
+                <include name="README.html"/>
+                <include name="LICENSE.txt"/>
+            </fileset>
+            <fileset dir="target/site"/>
+            <fileset dir="../../" includes="smooks-examples/**"/>
+            <fileset dir="target" includes="lib/*.jar"/>
+        </copy>
+
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-core"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/css"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/css"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/csv"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/csv"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/edi"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/edi"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/javabean"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/javabean"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/misc"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/misc"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/routing"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/routing"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/scripting"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/scripting"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/servlet"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/servlet"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/templating"/>
+            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/templating"/>
+        </antcall>
+
+        <zip destfile="target/${version}.zip" basedir="target" includes="${version}/**"/>
+    </target>
+
+    <target unless="iswindows" name="non-windows-assemble">
+        <exec dir="../../" executable="mvn">
+            <arg line="clean install javadoc:javadoc"/>
+        </exec>
+    </target>
+
+    <target name="move-javadoc">
+        <mkdir dir="${target}"/>
+        <move todir="${target}">
+            <fileset dir="${source}/target/site/apidocs"/>
+        </move>
+    </target>
+
+</project>
+
