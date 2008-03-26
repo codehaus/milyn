@@ -12,11 +12,11 @@
 	<version>${milyn.smooks.core.version}</version>
 
     <dependencies>
-        <!-- dependency>
+        <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-css</artifactId>
             <version>${milyn.smooks.css.version}</version>
-        </dependency -->
+        </dependency>
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-csv</artifactId>
@@ -42,15 +42,20 @@
             <artifactId>milyn-smooks-scripting</artifactId>
             <version>${milyn.smooks.scripting.version}</version>
         </dependency>
-        <!-- dependency>
+        <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-servlet</artifactId>
             <version>${milyn.smooks.servlet.version}</version>
-        </dependency -->
+        </dependency>
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-templating</artifactId>
             <version>${milyn.smooks.templating.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-routing</artifactId>
+            <version>${milyn.smooks.routing.version}</version>
         </dependency>
 	</dependencies>
 
@@ -67,19 +72,31 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <excludeTransitive>false</excludeTransitive>
+                            <excludeArtifactIds>junit,log4j,hsqldb,nekohtml,servlet-api,xalan</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptor>assembly.xml</descriptor>
-                </configuration>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <ant dir="./" antfile="assemble.xml" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
