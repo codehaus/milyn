@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.routing.file;
+package org.milyn.io.file;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +36,7 @@ public class FileListAccessorTest
 	@Test ( expected = IllegalArgumentException.class )
 	public void setFileNameNegative()
 	{
-		FileListAccessor.addListFileName( null, execContext );
+		FileListAccessor.addFileName( null, execContext );
 	}
 	
 	@Test
@@ -44,8 +44,9 @@ public class FileListAccessorTest
 	{
 		final String expectedFileName = "testing.txt";
 		final String expectedFileName2 = "testing2.txt";
-		FileListAccessor.addListFileName( expectedFileName , execContext );
-		FileListAccessor.addListFileName( expectedFileName2 , execContext );
+		FileListAccessor.addFileName( expectedFileName , execContext );
+		FileListAccessor.addFileName( expectedFileName2 , execContext );
+		FileListAccessor.addFileName( expectedFileName2 , execContext );
 		List<String> list = FileListAccessor.getListFileNames( execContext );
 		assertNotNull( list );
 		assertTrue( list.size() == 2 );

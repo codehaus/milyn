@@ -4,7 +4,15 @@
     <resource-config selector="global-parameters">
 		<param name="stream.filter.type">SAX</param>
 	</resource-config>
-
+	
+    <resource-config selector="$document">
+        <resource>org.milyn.io.file.FileOutputStreamResource</resource>
+        <param name="resourceName">hugeFileRouter</param>
+        <param name="fileNamePattern">Order.ser</param>
+        <param name="destinationDirectory">target</param>
+        <param name="listFileName">OrderFiles.lst</param>
+    </resource-config>
+    
     <resource-config selector="order">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">order</param>
@@ -31,16 +39,12 @@
             <binding property="customerName" selector="header customer" />
         </param>
     </resource-config>
-
-    <resource-config selector="order-item">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanClass">example.model.OrderItem</param>
-        <param name="setOn">orderItems</param>
-        <param name="bindings">
-            <binding property="productId" type="Long" selector="order-item product" />
-            <binding property="quantity" type="Integer" selector="order-item quantity" />
-            <binding property="price" type="Double" selector="order-item price" />
-        </param>
+    
+    <resource-config selector="header">
+        <resource>org.milyn.routing.io.OutputStreamRouter</resource>
+        <param name="visitAfter">true</param>
+        <param name="resourceName">hugeFileRouter</param>
+        <param name="beanId">header</param>
     </resource-config>
 
     <resource-config selector="decoder:OrderDateLong">
@@ -50,13 +54,5 @@
         <param name="locale-country">IE</param>
     </resource-config>
 
-    <resource-config selector="order">
-        <resource>org.milyn.routing.file.FileRouter</resource>
-        <param name="beanId">order</param>
-        <param name="visitAfter">true</param>
-        <param name="destinationDirectory">target</param>
-        <param name="listFileName">OrderFiles.lst</param>
-        <param name="fileNamePattern">Order-${orderId}.ser</param>
-    </resource-config>
     
 </smooks-resource-list>

@@ -27,6 +27,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.io.file.FileListAccessor;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.file.naming.NamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategyException;
@@ -63,6 +64,7 @@ import java.io.*;
  * Optional parameters:
  *    &lt;param name="encoding"&gt;UTF-8&lt;/param&gt;
  * </pre>
+ * 
  * Description of configuration properties:
  * <ul>
  * <li><code>beanId </code> is key used search the execution context for the content to be written to a file
@@ -80,7 +82,6 @@ import java.io.*;
 @VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
 public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter
 {
-    @SuppressWarnings( "unused" )
 	private final Log log = LogFactory.getLog( FileRouter.class );
     
     /*
@@ -252,9 +253,7 @@ public class FileRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 			final Object bean) throws IOException
 	{
 		final String listFilePath = destDirName + File.separator + generateFilePattern( listFileName, bean );
-		FileListAccessor.addListFileName( listFilePath, executionContext );
-		
-		log.debug( "writing to filelist file [" + listFilePath + "] fileName [" + transformedFileName + "]" );
+		FileListAccessor.addFileName( listFilePath, executionContext );
 		
 		FileWriter writer = null;
 		try

@@ -28,7 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.routing.file.FileListAccessor;
+import org.milyn.io.file.FileListAccessor;
 import org.xml.sax.SAXException;
 
 /**
@@ -56,10 +56,10 @@ public class Main
         
         //	display the output from the transform
         System.out.println( LINE_SEP );
-        System.out.println( "List file : [" + FileListAccessor.getListFileNames( executionContext ) );
+        System.out.println( "List file : [" + FileListAccessor.getListFileNames( executionContext ) + "]" );
         
         //	uncomment to print the files
-        printFiles( executionContext );
+        //printFiles( executionContext );
         
     }
 
