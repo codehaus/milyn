@@ -14,17 +14,29 @@
     </target>
 
     <target if="iswindows" name="windows-assemble">
-        <exec dir="../../" executable="mvn.bat">
+        <antcall target="run-assemble">
+            <param name="mvnexec" value="mvn.bat" />
+        </antcall>
+    </target>
+
+    <target unless="iswindows" name="non-windows-assemble">
+        <antcall target="run-assemble">
+            <param name="mvnexec" value="mvn" />
+        </antcall>
+    </target>
+
+    <target if="iswindows" name="run-assemble">
+        <exec dir="../../" executable="${mvnexec}">
             <arg line="clean install javadoc:javadoc"/>
         </exec>
 
-        <exec dir="../../" executable="mvn.bat">
+        <exec dir="../../" executable="${mvnexec}">
             <arg line="idea:clean eclipse:clean"/>
         </exec>
-        <exec dir="../../smooks-examples" executable="mvn.bat">
+        <exec dir="../../smooks-examples" executable="${mvnexec}">
             <arg line="clean"/>
         </exec>
-        <exec dir="./" executable="mvn.bat">
+        <exec dir="./" executable="${mvnexec}">
             <arg line="project-info-reports:dependencies"/>
         </exec>
 
@@ -83,12 +95,6 @@
         </antcall>
 
         <zip destfile="target/${version}.zip" basedir="target" includes="${version}/**"/>
-    </target>
-
-    <target unless="iswindows" name="non-windows-assemble">
-        <exec dir="../../" executable="mvn">
-            <arg line="clean install javadoc:javadoc"/>
-        </exec>
     </target>
 
     <target name="move-javadoc">
