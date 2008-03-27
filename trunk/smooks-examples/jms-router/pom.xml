@@ -67,10 +67,6 @@
             <id>milyn</id>
             <url>http://dist.codehaus.org</url>
         </repository>
-        <repository>
-            <id>mvnrepository</id>
-            <url>http://mvnrepository.com</url>
-        </repository>
 		<repository>
 			<id>jboss</id>
 			<url>http://repository.jboss.com/maven2</url>
