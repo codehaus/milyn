@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -299,7 +300,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             } else if(beanType == Classification.MAP_COLLECTION) {
                 ((Map)bean).put(mapPropertyName, dataObject);
             } else if(beanType == Classification.ARRAY_COLLECTION || beanType == Classification.COLLECTION_COLLECTION) {
-                ((List)bean).add(dataObject);
+                ((Collection)bean).add(dataObject);
             } else if(propertySetterMethod == null) {
             	if(setterMethod != null) {
                     throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
