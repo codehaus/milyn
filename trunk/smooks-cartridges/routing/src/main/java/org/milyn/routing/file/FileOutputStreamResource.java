@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.io.file;
+package org.milyn.routing.file;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +27,8 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.AbstractOutputStreamResource;
+import org.milyn.javabean.BeanAccessor;
+import org.milyn.util.FreeMarkerTemplate;
 
 /**
  * FileOutputStreamResouce is a {@link AbstractOutputStreamResource} implementation
@@ -58,6 +60,8 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 {
     private static final String TMP_FILE_CONTEXT_KEY_PREFIX = FileOutputStreamResource.class.getName() + "#tmpFile:";
     
+    private static final String BEAN_ID_CONTEXT_KEY_PREFIX = FileOutputStreamResource.class.getName() + "#beanId:";
+    
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
 	private Log log = LogFactory.getLog( FileOutputStreamResource.class );
@@ -77,11 +81,15 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 	//	public
 
 	@Override
-	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException
+	public FileOutputStream getOutputStream( final ExecutionContext executionContext, final String beanId ) throws IOException
 	{
 		final File tmpFile = File.createTempFile( getResourceName(), ".working" );
 		final FileOutputStream fileOutputStream = new FileOutputStream( tmpFile , true );
 		executionContext.setAttribute( TMP_FILE_CONTEXT_KEY_PREFIX + getResourceName(), tmpFile );
+		if ( beanId != null )
+		{
+    		executionContext.setAttribute( BEAN_ID_CONTEXT_KEY_PREFIX + getResourceName(), beanId );
+		}
 		return fileOutputStream;
 	}
 
@@ -98,10 +106,20 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 		if ( workingFile == null )
 			throw new SmooksException( "Could not find the tmp file in the execution context" );
 		
-		//	run the filename pattern through FreeMarker
-		//FreeMarkerTemplate template = new FreeMarkerTemplate( fileNamePattern );
-		//String newFileName = template.apply( executionContext.getAttribute(  ) );
-		String newFileName = fileNamePattern;
+		String newFileName;
+		final String beanId = (String) executionContext.getAttribute( BEAN_ID_CONTEXT_KEY_PREFIX + getResourceName() );
+		if ( beanId != null )
+		{
+    		//	run the filename pattern through FreeMarker
+            Object bean = BeanAccessor.getBean( executionContext, beanId );
+    		FreeMarkerTemplate template = new FreeMarkerTemplate( fileNamePattern );
+    		newFileName = template.apply( bean );
+		}
+		else
+		{
+			//	just use the fileNamePattern as the file name (not using template pattern)
+    		newFileName = fileNamePattern;
+		}
 		
 		//	create a new file in the destination directory
 		File newFile = new File( destinationDirectoryName + File.separator + newFileName );

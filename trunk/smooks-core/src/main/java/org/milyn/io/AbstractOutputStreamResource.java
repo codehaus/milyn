@@ -64,9 +64,11 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 	/**
 	 * Retrieve/create an output stream that is appropriate for the concreate implementation
 	 * 
+	 * @param <code>executionContext</code>
+	 * @param <code>beanId</code>
 	 * @return <code>OutputStream</code>	output stream specific to the concreate implementation
 	 */
-	public abstract OutputStream getOutputStream( ExecutionContext executionContext ) throws IOException;
+	public abstract OutputStream getOutputStream( final ExecutionContext executionContext, final String beanId ) throws IOException;
 	
 	/**
 	 * Return the name of this resource
@@ -75,32 +77,32 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 	 */
 	public abstract String getResourceName();
 
-	public void visitBefore( SAXElement element, ExecutionContext executionContext ) throws SmooksException, IOException
+	public void visitBefore( final SAXElement element, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
 		bind ( executionContext );
 	}
 
-	public void visitAfter( SAXElement element, ExecutionContext executionContext ) throws SmooksException, IOException
+	public void visitAfter( final SAXElement element, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
 		unbind( executionContext );
 	}
 
-	public void onChildElement( SAXElement element, SAXElement childElement, ExecutionContext executionContext ) throws SmooksException, IOException
+	public void onChildElement( final SAXElement element, final SAXElement childElement, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
 		//	NoOp
 	}
 
-	public void onChildText( SAXElement element, SAXText childText, ExecutionContext executionContext ) throws SmooksException, IOException
+	public void onChildText( final SAXElement element, final SAXText childText, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
 		//	NoOp
 	}
 
-	public void visitBefore( Element element, ExecutionContext executionContext ) throws SmooksException
+	public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
 	{
 		bind ( executionContext );
 	}
 
-	public void visitAfter( Element element, ExecutionContext executionContext ) throws SmooksException
+	public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
 	{
 		unbind( executionContext );
 	}
@@ -110,22 +112,25 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 		//unbind( executionContext );
 	}
 	
-	 public static OutputStream getOutputStream(String resourceName, ExecutionContext executionContext) throws SmooksException 
-	 {
+    public static OutputStream getOutputStream(  
+    		final String resourceName, 
+            final ExecutionContext executionContext,
+            final String beanId) throws SmooksException 
+    {
         OutputStream outputStream = (OutputStream) executionContext.getAttribute( OUTPUTSTREAM_CONTEXT_KEY_PREFIX + resourceName );
-
+        
         if( outputStream == null ) 
         {
             AbstractOutputStreamResource resource = (AbstractOutputStreamResource) executionContext.getAttribute( RESOURCE_CONTEXT_KEY_PREFIX + resourceName );
-
+        
             if( resource == null ) 
             {
-                throw new SmooksException( "OutputResource '" + resourceName + "' not bound to context.  Configure an '" + AbstractOutputStreamResource.class.getName() +  "' implementation and target it at '$document'." );
+            throw new SmooksException( "OutputResource '" + resourceName + "' not bound to context.  Configure an '" + AbstractOutputStreamResource.class.getName() +  "' implementation and target it at '$document'." );
             }
 
             try 
             {
-                outputStream = resource.getOutputStream( executionContext );
+                outputStream = resource.getOutputStream( executionContext, beanId );
             } 
             catch ( IOException e ) 
             {
@@ -144,14 +149,14 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 	 * 
 	 * @param <code>executionContext</code>	- Smooks ExecutionContext
 	 */ 
-    protected void preUnbindFromExecutionContext ( ExecutionContext executionContext )
+    protected void preUnbindFromExecutionContext ( final ExecutionContext executionContext )
 	{
 		//	NoOp
 	}
 	
 	//	private
 	
-	private void unbind( ExecutionContext executionContext )
+	private void unbind( final ExecutionContext executionContext )
 	{
 		try 
 		{
@@ -166,12 +171,12 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 		}
 	}
 
-	private void bind( ExecutionContext executionContext )
+	private void bind( final ExecutionContext executionContext )
 	{
         executionContext.setAttribute( RESOURCE_CONTEXT_KEY_PREFIX + getResourceName(), this );
 	}
 	
-	private void close( OutputStream outputStream )
+	private void close( final OutputStream outputStream )
 	{
 		if ( outputStream == null )
 		{

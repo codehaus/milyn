@@ -28,7 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.io.file.FileListAccessor;
+import org.milyn.routing.file.FileListAccessor;
 import org.xml.sax.SAXException;
 
 /**
@@ -59,7 +59,7 @@ public class Main
         System.out.println( "List file : [" + FileListAccessor.getListFileNames( executionContext ) + "]" );
         
         //	uncomment to print the files
-        //printFiles( executionContext );
+        printFiles( executionContext );
         
     }
 
@@ -93,7 +93,6 @@ public class Main
         List<String> allListFiles = FileListAccessor.getListFileNames( executionContext );
         for (String listFile : allListFiles)
 		{
-            System.out.println( "ListFile [" + listFile + "]" );
             List<String> fileNames = (List<String>) FileListAccessor.getFileList( executionContext, listFile );
             System.out.println( "Contains [" + fileNames.size() + "] files");
             for (String fileName : fileNames)

@@ -25,7 +25,7 @@
         </antcall>
     </target>
 
-    <target if="iswindows" name="run-assemble">
+    <target name="run-assemble">
         <exec dir="../../" executable="${mvnexec}">
             <arg line="clean install javadoc:javadoc"/>
         </exec>

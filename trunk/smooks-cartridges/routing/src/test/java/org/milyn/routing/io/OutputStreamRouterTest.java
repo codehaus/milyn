@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
-import org.milyn.io.file.FileOutputStreamResource;
 
 /**
  * Unit test for {@link OutputStreamRouter}
@@ -57,7 +56,7 @@ public class OutputStreamRouterTest
 			final String resourceName,
 			final String beanId)
 	{
-    	SmooksResourceConfiguration config = new SmooksResourceConfiguration( "x", FileOutputStreamResource.class.getName() );
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration( "x", OutputStreamRouter.class.getName() );
 		config.setParameter( "resourceName", resourceName );
 		config.setParameter( "beanId", beanId );
 		return config;

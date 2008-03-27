@@ -27,7 +27,6 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.io.file.FileListAccessor;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.file.naming.NamingStrategy;
 import org.milyn.routing.file.naming.NamingStrategyException;

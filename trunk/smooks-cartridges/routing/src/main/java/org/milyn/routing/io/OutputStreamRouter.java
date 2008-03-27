@@ -28,7 +28,6 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.io.file.FileOutputStreamResource;
 import org.milyn.javabean.BeanAccessor;
 import org.w3c.dom.Element;
 
@@ -114,7 +113,7 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
         	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
         }
         
-        OutputStream out = AbstractOutputStreamResource.getOutputStream( resourceName, executionContext );
+        OutputStream out = AbstractOutputStreamResource.getOutputStream( resourceName, executionContext, beanId );
 		try
 		{
 			if ( bean instanceof String )
