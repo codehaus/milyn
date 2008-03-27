@@ -20,7 +20,6 @@ import javax.xml.transform.Result;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.plugin.PayloadProcessor;
-import org.milyn.io.file.FileListAccessor;
 
 /**
  * 

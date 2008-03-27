@@ -40,7 +40,7 @@ public class AbstractOutputStreamResourceTest
 		MockExecutionContext executionContext = new MockExecutionContext();
 		resource.visitBefore( (Element)null, executionContext );
 		
-		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext );
+		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext, null );
 		assertNotNull( outputStream );
 		assertTrue( outputStream instanceof ByteArrayOutputStream );
 		
@@ -54,7 +54,7 @@ public class AbstractOutputStreamResourceTest
 	{
 
 		@Override
-		public OutputStream getOutputStream( final ExecutionContext executionContext )
+		public OutputStream getOutputStream( final ExecutionContext executionContext, final String beanId )
 		{
 			return new ByteArrayOutputStream();
 		}

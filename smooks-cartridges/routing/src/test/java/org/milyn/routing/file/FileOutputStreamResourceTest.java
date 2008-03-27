@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.io.file;
+package org.milyn.routing.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -64,7 +64,7 @@ public class FileOutputStreamResourceTest
 		MockExecutionContext executionContext = new MockExecutionContext();
 		resource.visitBefore( (Element)null, executionContext );
 		
-		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext );
+		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext, null );
 		assertNotNull( outputStream );
 		assertTrue( outputStream instanceof FileOutputStream );
 		

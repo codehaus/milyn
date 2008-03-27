@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.io.file;
+package org.milyn.routing.file;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

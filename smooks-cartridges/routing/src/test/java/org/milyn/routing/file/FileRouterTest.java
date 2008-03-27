@@ -39,7 +39,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.delivery.java.JavaSource;
-import org.milyn.io.file.FileListAccessor;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.TestBean;
 import org.milyn.routing.util.RouterTestHelper;
