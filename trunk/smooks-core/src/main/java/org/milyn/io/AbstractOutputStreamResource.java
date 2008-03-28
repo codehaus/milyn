@@ -65,10 +65,9 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 	 * Retrieve/create an output stream that is appropriate for the concreate implementation
 	 * 
 	 * @param <code>executionContext</code>
-	 * @param <code>beanId</code>
 	 * @return <code>OutputStream</code>	output stream specific to the concreate implementation
 	 */
-	public abstract OutputStream getOutputStream( final ExecutionContext executionContext, final String beanId ) throws IOException;
+	public abstract OutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException;
 	
 	/**
 	 * Return the name of this resource
@@ -109,7 +108,7 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 	
 	public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
 	{
-		//unbind( executionContext );
+		unbind( executionContext );
 	}
 	
     public static OutputStream getOutputStream(  
@@ -125,12 +124,12 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
         
             if( resource == null ) 
             {
-            throw new SmooksException( "OutputResource '" + resourceName + "' not bound to context.  Configure an '" + AbstractOutputStreamResource.class.getName() +  "' implementation and target it at '$document'." );
+                throw new SmooksException( "OutputResource '" + resourceName + "' not bound to context.  Configure an '" + AbstractOutputStreamResource.class.getName() +  "' implementation and target it at '$document'." );
             }
 
             try 
             {
-                outputStream = resource.getOutputStream( executionContext, beanId );
+                outputStream = resource.getOutputStream( executionContext );
             } 
             catch ( IOException e ) 
             {

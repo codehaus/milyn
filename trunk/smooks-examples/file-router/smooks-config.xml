@@ -8,7 +8,7 @@
     <resource-config selector="$document">
         <resource>org.milyn.routing.file.FileOutputStreamResource</resource>
         <param name="resourceName">hugeFileRouter</param>
-        <param name="fileNamePattern">Order-${customerNumber}.ser</param>
+        <param name="fileNamePattern">Order-${header.customerNumber}.ser</param>
         <param name="destinationDirectory">target</param>
         <param name="listFileName">OrderFiles.lst</param>
     </resource-config>

@@ -52,9 +52,8 @@ public class AbstractOutputStreamResourceTest
 	 */
 	private static class MockAbstractOutputStreamResource extends AbstractOutputStreamResource
 	{
-
 		@Override
-		public OutputStream getOutputStream( final ExecutionContext executionContext, final String beanId )
+		public OutputStream getOutputStream( final ExecutionContext executionContext )
 		{
 			return new ByteArrayOutputStream();
 		}

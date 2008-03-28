@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -60,8 +61,6 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 {
     private static final String TMP_FILE_CONTEXT_KEY_PREFIX = FileOutputStreamResource.class.getName() + "#tmpFile:";
     
-    private static final String BEAN_ID_CONTEXT_KEY_PREFIX = FileOutputStreamResource.class.getName() + "#beanId:";
-    
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
 	private Log log = LogFactory.getLog( FileOutputStreamResource.class );
@@ -81,15 +80,11 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 	//	public
 
 	@Override
-	public FileOutputStream getOutputStream( final ExecutionContext executionContext, final String beanId ) throws IOException
+	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException
 	{
-		final File tmpFile = File.createTempFile( getResourceName(), ".working" );
+		final File tmpFile = File.createTempFile( UUID.randomUUID().toString(), ".working" );
 		final FileOutputStream fileOutputStream = new FileOutputStream( tmpFile , true );
 		executionContext.setAttribute( TMP_FILE_CONTEXT_KEY_PREFIX + getResourceName(), tmpFile );
-		if ( beanId != null )
-		{
-    		executionContext.setAttribute( BEAN_ID_CONTEXT_KEY_PREFIX + getResourceName(), beanId );
-		}
 		return fileOutputStream;
 	}
 
@@ -104,14 +99,21 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 	{
 		File workingFile = (File) executionContext.getAttribute( TMP_FILE_CONTEXT_KEY_PREFIX + getResourceName() );
 		if ( workingFile == null )
+		{
 			throw new SmooksException( "Could not find the tmp file in the execution context" );
+		}
+		
+		//	this can happen if called from executeExecutionLifecycleCleanup
+		if ( !workingFile.exists() )
+		{
+			return;
+		}
 		
 		String newFileName;
-		final String beanId = (String) executionContext.getAttribute( BEAN_ID_CONTEXT_KEY_PREFIX + getResourceName() );
-		if ( beanId != null )
+        Object bean = BeanAccessor.getBeanMap( executionContext );
+		if ( bean != null )
 		{
     		//	run the filename pattern through FreeMarker
-            Object bean = BeanAccessor.getBean( executionContext, beanId );
     		FreeMarkerTemplate template = new FreeMarkerTemplate( fileNamePattern );
     		newFileName = template.apply( bean );
 		}
