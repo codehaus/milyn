@@ -15,21 +15,22 @@
 
 package org.milyn.routing.file;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.util.FreeMarkerTemplate;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * FileOutputStreamResouce is a {@link AbstractOutputStreamResource} implementation
@@ -65,13 +66,10 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 	
 	private Log log = LogFactory.getLog( FileOutputStreamResource.class );
     
-    @ConfigParam(name = "resourceName")
-    private String resourceName;
-    
     @ConfigParam(name = "fileNamePattern")
     private String fileNamePattern;
     
-	@ConfigParam ( name = "destinationDirectory", use = Use.REQUIRED )
+	@ConfigParam ( name = "destinationDirectory" )
 	private String destinationDirectoryName;
 	
     @ConfigParam(name = "listFileName")
@@ -80,8 +78,13 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 	private FreeMarkerTemplate template;
 	
 	//	public
+    
+    @Initialize
+    public void intialize() {
+        template = new FreeMarkerTemplate( fileNamePattern );
+    }
 
-	@Override
+    @Override
 	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException
 	{
 		final File tmpFile = File.createTempFile( UUID.randomUUID().toString(), ".working" );
@@ -91,58 +94,52 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 	}
 
 	@Override
-	public String getResourceName()
+	protected void closeResource( ExecutionContext executionContext )
 	{
-		return resourceName;
+        try {
+            super.closeResource(executionContext);
+        } finally {
+            File newFile = renameWorkingFile(executionContext);
+            if(newFile != null) {
+                addToListFile( executionContext, newFile );
+            }
+        }
 	}
 
-	@Override
-	protected void preUnbindFromExecutionContext( ExecutionContext executionContext )
-	{
-		File workingFile = (File) executionContext.getAttribute( TMP_FILE_CONTEXT_KEY_PREFIX + getResourceName() );
-		if ( workingFile == null )
-		{
-			throw new SmooksException( "Could not find the tmp file in the execution context" );
-		}
-		
-		//	this can happen if called from executeExecutionLifecycleCleanup
-		if ( !workingFile.exists() )
-		{
-			return;
-		}
-		
-		String newFileName;
-        Object bean = BeanAccessor.getBeanMap( executionContext );
-		if ( bean != null )
-		{
-    		//	run the filename pattern through FreeMarker
-    		if ( template == null )
-    		{
-        		template = new FreeMarkerTemplate( fileNamePattern );
-    		}
-    		newFileName = template.apply( bean );
-		}
-		else
-		{
-			//	just use the fileNamePattern as the file name (not using template pattern)
-    		newFileName = fileNamePattern;
-		}
-		
-		//	create a new file in the destination directory
-		File newFile = new File( destinationDirectoryName + File.separator + newFileName );
-		
-		//	try to rename the tmp file to the new file 
-		boolean renameTo = workingFile.renameTo( newFile ) ;
-		if ( !renameTo )
-		{
-			throw new SmooksException( "Could not rename [" + workingFile.getAbsolutePath() + "] to [" + newFile.getAbsolutePath() + "]");
-		}
-		workingFile.delete();
-		
-		addToListFile( executionContext, newFile );
-		
-	}
-	
+    private File renameWorkingFile(ExecutionContext executionContext) {
+        File workingFile = (File) executionContext.getAttribute( TMP_FILE_CONTEXT_KEY_PREFIX + getResourceName() );
+        if ( workingFile == null )
+        {
+            throw new SmooksException( "Could not find the tmp file in the execution context" );
+        }
+
+        //	this can happen if called from executeExecutionLifecycleCleanup
+        if ( !workingFile.exists() )
+        {
+            return null;
+        }
+
+        String newFileName;
+        Map beanMap = BeanAccessor.getBeanMap( executionContext );
+
+        //	BeanAccessor guarantees to return a beanMap... run the filename pattern
+        // through FreeMarker to generate the file name...
+        newFileName = template.apply( beanMap );
+
+        //	create a new file in the destination directory
+        File newFile = new File( destinationDirectoryName + File.separator + newFileName );
+
+        //	try to rename the tmp file to the new file
+        boolean renameTo = workingFile.renameTo( newFile ) ;
+        if ( !renameTo )
+        {
+            throw new SmooksException( "Could not rename [" + workingFile.getAbsolutePath() + "] to [" + newFile.getAbsolutePath() + "]");
+        }
+        workingFile.delete();
+
+        return newFile;
+    }
+
     //	private
     
 	private void addToListFile( ExecutionContext executionContext, File newFile )

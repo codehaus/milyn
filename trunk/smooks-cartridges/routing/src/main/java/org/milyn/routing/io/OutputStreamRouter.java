@@ -14,10 +14,6 @@
  */
 package org.milyn.routing.io;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-
 import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
@@ -31,12 +27,16 @@ import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.BeanAccessor;
 import org.w3c.dom.Element;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
 /**
  * OutputStreamRouter is a fragment Visitor (DOM/SAX) that can be used to route
  * context beans ({@link org.milyn.javabean.BeanAccessor} beans) an OutputStream.
  * </p>
  * An OutputStreamRouter is used in combination with a concreate implementation of 
- * {@link AbstractOutputStreamResource}, for example a {@link FileOutputStreamResource}.
+ * {@link AbstractOutputStreamResource}, for example a {@link org.milyn.routing.file.FileOutputStreamResource}.
  * 
  *Example configuration:
  *<pre>
@@ -113,7 +113,7 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
         	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
         }
         
-        OutputStream out = AbstractOutputStreamResource.getOutputStream( resourceName, executionContext, beanId );
+        OutputStream out = AbstractOutputStreamResource.getOutputStream( resourceName, executionContext );
 		try
 		{
 			if ( bean instanceof String )

@@ -108,7 +108,18 @@ public class Configurator {
     }
 
     private static <U extends ContentHandler> void processFieldConfigAnnotations(U instance, SmooksResourceConfiguration config) {
-        Field[] fields = instance.getClass().getDeclaredFields();
+        Class contentHandlerClass = instance.getClass();
+        processFieldConfigAnnotations(contentHandlerClass, instance, config);
+    }
+
+    private static <U extends ContentHandler> void processFieldConfigAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config) {
+        Field[] fields = contentHandlerClass.getDeclaredFields();
+
+        // Work back up the Inheritance tree first...
+        Class superClass = contentHandlerClass.getSuperclass();
+        if(superClass != null && ContentHandler.class.isAssignableFrom(superClass)) {
+            processFieldConfigAnnotations(superClass, instance, config);
+        }
 
         for (Field field : fields) {
             ConfigParam configParamAnnotation = field.getAnnotation(ConfigParam.class);
