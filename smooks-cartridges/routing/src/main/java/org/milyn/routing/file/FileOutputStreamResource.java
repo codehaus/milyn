@@ -61,8 +61,6 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 {
     private static final String TMP_FILE_CONTEXT_KEY_PREFIX = FileOutputStreamResource.class.getName() + "#tmpFile:";
     
-    private static final String TEMPLATE_CONTEXT_KEY_PREFIX = FileOutputStreamResource.class.getName() + "#template:";
-    
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
 	private Log log = LogFactory.getLog( FileOutputStreamResource.class );
@@ -78,6 +76,8 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 	
     @ConfigParam(name = "listFileName")
     private String listFileName;
+    
+	private FreeMarkerTemplate template;
 	
 	//	public
 
@@ -116,11 +116,9 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 		if ( bean != null )
 		{
     		//	run the filename pattern through FreeMarker
-    		FreeMarkerTemplate template = (FreeMarkerTemplate) executionContext.getAttribute( TEMPLATE_CONTEXT_KEY_PREFIX + getResourceName() );
     		if ( template == null )
     		{
         		template = new FreeMarkerTemplate( fileNamePattern );
-        		executionContext.setAttribute( TEMPLATE_CONTEXT_KEY_PREFIX + getResourceName(), template );
     		}
     		newFileName = template.apply( bean );
 		}
