@@ -21,12 +21,11 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ExecutionLifecycleCleanable;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.*;
 import org.w3c.dom.Element;
 
 /**
@@ -38,20 +37,20 @@ import org.w3c.dom.Element;
  * <pre>
  * &lt;resource-config selector="$document"&gt;
  *    &lt;resource&gt;org.milyn.io.ConcreateImpl&lt;/resource&gt;
- *    &lt;param name="resourcename"&gt;resourceName&lt;&lt;/param&gt;
+ *    &lt;param name="resourceName"&gt;resourceName&lt;/param&gt;
  * &lt;/resource-config&gt;
  * </pre>
  * 
  * Description of configuration properties:
  * <ul>
  * <li><code>resource </code> should be a concreate implementation of this class
- * <li><code>resourcename </code> the name of this resouce. Will be used to identify this resource
+ * <li><code>resourceName </code> the name of this resouce. Will be used to identify this resource
  * </ul>
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public abstract class AbstractOutputStreamResource implements SAXElementVisitor, DOMElementVisitor, ExecutionLifecycleCleanable 
+public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, ExecutionLifecycleCleanable 
 {
 	Log log = LogFactory.getLog( AbstractOutputStreamResource.class );
 	
@@ -59,13 +58,16 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
     
     private static final String OUTPUTSTREAM_CONTEXT_KEY_PREFIX = AbstractOutputStreamResource.class.getName() + "#outputstream:";
     
+    @ConfigParam
+    private String resourceName;
+
 	//	public
 	
 	/**
 	 * Retrieve/create an output stream that is appropriate for the concreate implementation
 	 * 
-	 * @param <code>executionContext</code>
-	 * @return <code>OutputStream</code>	output stream specific to the concreate implementation
+	 * @param executionContext Execution Context.
+	 * @return OutputStream specific to the concreate implementation
 	 */
 	public abstract OutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException;
 	
@@ -74,7 +76,9 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 	 * 
 	 * @return <code>String</code>	- the name of the resource
 	 */
-	public abstract String getResourceName();
+	public String getResourceName() {
+        return resourceName;
+    }
 
 	public void visitBefore( final SAXElement element, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
@@ -83,17 +87,7 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 
 	public void visitAfter( final SAXElement element, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
-		unbind( executionContext );
-	}
-
-	public void onChildElement( final SAXElement element, final SAXElement childElement, final ExecutionContext executionContext ) throws SmooksException, IOException
-	{
-		//	NoOp
-	}
-
-	public void onChildText( final SAXElement element, final SAXText childText, final ExecutionContext executionContext ) throws SmooksException, IOException
-	{
-		//	NoOp
+		closeResource( executionContext );
 	}
 
 	public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
@@ -103,18 +97,17 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 
 	public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
 	{
-		unbind( executionContext );
+		closeResource( executionContext );
 	}
 	
 	public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
 	{
-		unbind( executionContext );
+		closeResource( executionContext );
 	}
 	
-    public static OutputStream getOutputStream(  
-    		final String resourceName, 
-            final ExecutionContext executionContext,
-            final String beanId) throws SmooksException 
+    public static OutputStream getOutputStream(
+    		final String resourceName,
+            final ExecutionContext executionContext) throws SmooksException 
     {
         OutputStream outputStream = (OutputStream) executionContext.getAttribute( OUTPUTSTREAM_CONTEXT_KEY_PREFIX + resourceName );
         
@@ -143,19 +136,14 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 
 	 
 	/**
-	 * Hook for subclasses to perform operations before the attributes
-	 * of this class are removed from the execution context.
+	 * Close the resource output stream.
+     * <p/>
+     * Classes overriding this method must call super on this method. This will
+     * probably need to be done before performing any aditional cleanup.
 	 * 
-	 * @param <code>executionContext</code>	- Smooks ExecutionContext
+	 * @param executionContext Smooks ExecutionContext
 	 */ 
-    protected void preUnbindFromExecutionContext ( final ExecutionContext executionContext )
-	{
-		//	NoOp
-	}
-	
-	//	private
-	
-	private void unbind( final ExecutionContext executionContext )
+    protected void closeResource( final ExecutionContext executionContext )
 	{
 		try 
 		{
@@ -164,7 +152,6 @@ public abstract class AbstractOutputStreamResource implements SAXElementVisitor,
 		}
 		finally
 		{
-    		preUnbindFromExecutionContext( executionContext );
             executionContext.removeAttribute( OUTPUTSTREAM_CONTEXT_KEY_PREFIX + getResourceName() );
             executionContext.removeAttribute( RESOURCE_CONTEXT_KEY_PREFIX + getResourceName() );
 		}

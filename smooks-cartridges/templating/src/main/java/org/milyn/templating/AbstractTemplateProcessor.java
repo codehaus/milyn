@@ -60,12 +60,16 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
         BIND_TO,
     }
 
+    @ConfigParam(defaultVal = "false")
     private boolean applyTemplateBefore;
 
+    @ConfigParam(name = "action", defaultVal = "replace", choice = {"replace", "addto", "insertbefore", "insertafter", "bindto"}, decoder = ActionDecoder.class)
     private Action action;
 
+    @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String bindId;
 
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
@@ -90,18 +94,8 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 	
 	protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
 
-    @ConfigParam(defaultVal = "false")
-    public void setApplyTemplateBefore(boolean applyTemplateBefore) {
-        this.applyTemplateBefore = applyTemplateBefore;
-    }
-
     public boolean applyTemplateBefore() {
         return applyTemplateBefore;
-    }
-
-    @ConfigParam(name = "action", defaultVal = "replace", choice = {"replace", "addto", "insertbefore", "insertafter", "bindto"}, decoder = ActionDecoder.class)
-    public void setAction(Action action) {
-        this.action = action;
     }
 
     protected Action getAction() {
@@ -112,18 +106,8 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
         return encoding;
     }
 
-    @ConfigParam(defaultVal = "UTF-8")
-    public void setEncoding(Charset encoding) {
-        this.encoding = encoding;
-    }
-
     public String getBindId() {
         return bindId;
-    }
-
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    public void setBindId(String bindId) {
-        this.bindId = bindId;
     }
 
     protected void processTemplateAction(Element element, Node templatingResult) {

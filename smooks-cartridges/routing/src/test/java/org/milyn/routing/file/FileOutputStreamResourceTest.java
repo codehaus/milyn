@@ -64,7 +64,7 @@ public class FileOutputStreamResourceTest
 		MockExecutionContext executionContext = new MockExecutionContext();
 		resource.visitBefore( (Element)null, executionContext );
 		
-		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext, null );
+		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext );
 		assertNotNull( outputStream );
 		assertTrue( outputStream instanceof FileOutputStream );
 		
