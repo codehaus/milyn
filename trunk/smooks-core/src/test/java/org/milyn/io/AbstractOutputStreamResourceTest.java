@@ -56,8 +56,9 @@ public class AbstractOutputStreamResourceTest
 
         resource.visitAfter( (Element)null, executionContext );
 
-        // Should be unbound "after"...
+        // Should be unbound "after" and the stream should be closed...
         assertNull(getResource(resource, executionContext));
+        assertTrue(MockAbstractOutputStreamResource.isClosed);
 	}
 
     @Test
@@ -84,8 +85,9 @@ public class AbstractOutputStreamResourceTest
 
         resource.visitAfter( (Element)null, executionContext );
 
-        // Should be unbound "after"...
+        // Should be unbound "after" and the stream should be closed...
         assertNull(getResource(resource, executionContext));
+        assertTrue(MockAbstractOutputStreamResource.isClosed);
     }
 
     private Object getResource(AbstractOutputStreamResource resource, MockExecutionContext executionContext) {
@@ -97,10 +99,18 @@ public class AbstractOutputStreamResourceTest
 	 */
 	private static class MockAbstractOutputStreamResource extends AbstractOutputStreamResource
 	{
+        public static boolean isClosed = false;
+
 		@Override
 		public OutputStream getOutputStream( final ExecutionContext executionContext )
 		{
-			return new ByteArrayOutputStream();
+            isClosed = false;
+            return new ByteArrayOutputStream() {
+                public void close() throws IOException {
+                    isClosed = true;
+                    super.close();
+                }
+            };
 		}
 
 		@Override
