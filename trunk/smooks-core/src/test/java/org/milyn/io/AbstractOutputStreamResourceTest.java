@@ -16,15 +16,14 @@
 package org.milyn.io;
 
 import static org.junit.Assert.*;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.junit.Test;
+import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.w3c.dom.Element;
+
+import java.io.*;
+import java.nio.charset.Charset;
 
 /**
  * Unit test for AbstractOutputStreamResouce 
@@ -38,16 +37,62 @@ public class AbstractOutputStreamResourceTest
 	{
 		AbstractOutputStreamResource resource = new MockAbstractOutputStreamResource();
 		MockExecutionContext executionContext = new MockExecutionContext();
-		resource.visitBefore( (Element)null, executionContext );
-		
+
+        assertNull(getResource(resource, executionContext));
+        resource.visitBefore( (Element)null, executionContext );
+        assertNotNull(getResource(resource, executionContext));
+
 		OutputStream outputStream = AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext);
 		assertNotNull( outputStream );
 		assertTrue( outputStream instanceof ByteArrayOutputStream );
-		
-		resource.visitAfter( (Element)null, executionContext );
+
+        // Should get an error now if we try get a writer to the same resource...
+        try {
+            AbstractOutputStreamResource.getOutputWriter( resource.getResourceName(), executionContext);
+            fail("Expected SmooksException");
+        } catch(SmooksException e) {
+            assertEquals("An OutputStream to the 'Mock' resource is already open.  Cannot open a Writer to this resource now!", e.getMessage());
+        }
+
+        resource.visitAfter( (Element)null, executionContext );
+
+        // Should be unbound "after"...
+        assertNull(getResource(resource, executionContext));
 	}
-	
-	/**
+
+    @Test
+    public void getOutputWriter () throws IOException
+    {
+        AbstractOutputStreamResource resource = new MockAbstractOutputStreamResource();
+        MockExecutionContext executionContext = new MockExecutionContext();
+
+        assertNull(getResource(resource, executionContext));
+        resource.visitBefore( (Element)null, executionContext );
+        assertNotNull(getResource(resource, executionContext));
+
+        Writer writer = AbstractOutputStreamResource.getOutputWriter(resource.getResourceName(), executionContext);
+        assertNotNull( writer );
+        assertTrue( writer instanceof OutputStreamWriter);
+
+        // Should get an error now if we try get an OutputStream to the same resource...
+        try {
+            AbstractOutputStreamResource.getOutputStream( resource.getResourceName(), executionContext);
+            fail("Expected SmooksException");
+        } catch(SmooksException e) {
+            assertEquals("An Writer to the 'Mock' resource is already open.  Cannot open an OutputStream to this resource now!", e.getMessage());
+        }
+
+        resource.visitAfter( (Element)null, executionContext );
+
+        // Should be unbound "after"...
+        assertNull(getResource(resource, executionContext));
+    }
+
+    private Object getResource(AbstractOutputStreamResource resource, MockExecutionContext executionContext) {
+        return executionContext.getAttribute( AbstractOutputStreamResource.RESOURCE_CONTEXT_KEY_PREFIX + resource.getResourceName());
+    }
+
+    /**
 	 * Mock class for testing
 	 */
 	private static class MockAbstractOutputStreamResource extends AbstractOutputStreamResource
@@ -64,6 +109,9 @@ public class AbstractOutputStreamResourceTest
 			return "Mock";
 		}
 
-	}
+        public Charset getWriterEncoding() {
+            return Charset.forName("UTF-8");
+        }
+    }
 
 }
