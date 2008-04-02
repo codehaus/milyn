@@ -29,9 +29,9 @@
             <version>${xstream.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus</groupId>
+            <groupId>org.mvel</groupId>
             <artifactId>mvel</artifactId>
-            <version>1.2.22-java1.5</version>
+            <version>1.2.24-java1.5</version>
         </dependency>
 		<dependency>
 			<groupId>dtdparser</groupId>
@@ -47,6 +47,10 @@
 	</dependencies>
  
     <repositories>
+        <repository>
+            <id>mvel</id>
+            <url>http://repository.codehaus.org</url>
+        </repository>
         <repository>
             <id>milyn</id>
             <url>http://dist.codehaus.org</url>
