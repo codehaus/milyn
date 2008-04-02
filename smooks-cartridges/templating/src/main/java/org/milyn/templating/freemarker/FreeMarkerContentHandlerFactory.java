@@ -32,10 +32,14 @@ import org.milyn.delivery.annotation.Resource;
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter</i>&lt;/param&gt;
  *
- *     &lt;!-- (Optional - DOM Only) Should the template be applied before (true) or
+ *     &lt;!-- (Optional) Should the template be applied before (true) or
  *             after (false) Smooks visits the child elements of the target element.
  *             Default "false".--&gt;
  *     &lt;param name="<b>applyTemplateBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
+ *
+ *     &lt;!-- (Optional) The name of the {@link org.milyn.io.AbstractOutputStreamResource OutputStreamResource}
+ *             to which the result should be written. If set, the "action" param is ignored. --&gt;
+ *     &lt;param name="<b>outputStreamResource</b>"&gt;<i>xyzResource</i>&lt;/param&gt;
  *
  *     &lt;!-- (Optional) Template encoding.
  *          Default "UTF-8".--&gt;

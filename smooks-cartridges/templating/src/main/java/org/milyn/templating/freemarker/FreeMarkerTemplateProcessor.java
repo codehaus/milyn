@@ -25,6 +25,7 @@ import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
@@ -44,6 +45,8 @@ import java.util.Map;
 
 /**
  * <a href="http://freemarker.org/">FreeMarker</a> template application ProcessingUnit.
+ * <p/>
+ * See {@link org.milyn.templating.freemarker.FreeMarkerContentHandlerFactory}.
  *
  * @author tfennelly
  */
@@ -96,7 +99,10 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         String templatingResult;
         try {
             Writer writer = new StringWriter();
-            applyTemplate(executionContext, writer);
+            Map beans = BeanAccessor.getBeanMap(executionContext);
+
+            template.process(beans, writer);
+            writer.flush();
             templatingResult = writer.toString();
         } catch (TemplateException e) {
             throw new SmooksException("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
@@ -119,7 +125,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         }
 
         // Process the templating action, supplying the templating result...
-        processTemplateAction(element, resultNode);
+        processTemplateAction(element, resultNode, executionContext);
     }
 
     /* ------------------------------------------------------------------------------------------------------------------------------------------
@@ -127,100 +133,122 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
     ------------------------------------------------------------------------------------------------------------------------------------------ */
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        if (getAction() == Action.INSERT_BEFORE) {
-            // apply the template...
-            applyTemplate(element, executionContext);
-            // write the start of the element...
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                targetWriter.visitBefore(element, executionContext);
-            }
-        } else if (getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
-            // write the start of the element...
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                targetWriter.visitBefore(element, executionContext);
+        String outputStreamResourceName = getOutputStreamResource();
+        if(outputStreamResourceName != null) {
+            if(applyTemplateBefore()) {
+                applyTemplateToOutputStream(element, outputStreamResourceName, executionContext);
             }
         } else {
-            // Just acquire ownership of the writer...
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                element.getWriter(this);
+            if (getAction() == Action.INSERT_BEFORE) {
+                // apply the template...
+                applyTemplate(element, executionContext);
+                // write the start of the element...
+                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitBefore(element, executionContext);
+                }
+            } else if (getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
+                // write the start of the element...
+                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitBefore(element, executionContext);
+                }
+            } else {
+                // Just acquire ownership of the writer...
+                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    element.getWriter(this);
+                }
             }
         }
     }
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-        if (getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                targetWriter.onChildText(element, childText, executionContext);
+        if(getOutputStreamResource() == null) {
+            if (getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
+                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.onChildText(element, childText, executionContext);
+                }
             }
         }
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-        if (getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                targetWriter.onChildElement(element, childElement, executionContext);
+        if(getOutputStreamResource() == null) {
+            if (getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
+                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.onChildElement(element, childElement, executionContext);
+                }
             }
         }
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        if (getAction() == Action.ADDTO) {
-            if (!targetWriter.isStartWritten(element)) {
+        String outputStreamResourceName = getOutputStreamResource();
+        if(outputStreamResourceName != null) {
+            if(!applyTemplateBefore()) {
+                applyTemplateToOutputStream(element, outputStreamResourceName, executionContext);
+            }
+        } else {
+            if (getAction() == Action.ADDTO) {
+                if (!targetWriter.isStartWritten(element)) {
+                    if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                        targetWriter.writeStartElement(element);
+                    }
+                }
+                // apply the template...
+                applyTemplate(element, executionContext);
+                // write the end of the element...
                 if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                    targetWriter.writeStartElement(element);
+                    targetWriter.visitAfter(element, executionContext);
                 }
+            } else if (getAction() == Action.INSERT_BEFORE) {
+                // write the end of the element...
+                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitAfter(element, executionContext);
+                }
+            } else if (getAction() == Action.INSERT_AFTER) {
+                // write the end of the element...
+                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                    targetWriter.visitAfter(element, executionContext);
+                }
+                // apply the template...
+                applyTemplate(element, executionContext);
+            } else if (getAction() == Action.REPLACE || getAction() == Action.BIND_TO) {
+                // just apply the template...
+                applyTemplate(element, executionContext);
             }
-            // apply the template...
-            applyTemplate(element, executionContext);
-            // write the end of the element...
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                targetWriter.visitAfter(element, executionContext);
-            }
-        } else if (getAction() == Action.INSERT_BEFORE) {
-            // write the end of the element...
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                targetWriter.visitAfter(element, executionContext);
-            }
-        } else if (getAction() == Action.INSERT_AFTER) {
-            // write the end of the element...
-            if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
-                targetWriter.visitAfter(element, executionContext);
-            }
-            // apply the template...
-            applyTemplate(element, executionContext);
-        } else if (getAction() == Action.REPLACE || getAction() == Action.BIND_TO) {
-            // just apply the template...
-            applyTemplate(element, executionContext);
         }
     }
 
-    private void applyTemplate(SAXElement element, ExecutionContext executionContext) {
+    private void applyTemplateToOutputStream(SAXElement element, String outputStreamResourceName, ExecutionContext executionContext) {
+        Writer writer = AbstractOutputStreamResource.getOutputWriter(outputStreamResourceName, executionContext);
+        applyTemplate(element, executionContext, writer);
+    }
+
+    private void applyTemplate(SAXElement element, ExecutionContext executionContext) throws SmooksException {
+        if (getAction() == Action.BIND_TO) {
+            String bindId = getBindId();
+
+            if (bindId == null) {
+                throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
+            }
+            Writer writer = new StringWriter();
+            applyTemplate(element, executionContext, writer);
+            BeanAccessor.addBean(executionContext, bindId, writer.toString());
+        } else {
+            Writer writer = element.getWriter(this);
+            applyTemplate(element, executionContext, writer);
+        }
+    }
+
+    private void applyTemplate(SAXElement element, ExecutionContext executionContext, Writer writer) throws SmooksException {
         try {
-            if (getAction() == Action.BIND_TO) {
-                String bindId = getBindId();
-
-                if (bindId == null) {
-                    throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
-                }
-                Writer writer = new StringWriter();
-                applyTemplate(executionContext, writer);
-                BeanAccessor.addBean(executionContext, bindId, writer.toString());
-            } else {
-                Writer writer = element.getWriter(this);
-                applyTemplate(executionContext, writer);
-            }
+            Map beans = BeanAccessor.getBeanMap(executionContext);
+            template.process(beans, writer);
+            writer.flush();
         } catch (TemplateException e) {
-            logger.warn("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
-            return;
+            throw new SmooksException("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
         } catch (IOException e) {
-            logger.warn("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
-            return;
+            throw new SmooksException("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
         }
-    }
-
-    private void applyTemplate(ExecutionContext executionContext, Writer writer) throws TemplateException, IOException {
-        Map beans = BeanAccessor.getBeanMap(executionContext);
-        template.process(beans, writer);
     }
 
     private static class ContextClassLoaderTemplateLoader extends URLTemplateLoader {
