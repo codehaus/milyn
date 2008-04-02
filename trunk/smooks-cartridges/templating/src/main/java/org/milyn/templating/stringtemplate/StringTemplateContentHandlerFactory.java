@@ -66,6 +66,10 @@ import java.util.Map;
  *             Default "false".--&gt;
  *     &lt;param name="<b>applyTemplateBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
  *
+ *     &lt;!-- (Optional) The name of the {@link org.milyn.io.AbstractOutputStreamResource OutputStreamResource}
+ *             to which the result should be written. If set, the "action" param is ignored. --&gt;
+ *     &lt;param name="<b>outputStreamResource</b>"&gt;<i>xyzResource</i>&lt;/param&gt;
+ *
  *     &lt;!-- (Optional) Template encoding.
  *          Default "UTF-8".--&gt;
  *     &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
@@ -149,7 +153,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
             }
 
             // Process the templating action, supplying the templating result...
-            processTemplateAction(element, resultNode);
+            processTemplateAction(element, resultNode, executionContext);
         }
 	}
 }

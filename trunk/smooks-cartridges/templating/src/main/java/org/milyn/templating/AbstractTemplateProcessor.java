@@ -18,6 +18,7 @@ package org.milyn.templating;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -36,6 +37,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.transform.TransformerConfigurationException;
 import java.io.IOException;
+import java.io.Writer;
 import java.nio.charset.Charset;
 
 /**
@@ -71,6 +73,9 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String bindId;
+
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
+    private String outputStreamResource;
 
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         if(config.getResource() == null) {
@@ -110,16 +115,20 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
         return bindId;
     }
 
-    protected void processTemplateAction(Element element, Node templatingResult) {
+    public String getOutputStreamResource() {
+        return outputStreamResource;
+    }
+
+    protected void processTemplateAction(Element element, Node templatingResult, ExecutionContext executionContext) {
 		// REPLACE needs to be handled explicitly...
 		if(action == Action.REPLACE) {
             DomUtils.replaceNode(templatingResult, element);
         } else {
-    		_processTemplateAction(element, templatingResult, action);
+    		_processTemplateAction(element, templatingResult, action, executionContext);
         }
 	}
 
-	protected void processTemplateAction(Element element, NodeList templatingResultNodeList) {
+	protected void processTemplateAction(Element element, NodeList templatingResultNodeList, ExecutionContext executionContext) {
 		// If we're at the root element
 		if(element.getParentNode() instanceof Document) {
 			int count = templatingResultNodeList.getLength();
@@ -129,7 +138,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 			for(int i = 0; i < count; i++) {
 				Node node = templatingResultNodeList.item(0);
 				if(node.getNodeType() == Node.ELEMENT_NODE) {
-					processTemplateAction(element, node);
+					processTemplateAction(element, node, executionContext);
 					break;
 				}
 			}
@@ -137,25 +146,25 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 			// When we're not at the root element, REPLACE needs to be handled explicitly
 			// by performing a series of insert-befores, followed by a remove of the
 			// target element...
-			processTemplateAction(element, templatingResultNodeList, Action.INSERT_BEFORE);
+			processTemplateAction(element, templatingResultNodeList, Action.INSERT_BEFORE, executionContext);
 			element.getParentNode().removeChild(element);
         } else {
-			processTemplateAction(element, templatingResultNodeList, action);
+			processTemplateAction(element, templatingResultNodeList, action, executionContext);
         }
 	}
 
-	private void processTemplateAction(Element element, NodeList templatingResultNodeList, Action action) {
+	private void processTemplateAction(Element element, NodeList templatingResultNodeList, Action action, ExecutionContext executionContext) {
 		int count = templatingResultNodeList.getLength();
 		
 		// Iterate over the NodeList and filter each Node against the action.
 		for(int i = 0; i < count; i++) {
 			// We iterate over the list in this way because the nodes are auto removed from the
 			// the list as they are added/inserted elsewhere.
-			_processTemplateAction(element, templatingResultNodeList.item(0), action);
+			_processTemplateAction(element, templatingResultNodeList.item(0), action, executionContext);
 		}
 	}
 
-	private void _processTemplateAction(Element element, Node node, Action action) {
+	private void _processTemplateAction(Element element, Node node, Action action, ExecutionContext executionContext) {
         Node parent = element.getParentNode();
 
         // Can't insert before or after the root element...
@@ -163,39 +172,54 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
             logger.warn("Insert before/after root element not allowed.  Consider using the replace action!!");
             return;
         }
-        
-        if(action == Action.ADDTO) {
-            element.appendChild(node);
-        } else if(action == Action.INSERT_BEFORE) {
-            DomUtils.insertBefore(node, element);
-        } else if(action == Action.INSERT_AFTER) {
-            Node nextSibling = element.getNextSibling();
-            
-            if(nextSibling == null) {
-                // "element" is the last child of "parent" so just add to "parent".
-                parent.appendChild(node);
-            } else {
-                // insert before the "nextSibling" - Node doesn't have an "insertAfter" operation!
-                DomUtils.insertBefore(node, nextSibling);
+
+        String outputStreamResourceName = getOutputStreamResource();
+        if(outputStreamResourceName != null) {
+            Writer writer = AbstractOutputStreamResource.getOutputWriter(outputStreamResourceName, executionContext);
+            String text = extractTextContent(node, executionContext);
+            try {
+                writer.write(text);
+            } catch (IOException e) {
+                throw new SmooksException("Failed to write to output stream resource '" + outputStreamResourceName + "'.", e);
             }
-        } else if(action == Action.BIND_TO) {
-            if(bindId == null) {
-                throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
-            } else if(node.getNodeType() == Node.TEXT_NODE) {
-                ExecutionContext context = Filter.getCurrentExecutionContext();
-                BeanAccessor.addBean(context, bindId, node.getTextContent());
-            } else if(node.getNodeType() == Node.ELEMENT_NODE && ContextObjectSerializationUnit.isContextObjectElement((Element) node)) {
-                String contextKey = ContextObjectSerializationUnit.getContextKey((Element) node);
-                ExecutionContext context = Filter.getCurrentExecutionContext();
-                
-                BeanAccessor.addBean(context, bindId, context.getAttribute(contextKey));
-            } else {
-                throw new SmooksException("Unsupported 'bindTo' templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
+        } else {
+            if(action == Action.ADDTO) {
+                element.appendChild(node);
+            } else if(action == Action.INSERT_BEFORE) {
+                DomUtils.insertBefore(node, element);
+            } else if(action == Action.INSERT_AFTER) {
+                Node nextSibling = element.getNextSibling();
+
+                if(nextSibling == null) {
+                    // "element" is the last child of "parent" so just add to "parent".
+                    parent.appendChild(node);
+                } else {
+                    // insert before the "nextSibling" - Node doesn't have an "insertAfter" operation!
+                    DomUtils.insertBefore(node, nextSibling);
+                }
+            } else if(action == Action.BIND_TO) {
+                if(bindId == null) {
+                    throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
+                } else {
+                    String text = extractTextContent(node, executionContext);
+                    BeanAccessor.addBean(executionContext, bindId, text);
+                }
+            } else if(action == Action.REPLACE) {
+                // Don't perform any "replace" actions here!
             }
-        } else if(action == Action.REPLACE) {
-            // Don't perform any "replace" actions here!
         }
-	}
+    }
+
+    private String extractTextContent(Node node, ExecutionContext executionContext) {
+        if(node.getNodeType() == Node.TEXT_NODE) {
+            return node.getTextContent();
+        } else if(node.getNodeType() == Node.ELEMENT_NODE && ContextObjectSerializationUnit.isContextObjectElement((Element) node)) {
+            String contextKey = ContextObjectSerializationUnit.getContextKey((Element) node);
+            return (String) executionContext.getAttribute(contextKey);
+        } else {
+            throw new SmooksException("Unsupported 'bindTo' or toOutStream templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
+        }
+    }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         if(applyTemplateBefore) {

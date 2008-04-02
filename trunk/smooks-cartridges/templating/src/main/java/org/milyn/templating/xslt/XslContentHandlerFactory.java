@@ -86,6 +86,10 @@ import java.io.InputStreamReader;
  *             Default "false".--&gt;
  *     &lt;param name="<b>applyTemplateBefore</b>"&gt;<i>true/false</i>&lt;/param&gt;
  *
+ *     &lt;!-- (Optional) The name of the {@link org.milyn.io.AbstractOutputStreamResource OutputStreamResource}
+ *             to which the result should be written. If set, the "action" param is ignored. --&gt;
+ *     &lt;param name="<b>outputStreamResource</b>"&gt;<i>xyzResource</i>&lt;/param&gt;
+ *
  *     &lt;!-- (Optional) Template encoding.
  *          Default "UTF-8".--&gt;
  *     &lt;param name="<b>encoding</b>"&gt;<i>encoding</i>&lt;/param&gt;
@@ -274,17 +278,17 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
                 children = transRes.getChildNodes();
             }
 
-            if(getAction() == Action.BIND_TO) {
-                // For bindTo actions, we need to serialize the content and supply is as a Text DOM node.
+            if(getOutputStreamResource() != null || getAction() == Action.BIND_TO) {
+                // For bindTo or streamTo actions, we need to serialize the content and supply is as a Text DOM node.
                 // AbstractTemplateProcessor will look after the rest, by extracting the content from the
                 // Text node and attaching it to the ExecutionContext...
                 String serializedContent = XmlUtil.serialize(children);
                 Text textNode = element.getOwnerDocument().createTextNode(serializedContent);
 
-                processTemplateAction(element, textNode);
+                processTemplateAction(element, textNode, executionContext);
             } else {
                 // Process the templating action, supplying the templating result...
-                processTemplateAction(element, children);
+                processTemplateAction(element, children, executionContext);
             }
         }
 
