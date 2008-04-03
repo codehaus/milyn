@@ -110,7 +110,7 @@ public class FileOutputStreamResourceTest
 		config.setParameter( "resourceName", resourceName );
 		config.setParameter( "fileNamePattern", fileName );
 		config.setParameter( "destinationDirectory", destinationDirectory );
-		config.setParameter( "listFileName", listFileName );
+		config.setParameter( "listFileNamePattern", listFileName );
 		return config;
 	}
 	
