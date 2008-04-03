@@ -136,7 +136,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
         if( resourceIOObj == null ) 
         {
             AbstractOutputStreamResource resource = (AbstractOutputStreamResource) executionContext.getAttribute( RESOURCE_CONTEXT_KEY_PREFIX + resourceName );
-            OutputStream outputStream = openOutputStream(resource, executionContext);
+            OutputStream outputStream = openOutputStream(resource, resourceName, executionContext);
 
             executionContext.setAttribute( resourceKey, outputStream );
             return outputStream;
@@ -168,7 +168,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
 
         if( resourceIOObj == null ) {
             AbstractOutputStreamResource resource = (AbstractOutputStreamResource) executionContext.getAttribute( RESOURCE_CONTEXT_KEY_PREFIX + resourceName );
-            OutputStream outputStream = openOutputStream(resource, executionContext);
+            OutputStream outputStream = openOutputStream(resource, resourceName, executionContext);
             Writer outputStreamWriter = new OutputStreamWriter(outputStream, resource.getWriterEncoding());
             
             executionContext.setAttribute( resourceKey, outputStreamWriter );
@@ -184,10 +184,10 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
         }
     }
 
-    private static OutputStream openOutputStream(AbstractOutputStreamResource resource, ExecutionContext executionContext) {
+    private static OutputStream openOutputStream(AbstractOutputStreamResource resource, String resourceName, ExecutionContext executionContext) {
         if( resource == null )
         {
-            throw new SmooksException( "OutputResource '" + resource.getResourceName() + "' not bound to context.  Configure an '" + AbstractOutputStreamResource.class.getName() +  "' implementation." );
+            throw new SmooksException( "OutputResource '" + resourceName + "' not bound to context.  Configure an '" + AbstractOutputStreamResource.class.getName() +  "' implementation, or change resource ordering." );
         }
 
         try
