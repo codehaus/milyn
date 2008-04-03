@@ -13,24 +13,35 @@
     <!--
     Create an "example.beans.Order" bean instance when we visit the start of the <order> element.
     Assign the new bean instance to the beanId of "order".
+    Target the to be created Header bean under the beanId "header" via the ${header} bean binding. 
+    As soon as this bean is created it will be set on this bean instance.
+    Target the to be created ArrayList instance under the beanId "orderItems" via the ${orderItems} bean binding. 
+    As soon as this list is created it will be set on this bean instance.
     -->
     <resource-config selector="order">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">order</param>
         <param name="beanClass">example.model.Order</param>
+        <param name="bindings">
+        	<binding property="header" selector="${header}" />
+        	<binding property="orderItems" selector="${orderItems}" />
+        </param>
     </resource-config>
 
     <!--
     Create an "example.beans.Header" bean instance when we visit the start of the <order> element.
     Note, we're creating this bean instance before we encounter the actual <header> element.
-    Set the new bean instance on the "order" bean.
+    This bean is set on the on the previous declared Order bean as soon as it is created, because
+    it is target by that bean via a bean binding.
+    Target the to be created Customer instance under the beanId "customer" via the ${customer} bean binding. 
+    As soon as this bean is created it will be set on this bean instance.
     -->
     <resource-config selector="order">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">example.model.Header</param>
-        <param name="setOn">order</param>
         <param name="bindings">
             <!-- Header bindings... -->
+            <binding property="customer" selector="${customer}" />
             <binding property="orderId" selector="header order-id" />
             <binding property="orderStatus" type="Long" selector="header status-code" />
             <binding property="netAmount" type="BigDecimal" selector="header net-amount" />
@@ -43,12 +54,12 @@
     <!--
     Create an "example.beans.Customer" bean instance when we visit the start of the
     <customer-details> element. 
-    Set the new bean instance on the "header" bean.
+	This bean is set on the on the previous declared Header bean as soon as it is created, because
+    it is target by that bean via a bean binding.
     -->
     <resource-config selector="customer-details">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">example.model.Customer</param>
-        <param name="setOn">header</param>
         <param name="bindings">
             <!-- Customer bindings... -->
             <binding property="userName" selector="customer-details username" />
@@ -57,17 +68,31 @@
             <binding property="state" selector="customer-details state" />
         </param>
     </resource-config>
-
+	
+	<!-- 
+	Create an ArrayList when we visit the start of the <order> element.
+	This list is set on the on the previous declared Order bean as soon as it is created, because
+    it is target by that bean via a bean binding.
+	Target the to be created OrderItem beans under the beanId "orderItem" via the ${orderItem} bean binding. 
+    As soon as these beans are created they will be added to this list.
+	 -->
+	<resource-config selector="order">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanClass">java.util.ArrayList</param>
+        <param name="beanId">orderItems</param>
+        <param name="bindings">
+        	<binding selector="${orderItem}" />	
+        </param>
+	</resource-config>
+	
     <!--
     Create an "example.beans.OrderItem" bean instance when we visit the start of the <order-item> element.
-    Add the OrderItem instances to a list (because there are potentially many of them on an order).
-    Set the OrderItem list on the "order" bean.
+    This bean is add to the on the previous declared ArrayList as soon as it is created, because
+    it is target by that ArrayList via a bean binding.
     -->
     <resource-config selector="order-item">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanClass">example.model.OrderItem</param>
-        <param name="addToList">true</param>
-        <param name="setOn">order</param>
         <param name="bindings">
             <!-- OrderItem bindings... -->
             <binding property="quantity" type="Integer" selector="order-item quantity" />
