@@ -26,7 +26,7 @@ import java.io.IOException;
  *		&lt;/order-item&gt;
  *	&lt;/order-items&gt;
  *&lt;order&gt;
- * <pre>
+ * </pre>
  * The number of order-items is controlled by the 'nrOfOrderRows' argument.
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
@@ -88,12 +88,10 @@ public class InputOrderGenerator
 		{
     		return fileLength / 1024 + " KB";
 		}
-		else if ( digits >= 7 && digits <= 9 )
+		else 
 		{
     		return fileLength / (1024 * 1024 ) + " MB";
 		}
-		else
-    		return fileLength / (1024 * 1024 * 1024 ) + " GB";
 	}
 	
 	private static void deleteFile( final File file ) throws IOException
