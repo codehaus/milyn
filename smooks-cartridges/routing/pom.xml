@@ -17,6 +17,11 @@
             <artifactId>milyn-smooks-javabean</artifactId>
             <version>${milyn.smooks.javabean.version}</version>
         </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-templating</artifactId>
+            <version>${milyn.smooks.templating.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>com.mockrunner</groupId>
 			<artifactId>mockrunner-jdk1.5-j2ee1.3</artifactId>

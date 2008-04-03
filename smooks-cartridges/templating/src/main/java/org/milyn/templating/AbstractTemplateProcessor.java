@@ -121,7 +121,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 
     protected void processTemplateAction(Element element, Node templatingResult, ExecutionContext executionContext) {
 		// REPLACE needs to be handled explicitly...
-		if(action == Action.REPLACE) {
+		if(getOutputStreamResource() == null && action == Action.REPLACE) {
             DomUtils.replaceNode(templatingResult, element);
         } else {
     		_processTemplateAction(element, templatingResult, action, executionContext);

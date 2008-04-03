@@ -161,39 +161,28 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-    	visitBefore(executionContext);
+        if(beanBinding) {
+        	bindBeanValue(executionContext);
+        } else if(isAttribute) {
+            // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
+            bindDomDataValue(element, executionContext);
+        }
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-    	if(!beanBinding) {
-
-	    	String dataString;
-
-	        if (isAttribute) {
-	            dataString = element.getAttribute(valueAttributeName);
-	        } else {
-	            dataString = DomUtils.getAllText(element, false);
-	        }
-
-	        String mapPropertyName;
-	        if(mapKeyAttribute != null) {
-	            mapPropertyName = DomUtils.getAttributeValue(element, mapKeyAttribute);
-	            if(mapPropertyName == null) {
-	                mapPropertyName = DomUtils.getName(element);
-	            }
-	        } else if(property != null) {
-	            mapPropertyName = property;
-	        } else {
-	            mapPropertyName = DomUtils.getName(element);
-	        }
-	        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+    	if(!beanBinding && !isAttribute) {
+            bindDomDataValue(element, executionContext);
     	}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    	visitBefore(executionContext);
-    	if(!beanBinding && !isAttribute) {
+        if(beanBinding) {
+        	bindBeanValue(executionContext);
+        } else if(!beanBinding && !isAttribute) {
             element.setCache(new StringWriter());
+        } else if(isAttribute) {
+            // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
+            bindSaxDataValue(element, executionContext);
         }
     }
 
@@ -207,72 +196,93 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    	if(!beanBinding) {
-    		String dataString;
-
-	        if (isAttribute) {
-	            dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
-	        } else {
-	            dataString = element.getCache().toString();
-	        }
-
-	        String mapPropertyName;
-	        if(mapKeyAttribute != null) {
-	            mapPropertyName = SAXUtil.getAttribute(mapKeyAttribute, element.getAttributes(), null);
-	            if(mapPropertyName == null) {
-	                mapPropertyName = element.getName().getLocalPart();
-	            }
-	        } else if(property != null) {
-	            mapPropertyName = property;
-	        } else {
-	            mapPropertyName = element.getName().getLocalPart();
-	        }
-
-	        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+    	if(!beanBinding && !isAttribute) {
+            bindSaxDataValue(element, executionContext);
     	}
     }
 
+    private void bindDomDataValue(Element element, ExecutionContext executionContext) {
+        String dataString;
 
-	private void visitBefore(ExecutionContext executionContext) {
-    	if(beanBinding) {
-    		Object bean = BeanAccessor.getBean(executionContext, bindBeanId);
-    		if(bean == null) {
+        if (isAttribute) {
+            dataString = element.getAttribute(valueAttributeName);
+        } else {
+            dataString = DomUtils.getAllText(element, false);
+        }
 
-    			// Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
-    			// we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
-    			// and not the list representation. So we register and observer wo looks for the change from the list to the array
-    			BeanAccessor.addBeanLifecycleObserver(executionContext, bindBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
+        String mapPropertyName;
+        if(mapKeyAttribute != null) {
+            mapPropertyName = DomUtils.getAttributeValue(element, mapKeyAttribute);
+            if(mapPropertyName == null) {
+                mapPropertyName = DomUtils.getName(element);
+            }
+        } else if(property != null) {
+            mapPropertyName = property;
+        } else {
+            mapPropertyName = DomUtils.getName(element);
+        }
+        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+    }
 
-    				public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
+    private void bindSaxDataValue(SAXElement element, ExecutionContext executionContext) {
+        String dataString;
 
-    					Classification selectedBeanType = getSelectedBeanRuntimeInfo().getClassification();
+        if (isAttribute) {
+            dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
+        } else {
+            dataString = element.getCache().toString();
+        }
 
-						BeanAccessor.associateLifecycles(executionContext, beanId, targetBeanId);
+        String mapPropertyName;
+        if(mapKeyAttribute != null) {
+            mapPropertyName = SAXUtil.getAttribute(mapKeyAttribute, element.getAttributes(), null);
+            if(mapPropertyName == null) {
+                mapPropertyName = element.getName().getLocalPart();
+            }
+        } else if(property != null) {
+            mapPropertyName = property;
+        } else {
+            mapPropertyName = element.getName().getLocalPart();
+        }
 
-						if(selectedBeanType == Classification.ARRAY_COLLECTION ) {
+        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+    }
 
-							// Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
-							// can then set this array
-							BeanAccessor.addBeanLifecycleObserver(executionContext, targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanLifecycleObserver() {
-								public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
+    private void bindBeanValue(ExecutionContext executionContext) {
+        Object bean = BeanAccessor.getBean(executionContext, bindBeanId);
+        if(bean == null) {
 
-									populateAndSetPropertyValue(property, bean, executionContext);
+            // Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
+            // we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
+            // and not the list representation. So we register and observer wo looks for the change from the list to the array
+            BeanAccessor.addBeanLifecycleObserver(executionContext, bindBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
 
-								}
-							});
+                public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
-						} else {
-							populateAndSetPropertyValue(property, bean, executionContext);
-						}
-    				}
+                    Classification selectedBeanType = getSelectedBeanRuntimeInfo().getClassification();
 
-    			});
+                    BeanAccessor.associateLifecycles(executionContext, beanId, targetBeanId);
 
-    			
-    		} else {
-    			populateAndSetPropertyValue(property, bean, executionContext);
-    		}
-    	}
+                    if(selectedBeanType == Classification.ARRAY_COLLECTION ) {
+
+                        // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
+                        // can then set this array
+                        BeanAccessor.addBeanLifecycleObserver(executionContext, targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanLifecycleObserver() {
+                            public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
+
+                                populateAndSetPropertyValue(property, bean, executionContext);
+
+                            }
+                        });
+
+                    } else {
+                        populateAndSetPropertyValue(property, bean, executionContext);
+                    }
+                }
+            });
+        } else {
+            populateAndSetPropertyValue(property, bean, executionContext);
+        }
 	}
 
 
