@@ -27,7 +27,11 @@
 
     <target name="run-assemble">
         <exec dir="../../" executable="${mvnexec}">
-            <arg line="clean install javadoc:javadoc"/>
+            <arg line="clean install"/>
+        </exec>
+
+        <exec dir="../../" executable="${mvnexec}">
+            <arg line="javadoc:javadoc"/>
         </exec>
 
         <exec dir="../../" executable="${mvnexec}">
