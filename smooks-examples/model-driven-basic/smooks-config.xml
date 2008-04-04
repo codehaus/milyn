@@ -17,6 +17,7 @@
         <param name="beanClass">example.model.ShippingHistory</param>
         <param name="bindings">
             <!-- Bindings. Note the "special" decoder for the trackingNumbers - see next config! -->
+            <binding property="warehouse" selector="${warehouse}"/>
             <binding property="creationDate" type="Date" selector="header date" />
             <binding property="trackingNumbers" type="TrackingNumberHistory" selector="history trackingNumbers" />
         </param>
@@ -37,7 +38,6 @@
     <resource-config selector="history">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">warehouse</param>
-        <param name="setOn">history</param>
         <param name="beanClass">example.model.Warehouse</param>
         <param name="bindings">
             <!-- Bindings. -->
