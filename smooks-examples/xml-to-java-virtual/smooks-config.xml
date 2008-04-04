@@ -9,6 +9,10 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">order</param>
         <param name="beanClass">java.util.HashMap</param>
+        <param name="bindings">
+        	<binding name="header" selector="${header}" />
+        	<binding name="orderItems" selector="${orderItems}" />
+        </param>
     </resource-config>
 
     <!--
@@ -19,7 +23,9 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">orderItems</param>
         <param name="beanClass">java.util.ArrayList</param>
-        <param name="setOn">order</param>
+        <param name="bindings">
+        	<binding selector="${orderItem}" />
+        </param>
     </resource-config>
 
     <!--
@@ -30,7 +36,6 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">header</param>
         <param name="beanClass">java.util.HashMap</param>
-        <param name="setOn">order</param>
         <param name="bindings">
             <!-- Header bindings... -->
             <binding property="date" type="OrderDateLong" selector="header date" />
@@ -45,8 +50,8 @@
     -->
     <resource-config selector="order-item">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">orderItem</param>
         <param name="beanClass">java.util.HashMap</param>
-        <param name="setOn">orderItems</param>
         <param name="bindings">
             <!-- OrderItem bindings... -->
             <binding property="productId" type="Long" selector="order-item product" />
