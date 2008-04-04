@@ -24,7 +24,6 @@ import java.lang.annotation.*;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public abstract @interface VisitAfterReport {
