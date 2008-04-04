@@ -10,6 +10,7 @@
         <param name="beanId">lineOrder</param>
         <param name="beanClass">example.trgmodel.LineOrder</param>
         <param name="bindings">
+        	<binding property="lineItems" selector="${lineItems}" />
             <binding property="customerId" selector="header customerNumber" />
             <binding property="customerName" selector="header customerName" />
         </param>
@@ -19,14 +20,15 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">lineItems</param>
         <param name="beanClass">example.trgmodel.LineItem[]</param>
-        <param name="setOn">lineOrder</param>
+        <param name="bindings">
+            <binding selector="${lineItem}" />
+        </param>
     </resource-config>
 
     <resource-config selector="example.srcmodel.OrderItem">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">lineItem</param>
         <param name="beanClass">example.trgmodel.LineItem</param>
-        <param name="setOn">lineItems</param>
         <param name="bindings">
             <binding property="productCode" selector="example.srcmodel.OrderItem productId" />
             <binding property="unitQuantity" type="Integer" selector="example.srcmodel.OrderItem quantity" />
