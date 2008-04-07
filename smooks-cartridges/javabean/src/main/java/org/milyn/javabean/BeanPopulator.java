@@ -95,6 +95,10 @@ import org.w3c.dom.NodeList;
  *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanId"&gt;<b><u>order</u></b>&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Order</b>&lt;/param&gt;
+ *         &lt;param name="bindings"&gt;
+ *             &lt;binding property="header" selector="${header}" /&gt; &lt;-- Wire the header bean to the header property. See header configuration below... --&gt;
+ *             &lt;binding property="orderItems" selector="${orderItems}" /&gt; &lt;-- Wire the orderItems ArrayList to the orderItems property. See orderItems configuration below... --&gt;             
+ *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
  *     &lt;-- Create a List for the OrderItem instances when we encounter the "order" element.
@@ -103,16 +107,17 @@ import org.w3c.dom.NodeList;
  *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanId"&gt;<b><u>orderItems</u></b>&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>{@link ArrayList java.util.ArrayList}</b>&lt;/param&gt;
- *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt;
+ *         &lt;param name="bindings"&gt;
+ *             &lt;binding selector="${orderItem}" /&gt; &lt;-- Wire the orderItem to this ArrayList. See order-item configuration below... --&gt;
+ *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
  *     &lt;-- Create the Header bean instance when we encounter the "header" element.
- *            Call it "header" and set it on the "order" bean... --&gt;
+ *            Call it "header" --&gt;
  *     &lt;resource-config selector="header"&gt;
  *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanId"&gt;<b><u>header</u></b>&lt;/param&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Header</b>&lt;/param&gt;
- *         &lt;param name="setOn"&gt;<b><u>order</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;-- Header bindings... --&gt;
  *             &lt;binding property="date" type="OrderDateLong" selector="header date" /&gt; &lt;-- See OrderDateLong decoder definition below... --&gt;
@@ -126,7 +131,6 @@ import org.w3c.dom.NodeList;
  *     &lt;resource-config selector="order-item"&gt;
  *         &lt;resource&gt;org.milyn.javabean.BeanPopulator&lt;/resource&gt;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.OrderItem</b>&lt;/param&gt;
- *         &lt;param name="setOn"&gt;<b><u>orderItems</u></b>&lt;/param&gt; &lt;-- Set bean on Order --&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;-- OrderItem bindings... --&gt;
  *             &lt;binding property="productId" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="order-item product" /&gt;
