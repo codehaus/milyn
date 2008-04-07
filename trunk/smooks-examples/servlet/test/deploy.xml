@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="deploy" name="Deploy" basedir="./">
 
-    <property file="deploy.properties"/>
     <property name="appname" value="smooks-test"/>
 
     <target name="deploy">
