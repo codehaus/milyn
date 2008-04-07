@@ -55,11 +55,11 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
-@VisitBeforeReport(condition = "parameters.containsKey('bindBeanId')",
-        summary = "Create bean lifecycle observer for bean <b>${resource.parameters.bindBeanId!'undefined'}</b>.",
+@VisitBeforeReport(condition = "parameters.containsKey('wireBeanId')",
+        summary = "Create bean lifecycle observer for bean <b>${resource.parameters.wireBeanId!'undefined'}</b>.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_Before.html")
-@VisitAfterReport(condition = "!parameters.containsKey('bindBeanId')",
-        summary = "Populating <b>${resource.parameters.beanId}</b> with a value from this element.",
+@VisitAfterReport(condition = "!parameters.containsKey('wireBeanId')",
+        summary = "Populating <b>${resource.parameters.wireBeanId}</b> with a value from this element.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
 public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor {
 
@@ -71,7 +71,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String beanId;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private String bindBeanId;
+    private String wireBeanId;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -100,7 +100,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private DataDecoder decoder;
     private String mapKeyAttribute;
 
-    private boolean beanBinding;
+    private boolean beanWiring;
 
     /**
      * Set the resource configuration on the bean populator.
@@ -111,13 +111,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	buildId();
 
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
-        beanBinding = bindBeanId != null;
+        beanWiring = wireBeanId != null;
         isAttribute = (valueAttributeName != null);
 
 
         if (setterMethod == null && property == null ) {
-        	if(beanBinding && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
-        		property = bindBeanId;
+        	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+        		property = wireBeanId;
         	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
         		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
                     "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
@@ -152,16 +152,16 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     				 .append(setterMethod)
     				 .append("()");
     	}
-    	if(bindBeanId != null) {
+    	if(wireBeanId != null) {
     		idBuilder.append("#")
-    				.append(bindBeanId);
+    				.append(wireBeanId);
     	}
 
     	id = idBuilder.toString();
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        if(beanBinding) {
+        if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
@@ -170,15 +170,15 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-    	if(!beanBinding && !isAttribute) {
+    	if(!beanWiring && !isAttribute) {
             bindDomDataValue(element, executionContext);
     	}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        if(beanBinding) {
+        if(beanWiring) {
         	bindBeanValue(executionContext);
-        } else if(!beanBinding && !isAttribute) {
+        } else if(!beanWiring && !isAttribute) {
             element.setCache(new StringWriter());
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
@@ -187,7 +187,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-        if(!beanBinding && !isAttribute) {
+        if(!beanWiring && !isAttribute) {
             childText.toWriter((Writer) element.getCache());
         }
     }
@@ -196,7 +196,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    	if(!beanBinding && !isAttribute) {
+    	if(!beanWiring && !isAttribute) {
             bindSaxDataValue(element, executionContext);
     	}
     }
@@ -249,13 +249,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     private void bindBeanValue(ExecutionContext executionContext) {
-        Object bean = BeanAccessor.getBean(executionContext, bindBeanId);
+        Object bean = BeanAccessor.getBean(executionContext, wireBeanId);
         if(bean == null) {
 
             // Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
             // we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
             // and not the list representation. So we register and observer wo looks for the change from the list to the array
-            BeanAccessor.addBeanLifecycleObserver(executionContext, bindBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
+            BeanAccessor.addBeanLifecycleObserver(executionContext, wireBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
 
                 public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
@@ -388,7 +388,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
 	private BeanRuntimeInfo getSelectedBeanRuntimeInfo() {
 		if(selectedBeanRuntimeInfo == null) {
-			selectedBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(bindBeanId, appContext);
+			selectedBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(wireBeanId, appContext);
 		}
 		return selectedBeanRuntimeInfo;
 	}

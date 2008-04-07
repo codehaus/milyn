@@ -266,7 +266,7 @@ public class BeanPopulator implements ConfigurationExpander {
         String setterMethod;
         String type;
         String defaultVal;
-        String bindBeanId = null;
+        String wireBeanId = null;
 
         // Make sure there's both 'selector' and 'property' attributes...
         selector = getSelectorAttr(bindingConfig);
@@ -275,7 +275,7 @@ public class BeanPopulator implements ConfigurationExpander {
         //BeanInstanceCreator is called on that node instead of one off the child nodes.
         //The targetBeanId indicates the beanId that should be selected
         if(selector.startsWith("${") && selector.endsWith("}")) {
-        	bindBeanId = selector.substring(2, selector.length() - 1);
+        	wireBeanId = selector.substring(2, selector.length() - 1);
         	selector = config.getSelector();
         }
 
@@ -292,8 +292,8 @@ public class BeanPopulator implements ConfigurationExpander {
         resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
         resourceConfig.setParameter("beanId", beanId);
 
-        if(bindBeanId != null) {
-            resourceConfig.setParameter("bindBeanId", bindBeanId);
+        if(wireBeanId != null) {
+            resourceConfig.setParameter("wireBeanId", wireBeanId);
         }
 
         if(setterMethod != null) {
@@ -311,7 +311,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         type = DomUtils.getAttributeValue(bindingConfig, "type");
         defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
-        if(bindBeanId == null ) {
+        if(wireBeanId == null ) {
         	// Set the data type...
         	resourceConfig.setParameter("type", (type != null?type:"String"));
 
