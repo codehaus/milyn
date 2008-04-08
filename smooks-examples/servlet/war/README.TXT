@@ -26,8 +26,6 @@ How to Run?
         2. Maven 2.x (http://maven.apache.org/download.html)
 
     Running:
-        1. "mvn clean install"
-        2. Deploy the webapp (target/milyn-smooks-example-servlet-1.0.war) to your
-           Servlet Container.
-        3. Open a Firefox browser and browse to http://<server>/milyn-smooks-example-servlet-1.0/
-        4. Open an Internet Explorer browser and browse to http://<server>/milyn-smooks-example-servlet-1.0/
+        1. "mvn clean install tomcat:run"
+        3. Open a Firefox browser and browse to http://localhost:8080/example-servlet/
+        4. Open an Internet Explorer browser and browse to http://localhost:8080/example-servlet/
