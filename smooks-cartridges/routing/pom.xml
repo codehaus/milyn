@@ -73,6 +73,15 @@
             <version>1.8.0.7</version>
             <scope>test</scope>
         </dependency>
+        
+		<!--  Fix for broken mockrunner pom -->
+		<dependency>
+			<groupId>org.mockejb</groupId>
+			<artifactId>mockejb</artifactId>
+			<version>0.6-beta2</version>
+		</dependency>
+		<!-- /Fix -->
+		
     </dependencies>
 
 
