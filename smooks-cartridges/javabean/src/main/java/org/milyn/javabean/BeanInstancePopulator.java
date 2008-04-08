@@ -59,7 +59,7 @@ import org.w3c.dom.Element;
         summary = "Create bean lifecycle observer for bean <b>${resource.parameters.wireBeanId!'undefined'}</b>.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_Before.html")
 @VisitAfterReport(condition = "!parameters.containsKey('wireBeanId')",
-        summary = "Populating <b>${resource.parameters.wireBeanId}</b> with a value from this element.",
+        summary = "Populating <b>${resource.parameters.beanId}</b> with a value from this element.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
 public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor {
 

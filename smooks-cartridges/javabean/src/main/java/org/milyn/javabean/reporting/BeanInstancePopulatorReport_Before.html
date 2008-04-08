@@ -1,7 +1,7 @@
-<#if resource.parameters.bindBeanId??>
+<#if resource.parameters.wireBeanId??>
     <#if resource.parameters.property??>
-        Created lifecycle association for binding bean <b>${resource.parameters.bindBeanId}</b> onto property <b>${resource.parameters.property}</b> of bean <b>${resource.parameters.beanId}</b>.  Actual binding occurs later!
+        Created lifecycle association for binding bean <b>${resource.parameters.wireBeanId}</b> onto property <b>${resource.parameters.property}</b> of bean <b>${resource.parameters.beanId}</b>.  Actual binding occurs later!
     <#else>
-        Creating lifecycle association for binding bean <b>${resource.parameters.bindBeanId}</b> of bean <b>${resource.parameters.beanId}</b>.  Actual binding occurs later!
+        Creating lifecycle association for binding bean <b>${resource.parameters.wireBeanId}</b> of bean <b>${resource.parameters.beanId}</b>.  Actual binding occurs later!
     </#if>
 </#if>
