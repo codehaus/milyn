@@ -25,7 +25,6 @@ public class Order implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private int orderId;
 	private Header header;
     private List<OrderItem> orderItems;
 
@@ -50,18 +49,7 @@ public class Order implements Serializable {
 
     public String toString()
     {
-    	return "[Order orderId : " + orderId + ", " + header + ", " + orderItems + "]";
+    	return "[Order header: " +header + ", " + orderItems + "]";
     }
 
-
-	public int getOrderId()
-	{
-		return orderId;
-	}
-
-
-	public void setOrderId( int orderId )
-	{
-		this.orderId = orderId;
-	}
 }
