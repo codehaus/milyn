@@ -138,42 +138,7 @@ public class BeanAccessor {
         return accessor.beans;
     }
 
-    private static BeanAccessor getAccessor(ExecutionContext executionContext) {
-        BeanAccessor accessor = (BeanAccessor) executionContext.getAttribute(CONTEXT_KEY);
-
-        if(accessor == null) {
-            Result result = FilterResult.getResult(executionContext);
-            Source source = FilterSource.getSource(executionContext);
-            Map<String, Object> beanMap = null;
-
-            if(result instanceof JavaResult) {
-                JavaResult javaResult = (JavaResult) result;
-                beanMap = javaResult.getResultMap();
-            }
-            if(source instanceof JavaSource) {
-                JavaSource javaSource = (JavaSource) source;
-                Map<String, Object> sourceBeans = javaSource.getBeans();
-
-                if(sourceBeans != null) {
-                    if(beanMap != null) {
-                        beanMap.putAll(sourceBeans);
-                    } else {
-                        beanMap = sourceBeans;
-                    }
-                }
-            }
-
-            if(beanMap != null) {
-                accessor = new BeanAccessor(executionContext, beanMap);
-            } else {
-                accessor = new BeanAccessor(executionContext);
-            }
-
-            executionContext.setAttribute(CONTEXT_KEY, accessor);
-        }
-
-        return accessor;
-    }
+    
 
     /**
      * Add a bean instance to the specified request under the specified beanId.
@@ -352,6 +317,43 @@ public class BeanAccessor {
     	return beans.toString();
     }
 
+    private static BeanAccessor getAccessor(ExecutionContext executionContext) {
+        BeanAccessor accessor = (BeanAccessor) executionContext.getAttribute(CONTEXT_KEY);
+
+        if(accessor == null) {
+            Result result = FilterResult.getResult(executionContext);
+            Source source = FilterSource.getSource(executionContext);
+            Map<String, Object> beanMap = null;
+
+            if(result instanceof JavaResult) {
+                JavaResult javaResult = (JavaResult) result;
+                beanMap = javaResult.getResultMap();
+            }
+            if(source instanceof JavaSource) {
+                JavaSource javaSource = (JavaSource) source;
+                Map<String, Object> sourceBeans = javaSource.getBeans();
+
+                if(sourceBeans != null) {
+                    if(beanMap != null) {
+                        beanMap.putAll(sourceBeans);
+                    } else {
+                        beanMap = sourceBeans;
+                    }
+                }
+            }
+
+            if(beanMap != null) {
+                accessor = new BeanAccessor(executionContext, beanMap);
+            } else {
+                accessor = new BeanAccessor(executionContext);
+            }
+
+            executionContext.setAttribute(CONTEXT_KEY, accessor);
+        }
+
+        return accessor;
+    }
+    
     private void cleanAssociatedLifecycleBeans(String parentBean) {
 
     	List<String> associations = lifecycleAssociations.get(parentBean);
@@ -372,9 +374,7 @@ public class BeanAccessor {
     	beans.remove(beanId);
     }
 
-	/**
-	 * @return
-	 */
+	
 	private Set<String> getRootLifecycleAssociations() {
 		Set<String> rootParents = new HashSet<String>();
 		for(String parent : lifecycleAssociations.keySet()) {
@@ -394,8 +394,6 @@ public class BeanAccessor {
 		return rootParents;
 	}
     
-    
-    
     private void associateLifecycles(String parentBean, String childBean) {
     	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
     	AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
@@ -412,7 +410,6 @@ public class BeanAccessor {
             lifecycleAssociations.put(parentBean, associations);
         }
     }
-
 
     private void addBeanLifecycleObserver(String beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
     	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
