@@ -35,7 +35,7 @@
     </resource-config>
 
     <resource-config selector="order-item">
-        <resource>/org/milyn/routing/file/orderitem-split.ftl</resource>
+        <resource>target/classes/orderitem-split.ftl</resource>
         <param name="outputStreamResource">orderItemSplitStream</param>
     </resource-config>
 

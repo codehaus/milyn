@@ -98,7 +98,6 @@ public class Main
             for (String fileName : fileNames)
     		{
                 System.out.println( "fileName :  [" + fileName + "]" );
-                System.out.println( "Contents : " + new ObjectInputStream( new FileInputStream( fileName ) ).readObject() );
     		}
 		}
     }

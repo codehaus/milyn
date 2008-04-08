@@ -51,18 +51,16 @@ public class InputOrderGenerator
 		File file = new File ( fileName );
 		deleteFile( file );
 		FileWriter writer = new FileWriter( file, true );
-		writer.write( "<order>" + LINE_SEP );
-		writer.write( "<orderId>99</orderId>" + LINE_SEP );
+		writer.write( "<order id='332'>" + LINE_SEP );
 		writer.write( "<header>" + LINE_SEP);
-		writer.write( "<date>Wed Nov 15 13:45:28 EST 2006</date>" + LINE_SEP );
 		writer.write( "<customer number=\"123\">Joe</customer>" + LINE_SEP );
 		writer.write( "</header>" + LINE_SEP);
 		writer.flush();
 		writer.write( "<order-items>" + LINE_SEP );
 		System.out.print("Generating " + file.getName() + "...");
-		for ( int i = 1 ; i < nrOfOrderItems ; i ++ )
+		for ( int i = 1 ; i <= nrOfOrderItems ; i ++ )
 		{
-    		writer.write( "<order-item>" + LINE_SEP );
+    		writer.write( "<order-item id='" + i + "'>" + LINE_SEP );
     		writer.write( "<product>" + i + "</product>" + LINE_SEP );
     		writer.write( "<quantity>2</quantity>" + LINE_SEP );
     		writer.write( "<price>8.80</price>" + LINE_SEP );
