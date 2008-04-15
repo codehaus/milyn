@@ -37,5 +37,9 @@ public class DollarBraceDecoderTest  extends TestCase {
         assertEquals("aaa?aaa", DollarBraceDecoder.replaceTokens("aaa${x}aaa", "?"));
         assertEquals("aaa?a?aa", DollarBraceDecoder.replaceTokens("aaa${x}a${x}aa", "?"));
         assertEquals("aaa?a?a?a", DollarBraceDecoder.replaceTokens("aaa${x}a${x}a${y}a", "?"));
+        assertEquals("test-?.txt", DollarBraceDecoder.replaceTokens( "test-${currentDate.date?string('yyyy')}.txt", "?"));
+        assertEquals("test-?.txt", DollarBraceDecoder.replaceTokens( "test-${currentDate.date?string('yyyy-MM-dd-HH-mm-sss')}.txt", "?"));
+        assertEquals("test-?.txt", DollarBraceDecoder.replaceTokens( "test-${currentDate.date?string(\"yyyy-MM-dd-HH-mm-sss\")}.txt", "?"));
     }
+    
 }
