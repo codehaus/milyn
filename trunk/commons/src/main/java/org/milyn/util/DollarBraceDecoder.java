@@ -27,7 +27,7 @@ import java.util.ArrayList;
  */
 public class DollarBraceDecoder {
 
-    public static final String PATTERN = "\\$\\{[.\\w]+\\}";
+    public static final String PATTERN = "\\$\\{[.\\w\\?(\\(['\"].[\\w-]['\"]\\))]+\\}";
     private static final Pattern pattern = Pattern.compile(PATTERN);
 
     /**
