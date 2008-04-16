@@ -1,1 +1,1 @@
-call mvn clean project-info-reports:dependencies assembly:assembly
+call mvn clean package

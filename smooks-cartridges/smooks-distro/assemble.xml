@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="assemble" name="Assembly">
 
-    <property name="version" value="smooks-1.0-SNAPSHOT"/>
+    <property name="version" value="smooks-1.0"/>
     <property name="targetdir" value="target/${version}"/>
 
     <target name="assemble">

@@ -92,7 +92,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private ApplicationContext appContext;
 
     private BeanRuntimeInfo beanRuntimeInfo;
-    private BeanRuntimeInfo selectedBeanRuntimeInfo;
+    private BeanRuntimeInfo wiredBeanRuntimeInfo;
 
     private Method propertySetterMethod;
     private boolean checkedForSetterMethod;
@@ -259,11 +259,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
                 public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
-                    Classification selectedBeanType = getSelectedBeanRuntimeInfo().getClassification();
+                    Classification wiredBeanType = getWiredBeanRuntimeInfo().getClassification();
 
                     BeanAccessor.associateLifecycles(executionContext, beanId, targetBeanId);
 
-                    if(selectedBeanType == Classification.ARRAY_COLLECTION ) {
+                    if(wiredBeanType == Classification.ARRAY_COLLECTION ) {
 
                         // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
                         // can then set this array
@@ -386,11 +386,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
 
-	private BeanRuntimeInfo getSelectedBeanRuntimeInfo() {
-		if(selectedBeanRuntimeInfo == null) {
-			selectedBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(wireBeanId, appContext);
+	private BeanRuntimeInfo getWiredBeanRuntimeInfo() {
+		if(wiredBeanRuntimeInfo == null) {
+            // Don't need to synchronize this.  Worse thing that can happen is we initialize it
+            // more than once... no biggie...
+            wiredBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(wireBeanId, appContext);
 		}
-		return selectedBeanRuntimeInfo;
+		return wiredBeanRuntimeInfo;
 	}
 
 	/* (non-Javadoc)

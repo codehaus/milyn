@@ -18,13 +18,13 @@
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-javabean</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-templating</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
