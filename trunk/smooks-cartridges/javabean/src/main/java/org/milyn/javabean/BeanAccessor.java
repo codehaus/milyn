@@ -162,7 +162,7 @@ public class BeanAccessor {
      * @param executionContext The execution context within which the bean is created.
      * @param addToList Is the bean to be added to a bean list.
      * @deprecated Because of the new bean binding system, adding to a list this way is deprecated.
-     * 			   Use the {@link #addBean(String, Object, ExecutionContext)} method.
+     * 			   Use the {@link #addBean(org.milyn.container.ExecutionContext, String, Object)} method.
      */
     @SuppressWarnings("unchecked")
 	@Deprecated

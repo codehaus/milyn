@@ -5,16 +5,16 @@
     <groupId>milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
     <properties>
         <milyn.commons.version.base>1.0</milyn.commons.version.base>
-        <milyn.commons.version>${milyn.commons.version.base}-SNAPSHOT</milyn.commons.version>
+        <milyn.commons.version>${milyn.commons.version.base}</milyn.commons.version>
 
         <milyn.smooks.core.version.base>1.0</milyn.smooks.core.version.base>
-        <milyn.smooks.core.version>${milyn.smooks.core.version.base}-SNAPSHOT</milyn.smooks.core.version>
+        <milyn.smooks.core.version>${milyn.smooks.core.version.base}</milyn.smooks.core.version>
 
         <milyn.magger.version.base>0.1</milyn.magger.version.base>
         <milyn.magger.version>${milyn.magger.version.base}.3</milyn.magger.version>
