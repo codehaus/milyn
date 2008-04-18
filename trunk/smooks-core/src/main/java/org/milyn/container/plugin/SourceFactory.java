@@ -15,61 +15,46 @@
 
 package org.milyn.container.plugin;
 
+import org.milyn.payload.JavaSource;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
-import org.milyn.payload.JavaSource;
-
 /**
  * Factory for creating javax.xml.transform.Source objects.
- * 
- * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
+ * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  */
-public class SourceFactory
-{
-	private static SourceFactory factory = new SourceFactory();
-	
-	private SourceFactory() {}
-	
-	public static SourceFactory getInstance()
-	{
-		return factory;
-	}
-	
-	public Source createSource( final Object from )
-	{
-		Source source;
-		if( from instanceof String ) 
-        {
-            source = new StreamSource( new StringReader( ( String ) from ) );
-        } 
-        else if( from instanceof byte[] ) 
-        {
-            source = new StreamSource( new ByteArrayInputStream( (byte[]) from ) );
-        } 
-        else if( from instanceof Reader ) 
-        {
-            source = new StreamSource( (Reader) from );
-        } 
-        else if( from instanceof InputStream ) 
-        {
-            source = new StreamSource( (InputStream) from );
-        } 
-        else if( from instanceof Source )
-        {
+public class SourceFactory {
+    private static SourceFactory factory = new SourceFactory();
+
+    private SourceFactory() {
+    }
+
+    public static SourceFactory getInstance() {
+        return factory;
+    }
+
+    public Source createSource(final Object from) {
+        Source source;
+        if (from instanceof String) {
+            source = new StreamSource(new StringReader((String) from));
+        } else if (from instanceof byte[]) {
+            source = new StreamSource(new ByteArrayInputStream((byte[]) from));
+        } else if (from instanceof Reader) {
+            source = new StreamSource((Reader) from);
+        } else if (from instanceof InputStream) {
+            source = new StreamSource((InputStream) from);
+        } else if (from instanceof Source) {
             source = (Source) from;
+        } else {
+            source = new JavaSource(from);
         }
-        else
-        {
-            source = new JavaSource( from );
-        }
-		return source;
-	}
+        return source;
+    }
 
 }
