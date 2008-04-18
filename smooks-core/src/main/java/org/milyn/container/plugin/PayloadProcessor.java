@@ -108,5 +108,5 @@ public class PayloadProcessor {
         }
 
         return result;
-	}
+    }
 }
