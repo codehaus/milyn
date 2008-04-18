@@ -19,26 +19,23 @@ package org.milyn.templating.xslt;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
+import org.milyn.delivery.dom.serialize.GhostElementSerializationUnit;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.io.StreamUtils;
 import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
-import org.milyn.xml.Namespace;
 import org.milyn.xml.XmlUtil;
-import org.milyn.SmooksException;
-import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.event.report.annotation.VisitAfterReport;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
+import org.w3c.dom.*;
 
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMResult;
@@ -249,46 +246,37 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
 
         protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
             Document ownerDoc = element.getOwnerDocument();
-            Element transRes = ownerDoc.createElement("xsltrans");
-            NodeList children = null;
+            Element ghostElement = GhostElementSerializationUnit.createElement(ownerDoc);
 
             try {
                 if (isSynchronized) {
                     synchronized (xslTemplate) {
-                        performTransform(element, transRes, ownerDoc);
+                        performTransform(element, ghostElement, ownerDoc);
                     }
                 } else {
-                    performTransform(element, transRes, ownerDoc);
+                    performTransform(element, ghostElement, ownerDoc);
                 }
             } catch (TransformerException e) {
                 throw new SmooksException("Error applying XSLT to node [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "]", e);
-            }
-
-            if (isTemplatelet) {
-                // If the template in use on this resource is a templatelet, check for and remove the
-                // enclosing "root-do-not-remove" element i.e. the templatelet content is inside
-                // the "root-do-not-remove" element.
-                Element dontRemoveEl = DomUtils.getElement(transRes, "root-do-not-remove", 1, Namespace.SMOOKS_URI);
-                if (dontRemoveEl != null) {
-                    children = dontRemoveEl.getChildNodes();
-                } else {
-                    children = transRes.getChildNodes();
-                }
-            } else {
-                children = transRes.getChildNodes();
             }
 
             if(getOutputStreamResource() != null || getAction() == Action.BIND_TO) {
                 // For bindTo or streamTo actions, we need to serialize the content and supply is as a Text DOM node.
                 // AbstractTemplateProcessor will look after the rest, by extracting the content from the
                 // Text node and attaching it to the ExecutionContext...
-                String serializedContent = XmlUtil.serialize(children);
+                String serializedContent = XmlUtil.serialize(ghostElement.getChildNodes());
                 Text textNode = element.getOwnerDocument().createTextNode(serializedContent);
 
                 processTemplateAction(element, textNode, executionContext);
             } else {
+                NodeList children = ghostElement.getChildNodes();
+
                 // Process the templating action, supplying the templating result...
-                processTemplateAction(element, children, executionContext);
+                if(children.getLength() == 1 && children.item(0).getNodeType() == Node.ELEMENT_NODE) {
+                    processTemplateAction(element, children.item(0), executionContext);
+                } else {
+                    processTemplateAction(element, ghostElement, executionContext);
+                }
             }
         }
 

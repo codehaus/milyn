@@ -6,4 +6,8 @@
 	    <resource>org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit</resource>
 	</resource-config>
 
+    <resource-config selector="ghost-element" selector-namespace="http://milyn.codehaus.org/smooks">
+        <resource>org.milyn.delivery.dom.serialize.GhostElementSerializationUnit</resource>
+    </resource-config>
+
 </smooks-resource-list>
