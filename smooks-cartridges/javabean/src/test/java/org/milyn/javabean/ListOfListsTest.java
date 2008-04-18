@@ -17,7 +17,7 @@ package org.milyn.javabean;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.delivery.java.JavaResult;
+import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;

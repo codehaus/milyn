@@ -13,26 +13,27 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery;
+package org.milyn.payload;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 
 /**
- * Utility class for creating a String based {@link javax.xml.transform.stream.StreamSource}.
+ * Utility class for creating a Byte based {@link javax.xml.transform.stream.StreamSource}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class StringSource extends StreamSource {
+public class ByteSource extends StreamSource {
 
-    private String source;
+    private byte[] source;
 
-    public StringSource(String source) {
-        super(new StringReader(source));
+    public ByteSource(byte[] source) {
+        super(new ByteArrayInputStream(source));
         this.source = source;
     }
 
-    public String getSource() {
+    public byte[] getSource() {
         return source;
     }
 }

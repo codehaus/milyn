@@ -13,29 +13,26 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery;
+package org.milyn.payload;
 
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
 
 /**
- * Utility class for creating a String based {@link javax.xml.transform.stream.StreamResult}.
+ * Utility class for creating a String based {@link javax.xml.transform.stream.StreamSource}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class StringResult extends StreamResult {
+public class StringSource extends StreamSource {
 
-    public StringResult() {
-        super();
-        StringWriter writer = new StringWriter();
-        setWriter(writer);
+    private String source;
+
+    public StringSource(String source) {
+        super(new StringReader(source));
+        this.source = source;
     }
 
-    public String getResult() {
-        return getWriter().toString();
-    }
-
-    public String toString() {
-        return getResult();
+    public String getSource() {
+        return source;
     }
 }

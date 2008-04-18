@@ -13,11 +13,11 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.java;
+package org.milyn.payload;
 
 import com.thoughtworks.xstream.XStream;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.delivery.FilterResult;
+import org.milyn.payload.FilterResult;
 
 import javax.xml.transform.Result;
 import java.io.StringWriter;

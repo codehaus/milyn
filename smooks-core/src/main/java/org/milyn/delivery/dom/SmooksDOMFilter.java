@@ -25,7 +25,8 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
 import org.milyn.delivery.dom.serialize.Serializer;
-import org.milyn.delivery.java.JavaSource;
+import org.milyn.payload.JavaSource;
+import org.milyn.payload.FilterResult;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.DOMFilterLifecycleEvent;
@@ -49,7 +50,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Vector;
-import java.util.ArrayList;
 
 /**
  * Smooks DOM based content filtering class.

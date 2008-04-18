@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import java.io.StringWriter;
 
 import org.junit.Test;
+import org.milyn.payload.StringResult;
 
 /**
  * Unit test for StringResult

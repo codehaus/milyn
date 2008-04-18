@@ -22,7 +22,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 
 import org.junit.Test;
-import org.milyn.delivery.java.JavaResult;
+import org.milyn.payload.JavaResult;
 
 /**
  * 
@@ -59,7 +59,7 @@ public class ResultFactoryTest
 	public void createResultNoMap()
 	{
 		ResultFactory instance = ResultFactory.getInstance();
-		Result result = instance.createResult( ResultType.NOMAP );
+		Result result = instance.createResult( ResultType.NORESULT);
 		assertNull( result );
 	}
 	

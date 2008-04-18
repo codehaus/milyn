@@ -15,13 +15,12 @@
 */
 package org.milyn.delivery.sax;
 
-import com.sun.java_cup.internal.parser;
 import org.milyn.SmooksException;
+import org.milyn.payload.JavaSource;
+import org.milyn.payload.FilterResult;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
-import org.milyn.delivery.FilterResult;
-import org.milyn.delivery.java.JavaSource;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
