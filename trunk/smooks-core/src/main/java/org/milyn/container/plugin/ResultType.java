@@ -11,6 +11,6 @@ public enum ResultType
 {
         STRING, 
         BYTES, 
-        JAVA, 
-        NOMAP
+        JAVA,
+        NORESULT
 }

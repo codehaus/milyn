@@ -18,8 +18,8 @@ package org.milyn.delivery.sax;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.delivery.StringSource;
-import org.milyn.delivery.StringResult;
+import org.milyn.payload.StringResult;
+import org.milyn.payload.StringSource;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;

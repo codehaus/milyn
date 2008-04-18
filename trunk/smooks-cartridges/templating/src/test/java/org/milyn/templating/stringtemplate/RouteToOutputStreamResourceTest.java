@@ -17,10 +17,8 @@ package org.milyn.templating.stringtemplate;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.container.ExecutionContext;
+import org.milyn.payload.StringSource;
 import org.milyn.delivery.Filter;
-import org.milyn.delivery.StringSource;
 import org.milyn.templating.MockOutStreamResource;
 import org.xml.sax.SAXException;
 

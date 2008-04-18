@@ -5,4 +5,8 @@
 		<param name="stream.filter.type">SAX</param>
 	</resource-config>
 
+    <resource-config selector="$document">
+        <resource>org.milyn.container.plugin.JavaObjectSetter</resource>
+    </resource-config>
+
 </smooks-resource-list>

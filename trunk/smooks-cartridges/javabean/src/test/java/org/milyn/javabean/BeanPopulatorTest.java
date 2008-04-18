@@ -30,12 +30,12 @@ import javax.xml.transform.stream.StreamSource;
 import junit.framework.TestCase;
 
 import org.milyn.Smooks;
+import org.milyn.payload.JavaResult;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockApplicationContext;
-import org.milyn.delivery.java.JavaResult;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;

@@ -13,10 +13,10 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.java;
+package org.milyn.payload;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.delivery.FilterSource;
+import org.milyn.payload.FilterSource;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -21,10 +21,8 @@ import java.io.IOException;
 
 import org.xml.sax.SAXException;
 import org.milyn.Smooks;
-import org.milyn.delivery.StringSource;
-import org.milyn.delivery.StringResult;
-import org.milyn.delivery.sax.SAXVisitBeforeVisitor;
-import org.milyn.delivery.sax.SAXVisitAfterVisitor;
+import org.milyn.payload.StringResult;
+import org.milyn.payload.StringSource;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

@@ -29,10 +29,10 @@ import javax.xml.transform.Source;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.FilterResult;
-import org.milyn.delivery.FilterSource;
-import org.milyn.delivery.java.JavaResult;
-import org.milyn.delivery.java.JavaSource;
+import org.milyn.payload.FilterResult;
+import org.milyn.payload.FilterSource;
+import org.milyn.payload.JavaResult;
+import org.milyn.payload.JavaSource;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;

@@ -19,14 +19,20 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 /**
- * SourceResult is data holder for a Source and a Result.
- * 
+ * {@link Source} - {@link Result} value Object.
+ * <p/>
+ * This class allows users of the {@link PayloadProcessor} class to explicitly specify
+ * both the {@link Source} and {@link Result} payload carrier types.  This can be used
+ * in situations where the required {@link Source} or {@link Result} are not supported
+ * amoung the default payload types supported by the {@link PayloadProcessor}
+ * (for the {@link Source}), or by the {@link ResultType} (for the {@link Result}).
+ *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  * @since 1.0
  */
 public class SourceResult
 {
-	private Source source; 
+	private Source source;
 	private Result result;
 	
 	public SourceResult() { }

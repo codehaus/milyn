@@ -15,12 +15,11 @@
 
 package org.milyn.container.plugin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
+import org.milyn.payload.ByteResult;
+import org.milyn.payload.JavaResult;
+import org.milyn.payload.StringResult;
 
 import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import org.milyn.delivery.java.JavaResult;
 
 /**
  * Factory for javax.xml.transform.Result objects.
@@ -45,15 +44,15 @@ public class ResultFactory
 		switch ( type )
 		{
 		case STRING:
-            result = new StreamResult( new StringWriter() );
+            result = new StringResult();
 			break;
 		case BYTES:
-            result = new StreamResult( new ByteArrayOutputStream() );
+            result = new ByteResult();
 			break;
 		case JAVA:
             result = new JavaResult();
 			break;
-		case NOMAP:
+		case NORESULT:
 			break;
 
 		default:
@@ -63,29 +62,4 @@ public class ResultFactory
 		
 		return result;
 	}
-
-	public Object mapResultToObject( Result result, final ResultType resultType, final String beanId )
-	{
-        Object retObject = null;
-        switch ( resultType )
-        {
-            case STRING:
-                final StreamResult strResult = (StreamResult) result;
-                retObject = strResult.getWriter().toString();
-                break;
-            case BYTES:
-                final StreamResult byteArrayResult = (StreamResult) result;
-                retObject = byteArrayResult.getOutputStream();
-                break;
-			case JAVA:
-				final JavaResult javaResult = (JavaResult) result;
-				retObject = beanId == null ?  javaResult.getResultMap() : javaResult.getBean( beanId );
-				break;
-			case NOMAP:
-				retObject = result;
-				break;
-        }
-        return retObject;
-	}
-
 }

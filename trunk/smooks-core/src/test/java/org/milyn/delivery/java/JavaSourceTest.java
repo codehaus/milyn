@@ -17,6 +17,7 @@ package org.milyn.delivery.java;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.payload.JavaSource;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 

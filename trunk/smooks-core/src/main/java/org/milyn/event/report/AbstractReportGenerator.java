@@ -16,12 +16,14 @@
 package org.milyn.event.report;
 
 import org.milyn.SmooksException;
+import org.milyn.payload.JavaResult;
+import org.milyn.payload.StringResult;
+import org.milyn.payload.FilterResult;
 import org.milyn.container.ExecutionContext;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.delivery.*;
 import org.milyn.delivery.dom.DOMContentDeliveryConfig;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
-import org.milyn.delivery.java.JavaResult;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.event.BasicExecutionEventListener;
 import org.milyn.event.ElementProcessingEvent;

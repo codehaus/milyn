@@ -23,7 +23,7 @@ import java.io.StringReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.milyn.delivery.java.JavaSource;
+import org.milyn.payload.JavaSource;
 
 /**
  * Factory for creating javax.xml.transform.Source objects.
@@ -61,7 +61,11 @@ public class SourceFactory
         {
             source = new StreamSource( (InputStream) from );
         } 
-        else 
+        else if( from instanceof Source )
+        {
+            source = (Source) from;
+        }
+        else
         {
             source = new JavaSource( from );
         }

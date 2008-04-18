@@ -15,20 +15,18 @@
 
 package org.milyn.container.plugin;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Arrays;
 
 /**
  * Unit test for PayloadProcessor. 
@@ -38,48 +36,100 @@ import org.xml.sax.SAXException;
  */
 public class PayloadProcessorTest
 {
-	private Smooks smooks;
-	private PayloadProcessor processor;
-	
-	@Test ( expected = IllegalArgumentException.class )
+    private Smooks smooks;
+
+    @Before
+    public void setup() throws IOException, SAXException
+    {
+        smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
+    }
+
+    @Test ( expected = IllegalArgumentException.class )
 	public void process() throws IOException, SAXException
 	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
 		processor.process( null, smooks.createExecutionContext() );
 	}
-	
-	@Test
-	public void processSourceResult() throws IOException, SAXException
+
+    @Test
+	public void process_SourceResult() throws IOException, SAXException
 	{
-		SourceResult sourceResult = createSourceResult();
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
+        StreamSource source = new StreamSource( new StringReader("<text/>") );
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult( writer );
+        SourceResult sourceResult = new SourceResult( source, result );
 		Object object = processor.process( sourceResult, smooks.createExecutionContext() );
-		
-		assertNotNull( object );
-		assertTrue( object instanceof StreamResult );
-	}
-	
-	@Test
-	public void processObject()
-	{
-    	Object payload = "<testing/>";
-		Object object = processor.process( payload, smooks.createExecutionContext() );
-		
-		assertNotNull( object );
-		assertTrue( object instanceof StreamResult );
-		assertTrue( ((StreamResult)object).getWriter() instanceof StringWriter );
-	}
-	
-	private SourceResult createSourceResult()
-	{
-		StreamSource source = new StreamSource( new StringReader("<text/>") );
-		StreamResult result = new StreamResult( new StringWriter() );
-		return new SourceResult( source, result );
-	}
-	
-	@Before
-	public void setup() throws IOException, SAXException
-	{
-		smooks = new Smooks( getClass().getResourceAsStream( "smooks-config.xml" ));
-    	processor = new PayloadProcessor( smooks );
+
+		TestCase.assertEquals(result, object);
+        TestCase.assertEquals("<text />", writer.toString());
 	}
 
+    @Test
+	public void process_String2String()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
+		Object object = processor.process( "<testing/>", smooks.createExecutionContext() );
+
+        TestCase.assertEquals("<testing />", object);
+	}
+
+    @Test
+	public void process_bytes2String()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
+    	Object payload = "<testing/>".getBytes();
+		Object object = processor.process( payload, smooks.createExecutionContext() );
+
+        TestCase.assertEquals("<testing />", object);
+	}
+
+    @Test
+	public void process_bytes2bytes()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.BYTES);
+    	Object payload = "<testing/>".getBytes();
+		Object object = processor.process( payload, smooks.createExecutionContext() );
+
+        TestCase.assertTrue(object instanceof byte[]);
+        TestCase.assertTrue(Arrays.equals("<testing />".getBytes(), ((byte[])object)));
+	}
+
+    @Test
+	public void process_String2Java_01()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.JAVA);
+		Object object = processor.process( "<testing/>", smooks.createExecutionContext() );
+
+        TestCase.assertEquals("{theBean=Hi there!}", object.toString());
+	}
+
+    @Test
+	public void process_String2Java_02()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.JAVA);
+
+        processor.setJavaResultBeanId("theBean");
+        Object object = processor.process( "<testing/>", smooks.createExecutionContext() );
+
+        TestCase.assertEquals("Hi there!", object.toString());
+	}
+
+    @Test
+	public void process_Java2String()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
+        Object object = processor.process( 123, smooks.createExecutionContext() );
+
+        TestCase.assertEquals("<int>123</int>", object.toString());
+	}
+
+    @Test
+	public void process_NoResult()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.NORESULT);
+        Object object = processor.process( 123, smooks.createExecutionContext() );
+
+        TestCase.assertEquals(null, object);
+	}
 }

@@ -17,7 +17,7 @@ package org.milyn.delivery.executionlifecyclecleanup;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.delivery.StringSource;
+import org.milyn.payload.StringSource;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
