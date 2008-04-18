@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <!--
+    Use a FreeMarker template to perform the model driven transformation.  You can also inline the template here.
+    -->
+    <resource-config selector="$document">
+        <resource>/example/templates/HistoryTrans.ftl</resource>
+    </resource-config>
+
+    <!--
+    Configure the History bean creation and population.
+    -->
+    <resource-config selector="history">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">history</param>
+        <param name="beanClass">example.model.ShippingHistory</param>
+        <param name="bindings">
+            <!-- Bindings. Note the "special" decoder for the trackingNumbers - see next config! -->
+            <binding property="warehouse" selector="${warehouse}"/>
+            <binding property="creationDate" type="Date" selector="header date" />
+            <binding property="trackingNumbers" type="TrackingNumberHistory" selector="history trackingNumbers" />
+        </param>
+    </resource-config>
+
+    <!--
+    Configure a "special" decoder for trackingNumbers field.
+    -->
+    <resource-config selector="decoder:TrackingNumberHistory">
+        <resource>example.model.TrackingNumberDecoder</resource>
+    </resource-config>
+
+    <!--
+    Configure the Warehouse bean creation and population.
+    Note how we create it on visiting the history element and set the bean on
+    history element (will set it based on it's own beanId).
+    -->
+    <resource-config selector="history">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">warehouse</param>
+        <param name="beanClass">example.model.Warehouse</param>
+        <param name="bindings">
+            <!-- Bindings. -->
+            <binding property="id" type="Integer" selector="history @warehouse" />
+            <binding property="name" type="WarehouseNameMapper" selector="history @warehouse" />
+        </param>
+    </resource-config>
+
+    <!--
+    Configure a "special" decoder for mapping the warehouse ids to their names.
+    -->
+    <resource-config selector="decoder:WarehouseNameMapper">
+        <resource>org.milyn.javabean.decoders.MappingDecoder</resource>
+        <param name="1">Dublin</param>
+        <param name="2">Belfast</param>
+        <param name="3">Cork</param>
+    </resource-config>
+
+</smooks-resource-list>

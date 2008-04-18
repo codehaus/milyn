@@ -1,0 +1,1 @@
+call mvn assembly:directory-inline
