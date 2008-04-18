@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -122,6 +123,33 @@ public class PayloadProcessorTest
         Object object = processor.process( 123, smooks.createExecutionContext() );
 
         TestCase.assertEquals("<int>123</int>", object.toString());
+	}
+
+    @Test
+	public void process_Reader2String()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
+        Object object = processor.process( new StringReader("<test/>"), smooks.createExecutionContext() );
+
+        TestCase.assertEquals("<test />", object.toString());
+	}
+
+    @Test
+	public void process_Stream2String()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
+        Object object = processor.process( new ByteArrayInputStream("<test/>".getBytes()), smooks.createExecutionContext() );
+
+        TestCase.assertEquals("<test />", object.toString());
+	}
+
+    @Test
+	public void process_Source2String()
+	{
+        PayloadProcessor processor = new PayloadProcessor(smooks, ResultType.STRING);
+        Object object = processor.process( new StreamSource(new ByteArrayInputStream("<test/>".getBytes())), smooks.createExecutionContext() );
+
+        TestCase.assertEquals("<test />", object.toString());
 	}
 
     @Test
