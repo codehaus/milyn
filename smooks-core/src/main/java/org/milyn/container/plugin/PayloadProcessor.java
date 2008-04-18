@@ -51,6 +51,7 @@ import javax.xml.transform.Source;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  */
 public class PayloadProcessor {
+
     private Smooks smooks;
     private ResultType resultType;
     private String javaResultBeanId;
