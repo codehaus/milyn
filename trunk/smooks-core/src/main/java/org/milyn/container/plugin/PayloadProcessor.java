@@ -56,6 +56,11 @@ public class PayloadProcessor {
     private ResultType resultType;
     private String javaResultBeanId;
 
+    /**
+     * Public constructor.
+     * @param smooks The Smooks instance to be used.
+     * @param resultType The required result type.
+     */
     public PayloadProcessor(final Smooks smooks, final ResultType resultType) {
         AssertArgument.isNotNull(smooks, "smooks");
         AssertArgument.isNotNull(resultType, "resultType");
@@ -63,18 +68,29 @@ public class PayloadProcessor {
         this.resultType = resultType;
     }
 
+    /**
+     * Set the bean ID to be unpacked from a {@link JavaResult}.
+     * <p/>
+     * Only relevant for {@link ResultType#JAVA}.  If not specified, the
+     * complete {@link org.milyn.payload.JavaResult#getResultMap() result Map}
+     * will be returned as the result of the {@link #process(Object, org.milyn.container.ExecutionContext)}
+     * method call.
+     *
+     * @param javaResultBeanId The bean ID to be unpacked.
+     */
     public void setJavaResultBeanId(final String javaResultBeanId) {
         AssertArgument.isNotNullAndNotEmpty(javaResultBeanId, "javaResultBeanId");
         this.javaResultBeanId = javaResultBeanId;
     }
 
     /**
-     * The process method does the actual Smooks filtering.
+     * Process the supplied payload.
+     * <p/>
+     * See class level javadoc.
      *
-     * @param payload - the payload that is to be filtered. Can either be an Object (String, byte[],
-     *                Reader, InputStream) or an instance of SourceResult.
-     * @return Result            - javax.xml.transform.Result object, will either be the specified Result instance
-     *         specified in the passed-in SourceResult, or StringResult.
+     * @param payload The payload to be filtered. See class level javadoc for supported data types.
+     * @return The filter result. Will be "unpacked" as per the {@link ResultType} supplied in the
+     * {@link #PayloadProcessor(org.milyn.Smooks, ResultType) constructor}.
      * @throws SmooksException
      */
     public final Object process(final Object payload, final ExecutionContext executionContext) throws SmooksException {
