@@ -27,40 +27,35 @@ import javax.xml.transform.Source;
  * amoung the default payload types supported by the {@link PayloadProcessor}
  * (for the {@link Source}), or by the {@link ResultType} (for the {@link Result}).
  *
- * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
+ * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  * @since 1.0
  */
-public class SourceResult
-{
-	private Source source;
-	private Result result;
-	
-	public SourceResult() { }
-	
-	public SourceResult( final Source source, final Result result ) 
-	{
-		this.source = source;
-		this.result = result; 
-	}
-	
-	public Source getSource()
-	{
-		return source;
-	}
-	
-	public void setSource( final Source source )
-	{
-		this.source = source;
-	}
-	
-	public Result getResult()
-	{
-		return result;
-	}
-	
-	public void setResult( final Result result )
-	{
-		this.result = result;
-	}
+public class SourceResult {
+    private Source source;
+    private Result result;
+
+    public SourceResult() {
+    }
+
+    public SourceResult(final Source source, final Result result) {
+        this.source = source;
+        this.result = result;
+    }
+
+    public Source getSource() {
+        return source;
+    }
+
+    public void setSource(final Source source) {
+        this.source = source;
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(final Result result) {
+        this.result = result;
+    }
 
 }
