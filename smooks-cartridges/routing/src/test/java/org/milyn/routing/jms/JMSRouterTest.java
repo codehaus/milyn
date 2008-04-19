@@ -14,17 +14,13 @@
  */
 package org.milyn.routing.jms;
 
+import com.mockrunner.mock.ejb.EJBMockObjectFactory;
+import com.mockrunner.mock.jms.JMSMockObjectFactory;
+import com.mockrunner.mock.jms.MockQueue;
+import com.mockrunner.mock.jms.MockQueueConnectionFactory;
+import junit.framework.TestCase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-import javax.naming.Context;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -33,14 +29,17 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.util.RouterTestHelper;
 import org.mockejb.jndi.MockContextFactory;
 import org.xml.sax.SAXException;
 
-import com.mockrunner.mock.ejb.EJBMockObjectFactory;
-import com.mockrunner.mock.jms.JMSMockObjectFactory;
-import com.mockrunner.mock.jms.MockQueue;
-import com.mockrunner.mock.jms.MockQueueConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.TextMessage;
+import javax.naming.Context;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 
 /**
  * Unit test for the JMSRouter class
@@ -57,14 +56,14 @@ public class JMSRouterTest
 	private static MockQueue queue;
 	private static MockQueueConnectionFactory connectionFactory;
 
-	@Test( expected = SmooksConfigurationException.class )
+	@Test( expected = SmooksConfigurationException.class)
 	public void configureWithMissingDestinationType()
 	{
         Configurator.configure( new JMSRouter(), config, new MockApplicationContext() );
 	}
 
 	@Test
-	public void visitAfter() throws ParserConfigurationException, JMSException, SAXException, IOException
+	public void visitAfter_below_hwmark() throws ParserConfigurationException, JMSException, SAXException, IOException
 	{
 		final String beanId = "beanId";
 		final TestBean bean = RouterTestHelper.createBean();
@@ -86,6 +85,71 @@ public class JMSRouterTest
         assertEquals( "Content of bean was not the same as the content of the TextMessage",
         		bean.toString(), textMessage.getText() );
 	}
+
+    @Test
+    public void visitAfter_above_hwmark_notimeout() throws ParserConfigurationException, JMSException, SAXException, IOException
+    {
+        final String beanId = "beanId";
+        final TestBean bean = RouterTestHelper.createBean();
+
+        final MockExecutionContext executionContext = RouterTestHelper.createExecutionContext( beanId, bean );
+
+        config.setParameter( "destinationName", queueName );
+        config.setParameter( "beanId", beanId );
+        config.setParameter( "highWaterMark", "3" );
+        config.setParameter( "highWaterMarkPollFrequency", "200" );
+        final JMSRouter router = new JMSRouter();
+        Configurator.configure( router, config, new MockApplicationContext() );
+
+        int numMessages = 10;
+        ConsumeThread consumeThread = new ConsumeThread(queue, numMessages);
+        consumeThread.start();
+
+        // wait for the thread to start...
+        while(consumeThread.running) {
+            JMSRouterTest.sleep(500);
+        }
+
+        // Fire the messages...
+        for(int i = 0; i < numMessages; i++) {
+            router.visitAfter( (SAXElement)null, executionContext );
+        }
+
+        // wait for the thread to finish...
+        while(consumeThread.running) {
+            JMSRouterTest.sleep(500);            
+        }
+
+        assertEquals(numMessages, consumeThread.numMessagesProcessed);
+    }
+
+    @Test
+    public void visitAfter_above_hwmark_timeout() throws ParserConfigurationException, JMSException, SAXException, IOException
+    {
+        final String beanId = "beanId";
+        final TestBean bean = RouterTestHelper.createBean();
+
+        final MockExecutionContext executionContext = RouterTestHelper.createExecutionContext( beanId, bean );
+
+        config.setParameter( "destinationName", queueName );
+        config.setParameter( "beanId", beanId );
+        config.setParameter( "highWaterMark", "3" );
+        config.setParameter( "highWaterMarkTimeout", "3000" );
+        config.setParameter( "highWaterMarkPollFrequency", "200" );
+        final JMSRouter router = new JMSRouter();
+        Configurator.configure( router, config, new MockApplicationContext() );
+
+        router.visitAfter( (SAXElement)null, executionContext );
+        router.visitAfter( (SAXElement)null, executionContext );
+        router.visitAfter( (SAXElement)null, executionContext );
+
+        try {
+            router.visitAfter( (SAXElement)null, executionContext );
+            TestCase.fail("Expected SmooksRoutingException");
+        } catch(SmooksRoutingException e) {
+            assertEquals("Failed to route JMS message to Queue destination 'testQueue'. Timed out (3000 ms) waiting for queue length to drop below High Water Mark (3).  Consider increasing 'highWaterMark' and/or 'highWaterMarkTimeout' param values.", e.getMessage());
+        }
+    }
 
 	@Test
 	public void setJndiContextFactory()
@@ -133,7 +197,8 @@ public class JMSRouterTest
         final EJBMockObjectFactory mockObjectFactory = new EJBMockObjectFactory();
         final Context context = mockObjectFactory.getContext();
         final JMSMockObjectFactory jmsObjectFactory = new JMSMockObjectFactory();
-		connectionFactory = jmsObjectFactory.getMockQueueConnectionFactory();
+
+        connectionFactory = jmsObjectFactory.getMockQueueConnectionFactory();
         context.bind("ConnectionFactory",  connectionFactory);
         queue = jmsObjectFactory.getDestinationManager().createQueue("testQueue");
         context.bind("queue/testQueue", queue);
@@ -146,4 +211,37 @@ public class JMSRouterTest
         config.setParameter( "beanId", "bla" );
 	}
 
+    class ConsumeThread extends Thread {
+
+        private boolean running = false;
+        private int numMessagesProcessed;
+        private int numMessagesToProcesses;
+        private MockQueue queue;
+
+        ConsumeThread(MockQueue queue, int numMessagesToProcesses) {
+            this.queue = queue;
+            this.numMessagesToProcesses = numMessagesToProcesses;
+        }
+
+        public void run() {
+            running = true;
+
+            while(numMessagesProcessed < numMessagesToProcesses) {
+                JMSRouterTest.sleep(500);
+                if(!queue.isEmpty()) {
+                    queue.getMessage();
+                    numMessagesProcessed++;
+                }
+            }
+            
+            running = false;
+        }
+    }
+
+    private static void sleep(long duration) {
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+        }
+    }
 }

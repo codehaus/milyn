@@ -24,14 +24,16 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.routing.SmooksRoutingException;
 import org.milyn.util.DollarBraceDecoder;
 import org.milyn.util.FreeMarkerTemplate;
 
+import javax.jms.Queue;
 import java.io.*;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * FileOutputStreamResouce is a {@link AbstractOutputStreamResource} implementation
@@ -95,6 +97,8 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     private int highWaterMark;
     @ConfigParam(defaultVal = "60000")
     private long highWaterMarkTimeout;
+    @ConfigParam(defaultVal = "1000")
+    private long highWaterMarkPollFrequency;
 
     //	public
     
@@ -116,8 +120,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     }
 
     @Override
-	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException
-	{
+	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws SmooksRoutingException, IOException {
         waitWhileAboveHighWaterMark();
 
         final File tmpFile = File.createTempFile( UUID.randomUUID().toString(), ".working", destinationDirectory );
@@ -126,7 +129,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 		return fileOutputStream;
 	}
 
-    private void waitWhileAboveHighWaterMark() throws IOException {
+    private void waitWhileAboveHighWaterMark() throws SmooksRoutingException {
         if(highWaterMark == -1) {
             return;
         }
@@ -137,7 +140,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 
             while(System.currentTimeMillis() < start + highWaterMarkTimeout) {
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(highWaterMarkPollFrequency);
                 } catch (InterruptedException e) {
                     logger.error("Interrupted", e);
                     return;
@@ -148,7 +151,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
                 }
             }
 
-            throw new IOException("Unable to open file output stream.  Timed out waiting for the number of '" + listFileNamePattern + "' files in '" + destinationDirectory.getAbsolutePath() +  "' to drop below " + highWaterMark + ".  Consider increasing 'highWaterMark' param value.");
+            throw new SmooksRoutingException("Failed to route message to Filesystem destination '" + destinationDirectory.getAbsolutePath() + "'. Timed out (" + highWaterMarkTimeout + " ms) waiting for the number of '" + listFileNamePattern + "' files to drop below High Water Mark (" + highWaterMark + ").  Consider increasing 'highWaterMark' and/or 'highWaterMarkTimeout' param values.");
         }
     }
 

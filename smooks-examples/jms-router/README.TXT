@@ -3,9 +3,6 @@ About This Example:
     This example illustrates how Smooks can be used to transform and then
 	route the output to a JMS destination.
 
-	NOTE: This currenlty only runs from within eclipse. I'm trying to
-	sort this out :( /Daniel 2008-02-15
-
     See:
         1. The "Main" class in src/main/java/example/Main.java.
 

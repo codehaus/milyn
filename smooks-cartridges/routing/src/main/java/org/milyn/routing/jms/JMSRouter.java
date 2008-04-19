@@ -14,20 +14,6 @@
  */
 package org.milyn.routing.jms;
 
-import java.io.IOException;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -42,17 +28,25 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
 import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
 import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
 import org.w3c.dom.Element;
+
+import javax.jms.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.Enumeration;
 
 /**
  * <p/>
  * Router is a Visitor for DOM or SAX elements. It sends the content
  * as a JMS Message object to the configured destination.
  * <p/>
- * The type of the JMS Message is determined by the member {@link #messageType}
+ * The type of the JMS Message is determined by the "messageType" config param.
  * <p/>
  * Example configuration:
  * <pre>
@@ -63,7 +57,7 @@ import org.w3c.dom.Element;
  * &lt;/resource-config&gt;
  *	....
  * Optional parameters:
- *    &lt;param name="executeBefore"&gt;true&lt;/param&gt;
+ *    &lt;param name="executeBefore"&gt;true&lt;/param&gt;  &lt;-- default "false" --&gt;
  *    &lt;param name="jndiContextFactory"&gt;ConnectionFactory&lt;/param&gt;
  *    &lt;param name="jndiProviderUrl"&gt;jnp://localhost:1099&lt;/param&gt;
  *    &lt;param name="jndiNamingFactory"&gt;org.jboss.naming:java.naming.factory.url.pkgs=org.jnp.interfaces&lt;/param&gt;
@@ -75,7 +69,10 @@ import org.w3c.dom.Element;
  *    &lt;param name="securityCredential"&gt;password&lt;/param&gt;
  *    &lt;param name="acknowledgeMode"&gt;AUTO_ACKNOWLEDGE&lt;/param&gt;
  *    &lt;param name="transacted"&gt;false&lt;/param&gt;
- *    &lt;param name="messageType"&gt;ObjectMessage&lt;/param&gt;
+ *    &lt;param name="messageType"&gt;ObjectMessage&lt;/param&gt; &lt;-- "TextMessage" (default) or "ObjectMessage" --&gt;
+ *    &lt;param name="highWaterMark"&gt;50&lt;/param&gt; &lt;-- default 200 --&gt;
+ *    &lt;param name="highWaterMarkTimeout"&gt;5000&lt;/param&gt; &lt;-- default 60000 ms --&gt;
+ *    &lt;param name="highWaterMarkPollFrequency"&gt;500&lt;/param&gt; &lt;-- default 1000 ms --&gt;
  * </pre>
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  * @since 1.0
@@ -106,6 +103,13 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
      */
     @ConfigParam( use = ConfigParam.Use.REQUIRED )
     private String beanId;
+
+    @ConfigParam(defaultVal = "200")
+    private int highWaterMark;
+    @ConfigParam(defaultVal = "60000")
+    private long highWaterMarkTimeout;
+    @ConfigParam(defaultVal = "1000")
+    private long highWaterMarkPollFrequency;
 
     /*
      * 	Strategy for JMS Message object creation
@@ -290,20 +294,69 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 	}
 
-	protected void sendMessage( final Message message ) throws SmooksException
+	protected void sendMessage( final Message message ) throws SmooksRoutingException
 	{
-		try
+        try {
+            waitWhileAboveHighWaterMark();
+        } catch (JMSException e) {
+            throw new SmooksRoutingException("Exception while attempting to check JMS Queue High Water Mark.", e );
+        }
+
+        try
 		{
-			msgProducer.send( message );
+            msgProducer.send( message );
 		}
 		catch (JMSException e)
 		{
-			final String errorMsg = "JMSException while sending Text Mesage";
-			throw new SmooksException( errorMsg, e );
+			final String errorMsg = "JMSException while sending Message.";
+			throw new SmooksRoutingException( errorMsg, e );
 		}
 	}
 
-	protected void close( final Connection connection )
+    private void waitWhileAboveHighWaterMark() throws JMSException, SmooksRoutingException {
+        if(highWaterMark == -1) {
+            return;
+        }
+
+        if(session instanceof QueueSession) {
+            QueueSession queueSession = (QueueSession) session;
+            QueueBrowser queueBrowser = queueSession.createBrowser((Queue) destination);
+
+            try {
+                int length = getQueueLength(queueBrowser);
+                long start = System.currentTimeMillis();
+
+                while(length >= highWaterMark && (System.currentTimeMillis() < start + highWaterMarkTimeout)) {
+                    try {
+                        Thread.sleep(highWaterMarkPollFrequency);
+                    } catch (InterruptedException e) {
+                        log.error("Interrupted", e);
+                        return;
+                    }
+                    length = getQueueLength(queueBrowser);
+                }
+
+                // Check did the queue length drop below the HWM...
+                if(length >= highWaterMark) {
+                    throw new SmooksRoutingException("Failed to route JMS message to Queue destination '" + ((Queue) destination).getQueueName() + "'. Timed out (" + highWaterMarkTimeout + " ms) waiting for queue length to drop below High Water Mark (" + highWaterMark + ").  Consider increasing 'highWaterMark' and/or 'highWaterMarkTimeout' param values.");
+                }
+            } finally {
+                queueBrowser.close();
+            }
+        }
+    }
+
+    private int getQueueLength(QueueBrowser queueBrowser) throws JMSException {
+        int length = 0;
+        Enumeration queueEnum = queueBrowser.getEnumeration();
+        while(queueEnum.hasMoreElements()) {
+            length++;
+            queueEnum.nextElement();
+        }
+        return length;
+    }
+
+    protected void close( final Connection connection )
 	{
 		if ( connection != null )
 		{
@@ -453,12 +506,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		return jmsProperties.getPriority();
 	}
 
-    @ConfigParam (
-    		defaultVal = "auto-acknowledge",
-    		choice = {
-    				"auto-acknowledge",
-    				"client-acknowledge",
-    				"dups-ok-acknowledge" } )
+    @ConfigParam (defaultVal = "AUTO_ACKNOWLEDGE",
+    		choice = {"AUTO_ACKNOWLEDGE", "CLIENT_ACKNOWLEDGE", "DUPS_OK_ACKNOWLEDGE" } )
 	public void setAcknowledgeMode( final String jmsAcknowledgeMode )
 	{
 		jmsProperties.setAcknowledgeMode( jmsAcknowledgeMode );
