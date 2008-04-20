@@ -30,7 +30,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.bcm.ApplicationContextJavaPool;
 
 /**
  * Bean utility methods.
@@ -41,6 +43,7 @@ public abstract class BeanUtils {
 
     private static Log logger = LogFactory.getLog(BeanUtils.class);
 
+    
     /**
      * Create the bean setter method instance for this visitor.
      *
@@ -105,7 +108,23 @@ public abstract class BeanUtils {
         return beanSetterMethod;
     }
     
-    public static SetterMethodInvocator createSetterMethodInvocator(String setterName, Object bean, Class<?> setterParamType, ClassPool classPool) {
+    
+    /**
+     * Dynamically generates and instantiates a class that can call the desired method. 
+     * 
+     * TODO: move the whole logic to a separate class
+     * 
+     * @param applicationContext
+     * @param setterName
+     * @param bean
+     * @param setterParamType
+     * @return
+     */
+    public static SetterMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Object bean, Class<?> setterParamType) {
+    	
+    	
+    	ClassPool classPool = ApplicationContextJavaPool.getClassPool(applicationContext);
+    	ClassLoader classLoader = applicationContext.getClass().getClassLoader();
     	
     	// smi = SetterMethodInvocator
     	CtClass smiInterface;
@@ -116,13 +135,13 @@ public abstract class BeanUtils {
 		} catch (NotFoundException e) {
 			throw new RuntimeException("Could not get the SetterMethodInvocator interface", e);
 		}
-    	
+
 		Class<?> smiClass = null;
 		try {
 			String smiClassName = "org.milyn.javabean.smi." + bean.getClass().getName() + "_" + setterName + "_" + setterParamType.getName();
 			
 			try {
-				smiClass = classPool.getClassLoader().loadClass(smiClassName);
+				smiClass = classLoader.loadClass(smiClassName);
 			} catch (ClassNotFoundException e) {
 			}
 			
@@ -139,7 +158,7 @@ public abstract class BeanUtils {
 				
 				smiImpl.addInterface(smiInterface);
 				
-				smiClass = smiImpl.toClass(bean.getClass().getClassLoader(), bean.getClass().getProtectionDomain());
+				smiClass = smiImpl.toClass(classLoader, bean.getClass().getProtectionDomain());
 			}
 		} catch (CannotCompileException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
@@ -154,6 +173,7 @@ public abstract class BeanUtils {
 		}
     	
     }
+  
     
     private static String parameterStr(String setterName, Object bean, Class<?> setterParamType) {
     	

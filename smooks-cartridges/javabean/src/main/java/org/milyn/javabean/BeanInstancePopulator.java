@@ -22,9 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javassist.ClassClassPath;
-import javassist.ClassPool;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -353,10 +350,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      */
     private synchronized SetterMethodInvocator createSetterMethodInvocator(Object bean, String setterName, Class<?> setterParamType) {
         if (propertySetterMethodInvocator == null) {
-        	ClassPool classPool = new ClassPool(null);
-        	classPool.appendClassPath(new ClassClassPath(this.getClass()) );
-        	
-        	propertySetterMethodInvocator = BeanUtils.createSetterMethodInvocator(setterName, bean, setterParamType, classPool);
+        	propertySetterMethodInvocator = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean, setterParamType);
         }
 
         return propertySetterMethodInvocator;
