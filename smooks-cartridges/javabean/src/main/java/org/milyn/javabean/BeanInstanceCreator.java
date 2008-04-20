@@ -16,12 +16,13 @@
 package org.milyn.javabean;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import javassist.ClassClassPath;
+import javassist.ClassPool;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -89,7 +90,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     private BeanRuntimeInfo setOnBeanRuntimeInfo;
     private boolean isSetOnMethodConfigured = false;
     private String setOnMethod;
-    private Method setOnBeanSetterMethod;
+    private SetterMethodInvocator setOnBeanSetterMethod;
 
     /**
      * Set the resource configuration on the bean populator.
@@ -261,23 +262,21 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         try {
             if (setOnBeanSetterMethod == null) {
                 if (!addToList) {
-                    createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
+                    createBeanSetterMethodInvocator(setOnBean, setOnMethod, bean.getClass());
                 } else {
-                    createBeanSetterMethod(setOnBean, setOnMethod, List.class);
+                    createBeanSetterMethodInvocator(setOnBean, setOnMethod, List.class);
                 }
             }
             if(logger.isDebugEnabled()) {
                 logger.debug("Setting bean '" + beanId + "' on parent bean '" + setOn + "'.");
             }
             if (!addToList) {
-                setOnBeanSetterMethod.invoke(setOnBean, bean);
+                setOnBeanSetterMethod.set(setOnBean, bean);
             } else {
                 Object beanList = BeanAccessor.getBean(execContext, beanId + "List");
-                setOnBeanSetterMethod.invoke(setOnBean, beanList);
+                setOnBeanSetterMethod.set(setOnBean, beanList);
             }
-        } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
-        } catch (InvocationTargetException e) {
+        } catch (RuntimeException e) {
             throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
         }
     }
@@ -369,9 +368,13 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized Method createBeanSetterMethod(Object bean, String setterName, Class<?> type) {
+    private synchronized SetterMethodInvocator createBeanSetterMethodInvocator(Object bean, String setterName, Class<?> type) {
         if (setOnBeanSetterMethod == null) {
-            setOnBeanSetterMethod = BeanUtils.createSetterMethod(setterName, bean, type);
+            
+        	ClassPool classPool = new ClassPool(null);
+        	classPool.appendClassPath(new ClassClassPath(this.getClass()) );
+        	
+        	setOnBeanSetterMethod = BeanUtils.createSetterMethodInvocator(setterName, bean, type, classPool);
 
             if(setOnBeanSetterMethod == null) {
                 throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterName + "(" + type.getName() + ")] not found on type [" + bean.getClass().getName() + "].  You may need to set a 'decoder' on the binding config.");

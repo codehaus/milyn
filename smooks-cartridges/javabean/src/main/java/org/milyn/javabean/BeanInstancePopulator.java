@@ -18,11 +18,12 @@ package org.milyn.javabean;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import javassist.ClassClassPath;
+import javassist.ClassPool;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +95,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private BeanRuntimeInfo beanRuntimeInfo;
     private BeanRuntimeInfo wiredBeanRuntimeInfo;
 
-    private Method propertySetterMethod;
+    private SetterMethodInvocator propertySetterMethodInvocator;
     private boolean checkedForSetterMethod;
     private boolean isAttribute = true;
     private DataDecoder decoder;
@@ -300,34 +301,35 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
         Classification beanType = beanRuntimeInfo.getClassification();
 
-        createPropertySetterMethod(bean, dataObject.getClass());
-
-        // Set the data on the bean...
-        try {
-            if(propertySetterMethod != null) {
-            	propertySetterMethod.invoke(bean, dataObject);
-
-            } else if(beanType == Classification.MAP_COLLECTION) {
-                ((Map)bean).put(mapPropertyName, dataObject);
-            } else if(beanType == Classification.ARRAY_COLLECTION || beanType == Classification.COLLECTION_COLLECTION) {
-                ((Collection)bean).add(dataObject);
-            } else if(propertySetterMethod == null) {
-            	if(setterMethod != null) {
-                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+        // Set the data on the bean...        
+        if(beanType == Classification.NON_COLLECTION) {
+        	try {
+	        	createPropertySetterMethod(bean, dataObject.getClass());
+        	} catch (RuntimeException e){
+        		if(setterMethod != null) {
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.", e);
                 } else if(property != null) {
-                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.", e);
                 }
-            }
-        } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
-        } catch (InvocationTargetException e) {
-            throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
+        	}
+        	try {
+        		
+        		propertySetterMethodInvocator.set(bean, dataObject);
+        		
+        	 } catch (RuntimeException e) {
+                 throw new SmooksConfigurationException("Exception invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
+             }
+        } else if(beanType == Classification.MAP_COLLECTION) {
+            ((Map)bean).put(mapPropertyName, dataObject);
+        } else {
+            ((Collection)bean).add(dataObject);
         }
+ 
     }
 
     private void createPropertySetterMethod(Object bean, Class<?> parameter) {
 
-    	if (!checkedForSetterMethod && propertySetterMethod == null) {
+    	if (!checkedForSetterMethod && propertySetterMethodInvocator == null) {
             String methodName = null;
         	if(setterMethod != null && !setterMethod.trim().equals("")) {
         		methodName = setterMethod;
@@ -336,7 +338,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             }
 
         	if(methodName != null) {
-        		propertySetterMethod = createPropertySetterMethod(bean, methodName, parameter);
+        		propertySetterMethodInvocator = createSetterMethodInvocator(bean, methodName, parameter);
         	}
 
         	checkedForSetterMethod = true;
@@ -349,12 +351,15 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized Method createPropertySetterMethod(Object bean, String setterName, Class<?> setterParamType) {
-        if (propertySetterMethod == null) {
-            propertySetterMethod = BeanUtils.createSetterMethod(setterName, bean, setterParamType);
+    private synchronized SetterMethodInvocator createSetterMethodInvocator(Object bean, String setterName, Class<?> setterParamType) {
+        if (propertySetterMethodInvocator == null) {
+        	ClassPool classPool = new ClassPool(null);
+        	classPool.appendClassPath(new ClassClassPath(this.getClass()) );
+        	
+        	propertySetterMethodInvocator = BeanUtils.createSetterMethodInvocator(setterName, bean, setterParamType, classPool);
         }
 
-        return propertySetterMethod;
+        return propertySetterMethodInvocator;
     }
 
     private Object decodeDataString(String dataString, ExecutionContext executionContext) throws DataDecodeException {
