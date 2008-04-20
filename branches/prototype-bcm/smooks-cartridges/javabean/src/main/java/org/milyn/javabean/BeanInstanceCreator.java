@@ -21,9 +21,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javassist.ClassClassPath;
-import javassist.ClassPool;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -370,11 +367,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      */
     private synchronized SetterMethodInvocator createBeanSetterMethodInvocator(Object bean, String setterName, Class<?> type) {
         if (setOnBeanSetterMethod == null) {
-            
-        	ClassPool classPool = new ClassPool(null);
-        	classPool.appendClassPath(new ClassClassPath(this.getClass()) );
-        	
-        	setOnBeanSetterMethod = BeanUtils.createSetterMethodInvocator(setterName, bean, type, classPool);
+        	setOnBeanSetterMethod = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean, type);
 
             if(setOnBeanSetterMethod == null) {
                 throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterName + "(" + type.getName() + ")] not found on type [" + bean.getClass().getName() + "].  You may need to set a 'decoder' on the binding config.");
