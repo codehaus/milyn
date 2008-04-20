@@ -28,7 +28,6 @@ import org.milyn.routing.SmooksRoutingException;
 import org.milyn.util.DollarBraceDecoder;
 import org.milyn.util.FreeMarkerTemplate;
 
-import javax.jms.Queue;
 import java.io.*;
 import java.util.Map;
 import java.util.UUID;
