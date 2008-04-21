@@ -616,6 +616,7 @@ public class ContentDeliveryConfigBuilder {
 			// Create the ContentHandler.
 			try {
 				contentHandler = handlerFactory.create(resourceConfig);
+                store.getAllocatedHandlers().add(contentHandler);
             } catch(SmooksConfigurationException e) {
                 throw e;
             } catch(Throwable thrown) {

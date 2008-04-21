@@ -11,34 +11,17 @@
     <groupId>milyn</groupId>
     <artifactId>milyn-smooks-example-file-router</artifactId>
     <version>1.0</version>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>milyn</groupId>
-            <artifactId>milyn-smooks-javabean</artifactId>
-            <version>${milyn.smooks.javabean.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>milyn</groupId>
-			<artifactId>milyn-smooks-templating</artifactId>
-			<version>${milyn.smooks.templating.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>milyn</groupId>
-			<artifactId>milyn-smooks-routing</artifactId>
-			<version>${milyn.smooks.routing.version}</version>
-        </dependency>
-
-    </dependencies>
+    <modules>
+        <module>file-consumer</module>
+        <module>splitter-router</module>
+    </modules>
 
 	<repositories>
         <repository>
             <id>milyn</id>
             <url>http://dist.codehaus.org</url>
-        </repository>
-        <repository>
-            <id>milyn</id>
-            <url>http://mvnrepository.com</url>
         </repository>
     </repositories>
 
