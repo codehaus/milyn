@@ -296,6 +296,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     @SuppressWarnings("unchecked")
 	private void populateAndSetPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
+    	if ( dataObject == null )
+    	{
+    		return;
+    	}
+    	
         Object bean = BeanUtils.getBean(beanId, executionContext);
 
         Classification beanType = beanRuntimeInfo.getClassification();
@@ -359,6 +364,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private Object decodeDataString(String dataString, ExecutionContext executionContext) throws DataDecodeException {
         if((dataString == null || dataString.equals("")) && defaultVal != null) {
+        	if(defaultVal.equals("null")) {
+        		return null;
+        	}
             dataString = defaultVal;
         }
 
