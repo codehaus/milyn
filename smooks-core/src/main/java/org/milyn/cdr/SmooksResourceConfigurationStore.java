@@ -61,7 +61,16 @@ public class SmooksResourceConfigurationStore {
     /**
      * A complete list of all the content handlers allocated by this store.
      */
-    private List<ContentHandler> allocatedUnits = new ArrayList<ContentHandler>();
+    private List<ContentHandler> allocatedHandlers = new ArrayList<ContentHandler>() {
+        public boolean add(ContentHandler contentHandler) {
+            if(contains(contentHandler)) {
+                // Don't add the same handler again...
+                return false;
+            }
+            return super.add(contentHandler);
+        }
+    };
+
     /**
      * Default configuration list.
      */
@@ -315,11 +324,15 @@ public class SmooksResourceConfigurationStore {
 
 		if(object instanceof ContentHandler) {
 			Configurator.configure((ContentHandler)object, resourceConfig, applicationContext);
-            allocatedUnits.add((ContentHandler)object);
+            allocatedHandlers.add((ContentHandler)object);
         }
 		
 		return object;
 	}
+
+    public List<ContentHandler> getAllocatedHandlers() {
+        return allocatedHandlers;
+    }
 
     /**
      * Get the {@link org.milyn.delivery.ContentHandlerFactory} for a resource based on the
@@ -362,9 +375,9 @@ public class SmooksResourceConfigurationStore {
     }
 
     private void _close() {
-        if(allocatedUnits != null) {
+        if(allocatedHandlers != null) {
             logger.debug("Uninitializing all ContentHandler instances allocated through this store.");
-            for(ContentHandler deliveryUnit : allocatedUnits) {
+            for(ContentHandler deliveryUnit : allocatedHandlers) {
                 try {
                     logger.debug("Uninitializing ContentHandler instance: " + deliveryUnit.getClass().getName());
                     Configurator.uninitialise(deliveryUnit);
@@ -372,7 +385,7 @@ public class SmooksResourceConfigurationStore {
                     logger.error("Error uninitializing " + deliveryUnit.getClass().getName() + ".", throwable);
                 }
             }
-            allocatedUnits = null;
+            allocatedHandlers = null;
         }
     }
 }

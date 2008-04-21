@@ -21,6 +21,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
@@ -28,10 +29,12 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
 import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
 import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
+import org.milyn.util.FreeMarkerTemplate;
 import org.w3c.dom.Element;
 
 import javax.jms.*;
@@ -40,6 +43,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * <p/>
@@ -69,6 +73,7 @@ import java.util.Enumeration;
  *    &lt;param name="securityCredential"&gt;password&lt;/param&gt;
  *    &lt;param name="acknowledgeMode"&gt;AUTO_ACKNOWLEDGE&lt;/param&gt;
  *    &lt;param name="transacted"&gt;false&lt;/param&gt;
+ *    &lt;param name="correlationIdPattern"&gt;orderitem-${order.orderId}-${order.orderItem.itemId}&lt;/param&gt;
  *    &lt;param name="messageType"&gt;ObjectMessage&lt;/param&gt; &lt;-- "TextMessage" (default) or "ObjectMessage" --&gt;
  *    &lt;param name="highWaterMark"&gt;50&lt;/param&gt; &lt;-- default 200 --&gt;
  *    &lt;param name="highWaterMarkTimeout"&gt;5000&lt;/param&gt; &lt;-- default 60000 ms --&gt;
@@ -78,8 +83,8 @@ import java.util.Enumeration;
  * @since 1.0
  *
  */
-@VisitAfterIf(	condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
-@VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
+@VisitBeforeIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
+@VisitAfterIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
 public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 {
 	/*
@@ -104,10 +109,15 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
     @ConfigParam( use = ConfigParam.Use.REQUIRED )
     private String beanId;
 
+    @ConfigParam( use = ConfigParam.Use.OPTIONAL )
+    private String correlationIdPattern;
+    private FreeMarkerTemplate correlationIdTemplate;
+
     @ConfigParam(defaultVal = "200")
     private int highWaterMark;
     @ConfigParam(defaultVal = "60000")
     private long highWaterMarkTimeout;
+
     @ConfigParam(defaultVal = "1000")
     private long highWaterMarkPollFrequency;
 
@@ -130,13 +140,12 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
      * 	JMS Message producer
      */
     private MessageProducer msgProducer;
-
     /*
      * 	JMS Session
      */
     private Session session;
 
-	//	Vistor methods
+    //	Vistor methods
 
     public void visitAfter( final Element element, final ExecutionContext execContext ) throws SmooksException
 	{
@@ -158,27 +167,30 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		visit( execContext );
 	}
 
-	private void visit( final ExecutionContext execContext )
-	{
-		sendMessage( msgCreationStrategy.createJMSMessage( beanId, execContext, session ));
+	private void visit( final ExecutionContext execContext ) throws SmooksException	{
+        Message message = msgCreationStrategy.createJMSMessage(beanId, execContext, session);
+
+        if(correlationIdTemplate != null) {
+            setCorrelationID(execContext, message);
+        }
+
+        sendMessage(message);
 	}
 
-	public void onChildElement( final SAXElement saxElement, final SAXElement saxElement2, final ExecutionContext execContect ) throws SmooksException, IOException
+    public void onChildElement( final SAXElement saxElement, final SAXElement saxElement2, final ExecutionContext execContect ) throws SmooksException, IOException
 	{
 		//	NoOp
 	}
 
-	public void onChildText( final SAXElement saxElement, final SAXText saxText, final ExecutionContext execContext ) throws SmooksException, IOException
+    public void onChildText( final SAXElement saxElement, final SAXText saxText, final ExecutionContext execContext ) throws SmooksException, IOException
 	{
 		//	NoOp
 	}
 
-	//	Lifecycle
+    //	Lifecycle
 
-	@org.milyn.delivery.annotation.Initialize
-    public void initialize() throws SmooksConfigurationException
-    {
-    	log.info( " initializing JMSRouter..." );
+    @Initialize
+    public void initialize() throws SmooksConfigurationException, JMSException {
     	Context context = null;
     	try
 		{
@@ -190,53 +202,29 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
     	catch (NamingException e)
 		{
     		final String errorMsg = "NamingException while trying to lookup [" + jmsProperties.getDestinationName() + "]";
+            releaseJMSResources();
     		log.error( errorMsg, e );
     		throw new SmooksConfigurationException( errorMsg, e );
-		}
-    	finally
-    	{
+		} catch (JMSException e) {
+            releaseJMSResources();
+        } finally {
     		if ( context != null )
     		{
 				try { context.close(); } catch (NamingException e) { log.warn( "NamingException while trying to close initial Context"); }
     		}
     	}
+
+        if(correlationIdPattern != null) {
+            correlationIdTemplate = new FreeMarkerTemplate(correlationIdPattern);
+        }
     }
 
     @Uninitialize
-    public void uninitialize()
-    {
-    	log.info( "uninitializing JMSRouter" );
-    	if ( connection != null )
-    	{
-			try
-			{
-				connection.stop();
-			}
-			catch ( JMSException e )
-			{
-				final String errorMsg = "JMSException while trying to stop connection";
-				log.error( errorMsg, e );
-			}
-    	}
-
-    	if ( msgProducer != null )
-    	{
-			try
-			{
-				msgProducer.close();
-			}
-			catch (JMSException e)
-			{
-				final String errorMsg = "JMSException while trying to close message producer";
-				log.error( errorMsg, e );
-			}
-    	}
+    public void uninitialize() throws JMSException {
+        releaseJMSResources();
     }
 
-	//	protected
-
-    protected MessageProducer createMessageProducer( final Destination destination, final Context context )
-	{
+    protected MessageProducer createMessageProducer( final Destination destination, final Context context ) throws JMSException {
 		try
 		{
 		    final ConnectionFactory connFactory = (ConnectionFactory) context.lookup( jmsProperties.getConnectionFactoryName() );
@@ -255,11 +243,13 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		catch( JMSException e)
 		{
 			final String errorMsg = "JMSException while trying to create MessageProducer for Queue [" + jmsProperties.getDestinationName() + "]";
-			throw new SmooksConfigurationException( errorMsg, e );
+            releaseJMSResources();
+            throw new SmooksConfigurationException( errorMsg, e );
 		}
 		catch (NamingException e)
 		{
 			final String errorMsg = "NamingException while trying to lookup ConnectionFactory [" + jmsProperties.getConnectionFactoryName() + "]";
+            releaseJMSResources();
 			throw new SmooksConfigurationException( errorMsg, e );
 		}
 
@@ -294,7 +284,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 	}
 
-	protected void sendMessage( final Message message ) throws SmooksRoutingException
+    protected void sendMessage( final Message message ) throws SmooksRoutingException
 	{
         try {
             waitWhileAboveHighWaterMark();
@@ -372,7 +362,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 	}
 
-	protected void close( final Session session )
+    protected void close( final Session session )
 	{
 		if ( session != null )
 		{
@@ -388,50 +378,54 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		}
 	}
 
-	// getter/setter
+    // getter/setter
 
-	public Destination getDestination()
+    public Destination getDestination()
 	{
 		return destination;
 	}
-
 
     @ConfigParam ( use = Use.OPTIONAL, defaultVal = "org.jnp.interfaces.NamingContextFactory" )
     public void setJndiContextFactory( final String contextFactory )
     {
     	jndiProperties.setContextFactory( contextFactory );
     }
-	public String getJndiContectFactory()
+
+    public String getJndiContectFactory()
 	{
 		return jndiProperties.getContextFactory();
 	}
+
 
     @ConfigParam ( use = Use.OPTIONAL, defaultVal = "jnp://localhost:1099" )
     public void setJndiProviderUrl(final String providerUrl )
     {
     	jndiProperties.setProviderUrl( providerUrl );
     }
-	public String getJndiProviderUrl()
+
+    public String getJndiProviderUrl()
 	{
 		return jndiProperties.getProviderUrl();
 	}
 
-	public String getJndiNamingFactoryUrl()
+    public String getJndiNamingFactoryUrl()
 	{
 		return jndiProperties.getNamingFactoryUrlPkgs();
 	}
+
     @ConfigParam ( use = Use.OPTIONAL, defaultVal = "org.jboss.naming:java.naming.factory.url.pkgs" )
     public void setJndiNamingFactoryUrl(final String pkgUrl )
     {
     	jndiProperties.setNamingFactoryUrlPkgs( pkgUrl );
     }
 
-	@ConfigParam ( use = Use.REQUIRED )
+    @ConfigParam ( use = Use.REQUIRED )
 	public void setDestinationName( final String destinationName )
 	{
 		jmsProperties.setDestinationName( destinationName );
 	}
-	public String getDestinationName()
+
+    public String getDestinationName()
 	{
 		return jmsProperties.getDestinationName();
 	}
@@ -441,7 +435,19 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
     	jmsProperties.setDeliveryMode( deliveryMode );
 	}
-	public String getDeliveryMode()
+
+    private void setCorrelationID(ExecutionContext execContext, Message message) {
+        Map beanMap = BeanAccessor.getBeanMap(execContext);
+        String correlationId = correlationIdTemplate.apply(beanMap);
+
+        try {
+            message.setJMSCorrelationID(correlationId);
+        } catch (JMSException e) {
+            throw new SmooksException("Failed to set CorrelationID '" + correlationId + "' on message.", e);
+        }
+    }
+
+    public String getDeliveryMode()
 	{
 		return jmsProperties.getDeliveryMode();
 	}
@@ -451,7 +457,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
     	jmsProperties.setTimeToLive( timeToLive );
 	}
-	public long getTimeToLive()
+
+    public long getTimeToLive()
 	{
 		return jmsProperties.getTimeToLive();
 	}
@@ -461,7 +468,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
 		jmsProperties.setSecurityPrincipal( securityPrincipal );
 	}
-	public String getSecurityPrincipal()
+
+    public String getSecurityPrincipal()
 	{
 		return jmsProperties.getSecurityPrincipal();
 	}
@@ -471,7 +479,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
     	jmsProperties.setSecurityCredential( securityCredential );
 	}
-	public String getSecurityCredential()
+
+    public String getSecurityCredential()
 	{
 		return jmsProperties.getSecurityCredential();
 	}
@@ -481,7 +490,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
 		jmsProperties.setTransacted( transacted );
 	}
-	public boolean isTransacted()
+
+    public boolean isTransacted()
 	{
 		return jmsProperties.isTransacted();
 	}
@@ -491,7 +501,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
 		jmsProperties.setConnectionFactoryName( connectionFactoryName );
 	}
-	public String getConnectionFactoryName()
+
+    public String getConnectionFactoryName()
 	{
 		return jmsProperties.getConnectionFactoryName();
 	}
@@ -501,7 +512,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
     	jmsProperties.setPriority( priority );
 	}
-	public int getPriority()
+
+    public int getPriority()
 	{
 		return jmsProperties.getPriority();
 	}
@@ -512,7 +524,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	{
 		jmsProperties.setAcknowledgeMode( jmsAcknowledgeMode );
 	}
-	public String getAcknowledgeMode()
+
+    public String getAcknowledgeMode()
 	{
 		return jmsProperties.getAcknowledgeMode();
 	}
@@ -526,9 +539,53 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		jmsProperties.setMessageType( messageType );
 	}
 
-	public void setMsgCreationStrategy( final MessageCreationStrategy msgCreationStrategy )
+    public void setMsgCreationStrategy( final MessageCreationStrategy msgCreationStrategy )
 	{
 		this.msgCreationStrategy = msgCreationStrategy;
 	}
 
+    private void releaseJMSResources() throws JMSException {
+        if (connection != null) {
+            try {
+                try {
+                    connection.stop();
+                } finally {
+                    try {
+                        closeProducer();
+                    } finally {
+                        closeSession();
+                    }
+                }
+            } catch (JMSException e) {
+                log.error("JMSException while trying to stop JMS Connection.", e);
+            } finally {
+                connection.close();
+                connection = null;
+            }
+        }
+    }
+
+    private void closeProducer() {
+        if (msgProducer != null) {
+            try {
+                msgProducer.close();
+            } catch (JMSException e) {
+                log.error("JMSException while trying to close JMS Message Producer.", e);
+            } finally {
+                msgProducer = null;
+            }
+        }
+    }
+
+    private void closeSession() {
+        if (session != null) {
+            try {
+                session.close();
+            } catch (JMSException e) {
+                log.error("JMSException while trying to close JMS Session.", e);
+            } finally {
+                session = null;
+            }
+        }
+    }
 }

@@ -70,7 +70,7 @@ public class FileOutputStreamResourceTest
 		
 		resource.visitAfter( (Element)null, executionContext );
 		
-		File file = new File ( destinationDirectory + File.separator + fileNamePattern );
+		File file = new File ( destinationDirectory, fileNamePattern );
 		assertTrue( file.exists() );
 		
 		List<String> listFileNames = FileListAccessor.getListFileNames( executionContext );
@@ -109,7 +109,7 @@ public class FileOutputStreamResourceTest
     	SmooksResourceConfiguration config = new SmooksResourceConfiguration( "x", FileOutputStreamResource.class.getName() );
 		config.setParameter( "resourceName", resourceName );
 		config.setParameter( "fileNamePattern", fileName );
-		config.setParameter( "destinationDirectory", destinationDirectory );
+		config.setParameter( "destinationDirectoryPattern", destinationDirectory );
 		config.setParameter( "listFileNamePattern", listFileName );
 		return config;
 	}
