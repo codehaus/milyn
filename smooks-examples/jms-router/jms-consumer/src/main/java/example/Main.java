@@ -92,14 +92,21 @@ public class Main implements MessageListener
 	        else if ( message instanceof TextMessage )
 	        {
 	            System.out.println("\t[MessageType : TextMessage]");
-	            System.out.println( "\t[Text : " +  ((TextMessage)message).getText() + "]" );
+	            System.out.println( "\t[Text : \n" +  ((TextMessage)message).getText() + "]" );
 	        }
 		} catch (JMSException e)
 		{
 			e.printStackTrace();
 		}
         System.out.println("]");
-	}
+
+        // Slow the processing of the messages so as to force the High Water Mark...
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void closeConnection()
     {

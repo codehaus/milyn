@@ -18,6 +18,16 @@
         <module>splitter-router</module>
     </modules>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+
+    </dependencies>
+
 	<repositories>
         <repository>
             <id>milyn</id>
