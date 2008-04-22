@@ -150,6 +150,10 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
         if(currentList.length >= highWaterMark) {
             long start = System.currentTimeMillis();
 
+            if(logger.isDebugEnabled()) {
+                logger.debug("Destination directoy '" + destinationDirectory.getAbsolutePath() + "' contains " + currentList.length +  " file matching pattern '" + listFileNamePattern + "'.  High Water Mark is " + highWaterMark +  ".  Waiting for file count to drop.");
+            }
+
             while(System.currentTimeMillis() < start + highWaterMarkTimeout) {
                 try {
                     Thread.sleep(highWaterMarkPollFrequency);

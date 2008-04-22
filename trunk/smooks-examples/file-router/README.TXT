@@ -38,9 +38,11 @@ How to Run?
             windows is visible at the same time.
         8.  In "Window 2", run "mvn exec:java". When asked how many order-item
             records you'd like in the generated input message, just enter a small
-            number to start with (e.g. 20).  After that, try a HUGE message and
-            see how Smooks can process it (e.g. 100000).
-        9.  See the order-item messages as they are processed in "Window 1".
+            number to start with (e.g. 20).  Later, try a HUGE message and
+            see how Smooks can process it (e.g. 1,000,000 order-items).
+        9.  See Smooks throttling against the High Water Mark ("Window 2")
+            while the messages are being slowly consumed by the
+            file-consumer ("Window 1").
 
 	 Monitoring (optional):
 		1.  export MAVEN_OPTS=-Dcom.sun.management.jmxremote

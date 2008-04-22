@@ -35,7 +35,7 @@
         <param name="beanId">orderItem_xml</param>
         <param name="destinationName">smooks.exampleQueue</param>
         <param name="highWaterMark">3</param>
-        <param name="correlationIdPattern">correlationId-${order.orderId}-${order.orderItem.itemId}</param>        
+        <param name="correlationIdPattern">${order.orderId}-${order.orderItem.itemId}</param>        
     </resource-config>
 
     <resource-config selector="order-item">

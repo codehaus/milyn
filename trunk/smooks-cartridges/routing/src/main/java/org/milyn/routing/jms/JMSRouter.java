@@ -90,7 +90,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	/*
 	 *	Log instance
 	 */
-	private final Log log = LogFactory.getLog( JMSRouter.class );
+	private final Log logger = LogFactory.getLog( JMSRouter.class );
 
 	/*
 	 *	JNDI Properties holder
@@ -203,14 +203,14 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 		{
     		final String errorMsg = "NamingException while trying to lookup [" + jmsProperties.getDestinationName() + "]";
             releaseJMSResources();
-    		log.error( errorMsg, e );
+    		logger.error( errorMsg, e );
     		throw new SmooksConfigurationException( errorMsg, e );
 		} catch (JMSException e) {
             releaseJMSResources();
         } finally {
     		if ( context != null )
     		{
-				try { context.close(); } catch (NamingException e) { log.warn( "NamingException while trying to close initial Context"); }
+				try { context.close(); } catch (NamingException e) { logger.warn( "NamingException while trying to close initial Context"); }
     		}
     	}
 
@@ -238,7 +238,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 
 			msgProducer = session.createProducer( destination );
 			connection.start();
-			log.info ("JMS Connection started");
+			logger.info ("JMS Connection started");
 		}
 		catch( JMSException e)
 		{
@@ -316,11 +316,15 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
                 int length = getQueueLength(queueBrowser);
                 long start = System.currentTimeMillis();
 
+                if(logger.isDebugEnabled() && length >= highWaterMark) {
+                    logger.debug("Length of JMS destination Queue '" + jmsProperties.getDestinationName() + "' has reached " + length +  ".  High Water Mark is " + highWaterMark +  ".  Waiting for Queue length to drop.");
+                }
+
                 while(length >= highWaterMark && (System.currentTimeMillis() < start + highWaterMarkTimeout)) {
                     try {
                         Thread.sleep(highWaterMarkPollFrequency);
                     } catch (InterruptedException e) {
-                        log.error("Interrupted", e);
+                        logger.error("Interrupted", e);
                         return;
                     }
                     length = getQueueLength(queueBrowser);
@@ -357,7 +361,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 			catch (JMSException e)
 			{
 				final String errorMsg = "JMSException while trying to close connection";
-				log.error( errorMsg, e );
+				logger.error( errorMsg, e );
 			}
 		}
 	}
@@ -373,7 +377,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 			catch (JMSException e)
 			{
 				final String errorMsg = "JMSException while trying to close session";
-				log.error( errorMsg, e );
+				logger.error( errorMsg, e );
 			}
 		}
 	}
@@ -557,7 +561,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
                     }
                 }
             } catch (JMSException e) {
-                log.error("JMSException while trying to stop JMS Connection.", e);
+                logger.error("JMSException while trying to stop JMS Connection.", e);
             } finally {
                 connection.close();
                 connection = null;
@@ -570,7 +574,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
             try {
                 msgProducer.close();
             } catch (JMSException e) {
-                log.error("JMSException while trying to close JMS Message Producer.", e);
+                logger.error("JMSException while trying to close JMS Message Producer.", e);
             } finally {
                 msgProducer = null;
             }
@@ -582,7 +586,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
             try {
                 session.close();
             } catch (JMSException e) {
-                log.error("JMSException while trying to close JMS Session.", e);
+                logger.error("JMSException while trying to close JMS Session.", e);
             } finally {
                 session = null;
             }
