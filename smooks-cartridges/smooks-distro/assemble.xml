@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="assemble" name="Assembly">
 
-    <property name="version" value="smooks-1.0"/>
-    <property name="targetdir" value="target/${version}"/>
+    <property name="version" value="1.0"/>
+
+    <property name="mainDistroName" value="smooks-${version}"/>
+    <property name="mainTargetdir" value="target/${mainDistroName}"/>
+
+    <property name="examplesDistroName" value="smooks-examples-${version}"/>
+    <property name="exampleTargetdir" value="target/${examplesDistroName}"/>
 
     <target name="assemble">
         <condition property="iswindows">
@@ -44,10 +49,16 @@
             <arg line="project-info-reports:dependencies"/>
         </exec>
 
-        <mkdir dir="${targetdir}"/>
-        <mkdir dir="${targetdir}/docs/javadoc"/>
+        <antcall target="buildMainDistro" />
+        <antcall target="buildExamplesDistro" />
+    </target>
 
-        <copy todir="${targetdir}">
+    <target name="buildMainDistro">
+        
+        <mkdir dir="${mainTargetdir}"/>
+        <mkdir dir="${mainTargetdir}/docs/javadoc"/>
+
+        <copy todir="${mainTargetdir}">
             <fileset dir="./">
                 <include name="README.html"/>
                 <include name="LICENSE.txt"/>
@@ -59,46 +70,60 @@
 
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-core"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/css"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/css"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/css"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/csv"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/csv"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/csv"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/edi"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/edi"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/edi"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/javabean"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/javabean"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/javabean"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/misc"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/misc"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/misc"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/routing"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/routing"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/routing"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/scripting"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/scripting"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/scripting"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/servlet"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/servlet"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/servlet"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/templating"/>
-            <param name="target" value="${targetdir}/docs/javadoc/smooks-cartridges/templating"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/templating"/>
         </antcall>
 
-        <zip destfile="target/${version}.zip" basedir="target" includes="${version}/**"/>
+        <!-- Zip up the main distro... -->
+        <zip destfile="target/${mainDistroName}.zip" basedir="target" includes="${mainDistroName}/**"/>
+    </target>
+
+
+    <target name="buildExamplesDistro">
+
+        <mkdir dir="${exampleTargetdir}"/>
+
+        <copy todir="${exampleTargetdir}">
+            <fileset dir="../../smooks-examples" />
+        </copy>
+
+        <!-- Zip up the examples distro... -->
+        <zip destfile="target/${examplesDistroName}.zip" basedir="target" includes="${examplesDistroName}/**"/>
     </target>
 
     <target name="move-javadoc">
