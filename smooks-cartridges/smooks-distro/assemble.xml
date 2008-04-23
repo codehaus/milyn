@@ -73,6 +73,22 @@
             <param name="target" value="${mainTargetdir}/docs/javadoc/smooks"/>
         </antcall>
         <antcall target="move-javadoc">
+            <param name="source" value="../../commons"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/commons"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../edisax"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/edisax"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../magger"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/magger"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../tinak"/>
+            <param name="target" value="${mainTargetdir}/docs/javadoc/tinak"/>
+        </antcall>
+        <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/css"/>
             <param name="target" value="${mainTargetdir}/docs/javadoc/smooks-cartridges/css"/>
         </antcall>
@@ -112,7 +128,6 @@
         <!-- Zip up the main distro... -->
         <zip destfile="target/${mainDistroName}.zip" basedir="target" includes="${mainDistroName}/**"/>
     </target>
-
 
     <target name="buildExamplesDistro">
 
