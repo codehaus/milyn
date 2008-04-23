@@ -1,8 +1,8 @@
 Building and Running The Examples:
 ==================================
 In order to build any of the examples, you need to install Maven (http://maven.apache.org/).
-We use Maven v2.0.6, so if you're using a different version and have any issues, please try
-v2.0.6 before raising a JIRA (http://jira.codehaus.org/browse/MILYN).
+We use Maven v2.0.8, so if you're using a different version and have any issues, please try
+v2.0.8 before raising a JIRA (http://jira.codehaus.org/browse/MILYN).
 
 All of the examples are built and run in the same way:
 
