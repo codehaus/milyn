@@ -22,8 +22,8 @@
         <milyn.tinak.version.base>0.8</milyn.tinak.version.base>
         <milyn.tinak.version>${milyn.tinak.version.base}.1</milyn.tinak.version>
 
-        <milyn.edisax.version.base>0.2</milyn.edisax.version.base>
-        <milyn.edisax.version>${milyn.edisax.version.base}.1</milyn.edisax.version>
+        <milyn.edisax.version.base>0.3</milyn.edisax.version.base>
+        <milyn.edisax.version>${milyn.edisax.version.base}</milyn.edisax.version>
 
         <xerces.version>2.7.1</xerces.version>
         <xalan.version>2.7.0</xalan.version>

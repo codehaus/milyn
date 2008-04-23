@@ -50,7 +50,6 @@
 		</xs:complexType>
 	</xs:element>
 
-
 	<xs:element name="segments">
 		<xs:complexType>
 			<xs:complexContent>
@@ -95,8 +94,8 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="segcode"
-						type="xs:string" use="required"/>
+					<xs:attribute name="segcode" type="xs:string" use="required"/>
+                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -107,9 +106,10 @@
 			<xs:complexContent>
 				<xs:extension base="mapping:mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:component"
-							minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="mapping:component" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
+                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />
+                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -120,9 +120,10 @@
 			<xs:complexContent>
 				<xs:extension base="mapping:mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:sub-component"
-							minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="mapping:sub-component" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
+                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />
+                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -131,7 +132,9 @@
 	<xs:element name="sub-component">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node" />
+				<xs:extension base="mapping:mapping-node">
+                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />                    
+                </xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>

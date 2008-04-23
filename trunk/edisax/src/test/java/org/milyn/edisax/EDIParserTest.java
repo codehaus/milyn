@@ -16,11 +16,7 @@
 
 package org.milyn.edisax;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
+import junit.framework.TestCase;
 import org.milyn.io.StreamUtils;
 import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
 import org.milyn.schema.ediMessageMapping10.SegmentDocument.Segment;
@@ -29,7 +25,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import junit.framework.TestCase;
+import java.io.*;
 
 /**
  * @author tfennelly
@@ -87,9 +83,29 @@ public class EDIParserTest extends TestCase {
 		test("test13");
 		test("test14");
 		test("test15");
+        test("test16");
+        test("test17");
+        test("test18");
 	}
 
-	private void test(String testpack) throws IOException {
+    public void test_MILYN_108() throws IOException {
+        test("test-MILYN-108-01"); // Tests Segment Truncation
+        test("test-MILYN-108-02"); // Tests Segment Truncation
+        test("test-MILYN-108-03"); // Tests Segment Truncation
+        test("test-MILYN-108-04"); // Tests Segment Truncation
+
+        test("test-MILYN-108-05"); // Tests Component Truncation
+        test("test-MILYN-108-06"); // Tests Component Truncation
+        test("test-MILYN-108-07"); // Tests Component Truncation
+
+        test("test-MILYN-108-08"); // Tests Field Truncation
+        test("test-MILYN-108-09"); // Tests Field Truncation
+
+        test("test-MILYN-108-10"); // Tests Field and Component Truncation
+        test("test-MILYN-108-11"); // Tests Field and Component Truncation
+    }
+
+    private void test(String testpack) throws IOException {
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-input.txt")));
 		InputStream mapping = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-to-xml-mapping.xml")));
 		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/expected.xml"))).trim();
@@ -133,16 +149,7 @@ public class EDIParserTest extends TestCase {
 		parser.parse(new InputSource(ediInputStream));
 	}
 	
-	private String removeCRLF(String string) {
-		StringBuffer buffer = new StringBuffer();
-		
-		for(int i = 0; i < string.length(); i++) {
-			char character = string.charAt(i);
-			if(character != '\r' && character != '\n') {
-				buffer.append(character);
-			}
-		}
-		
-		return buffer.toString();
+	private String removeCRLF(String string) throws IOException {
+        return StreamUtils.trimLines(new StringReader(string)).toString();
 	}
 }
