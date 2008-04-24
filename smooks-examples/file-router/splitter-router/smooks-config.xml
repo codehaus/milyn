@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
+    <!--
+    Filter the message using the SAX Filter (i.e. not DOM, so no
+    intermediate DOM, so we can process huge messages...
+    -->
+    <resource-config selector="global-parameters">
+        <param name="stream.filter.type">SAX</param>
+    </resource-config>
+
     <resource-config selector="order">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">order</param>
