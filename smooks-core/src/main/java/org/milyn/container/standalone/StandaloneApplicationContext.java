@@ -18,6 +18,7 @@ package org.milyn.container.standalone;
 
 import java.net.URI;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
@@ -91,5 +92,10 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	 */
 	public ProfileStore getProfileStore() {
 		return profileStore;
+	}
+	
+	public Map getAttributes()
+	{
+		return attributes;
 	}
 }

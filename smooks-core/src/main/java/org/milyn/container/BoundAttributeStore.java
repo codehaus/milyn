@@ -16,6 +16,8 @@
 
 package org.milyn.container;
 
+import java.util.Map;
+
 /**
  * BoundAttributeStore interface definition.
  * <p/>
@@ -43,6 +45,12 @@ public interface BoundAttributeStore {
 	 * implementation, or null if no object is bound under the name.
 	 */
 	public abstract Object getAttribute(Object key);
+	
+	/**
+	 * Returns the Map of attributes bound in this {@link org.milyn.container.BoundAttributeStore} 
+	 * @return Map of all objects bound in this {@link org.milyn.container.BoundAttributeStore}
+	 */
+	public abstract Map getAttributes();
 	
 	/**
 	 * Removes the object bound with the specified name from this {@link org.milyn.container.BoundAttributeStore} 

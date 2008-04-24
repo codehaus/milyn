@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.dom.MockContentDeliveryConfig;
@@ -147,5 +148,10 @@ public class MockExecutionContext implements ExecutionContext {
     
     public MockContentDeliveryConfig getMockDeliveryConfig() {
         return (MockContentDeliveryConfig) this.deliveryConfig;
+    }
+    
+    public Map getAttributes()
+    {
+    	return attributes;
     }
 }

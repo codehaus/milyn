@@ -172,4 +172,9 @@ public class StandaloneExecutionContext implements ExecutionContext {
     public String toString() {
         return attributes.toString();
     }
+    
+    public Hashtable getAttributes()
+    {
+    	return attributes;
+    }
 }
