@@ -17,6 +17,7 @@
 package org.milyn.container;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
@@ -81,5 +82,10 @@ public class MockApplicationContext implements ApplicationContext {
 
     public void setResourceLocator(ContainerResourceLocator resourceLocator) {
         throw new UnsupportedOperationException("Can't set the locator on the Mock using this method.  Set it through the publicly accessible  property.");
+    }
+    
+    public Map getAttributes()
+    {
+    	return attributes;
     }
 }

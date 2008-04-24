@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
@@ -105,6 +106,12 @@ public class FileListAccessor
 	public static List<String> getListFileNames( final ExecutionContext executionContext )
 	{
 		return (List<String>) executionContext.getAttribute( ALL_LIST_FILE_NAME_CONTEXT_KEY );
+	}
+	
+	@SuppressWarnings ( "unchecked" )
+	public static List<String> getListFileNames( final Map attributes )
+	{
+		return (List<String>) attributes.get( ALL_LIST_FILE_NAME_CONTEXT_KEY );
 	}
 
 }

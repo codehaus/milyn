@@ -16,6 +16,8 @@
 
 package org.milyn.servlet.container;
 
+import java.util.Map;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
@@ -114,5 +116,10 @@ public class ServletApplicationContext implements ApplicationContext {
 	 */
 	public ServletContext getServletContext() {
 		return servletContext;
+	}
+	
+	public Map getAttributes()
+	{
+		throw new UnsupportedOperationException( "Method getAttributes is not implemented" ); 
 	}
 }

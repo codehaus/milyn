@@ -33,6 +33,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * Smooks ExecutionContext implementation for the HttpServlet container.
@@ -207,5 +208,10 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	 */
 	public HttpServletRequest getServletRequest() {
 		return servletRequest;
+	}
+	
+	public Map getAttributes()
+	{
+		throw new UnsupportedOperationException( "Method getAttributes is not implemented" ); 
 	}
 }
