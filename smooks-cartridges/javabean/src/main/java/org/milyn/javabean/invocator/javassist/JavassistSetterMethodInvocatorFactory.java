@@ -3,6 +3,8 @@
  */
 package org.milyn.javabean.invocator.javassist;
 
+import java.io.IOException;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -12,7 +14,9 @@ import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
 
 import org.milyn.container.ApplicationContext;
-import org.milyn.javabean.bcm.ApplicationContextJavaPool;
+import org.milyn.javabean.bcm.BcmClassLoader;
+import org.milyn.javabean.bcm.BcmUtils;
+import org.milyn.javabean.bcm.javassist.JavaPoolUtils;
 import org.milyn.javabean.invocator.SetterMethodInvocator;
 import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
 
@@ -23,14 +27,15 @@ import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
 public class JavassistSetterMethodInvocatorFactory implements
 		SetterMethodInvocatorFactory {
 
+	
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
 	public SetterMethodInvocator create(ApplicationContext applicationContext,
 			String setterName, Object bean, Class<?> setterParamType) {
 		
-    	ClassPool classPool = ApplicationContextJavaPool.getClassPool(applicationContext);
-    	ClassLoader classLoader = applicationContext.getClass().getClassLoader();
+    	ClassPool classPool = JavaPoolUtils.getClassPool(applicationContext);
+    	BcmClassLoader classLoader = BcmUtils.getClassloader(applicationContext);
     	
     	// smi = SetterMethodInvocator
     	CtClass smiInterface;
@@ -41,40 +46,22 @@ public class JavassistSetterMethodInvocatorFactory implements
 			
 			smiInterface = classPool.get(SetterMethodInvocator.class.getName());
 			
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Could not get the SetterMethodInvocator interface from the ClassPool", e);
-		}
-		try {
-			
 			ctBean = classPool.get(bean.getClass().getName());
 			
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Could not get CtClass from the bean class '" + bean.getClass().getName() + "'  from the ClassPool", e);
-		}
-		try {
-			
 			ctSetterParamType = classPool.get(setterParamType.getName());
-			
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Could not get CtClass from the setterParamType class '" + setterParamType.getName() + "'  from the ClassPool", e);
-		}
-		try {
 			
 			ctObj = classPool.get(Object.class.getName());
 			
 		} catch (NotFoundException e) {
-			throw new RuntimeException("Could not get the Object class from the ClassPool", e);
+			throw new RuntimeException("Could not get one of the CtClass's from the ClassPool", e);
 		}
 		
 		Class<?> smiClass = null;
 		try {
-			String smiClassName = "org.milyn.javabean.smi." + bean.getClass().getName() + "_" + setterName + "_" + setterParamType.getName();
+			String smiClassName = "org.milyn.javabean.invocator.javassist._generated." + safeClassName(bean.getClass().getName() + "_" + setterName + "_" + setterParamType.getName());
 			
-			try {
-				smiClass = classLoader.loadClass(smiClassName);
-			} catch (ClassNotFoundException e) {
-			}
-			
+			smiClass = classLoader.load(smiClassName);
+						
 			if(smiClass == null) {
 				CtClass smiImpl = classPool.makeClass(smiClassName);
 				smiImpl.addInterface(smiInterface);
@@ -85,11 +72,16 @@ public class JavassistSetterMethodInvocatorFactory implements
 				
 				smiImpl.addMethod(setMethod);
 				
-				smiClass = smiImpl.toClass(classLoader, bean.getClass().getProtectionDomain());
+				byte[] byteCode = smiImpl.toBytecode();
+				
+				smiClass = classLoader.load(smiImpl.getName(), byteCode);
+
 			}
 		} catch (CannotCompileException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
 		} catch (NotFoundException e) {
+			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
+		} catch (IOException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
 		}
     	
@@ -103,6 +95,13 @@ public class JavassistSetterMethodInvocatorFactory implements
     	
     }
   
+	private String safeClassName(String name) {
+		
+		return name.replace(".", "_")
+				.replace("[", "_")
+				.replace(";", "_");
+		
+	}
     
     private String parameterStr(String setterName, CtClass ctBeanClass, String parameterName, CtClass setterParamType) throws NotFoundException {
     	

@@ -38,6 +38,22 @@ public abstract class BeanUtils {
 
     private static Log logger = LogFactory.getLog(BeanUtils.class);
     
+    
+    public static long time = 0;
+    public static long called = 0;
+    
+    public static void resetMeanTime() {
+    	time = 0;
+    	called = 0;
+    }
+    
+    public static long getMeanTime() {
+    	if(called == 0) {
+    		return 0;
+    	}
+    	return time / called;
+    }
+    
     /**
      * Dynamically generates and instantiates a class that can call the desired method. 
      * 
@@ -48,11 +64,18 @@ public abstract class BeanUtils {
      * @return
      */
     public static SetterMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Object bean, Class<?> setterParamType) {
-
+    	
     	SetterMethodInvocatorFactory factory = SetterMethodInvocatorFactory.Factory.create(applicationContext);
     	
-    	return factory.create(applicationContext, setterName, bean, setterParamType);
+    	long beginTime = System.nanoTime();
     	
+    	SetterMethodInvocator setterMethodInvocator = factory.create(applicationContext, setterName, bean, setterParamType);
+    	
+    	time = System.nanoTime() - beginTime;
+    	
+    	called++;
+    	
+    	return setterMethodInvocator;
     }
      
     /**

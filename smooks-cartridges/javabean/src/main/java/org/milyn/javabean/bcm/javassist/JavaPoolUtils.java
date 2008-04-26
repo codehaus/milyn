@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.milyn.javabean.bcm;
+package org.milyn.javabean.bcm.javassist;
 
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -12,7 +12,7 @@ import org.milyn.container.ApplicationContext;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class ApplicationContextJavaPool {
+public final class JavaPoolUtils {
 	
 	private static final String CLASSPOOL_CONTEXT_KEY = ClassPool.class.getName() + "#CONTEXT_KEY";
     
@@ -29,6 +29,9 @@ public class ApplicationContextJavaPool {
 
         return classPool;
     	
+    }
+    
+    private JavaPoolUtils() {
     }
 	
 }
