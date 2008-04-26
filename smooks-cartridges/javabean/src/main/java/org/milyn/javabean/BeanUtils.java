@@ -19,31 +19,42 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.NotFoundException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.bcm.ApplicationContextJavaPool;
+import org.milyn.javabean.invocator.SetterMethodInvocator;
+import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
 
 /**
  * Bean utility methods.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public abstract class BeanUtils {
 
     private static Log logger = LogFactory.getLog(BeanUtils.class);
-
     
+    /**
+     * Dynamically generates and instantiates a class that can call the desired method. 
+     * 
+     * @param applicationContext
+     * @param setterName
+     * @param bean
+     * @param setterParamType
+     * @return
+     */
+    public static SetterMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Object bean, Class<?> setterParamType) {
+
+    	SetterMethodInvocatorFactory factory = SetterMethodInvocatorFactory.Factory.create(applicationContext);
+    	
+    	return factory.create(applicationContext, setterName, bean, setterParamType);
+    	
+    }
+     
     /**
      * Create the bean setter method instance for this visitor.
      *
@@ -107,150 +118,8 @@ public abstract class BeanUtils {
 
         return beanSetterMethod;
     }
-    
-    
-    /**
-     * Dynamically generates and instantiates a class that can call the desired method. 
-     * 
-     * TODO: move the whole logic to a separate class
-     * 
-     * @param applicationContext
-     * @param setterName
-     * @param bean
-     * @param setterParamType
-     * @return
-     */
-    public static SetterMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Object bean, Class<?> setterParamType) {
-    	
-    	
-    	ClassPool classPool = ApplicationContextJavaPool.getClassPool(applicationContext);
-    	ClassLoader classLoader = applicationContext.getClass().getClassLoader();
-    	
-    	// smi = SetterMethodInvocator
-    	CtClass smiInterface;
-		try {
-			
-			smiInterface = classPool.get(SetterMethodInvocator.class.getName());
-			
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Could not get the SetterMethodInvocator interface", e);
-		}
 
-		Class<?> smiClass = null;
-		try {
-			String smiClassName = "org.milyn.javabean.smi." + bean.getClass().getName() + "_" + setterName + "_" + setterParamType.getName();
-			
-			try {
-				smiClass = classLoader.loadClass(smiClassName);
-			} catch (ClassNotFoundException e) {
-			}
-			
-			if(smiClass == null) {
-				CtClass smiImpl = classPool.makeClass(smiClassName);
-			  	
-				String methodStr = "public void set(Object obj, Object arg) {" +
-					"((" + bean.getClass().getName() + ")obj)." + setterName + "(" + parameterStr(setterName, bean, setterParamType) + ");" +
-				"}";
-				
-				CtMethod setMethod = CtNewMethod.make(methodStr, smiImpl);
-				
-				smiImpl.addMethod(setMethod);
-				
-				smiImpl.addInterface(smiInterface);
-				
-				smiClass = smiImpl.toClass(classLoader, bean.getClass().getProtectionDomain());
-			}
-		} catch (CannotCompileException e) {
-			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
-		}
-    	
-    	try {
-			return (SetterMethodInvocator) smiClass.newInstance();
-		} catch (InstantiationException e) {
-			throw new RuntimeException("Could not create the SetterMethodInvocator object", e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Could not create the SetterMethodInvocator object", e);
-		}
-    	
-    }
-  
-    
-    private static String parameterStr(String setterName, Object bean, Class<?> setterParamType) {
-    	
-    	if(setterParamType.equals(Byte.class)) {
-    		
-    		return autobox(setterName, bean.getClass(), Byte.class, byte.class);
-    		
-    	} else if(setterParamType.equals(Short.class)) {
-    		
-    		return autobox(setterName, bean.getClass(), Short.class, short.class);
-    		
-		} else if(setterParamType.equals(Integer.class)) {
-
-    		return autobox(setterName, bean.getClass(), Integer.class, int.class);
-    		
-		} else if(setterParamType.equals(Long.class)) {
-
-    		return autobox(setterName, bean.getClass(), Long.class, long.class);
-		
-		} else if(setterParamType.equals(Float.class)) {
-
-    		return autobox(setterName, bean.getClass(), Float.class, float.class);
-    		
-		} else if(setterParamType.equals(Double.class)) {
-
-    		return autobox(setterName, bean.getClass(), Double.class, double.class);
-    		
-		} else if(setterParamType.equals(Boolean.class)) {
-
-    		return autobox(setterName, bean.getClass(), Boolean.class, boolean.class);
-    			
-		} else if(setterParamType.equals(Character.class)) {
-
-    		return autobox(setterName, bean.getClass(), Character.class, char.class);
-    				
-    	} else {
-    		if(setterParamType.isArray()) {
-    			
-    			return "(" + setterParamType.getComponentType().getName() + "[]) arg";
-    		} else {
-    			return "(" + setterParamType.getName() + ") arg";
-    		}
-    	}
-    	
-    }
-    
-    private static String autobox(String setterName, Class<?> beanClass, Class<?> paramType, Class<?> paramPrimativeType) {
-    	
-    	if(isMethodPresent(setterName, beanClass, paramType)) {
-			return "("+ paramType.getSimpleName() +") arg";
-		} else if (isMethodPresent(setterName, beanClass, paramPrimativeType)){
-			return "(("+ paramType.getSimpleName() +") arg)." + paramPrimativeType.getSimpleName() + "Value()";
-		} else {
-			
-			throw new RuntimeException("Could not find the method '" + setterName + "' on the bean '" + beanClass 
-					+ "' with a '" + paramType.getSimpleName() + "' or a '" + paramPrimativeType.getSimpleName() + "' parameter."); 
-			
-		}
-    }
-    
-    private static boolean isMethodPresent(String methodName, Class<?> beanClass, Class<?> setterParamType) {
-    	
-    	Method[] methods = beanClass.getMethods();
-    	
-    	for(Method method : methods) {
-    		
-    		if(methodName.equals(method.getName())) {
-	    		Class<?>[] parameterTypes = method.getParameterTypes(); 
-	    		
-	    		if(parameterTypes.length == 1 && parameterTypes[0].equals(setterParamType)) {
-	    			return true;
-	    		}
-    		}
-    		
-    	}
-    	return false;
-    }
+ 
 
     public static String toSetterName(String property) {
         StringBuffer setterName = new StringBuffer();
