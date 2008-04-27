@@ -38,22 +38,6 @@ public abstract class BeanUtils {
 
     private static Log logger = LogFactory.getLog(BeanUtils.class);
     
-    
-    public static long time = 0;
-    public static long called = 0;
-    
-    public static void resetMeanTime() {
-    	time = 0;
-    	called = 0;
-    }
-    
-    public static long getMeanTime() {
-    	if(called == 0) {
-    		return 0;
-    	}
-    	return time / called;
-    }
-    
     /**
      * Dynamically generates and instantiates a class that can call the desired method. 
      * 
@@ -63,21 +47,29 @@ public abstract class BeanUtils {
      * @param setterParamType
      * @return
      */
-    public static SetterMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Object bean, Class<?> setterParamType) {
+    public static SetterMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Class<?> bean, Class<?> setterParamType) {
     	
     	SetterMethodInvocatorFactory factory = SetterMethodInvocatorFactory.Factory.create(applicationContext);
     	
-    	long beginTime = System.nanoTime();
-    	
     	SetterMethodInvocator setterMethodInvocator = factory.create(applicationContext, setterName, bean, setterParamType);
-    	
-    	time = System.nanoTime() - beginTime;
-    	
-    	called++;
-    	
+
     	return setterMethodInvocator;
     }
-     
+    
+    /**
+     * Create the bean setter method instance for this visitor.
+     *
+     * @param setterName The setter method name.
+     * @param setterParamType
+     * @return The bean setter method.
+     * @Deprecated Use the {@link #createSetterMethod(String, Class, Class)} method instead
+     */
+    @Deprecated
+    public static Method createSetterMethod(String setterName, Object bean, Class<?> setterParamType) {
+    	return createSetterMethod(setterName, bean.getClass(), setterParamType);
+    }
+    
+    
     /**
      * Create the bean setter method instance for this visitor.
      *
@@ -85,15 +77,15 @@ public abstract class BeanUtils {
      * @param setterParamType
      * @return The bean setter method.
      */
-    public static Method createSetterMethod(String setterName, Object bean, Class<?> setterParamType) {
-        Method beanSetterMethod = getMethod(setterName, bean, setterParamType);
+    public static Method createSetterMethod(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+        Method beanSetterMethod = getMethod(setterName, beanClass, setterParamType);
 
         // Try it as a list...
         if (beanSetterMethod == null && List.class.isAssignableFrom(setterParamType)) {
             String setterNamePlural = setterName + "s";
 
             // Try it as a List using the plural name...
-            beanSetterMethod = getMethod(setterNamePlural, bean, setterParamType);
+            beanSetterMethod = getMethod(setterNamePlural, beanClass, setterParamType);
             if(beanSetterMethod == null) {
                 // Try it as an array using the non-plural name...
             }
@@ -101,32 +93,32 @@ public abstract class BeanUtils {
 
         // Try it as a primitive...
         if(beanSetterMethod == null && Integer.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Integer.TYPE);
+            beanSetterMethod = getMethod(setterName, beanClass, Integer.TYPE);
         }
         if(beanSetterMethod == null && Long.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Long.TYPE);
+            beanSetterMethod = getMethod(setterName, beanClass, Long.TYPE);
         }
         if(beanSetterMethod == null && Float.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Float.TYPE);
+            beanSetterMethod = getMethod(setterName, beanClass, Float.TYPE);
         }
         if(beanSetterMethod == null && Double.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Double.TYPE);
+            beanSetterMethod = getMethod(setterName, beanClass, Double.TYPE);
         }
         if(beanSetterMethod == null && Character.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Character.TYPE);
+            beanSetterMethod = getMethod(setterName, beanClass, Character.TYPE);
         }
         if(beanSetterMethod == null && Byte.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Byte.TYPE);
+            beanSetterMethod = getMethod(setterName, beanClass, Byte.TYPE);
         }
         if(beanSetterMethod == null && Boolean.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Boolean.TYPE);
+            beanSetterMethod = getMethod(setterName, beanClass, Boolean.TYPE);
         }
 
         return beanSetterMethod;
     }
 
-    private static Method getMethod(String setterName, Object bean, Class<?> setterParamType) {
-        Method[] methods = bean.getClass().getMethods();
+    private static Method getMethod(String setterName,  Class<?> beanClass, Class<?> setterParamType) {
+        Method[] methods = beanClass.getMethods();
         Method beanSetterMethod = null;
 
         for(Method method : methods) {

@@ -13,7 +13,7 @@ import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFact
 public interface SetterMethodInvocatorFactory {
 
 	
-	SetterMethodInvocator create(ApplicationContext applicationContext, String setterName, Object bean, Class<?> setterParamType);
+	SetterMethodInvocator create(ApplicationContext applicationContext, String setterName, Class<?> beanClass, Class<?> setterParamType);
 	
 	
 	public static final String IMPLEMENTATION_CONTEXT_KEY = SetterMethodInvocatorFactory.class.getName() + "#IMPLEMENTATION";

@@ -100,21 +100,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String mapKeyAttribute;
 
     private boolean beanWiring;
-    
-    public static long time = 0;
-    public static long called = 0;
-    
-    public static void resetMeanTime() {
-    	time = 0;
-    	called = 0;
-    }
-    
-    public static long getMeanTime() {
-    	if(called == 0) {
-    		return 0;
-    	}
-    	return time / called;
-    }
 
     /**
      * Set the resource configuration on the bean populator.
@@ -326,12 +311,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
                 }
         	}
         	try {
-        		long beginTime = System.nanoTime();
         		
         		propertySetterMethodInvocator.set(bean, dataObject);
-        		
-        		time += System.nanoTime() - beginTime;
-        		called++;
         		
         	 } catch (RuntimeException e) {
                  throw new SmooksConfigurationException("Exception invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
@@ -370,7 +351,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      */
     private synchronized SetterMethodInvocator createSetterMethodInvocator(Object bean, String setterName, Class<?> setterParamType) {
         if (propertySetterMethodInvocator == null) {
-        	propertySetterMethodInvocator = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean, setterParamType);
+        	propertySetterMethodInvocator = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean.getClass(), setterParamType);
         }
 
         return propertySetterMethodInvocator;

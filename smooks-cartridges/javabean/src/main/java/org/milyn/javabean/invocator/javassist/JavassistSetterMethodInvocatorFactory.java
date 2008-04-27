@@ -8,6 +8,7 @@ import java.io.IOException;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtConstructor;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.CtPrimitiveType;
@@ -27,12 +28,14 @@ import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
 public class JavassistSetterMethodInvocatorFactory implements
 		SetterMethodInvocatorFactory {
 
+	private final CtClass[] NO_ARGS = {};;
+	
 	
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
 	public SetterMethodInvocator create(ApplicationContext applicationContext,
-			String setterName, Object bean, Class<?> setterParamType) {
+			String setterName, Class<?> beanClass, Class<?> setterParamType) {
 		
     	ClassPool classPool = JavaPoolUtils.getClassPool(applicationContext);
     	BcmClassLoader classLoader = BcmUtils.getClassloader(applicationContext);
@@ -46,7 +49,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 			
 			smiInterface = classPool.get(SetterMethodInvocator.class.getName());
 			
-			ctBean = classPool.get(bean.getClass().getName());
+			ctBean = classPool.get(beanClass.getName());
 			
 			ctSetterParamType = classPool.get(setterParamType.getName());
 			
@@ -58,15 +61,20 @@ public class JavassistSetterMethodInvocatorFactory implements
 		
 		Class<?> smiClass = null;
 		try {
-			String smiClassName = "org.milyn.javabean.invocator.javassist._generated." + safeClassName(bean.getClass().getName() + "_" + setterName + "_" + setterParamType.getName());
+			String smiClassName = "org.milyn.javabean.invocator.javassist._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
 			
 			smiClass = classLoader.load(smiClassName);
 						
 			if(smiClass == null) {
 				CtClass smiImpl = classPool.makeClass(smiClassName);
 				smiImpl.addInterface(smiInterface);
-
-				String methodStr = "((" + bean.getClass().getName() + ")$1)." + setterName + "(" + parameterStr(setterName, ctBean, "$2", ctSetterParamType) + ");";
+				
+				// add public default constructor method to class
+		        CtConstructor cons = new CtConstructor(NO_ARGS, smiImpl);
+		        cons.setBody(";");
+		        smiImpl.addConstructor(cons);
+	
+				String methodStr = "((" + beanClass.getName() + ")$1)." + setterName + "(" + parameterStr(setterName, ctBean, "$2", ctSetterParamType) + ");";
 				
 				CtMethod setMethod = CtNewMethod.make(CtPrimitiveType.voidType, "set", new CtClass[] { ctObj, ctObj }, new CtClass[0], methodStr, smiImpl);
 				
@@ -97,9 +105,9 @@ public class JavassistSetterMethodInvocatorFactory implements
   
 	private String safeClassName(String name) {
 		
-		return name.replace(".", "_")
-				.replace("[", "_")
-				.replace(";", "_");
+		return name.replace('.', '_')
+				.replace('[', '_')
+				.replace(';', '_');
 		
 	}
     
