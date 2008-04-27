@@ -24,9 +24,9 @@ public class ReflectiveSetterMethodInvocatorFactory implements
 	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
 	public SetterMethodInvocator create(ApplicationContext applicationContext,
-			String setterName, Object bean, Class<?> setterParamType) {
+			String setterName, Class<?> beanClass, Class<?> setterParamType) {
 		
-		Method method = BeanUtils.createSetterMethod(setterName, bean, setterParamType);
+		Method method = BeanUtils.createSetterMethod(setterName, beanClass, setterParamType);
 		
 		return new ReflectiveSetterMethodInvocator(method);
 	}
