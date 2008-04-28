@@ -24,7 +24,6 @@
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
-        <module>mule-esb-integration</module>
         <module>servlet</module>
         <module>db-extract-transform-load</module>
         <module>file-router</module>
