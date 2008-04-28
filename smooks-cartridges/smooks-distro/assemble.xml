@@ -56,7 +56,7 @@
     <target name="buildMainDistro">
 
         <property name="docsdir" value="${mainTargetdir}/docs"/>
-        <property name="javadocdir" value="${docsdir}/api"/>
+        <property name="javadocdir" value="${docsdir}/javadoc"/>
 
         <mkdir dir="${mainTargetdir}"/>
         <mkdir dir="${javadocdir}"/>
