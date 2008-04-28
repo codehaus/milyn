@@ -24,7 +24,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>xstream</groupId>
+            <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>${xstream.version}</version>
         </dependency>
@@ -40,7 +40,7 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-			<groupId>freemarker</groupId>
+			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>${freemarker.version}</version>
         </dependency>
