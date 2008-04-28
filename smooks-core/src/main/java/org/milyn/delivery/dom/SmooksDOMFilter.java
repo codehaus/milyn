@@ -161,6 +161,14 @@ public class SmooksDOMFilter extends Filter {
     private boolean terminateOnVisitorException;
 
     /**
+     * Global assembly befores.
+     */
+    private List<ContentHandlerConfigMap<DOMVisitBefore>> globalAssemblyBefores;
+    /**
+     * Global assembly afters.
+     */
+    private List<ContentHandlerConfigMap<DOMVisitAfter>> globalAssemblyAfters;
+    /**
      * Global process befores.
      */
     private List<ContentHandlerConfigMap<DOMVisitBefore>> globalProcessingBefores;
@@ -310,7 +318,9 @@ public class SmooksDOMFilter extends Filter {
         // Apply assembly phase, skipping it if there are no configured assembly units...
         ContentHandlerConfigMapTable<DOMVisitBefore> visitBefores = deliveryConfig.getAssemblyVisitBefores();
         ContentHandlerConfigMapTable<DOMVisitAfter> visitAfters = deliveryConfig.getAssemblyVisitAfters();
-        if (!visitBefores.isEmpty() || !visitAfters.isEmpty()) {
+        globalAssemblyBefores = deliveryConfig.getAssemblyVisitBefores().getMappings("*");
+        globalAssemblyAfters = deliveryConfig.getAssemblyVisitAfters().getMappings("*");
+        if (applyAssembly(visitBefores, visitAfters)) {
             // Assemble
             if (logger.isDebugEnabled()) {
                 logger.debug("Starting assembly phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
@@ -331,8 +341,10 @@ public class SmooksDOMFilter extends Filter {
         if (logger.isDebugEnabled()) {
             logger.debug("Starting processing phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
         }
+
         globalProcessingBefores = deliveryConfig.getProcessingVisitBefores().getMappings("*");
         globalProcessingAfters = deliveryConfig.getProcessingVisitAfters().getMappings("*");
+
         buildProcessingList(transList, doc.getDocumentElement(), true);
         transListLength = transList.size();
         for (int i = 0; i < transListLength; i++) {
@@ -346,6 +358,12 @@ public class SmooksDOMFilter extends Filter {
         }
 
         return deliveryNode;
+    }
+
+    private boolean applyAssembly(ContentHandlerConfigMapTable<DOMVisitBefore> visitBefores, ContentHandlerConfigMapTable<DOMVisitAfter> visitAfters) {
+        return !visitBefores.isEmpty() || !visitAfters.isEmpty() ||
+                (globalAssemblyBefores != null && !globalAssemblyBefores.isEmpty()) ||
+                (globalAssemblyAfters != null && !globalAssemblyAfters.isEmpty());
     }
 
     /**
@@ -381,37 +399,10 @@ public class SmooksDOMFilter extends Filter {
 
         // Visit element with its assembly units before visiting its child content.
         if (elementVisitBefores != null && !elementVisitBefores.isEmpty()) {
-            for (int i = 0; i < elementVisitBefores.size(); i++) {
-                ContentHandlerConfigMap<DOMVisitBefore> configMap = elementVisitBefores.get(i);
-                SmooksResourceConfiguration config = configMap.getResourceConfig();
-
-                // Make sure the assembly unit is targeted at this element...
-                if (!config.isTargetedAtElement(element)) {
-                    continue;
-                }
-
-                // Register the targeting event.  No need to register it again in the visitAfter loop...
-                if (eventListener != null) {
-                    eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitSequence.BEFORE, VisitPhase.ASSEMBLY));
-                }
-
-                DOMVisitBefore assemblyUnit = configMap.getContentHandler();
-                try {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
-                    }
-                    if(configMap.isLifecycleCleanable()) {
-                        cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
-                    }
-                    assemblyUnit.visitBefore(element, executionContext);
-                    if (eventListener != null) {
-                        eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.BEFORE));
-                    }
-                } catch (Throwable e) {
-                    String errorMsg = "(Assembly) visitBefore failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-                    processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
-                }
-            }
+            applyAssemblyBefores(element, elementVisitBefores);
+        }
+        if (globalAssemblyBefores != null && !globalAssemblyBefores.isEmpty()) {
+            applyAssemblyBefores(element, globalAssemblyBefores);
         }
 
         // Recursively iterate the elements child content...
@@ -424,16 +415,57 @@ public class SmooksDOMFilter extends Filter {
 
         // Revisit the element with its assembly units after visiting its child content.
         if (elementVisitAfters != null && !elementVisitAfters.isEmpty()) {
-            if (reverseVisitOrderOnVisitAfter) {
-                for (int i = elementVisitAfters.size() - 1; i >= 0; i--) {
-                    ContentHandlerConfigMap<DOMVisitAfter> configMap = elementVisitAfters.get(i);
-                    applyAssemblyAfter(element, configMap);
+            applyAssemblyAfters(element, elementVisitAfters);
+        }
+        if (globalAssemblyAfters != null && !globalAssemblyAfters.isEmpty()) {
+            applyAssemblyAfters(element, globalAssemblyAfters);
+        }
+    }
+
+    private void applyAssemblyBefores(Element element, List<ContentHandlerConfigMap<DOMVisitBefore>> assemblyBefores) {
+        for (int i = 0; i < assemblyBefores.size(); i++) {
+            ContentHandlerConfigMap<DOMVisitBefore> configMap = assemblyBefores.get(i);
+            SmooksResourceConfiguration config = configMap.getResourceConfig();
+
+            // Make sure the assembly unit is targeted at this element...
+            if (!config.isTargetedAtElement(element)) {
+                continue;
+            }
+
+            // Register the targeting event.  No need to register it again in the visitAfter loop...
+            if (eventListener != null) {
+                eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitSequence.BEFORE, VisitPhase.ASSEMBLY));
+            }
+
+            DOMVisitBefore assemblyUnit = configMap.getContentHandler();
+            try {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
                 }
-            } else {
-                for (int i = 0; i < elementVisitAfters.size(); i++) {
-                    ContentHandlerConfigMap<DOMVisitAfter> configMap = elementVisitAfters.get(i);
-                    applyAssemblyAfter(element, configMap);
+                if(configMap.isLifecycleCleanable()) {
+                    cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
                 }
+                assemblyUnit.visitBefore(element, executionContext);
+                if (eventListener != null) {
+                    eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.BEFORE));
+                }
+            } catch (Throwable e) {
+                String errorMsg = "(Assembly) visitBefore failed [" + assemblyUnit.getClass().getName() + "] on [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
+                processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
+            }
+        }
+    }
+
+    private void applyAssemblyAfters(Element element, List<ContentHandlerConfigMap<DOMVisitAfter>> elementVisitAfters) {
+        if (reverseVisitOrderOnVisitAfter) {
+            for (int i = elementVisitAfters.size() - 1; i >= 0; i--) {
+                ContentHandlerConfigMap<DOMVisitAfter> configMap = elementVisitAfters.get(i);
+                applyAssemblyAfter(element, configMap);
+            }
+        } else {
+            for (int i = 0; i < elementVisitAfters.size(); i++) {
+                ContentHandlerConfigMap<DOMVisitAfter> configMap = elementVisitAfters.get(i);
+                applyAssemblyAfter(element, configMap);
             }
         }
     }

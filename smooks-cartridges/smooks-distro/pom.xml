@@ -57,7 +57,14 @@
             <artifactId>milyn-smooks-routing</artifactId>
             <version>${milyn.smooks.routing.version}</version>
         </dependency>
-	</dependencies>
+
+        <dependency>
+            <groupId>nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>
@@ -76,7 +83,7 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <excludeTransitive>false</excludeTransitive>
-                            <excludeArtifactIds>junit,log4j,hsqldb,nekohtml,servlet-api,xalan,jbossall-client,jboss-j2ee,jdom,cglib-full,cglib-nodep,struts,mockejb,nekohtml,commons-beanutils,commons-digester,commons-fileupload,commons-validator,oro,xmlunit</excludeArtifactIds>
+                            <excludeArtifactIds>junit,log4j,hsqldb,servlet-api,xalan,jbossall-client,jboss-j2ee,jdom,cglib-full,cglib-nodep,struts,mockejb,commons-beanutils,commons-digester,commons-fileupload,commons-validator,oro,xmlunit</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>

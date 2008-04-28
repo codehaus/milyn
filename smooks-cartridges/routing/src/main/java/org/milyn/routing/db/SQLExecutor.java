@@ -36,9 +36,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * SQLExecutor Visitor.
+ * <p/>
+ * Supports extraction and persistence to a Database.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SQLExecutor  implements SAXElementVisitor, DOMElementVisitor {
+public class SQLExecutor implements SAXElementVisitor, DOMElementVisitor {
 
     @ConfigParam
     private String datasource;

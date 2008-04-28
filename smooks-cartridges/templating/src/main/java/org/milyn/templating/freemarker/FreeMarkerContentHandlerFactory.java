@@ -8,10 +8,7 @@ import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
 
 /**
- * FreeMarker {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
- * <p/>
- * Creates {@link org.milyn.delivery.dom.DOMElementVisitor} instances for applying
- * <a href="http://freemarker.org/">FreeMarker</a> transformations (i.e. ".ftl" files).
+ * <a href="http://freemarker.org/">FreeMarker</a> templating {@link org.milyn.delivery.Visitor} Creator class.
  * <p/>
  * This templating solution relies on the <a href="http://milyn.codehaus.org/downloads">Smooks JavaBean Cartridge</a>
  * to perform the JavaBean population that's required by <a href="http://freemarker.org/">FreeMarker</a> (for the data model).
