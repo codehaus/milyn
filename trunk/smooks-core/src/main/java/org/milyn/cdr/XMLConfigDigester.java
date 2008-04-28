@@ -60,8 +60,9 @@ public final class XMLConfigDigester {
      *         XML configuration.
      * @throws SAXException Error parsing the XML stream.
      * @throws IOException  Error reading the XML stream.
+     * @throws SmooksConfigurationException  Invalid configuration..
      */
-    public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI) throws SAXException, IOException, URISyntaxException {
+    public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI) throws SAXException, IOException, URISyntaxException, SmooksConfigurationException {
         SmooksResourceConfigurationList list = new SmooksResourceConfigurationList(baseURI);
 
         digestConfig(stream, list, baseURI);
@@ -69,7 +70,7 @@ public final class XMLConfigDigester {
         return list;
     }
 
-    private static void digestConfig(InputStream stream, SmooksResourceConfigurationList list, String baseURI) throws IOException, SAXException, URISyntaxException {
+    private static void digestConfig(InputStream stream, SmooksResourceConfigurationList list, String baseURI) throws IOException, SAXException, URISyntaxException, SmooksConfigurationException {
         LocalEntityResolver entityResolver;
         Document archiveDefDoc;
         String docType;
@@ -149,7 +150,7 @@ public final class XMLConfigDigester {
         }
     }
 
-    private static void digestV10XSDValidatedConfig(String baseURI, Document configDoc, SmooksResourceConfigurationList list) throws SAXException, URISyntaxException {
+    private static void digestV10XSDValidatedConfig(String baseURI, Document configDoc, SmooksResourceConfigurationList list) throws SAXException, URISyntaxException, SmooksConfigurationException {
         Element currentElement;
 
         currentElement = (Element) XmlUtil.getNode(configDoc, "/smooks-resource-list");
@@ -172,7 +173,7 @@ public final class XMLConfigDigester {
         }
     }
 
-    private static void digestImport(Element configElement, URI baseURI, SmooksResourceConfigurationList list) throws SAXException, URISyntaxException {
+    private static void digestImport(Element configElement, URI baseURI, SmooksResourceConfigurationList list) throws SAXException, URISyntaxException, SmooksConfigurationException {
         String file = DomUtils.getAttributeValue(configElement, "file");
         URIResourceLocator resourceLocator;
         InputStream resourceStream;
@@ -193,7 +194,7 @@ public final class XMLConfigDigester {
                 digestConfig(resourceStream, list, URIUtil.getParent(fileURI).toString()); // the file's parent URI becomes the new base URI.
             }
         } catch (IOException e) {
-            logger.error("Failed to load Smooks configuration resource <import> '" + file + "': " + e.getMessage());
+            throw new SmooksConfigurationException("Failed to load Smooks configuration resource <import> '" + file + "': " + e.getMessage(), e);
         }
     }
 
