@@ -9,15 +9,15 @@ About This Example:
     This example is very trivial.  It's a simple webapp with an index.html (see src/webapp). Requesting
     the index.html page through Firefox or Internet Explorer yields slightly different results.
 
-    The Smooks configuration (src/webapp/WEB-INF/smooks-config.xml) specifies
+    The Smooks configuration (war/src/main/webapp/WEB-INF/smooks-config.xml) specifies
     some simple browser specific transforms for Firefox and Internet Explorer.  This config
     also specifies the browser profiles.
 
     Also Note:
     1.  The useragent/browser recognition configurations are specified in
-        src/webapp/WEB-INF/device-ident.xml.  See http://milyn.codehaus.org/Tinak.
+        war/src/main/webapp/WEB-INF/device-ident.xml.  See http://milyn.codehaus.org/Tinak.
     2.  The SmooksServletFilter is configured into the webapp in
-        src/webapp/WEB-INF/web.xml.
+        war/src/main/webapp/WEB-INF/web.xml.
 
 How to Run?
 ===========
@@ -26,6 +26,7 @@ How to Run?
         2. Maven 2.x (http://maven.apache.org/download.html)
 
     Running:
+        2. Change directory to the war directory
         1. "mvn clean install tomcat:run"
         3. Open a Firefox browser and browse to http://localhost:8080/example-servlet/
         4. Open an Internet Explorer browser and browse to http://localhost:8080/example-servlet/
