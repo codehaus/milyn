@@ -1,0 +1,4 @@
+Class: example.trgmodel.LineOrder
+	customerId: 1234
+	customerName: Buzz Lightyear
+	lineItems: [{productCode: 111 | unitQuantity: 2 | unitPrice: 10.99}, {productCode: 222 | unitQuantity: 4 | unitPrice: 25.5}]
