@@ -3,6 +3,8 @@
  */
 package org.milyn.javabean.invocator.javassist;
 
+import static org.milyn.javabean.bcm.javassist.JavassistUtils.NO_ARGS;
+
 import java.io.IOException;
 
 import javassist.CannotCompileException;
@@ -27,38 +29,63 @@ import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
  */
 public class JavassistSetterMethodInvocatorFactory implements
 		SetterMethodInvocatorFactory {
+	
 
-	private final CtClass[] NO_ARGS = {};;
+	private ClassPool classPool;
+	
+	private BcmClassLoader classLoader;
+
+	private CtClass smiInterface;
+	
+	private CtClass ctObject;
+	
+	private boolean initialized = false;
 	
 	
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
+	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#initialize(org.milyn.container.ApplicationContext)
 	 */
-	public SetterMethodInvocator create(ApplicationContext applicationContext,
-			String setterName, Class<?> beanClass, Class<?> setterParamType) {
-		
-    	ClassPool classPool = JavaPoolUtils.getClassPool(applicationContext);
-    	BcmClassLoader classLoader = BcmUtils.getClassloader(applicationContext);
-    	
-    	// smi = SetterMethodInvocator
-    	CtClass smiInterface;
-    	CtClass ctObj;
-    	CtClass ctSetterParamType;
-    	CtClass ctBean;
+	public void initialize(ApplicationContext applicationContext) {
+
+    	classPool = JavaPoolUtils.getClassPool(applicationContext);
+    	classLoader = BcmUtils.getClassloader(applicationContext);	
+
 		try {
 			
+			// smi = SetterMethodInvocator
 			smiInterface = classPool.get(SetterMethodInvocator.class.getName());
 			
-			ctBean = classPool.get(beanClass.getName());
-			
-			ctSetterParamType = classPool.get(setterParamType.getName());
-			
-			ctObj = classPool.get(Object.class.getName());
+			ctObject = classPool.get(Object.class.getName());
 			
 		} catch (NotFoundException e) {
 			throw new RuntimeException("Could not get one of the CtClass's from the ClassPool", e);
 		}
 		
+		initialized = true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
+	 */
+	public SetterMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+		if(!initialized) {
+			throw new IllegalStateException("Factory not initizialed. Call the #initialize(ApplicationContext) first.");
+		}
+		
+		CtClass ctSetterParamType;
+		CtClass ctBean;
+		
+		try {
+			
+			ctBean = classPool.get(beanClass.getName());
+			
+			ctSetterParamType = classPool.get(setterParamType.getName());
+			
+		} catch (NotFoundException e) {
+			throw new RuntimeException("Could not get one of the CtClass's from the ClassPool", e);
+		}
+		
+		// smi = SetterMethodInvocator
 		Class<?> smiClass = null;
 		try {
 			String smiClassName = "org.milyn.javabean.invocator.javassist._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
@@ -76,7 +103,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 	
 				String methodStr = "((" + beanClass.getName() + ")$1)." + setterName + "(" + parameterStr(setterName, ctBean, "$2", ctSetterParamType) + ");";
 				
-				CtMethod setMethod = CtNewMethod.make(CtPrimitiveType.voidType, "set", new CtClass[] { ctObj, ctObj }, new CtClass[0], methodStr, smiImpl);
+				CtMethod setMethod = CtNewMethod.make(CtPrimitiveType.voidType, "set", new CtClass[] { ctObject, ctObject }, new CtClass[0], methodStr, smiImpl);
 				
 				smiImpl.addMethod(setMethod);
 				
@@ -207,5 +234,6 @@ public class JavassistSetterMethodInvocatorFactory implements
     	}
     	return false;
     }
+
 
 }

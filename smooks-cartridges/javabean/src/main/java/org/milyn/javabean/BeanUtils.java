@@ -51,7 +51,7 @@ public abstract class BeanUtils {
     	
     	SetterMethodInvocatorFactory factory = SetterMethodInvocatorFactory.Factory.create(applicationContext);
     	
-    	SetterMethodInvocator setterMethodInvocator = factory.create(applicationContext, setterName, bean, setterParamType);
+    	SetterMethodInvocator setterMethodInvocator = factory.create(setterName, bean, setterParamType);
 
     	return setterMethodInvocator;
     }
@@ -147,6 +147,19 @@ public abstract class BeanUtils {
         setterName.insert(0, "set");
 
         return setterName.toString();
+    }
+    
+    public static String toGetterName(String property) {
+        StringBuffer getterName = new StringBuffer();
+
+        // Add the property string to the buffer...
+        getterName.append(property);
+        // Uppercase the first character...
+        getterName.setCharAt(0, Character.toUpperCase(property.charAt(0)));
+        // Prefix with "get"...
+        getterName.insert(0, "get");
+
+        return getterName.toString();
     }
 
     /**

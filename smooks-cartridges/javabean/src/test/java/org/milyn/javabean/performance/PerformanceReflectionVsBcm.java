@@ -5,7 +5,6 @@ package org.milyn.javabean.performance;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.javabean.invocator.SetterMethodInvocator;
 import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
@@ -35,11 +34,11 @@ public class PerformanceReflectionVsBcm {
 		for(SetterMethodInvocatorFactory setterMethodInvocatorFactory: setterMethodInvocatorFactories) {
 			logger.info("SetterMethodInvocatorFactory: " + setterMethodInvocatorFactory.getClass().getSimpleName());
 			
+			setterMethodInvocatorFactory.initialize(new MockApplicationContext());
+			
 			long beginTime = System.currentTimeMillis();
 			
-			ApplicationContext applicationContext = new MockApplicationContext();
-			
-			SetterMethodInvocator setterMethodInvocator = setterMethodInvocatorFactory.create(applicationContext, "setSurname", Person.class, String.class);
+			SetterMethodInvocator setterMethodInvocator = setterMethodInvocatorFactory.create("setSurname", Person.class, String.class);
 			
 			logger.info("Construction: " + (System.currentTimeMillis() - beginTime));
 			String str = "few";

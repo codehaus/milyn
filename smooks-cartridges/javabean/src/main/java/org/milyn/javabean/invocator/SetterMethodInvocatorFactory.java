@@ -13,7 +13,9 @@ import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFact
 public interface SetterMethodInvocatorFactory {
 
 	
-	SetterMethodInvocator create(ApplicationContext applicationContext, String setterName, Class<?> beanClass, Class<?> setterParamType);
+	void initialize(ApplicationContext applicationContext);
+	
+	SetterMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType);
 	
 	
 	public static final String IMPLEMENTATION_CONTEXT_KEY = SetterMethodInvocatorFactory.class.getName() + "#IMPLEMENTATION";
@@ -40,6 +42,8 @@ public interface SetterMethodInvocatorFactory {
 					Class<?> setterMethodInvocatorFactoryClass = applicationContext.getClass().getClassLoader().loadClass(setterMethodInvocatorFactoryImplementation);
 					
 					setterMethodInvocatorFactory = (SetterMethodInvocatorFactory) setterMethodInvocatorFactoryClass.newInstance();
+					
+					setterMethodInvocatorFactory.initialize(applicationContext);
 					
 				} catch (ClassNotFoundException e) {
 					throw new RuntimeException("Configured factory implementation class '" 
