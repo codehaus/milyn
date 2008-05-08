@@ -18,7 +18,9 @@ package org.milyn.javabean;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +35,10 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.VisitPhase;
+import org.milyn.javabean.runtime.info.Classification;
+import org.milyn.javabean.runtime.info.MapRuntimeInfo;
+import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
+import org.milyn.javabean.runtime.info.ObjectRuntimeInfoFactory;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -156,22 +162,26 @@ import org.w3c.dom.NodeList;
  */
 public class BeanPopulator implements ConfigurationExpander {
 
+	public static Pattern VALID_VIRTUAL_PROPERTY_NAME_PATTERN = Pattern.compile("[A-Za-z_][A-Za-z0-9_]+");
+	
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
-    private static final String APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED = BeanPopulator.class.getName() + "#LIFECYCLE_ENDER_CREATED";
-    
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String beanId;
 
     @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
-
+    
     @Config
     private SmooksResourceConfiguration config;
     
     @AppContext
     private ApplicationContext appContext;
 
+    private boolean optimized = false;
+    
+    private ObjectRuntimeInfo objectRuntimeInfo;
+    
     /*******************************************************************************************************
      *  Common Methods.
      *******************************************************************************************************/
@@ -182,9 +192,9 @@ public class BeanPopulator implements ConfigurationExpander {
      */
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-        // One of "beanId" or "beanClass" must be specified...
         if (beanClassName == null || beanClassName.trim().equals("")) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
+            beanClassName = HashMap.class.getName();
+            optimized = true;
         }
 
         // May need to default the "beanId"...
@@ -200,7 +210,14 @@ public class BeanPopulator implements ConfigurationExpander {
         if (config.getStringParameter("setterName") != null) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
-
+        
+        objectRuntimeInfo = ObjectRuntimeInfoFactory.createBeanRuntime(beanClassName);
+        if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
+        	((MapRuntimeInfo)objectRuntimeInfo).setOptimize(optimized);
+        }
+        
+        ObjectRuntimeInfo.recordRuntimeInfo(beanId, objectRuntimeInfo, appContext);
+        
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].");
     }
 
@@ -296,11 +313,42 @@ public class BeanPopulator implements ConfigurationExpander {
             resourceConfig.setParameter("wireBeanId", wireBeanId);
         }
 
+        
         if(setterMethod != null) {
+        	if(objectRuntimeInfo.getClassification() != Classification.NON_COLLECTION) {
+        		throw new SmooksConfigurationException("The 'setterMethod' attribute isn't allowed with a Collection or Map bean class: " + bindingConfig);
+        	}
+        	
+        	setterMethod = setterMethod.trim();
+        	
             resourceConfig.setParameter("setterMethod", setterMethod);
         }
+        
+        if (setterMethod == null && property == null ) {
+        	if(wireBeanId != null && (objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION || objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+        		property = wireBeanId;
+        	} else if(objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
+        		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
+                    "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
+                    "  Bean is type '" + objectRuntimeInfo.getPopulateType().getName() + "'.");
+        	}
+        }
+        
         if(property != null) {
+        	property = property.trim();
+        	
             resourceConfig.setParameter("property", property);
+            
+            if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
+            	if(property.charAt(0) != '@') {
+            		if(optimized) {
+            			if(!VALID_VIRTUAL_PROPERTY_NAME_PATTERN.matcher(property).matches()) {
+            				throw new SmooksConfigurationException("The 'property' attribute '"+ property +"' of the virtual map contains illegal characters: " + bindingConfig);
+            			}
+            		}
+            		((MapRuntimeInfo)objectRuntimeInfo).addKey(property);
+            	}
+            }
         }
 
         if (attributeNameProperty != null && !attributeNameProperty.trim().equals("")) {
@@ -312,18 +360,22 @@ public class BeanPopulator implements ConfigurationExpander {
         type = DomUtils.getAttributeValue(bindingConfig, "type");
         defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
         if(wireBeanId == null ) {
+        	if(type == null) {
+        		type = "String";
+        	}
+        	
         	// Set the data type...
-        	resourceConfig.setParameter("type", (type != null?type:"String"));
+        	resourceConfig.setParameter("type", type);
 
             if(defaultVal != null) {
                 resourceConfig.setParameter("default", defaultVal);
             }
         } else {
         	if(type != null) {
-        		throw new SmooksConfigurationException("The 'type' attribute isn't a allowed when binding a bean: " + bindingConfig);
+        		throw new SmooksConfigurationException("The 'type' attribute isn't allowed when binding a bean: " + bindingConfig);
         	}
         	if(defaultVal != null) {
-        		throw new SmooksConfigurationException("The 'default' attribute isn't a allowed when binding a bean: " + bindingConfig);
+        		throw new SmooksConfigurationException("The 'default' attribute isn't allowed when binding a bean: " + bindingConfig);
         	}
         }
 

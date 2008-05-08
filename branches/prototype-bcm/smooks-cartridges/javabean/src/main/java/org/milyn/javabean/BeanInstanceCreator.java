@@ -16,7 +16,6 @@
 package org.milyn.javabean;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +37,12 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.bcm.MapGenerator;
 import org.milyn.javabean.invocator.SetterMethodInvocator;
-import org.milyn.util.ClassUtil;
+import org.milyn.javabean.runtime.info.ArrayRuntimeInfo;
+import org.milyn.javabean.runtime.info.Classification;
+import org.milyn.javabean.runtime.info.MapRuntimeInfo;
+import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
 import org.w3c.dom.Element;
 
 /**
@@ -81,11 +83,11 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     @AppContext
     private ApplicationContext appContext;
 
-    private BeanRuntimeInfo beanRuntimeInfo;
+    private ObjectRuntimeInfo objectRuntimeInfo;
 
     // Properties associated with the bean on which the created bean
     // is to be set.  Is it a List, Map etc...
-    private BeanRuntimeInfo setOnBeanRuntimeInfo;
+    private ObjectRuntimeInfo setOnBeanRuntimeInfo;
     private boolean isSetOnMethodConfigured = false;
     private String setOnMethod;
     private SetterMethodInvocator setOnBeanSetterMethod;
@@ -94,13 +96,18 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      * Set the resource configuration on the bean populator.
      * @throws SmooksConfigurationException Incorrectly configured resource.
      */
-    @Initialize
+	@Initialize
+	@SuppressWarnings("deprecation")
     public void initialize() throws SmooksConfigurationException {
     	buildId();
-
-    	beanRuntimeInfo = resolveBeanRuntime(beanClassName);
-        BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, beanRuntimeInfo, appContext);
-
+    	
+    	objectRuntimeInfo = ObjectRuntimeInfo.getRuntimeInfo(beanId, appContext);
+    	
+    	//For backward compatibility
+    	org.milyn.javabean.BeanRuntimeInfo bri = resolveBeanRuntime(beanClassName);
+    	org.milyn.javabean.BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, bri, appContext);
+    	
+    	
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
 
@@ -115,7 +122,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         		WARNED_SETON_DEPRECATED = true;
         	}
 
-            setOnBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(setOn, appContext);
+            setOnBeanRuntimeInfo = ObjectRuntimeInfo.getRuntimeInfo(setOn, appContext);
             if(setOnBeanRuntimeInfo == null) {
                 throw new SmooksConfigurationException("Parent bean '" + setOn + "' must be defined before bean '" + beanId + "'.");
             }
@@ -180,7 +187,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
 
 	public void visitAfter(ExecutionContext executionContext) {
 		
-		Classification thisBeanType = beanRuntimeInfo.getClassification();
+		Classification thisBeanType = objectRuntimeInfo.getClassification();
 		
 		boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 		boolean isSetOn = (setOn != null);
@@ -206,7 +213,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
 
     private Object convert(Object bean, ExecutionContext executionContext) {
 
-        bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
+        bean = BeanUtils.convertListToArray((List<?>)bean, ((ArrayRuntimeInfo)objectRuntimeInfo).getArrayType());
 
         BeanAccessor.changeBean(executionContext, beanId, bean);
 
@@ -293,14 +300,26 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     private Object createBeanInstance() {
         Object bean;
 
-        try {
-            bean = beanRuntimeInfo.getPopulateType().newInstance();
-        } catch (InstantiationException e) {
-            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
-        } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
-        }
+        if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION &&
+        		((MapRuntimeInfo)objectRuntimeInfo).isOptimize()) {
 
+        	MapRuntimeInfo mapRuntimeInfo = (MapRuntimeInfo) objectRuntimeInfo;
+        	
+    		MapGenerator mapGenerator = MapGenerator.Factory.create(appContext);
+    		
+    		bean = mapGenerator.generateMap(beanId, mapRuntimeInfo.getKeys());
+        	
+        } else {
+
+        	try {
+	            bean = objectRuntimeInfo.getPopulateType().newInstance();
+	        } catch (InstantiationException e) {
+	            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + objectRuntimeInfo.getPopulateType().getName() + "].", e);
+	        } catch (IllegalAccessException e) {
+	            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + objectRuntimeInfo.getPopulateType().getName() + "].", e);
+	        }
+        	
+        }
         return bean;
     }
 
@@ -311,52 +330,30 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      *
      * @param beanClass The beanClass name.
      * @return The bean runtime class instance.
+     * @deprecated
      */
-    private BeanRuntimeInfo resolveBeanRuntime(String beanClass) {
-        BeanRuntimeInfo beanInfo = new BeanRuntimeInfo();
-        Class<?> clazz;
-
-        // If it's an array, we use a List and extract an array from it on the
-        // visitAfter event....
-        if(beanClass.endsWith("[]")) {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.ARRAY_COLLECTION);
-            String arrayTypeName = beanClass.substring(0, beanClass.length() - 2);
-            try {
-                beanInfo.setArrayType(ClassUtil.forName(arrayTypeName, getClass()));
-            } catch (ClassNotFoundException e) {
-                throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + arrayTypeName + " not on classpath.");
-            }
-            beanInfo.setPopulateType(ArrayList.class);
-
-            return beanInfo;
-        }
-
-        try {
-            clazz = ClassUtil.forName(beanClass, getClass());
-        } catch (ClassNotFoundException e) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " not on classpath.");
-        }
-
-        beanInfo.setPopulateType(clazz);
-
-        // We maintain a targetType enum because it helps us avoid performing
-        // instanceof checks, which are cheap when the instance being checked is
-        // an instanceof, but is expensive if it's not....
-        if(Map.class.isAssignableFrom(clazz)) {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.MAP_COLLECTION);
-        } else if(Collection.class.isAssignableFrom(clazz)) {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.COLLECTION_COLLECTION);
+    @Deprecated
+	private org.milyn.javabean.BeanRuntimeInfo resolveBeanRuntime(String beanClass) {
+        
+    	org.milyn.javabean.BeanRuntimeInfo beanInfo = new org.milyn.javabean.BeanRuntimeInfo();
+        
+        beanInfo.setPopulateType(objectRuntimeInfo.getPopulateType());
+        
+        if(objectRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
+        	beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.ARRAY_COLLECTION);
+        	
+        	ArrayRuntimeInfo arrayRuntimeInfo = (ArrayRuntimeInfo)objectRuntimeInfo;
+       	
+        	beanInfo.setArrayType(arrayRuntimeInfo.getArrayType());
+        	
+        } else if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
+        	beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.MAP_COLLECTION);
+        } else if(objectRuntimeInfo.getClassification() == Classification.COLLECTION_COLLECTION) {
+        	beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.COLLECTION_COLLECTION);
         } else {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.NON_COLLECTION);
-        }
-
-        // check for a default constructor.
-        try {
-            clazz.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
-        }
-
+            beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.NON_COLLECTION);
+        } 
+        
         return beanInfo;
     }
 
