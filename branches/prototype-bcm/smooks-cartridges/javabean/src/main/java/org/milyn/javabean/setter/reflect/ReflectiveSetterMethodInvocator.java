@@ -1,18 +1,18 @@
 /**
  * 
  */
-package org.milyn.javabean.invocator.reflect;
+package org.milyn.javabean.setter.reflect;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.milyn.javabean.invocator.SetterMethodInvocator;
+import org.milyn.javabean.setter.PropertySetMethodInvocator;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class ReflectiveSetterMethodInvocator implements SetterMethodInvocator {
+public class ReflectiveSetterMethodInvocator implements PropertySetMethodInvocator {
 
 	private final Method method;
 	

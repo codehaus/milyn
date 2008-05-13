@@ -14,7 +14,7 @@ public class MapRuntimeInfo extends ObjectRuntimeInfo {
 
 	private List<String> keys = new ArrayList<String>();
 
-	private boolean optimize = false;
+	private boolean virtual = false;
 	
 	/**
 	 * @return the keys
@@ -40,15 +40,15 @@ public class MapRuntimeInfo extends ObjectRuntimeInfo {
 	/**
 	 * @return the optimized
 	 */
-	public boolean isOptimize() {
-		return optimize;
+	public boolean isVirtual() {
+		return virtual;
 	}
 
 	/**
 	 * @param optimized the optimized to set
 	 */
-	public void setOptimize(boolean optimized) {
-		this.optimize = optimized;
+	public void setVirtual(boolean virtual) {
+		this.virtual = virtual;
 	}
 	
 }

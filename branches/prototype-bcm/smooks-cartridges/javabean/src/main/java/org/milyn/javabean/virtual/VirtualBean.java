@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.milyn.javabean.bcm;
+package org.milyn.javabean.virtual;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.Set;
  *
  */
 @SuppressWarnings("unchecked")
-public abstract class OptimizedMap implements Map {
+public abstract class VirtualBean implements Map {
 
 	protected static final Object NOT_SET = new Object();
 	
@@ -206,6 +206,10 @@ public abstract class OptimizedMap implements Map {
 		}
 		
 		return totalSize;
+	}
+	
+	protected void incrementSize() {
+		size++;
 	}
 
 	/**

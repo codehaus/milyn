@@ -1,24 +1,24 @@
 /**
  * 
  */
-package org.milyn.javabean.invocator;
+package org.milyn.javabean.setter;
 
 import org.milyn.container.ApplicationContext;
-import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
+import org.milyn.javabean.setter.javassist.JavassistSetterMethodInvocatorFactory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface SetterMethodInvocatorFactory {
+public interface PropertySetMethodInvocatorFactory {
 
 	
 	void initialize(ApplicationContext applicationContext);
 	
-	SetterMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType);
+	PropertySetMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType);
 	
 	
-	public static final String IMPLEMENTATION_CONTEXT_KEY = SetterMethodInvocatorFactory.class.getName() + "#IMPLEMENTATION";
+	public static final String IMPLEMENTATION_CONTEXT_KEY = PropertySetMethodInvocatorFactory.class.getName() + "#IMPLEMENTATION";
 
 	public static class Factory {
 		
@@ -26,11 +26,11 @@ public interface SetterMethodInvocatorFactory {
 
 		public static final String INSTANCE_CONTEXT_KEY = Factory.class.getName() + "#INSTANCE";
 
-		public static SetterMethodInvocatorFactory create(ApplicationContext applicationContext) {
+		public static PropertySetMethodInvocatorFactory create(ApplicationContext applicationContext) {
 			
-			SetterMethodInvocatorFactory setterMethodInvocatorFactory = (SetterMethodInvocatorFactory) applicationContext.getAttribute(INSTANCE_CONTEXT_KEY);
+			PropertySetMethodInvocatorFactory propertySetMethodInvocatorFactory = (PropertySetMethodInvocatorFactory) applicationContext.getAttribute(INSTANCE_CONTEXT_KEY);
 			
-			if(setterMethodInvocatorFactory == null) {
+			if(propertySetMethodInvocatorFactory == null) {
 				
 				String setterMethodInvocatorFactoryImplementation = (String) applicationContext.getAttribute(IMPLEMENTATION_CONTEXT_KEY);
 				
@@ -41,9 +41,9 @@ public interface SetterMethodInvocatorFactory {
 				try {
 					Class<?> setterMethodInvocatorFactoryClass = applicationContext.getClass().getClassLoader().loadClass(setterMethodInvocatorFactoryImplementation);
 					
-					setterMethodInvocatorFactory = (SetterMethodInvocatorFactory) setterMethodInvocatorFactoryClass.newInstance();
+					propertySetMethodInvocatorFactory = (PropertySetMethodInvocatorFactory) setterMethodInvocatorFactoryClass.newInstance();
 					
-					setterMethodInvocatorFactory.initialize(applicationContext);
+					propertySetMethodInvocatorFactory.initialize(applicationContext);
 					
 				} catch (ClassNotFoundException e) {
 					throw new RuntimeException("Configured factory implementation class '" 
@@ -58,11 +58,11 @@ public interface SetterMethodInvocatorFactory {
 							+ "Make sure it has a parameterless public constructor.", e);
 				}
 				
-				applicationContext.setAttribute(INSTANCE_CONTEXT_KEY, setterMethodInvocatorFactory);
+				applicationContext.setAttribute(INSTANCE_CONTEXT_KEY, propertySetMethodInvocatorFactory);
 				
 			}
 			
-			return setterMethodInvocatorFactory;
+			return propertySetMethodInvocatorFactory;
 			
 			
 		}	

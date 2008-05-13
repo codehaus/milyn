@@ -25,8 +25,8 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.invocator.SetterMethodInvocator;
-import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
+import org.milyn.javabean.setter.PropertySetMethodInvocator;
+import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
 
 /**
  * Bean utility methods.
@@ -47,13 +47,13 @@ public abstract class BeanUtils {
      * @param setterParamType
      * @return
      */
-    public static SetterMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Class<?> bean, Class<?> setterParamType) {
+    public static PropertySetMethodInvocator createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Class<?> bean, Class<?> setterParamType) {
     	
-    	SetterMethodInvocatorFactory factory = SetterMethodInvocatorFactory.Factory.create(applicationContext);
+    	PropertySetMethodInvocatorFactory factory = PropertySetMethodInvocatorFactory.Factory.create(applicationContext);
     	
-    	SetterMethodInvocator setterMethodInvocator = factory.create(setterName, bean, setterParamType);
+    	PropertySetMethodInvocator propertySetMethodInvocator = factory.create(setterName, bean, setterParamType);
 
-    	return setterMethodInvocator;
+    	return propertySetMethodInvocator;
     }
     
     /**

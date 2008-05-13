@@ -37,12 +37,12 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.javabean.bcm.MapGenerator;
-import org.milyn.javabean.invocator.SetterMethodInvocator;
 import org.milyn.javabean.runtime.info.ArrayRuntimeInfo;
 import org.milyn.javabean.runtime.info.Classification;
 import org.milyn.javabean.runtime.info.MapRuntimeInfo;
 import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
+import org.milyn.javabean.setter.PropertySetMethodInvocator;
+import org.milyn.javabean.virtual.VirtualBeanGenerator;
 import org.w3c.dom.Element;
 
 /**
@@ -90,7 +90,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     private ObjectRuntimeInfo setOnBeanRuntimeInfo;
     private boolean isSetOnMethodConfigured = false;
     private String setOnMethod;
-    private SetterMethodInvocator setOnBeanSetterMethod;
+    private PropertySetMethodInvocator setOnBeanSetterMethod;
 
     /**
      * Set the resource configuration on the bean populator.
@@ -301,13 +301,13 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         Object bean;
 
         if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION &&
-        		((MapRuntimeInfo)objectRuntimeInfo).isOptimize()) {
+        		((MapRuntimeInfo)objectRuntimeInfo).isVirtual()) {
 
         	MapRuntimeInfo mapRuntimeInfo = (MapRuntimeInfo) objectRuntimeInfo;
         	
-    		MapGenerator mapGenerator = MapGenerator.Factory.create(appContext);
+    		VirtualBeanGenerator mapGenerator = VirtualBeanGenerator.Factory.create(appContext);
     		
-    		bean = mapGenerator.generateMap(beanId, mapRuntimeInfo.getKeys());
+    		bean = mapGenerator.generate(beanId, mapRuntimeInfo.getKeys());
         	
         } else {
 
@@ -363,7 +363,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized SetterMethodInvocator createBeanSetterMethodInvocator(Object bean, String setterName, Class<?> type) {
+    private synchronized PropertySetMethodInvocator createBeanSetterMethodInvocator(Object bean, String setterName, Class<?> type) {
         if (setOnBeanSetterMethod == null) {
         	setOnBeanSetterMethod = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean.getClass(), type);
 

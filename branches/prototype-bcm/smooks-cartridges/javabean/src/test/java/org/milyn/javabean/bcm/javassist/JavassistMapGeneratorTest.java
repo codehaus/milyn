@@ -11,7 +11,8 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.milyn.container.MockApplicationContext;
-import org.milyn.javabean.bcm.OptimizedMap;
+import org.milyn.javabean.virtual.VirtualBean;
+import org.milyn.javabean.virtual.javassist.JavassistVirtualBeanGenerator;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
@@ -19,7 +20,7 @@ import org.milyn.javabean.bcm.OptimizedMap;
  */
 public class JavassistMapGeneratorTest extends TestCase {
 	
-	JavassistMapGenerator generator;
+	JavassistVirtualBeanGenerator generator;
 	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
@@ -28,13 +29,13 @@ public class JavassistMapGeneratorTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		generator = new JavassistMapGenerator();
+		generator = new JavassistVirtualBeanGenerator();
 		generator.initialize(new MockApplicationContext());
 	}
 	
 	public void testGenerateNoKeys() {
 		
-		Map map = generator.generateMap("Test", new ArrayList<String>());
+		Map map = generator.generate("Test", new ArrayList<String>());
 		
 		assertNotNull(map);
 		assertTrue(map instanceof HashMap);
@@ -49,14 +50,14 @@ public class JavassistMapGeneratorTest extends TestCase {
 		List<String> keys = new ArrayList<String>();
 		keys.add(testKey);
 		
-		Map map = generator.generateMap("Test", keys);
+		Map map = generator.generate("Test", keys);
 		
 		assertNotNull(map);
-		assertTrue(map instanceof OptimizedMap);
+		assertTrue(map instanceof VirtualBean);
 						
 		map.put(testKey, testValue);
 		
-		assertFalse(((OptimizedMap)map).isBackingMapUsed());
+		assertFalse(((VirtualBean)map).isBackingMapUsed());
 		
 		assertTrue(map.containsKey(testKey));
 		assertEquals(testValue, map.get(testKey));
@@ -67,7 +68,7 @@ public class JavassistMapGeneratorTest extends TestCase {
 		
 		map.put(testKey2, testValue2);
 		
-		assertTrue(((OptimizedMap)map).isBackingMapUsed());
+		assertTrue(((VirtualBean)map).isBackingMapUsed());
 		
 		assertTrue(map.containsKey(testKey2));
 		assertEquals(testValue2, map.get(testKey2));
