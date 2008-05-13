@@ -1,14 +1,16 @@
 /**
  * 
  */
-package org.milyn.javabean.bcm.javassist;
+package org.milyn.javabean.virtual.javassist;
 
 import static org.milyn.javabean.bcm.javassist.JavassistUtils.NO_ARGS;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -19,20 +21,31 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.ArrayMemberValue;
+import javassist.bytecode.annotation.MemberValue;
+import javassist.bytecode.annotation.StringMemberValue;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.BeanUtils;
 import org.milyn.javabean.bcm.BcmClassLoader;
 import org.milyn.javabean.bcm.BcmUtils;
-import org.milyn.javabean.bcm.MapGenerator;
-import org.milyn.javabean.bcm.OptimizedMap;
+import org.milyn.javabean.bcm.javassist.JavaPoolUtils;
+import org.milyn.javabean.virtual.VirtualBean;
+import org.milyn.javabean.virtual.VirtualBeanGenerator;
+import org.milyn.javabean.virtual.annotation.DirectSettableProperties;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class JavassistMapGenerator implements MapGenerator {
-
+public class JavassistVirtualBeanGenerator implements VirtualBeanGenerator {
+	
+	public static Pattern VALID_VIRTUAL_FIELD_NAME_PATTERN = Pattern.compile("([A-Za-z_][A-Za-z0-9]|[A-Za-z])[A-Za-z0-9_]+");
+	
 	/**
 	 * 
 	 */
@@ -42,7 +55,7 @@ public class JavassistMapGenerator implements MapGenerator {
 	
 	private BcmClassLoader classLoader;
 	
-	private CtClass ctOptimizedMap;
+	private CtClass ctVirtualBean;
 	
 	private CtClass ctObject;
 	
@@ -56,7 +69,7 @@ public class JavassistMapGenerator implements MapGenerator {
 		
 		try {
 			
-			ctOptimizedMap = classPool.get(OptimizedMap.class.getName());
+			ctVirtualBean = classPool.get(VirtualBean.class.getName());
 			
 			ctObject = classPool.get(Object.class.getName());
 			
@@ -73,16 +86,16 @@ public class JavassistMapGenerator implements MapGenerator {
 	 * @see org.milyn.javabean.bcm.MapGenerator#generateMap(java.lang.Class, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<String, ?> generateMap(String name, List<String> keys) {
+	public Map<String, ?> generate(String name, List<String> fieldNames) {
 		
 		if(!initialized) {
 			throw new IllegalStateException("JavassistMapGenerator not initialized. Call #initialize(ApplicationContext) first.");
 		}
 		
-		if(keys.isEmpty()) {
+		if(fieldNames.isEmpty()) {
 			return new HashMap<String, Object>();
 		}
-    	
+		
 		Class<?> mapClass = null;
 		try {
 			String mapClassName = MAP_NAME_PREFIX + name;
@@ -90,28 +103,33 @@ public class JavassistMapGenerator implements MapGenerator {
 			mapClass = classLoader.load(mapClassName);
 						
 			if(mapClass == null) {
+				
+				List<String> validFieldNames = filterValidFieldsNames(fieldNames);
+				
 				CtClass impl = classPool.makeClass(mapClassName);
-				impl.setSuperclass(ctOptimizedMap);
+				impl.setSuperclass(ctVirtualBean);
 				
 				addConstructor(impl);
-	
-				addFields(impl, keys);
+
+				addTypePropertyAnnotation(impl, validFieldNames);
 				
-				addVirtualClearMethod(impl, keys);
+				addFields(impl, validFieldNames);
 				
-				addVirtualContainsKeyMethod(impl, keys);
+				addVirtualClearMethod(impl, validFieldNames);
 				
-				addVirtualContainsValueMethod(impl, keys);
+				addVirtualContainsKeyMethod(impl, validFieldNames);
 				
-				addVirtualGetMethod(impl, keys);
+				addVirtualContainsValueMethod(impl, validFieldNames);
 				
-				addVirtualPutMethod(impl, keys);
+				addVirtualGetMethod(impl, validFieldNames);
 				
-				//addVirtualPutAllMethod(impl, keys);
+				addVirtualPutMethod(impl, validFieldNames);
 				
-				addVirtualRemoveMethod(impl, keys);
+				//addVirtualPutAllMethod(impl, validKeys);
 				
-				addVirtualFieldsToMapMethod(impl, keys);
+				addVirtualRemoveMethod(impl, validFieldNames);
+				
+				addVirtualFieldsToMapMethod(impl, validFieldNames);
 				
 				byte[] byteCode = impl.toBytecode();
 				
@@ -133,12 +151,28 @@ public class JavassistMapGenerator implements MapGenerator {
 		}
 	}
 
+	/**
+	 * @param keys
+	 * @return
+	 */
+	private List<String> filterValidFieldsNames(List<String> keys) {
+		List<String> validKeys = new ArrayList<String>();
+		for(String key : keys) {
+			if(VALID_VIRTUAL_FIELD_NAME_PATTERN.matcher(key).matches()) {
+				validKeys.add(key);
+			}
+			
+		}
+		return validKeys;
+	}
+
 	private void addConstructor(CtClass impl) throws CannotCompileException {
-		// add public default constructor method to class
+		
         CtConstructor cons = new CtConstructor(NO_ARGS, impl);
         cons.setBody(";");
         impl.addConstructor(cons);
 	}
+	
 	
 	private void addFields(CtClass impl, List<String> fieldNames) throws CannotCompileException {
 		
@@ -148,6 +182,29 @@ public class JavassistMapGenerator implements MapGenerator {
 		
 	}
 
+	private void addTypePropertyAnnotation(CtClass impl, List<String> fieldNames)
+			throws CannotCompileException {
+
+		ClassFile cf = impl.getClassFile();
+
+		ConstPool cp = cf.getConstPool();
+		AnnotationsAttribute attr = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
+		
+		MemberValue[] properties = new MemberValue[fieldNames.size()];
+		for(int i = 0; i < fieldNames.size(); i++) {
+			properties[i] = new StringMemberValue(fieldNames.get(i), cp);
+		}
+		ArrayMemberValue value = new ArrayMemberValue(cp);
+		value.setValue(properties);		
+		
+		Annotation a = new Annotation(DirectSettableProperties.class.getName(), cp);
+		a.addMemberValue("value", value);
+		attr.setAnnotation(a);
+		
+		cf.addAttribute(attr);
+		cf.setVersionToJava5();
+	}
+	
 	/**
 	 * @param impl
 	 * @param fieldName
@@ -165,17 +222,30 @@ public class JavassistMapGenerator implements MapGenerator {
 	
 	private void addFieldGetter(CtClass impl, String fieldName) throws CannotCompileException {
 		
-		String methodBody = "return " + fieldName + ";";
+		StringBuilder methodBody = new StringBuilder();
+		methodBody.append("return ")
+				  .append(fieldName)
+				  .append(" == NOT_SET ? null : ")
+				  .append(fieldName)
+				  .append(";");
+				
 		
-		CtMethod setMethod = CtNewMethod.make(ctObject, BeanUtils.toGetterName(fieldName), NO_ARGS, new CtClass[0], methodBody, impl);
+		CtMethod setMethod = CtNewMethod.make(ctObject, BeanUtils.toGetterName(fieldName), NO_ARGS, new CtClass[0], methodBody.toString(), impl);
 		impl.addMethod(setMethod);
 	}
 	
 	private void addFieldSetter(CtClass impl, String fieldName) throws CannotCompileException {
 		
-		String methodBody = fieldName + " = $1;";
+		StringBuilder methodBody = new StringBuilder();
+		methodBody.append("{")
+				  .append("if(")
+				  .append(fieldName)
+				  .append(" == NOT_SET) incrementSize();")
+				  .append(fieldName)
+				  .append(" = $1; }");
+				  
 		
-		CtMethod setMethod = CtNewMethod.make(CtPrimitiveType.voidType, BeanUtils.toSetterName(fieldName), new CtClass[] { ctObject }, new CtClass[0], methodBody, impl);
+		CtMethod setMethod = CtNewMethod.make(CtPrimitiveType.voidType, BeanUtils.toSetterName(fieldName), new CtClass[] { ctObject }, new CtClass[0], methodBody.toString(), impl);
 		impl.addMethod(setMethod);
 	}
 
@@ -365,6 +435,5 @@ public class JavassistMapGenerator implements MapGenerator {
 		CtMethod setMethod = CtNewMethod.make(ctMap, "virtualFieldsToMap", NO_ARGS, new CtClass[0], methodBody.toString(), impl);
 		impl.addMethod(setMethod);
 	}
-	
-	
+
 }

@@ -7,11 +7,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
-import org.milyn.javabean.invocator.SetterMethodInvocator;
-import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
-import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
-import org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory;
 import org.milyn.javabean.performance.model.Person;
+import org.milyn.javabean.setter.PropertySetMethodInvocator;
+import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.setter.javassist.JavassistSetterMethodInvocatorFactory;
 
 
 /**
@@ -29,20 +28,20 @@ public class PerformanceReflectionVsBcm {
 
 		logger.info("Number of invocations: " + numLoops);
 
-		SetterMethodInvocatorFactory[] setterMethodInvocatorFactories = {
+		PropertySetMethodInvocatorFactory[] setterMethodInvocatorFactories = {
 				new DirectSetterMethodInvocatorFactory(),
-				new ReflectiveSetterMethodInvocatorFactory(),
+				new org.milyn.javabean.setter.reflect.ReflectiveSetterMethodInvocatorFactory(),
 				new JavassistSetterMethodInvocatorFactory()
 		};
 
-		for(SetterMethodInvocatorFactory setterMethodInvocatorFactory: setterMethodInvocatorFactories) {
+		for(PropertySetMethodInvocatorFactory setterMethodInvocatorFactory: setterMethodInvocatorFactories) {
 			logger.info("SetterMethodInvocatorFactory: " + setterMethodInvocatorFactory.getClass().getSimpleName());
 
 			setterMethodInvocatorFactory.initialize(new MockApplicationContext());
 
 			long beginTime = System.currentTimeMillis();
 
-			SetterMethodInvocator setterMethodInvocator = setterMethodInvocatorFactory.create("setSurname", Person.class, String.class);
+			PropertySetMethodInvocator setMethodInvocator = setterMethodInvocatorFactory.create("setSurname", Person.class, String.class);
 
 			logger.info("Construction: " + (System.currentTimeMillis() - beginTime)+ "ms");
 			String str = "testSomething";
@@ -52,7 +51,7 @@ public class PerformanceReflectionVsBcm {
 			beginTime = System.currentTimeMillis();
 			for(int i = 0; i < numLoops; i++) {
 
-				setterMethodInvocator.set(person, str);
+				setMethodInvocator.set(person, str);
 
 			}
 			logger.info("Invocation: " + (System.currentTimeMillis() - beginTime) + "ms");
@@ -62,9 +61,9 @@ public class PerformanceReflectionVsBcm {
 
 	}
 
-	static class DirectSetterMethodInvocatorFactory implements SetterMethodInvocatorFactory {
+	static class DirectSetterMethodInvocatorFactory implements PropertySetMethodInvocatorFactory {
 
-		public SetterMethodInvocator create(String setterName,
+		public PropertySetMethodInvocator create(String setterName,
 				Class<?> beanClass, Class<?> setterParamType) {
 
 			return new DirectSetterMethodInvocator();
@@ -75,7 +74,7 @@ public class PerformanceReflectionVsBcm {
 
 	}
 
-	static class DirectSetterMethodInvocator implements SetterMethodInvocator{
+	static class DirectSetterMethodInvocator implements PropertySetMethodInvocator{
 
 		public void set(Object obj, Object arg) {
 			((Person)obj).setSurname((String)arg);

@@ -1,14 +1,14 @@
 /**
  * 
  */
-package org.milyn.javabean.invocator.reflect;
+package org.milyn.javabean.setter.reflect;
 
 import java.lang.reflect.Method;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.BeanUtils;
-import org.milyn.javabean.invocator.SetterMethodInvocator;
-import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
+import org.milyn.javabean.setter.PropertySetMethodInvocator;
+import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
 
 
 /**
@@ -16,7 +16,7 @@ import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
  *
  */
 public class ReflectiveSetterMethodInvocatorFactory implements
-		SetterMethodInvocatorFactory {
+		PropertySetMethodInvocatorFactory {
 
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#initialize(org.milyn.container.ApplicationContext)
@@ -27,7 +27,7 @@ public class ReflectiveSetterMethodInvocatorFactory implements
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
-	public SetterMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+	public PropertySetMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
 		
 		Method method = BeanUtils.createSetterMethod(setterName, beanClass, setterParamType);
 		

@@ -14,9 +14,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
-import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
-import org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory;
+import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.setter.javassist.JavassistSetterMethodInvocatorFactory;
+import org.milyn.javabean.setter.reflect.ReflectiveSetterMethodInvocatorFactory;
 import org.milyn.payload.JavaResult;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
@@ -76,7 +76,7 @@ public class PerformanceTest {
 		String packagePath = ClassUtil.toFilePath(PerformanceTest.class.getPackage());
 		Smooks smooks = new Smooks(packagePath + configFile);
 		
-		smooks.getApplicationContext().setAttribute(SetterMethodInvocatorFactory.IMPLEMENTATION_CONTEXT_KEY, setterMethodInvocatorFactoryImpl.getName());
+		smooks.getApplicationContext().setAttribute(PropertySetMethodInvocatorFactory.IMPLEMENTATION_CONTEXT_KEY, setterMethodInvocatorFactoryImpl.getName());
 		
 		ExecutionContext executionContext = smooks.createExecutionContext();
 		

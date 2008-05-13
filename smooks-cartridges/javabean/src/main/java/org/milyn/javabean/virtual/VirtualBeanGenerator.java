@@ -1,13 +1,13 @@
 /**
  * 
  */
-package org.milyn.javabean.bcm;
+package org.milyn.javabean.virtual;
 
 import java.util.List;
 import java.util.Map;
 
 import org.milyn.container.ApplicationContext;
-import org.milyn.javabean.bcm.javassist.JavassistMapGenerator;
+import org.milyn.javabean.virtual.javassist.JavassistVirtualBeanGenerator;
 
 
 /**
@@ -19,27 +19,27 @@ import org.milyn.javabean.bcm.javassist.JavassistMapGenerator;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface MapGenerator {
+public interface VirtualBeanGenerator {
 	
 	void initialize(ApplicationContext applicationContext);
 	
 	@SuppressWarnings("unchecked")
-	Map<String, ?> generateMap(String name, List<String> keys);
+	Map<String, ?> generate(String name, List<String> keys);
 	
 	
-	public static final String IMPLEMENTATION_CONTEXT_KEY = MapGenerator.class.getName() + "#IMPLEMENTATION";
+	public static final String IMPLEMENTATION_CONTEXT_KEY = VirtualBeanGenerator.class.getName() + "#IMPLEMENTATION";
 
 	public static class Factory {
 		
-		public static final String DEFAULT_IMPLEMENTATION = JavassistMapGenerator.class.getName();
+		public static final String DEFAULT_IMPLEMENTATION = JavassistVirtualBeanGenerator.class.getName();
 
 		public static final String INSTANCE_CONTEXT_KEY = Factory.class.getName() + "#INSTANCE";
 
-		public static MapGenerator create(ApplicationContext applicationContext) {
+		public static VirtualBeanGenerator create(ApplicationContext applicationContext) {
 			
-			MapGenerator mapGenerator = (MapGenerator) applicationContext.getAttribute(INSTANCE_CONTEXT_KEY);
+			VirtualBeanGenerator virtualBeanGenerator = (VirtualBeanGenerator) applicationContext.getAttribute(INSTANCE_CONTEXT_KEY);
 			
-			if(mapGenerator == null) {
+			if(virtualBeanGenerator == null) {
 				
 				String mapGeneratorImplementation = (String) applicationContext.getAttribute(IMPLEMENTATION_CONTEXT_KEY);
 				
@@ -50,9 +50,9 @@ public interface MapGenerator {
 				try {
 					Class<?> mapGeneratorClass = applicationContext.getClass().getClassLoader().loadClass(mapGeneratorImplementation);
 					
-					mapGenerator = (MapGenerator) mapGeneratorClass.newInstance();
+					virtualBeanGenerator = (VirtualBeanGenerator) mapGeneratorClass.newInstance();
 					
-					mapGenerator.initialize(applicationContext);
+					virtualBeanGenerator.initialize(applicationContext);
 					
 				} catch (ClassNotFoundException e) {
 					throw new RuntimeException("Configured factory implementation class '" 
@@ -67,11 +67,11 @@ public interface MapGenerator {
 							+ "Make sure it has a parameterless public constructor.", e);
 				}
 				
-				applicationContext.setAttribute(INSTANCE_CONTEXT_KEY, mapGenerator);
+				applicationContext.setAttribute(INSTANCE_CONTEXT_KEY, virtualBeanGenerator);
 				
 			}
 			
-			return mapGenerator;
+			return virtualBeanGenerator;
 			
 			
 		}	

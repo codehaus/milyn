@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +38,7 @@ import org.milyn.javabean.runtime.info.Classification;
 import org.milyn.javabean.runtime.info.MapRuntimeInfo;
 import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
 import org.milyn.javabean.runtime.info.ObjectRuntimeInfoFactory;
+import org.milyn.javabean.virtual.annotation.DirectSettableProperties;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -160,9 +160,8 @@ import org.w3c.dom.NodeList;
  * @author tfennelly
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
+@DirectSettableProperties( {"fewfe", "fwefew"})
 public class BeanPopulator implements ConfigurationExpander {
-
-	public static Pattern VALID_VIRTUAL_PROPERTY_NAME_PATTERN = Pattern.compile("[A-Za-z_][A-Za-z0-9_]+");
 	
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
@@ -213,7 +212,7 @@ public class BeanPopulator implements ConfigurationExpander {
         
         objectRuntimeInfo = ObjectRuntimeInfoFactory.createBeanRuntime(beanClassName);
         if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
-        	((MapRuntimeInfo)objectRuntimeInfo).setOptimize(optimized);
+        	((MapRuntimeInfo)objectRuntimeInfo).setVirtual(optimized);
         }
         
         ObjectRuntimeInfo.recordRuntimeInfo(beanId, objectRuntimeInfo, appContext);
@@ -341,11 +340,6 @@ public class BeanPopulator implements ConfigurationExpander {
             
             if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
             	if(property.charAt(0) != '@') {
-            		if(optimized) {
-            			if(!VALID_VIRTUAL_PROPERTY_NAME_PATTERN.matcher(property).matches()) {
-            				throw new SmooksConfigurationException("The 'property' attribute '"+ property +"' of the virtual map contains illegal characters: " + bindingConfig);
-            			}
-            		}
             		((MapRuntimeInfo)objectRuntimeInfo).addKey(property);
             	}
             }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.milyn.javabean.invocator.javassist;
+package org.milyn.javabean.setter.javassist;
 
 import static org.milyn.javabean.bcm.javassist.JavassistUtils.NO_ARGS;
 
@@ -20,15 +20,15 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.bcm.BcmClassLoader;
 import org.milyn.javabean.bcm.BcmUtils;
 import org.milyn.javabean.bcm.javassist.JavaPoolUtils;
-import org.milyn.javabean.invocator.SetterMethodInvocator;
-import org.milyn.javabean.invocator.SetterMethodInvocatorFactory;
+import org.milyn.javabean.setter.PropertySetMethodInvocator;
+import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 public class JavassistSetterMethodInvocatorFactory implements
-		SetterMethodInvocatorFactory {
+		PropertySetMethodInvocatorFactory {
 	
 
 	private ClassPool classPool;
@@ -53,7 +53,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 		try {
 			
 			// smi = SetterMethodInvocator
-			smiInterface = classPool.get(SetterMethodInvocator.class.getName());
+			smiInterface = classPool.get(PropertySetMethodInvocator.class.getName());
 			
 			ctObject = classPool.get(Object.class.getName());
 			
@@ -67,7 +67,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
-	public SetterMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+	public PropertySetMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
 		if(!initialized) {
 			throw new IllegalStateException("Factory not initizialed. Call the #initialize(ApplicationContext) first.");
 		}
@@ -121,7 +121,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 		}
     	
     	try {
-			return (SetterMethodInvocator) smiClass.newInstance();
+			return (PropertySetMethodInvocator) smiClass.newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator object", e);
 		} catch (IllegalAccessException e) {
@@ -209,10 +209,12 @@ public class JavassistSetterMethodInvocatorFactory implements
 			return "("+ paramType.getSimpleName() +") " + parameterName;
 		} else if (isMethodPresent(setterName, beanClass, paramPrimativeType)){
 			return "(("+ paramType.getSimpleName() +") " + parameterName + ")." + paramPrimativeType.getSimpleName() + "Value()";
+		} else if (isMethodPresent(setterName, beanClass, ctObject)){
+			return parameterName;
 		} else {
 			
 			throw new RuntimeException("Could not find the method '" + setterName + "' on the bean '" + beanClass 
-					+ "' with a '" + paramType.getSimpleName() + "' or a '" + paramPrimativeType.getSimpleName() + "' parameter."); 
+					+ "' with a '" + paramType.getSimpleName() + "','" + paramPrimativeType.getSimpleName() + "' or a 'Object' parameter."); 
 			
 		}
     }
