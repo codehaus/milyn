@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.milyn.javabean.setter.javassist;
+package org.milyn.javabean.invocator.javassist;
 
 import static org.milyn.javabean.bcm.javassist.JavassistUtils.NO_ARGS;
 
@@ -20,8 +20,8 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.bcm.BcmClassLoader;
 import org.milyn.javabean.bcm.BcmUtils;
 import org.milyn.javabean.bcm.javassist.JavaPoolUtils;
-import org.milyn.javabean.setter.PropertySetMethodInvocator;
-import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.invocator.PropertySetMethodInvocator;
+import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

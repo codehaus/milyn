@@ -1,14 +1,14 @@
 /**
  * 
  */
-package org.milyn.javabean.setter.reflect;
+package org.milyn.javabean.invocator.reflect;
 
 import java.lang.reflect.Method;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.BeanUtils;
-import org.milyn.javabean.setter.PropertySetMethodInvocator;
-import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.invocator.PropertySetMethodInvocator;
+import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
 
 
 /**

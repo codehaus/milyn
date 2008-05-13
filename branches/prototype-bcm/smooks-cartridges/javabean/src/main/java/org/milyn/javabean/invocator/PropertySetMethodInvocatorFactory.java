@@ -1,10 +1,10 @@
 /**
  * 
  */
-package org.milyn.javabean.setter;
+package org.milyn.javabean.invocator;
 
 import org.milyn.container.ApplicationContext;
-import org.milyn.javabean.setter.javassist.JavassistSetterMethodInvocatorFactory;
+import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

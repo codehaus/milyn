@@ -7,10 +7,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
+import org.milyn.javabean.invocator.PropertySetMethodInvocator;
+import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
 import org.milyn.javabean.performance.model.Person;
-import org.milyn.javabean.setter.PropertySetMethodInvocator;
-import org.milyn.javabean.setter.PropertySetMethodInvocatorFactory;
-import org.milyn.javabean.setter.javassist.JavassistSetterMethodInvocatorFactory;
 
 
 /**
@@ -30,7 +30,7 @@ public class PerformanceReflectionVsBcm {
 
 		PropertySetMethodInvocatorFactory[] setterMethodInvocatorFactories = {
 				new DirectSetterMethodInvocatorFactory(),
-				new org.milyn.javabean.setter.reflect.ReflectiveSetterMethodInvocatorFactory(),
+				new org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory(),
 				new JavassistSetterMethodInvocatorFactory()
 		};
 
