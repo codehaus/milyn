@@ -37,11 +37,11 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.javabean.invocator.PropertySetMethodInvocator;
 import org.milyn.javabean.runtime.info.ArrayRuntimeInfo;
 import org.milyn.javabean.runtime.info.Classification;
 import org.milyn.javabean.runtime.info.MapRuntimeInfo;
 import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
-import org.milyn.javabean.setter.PropertySetMethodInvocator;
 import org.milyn.javabean.virtual.VirtualBeanGenerator;
 import org.w3c.dom.Element;
 

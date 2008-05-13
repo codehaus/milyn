@@ -1,12 +1,12 @@
 /**
  * 
  */
-package org.milyn.javabean.setter.reflect;
+package org.milyn.javabean.invocator.reflect;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.milyn.javabean.setter.PropertySetMethodInvocator;
+import org.milyn.javabean.invocator.PropertySetMethodInvocator;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
