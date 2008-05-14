@@ -35,11 +35,18 @@
    <category name="org.milyn">
       <priority value="ERROR"/>
    </category>
-   
+
    <category name="org.milyn.javabean.performance">
       <priority value="DEBUG"/>
    </category>
-   
+
+	<category name="org.milyn.javabean.invocator.performance">
+      <priority value="DEBUG"/>
+   </category>
+
+   <category name="org.milyn.javabean.virtual.performance">
+      <priority value="DEBUG"/>
+   </category>
 
    <!-- ======================= -->
    <!-- Setup the Root category -->

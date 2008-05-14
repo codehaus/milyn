@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.milyn.javabean.performance;
+package org.milyn.javabean.invocator.performance;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,14 +17,14 @@ import org.milyn.javabean.performance.model.Person;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class PerformanceReflectionVsBcm {
+public class InvocatorPerformance {
 
 	private final static Log logger = LogFactory
-			.getLog(PerformanceReflectionVsBcm.class);
+			.getLog(InvocatorPerformance.class);
 
 	public static void main(String[] args) {
 
-		int numLoops = 1000000;
+		int numLoops = 100000000;
 
 		logger.info("Number of invocations: " + numLoops);
 
