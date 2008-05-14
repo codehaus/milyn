@@ -14,28 +14,28 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateSequenceModel;
 
 /**
- * 
+ *
  */
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
- * 
+ *
  */
 public class GenerateXML {
 	public static void main(String[] args) throws IOException, TemplateException {
 		Locale.setDefault(Locale.US);
-		
+
 		boolean simple = false;
-		
+
 		Configuration cfg = new Configuration();
 		// Specify the data source where the template files come from.
 		// Here I set a file directory for it:
 		cfg.setDirectoryForTemplateLoading(new File("src/test/resources/templates"));
-		
+
 		// Specify how templates will see the data-model. This is an advanced topic...
 		// but just use this:
-		cfg.setObjectWrapper(new DefaultObjectWrapper());  
-		
+		cfg.setObjectWrapper(new DefaultObjectWrapper());
+
 		Template temp;
 		String name;
 		if(simple) {
@@ -45,17 +45,19 @@ public class GenerateXML {
 			temp = cfg.getTemplate("extended.ftl");
 			name = "orders";
 		}
-		
+
 		String path = "";
-		
-		write(temp, 500, path + name +"-500.xml", simple);
-		write(temp, 5000, path + name +"-5000.xml", simple);
+
+//		write(temp, 1, path + name +"-1.xml", simple);
+//		write(temp, 500, path + name +"-500.xml", simple);
+//		write(temp, 5000, path + name +"-5000.xml", simple);
 		write(temp, 50000, path + name +"-50000.xml", simple);
-		write(temp, 500000, path + name +"-500000.xml", simple);
-		write(temp, 5000000, path + name +"-5000000.xml", simple);
-        
+//		write(temp, 500000, path + name +"-500000.xml", simple);
+//		write(temp, 5000000, path + name +"-5000000.xml", simple);
+//		write(temp, 20000000, path + name +"-20000000.xml", simple);
+
         System.out.println("done");
-        
+
 	}
 
 	/**
@@ -66,24 +68,24 @@ public class GenerateXML {
 	private static void write(Template temp, int numCustomers, String fileName, boolean simple) throws TemplateException,
 			IOException {
 		System.out.println("Writing " + fileName);
-		
+
 		Map<String, TemplateSequenceModel> root = new HashMap();
 		if(simple) {
 			root.put("customers", new SimpleGenerator(numCustomers));
 		} else {
 			root.put("customers", new CustomerGenerator(numCustomers));
 		}
-		
+
 		Writer out = null;
 		try {
 			out = createWriter(fileName);
-		
+
 			temp.process(root, out);
 		} finally {
 			closeWriter(out);
 		}
 	}
-	
+
 	private static Writer createWriter(final String filepath) {
 
 		try {
@@ -109,5 +111,5 @@ public class GenerateXML {
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
-	}	
+	}
 }

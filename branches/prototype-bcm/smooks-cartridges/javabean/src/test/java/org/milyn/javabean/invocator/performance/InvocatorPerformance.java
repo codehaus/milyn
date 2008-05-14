@@ -29,8 +29,8 @@ public class InvocatorPerformance {
 		logger.info("Number of invocations: " + numLoops);
 
 		PropertySetMethodInvocatorFactory[] setterMethodInvocatorFactories = {
-				new DirectSetterMethodInvocatorFactory(),
-				new org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory(),
+				//new DirectSetterMethodInvocatorFactory(),
+				//new org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory(),
 				new JavassistSetterMethodInvocatorFactory()
 		};
 
@@ -44,9 +44,17 @@ public class InvocatorPerformance {
 			PropertySetMethodInvocator setMethodInvocator = setterMethodInvocatorFactory.create("setSurname", Person.class, String.class);
 
 			logger.info("Construction: " + (System.currentTimeMillis() - beginTime)+ "ms");
+
+
 			String str = "testSomething";
 
 			Person person = new Person();
+
+			beginTime = System.currentTimeMillis();
+
+			setMethodInvocator.set(person, str);
+
+			logger.info("Warmup: " + (System.currentTimeMillis() - beginTime)+ "ms");
 
 			beginTime = System.currentTimeMillis();
 			for(int i = 0; i < numLoops; i++) {

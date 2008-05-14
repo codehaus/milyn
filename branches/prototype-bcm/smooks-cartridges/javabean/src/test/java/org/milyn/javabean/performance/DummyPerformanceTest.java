@@ -14,9 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
-import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
-import org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory;
 import org.milyn.payload.JavaResult;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
@@ -25,9 +22,9 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class PerformanceTest {
+public class DummyPerformanceTest {
 
-	private static final Log logger = LogFactory.getLog(PerformanceTest.class);
+	private static final Log logger = LogFactory.getLog(DummyPerformanceTest.class);
 
 	/**
 	 * @param args
@@ -38,28 +35,18 @@ public class PerformanceTest {
 		try {
 			logger.info("Start");
 
-			boolean simple = false;
+			boolean simple = true;
 
-			String file = simple ? "/smooks-config-simple.xml" : "/smooks-config-orders.xml";
-
-			Class<?>[] setterMethodInvocatorFactoryImpls = new Class[] {
-				ReflectiveSetterMethodInvocatorFactory.class,
-				JavassistSetterMethodInvocatorFactory.class
-			};
+			String file = simple ? "/smooks-config-simple-dummy.xml" : "/smooks-config-orders-dummy.xml";
 
 			String name = simple ? "simple" : "orders";
 
-			for(Class<?> setterMethodInvocatorFactoryImpl : setterMethodInvocatorFactoryImpls) {
+			test(file, name + "-1.xml", name + "-1.xml");
+			//test(file, name + "-1.xml", name + "-500.xml", setterMethodInvocatorFactoryImpl);
+			//test(file, name + "-1.xml", name + "-5000.xml", setterMethodInvocatorFactoryImpl);
+			//test(file, name + "-1.xml", name + "-50000.xml", setterMethodInvocatorFactoryImpl);
+			test(file, name + "-1.xml", name + "-500000.xml");
 
-				logger.info("SetterMethodInvocatorFactory implementation: " + setterMethodInvocatorFactoryImpl.getSimpleName());
-
-				test(file, name + "-1.xml", name + "-1.xml", setterMethodInvocatorFactoryImpl);
-				//test(file, name + "-1.xml", name + "-500.xml", setterMethodInvocatorFactoryImpl);
-				//test(file, name + "-1.xml", name + "-500.xml", setterMethodInvocatorFactoryImpl);
-				//test(file, name + "-1.xml", name + "-5000.xml", setterMethodInvocatorFactoryImpl);
-				test(file, name + "-1.xml", name + "-50000.xml", setterMethodInvocatorFactoryImpl);
-				//test(file, name + "-1.xml", name + "-500000.xml" ,setterMethodInvocatorFactoryImpl);
-			}
 
 
 		} catch (Exception e) {
@@ -71,13 +58,11 @@ public class PerformanceTest {
 	 * @throws IOException
 	 * @throws SAXException
 	 */
-	public static void test(String configFile, String warmupFilename, String inFilename, Class setterMethodInvocatorFactoryImpl) throws IOException, SAXException {
+	public static void test(String configFile, String warmupFilename, String inFilename) throws IOException, SAXException {
 		Long beginTime = System.currentTimeMillis();
 
 		String packagePath = ClassUtil.toFilePath(PerformanceTest.class.getPackage());
 		Smooks smooks = new Smooks(packagePath + configFile);
-
-		smooks.getApplicationContext().setAttribute(PropertySetMethodInvocatorFactory.IMPLEMENTATION_CONTEXT_KEY, setterMethodInvocatorFactoryImpl.getName());
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
@@ -112,5 +97,4 @@ public class PerformanceTest {
 		} catch (InterruptedException e) {
 		}
 	}
-
 }
