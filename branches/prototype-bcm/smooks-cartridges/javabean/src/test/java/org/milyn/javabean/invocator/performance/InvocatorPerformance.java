@@ -9,6 +9,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.javabean.invocator.PropertySetMethodInvocator;
 import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.invocator.asm.AsmPropertiesSetterMethodInvocatorFactory;
 import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
 import org.milyn.javabean.performance.model.Person;
 
@@ -29,9 +30,10 @@ public class InvocatorPerformance {
 		logger.info("Number of invocations: " + numLoops);
 
 		PropertySetMethodInvocatorFactory[] setterMethodInvocatorFactories = {
-				//new DirectSetterMethodInvocatorFactory(),
-				//new org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory(),
-				new JavassistSetterMethodInvocatorFactory()
+				new DirectSetterMethodInvocatorFactory(),
+				new org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory(),
+				new JavassistSetterMethodInvocatorFactory(),
+				new AsmPropertiesSetterMethodInvocatorFactory()
 		};
 
 		for(PropertySetMethodInvocatorFactory setterMethodInvocatorFactory: setterMethodInvocatorFactories) {
