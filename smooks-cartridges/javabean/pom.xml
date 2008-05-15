@@ -18,12 +18,17 @@
             <url>http://dist.codehaus.org</url>
         </repository>
     </repositories>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm-all</artifactId>
+			<version>3.1</version>
+		</dependency>
 	</dependencies>
-	
+
 </project>
