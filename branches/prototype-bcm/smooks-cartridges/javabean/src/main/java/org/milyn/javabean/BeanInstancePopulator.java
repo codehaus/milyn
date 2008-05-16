@@ -18,7 +18,6 @@ package org.milyn.javabean;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +39,10 @@ import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.javabean.invocator.PropertySetMethodInvocator;
+import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.invocator.SetMethodInvoker;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.runtime.info.Classification;
-import org.milyn.javabean.runtime.info.MapRuntimeInfo;
-import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
-import org.milyn.javabean.virtual.annotation.DirectSettableProperties;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -94,10 +90,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     @AppContext
     private ApplicationContext appContext;
 
-    private ObjectRuntimeInfo objectRuntimeInfo;
-    private ObjectRuntimeInfo wiredBeanRuntimeInfo;
+    private BeanRuntimeInfo beanRuntimeInfo;
+    private BeanRuntimeInfo wiredBeanRuntimeInfo;
 
-    private PropertySetMethodInvocator propertySetMethodInvocator;
+    private SetMethodInvoker propertySetMethodInvoker;
 
     private boolean checkedForSetMethod;
     private boolean isAttribute = true;
@@ -114,12 +110,22 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     public void initialize() throws SmooksConfigurationException {
     	buildId();
 
-        objectRuntimeInfo = ObjectRuntimeInfo.getRuntimeInfo(beanId, appContext);
-
+beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
         beanWiring = wireBeanId != null;
         isAttribute = (valueAttributeName != null);
 
-        if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION && property != null) {
+		if (setterMethod == null && property == null ) {
+        	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+        		property = wireBeanId;
+        	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
+        		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
+                    "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
+                    "  Bean is type '" + beanRuntimeInfo.getPopulateType().getName() + "'.");
+        	}
+        }
+
+        if(beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION && property != null) {
+            property = property.trim();
             if(property.length() > 1 && property.charAt(0) == '@') {
                 mapKeyAttribute = property.substring(1);
             }
@@ -291,77 +297,34 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 	private void setPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
         Object bean = BeanUtils.getBean(beanId, executionContext);
 
+        Classification beanType = beanRuntimeInfo.getClassification();
 
-        try {
-        	createPropertySetMethod(bean, dataObject.getClass());
-    	} catch (RuntimeException e){
-    		if(setterMethod != null) {
-                throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + objectRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.", e);
-            } else if(property != null) {
-                throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + objectRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.", e);
-            }
-    	}
+        createPropertySetMethod(bean, dataObject.getClass());
 
         // Set the data on the bean...
-        if(propertySetMethodInvocator != null) {
+        if(propertySetMethodInvoker != null) {
+        	propertySetMethodInvoker.set(bean, dataObject);
 
-        	try {
+        } else if(beanType == Classification.MAP_COLLECTION) {
+            ((Map)bean).put(mapPropertyName, dataObject);
+        } else if(beanType == Classification.ARRAY_COLLECTION || beanType == Classification.COLLECTION_COLLECTION) {
+            ((Collection)bean).add(dataObject);
+        } else if(propertySetMethodInvoker == null) {
+        	if(setterMethod != null) {
+                throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+            } else if(property != null) {
+                throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+            }
+        }
 
-        		propertySetMethodInvocator.set(bean, dataObject);
-
-        	 } catch (RuntimeException e) {
-                 throw new SmooksConfigurationException("Exception invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
-             }
-        } else {
-        	 Classification beanType = objectRuntimeInfo.getClassification();
-
-        	if(beanType == Classification.MAP_COLLECTION) {
-	            ((Map)bean).put(mapPropertyName, dataObject);
-	        } else {
-	            ((Collection)bean).add(dataObject);
-	        }
-    	}
     }
 
 
 
     private void createPropertySetMethod(Object bean, Class<?> parameter) {
 
-    	if (!checkedForSetMethod && propertySetMethodInvocator == null) {
+    	if (!checkedForSetMethod && propertySetMethodInvoker == null) {
     		checkedForSetMethod = true;
-
-    		//Dynamic attributes can never be set via a invocator, they
-    		//always use the Map#put method
-    		if(mapKeyAttribute != null) {
-    			return;
-    		}
-
-    		Classification beanType = objectRuntimeInfo.getClassification();
-
-    		// Following block checks if the map property is settable via
-    		// a direct set method
-    		if(beanType  == Classification.MAP_COLLECTION) {
-    			MapRuntimeInfo mapRuntimeInfo = (MapRuntimeInfo)objectRuntimeInfo;
-
-    			if(property == null) {
-    				return;
-    			}
-
-    			if(!mapRuntimeInfo.isVirtual()) {
-    				return;
-    			}
-
-    			DirectSettableProperties directSettableProperties = bean.getClass().getAnnotation(DirectSettableProperties.class);
-    			if(directSettableProperties == null) {
-    				return;
-    			}
-
-    			String[] settableProperties = directSettableProperties.value();
-
-    			if(Arrays.binarySearch(settableProperties, property) < 0) {
-    				return;
-    			}
-    		}
 
             String methodName = null;
         	if(setterMethod != null && !setterMethod.trim().equals("")) {
@@ -371,7 +334,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             }
 
         	if(methodName != null) {
-        		propertySetMethodInvocator = createSetterMethodInvocator(bean, methodName, parameter);
+        		propertySetMethodInvoker = createSetterMethodInvocator(bean, methodName, parameter);
         	}
 
 
@@ -384,12 +347,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized PropertySetMethodInvocator createSetterMethodInvocator(Object bean, String setterName, Class<?> setterParamType) {
-        if (propertySetMethodInvocator == null) {
-        	propertySetMethodInvocator = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean.getClass(), setterParamType);
+    private synchronized SetMethodInvoker createSetterMethodInvocator(Object bean, String setterName, Class<?> setterParamType) {
+        if (propertySetMethodInvoker == null) {
+        	propertySetMethodInvoker = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean.getClass(), setterParamType);
         }
 
-        return propertySetMethodInvocator;
+        return propertySetMethodInvoker;
     }
 
     private Object decodeDataString(String dataString, ExecutionContext executionContext) throws DataDecodeException {
@@ -421,11 +384,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
 
-	private ObjectRuntimeInfo getWiredBeanRuntimeInfo() {
+	private BeanRuntimeInfo getWiredBeanRuntimeInfo() {
 		if(wiredBeanRuntimeInfo == null) {
             // Don't need to synchronize this.  Worse thing that can happen is we initialize it
             // more than once... no biggie...
-            wiredBeanRuntimeInfo = ObjectRuntimeInfo.getRuntimeInfo(wireBeanId, appContext);
+            wiredBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(wireBeanId, appContext);
 		}
 		return wiredBeanRuntimeInfo;
 	}

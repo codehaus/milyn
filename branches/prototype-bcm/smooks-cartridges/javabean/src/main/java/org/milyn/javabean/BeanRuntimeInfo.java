@@ -25,10 +25,7 @@ import org.milyn.container.ApplicationContext;
  * Java bean runtime info.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
- * @deprecated Use the {@link org.milyn.javabean.runtime.info.ObjectRuntimeInfo} class for the
- * runtime information 
  */
-@Deprecated
 public class BeanRuntimeInfo {
 
     private static final String CONTEXT_KEY = BeanRuntimeInfo.class.getName() + "#CONTEXT_KEY";

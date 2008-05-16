@@ -1,9 +1,9 @@
 package org.milyn.javabean.asm;
 
-import org.milyn.javabean.invocator.PropertySetMethodInvocator;
+import org.milyn.javabean.invocator.SetMethodInvoker;
 
 public class AsmTestIntPropertySetMethodInvocator implements
-		PropertySetMethodInvocator {
+		SetMethodInvoker {
 
 
 	public void set(Object obj, Object arg) {

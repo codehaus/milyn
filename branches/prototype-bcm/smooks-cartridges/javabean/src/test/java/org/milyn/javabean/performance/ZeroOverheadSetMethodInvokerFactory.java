@@ -15,22 +15,22 @@
 */
 package org.milyn.javabean.performance;
 
-import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
-import org.milyn.javabean.invocator.PropertySetMethodInvocator;
 import org.milyn.container.ApplicationContext;
+import org.milyn.javabean.invocator.SetMethodInvoker;
+import org.milyn.javabean.invocator.SetMethodInvokerFactory;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ZeroOverheadSetterMethodInvocatorFactory implements PropertySetMethodInvocatorFactory {
+public class ZeroOverheadSetMethodInvokerFactory implements SetMethodInvokerFactory {
     public void initialize(ApplicationContext applicationContext) {
     }
 
-    public PropertySetMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+    public SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
         return new ZeroOverheadPropertySetMethodInvocator();
     }
 
-    public class ZeroOverheadPropertySetMethodInvocator implements PropertySetMethodInvocator {
+    public class ZeroOverheadPropertySetMethodInvocator implements SetMethodInvoker {
         public void set(Object obj, Object arg) {
             // Do nothing.... zero overhead....
         }

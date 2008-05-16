@@ -3,21 +3,27 @@
  */
 package org.milyn.javabean.performance;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import javax.xml.transform.stream.StreamSource;
+
 import junit.framework.TestCase;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
-import org.milyn.io.StreamUtils;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
-import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
-import org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory;
+import org.milyn.io.StreamUtils;
+import org.milyn.javabean.invocator.SetMethodInvokerFactory;
+import org.milyn.javabean.invocator.javassist.JavassistSetMethodInvokerFactory;
+import org.milyn.javabean.invocator.reflect.ReflectionSetMethodInvokerFactory;
 import org.milyn.payload.JavaResult;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
@@ -41,8 +47,8 @@ public class PerformanceTest extends TestCase {
 			String file = simple ? "/smooks-config-simple.xml" : "/smooks-config-orders.xml";
 
 			Class<?>[] setterMethodInvocatorFactoryImpls = new Class[] {
-				ReflectiveSetterMethodInvocatorFactory.class,
-				JavassistSetterMethodInvocatorFactory.class
+				ReflectionSetMethodInvokerFactory.class,
+				JavassistSetMethodInvokerFactory.class
 			};
 
 			String name = simple ? "simple" : "orders";
@@ -75,7 +81,7 @@ public class PerformanceTest extends TestCase {
 		String packagePath = ClassUtil.toFilePath(PerformanceTest.class.getPackage());
 		Smooks smooks = new Smooks(packagePath + configFile);
 
-		smooks.getApplicationContext().setAttribute(PropertySetMethodInvocatorFactory.IMPLEMENTATION_CONTEXT_KEY, setterMethodInvocatorFactoryImpl.getName());
+		smooks.getApplicationContext().setAttribute(SetMethodInvokerFactory.IMPLEMENTATION_CONTEXT_KEY, setterMethodInvocatorFactoryImpl.getName());
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
@@ -112,22 +118,22 @@ public class PerformanceTest extends TestCase {
 	}
 
     public void test_orders_reflective() throws IOException, SAXException, InterruptedException {
-        test_orders(ReflectiveSetterMethodInvocatorFactory.class);
+        test_orders(ReflectionSetMethodInvokerFactory.class);
     }
 
     public void test_orders_javassist() throws IOException, SAXException, InterruptedException {
-        test_orders(JavassistSetterMethodInvocatorFactory.class);
+        test_orders(JavassistSetMethodInvokerFactory.class);
     }
 
     public void test_orders_zeroOverhead() throws IOException, SAXException, InterruptedException {
-        test_orders(ZeroOverheadSetterMethodInvocatorFactory.class);
+        test_orders(ZeroOverheadSetMethodInvokerFactory.class);
     }
 
     public void test_orders(Class invokerFactory) throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-orders.xml"));
         //Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-simple-dummy.xml"));
 
-        smooks.getApplicationContext().setAttribute(PropertySetMethodInvocatorFactory.IMPLEMENTATION_CONTEXT_KEY, invokerFactory.getName());
+        smooks.getApplicationContext().setAttribute(SetMethodInvokerFactory.IMPLEMENTATION_CONTEXT_KEY, invokerFactory.getName());
 
         // Warmup...
         runOrderBind(smooks, 10);

@@ -7,10 +7,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
-import org.milyn.javabean.invocator.PropertySetMethodInvocator;
-import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
-import org.milyn.javabean.invocator.asm.AsmPropertiesSetterMethodInvocatorFactory;
-import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
+import org.milyn.javabean.invocator.SetMethodInvoker;
+import org.milyn.javabean.invocator.SetMethodInvokerFactory;
+import org.milyn.javabean.invocator.asm.AsmSetMethodInvokerFactory;
 import org.milyn.javabean.performance.model.Person;
 
 
@@ -18,10 +17,10 @@ import org.milyn.javabean.performance.model.Person;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class InvocatorPerformance {
+public class SetMethodInvokerPerformance {
 
 	private final static Log logger = LogFactory
-			.getLog(InvocatorPerformance.class);
+			.getLog(SetMethodInvokerPerformance.class);
 
 	public static void main(String[] args) {
 
@@ -29,21 +28,21 @@ public class InvocatorPerformance {
 
 		logger.info("Number of invocations: " + numLoops);
 
-		PropertySetMethodInvocatorFactory[] setterMethodInvocatorFactories = {
-				new DirectSetterMethodInvocatorFactory(),
-				new org.milyn.javabean.invocator.reflect.ReflectiveSetterMethodInvocatorFactory(),
-				new JavassistSetterMethodInvocatorFactory(),
-				new AsmPropertiesSetterMethodInvocatorFactory()
+		SetMethodInvokerFactory[] setterMethodInvocatorFactories = {
+				//new DirectSetterMethodInvocatorFactory(),
+				//new org.milyn.javabean.invocator.reflect.ReflectionSetMethodInvokerFactory(),
+				//new JavassistSetMethodInvokerFactory(),
+				new AsmSetMethodInvokerFactory()
 		};
 
-		for(PropertySetMethodInvocatorFactory setterMethodInvocatorFactory: setterMethodInvocatorFactories) {
+		for(SetMethodInvokerFactory setterMethodInvocatorFactory: setterMethodInvocatorFactories) {
 			logger.info("SetterMethodInvocatorFactory: " + setterMethodInvocatorFactory.getClass().getSimpleName());
 
 			setterMethodInvocatorFactory.initialize(new MockApplicationContext());
 
 			long beginTime = System.currentTimeMillis();
 
-			PropertySetMethodInvocator setMethodInvocator = setterMethodInvocatorFactory.create("setSurname", Person.class, String.class);
+			SetMethodInvoker setMethodInvocator = setterMethodInvocatorFactory.create("setSurname", Person.class, String.class);
 
 			logger.info("Construction: " + (System.currentTimeMillis() - beginTime)+ "ms");
 
@@ -71,9 +70,9 @@ public class InvocatorPerformance {
 
 	}
 
-	static class DirectSetterMethodInvocatorFactory implements PropertySetMethodInvocatorFactory {
+	static class DirectSetterMethodInvocatorFactory implements SetMethodInvokerFactory {
 
-		public PropertySetMethodInvocator create(String setterName,
+		public SetMethodInvoker create(String setterName,
 				Class<?> beanClass, Class<?> setterParamType) {
 
 			return new DirectSetterMethodInvocator();
@@ -84,7 +83,7 @@ public class InvocatorPerformance {
 
 	}
 
-	static class DirectSetterMethodInvocator implements PropertySetMethodInvocator{
+	static class DirectSetterMethodInvocator implements SetMethodInvoker{
 
 		public void set(Object obj, Object arg) {
 			((Person)obj).setSurname((String)arg);

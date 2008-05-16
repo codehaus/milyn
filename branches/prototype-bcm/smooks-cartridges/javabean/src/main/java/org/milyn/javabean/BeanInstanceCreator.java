@@ -16,6 +16,7 @@
 package org.milyn.javabean;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +38,9 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.javabean.invocator.PropertySetMethodInvocator;
-import org.milyn.javabean.runtime.info.ArrayRuntimeInfo;
-import org.milyn.javabean.runtime.info.Classification;
-import org.milyn.javabean.runtime.info.MapRuntimeInfo;
-import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
-import org.milyn.javabean.virtual.VirtualBeanGenerator;
+import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.invocator.SetMethodInvoker;
+import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -55,7 +53,7 @@ import org.w3c.dom.Element;
 @VisitBeforeReport(summary = "Created <b>${resource.parameters.beanId!'undefined'}</b> bean instance.  Associated lifecycle if wired to another bean.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_Before.html")
 @VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
-        summary = "Ended bean lifecycle. Set bean on any targets.", 
+        summary = "Ended bean lifecycle. Set bean on any targets.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
 public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
@@ -83,31 +81,27 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     @AppContext
     private ApplicationContext appContext;
 
-    private ObjectRuntimeInfo objectRuntimeInfo;
+	private BeanRuntimeInfo beanRuntimeInfo;
 
     // Properties associated with the bean on which the created bean
     // is to be set.  Is it a List, Map etc...
-    private ObjectRuntimeInfo setOnBeanRuntimeInfo;
+    private BeanRuntimeInfo setOnBeanRuntimeInfo;
     private boolean isSetOnMethodConfigured = false;
     private String setOnMethod;
-    private PropertySetMethodInvocator setOnBeanSetterMethod;
+    private SetMethodInvoker setOnBeanSetterMethod;
 
     /**
      * Set the resource configuration on the bean populator.
      * @throws SmooksConfigurationException Incorrectly configured resource.
      */
 	@Initialize
-	@SuppressWarnings("deprecation")
     public void initialize() throws SmooksConfigurationException {
     	buildId();
-    	
-    	objectRuntimeInfo = ObjectRuntimeInfo.getRuntimeInfo(beanId, appContext);
-    	
-    	//For backward compatibility
-    	org.milyn.javabean.BeanRuntimeInfo bri = resolveBeanRuntime(beanClassName);
-    	org.milyn.javabean.BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, bri, appContext);
-    	
-    	
+
+    	beanRuntimeInfo = resolveBeanRuntime(beanClassName);
+        BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, beanRuntimeInfo, appContext);
+
+
         // Get the details of the bean on which instances of beans created by this class are to be set on.
         if (setOn != null) {
 
@@ -122,7 +116,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         		WARNED_SETON_DEPRECATED = true;
         	}
 
-            setOnBeanRuntimeInfo = ObjectRuntimeInfo.getRuntimeInfo(setOn, appContext);
+            setOnBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(setOn, appContext);
             if(setOnBeanRuntimeInfo == null) {
                 throw new SmooksConfigurationException("Parent bean '" + setOn + "' must be defined before bean '" + beanId + "'.");
             }
@@ -165,14 +159,14 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         createAndSetBean(executionContext);
     }
-    
+
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext)
 			throws SmooksException {
-		
+
 		visitAfter(executionContext);
 	}
 
@@ -181,39 +175,39 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
 	 */
 	public void visitAfter(SAXElement element, ExecutionContext executionContext)
 			throws SmooksException, IOException {
-		
+
 		visitAfter(executionContext);
 	}
 
 	public void visitAfter(ExecutionContext executionContext) {
-		
-		Classification thisBeanType = objectRuntimeInfo.getClassification();
-		
+
+		Classification thisBeanType = beanRuntimeInfo.getClassification();
+
 		boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 		boolean isSetOn = (setOn != null);
-		
+
 		if(isSetOn || isBeanTypeArray) {
 			Object bean  = BeanUtils.getBean(beanId, executionContext);
-	    	
+
 			if(isBeanTypeArray) {
 				// This bean is an array, we need to convert the List used to create it into
 		        // an array of that type, and add that array to the BeanAccessor, overwriting the list
 		    	bean = convert(bean, executionContext);
 			}
-			
+
 			if(isSetOn) {
 				setOn(bean, executionContext);
 			}
-			
-			
+
+
 		}
-		
+
 	}
 
 
     private Object convert(Object bean, ExecutionContext executionContext) {
 
-        bean = BeanUtils.convertListToArray((List<?>)bean, ((ArrayRuntimeInfo)objectRuntimeInfo).getArrayType());
+        bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
 
         BeanAccessor.changeBean(executionContext, beanId, bean);
 
@@ -244,9 +238,9 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     	Object setOnBean = getSetOnTargetBean(executionContext);
 
         if (setOnBean != null) {
-        	
+
             Classification setOnBeanType = setOnBeanRuntimeInfo.getClassification();
-            
+
             // Set the bean instance on another bean. Supports creating an object graph
             if(setOnBeanType == Classification.NON_COLLECTION) {
                 setOnNonCollection(executionContext, bean, setOnBean);
@@ -297,29 +291,17 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      *
      * @return A new bean instance.
      */
-    private Object createBeanInstance() {
+     private Object createBeanInstance() {
         Object bean;
 
-        if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION &&
-        		((MapRuntimeInfo)objectRuntimeInfo).isVirtual()) {
-
-        	MapRuntimeInfo mapRuntimeInfo = (MapRuntimeInfo) objectRuntimeInfo;
-        	
-    		VirtualBeanGenerator mapGenerator = VirtualBeanGenerator.Factory.create(appContext);
-    		
-    		bean = mapGenerator.generate(beanId, mapRuntimeInfo.getKeys());
-        	
-        } else {
-
-        	try {
-	            bean = objectRuntimeInfo.getPopulateType().newInstance();
-	        } catch (InstantiationException e) {
-	            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + objectRuntimeInfo.getPopulateType().getName() + "].", e);
-	        } catch (IllegalAccessException e) {
-	            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + objectRuntimeInfo.getPopulateType().getName() + "].", e);
-	        }
-        	
+        try {
+            bean = beanRuntimeInfo.getPopulateType().newInstance();
+        } catch (InstantiationException e) {
+            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
+        } catch (IllegalAccessException e) {
+            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
         }
+
         return bean;
     }
 
@@ -330,30 +312,52 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      *
      * @param beanClass The beanClass name.
      * @return The bean runtime class instance.
-     * @deprecated
      */
-    @Deprecated
-	private org.milyn.javabean.BeanRuntimeInfo resolveBeanRuntime(String beanClass) {
-        
-    	org.milyn.javabean.BeanRuntimeInfo beanInfo = new org.milyn.javabean.BeanRuntimeInfo();
-        
-        beanInfo.setPopulateType(objectRuntimeInfo.getPopulateType());
-        
-        if(objectRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
-        	beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.ARRAY_COLLECTION);
-        	
-        	ArrayRuntimeInfo arrayRuntimeInfo = (ArrayRuntimeInfo)objectRuntimeInfo;
-       	
-        	beanInfo.setArrayType(arrayRuntimeInfo.getArrayType());
-        	
-        } else if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
-        	beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.MAP_COLLECTION);
-        } else if(objectRuntimeInfo.getClassification() == Classification.COLLECTION_COLLECTION) {
-        	beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.COLLECTION_COLLECTION);
+    private BeanRuntimeInfo resolveBeanRuntime(String beanClass) {
+        BeanRuntimeInfo beanInfo = new BeanRuntimeInfo();
+        Class<?> clazz;
+
+        // If it's an array, we use a List and extract an array from it on the
+        // visitAfter event....
+        if(beanClass.endsWith("[]")) {
+            beanInfo.setClassification(BeanRuntimeInfo.Classification.ARRAY_COLLECTION);
+            String arrayTypeName = beanClass.substring(0, beanClass.length() - 2);
+            try {
+                beanInfo.setArrayType(ClassUtil.forName(arrayTypeName, getClass()));
+            } catch (ClassNotFoundException e) {
+                throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + arrayTypeName + " not on classpath.");
+            }
+            beanInfo.setPopulateType(ArrayList.class);
+
+            return beanInfo;
+        }
+
+        try {
+            clazz = ClassUtil.forName(beanClass, getClass());
+        } catch (ClassNotFoundException e) {
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " not on classpath.");
+        }
+
+        beanInfo.setPopulateType(clazz);
+
+        // We maintain a targetType enum because it helps us avoid performing
+        // instanceof checks, which are cheap when the instance being checked is
+        // an instanceof, but is expensive if it's not....
+        if(Map.class.isAssignableFrom(clazz)) {
+            beanInfo.setClassification(BeanRuntimeInfo.Classification.MAP_COLLECTION);
+        } else if(Collection.class.isAssignableFrom(clazz)) {
+            beanInfo.setClassification(BeanRuntimeInfo.Classification.COLLECTION_COLLECTION);
         } else {
-            beanInfo.setClassification(org.milyn.javabean.BeanRuntimeInfo.Classification.NON_COLLECTION);
-        } 
-        
+            beanInfo.setClassification(BeanRuntimeInfo.Classification.NON_COLLECTION);
+        }
+
+        // check for a default constructor.
+        try {
+            clazz.getConstructor();
+        } catch (NoSuchMethodException e) {
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
+        }
+
         return beanInfo;
     }
 
@@ -363,7 +367,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      * @param setterName The setter method name.
      * @return The bean setter method.
      */
-    private synchronized PropertySetMethodInvocator createBeanSetterMethodInvocator(Object bean, String setterName, Class<?> type) {
+    private synchronized SetMethodInvoker createBeanSetterMethodInvocator(Object bean, String setterName, Class<?> type) {
         if (setOnBeanSetterMethod == null) {
         	setOnBeanSetterMethod = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean.getClass(), type);
 
