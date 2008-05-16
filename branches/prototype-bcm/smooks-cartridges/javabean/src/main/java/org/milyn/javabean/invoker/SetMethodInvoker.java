@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.milyn.javabean.invocator;
+package org.milyn.javabean.invoker;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

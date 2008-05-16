@@ -39,7 +39,7 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
-import org.milyn.javabean.invocator.SetMethodInvoker;
+import org.milyn.javabean.invoker.SetMethodInvoker;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
 

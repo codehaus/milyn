@@ -1,15 +1,15 @@
 /**
  *
  */
-package org.milyn.javabean.invocator.performance;
+package org.milyn.javabean.invoker.performance;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
-import org.milyn.javabean.invocator.SetMethodInvoker;
-import org.milyn.javabean.invocator.SetMethodInvokerFactory;
-import org.milyn.javabean.invocator.asm.AsmSetMethodInvokerFactory;
+import org.milyn.javabean.invoker.SetMethodInvoker;
+import org.milyn.javabean.invoker.SetMethodInvokerFactory;
+import org.milyn.javabean.invoker.asm.AsmSetMethodInvokerFactory;
 import org.milyn.javabean.performance.model.Person;
 
 
@@ -30,7 +30,7 @@ public class SetMethodInvokerPerformance {
 
 		SetMethodInvokerFactory[] setterMethodInvocatorFactories = {
 				//new DirectSetterMethodInvocatorFactory(),
-				//new org.milyn.javabean.invocator.reflect.ReflectionSetMethodInvokerFactory(),
+				//new org.milyn.javabean.invoker.reflect.ReflectionSetMethodInvokerFactory(),
 				//new JavassistSetMethodInvokerFactory(),
 				new AsmSetMethodInvokerFactory()
 		};
