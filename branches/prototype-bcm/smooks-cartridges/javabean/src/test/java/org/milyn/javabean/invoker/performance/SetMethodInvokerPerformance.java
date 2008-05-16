@@ -9,7 +9,6 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.javabean.invoker.SetMethodInvoker;
 import org.milyn.javabean.invoker.SetMethodInvokerFactory;
-import org.milyn.javabean.invoker.asm.AsmSetMethodInvokerFactory;
 import org.milyn.javabean.invoker.javassist.JavassistSetMethodInvokerFactory;
 import org.milyn.javabean.performance.model.Person;
 
@@ -32,7 +31,6 @@ public class SetMethodInvokerPerformance {
 		SetMethodInvokerFactory[] setterMethodInvocatorFactories = {
 				//new DirectSetterMethodInvocatorFactory(),
 				new org.milyn.javabean.invoker.reflect.ReflectionSetMethodInvokerFactory(),
-				new AsmSetMethodInvokerFactory(),
 				new JavassistSetMethodInvokerFactory(),
 
 		};

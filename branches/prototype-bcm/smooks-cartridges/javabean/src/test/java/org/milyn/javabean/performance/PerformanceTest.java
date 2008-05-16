@@ -47,8 +47,8 @@ public class PerformanceTest extends TestCase {
 			String file = simple ? "/smooks-config-simple.xml" : "/smooks-config-orders.xml";
 
 			Class<?>[] setterMethodInvocatorFactoryImpls = new Class[] {
-				ReflectionSetMethodInvokerFactory.class,
-				JavassistSetMethodInvokerFactory.class
+				//ReflectionSetMethodInvokerFactory.class,
+				JavassistSetMethodInvokerFactory.class,
 			};
 
 			String name = simple ? "simple" : "orders";
@@ -59,9 +59,9 @@ public class PerformanceTest extends TestCase {
 
 				test(file, name + "-1.xml", name + "-1.xml", setterMethodInvocatorFactoryImpl);
 				//test(file, name + "-1.xml", name + "-500.xml", setterMethodInvocatorFactoryImpl);
-				//test(file, name + "-1.xml", name + "-500.xml", setterMethodInvocatorFactoryImpl);
+				test(file, name + "-1.xml", name + "-500.xml", setterMethodInvocatorFactoryImpl);
 				//test(file, name + "-1.xml", name + "-5000.xml", setterMethodInvocatorFactoryImpl);
-				test(file, name + "-1.xml", name + "-50000.xml", setterMethodInvocatorFactoryImpl);
+				//test(file, name + "-1.xml", name + "-50000.xml", setterMethodInvocatorFactoryImpl);
 				//test(file, name + "-1.xml", name + "-500000.xml" ,setterMethodInvocatorFactoryImpl);
 			}
 
