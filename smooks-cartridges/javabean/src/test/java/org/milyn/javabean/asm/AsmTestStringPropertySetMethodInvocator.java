@@ -1,6 +1,6 @@
 package org.milyn.javabean.asm;
 
-import org.milyn.javabean.invocator.SetMethodInvoker;
+import org.milyn.javabean.invoker.SetMethodInvoker;
 
 public class AsmTestStringPropertySetMethodInvocator implements
 		SetMethodInvoker {

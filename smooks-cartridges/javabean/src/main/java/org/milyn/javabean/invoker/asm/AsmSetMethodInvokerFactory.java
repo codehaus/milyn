@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.milyn.javabean.invocator.asm;
+package org.milyn.javabean.invoker.asm;
 
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ACC_SUPER;
@@ -15,8 +15,8 @@ import static org.objectweb.asm.Opcodes.V1_5;
 import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.bcm.BcmClassLoader;
 import org.milyn.javabean.bcm.BcmUtils;
-import org.milyn.javabean.invocator.SetMethodInvoker;
-import org.milyn.javabean.invocator.SetMethodInvokerFactory;
+import org.milyn.javabean.invoker.SetMethodInvoker;
+import org.milyn.javabean.invoker.SetMethodInvokerFactory;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -34,7 +34,7 @@ public class AsmSetMethodInvokerFactory implements
 	private boolean initialized = false;
 
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.SetMethodInvokerFactory#initialize(org.milyn.container.ApplicationContext)
+	 * @see org.milyn.javabean.invoker.SetMethodInvokerFactory#initialize(org.milyn.container.ApplicationContext)
 	 */
 	public void initialize(ApplicationContext applicationContext) {
 
@@ -44,7 +44,7 @@ public class AsmSetMethodInvokerFactory implements
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.SetMethodInvokerFactory#create(java.lang.String, java.lang.Class, java.lang.Class)
+	 * @see org.milyn.javabean.invoker.SetMethodInvokerFactory#create(java.lang.String, java.lang.Class, java.lang.Class)
 	 */
 	public SetMethodInvoker create(String setterName,
 			Class<?> beanClass, Class<?> setterParamType) {
@@ -56,7 +56,7 @@ public class AsmSetMethodInvokerFactory implements
 		// smi = SetterMethodInvocator
 		Class<?> smiClass = null;
 
-		String smiClassName = "org.milyn.javabean.invocator.asm._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
+		String smiClassName = "org.milyn.javabean.invoker.asm._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
 
 		smiClass = classLoader.load(smiClassName);
 

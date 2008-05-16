@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.milyn.javabean.invocator.javassist;
+package org.milyn.javabean.invoker.javassist;
 
 import static org.milyn.javabean.bcm.javassist.JavassistUtils.NO_ARGS;
 
@@ -20,8 +20,8 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.bcm.BcmClassLoader;
 import org.milyn.javabean.bcm.BcmUtils;
 import org.milyn.javabean.bcm.javassist.JavaPoolUtils;
-import org.milyn.javabean.invocator.SetMethodInvoker;
-import org.milyn.javabean.invocator.SetMethodInvokerFactory;
+import org.milyn.javabean.invoker.SetMethodInvoker;
+import org.milyn.javabean.invoker.SetMethodInvokerFactory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
@@ -43,7 +43,7 @@ public class JavassistSetMethodInvokerFactory implements
 
 
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#initialize(org.milyn.container.ApplicationContext)
+	 * @see org.milyn.javabean.invoker.SetterMethodInvocatorFactory#initialize(org.milyn.container.ApplicationContext)
 	 */
 	public void initialize(ApplicationContext applicationContext) {
 
@@ -65,7 +65,7 @@ public class JavassistSetMethodInvokerFactory implements
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
+	 * @see org.milyn.javabean.invoker.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
 	public SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
 		if(!initialized) {
@@ -75,7 +75,7 @@ public class JavassistSetMethodInvokerFactory implements
 		// smi = SetterMethodInvocator
 		Class<?> smiClass = null;
 		try {
-			String smiClassName = "org.milyn.javabean.invocator.javassist._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
+			String smiClassName = "org.milyn.javabean.invoker.javassist._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
 
 			smiClass = classLoader.load(smiClassName);
 

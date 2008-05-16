@@ -1,14 +1,14 @@
 /**
  * 
  */
-package org.milyn.javabean.invocator.reflect;
+package org.milyn.javabean.invoker.reflect;
 
 import java.lang.reflect.Method;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.BeanUtils;
-import org.milyn.javabean.invocator.SetMethodInvoker;
-import org.milyn.javabean.invocator.SetMethodInvokerFactory;
+import org.milyn.javabean.invoker.SetMethodInvoker;
+import org.milyn.javabean.invoker.SetMethodInvokerFactory;
 
 
 /**
@@ -19,13 +19,13 @@ public class ReflectionSetMethodInvokerFactory implements
 		SetMethodInvokerFactory {
 
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#initialize(org.milyn.container.ApplicationContext)
+	 * @see org.milyn.javabean.invoker.SetterMethodInvocatorFactory#initialize(org.milyn.container.ApplicationContext)
 	 */
 	public void initialize(ApplicationContext applicationContext) {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
+	 * @see org.milyn.javabean.invoker.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
 	public SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
 		

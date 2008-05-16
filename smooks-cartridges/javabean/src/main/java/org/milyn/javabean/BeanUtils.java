@@ -25,8 +25,8 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.invocator.SetMethodInvoker;
-import org.milyn.javabean.invocator.SetMethodInvokerFactory;
+import org.milyn.javabean.invoker.SetMethodInvoker;
+import org.milyn.javabean.invoker.SetMethodInvokerFactory;
 
 /**
  * Bean utility methods.
