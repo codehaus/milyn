@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.milyn.javabean.invoker;
 
@@ -12,64 +12,64 @@ import org.milyn.javabean.invoker.javassist.JavassistSetMethodInvokerFactory;
  */
 public interface SetMethodInvokerFactory {
 
-	
+
 	void initialize(ApplicationContext applicationContext);
-	
-	SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType);
-	
-	
+
+	SetMethodInvoker create(Class<?> beanClass, String setterName, Class<?> setterParamType);
+
+
 	public static final String IMPLEMENTATION_CONTEXT_KEY = SetMethodInvokerFactory.class.getName() + "#IMPLEMENTATION";
 
 	public static class Factory {
-		
+
 		public static final String DEFAULT_IMPLEMENTATION = JavassistSetMethodInvokerFactory.class.getName();
 
 		public static final String INSTANCE_CONTEXT_KEY = Factory.class.getName() + "#INSTANCE";
 
 		public static SetMethodInvokerFactory create(ApplicationContext applicationContext) {
-			
+
 			SetMethodInvokerFactory propertySetMethodInvocatorFactory = (SetMethodInvokerFactory) applicationContext.getAttribute(INSTANCE_CONTEXT_KEY);
-			
+
 			if(propertySetMethodInvocatorFactory == null) {
-				
+
 				String setterMethodInvocatorFactoryImplementation = (String) applicationContext.getAttribute(IMPLEMENTATION_CONTEXT_KEY);
-				
+
 				if(setterMethodInvocatorFactoryImplementation == null) {
 					setterMethodInvocatorFactoryImplementation = DEFAULT_IMPLEMENTATION;
 				}
-				
+
 				try {
 					Class<?> setterMethodInvocatorFactoryClass = applicationContext.getClass().getClassLoader().loadClass(setterMethodInvocatorFactoryImplementation);
-					
+
 					propertySetMethodInvocatorFactory = (SetMethodInvokerFactory) setterMethodInvocatorFactoryClass.newInstance();
-					
+
 					propertySetMethodInvocatorFactory.initialize(applicationContext);
-					
+
 				} catch (ClassNotFoundException e) {
-					throw new RuntimeException("Configured factory implementation class '" 
+					throw new RuntimeException("Configured factory implementation class '"
 							+ setterMethodInvocatorFactoryImplementation + "' not found", e);
 				} catch (InstantiationException e) {
-					throw new RuntimeException("Configured factory implementation class '" 
-							+ setterMethodInvocatorFactoryImplementation + "' could not be instantiated. " 
+					throw new RuntimeException("Configured factory implementation class '"
+							+ setterMethodInvocatorFactoryImplementation + "' could not be instantiated. "
 							+ "Make sure it has a parameterless public constructor.", e);
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException("Configured factory implementation class '"
-							+ setterMethodInvocatorFactoryImplementation + "' could not be instantiated. " 
+							+ setterMethodInvocatorFactoryImplementation + "' could not be instantiated. "
 							+ "Make sure it has a parameterless public constructor.", e);
 				}
-				
+
 				applicationContext.setAttribute(INSTANCE_CONTEXT_KEY, propertySetMethodInvocatorFactory);
-				
+
 			}
-			
+
 			return propertySetMethodInvocatorFactory;
-			
-			
-		}	
-		
-		
+
+
+		}
+
+
 	}
-	
-	
-	
+
+
+
 }

@@ -37,25 +37,25 @@ import org.milyn.javabean.invoker.SetMethodInvokerFactory;
 public abstract class BeanUtils {
 
     private static Log logger = LogFactory.getLog(BeanUtils.class);
-    
+
     /**
-     * Dynamically generates and instantiates a class that can call the desired method. 
-     * 
+     * Dynamically generates and instantiates a class that can call the desired method.
+     *
      * @param applicationContext
      * @param setterName
      * @param bean
      * @param setterParamType
      * @return
      */
-    public static SetMethodInvoker createSetterMethodInvocator(ApplicationContext applicationContext, String setterName, Class<?> bean, Class<?> setterParamType) {
-    	
+    public static SetMethodInvoker createSetterMethodInvocator(ApplicationContext applicationContext, Class<?> bean, String setterName, Class<?> setterParamType) {
+
     	SetMethodInvokerFactory factory = SetMethodInvokerFactory.Factory.create(applicationContext);
-    	
-    	SetMethodInvoker propertySetMethodInvocator = factory.create(setterName, bean, setterParamType);
+
+    	SetMethodInvoker propertySetMethodInvocator = factory.create(bean, setterName, setterParamType);
 
     	return propertySetMethodInvocator;
     }
-    
+
     /**
      * Create the bean setter method instance for this visitor.
      *
@@ -68,8 +68,8 @@ public abstract class BeanUtils {
     public static Method createSetterMethod(String setterName, Object bean, Class<?> setterParamType) {
     	return createSetterMethod(setterName, bean.getClass(), setterParamType);
     }
-    
-    
+
+
     /**
      * Create the bean setter method instance for this visitor.
      *
@@ -134,7 +134,7 @@ public abstract class BeanUtils {
         return beanSetterMethod;
     }
 
- 
+
 
     public static String toSetterName(String property) {
         StringBuffer setterName = new StringBuffer();
@@ -148,7 +148,7 @@ public abstract class BeanUtils {
 
         return setterName.toString();
     }
-    
+
     public static String toGetterName(String property) {
         StringBuffer getterName = new StringBuffer();
 

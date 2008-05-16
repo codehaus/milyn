@@ -369,7 +369,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
      */
     private synchronized SetMethodInvoker createBeanSetterMethodInvocator(Object bean, String setterName, Class<?> type) {
         if (setOnBeanSetterMethod == null) {
-        	setOnBeanSetterMethod = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean.getClass(), type);
+        	setOnBeanSetterMethod = BeanUtils.createSetterMethodInvocator(appContext, bean.getClass(), setterName, type);
 
             if(setOnBeanSetterMethod == null) {
                 throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterName + "(" + type.getName() + ")] not found on type [" + bean.getClass().getName() + "].  You may need to set a 'decoder' on the binding config.");

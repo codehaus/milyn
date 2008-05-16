@@ -40,11 +40,7 @@
       <priority value="DEBUG"/>
    </category>
 
-	<category name="org.milyn.javabean.invocator.performance">
-      <priority value="DEBUG"/>
-   </category>
-
-   <category name="org.milyn.javabean.virtual.performance">
+	<category name="org.milyn.javabean.invoker.performance">
       <priority value="DEBUG"/>
    </category>
 

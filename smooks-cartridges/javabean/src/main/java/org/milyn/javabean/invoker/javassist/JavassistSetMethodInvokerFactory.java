@@ -67,7 +67,7 @@ public class JavassistSetMethodInvokerFactory implements
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invoker.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
-	public SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+	public SetMethodInvoker create(Class<?> beanClass, String setterName, Class<?> setterParamType) {
 		if(!initialized) {
 			throw new IllegalStateException("Factory not initizialed. Call the #initialize(ApplicationContext) first.");
 		}

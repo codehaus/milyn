@@ -17,4 +17,10 @@ public class AsmTestObj {
 
 	public void setTestInt(int testInt) {
 	}
+
+	public void setTestIntegerArray(Integer[] testInt) {
+	}
+
+	public void setTestIntArray(int[] testInt) {
+	}
 }

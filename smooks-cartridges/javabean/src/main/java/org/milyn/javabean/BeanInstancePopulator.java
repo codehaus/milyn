@@ -349,7 +349,7 @@ beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
      */
     private synchronized SetMethodInvoker createSetterMethodInvocator(Object bean, String setterName, Class<?> setterParamType) {
         if (propertySetMethodInvoker == null) {
-        	propertySetMethodInvoker = BeanUtils.createSetterMethodInvocator(appContext, setterName, bean.getClass(), setterParamType);
+        	propertySetMethodInvoker = BeanUtils.createSetterMethodInvocator(appContext,bean.getClass(), setterName, setterParamType);
         }
 
         return propertySetMethodInvoker;
