@@ -5,7 +5,7 @@
         <param name="stream.filter.type">SAX</param>
     </resource-config>
 
-    <resource-config selector="person">
+    <resource-config selector="person,person/surname,person/firstname,person/gender,person/phonenumber,address,address/street,address/housenumber,address/zipcode,address/city,orders/order,orders/order/size,orders/order/totalprice,orders/order/article,orders/order/article/name,orders/order/article/price">
         <resource>org.milyn.javabean.performance.DummyVisitor</resource>
     </resource-config>
 
