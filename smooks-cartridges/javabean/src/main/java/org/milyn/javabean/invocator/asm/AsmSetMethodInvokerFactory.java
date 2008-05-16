@@ -15,8 +15,8 @@ import static org.objectweb.asm.Opcodes.V1_5;
 import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.bcm.BcmClassLoader;
 import org.milyn.javabean.bcm.BcmUtils;
-import org.milyn.javabean.invocator.PropertySetMethodInvocator;
-import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.invocator.SetMethodInvoker;
+import org.milyn.javabean.invocator.SetMethodInvokerFactory;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -25,8 +25,8 @@ import org.objectweb.asm.MethodVisitor;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class AsmPropertiesSetterMethodInvocatorFactory implements
-		PropertySetMethodInvocatorFactory {
+public class AsmSetMethodInvokerFactory implements
+		SetMethodInvokerFactory {
 
 
 	private BcmClassLoader classLoader;
@@ -34,7 +34,7 @@ public class AsmPropertiesSetterMethodInvocatorFactory implements
 	private boolean initialized = false;
 
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory#initialize(org.milyn.container.ApplicationContext)
+	 * @see org.milyn.javabean.invocator.SetMethodInvokerFactory#initialize(org.milyn.container.ApplicationContext)
 	 */
 	public void initialize(ApplicationContext applicationContext) {
 
@@ -44,9 +44,9 @@ public class AsmPropertiesSetterMethodInvocatorFactory implements
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory#create(java.lang.String, java.lang.Class, java.lang.Class)
+	 * @see org.milyn.javabean.invocator.SetMethodInvokerFactory#create(java.lang.String, java.lang.Class, java.lang.Class)
 	 */
-	public PropertySetMethodInvocator create(String setterName,
+	public SetMethodInvoker create(String setterName,
 			Class<?> beanClass, Class<?> setterParamType) {
 
 		if(!initialized) {
@@ -67,7 +67,7 @@ public class AsmPropertiesSetterMethodInvocatorFactory implements
 
 			String bcSMIClassname = getBcClassName(smiClassName);
 
-			cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, bcSMIClassname, null, "java/lang/Object", new String[] { getBcClassName(PropertySetMethodInvocator.class) });
+			cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, bcSMIClassname, null, "java/lang/Object", new String[] { getBcClassName(SetMethodInvoker.class) });
 
 			createConstructor(cw, bcSMIClassname);
 
@@ -82,7 +82,7 @@ public class AsmPropertiesSetterMethodInvocatorFactory implements
 
 
     	try {
-			return (PropertySetMethodInvocator) smiClass.newInstance();
+			return (SetMethodInvoker) smiClass.newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator object", e);
 		} catch (IllegalAccessException e) {
@@ -118,11 +118,11 @@ public class AsmPropertiesSetterMethodInvocatorFactory implements
 		mv.visitLabel(l1);
 		mv.visitLineNumber(11, l1);
 		mv.visitInsn(RETURN);
-		Label l2 = new Label();
-		mv.visitLabel(l2);
-		mv.visitLocalVariable("this", "L"+ bcSMIClassname +";", null, l0, l2, 0);
-		mv.visitLocalVariable("obj", "Ljava/lang/Object;", null, l0, l2, 1);
-		mv.visitLocalVariable("arg", "Ljava/lang/Object;", null, l0, l2, 2);
+//		Label l2 = new Label();
+//		mv.visitLabel(l2);
+//		mv.visitLocalVariable("this", "L"+ bcSMIClassname +";", null, l0, l2, 0);
+//		mv.visitLocalVariable("obj", "Ljava/lang/Object;", null, l0, l2, 1);
+//		mv.visitLocalVariable("arg", "Ljava/lang/Object;", null, l0, l2, 2);
 		mv.visitMaxs(2, 3);
 		mv.visitEnd();
 	}
@@ -141,9 +141,9 @@ public class AsmPropertiesSetterMethodInvocatorFactory implements
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
 		mv.visitInsn(RETURN);
-		Label l1 = new Label();
-		mv.visitLabel(l1);
-		mv.visitLocalVariable("this", "L"+ bcSMIClassname +";", null, l0, l1, 0);
+//		Label l1 = new Label();
+//		mv.visitLabel(l1);
+//		mv.visitLocalVariable("this", "L"+ bcSMIClassname +";", null, l0, l1, 0);
 		mv.visitMaxs(1, 1);
 		mv.visitEnd();
 

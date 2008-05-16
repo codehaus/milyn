@@ -20,15 +20,15 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.javabean.bcm.BcmClassLoader;
 import org.milyn.javabean.bcm.BcmUtils;
 import org.milyn.javabean.bcm.javassist.JavaPoolUtils;
-import org.milyn.javabean.invocator.PropertySetMethodInvocator;
-import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
+import org.milyn.javabean.invocator.SetMethodInvoker;
+import org.milyn.javabean.invocator.SetMethodInvokerFactory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class JavassistSetterMethodInvocatorFactory implements
-		PropertySetMethodInvocatorFactory {
+public class JavassistSetMethodInvokerFactory implements
+		SetMethodInvokerFactory {
 
 
 	private ClassPool classPool;
@@ -53,7 +53,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 		try {
 
 			// smi = SetterMethodInvocator
-			smiInterface = classPool.get(PropertySetMethodInvocator.class.getName());
+			smiInterface = classPool.get(SetMethodInvoker.class.getName());
 
 			ctObject = classPool.get(Object.class.getName());
 
@@ -67,7 +67,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invocator.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
-	public PropertySetMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+	public SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
 		if(!initialized) {
 			throw new IllegalStateException("Factory not initizialed. Call the #initialize(ApplicationContext) first.");
 		}
@@ -122,7 +122,7 @@ public class JavassistSetterMethodInvocatorFactory implements
 		}
 
     	try {
-			return (PropertySetMethodInvocator) smiClass.newInstance();
+			return (SetMethodInvoker) smiClass.newInstance();
 		} catch (InstantiationException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator object", e);
 		} catch (IllegalAccessException e) {

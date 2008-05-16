@@ -4,31 +4,31 @@
 package org.milyn.javabean.invocator;
 
 import org.milyn.container.ApplicationContext;
-import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
+import org.milyn.javabean.invocator.javassist.JavassistSetMethodInvokerFactory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface PropertySetMethodInvocatorFactory {
+public interface SetMethodInvokerFactory {
 
 	
 	void initialize(ApplicationContext applicationContext);
 	
-	PropertySetMethodInvocator create(String setterName, Class<?> beanClass, Class<?> setterParamType);
+	SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType);
 	
 	
-	public static final String IMPLEMENTATION_CONTEXT_KEY = PropertySetMethodInvocatorFactory.class.getName() + "#IMPLEMENTATION";
+	public static final String IMPLEMENTATION_CONTEXT_KEY = SetMethodInvokerFactory.class.getName() + "#IMPLEMENTATION";
 
 	public static class Factory {
 		
-		public static final String DEFAULT_IMPLEMENTATION = JavassistSetterMethodInvocatorFactory.class.getName();
+		public static final String DEFAULT_IMPLEMENTATION = JavassistSetMethodInvokerFactory.class.getName();
 
 		public static final String INSTANCE_CONTEXT_KEY = Factory.class.getName() + "#INSTANCE";
 
-		public static PropertySetMethodInvocatorFactory create(ApplicationContext applicationContext) {
+		public static SetMethodInvokerFactory create(ApplicationContext applicationContext) {
 			
-			PropertySetMethodInvocatorFactory propertySetMethodInvocatorFactory = (PropertySetMethodInvocatorFactory) applicationContext.getAttribute(INSTANCE_CONTEXT_KEY);
+			SetMethodInvokerFactory propertySetMethodInvocatorFactory = (SetMethodInvokerFactory) applicationContext.getAttribute(INSTANCE_CONTEXT_KEY);
 			
 			if(propertySetMethodInvocatorFactory == null) {
 				
@@ -41,7 +41,7 @@ public interface PropertySetMethodInvocatorFactory {
 				try {
 					Class<?> setterMethodInvocatorFactoryClass = applicationContext.getClass().getClassLoader().loadClass(setterMethodInvocatorFactoryImplementation);
 					
-					propertySetMethodInvocatorFactory = (PropertySetMethodInvocatorFactory) setterMethodInvocatorFactoryClass.newInstance();
+					propertySetMethodInvocatorFactory = (SetMethodInvokerFactory) setterMethodInvocatorFactoryClass.newInstance();
 					
 					propertySetMethodInvocatorFactory.initialize(applicationContext);
 					

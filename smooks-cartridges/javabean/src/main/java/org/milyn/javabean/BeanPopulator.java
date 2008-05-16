@@ -34,11 +34,6 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.VisitPhase;
-import org.milyn.javabean.runtime.info.Classification;
-import org.milyn.javabean.runtime.info.MapRuntimeInfo;
-import org.milyn.javabean.runtime.info.ObjectRuntimeInfo;
-import org.milyn.javabean.runtime.info.ObjectRuntimeInfoFactory;
-import org.milyn.javabean.virtual.annotation.DirectSettableProperties;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -103,7 +98,7 @@ import org.w3c.dom.NodeList;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Order</b>&lt;/param&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;binding property="header" selector="${header}" /&gt; &lt;-- Wire the header bean to the header property. See header configuration below... --&gt;
- *             &lt;binding property="orderItems" selector="${orderItems}" /&gt; &lt;-- Wire the orderItems ArrayList to the orderItems property. See orderItems configuration below... --&gt;             
+ *             &lt;binding property="orderItems" selector="${orderItems}" /&gt; &lt;-- Wire the orderItems ArrayList to the orderItems property. See orderItems configuration below... --&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -160,9 +155,8 @@ import org.w3c.dom.NodeList;
  * @author tfennelly
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
-@DirectSettableProperties( {"fewfe", "fwefew"})
 public class BeanPopulator implements ConfigurationExpander {
-	
+
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
@@ -170,17 +164,15 @@ public class BeanPopulator implements ConfigurationExpander {
 
     @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
-    
+
     @Config
     private SmooksResourceConfiguration config;
-    
+
     @AppContext
     private ApplicationContext appContext;
 
     private boolean optimized = false;
-    
-    private ObjectRuntimeInfo objectRuntimeInfo;
-    
+
     /*******************************************************************************************************
      *  Common Methods.
      *******************************************************************************************************/
@@ -209,14 +201,8 @@ public class BeanPopulator implements ConfigurationExpander {
         if (config.getStringParameter("setterName") != null) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
-        
-        objectRuntimeInfo = ObjectRuntimeInfoFactory.createBeanRuntime(beanClassName);
-        if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
-        	((MapRuntimeInfo)objectRuntimeInfo).setVirtual(optimized);
-        }
-        
-        ObjectRuntimeInfo.recordRuntimeInfo(beanId, objectRuntimeInfo, appContext);
-        
+
+
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].");
     }
 
@@ -225,7 +211,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         buildInstanceCreatorConfig(resources);
         buildBindingConfigs(resources);
-        
+
         return resources;
     }
 
@@ -312,37 +298,32 @@ public class BeanPopulator implements ConfigurationExpander {
             resourceConfig.setParameter("wireBeanId", wireBeanId);
         }
 
-        
         if(setterMethod != null) {
-        	if(objectRuntimeInfo.getClassification() != Classification.NON_COLLECTION) {
-        		throw new SmooksConfigurationException("The 'setterMethod' attribute isn't allowed with a Collection or Map bean class: " + bindingConfig);
-        	}
-        	
+//        	if(objectRuntimeInfo.getClassification() != Classification.NON_COLLECTION) {
+//        		throw new SmooksConfigurationException("The 'setterMethod' attribute isn't allowed with a Collection or Map bean class: " + bindingConfig);
+//        	}
+
         	setterMethod = setterMethod.trim();
-        	
+
             resourceConfig.setParameter("setterMethod", setterMethod);
         }
-        
+
         if (setterMethod == null && property == null ) {
-        	if(wireBeanId != null && (objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION || objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
-        		property = wireBeanId;
-        	} else if(objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
-        		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
-                    "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
-                    "  Bean is type '" + objectRuntimeInfo.getPopulateType().getName() + "'.");
-        	}
+        	property = wireBeanId;
+//        	if(wireBeanId != null && (objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION || objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+//        		property = wireBeanId;
+//        	} else if(objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
+//        		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
+//                    "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
+//                    "  Bean is type '" + objectRuntimeInfo.getPopulateType().getName() + "'.");
+//        	}
         }
-        
+
         if(property != null) {
         	property = property.trim();
-        	
+
             resourceConfig.setParameter("property", property);
-            
-            if(objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION) {
-            	if(property.charAt(0) != '@') {
-            		((MapRuntimeInfo)objectRuntimeInfo).addKey(property);
-            	}
-            }
+
         }
 
         if (attributeNameProperty != null && !attributeNameProperty.trim().equals("")) {
@@ -357,7 +338,7 @@ public class BeanPopulator implements ConfigurationExpander {
         	if(type == null) {
         		type = "String";
         	}
-        	
+
         	// Set the data type...
         	resourceConfig.setParameter("type", type);
 
