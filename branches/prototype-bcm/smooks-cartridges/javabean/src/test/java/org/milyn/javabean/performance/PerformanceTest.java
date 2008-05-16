@@ -3,16 +3,11 @@
  */
 package org.milyn.javabean.performance;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import javax.xml.transform.stream.StreamSource;
-
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
+import org.milyn.io.StreamUtils;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.invocator.PropertySetMethodInvocatorFactory;
 import org.milyn.javabean.invocator.javassist.JavassistSetterMethodInvocatorFactory;
@@ -21,11 +16,14 @@ import org.milyn.payload.JavaResult;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class PerformanceTest {
+public class PerformanceTest extends TestCase {
 
 	private static final Log logger = LogFactory.getLog(PerformanceTest.class);
 
@@ -113,4 +111,39 @@ public class PerformanceTest {
 		}
 	}
 
+    public void test_orders_reflective() throws IOException, SAXException, InterruptedException {
+        test_orders(ReflectiveSetterMethodInvocatorFactory.class);
+    }
+
+    public void test_orders_javassist() throws IOException, SAXException, InterruptedException {
+        test_orders(JavassistSetterMethodInvocatorFactory.class);
+    }
+
+    public void test_orders_zeroOverhead() throws IOException, SAXException, InterruptedException {
+        test_orders(ZeroOverheadSetterMethodInvocatorFactory.class);
+    }
+
+    public void test_orders(Class invokerFactory) throws IOException, SAXException, InterruptedException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-orders.xml"));
+        //Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-simple-dummy.xml"));
+
+        smooks.getApplicationContext().setAttribute(PropertySetMethodInvocatorFactory.IMPLEMENTATION_CONTEXT_KEY, invokerFactory.getName());
+
+        // Warmup...
+        runOrderBind(smooks, 10);
+
+        // Timed...
+        long start = System.currentTimeMillis();
+        runOrderBind(smooks, 100);
+        System.out.println(invokerFactory.getName() + ": " + (System.currentTimeMillis() - start) + "ms");
+    }
+
+    private void runOrderBind(Smooks smooks, int numIterations) throws IOException, InterruptedException {
+        byte[] messageBytes = StreamUtils.readFile(new File("orders-500.xml"));
+
+        for(int i = 0; i < numIterations; i++) {
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageBytes)), new JavaResult());
+            Thread.sleep(10);
+        }
+    }
 }
