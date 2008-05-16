@@ -10,6 +10,7 @@ import org.milyn.container.MockApplicationContext;
 import org.milyn.javabean.invoker.SetMethodInvoker;
 import org.milyn.javabean.invoker.SetMethodInvokerFactory;
 import org.milyn.javabean.invoker.asm.AsmSetMethodInvokerFactory;
+import org.milyn.javabean.invoker.javassist.JavassistSetMethodInvokerFactory;
 import org.milyn.javabean.performance.model.Person;
 
 
@@ -30,9 +31,10 @@ public class SetMethodInvokerPerformance {
 
 		SetMethodInvokerFactory[] setterMethodInvocatorFactories = {
 				//new DirectSetterMethodInvocatorFactory(),
-				//new org.milyn.javabean.invoker.reflect.ReflectionSetMethodInvokerFactory(),
-				//new JavassistSetMethodInvokerFactory(),
-				new AsmSetMethodInvokerFactory()
+				new org.milyn.javabean.invoker.reflect.ReflectionSetMethodInvokerFactory(),
+				new AsmSetMethodInvokerFactory(),
+				new JavassistSetMethodInvokerFactory(),
+
 		};
 
 		for(SetMethodInvokerFactory setterMethodInvocatorFactory: setterMethodInvocatorFactories) {
@@ -42,7 +44,7 @@ public class SetMethodInvokerPerformance {
 
 			long beginTime = System.currentTimeMillis();
 
-			SetMethodInvoker setMethodInvocator = setterMethodInvocatorFactory.create("setSurname", Person.class, String.class);
+			SetMethodInvoker setMethodInvocator = setterMethodInvocatorFactory.create(Person.class, "setSurname", String.class);
 
 			logger.info("Construction: " + (System.currentTimeMillis() - beginTime)+ "ms");
 
@@ -65,6 +67,7 @@ public class SetMethodInvokerPerformance {
 			}
 			logger.info("Invocation: " + (System.currentTimeMillis() - beginTime) + "ms");
 
+			System.gc();
 		}
 
 
@@ -72,8 +75,8 @@ public class SetMethodInvokerPerformance {
 
 	static class DirectSetterMethodInvocatorFactory implements SetMethodInvokerFactory {
 
-		public SetMethodInvoker create(String setterName,
-				Class<?> beanClass, Class<?> setterParamType) {
+		public SetMethodInvoker create(Class<?> beanClass, String setterName,
+				Class<?> setterParamType) {
 
 			return new DirectSetterMethodInvocator();
 		}

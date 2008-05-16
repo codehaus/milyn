@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.milyn.javabean.invoker.reflect;
 
@@ -23,17 +23,17 @@ public class ReflectionSetMethodInvokerFactory implements
 	 */
 	public void initialize(ApplicationContext applicationContext) {
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.invoker.SetterMethodInvocatorFactory#create(org.milyn.container.ApplicationContext, java.lang.String, java.lang.Object, java.lang.Class)
 	 */
-	public SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
-		
+	public SetMethodInvoker create(Class<?> beanClass, String setterName, Class<?> setterParamType) {
+
 		Method method = BeanUtils.createSetterMethod(setterName, beanClass, setterParamType);
-		
+
 		return new ReflectionSetMethodInvoker(method);
 	}
 
-	
+
 
 }

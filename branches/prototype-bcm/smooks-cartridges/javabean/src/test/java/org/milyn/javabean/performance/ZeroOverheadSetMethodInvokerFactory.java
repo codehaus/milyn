@@ -26,7 +26,7 @@ public class ZeroOverheadSetMethodInvokerFactory implements SetMethodInvokerFact
     public void initialize(ApplicationContext applicationContext) {
     }
 
-    public SetMethodInvoker create(String setterName, Class<?> beanClass, Class<?> setterParamType) {
+    public SetMethodInvoker create(Class<?> beanClass, String setterName, Class<?> setterParamType) {
         return new ZeroOverheadPropertySetMethodInvocator();
     }
 
