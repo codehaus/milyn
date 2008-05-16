@@ -171,8 +171,6 @@ public class BeanPopulator implements ConfigurationExpander {
     @AppContext
     private ApplicationContext appContext;
 
-    private boolean optimized = false;
-
     /*******************************************************************************************************
      *  Common Methods.
      *******************************************************************************************************/
@@ -185,7 +183,6 @@ public class BeanPopulator implements ConfigurationExpander {
     public void initialize() throws SmooksConfigurationException {
         if (beanClassName == null || beanClassName.trim().equals("")) {
             beanClassName = HashMap.class.getName();
-            optimized = true;
         }
 
         // May need to default the "beanId"...
@@ -202,7 +199,6 @@ public class BeanPopulator implements ConfigurationExpander {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
 
-
         logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].");
     }
 
@@ -217,7 +213,9 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private void buildInstanceCreatorConfig(List<SmooksResourceConfiguration> resources) {
         SmooksResourceConfiguration resource = (SmooksResourceConfiguration) config.clone();
-
+        
+       
+        
         // Reset the beanId and beanClass parameters
         resource.removeParameter("beanId");
         resource.setParameter("beanId", beanId);
@@ -299,24 +297,9 @@ public class BeanPopulator implements ConfigurationExpander {
         }
 
         if(setterMethod != null) {
-//        	if(objectRuntimeInfo.getClassification() != Classification.NON_COLLECTION) {
-//        		throw new SmooksConfigurationException("The 'setterMethod' attribute isn't allowed with a Collection or Map bean class: " + bindingConfig);
-//        	}
-
         	setterMethod = setterMethod.trim();
 
             resourceConfig.setParameter("setterMethod", setterMethod);
-        }
-
-        if (setterMethod == null && property == null ) {
-        	property = wireBeanId;
-//        	if(wireBeanId != null && (objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION || objectRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
-//        		property = wireBeanId;
-//        	} else if(objectRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
-//        		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
-//                    "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
-//                    "  Bean is type '" + objectRuntimeInfo.getPopulateType().getName() + "'.");
-//        	}
         }
 
         if(property != null) {
