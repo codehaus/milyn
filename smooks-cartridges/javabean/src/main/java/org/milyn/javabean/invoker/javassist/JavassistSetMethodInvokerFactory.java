@@ -72,57 +72,10 @@ public class JavassistSetMethodInvokerFactory implements
 			throw new IllegalStateException("Factory not initizialed. Call the #initialize(ApplicationContext) first.");
 		}
 
-		// smi = SetterMethodInvocator
-		Class<?> smiClass = null;
-		try {
-			String smiClassName = "org.milyn.javabean.invoker.javassist._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
-
-			smiClass = classLoader.load(smiClassName);
-
-			if(smiClass == null) {
-
-				CtClass ctSetterParamType;
-				CtClass ctBean;
-
-				try {
-
-					ctBean = classPool.get(beanClass.getName());
-
-					ctSetterParamType = classPool.get(setterParamType.getName());
-
-				} catch (NotFoundException e) {
-					throw new RuntimeException("Could not get one of the CtClass's from the ClassPool", e);
-				}
-
-				CtClass smiImpl = classPool.makeClass(smiClassName);
-				smiImpl.addInterface(smiInterface);
-
-				// add public default constructor method to class
-		        CtConstructor cons = new CtConstructor(NO_ARGS, smiImpl);
-		        cons.setBody(";");
-		        smiImpl.addConstructor(cons);
-
-				String methodStr = "((" + beanClass.getName() + ")$1)." + setterName + "(" + parameterStr(setterName, ctBean, "$2", ctSetterParamType) + ");";
-
-				CtMethod setMethod = CtNewMethod.make(CtPrimitiveType.voidType, "set", new CtClass[] { ctObject, ctObject }, new CtClass[0], methodStr, smiImpl);
-
-				smiImpl.addMethod(setMethod);
-
-				byte[] byteCode = smiImpl.toBytecode();
-
-				smiClass = classLoader.load(smiImpl.getName(), byteCode);
-
-			}
-		} catch (CannotCompileException e) {
-			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
-		} catch (NotFoundException e) {
-			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
-		}
-
     	try {
-			return (SetMethodInvoker) smiClass.newInstance();
+
+			return (SetMethodInvoker) getClass(beanClass, setterName, setterParamType).newInstance();
+
 		} catch (InstantiationException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator object", e);
 		} catch (IllegalAccessException e) {
@@ -130,6 +83,115 @@ public class JavassistSetMethodInvokerFactory implements
 		}
 
     }
+
+
+	/**
+	 * Gets the setMethodInvoker class with the specified parameter
+	 *
+	 * @param beanClass
+	 * @param setterName
+	 * @param setterParamType
+	 * @return
+	 */
+	private Class<?> getClass(Class<?> beanClass, String setterName, Class<?> setterParamType) {
+		if(!initialized) {
+			throw new IllegalStateException("Factory not initizialed. Call the #initialize(ApplicationContext) first.");
+		}
+
+		// smi = SetterMethodInvocator
+		Class<?> smiClass = null;
+
+		String smiClassName = "org.milyn.javabean.invoker.javassist._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
+
+		smiClass = classLoader.load(smiClassName);
+
+		if(smiClass == null) {
+			smiClass = createClass(beanClass, setterName, setterParamType, smiClassName);
+		}
+
+		return smiClass;
+	}
+
+	/**
+	 * @param beanClass
+	 * @param setterName
+	 * @param setterParamType
+	 * @param smiClass
+	 * @param smiClassName
+	 * @return
+	 * @throws CannotCompileException
+	 * @throws NotFoundException
+	 * @throws IOException
+	 */
+	private Class<?> createClass(Class<?> beanClass, String setterName,	Class<?> setterParamType, String smiClassName) {
+		try {
+
+			CtClass ctSetterParamType;
+			CtClass ctBean;
+
+			try {
+
+				ctBean = classPool.get(beanClass.getName());
+
+				ctSetterParamType = classPool.get(setterParamType.getName());
+
+			} catch (NotFoundException e) {
+				throw new RuntimeException("Could not get one of the CtClass's from the ClassPool", e);
+			}
+
+			CtClass smiImpl = classPool.makeClass(smiClassName);
+			smiImpl.addInterface(smiInterface);
+
+			createConstructor(smiImpl);
+
+			createSetMethod(smiImpl, beanClass, setterName, smiClassName, ctSetterParamType, ctBean);
+
+			byte[] byteCode = smiImpl.toBytecode();
+
+			return classLoader.load(smiImpl.getName(), byteCode);
+
+		} catch (CannotCompileException e) {
+			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
+		} catch (NotFoundException e) {
+			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
+		} catch (IOException e) {
+			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);
+		}
+	}
+
+	/**
+	 * @param smiImpl
+	 * @throws CannotCompileException
+	 */
+	private void createConstructor(CtClass smiImpl)
+			throws CannotCompileException {
+		// add public default constructor method to class
+		CtConstructor cons = new CtConstructor(NO_ARGS, smiImpl);
+		cons.setBody(";");
+		smiImpl.addConstructor(cons);
+	}
+
+	/**
+	 * @param beanClass
+	 * @param setterName
+	 * @param smiClassName
+	 * @param ctSetterParamType
+	 * @param ctBean
+	 * @return
+	 * @throws CannotCompileException
+	 * @throws NotFoundException
+	 */
+	private void createSetMethod(CtClass smiImpl, Class<?> beanClass, String setterName,
+			String smiClassName, CtClass ctSetterParamType, CtClass ctBean)
+			throws CannotCompileException, NotFoundException {
+
+		String methodStr = "((" + beanClass.getName() + ")$1)." + setterName + "(" + parameterStr(setterName, ctBean, "$2", ctSetterParamType) + ");";
+
+		CtMethod setMethod = CtNewMethod.make(CtPrimitiveType.voidType, "set", new CtClass[] { ctObject, ctObject }, new CtClass[0], methodStr, smiImpl);
+
+		smiImpl.addMethod(setMethod);
+
+	}
 
 	private String safeClassName(String name) {
 
