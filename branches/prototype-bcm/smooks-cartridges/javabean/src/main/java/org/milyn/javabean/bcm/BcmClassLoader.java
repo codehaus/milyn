@@ -22,6 +22,7 @@ public class BcmClassLoader extends ClassLoader {
 	 */
 	public BcmClassLoader() {
 		super(Smooks.class.getClassLoader());
+		
 	}
 
 	/**
@@ -32,17 +33,22 @@ public class BcmClassLoader extends ClassLoader {
 	}
 
 	public Class<?> load(String name) {
-		if(loadedBCMClasses.isEmpty()) {
-			return null;
+		synchronized (loadedBCMClasses) {
+			if(loadedBCMClasses.isEmpty()) {
+				return null;
+			}
+			return loadedBCMClasses.get(name);
 		}
-		return loadedBCMClasses.get(name);
 	}
 
 	public Class<?> load(String name, byte[] data) {
 
-		Class<?> cls = super.defineClass(name, data, 0, data.length);
+		Class<?> cls;
+		synchronized (loadedBCMClasses) {
+			cls = super.defineClass(name, data, 0, data.length);
 
-		loadedBCMClasses.put(name, cls);
+			loadedBCMClasses.put(name, cls);
+		}
 
 		return cls;
 

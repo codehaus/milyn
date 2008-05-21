@@ -103,11 +103,14 @@ public class JavassistSetMethodInvokerFactory implements
 
 		String smiClassName = "org.milyn.javabean.invoker.javassist._generated." + safeClassName(beanClass.getName() + "_" + setterName + "_" + setterParamType.getName());
 
+
 		smiClass = classLoader.load(smiClassName);
 
 		if(smiClass == null) {
 			smiClass = createClass(beanClass, setterName, setterParamType, smiClassName);
 		}
+
+
 
 		return smiClass;
 	}
@@ -148,7 +151,17 @@ public class JavassistSetMethodInvokerFactory implements
 
 			byte[] byteCode = smiImpl.toBytecode();
 
-			return classLoader.load(smiImpl.getName(), byteCode);
+			// Do a last synchronized check to see if some other class didn't already
+			// create the class
+			synchronized (classLoader) {
+				Class<?> cls = classLoader.load("smiClassName");
+				if(cls == null) {
+					return classLoader.load(smiClassName, byteCode);
+				} else {
+					return  cls;
+				}
+			}
+
 
 		} catch (CannotCompileException e) {
 			throw new RuntimeException("Could not create the SetterMethodInvocator class", e);

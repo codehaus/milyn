@@ -30,7 +30,7 @@ public class SetMethodInvokerPerformance {
 
 		SetMethodInvokerFactory[] setterMethodInvocatorFactories = {
 				//new DirectSetterMethodInvocatorFactory(),
-				new org.milyn.javabean.invoker.reflect.ReflectionSetMethodInvokerFactory(),
+				//new org.milyn.javabean.invoker.reflect.ReflectionSetMethodInvokerFactory(),
 				new JavassistSetMethodInvokerFactory(),
 
 		};

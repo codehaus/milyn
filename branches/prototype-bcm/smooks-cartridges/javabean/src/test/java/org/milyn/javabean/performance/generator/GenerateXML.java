@@ -49,9 +49,9 @@ public class GenerateXML {
 		String path = "";
 
 //		write(temp, 1, path + name +"-1.xml", simple);
-		write(temp, 500, path + name +"-500.xml", simple);
+//		write(temp, 500, path + name +"-500.xml", simple);
 //		write(temp, 5000, path + name +"-5000.xml", simple);
-//		write(temp, 50000, path + name +"-50000.xml", simple);
+		write(temp, 50000, path + name +"-50000.xml", simple);
 //		write(temp, 500000, path + name +"-500000.xml", simple);
 //		write(temp, 5000000, path + name +"-5000000.xml", simple);
 //		write(temp, 20000000, path + name +"-20000000.xml", simple);
