@@ -1,6 +1,0 @@
-<root visitedby-AssemblyVisitor1="true" visitedby-ConfigurableVisitor="true">
-    <a>
-        <b visitedby-ProcessorVisitor1="true"></b>
-        <c visitedby-ProcessorVisitor1="true"></c>
-    </a>
-</root>
