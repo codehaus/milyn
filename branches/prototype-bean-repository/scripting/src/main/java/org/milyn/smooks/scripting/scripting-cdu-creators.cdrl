@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!--
+	This cdrl config defines the Content Handler Creators
+	for this cartridge.
+-->
+
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-selector="cdu-creator">
+
+	<!-- 
+		Groovy Scripting Support.
+	-->
+	<resource-config>
+	    <resource type="class">org.milyn.smooks.scripting.GroovyContentHandlerFactory</resource>
+		<param name="restype">groovy</param>
+	</resource-config>
+	
+</smooks-resource-list>

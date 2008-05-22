@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>milyn</groupId>
+		<artifactId>smooks-cartridge-base-pom</artifactId>
+		<version>1.1</version>
+	</parent>
+    <name>Milyn Smooks Full Distribution</name>
+	<groupId>milyn</groupId>
+	<artifactId>milyn-smooks-distro</artifactId>
+	<version>${milyn.smooks.core.version}</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-css</artifactId>
+            <version>${milyn.smooks.css.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-csv</artifactId>
+            <version>${milyn.smooks.csv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-edi</artifactId>
+            <version>${milyn.smooks.edi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-javabean</artifactId>
+            <version>${milyn.smooks.javabean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-misc</artifactId>
+            <version>${milyn.smooks.misc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-scripting</artifactId>
+            <version>${milyn.smooks.scripting.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-servlet</artifactId>
+            <version>${milyn.smooks.servlet.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-templating</artifactId>
+            <version>${milyn.smooks.templating.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>milyn</groupId>
+            <artifactId>milyn-smooks-routing</artifactId>
+            <version>${milyn.smooks.routing.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <excludeTransitive>false</excludeTransitive>
+                            <excludeArtifactIds>junit,log4j,hsqldb,servlet-api,xalan,jbossall-client,jboss-j2ee,jdom,cglib-full,cglib-nodep,struts,mockejb,commons-beanutils,commons-digester,commons-fileupload,commons-validator,oro,xmlunit</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <ant dir="./" antfile="assemble.xml" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
+
+</project>
