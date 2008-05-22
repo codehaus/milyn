@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!--
+	This cdrl config defines the Content Handler Creators
+	for this cartridge.
+-->
+
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd" default-selector="cdu-creator">
+
+	<!-- 
+		All "st" resource types will be treated as StringTemplate templates and
+		will be handled by the StringTemplateContentHandlerFactory.
+	-->
+	<resource-config>
+	    <resource type="class">org.milyn.templating.stringtemplate.StringTemplateContentHandlerFactory</resource>
+		<param name="restype">st</param>
+	</resource-config>
+		
+	<!-- 
+		All "xsl" resource types will be treated as XSL templates and
+		will be handled by the XslContentHandlerFactory.
+	-->
+	<resource-config>
+	    <resource type="class">org.milyn.templating.xslt.XslContentHandlerFactory</resource>
+		<param name="restype">xsl</param>
+	</resource-config>	
+
+    <!--
+        All "ftl" resource types will be treated as FreeMarker templates and
+        will be handled by the FreeMarkerContentHandlerFactory.
+    -->
+    <resource-config>
+        <resource type="class">org.milyn.templating.freemarker.FreeMarkerContentHandlerFactory</resource>
+        <param name="restype">ftl</param>
+    </resource-config>
+
+</smooks-resource-list>
