@@ -4,7 +4,11 @@
 package org.milyn.javabean.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
@@ -20,32 +24,57 @@ public class BeanRepository {
 
 	private final ExecutionContext executionContext;
 	
-	private final List<Object> beans;
+	private final Map<String, Object> beanMap = new HashMap<String, Object>();
+	
+	private final List<Entry<String, Object>> beansEntrySet;
 	
 	private final List<List<Integer>> lifecycleAssociations;
 
 	private final List<BeanLifecycleSubjectGroup> beanLifecycleSubjectGroups;
 
+	private final BeanRepositoryIdList beanRepositoryIdList;
 	
-	public BeanRepository(ExecutionContext executionContext, int size) {
-		
+	public BeanRepository(ExecutionContext executionContext, BeanRepositoryIdList beanRepositoryIdList) {
 		this.executionContext = executionContext;
+		this.beanRepositoryIdList = beanRepositoryIdList;
 		
-		beans = new ArrayList<Object>(size);
+		int size = beanRepositoryIdList.size();
+		
+		beansEntrySet = new ArrayList<Entry<String, Object>>(size);
 		lifecycleAssociations = new ArrayList<List<Integer>>(size);
 		beanLifecycleSubjectGroups = new ArrayList<BeanLifecycleSubjectGroup>(size);
+		
+		for(String beanId : beanRepositoryIdList.getRepositoryBeanIdMap().keySet()) {
+			
+			beanMap.put(beanId, null);
+			
+		}
+		
+		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
+		
+			BeanRepositoryId beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(beanMapEntry.getKey());
+			
+			beansEntrySet.set(beanRepositoryId.getId(), beanMapEntry);
+		
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.repository.Repository#addBean(org.milyn.javabean.repository.RepositoryMember, java.lang.Object)
 	 */
 	public void addBean(BeanRepositoryId beanRepositoryId, Object bean) {
+		AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+		AssertArgument.isNotNull(bean, "bean");
+		
+		if(beanRepositoryIdList != beanRepositoryId.getBeanRepositoryIdList()) {
+			throw new IllegalArgumentException("The BeanRepositoryId object does not belong to this BeanRepository");
+		}
 		
 		int id = beanRepositoryId.getId();
 		
 		cleanAssociatedLifecycleBeans(id);
 		
-		beans.set(beanRepositoryId.getId(), bean);
+		beansEntrySet.get(beanRepositoryId.getId()).setValue(bean);
 		
 		notifyObservers(beanRepositoryId, BeanLifecycle.BEGIN, bean);
 	}
@@ -56,25 +85,41 @@ public class BeanRepository {
 	public boolean containsBean(BeanRepositoryId beanRepositoryId) {
 		int id = beanRepositoryId.getId();
 		
-		return beans.size() >= id && beans.get(beanRepositoryId.getId()) != null;
+		if(beanRepositoryIdList != beanRepositoryId.getBeanRepositoryIdList()) {
+			return false;
+		}
+		
+		return beansEntrySet.size() >= id && beansEntrySet.get(beanRepositoryId.getId()) != null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.repository.Repository#getBean(org.milyn.javabean.repository.RepositoryMember)
 	 */
 	public Object getBean(BeanRepositoryId beanRepositoryId) {
-		return beans.get(beanRepositoryId.getId());
+		AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+		
+		if(beanRepositoryIdList != beanRepositoryId.getBeanRepositoryIdList()) {
+			throw new IllegalArgumentException("The BeanRepositoryId object does not belong to this BeanRepository");
+		}
+		
+		return beansEntrySet.get(beanRepositoryId.getId()).getValue();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.repository.Repository#replaceBean(org.milyn.javabean.repository.RepositoryMember, java.lang.Object)
 	 */
 	public void changeBean(BeanRepositoryId beanRepositoryId, Object bean) {
+		AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+		AssertArgument.isNotNull(bean, "bean");
+		
+		if(beanRepositoryIdList != beanRepositoryId.getBeanRepositoryIdList()) {
+			throw new IllegalArgumentException("The BeanRepositoryId object does not belong to this BeanRepository");
+		}
 		
 		int id = beanRepositoryId.getId();
 		
-		if(beans.get(id) == null) {
-			beans.set(beanRepositoryId.getId(), bean);
+		if(beansEntrySet.get(id) == null) {
+			beansEntrySet.get(beanRepositoryId.getId()).setValue(bean);
 
 			notifyObservers(beanRepositoryId, BeanLifecycle.CHANGE, bean);
     	} else {
@@ -136,7 +181,7 @@ public class BeanRepository {
 	private void removeBean(int id) {
     	cleanAssociatedLifecycleBeans(id);
 
-    	beans.set(id, null);
+    	beansEntrySet.set(id, null);
     }
 
     private void notifyObservers(BeanRepositoryId beanRepositoryId, BeanLifecycle lifecycle, Object bean) {
@@ -159,5 +204,12 @@ public class BeanRepository {
 
     	return subjectGroup;
     }
+
+	/**
+	 * @return the beanMap
+	 */
+	public Map<String, Object> getBeanMap() {
+		return Collections.unmodifiableMap(beanMap);
+	}
 
 }

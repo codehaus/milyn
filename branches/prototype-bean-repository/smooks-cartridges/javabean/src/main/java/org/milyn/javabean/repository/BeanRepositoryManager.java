@@ -53,7 +53,7 @@ public class BeanRepositoryManager {
 			
 			beanRepositoryIdList.freeze();
 			
-			beanRepository = new BeanRepository(executionContext, beanRepositoryIdList.size());
+			beanRepository = new BeanRepository(executionContext, beanRepositoryIdList);
 			
 			executionContext.setAttribute(BEAN_REPOSITORY_CONTEXT_KEY, beanRepository);
 		}

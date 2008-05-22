@@ -3,6 +3,7 @@
  */
 package org.milyn.javabean.repository;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,13 @@ public class BeanRepositoryIdList {
 	 */
 	public BeanRepositoryId getRepositoryBeanId(String beanId) {
 		return repositoryBeanIdMap.get(beanId);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.repository.Repository#getMember(java.lang.String)
+	 */
+	public Map<String, BeanRepositoryId> getRepositoryBeanIdMap() {
+		return Collections.unmodifiableMap(repositoryBeanIdMap) ;
 	}
 	
 	public int size() {
