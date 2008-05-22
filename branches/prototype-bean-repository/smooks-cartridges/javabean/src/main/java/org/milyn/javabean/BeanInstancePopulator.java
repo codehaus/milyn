@@ -43,7 +43,12 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
+import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleEvent;
+import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleObserver;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryId;
+import org.milyn.javabean.repository.BeanRepositoryIdList;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -90,7 +95,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     @AppContext
     private ApplicationContext appContext;
-
+    
+    private BeanRepositoryManager beanRepositoryManager;
+    
+    private BeanRepositoryId beanRepositoryId;
+    
+    private BeanRepositoryId wireBeanRepositoryId;
+    
     private BeanRuntimeInfo beanRuntimeInfo;
     private BeanRuntimeInfo wiredBeanRuntimeInfo;
 
@@ -113,8 +124,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
         beanWiring = wireBeanId != null;
         isAttribute = (valueAttributeName != null);
-
-
+        
+        beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
+        
+        BeanRepositoryIdList beanRepositoryIdList = beanRepositoryManager.getBeanRepositoryIdList();
+        
+        beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(beanId);
+        
         if (setterMethod == null && property == null ) {
         	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
         		property = wireBeanId;
@@ -247,38 +263,51 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
         populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
     }
+    
+    
+    private BeanRepositoryId getWireBeanRepositoryId() {
+    	if(wireBeanRepositoryId == null) {
+    		wireBeanRepositoryId = beanRepositoryManager.getBeanRepositoryIdList().getRepositoryBeanId(wireBeanId);
+    	}
+    	return wireBeanRepositoryId;
+    }
 
-    private void bindBeanValue(ExecutionContext executionContext) {
-        Object bean = BeanAccessor.getBean(executionContext, wireBeanId);
+    private void bindBeanValue(final ExecutionContext executionContext) {
+    	final BeanRepositoryId targetBeanRepositoryId = getWireBeanRepositoryId();
+    	
+    	final BeanRepository beanRepository = beanRepositoryManager.getBeanRepository(executionContext);
+    	
+    	Object bean = beanRepository.getBean(targetBeanRepositoryId);
         if(bean == null) {
 
             // Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
             // we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
             // and not the list representation. So we register and observer wo looks for the change from the list to the array
-            BeanAccessor.addBeanLifecycleObserver(executionContext, wireBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
+        	beanRepository.addBeanLifecycleObserver(targetBeanRepositoryId, BeanLifecycle.BEGIN, getId(), false, new RepositoryBeanLifecycleObserver(){
 
-                public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
+                public void onBeanLifecycleEvent(RepositoryBeanLifecycleEvent event) {
 
                     Classification wiredBeanType = getWiredBeanRuntimeInfo().getClassification();
 
-                    BeanAccessor.associateLifecycles(executionContext, beanId, targetBeanId);
+                    beanRepository.associateLifecycles(beanRepositoryId , targetBeanRepositoryId);
 
                     if(wiredBeanType == Classification.ARRAY_COLLECTION ) {
 
                         // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
                         // can then set this array
-                        BeanAccessor.addBeanLifecycleObserver(executionContext, targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanLifecycleObserver() {
-                            public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
+                    	beanRepository.addBeanLifecycleObserver( targetBeanRepositoryId, BeanLifecycle.CHANGE, getId(), true, new RepositoryBeanLifecycleObserver() {
+                            public void onBeanLifecycleEvent(RepositoryBeanLifecycleEvent event) {
 
-                                populateAndSetPropertyValue(property, bean, executionContext);
+                                populateAndSetPropertyValue(property, event.getBean(), executionContext);
 
                             }
                         });
 
                     } else {
-                        populateAndSetPropertyValue(property, bean, executionContext);
+                        populateAndSetPropertyValue(property, event.getBean(), executionContext);
                     }
                 }
+
             });
         } else {
             populateAndSetPropertyValue(property, bean, executionContext);

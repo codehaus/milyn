@@ -18,24 +18,23 @@ package org.milyn.javabean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
+import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
+import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.payload.FilterResult;
 import org.milyn.payload.FilterSource;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.JavaSource;
-import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 
 /**
  * Bean Accessor.
@@ -44,7 +43,9 @@ import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
  *
  * @author tfennelly
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @deprecated Use the {@link BeanRepository} 
  */
+@Deprecated
 public class BeanAccessor {
 
     private static final String CONTEXT_KEY = BeanAccessor.class.getName() + "#CONTEXT_KEY";
@@ -373,26 +374,6 @@ public class BeanAccessor {
     	
     	beans.remove(beanId);
     }
-
-	
-	private Set<String> getRootLifecycleAssociations() {
-		Set<String> rootParents = new HashSet<String>();
-		for(String parent : lifecycleAssociations.keySet()) {
-			boolean found = false;
-			
-			for(List<String> childs : lifecycleAssociations.values()) {
-				found = childs.contains(parent);
-				if(found) {
-					break;
-				}
-			}
-		
-			if(!found) {
-				rootParents.add(parent);
-			}
-		}
-		return rootParents;
-	}
     
     private void associateLifecycles(String parentBean, String childBean) {
     	AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
@@ -428,9 +409,6 @@ public class BeanAccessor {
     	}
     }
 
-    private void notifyObservers(BeanLifecycle lifecycle, String beanId) {
-    	notifyObservers(lifecycle, beanId, null);
-    }
 
     private void notifyObservers(BeanLifecycle lifecycle, String beanId, Object bean) {
     	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);

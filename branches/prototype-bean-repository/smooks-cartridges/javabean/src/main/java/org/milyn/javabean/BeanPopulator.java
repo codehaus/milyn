@@ -26,10 +26,8 @@ import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AnnotationConstants;
-import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.VisitPhase;
@@ -158,8 +156,6 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
-    private static final String APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED = BeanPopulator.class.getName() + "#LIFECYCLE_ENDER_CREATED";
-    
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String beanId;
 
@@ -169,8 +165,6 @@ public class BeanPopulator implements ConfigurationExpander {
     @Config
     private SmooksResourceConfiguration config;
     
-    @AppContext
-    private ApplicationContext appContext;
 
     /*******************************************************************************************************
      *  Common Methods.
