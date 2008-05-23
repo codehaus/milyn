@@ -22,14 +22,21 @@ import java.util.Map;
 
 import org.milyn.SmooksException;
 import org.milyn.cdr.Parameter;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
-import org.milyn.javabean.BeanAccessor;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryId;
+import org.milyn.javabean.repository.BeanRepositoryIdList;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
 /**
@@ -47,8 +54,32 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
     private static final String STATVAR = "statvar";
 
+    private BeanRepositoryManager beanRepositoryManager;
+
+    private BeanRepositoryId beanRepositoryId;
+
     @Config
     private SmooksResourceConfiguration config;
+
+
+    @AppContext
+    private ApplicationContext appContext;
+
+    @Initialize
+    public void initialize() throws SmooksConfigurationException {
+
+    	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
+
+        BeanRepositoryIdList beanRepositoryIdList = beanRepositoryManager.getBeanRepositoryIdList();
+
+        beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(STATVAR);
+
+        if(beanRepositoryId == null) {
+        	beanRepositoryId = beanRepositoryManager.getBeanRepositoryIdList().register(STATVAR);
+        }
+
+
+    }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         bindParamaters(executionContext);
@@ -71,31 +102,37 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     }
 
     private void bindParamaters(ExecutionContext executionContext) {
-        List params = config.getParameterList();
+        List<?> params = config.getParameterList();
 
         for (Object parameter : params) {
             // It's either an object, or list of objects...
             if (parameter instanceof List) {
                 // Bind the first paramater...
-                bindParameter((Parameter) ((List) parameter).get(0), executionContext);
+                bindParameter((Parameter) ((List<?>) parameter).get(0), executionContext);
             } else if (parameter instanceof Parameter) {
                 bindParameter((Parameter) parameter, executionContext);
             }
         }
     }
 
-    private void bindParameter(Parameter parameter, ExecutionContext executionContext) {
-        Map params = null;
+
+	private void bindParameter(Parameter parameter, ExecutionContext executionContext) {
+        Map<String, Object> params = null;
+
+        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
 
         try {
-            params = (Map) BeanAccessor.getBean(executionContext, STATVAR);
+        	@SuppressWarnings("unchecked")
+        	Map<String, Object> castParams = (Map<String, Object>) beanRepository.getBean(beanRepositoryId);
+
+        	params = castParams;
         } catch(ClassCastException e) {
             throw new SmooksException("Illegal use of reserved beanId '" + STATVAR + "'.  Must be a Map.  Is a " + params.getClass().getName(), e);
         }
 
         if(params == null) {
-            params = new HashMap();
-            BeanAccessor.addBean(executionContext, STATVAR, params);
+            params = new HashMap<String, Object>();
+            beanRepository.addBean(beanRepositoryId, params);
         }
 
         params.put(parameter.getName(), parameter.getValue(executionContext.getDeliveryConfig()));
