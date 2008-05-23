@@ -283,8 +283,7 @@ public class BeanAccessor {
 		BeanRepositoryId beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(beanId);
 
 		if (beanRepositoryId == null) {
-			throw new IllegalStateException(
-					"The bean with  beanId '" + beanId + "' is not registered in the BeanRepositoryIdList of the current ApplicationContext.");
+			beanRepositoryId = beanRepositoryIdList.register(beanId);
 		}
 
 		return beanRepositoryId;

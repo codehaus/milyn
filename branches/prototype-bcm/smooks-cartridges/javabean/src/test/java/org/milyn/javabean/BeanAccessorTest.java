@@ -86,6 +86,7 @@ public class BeanAccessorTest extends TestCase {
         Object newBean1 = new MyGoodBean();
 
         getBeanRepositoryIdList().register("bean1");
+        getBeanRepositoryIdList().register("notExisting");
 
         BeanAccessor.addBean(executionContext, "bean1", bean1);
 

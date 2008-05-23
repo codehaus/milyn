@@ -15,8 +15,6 @@ import org.milyn.assertion.AssertArgument;
  */
 public class BeanRepositoryIdList {
 
-	private boolean frozen = false;
-
 	private int index = 0;
 
 	private final Map<String, BeanRepositoryId> repositoryBeanIdMap = new HashMap<String, BeanRepositoryId>();
@@ -26,10 +24,6 @@ public class BeanRepositoryIdList {
 	 */
 	public BeanRepositoryId register(String beanId) {
 		AssertArgument.isNotEmpty(beanId, "beanId");
-
-		if(frozen) {
-			throw new IllegalStateException("The BeanProviderManager is frozen. No new bean id's can be registered");
-		}
 
 		if(repositoryBeanIdMap.containsKey(beanId)) {
 			throw new IllegalArgumentException("Member with beanId '" + beanId + "' is already registered");
@@ -67,13 +61,5 @@ public class BeanRepositoryIdList {
 
 	public int size() {
 		return index;
-	}
-
-	public void freeze() {
-		frozen = true;
-	}
-
-	public boolean isFrozen() {
-		return frozen;
 	}
 }

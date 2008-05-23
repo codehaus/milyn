@@ -29,16 +29,19 @@ public class BeanRepositoryPerformance  extends TestCase {
 
 	public void _test_BeanRepository_performance() {
 
-		test_BeanAccessor_performance(100, 100, true);
+		test_BeanRepository_performance(100, 100, true);
 		test_BeanRepository_performance(1, 100000, false);
 		test_BeanRepository_performance(10, 100000, false);
 		test_BeanRepository_performance(100, 100000, false);
+		test_BeanRepository_performance(1000, 100000, false);
 	}
 
 
 	@SuppressWarnings("deprecation")
 	private void test_BeanAccessor_performance(int beans, int loops, boolean warmup) {
-		sleep();
+		if(!warmup) {
+			sleep();
+		}
 
 		executionContext = new MockExecutionContext();
 

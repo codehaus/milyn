@@ -79,10 +79,7 @@ public class BeanRepositoryManager {
 
 		Map<String, Object> beanMap = createBeanMap(executionContext);
 
-		beanRepositoryIdList.freeze();
-
 		beanRepository = new BeanRepository(executionContext, beanRepositoryIdList, beanMap);
-
 
 		return beanRepository;
 	}
