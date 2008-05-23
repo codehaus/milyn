@@ -148,6 +148,17 @@ public class BeanRepository {
     }
 
 	/**
+	 * Returns the bean by it's beanId
+	 *
+	 * @return the beanMap
+	 */
+	public Object getBean(String beanId) {
+		return beanMap.get(beanId);
+	}
+
+	/**
+	 *  Returns the an unmodifiable bean Map
+	 *
 	 * @return the beanMap
 	 */
 	public Map<String, Object> getBeanMap() {

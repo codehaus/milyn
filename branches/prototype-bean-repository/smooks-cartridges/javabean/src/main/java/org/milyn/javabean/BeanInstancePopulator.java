@@ -95,13 +95,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     @AppContext
     private ApplicationContext appContext;
-    
+
     private BeanRepositoryManager beanRepositoryManager;
-    
+
     private BeanRepositoryId beanRepositoryId;
-    
+
     private BeanRepositoryId wireBeanRepositoryId;
-    
+
     private BeanRuntimeInfo beanRuntimeInfo;
     private BeanRuntimeInfo wiredBeanRuntimeInfo;
 
@@ -124,13 +124,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
         beanWiring = wireBeanId != null;
         isAttribute = (valueAttributeName != null);
-        
+
         beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
-        
+
         BeanRepositoryIdList beanRepositoryIdList = beanRepositoryManager.getBeanRepositoryIdList();
-        
+
         beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(beanId);
-        
+
         if (setterMethod == null && property == null ) {
         	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
         		property = wireBeanId;
@@ -263,8 +263,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
         populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
     }
-    
-    
+
+
     private BeanRepositoryId getWireBeanRepositoryId() {
     	if(wireBeanRepositoryId == null) {
     		wireBeanRepositoryId = beanRepositoryManager.getBeanRepositoryIdList().getRepositoryBeanId(wireBeanId);
@@ -274,9 +274,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private void bindBeanValue(final ExecutionContext executionContext) {
     	final BeanRepositoryId targetBeanRepositoryId = getWireBeanRepositoryId();
-    	
-    	final BeanRepository beanRepository = beanRepositoryManager.getBeanRepository(executionContext);
-    	
+
+    	final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
     	Object bean = beanRepository.getBean(targetBeanRepositoryId);
         if(bean == null) {
 
@@ -329,8 +329,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	{
     		return;
     	}
-    	
-        Object bean = BeanUtils.getBean(beanId, executionContext);
+
+        Object bean = BeanRepositoryManager.getBeanRepository(executionContext).getBean(beanRepositoryId);
 
         Classification beanType = beanRuntimeInfo.getClassification();
 

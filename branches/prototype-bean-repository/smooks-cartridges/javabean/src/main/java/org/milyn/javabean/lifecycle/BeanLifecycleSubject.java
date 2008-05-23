@@ -11,7 +11,7 @@ import org.milyn.javabean.repository.BeanRepositoryManager;
 public class BeanLifecycleSubject {
 
     private final ArrayList<ObserverContext> observers = new ArrayList<ObserverContext>();
-    
+
     private final BeanLifecycle beanLifecycle;
 
     private final BeanRepositoryId beanRepositoryId;
@@ -22,14 +22,14 @@ public class BeanLifecycleSubject {
     	AssertArgument.isNotNull(executionContext, "executionContext");
     	AssertArgument.isNotNull(beanLifecycle, "beanLifecycle");
     	AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
-    	
+
     	this.beanLifecycle = beanLifecycle;
     	this.executionContext = executionContext;
 		this.beanRepositoryId = beanRepositoryId;
 	}
-    
+
     /**
-     * 
+     *
      * @param executionContext
      * @param beanLifecycle
      * @param beanId
@@ -41,7 +41,7 @@ public class BeanLifecycleSubject {
 	}
 
     /**
-     * 
+     *
      * @param observerId
      * @param notifyOnce
      * @param observer
@@ -51,7 +51,7 @@ public class BeanLifecycleSubject {
     public void addObserver(String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
     	AssertArgument.isNotNull(observer, "observer");
-    	
+
     	removeObserver(observerId);
 
     	ObserverContext observerContext = new ObserverContext();
@@ -60,13 +60,13 @@ public class BeanLifecycleSubject {
     	observerContext.notifyOnce = notifyOnce;
 
     	observers.add(observerContext);
-    	
+
     }
-    
+
     public void addObserver(String observerId, boolean notifyOnce, RepositoryBeanLifecycleObserver observer) {
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
     	AssertArgument.isNotNull(observer, "observer");
-    	
+
     	removeObserver(observerId);
 
     	ObserverContext observerContext = new ObserverContext();
@@ -75,12 +75,12 @@ public class BeanLifecycleSubject {
     	observerContext.notifyOnce = notifyOnce;
 
     	observers.add(observerContext);
-    	
+
     }
 
     public void removeObserver(String observerId) {
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
-    	
+
     	boolean found = false;
     	for (int i = 0; !found && i < observers.size(); i++) {
     		ObserverContext observerContext = observers.get(i);
@@ -100,17 +100,17 @@ public class BeanLifecycleSubject {
 			List<ObserverContext> observersClone = (List<ObserverContext>) observers.clone();
 			for(int i = 0; i < observersClone.size(); i++) {
 				ObserverContext observerContext = observersClone.get(i);
-				
+
 				if(observerContext.repositoryBeanLifecycleObserver != null) {
-					
+
 					RepositoryBeanLifecycleEvent beanLifecycleEvent = new RepositoryBeanLifecycleEvent(executionContext, beanLifecycle, beanRepositoryId, bean);
-					
+
 					observerContext.repositoryBeanLifecycleObserver.onBeanLifecycleEvent(beanLifecycleEvent);
-					
+
 				} else {
-					
+
 					observerContext.observer.onBeanLifecycleEvent(executionContext, beanLifecycle, beanRepositoryId.getBeanId(), bean);
-					
+
 				}
 
 				if(observerContext.notifyOnce) {
@@ -137,7 +137,7 @@ public class BeanLifecycleSubject {
 	public String getBeanId() {
 		return beanRepositoryId.getBeanId();
 	}
-	
+
 	/**
 	 * @return the beanId
 	 */
@@ -166,10 +166,10 @@ public class BeanLifecycleSubject {
 
     	@Deprecated
     	BeanLifecycleObserver observer;
-    	
+
     	RepositoryBeanLifecycleObserver repositoryBeanLifecycleObserver;
     }
-	
+
     /**
 	 * @param executionContext
 	 * @param beanId
@@ -177,7 +177,7 @@ public class BeanLifecycleSubject {
 	 */
 	private static BeanRepositoryId getBeanRepositoryId(ExecutionContext executionContext, String beanId) {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-		
+
 		return BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanRepositoryIdList().getRepositoryBeanId(beanId);
 	}
 }

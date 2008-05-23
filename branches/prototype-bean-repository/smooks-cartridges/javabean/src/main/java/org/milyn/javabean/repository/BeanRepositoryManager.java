@@ -43,6 +43,7 @@ public class BeanRepositoryManager {
 
 	}
 
+
 	private BeanRepositoryManager() {
 	}
 
@@ -56,23 +57,36 @@ public class BeanRepositoryManager {
 	/**
 	 * @return the beanProviderManager
 	 */
-	public BeanRepository getBeanRepository(ExecutionContext executionContext) {
+	public static BeanRepository getBeanRepository(ExecutionContext executionContext) {
 		BeanRepository beanRepository = (BeanRepository) executionContext.getAttribute(BEAN_REPOSITORY_CONTEXT_KEY);
 
 		if(beanRepository == null) {
 
-			Map<String, Object> beanMap = createBeanMap(executionContext);
-
-	        beanRepositoryIdList.freeze();
-
-			beanRepository = new BeanRepository(executionContext, beanRepositoryIdList, beanMap);
+			beanRepository = getInstance(executionContext.getContext()).createBeanRepository(executionContext);
 
 			executionContext.setAttribute(BEAN_REPOSITORY_CONTEXT_KEY, beanRepository);
 		}
 
+		return beanRepository;
+	}
+
+	/**
+	 * @param executionContext
+	 * @return
+	 */
+	private BeanRepository createBeanRepository(ExecutionContext executionContext) {
+		BeanRepository beanRepository;
+
+		Map<String, Object> beanMap = createBeanMap(executionContext);
+
+		beanRepositoryIdList.freeze();
+
+		beanRepository = new BeanRepository(executionContext, beanRepositoryIdList, beanMap);
+
 
 		return beanRepository;
 	}
+
 
 	/**
 	 * @param executionContext

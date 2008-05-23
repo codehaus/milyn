@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.milyn.javabean.lifecycle;
 
@@ -13,15 +13,14 @@ import org.milyn.javabean.repository.BeanRepositoryId;
 public class RepositoryBeanLifecycleEvent {
 
 	private final ExecutionContext executionContext;
-	
+
 	private final BeanLifecycle lifecycle;
-	
+
 	private final BeanRepositoryId beanRepositoryId;
-	
+
 	private final Object bean;
-	
-	
-	
+
+
 	/**
 	 * @param executionContext
 	 * @param beanRepositoryId
@@ -30,7 +29,7 @@ public class RepositoryBeanLifecycleEvent {
 	 */
 	public RepositoryBeanLifecycleEvent(ExecutionContext executionContext,
 			 BeanLifecycle lifecycle, BeanRepositoryId beanRepositoryId, Object bean) {
-		
+
 		this.executionContext = executionContext;
 		this.beanRepositoryId = beanRepositoryId;
 		this.lifecycle = lifecycle;

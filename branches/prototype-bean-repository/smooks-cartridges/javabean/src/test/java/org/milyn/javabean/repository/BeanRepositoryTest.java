@@ -18,7 +18,6 @@ package org.milyn.javabean.repository;
 
 import junit.framework.TestCase;
 
-import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.javabean.MyGoodBean;
@@ -33,7 +32,6 @@ import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleObserver;
 public class BeanRepositoryTest extends TestCase {
 
 	private ExecutionContext executionContext;
-	private ApplicationContext applicationContext;
 
 
 	/**
@@ -323,7 +321,6 @@ public class BeanRepositoryTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		executionContext = new MockExecutionContext();
-		applicationContext = executionContext.getContext();
 	}
 
 
@@ -342,14 +339,14 @@ public class BeanRepositoryTest extends TestCase {
 	private BeanRepository getBeanRepository() {
 		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
 
-        return beanRepositoryManager.getBeanRepository(executionContext);
+        return BeanRepositoryManager.getBeanRepository(executionContext);
 	}
 
 	/**
 	 * @return
 	 */
 	private BeanRepositoryManager getRepositoryManager() {
-		return BeanRepositoryManager.getInstance(applicationContext);
+		return BeanRepositoryManager.getInstance(executionContext.getContext());
 	}
 
     public class MockRepositoryBeanLifecycleObserver implements RepositoryBeanLifecycleObserver {
