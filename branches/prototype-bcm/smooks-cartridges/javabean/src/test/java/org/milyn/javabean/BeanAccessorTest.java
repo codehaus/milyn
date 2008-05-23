@@ -29,6 +29,7 @@ import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
  *
  * @author tfennelly
  */
+@SuppressWarnings("deprecation")
 public class BeanAccessorTest extends TestCase {
 
 	/**
@@ -251,7 +252,7 @@ public class BeanAccessorTest extends TestCase {
 
 	}
 
-	
+
 	/**
 	 * replace with easy mock framework for more control
 	 *
@@ -271,13 +272,13 @@ public class BeanAccessorTest extends TestCase {
         assertFalse(observerChange.isFired());
 
         BeanAccessor.addBeanLifecycleObserver(request, "bean", BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
-        
+
         //now do the change
         BeanAccessor.changeBean(request, "bean", bean);
 
         assertTrue(observerChange.isFired());
         assertFalse(observerBegin.isFired());
-        
+
 	}
 
     /**
