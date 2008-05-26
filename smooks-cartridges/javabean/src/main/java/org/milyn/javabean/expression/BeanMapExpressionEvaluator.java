@@ -15,15 +15,16 @@
 */
 package org.milyn.javabean.expression;
 
-import java.util.Map;
-
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanAccessor;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.mvel.MVEL;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Javabean Cartridge bean Map expression evaluator.
@@ -47,12 +48,12 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
     }
 
     public boolean eval(ExecutionContext context) throws ExpressionEvaluationException {
-        Map beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
+        Map beans = BeanAccessor.getBeanMap(context);
         return eval(beans);
     }
 
     public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
-        Map beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
+        Map beans = BeanAccessor.getBeanMap(context);
         return getValue(beans);
     }
 }
