@@ -95,7 +95,7 @@ import org.w3c.dom.NodeList;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Order</b>&lt;/param&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;binding property="header" selector="${header}" /&gt; &lt;-- Wire the header bean to the header property. See header configuration below... --&gt;
- *             &lt;binding property="orderItems" selector="${orderItems}" /&gt; &lt;-- Wire the orderItems ArrayList to the orderItems property. See orderItems configuration below... --&gt;             
+ *             &lt;binding property="orderItems" selector="${orderItems}" /&gt; &lt;-- Wire the orderItems ArrayList to the orderItems property. See orderItems configuration below... --&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -156,15 +156,15 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
-    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private String beanId;
+    @ConfigParam(name="beanId", defaultVal = AnnotationConstants.NULL_STRING)
+    private String beanIdName;
 
     @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
 
     @Config
     private SmooksResourceConfiguration config;
-    
+
 
     /*******************************************************************************************************
      *  Common Methods.
@@ -182,9 +182,9 @@ public class BeanPopulator implements ConfigurationExpander {
         }
 
         // May need to default the "beanId"...
-        if (beanId == null || beanId.trim().equals("")) {
-            beanId = toBeanId(beanClassName);
-            logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'.  Defaulting beanId to '" + beanId + "'.");
+        if (beanIdName == null || beanIdName.trim().length() == 0) {
+        	beanIdName = toBeanId(beanClassName);
+            logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'.  Defaulting beanId to '" + beanIdName + "'.");
         }
 
         if (config.getStringParameter("attributeName") != null) {
@@ -195,7 +195,7 @@ public class BeanPopulator implements ConfigurationExpander {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
 
-        logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].");
+        logger.debug("Bean Populator created for [" + beanIdName + ":" + beanClassName + "].");
     }
 
     public List<SmooksResourceConfiguration> expandConfigurations() throws SmooksConfigurationException {
@@ -203,7 +203,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         buildInstanceCreatorConfig(resources);
         buildBindingConfigs(resources);
-        
+
         return resources;
     }
 
@@ -212,7 +212,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         // Reset the beanId and beanClass parameters
         resource.removeParameter("beanId");
-        resource.setParameter("beanId", beanId);
+        resource.setParameter("beanId", beanIdName);
         resource.removeParameter("beanClass");
         resource.setParameter("beanClass", beanClassName);
 
@@ -284,7 +284,7 @@ public class BeanPopulator implements ConfigurationExpander {
         // Construct the configuraton...
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, BeanInstancePopulator.class.getName());
         resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
-        resourceConfig.setParameter("beanId", beanId);
+        resourceConfig.setParameter("beanId", beanIdName);
 
         if(wireBeanId != null) {
             resourceConfig.setParameter("wireBeanId", wireBeanId);

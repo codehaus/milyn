@@ -21,7 +21,7 @@ import org.milyn.container.ExecutionContext;
 /**
  * <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
- *@deprecated Use the {@link RepositoryBeanLifecycleObserver} object
+ *@deprecated Use the {@link BeanRepositoryLifecycleObserver} object
  */
 @Deprecated
 public interface BeanLifecycleObserver {

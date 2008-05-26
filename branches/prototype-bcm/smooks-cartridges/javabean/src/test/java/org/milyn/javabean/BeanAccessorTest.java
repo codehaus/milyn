@@ -22,7 +22,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.repository.BeanRepositoryIdList;
+import org.milyn.javabean.repository.BeanIdList;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 
 /**
@@ -41,8 +41,8 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
 
-        getBeanRepositoryIdList().register("bean1");
-        getBeanRepositoryIdList().register("bean2");
+        getBeanIdList().register("bean1");
+        getBeanIdList().register("bean2");
 
         assertNull(BeanAccessor.getBean(executionContext, "bean1"));
         assertNull(BeanAccessor.getBean(executionContext, "bean2"));
@@ -65,7 +65,7 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        getBeanRepositoryIdList().register("bean1");
+        getBeanIdList().register("bean1");
 
         assertNull(BeanAccessor.getBean(executionContext, "bean1"));
 
@@ -85,8 +85,8 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        getBeanRepositoryIdList().register("bean1");
-        getBeanRepositoryIdList().register("notExisting");
+        getBeanIdList().register("bean1");
+        getBeanIdList().register("notExisting");
 
         BeanAccessor.addBean(executionContext, "bean1", bean1);
 
@@ -116,10 +116,10 @@ public class BeanAccessorTest extends TestCase {
         Object child2 = new MyGoodBean();
         Object childChild = new MyGoodBean();
 
-        getBeanRepositoryIdList().register("parent");
-        getBeanRepositoryIdList().register("child");
-        getBeanRepositoryIdList().register("child2");
-        getBeanRepositoryIdList().register("childChild");
+        getBeanIdList().register("parent");
+        getBeanIdList().register("child");
+        getBeanIdList().register("child2");
+        getBeanIdList().register("childChild");
 
         // check single level association
         BeanAccessor.addBean(executionContext, "parent", parent);
@@ -184,8 +184,8 @@ public class BeanAccessorTest extends TestCase {
         final Object bean1 = new MyGoodBean();
         final Object bean2 = new MyGoodBean();
 
-        getBeanRepositoryIdList().register("bean1");
-        getBeanRepositoryIdList().register("bean2");
+        getBeanIdList().register("bean1");
+        getBeanIdList().register("bean2");
 
         MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
         BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
@@ -274,7 +274,7 @@ public class BeanAccessorTest extends TestCase {
 	public void test_bean_lifecycle_change_observers_associates() {
         Object bean = new MyGoodBean();
 
-        getBeanRepositoryIdList().register("bean");
+        getBeanIdList().register("bean");
 
         MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
@@ -305,10 +305,10 @@ public class BeanAccessorTest extends TestCase {
 	/**
 	 *
 	 */
-	private BeanRepositoryIdList getBeanRepositoryIdList() {
+	private BeanIdList getBeanIdList() {
 		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
 
-        return beanRepositoryManager.getBeanRepositoryIdList();
+        return beanRepositoryManager.getBeanIdList();
 	}
 
 	/**

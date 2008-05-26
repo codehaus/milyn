@@ -33,9 +33,9 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdList;
 import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryId;
-import org.milyn.javabean.repository.BeanRepositoryIdList;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
@@ -56,7 +56,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
     private BeanRepositoryManager beanRepositoryManager;
 
-    private BeanRepositoryId beanRepositoryId;
+    private BeanId beanId;
 
     @Config
     private SmooksResourceConfiguration config;
@@ -70,12 +70,12 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
     	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
-        BeanRepositoryIdList beanRepositoryIdList = beanRepositoryManager.getBeanRepositoryIdList();
+        BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
 
-        beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(STATVAR);
+        beanId = beanIdList.getBeanId(STATVAR);
 
-        if(beanRepositoryId == null) {
-        	beanRepositoryId = beanRepositoryManager.getBeanRepositoryIdList().register(STATVAR);
+        if(beanId == null) {
+        	beanId = beanRepositoryManager.getBeanIdList().register(STATVAR);
         }
 
 
@@ -123,7 +123,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
         try {
         	@SuppressWarnings("unchecked")
-        	Map<String, Object> castParams = (Map<String, Object>) beanRepository.getBean(beanRepositoryId);
+        	Map<String, Object> castParams = (Map<String, Object>) beanRepository.getBean(beanId);
 
         	params = castParams;
         } catch(ClassCastException e) {
@@ -132,7 +132,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
         if(params == null) {
             params = new HashMap<String, Object>();
-            beanRepository.addBean(beanRepositoryId, params);
+            beanRepository.addBean(beanId, params);
         }
 
         params.put(parameter.getName(), parameter.getValue(executionContext.getDeliveryConfig()));

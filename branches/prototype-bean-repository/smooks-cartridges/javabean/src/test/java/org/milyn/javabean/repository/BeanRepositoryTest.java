@@ -22,8 +22,8 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.javabean.MyGoodBean;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleEvent;
-import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleObserver;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 
 /**
  *
@@ -41,21 +41,21 @@ public class BeanRepositoryTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
 
-        BeanRepositoryId beanRepositoryId1 = getBeanRepositoryIdList().register("bean1");
-        BeanRepositoryId beanRepositoryId2 = getBeanRepositoryIdList().register("bean2");
+        BeanId beanId1 = getBeanIdList().register("bean1");
+        BeanId beanId2 = getBeanIdList().register("bean2");
 
         BeanRepository beanRepository = getBeanRepository();
 
         assertEquals(2, beanRepository.getBeanMap().size());
 
-        assertNull(beanRepository.getBean(beanRepositoryId1));
-        assertNull(beanRepository.getBean(beanRepositoryId2));
+        assertNull(beanRepository.getBean(beanId1));
+        assertNull(beanRepository.getBean(beanId2));
 
-        beanRepository.addBean(beanRepositoryId1, bean1);
-        beanRepository.addBean(beanRepositoryId2, bean2);
+        beanRepository.addBean(beanId1, bean1);
+        beanRepository.addBean(beanId2, bean2);
 
-        assertEquals(bean1, beanRepository.getBean(beanRepositoryId1));
-        assertEquals(bean2, beanRepository.getBean(beanRepositoryId2));
+        assertEquals(bean1, beanRepository.getBean(beanId1));
+        assertEquals(bean2, beanRepository.getBean(beanId2));
 
 
         assertEquals(bean1, beanRepository.getBeanMap().get("bean1"));
@@ -72,19 +72,19 @@ public class BeanRepositoryTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        BeanRepositoryId beanRepositoryId1 = getBeanRepositoryIdList().register("bean1");
+        BeanId beanId1 = getBeanIdList().register("bean1");
 
         BeanRepository beanRepository = getBeanRepository();
 
-        assertNull(beanRepository.getBean(beanRepositoryId1));
+        assertNull(beanRepository.getBean(beanId1));
 
-        beanRepository.addBean( beanRepositoryId1, bean1);
+        beanRepository.addBean( beanId1, bean1);
 
-        assertEquals(bean1, beanRepository.getBean(beanRepositoryId1));
+        assertEquals(bean1, beanRepository.getBean(beanId1));
 
-        beanRepository.addBean( beanRepositoryId1, newBean1);
+        beanRepository.addBean( beanId1, newBean1);
 
-        assertEquals(newBean1, beanRepository.getBean(beanRepositoryId1));
+        assertEquals(newBean1, beanRepository.getBean(beanId1));
     }
 
 	/**
@@ -94,24 +94,24 @@ public class BeanRepositoryTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        BeanRepositoryId beanRepositoryId1 = getBeanRepositoryIdList().register("bean1");
-        BeanRepositoryId beanRepositoryIdNE = getBeanRepositoryIdList().register("notExisting");
+        BeanId beanId1 = getBeanIdList().register("bean1");
+        BeanId beanIdNE = getBeanIdList().register("notExisting");
 
 
         BeanRepository beanRepository = getBeanRepository();
 
-        beanRepository.addBean(beanRepositoryId1, bean1);
+        beanRepository.addBean(beanId1, bean1);
 
-        assertEquals(bean1, beanRepository.getBean(beanRepositoryId1));
+        assertEquals(bean1, beanRepository.getBean(beanId1));
 
-        beanRepository.changeBean(beanRepositoryId1, newBean1);
+        beanRepository.changeBean(beanId1, newBean1);
 
-        assertEquals(newBean1, beanRepository.getBean(beanRepositoryId1));
+        assertEquals(newBean1, beanRepository.getBean(beanId1));
 
         boolean fired = false;
 
         try {
-        	beanRepository.changeBean(beanRepositoryIdNE, new Object());
+        	beanRepository.changeBean(beanIdNE, new Object());
         } catch (IllegalStateException e) {
         	fired = true;
 		}
@@ -128,10 +128,10 @@ public class BeanRepositoryTest extends TestCase {
         Object child2 = new MyGoodBean();
         Object childChild = new MyGoodBean();
 
-        BeanRepositoryId brIdParent = getBeanRepositoryIdList().register("parent");
-        BeanRepositoryId brIdChild = getBeanRepositoryIdList().register("child");
-        BeanRepositoryId brIdChild2 = getBeanRepositoryIdList().register("child2");
-        BeanRepositoryId brIdChildChild = getBeanRepositoryIdList().register("childChild");
+        BeanId brIdParent = getBeanIdList().register("parent");
+        BeanId brIdChild = getBeanIdList().register("child");
+        BeanId brIdChild2 = getBeanIdList().register("child2");
+        BeanId brIdChildChild = getBeanIdList().register("childChild");
 
         BeanRepository beanRepository = getBeanRepository();
 
@@ -199,31 +199,31 @@ public class BeanRepositoryTest extends TestCase {
         final Object bean1 = new MyGoodBean();
         final Object bean2 = new MyGoodBean();
 
-        final BeanRepositoryId beanRepositoryId1 = getBeanRepositoryIdList().register("bean1");
-        final BeanRepositoryId beanRepositoryId2 = getBeanRepositoryIdList().register("bean2");
+        final BeanId beanId1 = getBeanIdList().register("bean1");
+        final BeanId beanId2 = getBeanIdList().register("bean2");
 
         BeanRepository beanRepository = getBeanRepository();
 
 
         MockRepositoryBeanLifecycleObserver observer = new MockRepositoryBeanLifecycleObserver();
-        beanRepository.addBeanLifecycleObserver(beanRepositoryId1, BeanLifecycle.BEGIN, "observer1", false, observer);
+        beanRepository.addBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer1", false, observer);
 
         //Add first time
-        beanRepository.addBean(beanRepositoryId1, bean1);
+        beanRepository.addBean(beanId1, bean1);
 
         assertTrue(observer.isFired());
 
         observer.reset();
 
         //Add second time
-        beanRepository.addBean(beanRepositoryId1, bean1);
+        beanRepository.addBean(beanId1, bean1);
 
         assertTrue(observer.isFired());
 
         observer.reset();
 
         //Add another bean
-        beanRepository.addBean(beanRepositoryId2, bean2);
+        beanRepository.addBean(beanId2, bean2);
 
         assertFalse(observer.isFired());
 
@@ -231,9 +231,9 @@ public class BeanRepositoryTest extends TestCase {
 
         //register override
         MockRepositoryBeanLifecycleObserver observer2 = new MockRepositoryBeanLifecycleObserver();
-        beanRepository.addBeanLifecycleObserver(beanRepositoryId1, BeanLifecycle.BEGIN, "observer1", false, observer2);
+        beanRepository.addBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer1", false, observer2);
 
-        beanRepository.addBean(beanRepositoryId1, bean1);
+        beanRepository.addBean(beanId1, bean1);
 
         assertFalse(observer.isFired());
         assertTrue(observer2.isFired());
@@ -241,10 +241,10 @@ public class BeanRepositoryTest extends TestCase {
         observer2.reset();
 
         //multi observers
-        beanRepository.addBeanLifecycleObserver(beanRepositoryId1, BeanLifecycle.BEGIN, "observer1", false, observer);
-        beanRepository.addBeanLifecycleObserver(beanRepositoryId1, BeanLifecycle.BEGIN, "observer2", false, observer2);
+        beanRepository.addBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer1", false, observer);
+        beanRepository.addBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer2", false, observer2);
 
-        beanRepository.addBean(beanRepositoryId1, bean1);
+        beanRepository.addBean(beanId1, bean1);
 
         assertTrue(observer.isFired());
         assertTrue(observer2.isFired());
@@ -253,9 +253,9 @@ public class BeanRepositoryTest extends TestCase {
         observer2.reset();
 
         //unregister one
-        beanRepository.removeBeanLifecycleObserver(beanRepositoryId1, BeanLifecycle.BEGIN, "observer2");
+        beanRepository.removeBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer2");
 
-        beanRepository.addBean(beanRepositoryId1, bean1);
+        beanRepository.addBean(beanId1, bean1);
 
         assertTrue(observer.isFired());
         assertFalse(observer2.isFired());
@@ -263,20 +263,20 @@ public class BeanRepositoryTest extends TestCase {
         observer.reset();
 
         //unregister last
-        beanRepository.removeBeanLifecycleObserver(beanRepositoryId1, BeanLifecycle.BEGIN, "observer1");
+        beanRepository.removeBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer1");
 
-        beanRepository.addBean(beanRepositoryId1, bean1);
+        beanRepository.addBean(beanId1, bean1);
 
         assertFalse(observer.isFired());
         assertFalse(observer2.isFired());
 
-        beanRepository.addBeanLifecycleObserver(beanRepositoryId1, BeanLifecycle.BEGIN, "observer2", false, new MockRepositoryBeanLifecycleObserver() {
+        beanRepository.addBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer2", false, new MockRepositoryBeanLifecycleObserver() {
 
         	@Override
-			public void onBeanLifecycleEvent(RepositoryBeanLifecycleEvent event) {
+			public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
         		assertEquals(executionContext, event.getExecutionContext());
         		assertEquals(BeanLifecycle.BEGIN, event.getLifecycle());
-        		assertEquals(beanRepositoryId1, event.getBeanRepositoryId());
+        		assertEquals(beanId1, event.getBeanId());
         		assertEquals(bean1, event.getBean());
         	}
 
@@ -293,23 +293,23 @@ public class BeanRepositoryTest extends TestCase {
 	public void test_bean_lifecycle_change_observers_associates() {
         Object bean = new MyGoodBean();
 
-        BeanRepositoryId beanRepositoryId = getBeanRepositoryIdList().register("bean");
+        BeanId beanId = getBeanIdList().register("bean");
 
         BeanRepository beanRepository = getBeanRepository();
 
         MockRepositoryBeanLifecycleObserver observerChange = new MockRepositoryBeanLifecycleObserver();
         MockRepositoryBeanLifecycleObserver observerBegin = new MockRepositoryBeanLifecycleObserver();
-        beanRepository.addBeanLifecycleObserver(beanRepositoryId, BeanLifecycle.CHANGE, "observerChange", false, observerChange);
+        beanRepository.addBeanLifecycleObserver(beanId, BeanLifecycle.CHANGE, "observerChange", false, observerChange);
 
         //Add first time
-        beanRepository.addBean(beanRepositoryId, bean);
+        beanRepository.addBean(beanId, bean);
 
         assertFalse(observerChange.isFired());
 
-        beanRepository.addBeanLifecycleObserver(beanRepositoryId, BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
+        beanRepository.addBeanLifecycleObserver(beanId, BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
 
         //now do the change
-        beanRepository.changeBean(beanRepositoryId, bean);
+        beanRepository.changeBean(beanId, bean);
 
         assertTrue(observerChange.isFired());
         assertFalse(observerBegin.isFired());
@@ -327,10 +327,10 @@ public class BeanRepositoryTest extends TestCase {
 	/**
 	 *
 	 */
-	private BeanRepositoryIdList getBeanRepositoryIdList() {
+	private BeanIdList getBeanIdList() {
 		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
 
-        return beanRepositoryManager.getBeanRepositoryIdList();
+        return beanRepositoryManager.getBeanIdList();
 	}
 
 	/**
@@ -349,7 +349,7 @@ public class BeanRepositoryTest extends TestCase {
 		return BeanRepositoryManager.getInstance(executionContext.getContext());
 	}
 
-    public class MockRepositoryBeanLifecycleObserver implements RepositoryBeanLifecycleObserver {
+    public class MockRepositoryBeanLifecycleObserver implements BeanRepositoryLifecycleObserver {
 
     	private boolean fired = false;
 
@@ -361,7 +361,7 @@ public class BeanRepositoryTest extends TestCase {
     		fired = false;
     	}
 
-		public void onBeanLifecycleEvent(RepositoryBeanLifecycleEvent event) {
+		public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
 			fired = true;
 		}
     }

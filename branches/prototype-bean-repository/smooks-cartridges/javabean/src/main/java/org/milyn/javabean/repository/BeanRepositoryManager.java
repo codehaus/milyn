@@ -26,7 +26,7 @@ public class BeanRepositoryManager {
 
 	private static final String BEAN_REPOSITORY_CONTEXT_KEY = BeanRepository.class.getName() + "#CONTEXT_KEY";
 
-	private final BeanRepositoryIdList beanRepositoryIdList = new BeanRepositoryIdList();
+	private final BeanIdList beanIdList = new BeanIdList();
 
 	public static BeanRepositoryManager getInstance(ApplicationContext applicationContext) {
 		BeanRepositoryManager beanRepositoryManager = (BeanRepositoryManager) applicationContext.getAttribute(CONTEXT_KEY);
@@ -50,8 +50,8 @@ public class BeanRepositoryManager {
 	/**
 	 * @return the beanProviderManager
 	 */
-	public BeanRepositoryIdList getBeanRepositoryIdList() {
-		return beanRepositoryIdList;
+	public BeanIdList getBeanIdList() {
+		return beanIdList;
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class BeanRepositoryManager {
 
 		Map<String, Object> beanMap = createBeanMap(executionContext);
 
-		beanRepository = new BeanRepository(executionContext, beanRepositoryIdList, beanMap);
+		beanRepository = new BeanRepository(executionContext, beanIdList, beanMap);
 
 		return beanRepository;
 	}
@@ -118,8 +118,8 @@ public class BeanRepositoryManager {
 
 			for(String beanId : beanMap.keySet()) {
 
-				if(!beanRepositoryIdList.containsRepositoryBeanId(beanId)) {
-					beanRepositoryIdList.register(beanId);
+				if(!beanIdList.containsBeanId(beanId)) {
+					beanIdList.register(beanId);
 				}
 
 	        }

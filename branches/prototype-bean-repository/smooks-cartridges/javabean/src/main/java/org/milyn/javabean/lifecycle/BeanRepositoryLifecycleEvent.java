@@ -4,34 +4,34 @@
 package org.milyn.javabean.lifecycle;
 
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.repository.BeanRepositoryId;
+import org.milyn.javabean.repository.BeanId;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class RepositoryBeanLifecycleEvent {
+public class BeanRepositoryLifecycleEvent {
 
 	private final ExecutionContext executionContext;
 
 	private final BeanLifecycle lifecycle;
 
-	private final BeanRepositoryId beanRepositoryId;
+	private final BeanId beanId;
 
 	private final Object bean;
 
 
 	/**
 	 * @param executionContext
-	 * @param beanRepositoryId
+	 * @param beanId
 	 * @param lifecycle
 	 * @param bean
 	 */
-	public RepositoryBeanLifecycleEvent(ExecutionContext executionContext,
-			 BeanLifecycle lifecycle, BeanRepositoryId beanRepositoryId, Object bean) {
+	public BeanRepositoryLifecycleEvent(ExecutionContext executionContext,
+			 BeanLifecycle lifecycle, BeanId beanId, Object bean) {
 
 		this.executionContext = executionContext;
-		this.beanRepositoryId = beanRepositoryId;
+		this.beanId = beanId;
 		this.lifecycle = lifecycle;
 		this.bean = bean;
 	}
@@ -48,10 +48,10 @@ public class RepositoryBeanLifecycleEvent {
 		return lifecycle;
 	}
 	/**
-	 * @return the beanRepositoryId
+	 * @return the beanId
 	 */
-	public BeanRepositoryId getBeanRepositoryId() {
-		return beanRepositoryId;
+	public BeanId getBeanId() {
+		return beanId;
 	}
 	/**
 	 * @return the bean

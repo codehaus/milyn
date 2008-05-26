@@ -2,7 +2,7 @@ package org.milyn.javabean.lifecycle;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.repository.BeanRepositoryId;
+import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 
 public class BeanLifecycleSubjectGroup {
@@ -11,43 +11,43 @@ public class BeanLifecycleSubjectGroup {
 
 	private final BeanLifecycleSubject changeLifecycleNotifier;
 
-	private final BeanRepositoryId beanRepositoryId;
+	private final BeanId beanId;
 
 	private final ExecutionContext executionContext;
 
 	/**
 	 * @param beanId
 	 */
-	public BeanLifecycleSubjectGroup(ExecutionContext executionContext, BeanRepositoryId beanRepositoryId) {
+	public BeanLifecycleSubjectGroup(ExecutionContext executionContext, BeanId beanId) {
 		AssertArgument.isNotNull(executionContext, "executionContext");
-    	AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
-    	
-		this.executionContext = executionContext;
-		this.beanRepositoryId = beanRepositoryId;
+    	AssertArgument.isNotNull(beanId, "beanId");
 
-		beginLifecycleNotifier = new BeanLifecycleSubject(executionContext, BeanLifecycle.BEGIN, beanRepositoryId);
-		changeLifecycleNotifier = new BeanLifecycleSubject(executionContext, BeanLifecycle.CHANGE, beanRepositoryId);
+		this.executionContext = executionContext;
+		this.beanId = beanId;
+
+		beginLifecycleNotifier = new BeanLifecycleSubject(executionContext, BeanLifecycle.BEGIN, beanId);
+		changeLifecycleNotifier = new BeanLifecycleSubject(executionContext, BeanLifecycle.CHANGE, beanId);
 	}
-	
+
 	/**
 	 * @param beanId
-	 * @deprecated Use the constructor 
+	 * @deprecated Use the constructor
 	 */
 	@Deprecated
 	public BeanLifecycleSubjectGroup(ExecutionContext executionContext, String beanId) {
-		this(executionContext, getBeanRepositoryId(executionContext, beanId));
+		this(executionContext, getBeanId(executionContext, beanId));
 	}
 
 	/**
-	 * @deprecated Use the {@link #addObserver(BeanLifecycle, String, boolean, RepositoryBeanLifecycleObserver)}
+	 * @deprecated Use the {@link #addObserver(BeanLifecycle, String, boolean, BeanRepositoryLifecycleObserver)}
 	 */
 	@Deprecated
 	public void addObserver(BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
 		getBeanObserverNotifier(lifecycle).addObserver(observerId, notifyOnce, observer);
 
     }
-	
-	public void addObserver(BeanLifecycle lifecycle, String observerId, boolean notifyOnce, RepositoryBeanLifecycleObserver observer) {
+
+	public void addObserver(BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanRepositoryLifecycleObserver observer) {
 		getBeanObserverNotifier(lifecycle).addObserver(observerId, notifyOnce, observer);
 
     }
@@ -78,20 +78,13 @@ public class BeanLifecycleSubjectGroup {
 
 	/**
 	 * @return the beanId
-	 * @deprecated Use the {@link #getBeanRepositoryId()} to retrieve the beanId
+	 * @deprecated Don't use anymore, not alternative given yet (tell us if you need it)
 	 */
     @Deprecated
 	public String getBeanId() {
-		return beanRepositoryId.getBeanId();
+		return beanId.getName();
 	}
-    
-    /**
-	 * @return the beanId
-	 */
-	public BeanRepositoryId getBeanRepositoryId() {
-		return beanRepositoryId;
-	}
-    
+
 
 	/**
 	 * @return the executionContext
@@ -106,9 +99,9 @@ public class BeanLifecycleSubjectGroup {
 	 * @param beanId
 	 * @return
 	 */
-	private static BeanRepositoryId getBeanRepositoryId(ExecutionContext executionContext, String beanId) {
+	private static BeanId getBeanId(ExecutionContext executionContext, String beanId) {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-		
-		return BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanRepositoryIdList().getRepositoryBeanId(beanId);
+
+		return BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanIdList().getBeanId(beanId);
 	}
 }

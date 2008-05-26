@@ -25,11 +25,11 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleEvent;
-import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleObserver;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdList;
 import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryId;
-import org.milyn.javabean.repository.BeanRepositoryIdList;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 
 /**
@@ -142,13 +142,13 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		BeanRepositoryIdList beanRepositoryIdList = BeanRepositoryManager
+		BeanIdList beanIdList = BeanRepositoryManager
 		 		.getInstance(executionContext.getContext())
-		 		.getBeanRepositoryIdList();
+		 		.getBeanIdList();
 
-		BeanRepositoryId beanRepositoryId = getBeanRepositoryId(beanRepositoryIdList, beanId);
+		BeanId beanIdObj = getBeanId(beanIdList, beanId);
 
-		BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanRepositoryId, bean);
+		BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanIdObj, bean);
 
     }
 
@@ -168,13 +168,13 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		BeanRepositoryIdList beanRepositoryIdList = BeanRepositoryManager
+		BeanIdList beanIdList = BeanRepositoryManager
 				.getInstance(executionContext.getContext())
-				.getBeanRepositoryIdList();
+				.getBeanIdList();
 
-		BeanRepositoryId beanRepositoryId = getBeanRepositoryId(beanRepositoryIdList, beanId);
+		BeanId beanIdObj = getBeanId(beanIdList, beanId);
 
-		BeanRepositoryManager.getBeanRepository(executionContext).changeBean(beanRepositoryId, bean);
+		BeanRepositoryManager.getBeanRepository(executionContext).changeBean(beanIdObj, bean);
     }
 
 
@@ -195,20 +195,20 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
 		AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
 
-		BeanRepositoryIdList beanRepositoryIdList = BeanRepositoryManager
+		BeanIdList beanIdList = BeanRepositoryManager
 				.getInstance(executionContext.getContext())
-				.getBeanRepositoryIdList();
+				.getBeanIdList();
 
-		BeanRepositoryId parentBeanRepositoryId = getBeanRepositoryId(beanRepositoryIdList, parentBean);
+		BeanId parentIdObj = getBeanId(beanIdList, parentBean);
 
-		BeanRepositoryId childBeanRepositoryId =  getBeanRepositoryId(beanRepositoryIdList, childBean);
+		BeanId childBeanIdObj =  getBeanId(beanIdList, childBean);
 
-		if (parentBeanRepositoryId == null) {
+		if (parentIdObj == null) {
 			throw new IllegalStateException(
-					"The bean with child beanId '" + parentBean + "' is not registered in the BeanRepositoryIdList of the current ApplicationContext.");
+					"The bean with child beanId '" + parentBean + "' is not registered in the BeanIdList of the current ApplicationContext.");
 		}
 
-		BeanRepositoryManager.getBeanRepository(executionContext).associateLifecycles(parentBeanRepositoryId, childBeanRepositoryId);
+		BeanRepositoryManager.getBeanRepository(executionContext).associateLifecycles(parentIdObj, childBeanIdObj);
     }
 
 
@@ -230,21 +230,21 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
 		AssertArgument.isNotNull(observer, "observer");
 
-		BeanRepositoryIdList beanRepositoryIdList = BeanRepositoryManager
+		BeanIdList beanIdList = BeanRepositoryManager
 				.getInstance(executionContext.getContext())
-				.getBeanRepositoryIdList();
+				.getBeanIdList();
 
-		BeanRepositoryId beanRepositoryId = getBeanRepositoryId(beanRepositoryIdList, beanId);
+		BeanId beanIdObj = getBeanId(beanIdList, beanId);
 
-		RepositoryBeanLifecycleObserver repositoryBeanLifecycleObserver = new RepositoryBeanLifecycleObserver() {
+		BeanRepositoryLifecycleObserver repositoryBeanLifecycleObserver = new BeanRepositoryLifecycleObserver() {
 
-			public void onBeanLifecycleEvent(RepositoryBeanLifecycleEvent event) {
-				observer.onBeanLifecycleEvent(event.getExecutionContext(), event.getLifecycle(), event.getBeanRepositoryId().getBeanId(), event.getBean());
+			public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+				observer.onBeanLifecycleEvent(event.getExecutionContext(), event.getLifecycle(), event.getBeanId().getName(), event.getBean());
 			}
 
 		};
 
-		BeanRepositoryManager.getBeanRepository(executionContext).addBeanLifecycleObserver(beanRepositoryId, lifecycle, observerId, notifyOnce, repositoryBeanLifecycleObserver);
+		BeanRepositoryManager.getBeanRepository(executionContext).addBeanLifecycleObserver(beanIdObj, lifecycle, observerId, notifyOnce, repositoryBeanLifecycleObserver);
     }
 
 
@@ -263,30 +263,30 @@ public class BeanAccessor {
 		AssertArgument.isNotNull(lifecycle, "lifecycle");
 		AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
 
-		BeanRepositoryIdList beanRepositoryIdList = BeanRepositoryManager
+		BeanIdList beanIdList = BeanRepositoryManager
 				.getInstance(executionContext.getContext())
-				.getBeanRepositoryIdList();
+				.getBeanIdList();
 
-		BeanRepositoryId beanRepositoryId = getBeanRepositoryId(beanRepositoryIdList, beanId);
+		BeanId beanIdObj = getBeanId(beanIdList, beanId);
 
-		BeanRepositoryManager.getBeanRepository(executionContext).removeBeanLifecycleObserver(beanRepositoryId, lifecycle, observerId);
+		BeanRepositoryManager.getBeanRepository(executionContext).removeBeanLifecycleObserver(beanIdObj, lifecycle, observerId);
 
     }
 
 	/**
 	 * @param beanId
-	 * @param beanRepositoryIdList
+	 * @param beanIdList
 	 */
-	private static BeanRepositoryId getBeanRepositoryId(BeanRepositoryIdList beanRepositoryIdList, String beanId) {
+	private static BeanId getBeanId(BeanIdList beanIdList, String beanId) {
 		warnUsingDeprecatedMethod();
 
-		BeanRepositoryId beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(beanId);
+		BeanId beanIdObj = beanIdList.getBeanId(beanId);
 
-		if (beanRepositoryId == null) {
-			beanRepositoryId = beanRepositoryIdList.register(beanId);
+		if (beanIdObj == null) {
+			beanIdObj = beanIdList.register(beanId);
 		}
 
-		return beanRepositoryId;
+		return beanIdObj;
 	}
 
 	private static void warnUsingDeprecatedMethod() {

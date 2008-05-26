@@ -13,7 +13,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
-import org.milyn.javabean.lifecycle.RepositoryBeanLifecycleObserver;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
@@ -31,90 +31,87 @@ public class BeanRepository {
 
 	private final ArrayList<BeanLifecycleSubjectGroup> beanLifecycleSubjectGroups;
 
-	private final BeanRepositoryIdList beanRepositoryIdList;
+	private final BeanIdList beanIdList;
 
-	public BeanRepository(ExecutionContext executionContext, BeanRepositoryIdList beanRepositoryIdList, Map<String, Object> beanMap) {
+	private int listsSize = 0;
+
+	public BeanRepository(ExecutionContext executionContext, BeanIdList beanIdList, Map<String, Object> beanMap) {
 		this.executionContext = executionContext;
-		this.beanRepositoryIdList = beanRepositoryIdList;
+		this.beanIdList = beanIdList;
 		this.beanMap = beanMap;
+		this.listsSize = beanIdList.size();
 
-		int size = beanRepositoryIdList.size();
+		beanMapEntries = new ArrayList<Entry<String, Object>>(listsSize);
+		lifecycleAssociations = new ArrayList<List<Integer>>(listsSize);
+		beanLifecycleSubjectGroups = new ArrayList<BeanLifecycleSubjectGroup>(listsSize);
 
-		beanMapEntries = new ArrayList<Entry<String, Object>>(size);
-		lifecycleAssociations = new ArrayList<List<Integer>>(size);
-		beanLifecycleSubjectGroups = new ArrayList<BeanLifecycleSubjectGroup>(size);
-
-		growLists(size);
+		updateLists(false);
 	}
 
 
-	public void addBean(BeanRepositoryId beanRepositoryId, Object bean) {
-		AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+	public void addBean(BeanId beanId, Object bean) {
+		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		int id = beanRepositoryId.getId();
+		updateLists(true);
 
-		cleanAssociatedLifecycleBeans(id);
+		int index = beanId.getIndex();
 
-		if(beanMapEntries.size() <= id) {
-			growLists(id);
-		}
-		Entry<String, Object> entry = beanMapEntries.get(id);
+		cleanAssociatedLifecycleBeans(index);
+
+		Entry<String, Object> entry = beanMapEntries.get(index);
 
 		entry.setValue(bean);
 
-		notifyObservers(beanRepositoryId, BeanLifecycle.BEGIN, bean);
+		notifyObservers(beanId, BeanLifecycle.BEGIN, bean);
 	}
 
-	public boolean containsBean(BeanRepositoryId beanRepositoryId) {
-		AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+	public boolean containsBean(BeanId beanId) {
+		AssertArgument.isNotNull(beanId, "beanId");
 
-		int id = beanRepositoryId.getId();
+		int index = beanId.getIndex();
 
-		return beanMapEntries.size() > id && beanMapEntries.get(id).getValue() != null;
+		return listsSize > index && beanMapEntries.get(index).getValue() != null;
 	}
 
-	public Object getBean(BeanRepositoryId beanRepositoryId) {
-		AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+	public Object getBean(BeanId beanId) {
+		AssertArgument.isNotNull(beanId, "beanId");
 
-		int id = beanRepositoryId.getId();
+		int index = beanId.getIndex();
 
-		if(beanMapEntries.size() <= id) {
+		if(listsSize <= index) {
 			return null;
 		}
 
-		Entry<String, Object> entry = beanMapEntries.get(id);
+		Entry<String, Object> entry = beanMapEntries.get(index);
 
 		return entry.getValue();
 	}
 
 
-	public void changeBean(BeanRepositoryId beanRepositoryId, Object bean) {
-		AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+	public void changeBean(BeanId beanId, Object bean) {
+		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		int id = beanRepositoryId.getId();
+		int index = beanId.getIndex();
 
-		if(beanMapEntries.size() > id && beanMapEntries.get(id).getValue() != null) {
-			beanMapEntries.get(id).setValue(bean);
+		if(listsSize > index && beanMapEntries.get(index).getValue() != null) {
+			beanMapEntries.get(index).setValue(bean);
 
-			notifyObservers(beanRepositoryId, BeanLifecycle.CHANGE, bean);
+			notifyObservers(beanId, BeanLifecycle.CHANGE, bean);
     	} else {
-    		throw new IllegalStateException("The bean '" + beanRepositoryId + "' can't be changed because it isn't in the repository.");
+    		throw new IllegalStateException("The bean '" + beanId + "' can't be changed because it isn't in the repository.");
     	}
 	}
 
-	public void associateLifecycles(BeanRepositoryId parentRepositoryBeanId, BeanRepositoryId childRepositoryBeanId) {
-    	AssertArgument.isNotNull(parentRepositoryBeanId, "parentBeanRepositoryId");
-    	AssertArgument.isNotNull(childRepositoryBeanId, "childBeanRepositoryId");
+	public void associateLifecycles(BeanId parentBeanId, BeanId childBeanId) {
+    	AssertArgument.isNotNull(parentBeanId, "parentBeanId");
+    	AssertArgument.isNotNull(childBeanId, "childBeanId");
 
-    	int parentId = parentRepositoryBeanId.getId();
-    	int childId = childRepositoryBeanId.getId();
+    	updateLists(true);
 
-    	int checkId = parentId < childId ? childId : parentId;
-    	if(lifecycleAssociations.size() <= checkId) {
-    		growLists(checkId);
-		}
+    	int parentId = parentBeanId.getIndex();
+    	int childId = childBeanId.getIndex();
 
     	List<Integer> associations = lifecycleAssociations.get(parentId);
 
@@ -130,17 +127,17 @@ public class BeanRepository {
         }
     }
 
-	public void addBeanLifecycleObserver(BeanRepositoryId beanRepositoryId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, RepositoryBeanLifecycleObserver observer) {
-    	AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+	public void addBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanRepositoryLifecycleObserver observer) {
+    	AssertArgument.isNotNull(beanId, "beanId");
 
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanRepositoryId, true);
+    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, true);
     	subjectGroup.addObserver(lifecycle, observerId, notifyOnce, observer);
     }
 
-	public void removeBeanLifecycleObserver(BeanRepositoryId beanRepositoryId, BeanLifecycle lifecycle,String observerId) {
-    	AssertArgument.isNotNull(beanRepositoryId, "beanRepositoryId");
+	public void removeBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle,String observerId) {
+    	AssertArgument.isNotNull(beanId, "beanId");
 
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanRepositoryId, false);
+    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
 
     	if(subjectGroup != null) {
     		subjectGroup.removeObserver(lifecycle, observerId);
@@ -165,35 +162,56 @@ public class BeanRepository {
 		return Collections.unmodifiableMap(beanMap);
 	}
 
-	/**
-	 * @param beanRepositoryIdList
-	 * @param beanmapEmpty
+
+    /**
+	 * @param size
 	 */
-	private void initBeanMap() {
-        boolean beanmapEmpty = beanMap.isEmpty();
+	private void updateLists(boolean check) {
 
-		for(String beanId : beanRepositoryIdList.getRepositoryBeanIdMap().keySet()) {
+		if(!check || listsSize != beanIdList.size()) {
+			listsSize = beanIdList.size();
 
-			if(beanmapEmpty || !beanMap.containsKey(beanId) ) {
-				beanMap.put(beanId, null);
-			}
+			beanMapEntries.addAll(Collections.nCopies((listsSize - beanMapEntries.size())+1, (Entry<String, Object>)null));
+			lifecycleAssociations.addAll(Collections.nCopies((listsSize - lifecycleAssociations.size())+1, (List<Integer>)null));
+			beanLifecycleSubjectGroups.addAll(Collections.nCopies((listsSize - beanLifecycleSubjectGroups.size())+1, (BeanLifecycleSubjectGroup)null));
+
+			updateBeanMap();
+
 		}
 	}
 
 	/**
-	 * @param beanRepositoryIdList
+	 * @param beanIdList
+	 * @param beanmapEmpty
+	 */
+	private void updateBeanMap() {
+        boolean foundChanges = false;
+
+		for(String beanId : beanIdList.getBeanIdMap().keySet()) {
+
+			if(!beanMap.containsKey(beanId) ) {
+				beanMap.put(beanId, null);
+
+				foundChanges = true;
+			}
+		}
+		if(foundChanges) {
+			updateBeanMapEntries();
+		}
+	}
+
+	/**
+	 * @param beanIdList
 	 * @param beanMap
 	 */
-	private void initBeanMapEntries() {
-		initBeanMap();
-
+	private void updateBeanMapEntries() {
 		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
 
-			BeanRepositoryId beanRepositoryId = beanRepositoryIdList.getRepositoryBeanId(beanMapEntry.getKey());
+			BeanId beanId = beanIdList.getBeanId(beanMapEntry.getKey());
 
-			int id = beanRepositoryId.getId();
-			if(beanMapEntries.get(id) == null) {
-				beanMapEntries.set(id, beanMapEntry);
+			int index = beanId.getIndex();
+			if(beanMapEntries.get(index) == null) {
+				beanMapEntries.set(index, beanMapEntry);
 			}
 		}
 	}
@@ -211,52 +229,39 @@ public class BeanRepository {
 
     }
 
-	private void removeBean(int id) {
-    	cleanAssociatedLifecycleBeans(id);
+	private void removeBean(int index) {
+    	cleanAssociatedLifecycleBeans(index);
 
-    	Entry<String, Object> entry = beanMapEntries.get(id);
+    	Entry<String, Object> entry = beanMapEntries.get(index);
     	if(entry != null) {
     		entry.setValue(null);
     	}
     }
 
-    private void notifyObservers(BeanRepositoryId beanRepositoryId, BeanLifecycle lifecycle, Object bean) {
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanRepositoryId, false);
+    private void notifyObservers(BeanId beanId, BeanLifecycle lifecycle, Object bean) {
+    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
 
     	if(subjectGroup != null) {
     		subjectGroup.notifyObservers(lifecycle, bean);
     	}
     }
 
-    private BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup(BeanRepositoryId beanRepositoryId, boolean createIfNotExist) {
+    private BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup(BeanId beanId, boolean createIfNotExist) {
+    	updateLists(true);
 
-    	int id = beanRepositoryId.getId();
-    	if(beanLifecycleSubjectGroups.size() <= id) {
-    		growLists(id);
-		}
-
-    	BeanLifecycleSubjectGroup subjectGroup = beanLifecycleSubjectGroups.get(id);
+    	int index = beanId.getIndex();
+    	BeanLifecycleSubjectGroup subjectGroup = beanLifecycleSubjectGroups.get(index);
 
     	if(subjectGroup == null && createIfNotExist) {
 
-    		subjectGroup = new BeanLifecycleSubjectGroup(executionContext, beanRepositoryId);
+    		subjectGroup = new BeanLifecycleSubjectGroup(executionContext, beanId);
 
-    		beanLifecycleSubjectGroups.set(id, subjectGroup);
+    		beanLifecycleSubjectGroups.set(index, subjectGroup);
 
     	}
 
     	return subjectGroup;
     }
 
-	/**
-	 * @param size
-	 */
-	private void growLists(int index) {
-		beanMapEntries.addAll(Collections.nCopies((index - beanMapEntries.size())+1, (Entry<String, Object>)null));
-		lifecycleAssociations.addAll(Collections.nCopies((index - lifecycleAssociations.size())+1, (List<Integer>)null));
-		beanLifecycleSubjectGroups.addAll(Collections.nCopies((index - beanLifecycleSubjectGroups.size())+1, (BeanLifecycleSubjectGroup)null));
-
-		initBeanMapEntries();
-	}
 
 }

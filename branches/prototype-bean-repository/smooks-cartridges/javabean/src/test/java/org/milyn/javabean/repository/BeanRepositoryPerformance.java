@@ -2,53 +2,57 @@ package org.milyn.javabean.repository;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.javabean.BeanAccessor;
 
-public class BeanRepositoryPerformance  extends TestCase {
+public class BeanRepositoryPerformance {
 
 	private static final Log log = LogFactory.getLog(BeanRepositoryPerformance.class);
 
 	private ExecutionContext executionContext;
 
-	public void test_dummy() {
+	public static void main(String[] args) {
+
+
+		new BeanRepositoryPerformance().test_BeanRepository_performance();
+		//new BeanRepositoryPerformance().test_old_BeanAccessor_performance();
 	}
 
-	public void _test_BeanAccessor_performance() {
-
-		test_BeanAccessor_performance(100, 100, true);
-		test_BeanAccessor_performance(1, 100000, false);
-		test_BeanAccessor_performance(10, 100000, false);
-		test_BeanAccessor_performance(100, 100000, false);
+	public void _test_dummy() {
 	}
 
-	public void _test_BeanRepository_performance() {
+	public void test_old_BeanAccessor_performance() {
+
+		test_old_BeanAccessor_performance(100, 100, true);
+		test_old_BeanAccessor_performance(1, 100000, false);
+		test_old_BeanAccessor_performance(10, 100000, false);
+		test_old_BeanAccessor_performance(100, 100000, false);
+	}
+
+	public void test_BeanRepository_performance() {
 
 		test_BeanRepository_performance(100, 100, true);
 		test_BeanRepository_performance(1, 100000, false);
 		test_BeanRepository_performance(10, 100000, false);
 		test_BeanRepository_performance(100, 100000, false);
-		test_BeanRepository_performance(1000, 100000, false);
+
 	}
 
 
 	@SuppressWarnings("deprecation")
-	private void test_BeanAccessor_performance(int beans, int loops, boolean warmup) {
+	private void test_old_BeanAccessor_performance(int beans, int loops, boolean warmup) {
 		if(!warmup) {
 			sleep();
 		}
 
 		executionContext = new MockExecutionContext();
 
-		ArrayList<String> beanRepositoryIds = new ArrayList<String>();
+		ArrayList<String> beanIds = new ArrayList<String>();
 
 		for(int i = 0; i < beans; i++) {
-			beanRepositoryIds.add(getBeanId(i));
+			beanIds.add(getBeanId(i));
 		}
 
 		Object bean = new Object();
@@ -56,17 +60,17 @@ public class BeanRepositoryPerformance  extends TestCase {
 		long begin = System.currentTimeMillis();
 		for(int l = 0; l < loops; l++) {
 
-			for(String id: beanRepositoryIds) {
-				BeanAccessor.addBean(executionContext, id, bean);
+			for(String id: beanIds) {
+				OldBeanAccessor.addBean(executionContext, id, bean);
 			}
-			for(String id: beanRepositoryIds) {
-				BeanAccessor.getBean(executionContext, id);
+			for(String id: beanIds) {
+				OldBeanAccessor.getBean(executionContext, id);
 			}
 		}
 		long end  = System.currentTimeMillis();
 
 		if(!warmup) {
-			log.info("BeanAccessor performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
+			log.info("Old BeanAccessor performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
 		}
 
 
@@ -77,26 +81,24 @@ public class BeanRepositoryPerformance  extends TestCase {
 
 		executionContext = new MockExecutionContext();
 
-		BeanRepositoryIdList beanRepositoryIdList = getBeanRepositoryIdList();
+		BeanIdList beanIdList = getBeanIdList();
 
-		ArrayList<BeanRepositoryId> beanRepositoryIds = new ArrayList<BeanRepositoryId>();
+		ArrayList<BeanId> beanIds = new ArrayList<BeanId>();
 
 		for(int i = 0; i < beans; i++) {
-			beanRepositoryIds.add(beanRepositoryIdList.register(getBeanId(i)));
+			beanIds.add(beanIdList.register(getBeanId(i)));
 		}
-
-		BeanRepositoryManager beanRepositoryManager =  getRepositoryManager();
 
 		Object bean = new Object();
 
 		long begin = System.currentTimeMillis();
 		for(int l = 0; l < loops; l++) {
 
-			for(BeanRepositoryId id: beanRepositoryIds) {
+			for(BeanId id: beanIds) {
 				BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
 				beanRepository.addBean(id, bean);
 			}
-			for(BeanRepositoryId id: beanRepositoryIds) {
+			for(BeanId id: beanIds) {
 				BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
 				beanRepository.getBean(id);
 			}
@@ -116,19 +118,10 @@ public class BeanRepositoryPerformance  extends TestCase {
 	/**
 	 *
 	 */
-	private BeanRepositoryIdList getBeanRepositoryIdList() {
+	private BeanIdList getBeanIdList() {
 		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
 
-        return beanRepositoryManager.getBeanRepositoryIdList();
-	}
-
-	/**
-	 *
-	 */
-	private BeanRepository getBeanRepository() {
-		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
-
-        return BeanRepositoryManager.getBeanRepository(executionContext);
+        return beanRepositoryManager.getBeanIdList();
 	}
 
 	/**
