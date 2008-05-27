@@ -37,7 +37,6 @@ import org.milyn.javabean.repository.BeanRepositoryManager;
  * <p/>
  * This class provides support for saving and accessing Javabean instance.
  *
- * @author tfennelly
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  * @deprecated Use the {@link BeanRepository} to manager the beans
  */

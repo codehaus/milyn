@@ -36,7 +36,7 @@
       <priority value="ERROR"/>
    </category>
 
-   <category name="org.milyn.javabean.repository">
+   <category name="org.milyn.javabean">
       <priority value="INFO"/>
    </category>
 

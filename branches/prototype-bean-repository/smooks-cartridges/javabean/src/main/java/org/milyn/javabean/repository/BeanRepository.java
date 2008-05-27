@@ -1,6 +1,19 @@
-/**
- *
- */
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+
 package org.milyn.javabean.repository;
 
 import java.util.ArrayList;
@@ -25,27 +38,18 @@ public class BeanRepository {
 
 	private final Map<String, Object> beanMap;
 
-	private final ArrayList<Entry<String, Object>> beanMapEntries;
-
-	private final ArrayList<List<Integer>> lifecycleAssociations;
-
-	private final ArrayList<BeanLifecycleSubjectGroup> beanLifecycleSubjectGroups;
+	private final ArrayList<RepositoryEntry> repositoryEntries;
 
 	private final BeanIdList beanIdList;
-
-	private int listsSize = 0;
 
 	public BeanRepository(ExecutionContext executionContext, BeanIdList beanIdList, Map<String, Object> beanMap) {
 		this.executionContext = executionContext;
 		this.beanIdList = beanIdList;
 		this.beanMap = beanMap;
-		this.listsSize = beanIdList.size();
 
-		beanMapEntries = new ArrayList<Entry<String, Object>>(listsSize);
-		lifecycleAssociations = new ArrayList<List<Integer>>(listsSize);
-		beanLifecycleSubjectGroups = new ArrayList<BeanLifecycleSubjectGroup>(listsSize);
+		repositoryEntries = new ArrayList<RepositoryEntry>(beanIdList.size());
 
-		updateLists(false);
+		updateBeanMap();
 	}
 
 
@@ -53,15 +57,13 @@ public class BeanRepository {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		updateLists(true);
+		checkUpdatedBeanIdList();
 
 		int index = beanId.getIndex();
 
 		cleanAssociatedLifecycleBeans(index);
 
-		Entry<String, Object> entry = beanMapEntries.get(index);
-
-		entry.setValue(bean);
+		repositoryEntries.get(index).setValue(bean);
 
 		notifyObservers(beanId, BeanLifecycle.BEGIN, bean);
 	}
@@ -71,7 +73,7 @@ public class BeanRepository {
 
 		int index = beanId.getIndex();
 
-		return listsSize > index && beanMapEntries.get(index).getValue() != null;
+		return repositoryEntries.size() > index && repositoryEntries.get(index).getValue() != null;
 	}
 
 	public Object getBean(BeanId beanId) {
@@ -79,13 +81,11 @@ public class BeanRepository {
 
 		int index = beanId.getIndex();
 
-		if(listsSize <= index) {
+		if(repositoryEntries.size() <= index) {
 			return null;
 		}
 
-		Entry<String, Object> entry = beanMapEntries.get(index);
-
-		return entry.getValue();
+		return repositoryEntries.get(index).getValue();
 	}
 
 
@@ -95,8 +95,8 @@ public class BeanRepository {
 
 		int index = beanId.getIndex();
 
-		if(listsSize > index && beanMapEntries.get(index).getValue() != null) {
-			beanMapEntries.get(index).setValue(bean);
+		if(repositoryEntries.size() > index && repositoryEntries.get(index).getValue() != null) {
+			repositoryEntries.get(index).setValue(bean);
 
 			notifyObservers(beanId, BeanLifecycle.CHANGE, bean);
     	} else {
@@ -108,22 +108,15 @@ public class BeanRepository {
     	AssertArgument.isNotNull(parentBeanId, "parentBeanId");
     	AssertArgument.isNotNull(childBeanId, "childBeanId");
 
-    	updateLists(true);
+    	checkUpdatedBeanIdList();
 
     	int parentId = parentBeanId.getIndex();
     	int childId = childBeanId.getIndex();
 
-    	List<Integer> associations = lifecycleAssociations.get(parentId);
+    	List<Integer> associations = repositoryEntries.get(parentId).getLifecycleAssociation();
 
-        if(associations != null) {
-            if(!associations.contains(childId)) {
-                associations.add(childId);
-            }
-        } else {
-            associations = new ArrayList<Integer>(1);
+        if(!associations.contains(childId)) {
             associations.add(childId);
-
-            lifecycleAssociations.set(parentId, associations);
         }
     }
 
@@ -166,14 +159,9 @@ public class BeanRepository {
     /**
 	 * @param size
 	 */
-	private void updateLists(boolean check) {
+	private void checkUpdatedBeanIdList() {
 
-		if(!check || listsSize != beanIdList.size()) {
-			listsSize = beanIdList.size();
-
-			beanMapEntries.addAll(Collections.nCopies((listsSize - beanMapEntries.size())+1, (Entry<String, Object>)null));
-			lifecycleAssociations.addAll(Collections.nCopies((listsSize - lifecycleAssociations.size())+1, (List<Integer>)null));
-			beanLifecycleSubjectGroups.addAll(Collections.nCopies((listsSize - beanLifecycleSubjectGroups.size())+1, (BeanLifecycleSubjectGroup)null));
+		if(repositoryEntries.size() != beanIdList.size()) {
 
 			updateBeanMap();
 
@@ -185,46 +173,45 @@ public class BeanRepository {
 	 * @param beanmapEmpty
 	 */
 	private void updateBeanMap() {
-        boolean foundChanges = false;
 
 		for(String beanId : beanIdList.getBeanIdMap().keySet()) {
 
 			if(!beanMap.containsKey(beanId) ) {
 				beanMap.put(beanId, null);
-
-				foundChanges = true;
 			}
 		}
-		if(foundChanges) {
-			updateBeanMapEntries();
-		}
+		updateRepositoryEntries();
 	}
 
 	/**
 	 * @param beanIdList
 	 * @param beanMap
 	 */
-	private void updateBeanMapEntries() {
+	private void updateRepositoryEntries() {
+		repositoryEntries.addAll(Collections.nCopies((beanIdList.size() - repositoryEntries.size()), (RepositoryEntry)null));
+
 		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
 
 			BeanId beanId = beanIdList.getBeanId(beanMapEntry.getKey());
 
 			int index = beanId.getIndex();
-			if(beanMapEntries.get(index) == null) {
-				beanMapEntries.set(index, beanMapEntry);
+			if(repositoryEntries.get(index) == null) {
+
+				repositoryEntries.set(index, new RepositoryEntry(beanId, beanMapEntry));
 			}
 		}
 	}
 
 	private void cleanAssociatedLifecycleBeans(int parentId) {
 
-    	List<Integer> associations = lifecycleAssociations.get(parentId);
+		RepositoryEntry repositoryEntry = repositoryEntries.get(parentId);
+    	List<Integer> associations = repositoryEntry.getLifecycleAssociation();
 
-        if(associations != null) {
+        if(associations.size() > 0) {
             for (Integer associationId : associations) {
             	removeBean(associationId);
             }
-            lifecycleAssociations.set(parentId, null);
+            repositoryEntry.getLifecycleAssociation().clear();
         }
 
     }
@@ -232,10 +219,7 @@ public class BeanRepository {
 	private void removeBean(int index) {
     	cleanAssociatedLifecycleBeans(index);
 
-    	Entry<String, Object> entry = beanMapEntries.get(index);
-    	if(entry != null) {
-    		entry.setValue(null);
-    	}
+    	repositoryEntries.get(index).setValue(null);
     }
 
     private void notifyObservers(BeanId beanId, BeanLifecycle lifecycle, Object bean) {
@@ -247,21 +231,84 @@ public class BeanRepository {
     }
 
     private BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup(BeanId beanId, boolean createIfNotExist) {
-    	updateLists(true);
+    	checkUpdatedBeanIdList();
 
-    	int index = beanId.getIndex();
-    	BeanLifecycleSubjectGroup subjectGroup = beanLifecycleSubjectGroups.get(index);
+    	RepositoryEntry repositoryEntry = repositoryEntries.get(beanId.getIndex());
+
+    	BeanLifecycleSubjectGroup subjectGroup = repositoryEntry.getBeanLifecycleSubjectGroup();
 
     	if(subjectGroup == null && createIfNotExist) {
 
     		subjectGroup = new BeanLifecycleSubjectGroup(executionContext, beanId);
 
-    		beanLifecycleSubjectGroups.set(index, subjectGroup);
+    		repositoryEntry.setBeanLifecycleSubjectGroup(subjectGroup);
 
     	}
 
     	return subjectGroup;
     }
 
+    private class RepositoryEntry {
+
+    	private final BeanId beanId;
+
+    	private final Entry<String, Object> entry;
+
+    	private final List<Integer> lifecycleAssociation = new ArrayList<Integer>();
+
+    	private BeanLifecycleSubjectGroup beanLifecycleSubjectGroup;
+
+		/**
+		 * @param entry
+		 */
+		public RepositoryEntry(BeanId beanId, Entry<String, Object> entry) {
+			this.beanId = beanId;
+			this.entry = entry;
+		}
+
+		/**
+		 * @return the beanId
+		 */
+		public BeanId getBeanId() {
+			return beanId;
+		}
+
+		/**
+		 * @return the entry
+		 */
+		public Entry<String, Object> getEntry() {
+			return entry;
+		}
+
+		public Object getValue() {
+			return entry.getValue();
+		}
+
+		public void setValue(Object value) {
+			entry.setValue(value);
+		}
+
+		/**
+		 * @return the lifecycleAssociation
+		 */
+		public List<Integer> getLifecycleAssociation() {
+			return lifecycleAssociation;
+		}
+
+		/**
+		 * @return the beanLifecycleSubjectGroup
+		 */
+		public BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup() {
+			return beanLifecycleSubjectGroup;
+		}
+
+		/**
+		 * @param beanLifecycleSubjectGroup the beanLifecycleSubjectGroup to set
+		 */
+		public void setBeanLifecycleSubjectGroup(BeanLifecycleSubjectGroup beanLifecycleSubjectGroup) {
+			this.beanLifecycleSubjectGroup = beanLifecycleSubjectGroup;
+		}
+
+    }
 
 }
