@@ -96,7 +96,7 @@ public class BeanId {
 	 */
 	@Override
 	public String toString() {
-		return index + ": " + name;
+		return name;
 	}
 
 }

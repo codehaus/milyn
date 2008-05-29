@@ -15,6 +15,35 @@
 */
 package org.milyn.templating.freemarker;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.sax.DefaultSAXElementSerializer;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.io.AbstractOutputStreamResource;
+import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.templating.AbstractTemplateProcessor;
+import org.milyn.xml.DomUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
@@ -22,26 +51,6 @@ import freemarker.cache.URLTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.SmooksException;
-import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
-import org.milyn.delivery.sax.*;
-import org.milyn.event.report.annotation.VisitAfterReport;
-import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.javabean.BeanAccessor;
-import org.milyn.templating.AbstractTemplateProcessor;
-import org.milyn.xml.DomUtils;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import java.io.*;
-import java.net.URL;
-import java.util.Map;
 
 /**
  * <a href="http://freemarker.org/">FreeMarker</a> template application ProcessingUnit.
@@ -60,7 +69,8 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
     private SmooksResourceConfiguration config;
     private DefaultSAXElementSerializer targetWriter;
 
-    protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {
+    @Override
+	protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {
         this.config = config;
 
         if (config.isInline()) {
@@ -94,12 +104,14 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
      * @param executionContext The Smooks execution context.
      * @throws org.milyn.SmooksException Failed to apply template. See cause.
      */
-    protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
+    @Override
+	protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
         // Apply the template...
         String templatingResult;
         try {
             Writer writer = new StringWriter();
-            Map beans = BeanAccessor.getBeanMap(executionContext);
+            
+            Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
 
             template.process(beans, writer);
             writer.flush();
@@ -225,14 +237,10 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
 
     private void applyTemplate(SAXElement element, ExecutionContext executionContext) throws SmooksException {
         if (getAction() == Action.BIND_TO) {
-            String bindId = getBindId();
-
-            if (bindId == null) {
-                throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
-            }
             Writer writer = new StringWriter();
             applyTemplate(element, executionContext, writer);
-            BeanAccessor.addBean(executionContext, bindId, writer.toString());
+            
+            BeanRepositoryManager.getBeanRepository(executionContext).addBean(getBindBeanId(), writer.toString());
         } else {
             Writer writer = element.getWriter(this);
             applyTemplate(element, executionContext, writer);
@@ -241,7 +249,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
 
     private void applyTemplate(SAXElement element, ExecutionContext executionContext, Writer writer) throws SmooksException {
         try {
-            Map beans = BeanAccessor.getBeanMap(executionContext);
+        	Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
             template.process(beans, writer);
             writer.flush();
         } catch (TemplateException e) {
@@ -252,7 +260,8 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
     }
 
     private static class ContextClassLoaderTemplateLoader extends URLTemplateLoader {
-        protected URL getURL(String name) {
+        @Override
+		protected URL getURL(String name) {
             return Thread.currentThread().getContextClassLoader().getResource(name);
         }
     }

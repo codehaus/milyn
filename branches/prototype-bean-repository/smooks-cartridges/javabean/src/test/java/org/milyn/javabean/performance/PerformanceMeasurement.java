@@ -1,6 +1,19 @@
-/**
- *
- */
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+
 package org.milyn.javabean.performance;
 
 import java.io.File;
@@ -22,9 +35,9 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class DummyPerformanceTest {
+public class PerformanceMeasurement {
 
-	private static final Log logger = LogFactory.getLog(DummyPerformanceTest.class);
+	private static final Log logger = LogFactory.getLog(PerformanceMeasurement.class);
 
 	/**
 	 * @param args
@@ -35,16 +48,17 @@ public class DummyPerformanceTest {
 		try {
 			logger.info("Start");
 
-			boolean simple = true;
+			boolean simple = false;
 
-			String file = simple ? "/smooks-config-simple-dummy.xml" : "/smooks-config-orders-dummy.xml";
+			String file = simple ? "/smooks-config-simple.xml" : "/smooks-config-orders.xml";
 
 			String name = simple ? "simple" : "orders";
 
 			test(file, name + "-1.xml", name + "-1.xml");
-			//test(file, name + "-1.xml", name + "-500.xml", setterMethodInvocatorFactoryImpl);
-			//test(file, name + "-1.xml", name + "-5000.xml", setterMethodInvocatorFactoryImpl);
-			//test(file, name + "-1.xml", name + "-50000.xml", setterMethodInvocatorFactoryImpl);
+			test(file, name + "-1.xml", name + "-50.xml");
+			test(file, name + "-1.xml", name + "-500.xml");
+			test(file, name + "-1.xml", name + "-5000.xml");
+			test(file, name + "-1.xml", name + "-50000.xml");
 			test(file, name + "-1.xml", name + "-500000.xml");
 
 
@@ -58,10 +72,10 @@ public class DummyPerformanceTest {
 	 * @throws IOException
 	 * @throws SAXException
 	 */
-	public static void test(String configFile, String warmupFilename, String inFilename) throws IOException, SAXException {
+	private static void test(String configFile, String warmupFilename, String inFilename) throws IOException, SAXException {
 		Long beginTime = System.currentTimeMillis();
 
-		String packagePath = ClassUtil.toFilePath(PerformanceTest.class.getPackage());
+		String packagePath = ClassUtil.toFilePath(PerformanceMeasurement.class.getPackage());
 		Smooks smooks = new Smooks(packagePath + configFile);
 
 		ExecutionContext executionContext = smooks.createExecutionContext();

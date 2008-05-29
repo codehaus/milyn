@@ -43,7 +43,7 @@ import org.w3c.dom.Element;
  * Static variable binding visitor.
  * <p/>
  * Binds resource paramater variables into the bean context (managed by the
- * {@link org.milyn.javabean.BeanAccessor}).  The paramater values are all bound
+ * {@link org.milyn.javabean.repository.BeanRepository}).  The paramater values are all bound
  * into a bean accessor Map named "statvar", so variables bound in this way
  * can be referenced in expressions or templates as e.g "<i>${statvar.<b>xxx</b>}</i>"
  * (for static variable "xxx").

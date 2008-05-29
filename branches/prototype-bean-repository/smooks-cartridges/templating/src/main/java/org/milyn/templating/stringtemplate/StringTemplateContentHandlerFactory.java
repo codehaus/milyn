@@ -16,25 +16,28 @@
 
 package org.milyn.templating.stringtemplate;
 
+import java.util.Map;
+
 import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
-import org.milyn.javabean.BeanAccessor;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.xml.DomUtils;
-import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.event.report.annotation.VisitAfterReport;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-
-import java.util.Map;
 
 /**
  * StringTemplate {@link org.milyn.delivery.dom.DOMElementVisitor} Creator class.
@@ -57,7 +60,7 @@ import java.util.Map;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
- *          5. be bound to ("bindto") a {@link BeanAccessor} variable named by the "bindId" param.
+ *          5. be bound to ("bindto") a {@link BeanRepository} variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter</i>&lt;/param&gt;
  *
@@ -85,6 +88,9 @@ import java.util.Map;
 @Resource(type="st")
 public class StringTemplateContentHandlerFactory implements ContentHandlerFactory {
 
+	@AppContext
+	private ApplicationContext applicationContext;
+	
 	/**
 	 * Create a StringTemplate based ContentHandler.
      * @param resourceConfig The SmooksResourceConfiguration for the StringTemplate.
@@ -92,7 +98,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 	 */
 	public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
         try {
-            return Configurator.configure(new StringTemplateTemplateProcessor(), resourceConfig);
+            return Configurator.configure(new StringTemplateTemplateProcessor(), resourceConfig, applicationContext);
         } catch (SmooksConfigurationException e) {
             throw e;
         } catch (Exception e) {
@@ -112,7 +118,8 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 
         private StringTemplate template;
 
-        protected void loadTemplate(SmooksResourceConfiguration config) {
+        @Override
+		protected void loadTemplate(SmooksResourceConfiguration config) {
             String path = config.getResource();
 
             if(path.charAt(0) == '/') {
@@ -127,10 +134,11 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
             template = templateGroup.getInstanceOf(path);
         }
 
-        protected void visit(Element element, ExecutionContext executionContext) {
+        @Override
+		protected void visit(Element element, ExecutionContext executionContext) {
             // First thing we do is clone the template for this transformation...
             StringTemplate thisTransTemplate = template.getInstanceOf();
-            Map beans = BeanAccessor.getBeanMap(executionContext);
+            Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
             String templatingResult;
             Node resultNode;
 
