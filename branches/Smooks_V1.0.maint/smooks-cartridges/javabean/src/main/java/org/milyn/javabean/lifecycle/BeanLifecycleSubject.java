@@ -28,7 +28,6 @@ public class BeanLifecycleSubject {
 
     public void addObserver(String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNull(observer, "observer");
     	
     	removeObserver(observerId);
