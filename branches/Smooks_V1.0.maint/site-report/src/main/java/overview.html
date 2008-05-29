@@ -1,0 +1,33 @@
+<html>
+    <head></head>
+    <body>
+    	Smooks Content Filtering Framework.
+
+		<h1>Overview</h1>
+		Smooks is a framework for filtering content 
+		(XML/XHTML/HTML etc) in a manner that can be optimised for a given execution context e.g. optimised for the requesting
+		browser in a Servlet Container.
+
+		<h2>XML/XHTML/HTML Filtering</h2>
+		<a href="org/milyn/delivery/SmooksXML.html">SmooksXML</a> is a filtering solution for
+		XML/XHTML/HTML etc.  It can be used as a Java alternative to templating solutions such as XSLT,
+		or simply as an XML analysis tool (see <a href="org/milyn/report/package-summary.html">Smooks Report Generator</a>).
+		SmooksXML is a DOM <a href="org/milyn/delivery/ElementVisitor.html">visitor</a> type implementation.
+		<p/>
+		As an alternative to XSLT, <a href="org/milyn/delivery/SmooksXML.html">SmooksXML</a> is a non-templating solution.  
+		By this we mean that it doesn't "manufacture" a completely new XML document using a source document as input.  Instead,
+		<a href="org/milyn/delivery/SmooksXML.html">SmooksXML</a> <a href="org/milyn/delivery/ElementVisitor.html">visits</a> the source
+		document and transforms the source i.e. no new document created.
+
+		<h2>Other Docs</h2>
+		<ol>
+			<li><a href="org/milyn/SmooksServletFilter.html">SmooksServletFilter</a>: Smooks in a Servlet Container.  (also see 
+			<a href="org/milyn/delivery/response/ServletResponseWrapperFactory.html">ServletResponseWrapperFactory</a>)</li>
+			<li><a href="org/milyn/SmooksStandalone.html">SmooksStandalone</a> Smooks in a non-containered environment e.g. on the command line. 
+			(See <a href="org/milyn/report/package-summary.html">Smooks Report Generator</a>)</li>
+			<li>Smooks User Docs at 
+			<a href="http://milyn.codehaus.org/Smooks" target="new">milyn.codehaus.org</a>.
+			</li>
+		</ol>
+    </body>
+</html>
