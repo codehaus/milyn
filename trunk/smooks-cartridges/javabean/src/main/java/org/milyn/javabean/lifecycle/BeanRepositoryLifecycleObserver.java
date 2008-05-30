@@ -13,19 +13,16 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean.lifecycle;
 
-import org.milyn.container.ExecutionContext;
+package org.milyn.javabean.lifecycle;
 
 
 /**
- * <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
- *@deprecated Use the {@link BeanRepositoryLifecycleObserver} object
  */
-@Deprecated
-public interface BeanLifecycleObserver {
-	
-	void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean);
+public interface BeanRepositoryLifecycleObserver {
+
+	void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event);
 	
 }

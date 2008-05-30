@@ -28,7 +28,7 @@
         <module>db-extract-transform-load</module>
         <module>file-router</module>
         <module>jms-router</module>
-        <module>sj-testimonial</module>
+        <!--<module>sj-testimonial</module>-->
     </modules>
 
     <properties>

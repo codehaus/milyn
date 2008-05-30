@@ -16,13 +16,29 @@
 
 package org.milyn.templating.xslt;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Configurator;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
@@ -35,15 +51,11 @@ import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.XmlUtil;
-import org.w3c.dom.*;
-
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 
 /**
@@ -69,7 +81,7 @@ import java.io.InputStreamReader;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
- *          5. be bound to ("bindto") a {@link org.milyn.javabean.BeanAccessor} variable named by the "bindId" param.
+ *          5. be bound to ("bindto") a {@link org.milyn.javabean.repository.BeanRepository} variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter/bindto</i>&lt;/param&gt;
  *
@@ -159,6 +171,9 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      */
     public static final String ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED = "org.milyn.templating.xslt.synchronized";
 
+    @AppContext
+    private ApplicationContext applicationContext;
+    
     /**
      * Create an XSL based ContentHandler instance ie from an XSL byte streamResult.
      *
@@ -169,7 +184,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      */
     public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
         try {
-            return Configurator.configure(new XslProcessor(), resourceConfig);
+            return Configurator.configure(new XslProcessor(), resourceConfig, applicationContext);
         } catch(SmooksConfigurationException e) {
             throw e;
         } catch (Exception e) {
@@ -204,7 +219,8 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
          */
         private final boolean isSynchronized = Boolean.getBoolean(ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED);
 
-        protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
+        @Override
+		protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
             byte[] xslBytes = resourceConfig.getBytes();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             StreamSource xslStreamSource;
@@ -244,7 +260,8 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
             return isTemplatelet;
         }
 
-        protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
+        @Override
+		protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
             Document ownerDoc = element.getOwnerDocument();
             Element ghostElement = GhostElementSerializationUnit.createElement(ownerDoc);
 
@@ -292,7 +309,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
         }
 
         private static class XslErrorListener implements ErrorListener {
-            private boolean failOnWarning;
+            private final boolean failOnWarning;
 
             public XslErrorListener(boolean failOnWarning) {
                 this.failOnWarning = failOnWarning;

@@ -16,8 +16,6 @@
 package org.milyn.javabean;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,9 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
-import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
@@ -41,6 +37,9 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
 
@@ -54,42 +53,30 @@ import org.w3c.dom.Element;
 @VisitBeforeReport(summary = "Created <b>${resource.parameters.beanId!'undefined'}</b> bean instance.  Associated lifecycle if wired to another bean.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_Before.html")
 @VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
-        summary = "Ended bean lifecycle. Set bean on any targets.", 
+        summary = "Ended bean lifecycle. Set bean on any targets.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
 public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
-    private static boolean WARNED_SETON_DEPRECATED = false;
-
     private String id;
 
-    @ConfigParam
-    private String beanId;
+    @ConfigParam(name="beanId")
+    private String beanIdName;
 
     @ConfigParam(name="beanClass")
     private String beanClassName;
 
-    @ConfigParam(defaultVal = "false")
-    private boolean addToList;
-
-    @ConfigParam(use=ConfigParam.Use.OPTIONAL)
-    private String setOn; // The name of the bean on which to set this bean
-
-    @Config
-    private SmooksResourceConfiguration config;
 
     @AppContext
     private ApplicationContext appContext;
 
     private BeanRuntimeInfo beanRuntimeInfo;
 
-    // Properties associated with the bean on which the created bean
-    // is to be set.  Is it a List, Map etc...
-    private BeanRuntimeInfo setOnBeanRuntimeInfo;
-    private boolean isSetOnMethodConfigured = false;
-    private String setOnMethod;
-    private Method setOnBeanSetterMethod;
+    private BeanRepositoryManager beanRepositoryManager;
+
+    private BeanId beanId;
+
 
     /**
      * Set the resource configuration on the bean populator.
@@ -99,46 +86,15 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     public void initialize() throws SmooksConfigurationException {
     	buildId();
 
+    	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
+    	BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
+        beanId = beanIdList.register(beanIdName);
+
     	beanRuntimeInfo = resolveBeanRuntime(beanClassName);
-        BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, beanRuntimeInfo, appContext);
-
-        // Get the details of the bean on which instances of beans created by this class are to be set on.
-        if (setOn != null) {
-
-        	// We only warn once that the setOn is deprecated. We do it once because we
-        	// don't want overflood the log with the same warning.
-        	if(!WARNED_SETON_DEPRECATED && logger.isWarnEnabled()) {
-        		logger.warn("The setOn parameter is deprecated. It is " +
-        				"possible that it will be removed in the next major release. " +
-        				"It is better to use the bean binding method " +
-        				"(bean binding = binding with a ${beanId} selector notation). This warning is only given once.");
-
-        		WARNED_SETON_DEPRECATED = true;
-        	}
-
-            setOnBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(setOn, appContext);
-            if(setOnBeanRuntimeInfo == null) {
-                throw new SmooksConfigurationException("Parent bean '" + setOn + "' must be defined before bean '" + beanId + "'.");
-            }
-
-            setOnMethod = config.getStringParameter("setOnMethod");
-            if(setOnMethod == null) {
-                String setOnProperty = config.getStringParameter("setOnProperty");
-                if(setOnProperty == null) {
-                    // If 'setOnProperty' is not defined, default to the name of this bean...
-                    setOnProperty = beanId;
-                    if(addToList && !setOnProperty.endsWith("s")) {
-                        setOnProperty += "s";
-                    }
-                }
-                setOnMethod = BeanUtils.toSetterName(setOnProperty);
-            } else {
-                isSetOnMethodConfigured = true;
-            }
-        }
+        BeanRuntimeInfo.recordBeanRuntimeInfo(beanIdName, beanRuntimeInfo, appContext);
 
         if(logger.isDebugEnabled()) {
-        	logger.debug("BeanInstanceCreator created for [" + beanId + ":" + beanClassName + "].");
+        	logger.debug("BeanInstanceCreator created for [" + beanIdName + ":" + beanClassName + "].");
         }
     }
 
@@ -146,7 +102,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     	StringBuilder idBuilder = new StringBuilder();
     	idBuilder.append(BeanInstanceCreator.class.getName());
     	idBuilder.append("#");
-    	idBuilder.append(beanId);
+    	idBuilder.append(beanIdName);
 
 
     	id = idBuilder.toString();
@@ -159,14 +115,14 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         createAndSetBean(executionContext);
     }
-    
+
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext)
 			throws SmooksException {
-		
+
 		visitAfter(executionContext);
 	}
 
@@ -175,117 +131,44 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
 	 */
 	public void visitAfter(SAXElement element, ExecutionContext executionContext)
 			throws SmooksException, IOException {
-		
+
 		visitAfter(executionContext);
 	}
 
 	public void visitAfter(ExecutionContext executionContext) {
-		
+
 		Classification thisBeanType = beanRuntimeInfo.getClassification();
-		
+
 		boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
-		boolean isSetOn = (setOn != null);
-		
-		if(isSetOn || isBeanTypeArray) {
-			Object bean  = BeanUtils.getBean(beanId, executionContext);
-	    	
-			if(isBeanTypeArray) {
-				// This bean is an array, we need to convert the List used to create it into
-		        // an array of that type, and add that array to the BeanAccessor, overwriting the list
-		    	bean = convert(bean, executionContext);
-			}
-			
-			if(isSetOn) {
-				setOn(bean, executionContext);
-			}
-			
-			
+
+		if(isBeanTypeArray) {
+			Object bean  = BeanRepositoryManager.getBeanRepository(executionContext).getBean(beanId);
+
+			bean = convert(executionContext, bean);
+
 		}
-		
+
 	}
 
 
-    private Object convert(Object bean, ExecutionContext executionContext) {
+    private Object convert(ExecutionContext executionContext, Object bean) {
 
         bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
 
-        BeanAccessor.changeBean(executionContext, beanId, bean);
+        BeanRepositoryManager.getBeanRepository(executionContext).changeBean(beanId, bean);
 
     	return bean;
     }
 
-    @SuppressWarnings("deprecation")
 	private void createAndSetBean(ExecutionContext executionContext) {
         Object bean;
         bean = createBeanInstance();
 
-        if (setOn != null) {
-            // Need to associate the 2 bean lifecycles...
-            BeanAccessor.associateLifecycles(executionContext, setOn, beanId, addToList);
-        }
-
-        BeanAccessor.addBean(beanId, bean, executionContext, addToList);
+        BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanId, bean);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Bean [" + beanId + "] instance created.");
+            logger.debug("Bean [" + beanIdName + "] instance created.");
         }
-
-
-    }
-
-    @SuppressWarnings("unchecked")
-	private void setOn(Object bean, ExecutionContext executionContext) {
-    	Object setOnBean = getSetOnTargetBean(executionContext);
-
-        if (setOnBean != null) {
-        	
-            Classification setOnBeanType = setOnBeanRuntimeInfo.getClassification();
-            
-            // Set the bean instance on another bean. Supports creating an object graph
-            if(setOnBeanType == Classification.NON_COLLECTION) {
-                setOnNonCollection(executionContext, bean, setOnBean);
-            } else if(!isSetOnMethodConfigured && (setOnBeanType == Classification.COLLECTION_COLLECTION ||
-                                                setOnBeanType == Classification.ARRAY_COLLECTION)) {
-                // It's a Collection or array.  Arrays are always populated through a List...
-            	((Collection)setOnBean).add(bean);
-            } else if(!isSetOnMethodConfigured && setOnBeanType == Classification.MAP_COLLECTION) {
-                // It's a map...
-                ((Map)setOnBean).put(beanId, bean);
-            }
-        } else if(logger.isErrorEnabled()) {
-            logger.error("Failed to set bean '" + beanId + "' on parent bean '" + setOn + "'.  Failed to find bean '" + setOn + "'.");
-        }
-    }
-
-    private void setOnNonCollection(ExecutionContext execContext, Object bean, Object setOnBean) {
-        try {
-            if (setOnBeanSetterMethod == null) {
-                if (!addToList) {
-                    createBeanSetterMethod(setOnBean, setOnMethod, bean.getClass());
-                } else {
-                    createBeanSetterMethod(setOnBean, setOnMethod, List.class);
-                }
-            }
-            if(logger.isDebugEnabled()) {
-                logger.debug("Setting bean '" + beanId + "' on parent bean '" + setOn + "'.");
-            }
-            if (!addToList) {
-                setOnBeanSetterMethod.invoke(setOnBean, bean);
-            } else {
-                Object beanList = BeanAccessor.getBean(execContext, beanId + "List");
-                setOnBeanSetterMethod.invoke(setOnBean, beanList);
-            }
-        } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
-        } catch (InvocationTargetException e) {
-            throw new SmooksConfigurationException("Error invoking bean setter method [" + setOnMethod + "] on bean instance class type [" + setOnBean.getClass() + "].", e);
-        }
-    }
-
-    private Object getSetOnTargetBean(ExecutionContext execContext) {
-        Object setOnBean = BeanUtils.getBean(setOn, execContext);
-
-        return setOnBean;
     }
 
     /**
@@ -299,9 +182,9 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         try {
             bean = beanRuntimeInfo.getPopulateType().newInstance();
         } catch (InstantiationException e) {
-            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
+            throw new SmooksConfigurationException("Unable to create bean instance [" + beanIdName + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
         } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Unable to create bean instance [" + beanId + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
+            throw new SmooksConfigurationException("Unable to create bean instance [" + beanIdName + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
         }
 
         return bean;
@@ -361,24 +244,6 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         }
 
         return beanInfo;
-    }
-
-    /**
-     * Create the bean setter method instance for this visitor.
-     *
-     * @param setterName The setter method name.
-     * @return The bean setter method.
-     */
-    private synchronized Method createBeanSetterMethod(Object bean, String setterName, Class<?> type) {
-        if (setOnBeanSetterMethod == null) {
-            setOnBeanSetterMethod = BeanUtils.createSetterMethod(setterName, bean, type);
-
-            if(setOnBeanSetterMethod == null) {
-                throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterName + "(" + type.getName() + ")] not found on type [" + bean.getClass().getName() + "].  You may need to set a 'decoder' on the binding config.");
-            }
-        }
-
-        return setOnBeanSetterMethod;
     }
 
     private String getId() {

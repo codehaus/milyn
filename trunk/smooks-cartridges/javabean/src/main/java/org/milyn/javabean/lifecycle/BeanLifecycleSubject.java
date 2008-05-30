@@ -1,3 +1,19 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+
 package org.milyn.javabean.lifecycle;
 
 import java.util.ArrayList;
@@ -5,6 +21,8 @@ import java.util.List;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 
 public class BeanLifecycleSubject {
 
@@ -12,25 +30,44 @@ public class BeanLifecycleSubject {
 
     private final BeanLifecycle beanLifecycle;
 
-    private final String beanId;
+    private final BeanId beanId;
 
     private final ExecutionContext executionContext;
 
-    public BeanLifecycleSubject(ExecutionContext executionContext, BeanLifecycle beanLifecycle, String beanId) {
+    public BeanLifecycleSubject(ExecutionContext executionContext, BeanLifecycle beanLifecycle, BeanId beanId) {
     	AssertArgument.isNotNull(executionContext, "executionContext");
     	AssertArgument.isNotNull(beanLifecycle, "beanLifecycle");
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-    	
+    	AssertArgument.isNotNull(beanId, "beanId");
+
     	this.beanLifecycle = beanLifecycle;
     	this.executionContext = executionContext;
 		this.beanId = beanId;
 	}
 
+    /**
+     *
+     * @param executionContext
+     * @param beanLifecycle
+     * @param beanId
+     * @deprecated Use the {@link #BeanLifecycleSubject(ExecutionContext, BeanLifecycle, BeanId)} constructor
+     */
+    @Deprecated
+    public BeanLifecycleSubject(ExecutionContext executionContext, BeanLifecycle beanLifecycle, String beanId) {
+    	this(executionContext, beanLifecycle, getBeanId(executionContext, beanId));
+	}
+
+    /**
+     *
+     * @param observerId
+     * @param notifyOnce
+     * @param observer
+     * @deprecated Us the {@link #addObserver(String, boolean, BeanRepositoryLifecycleObserver)}
+     */
+    @Deprecated
     public void addObserver(String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
     	AssertArgument.isNotNull(observer, "observer");
-    	
+
     	removeObserver(observerId);
 
     	ObserverContext observerContext = new ObserverContext();
@@ -39,12 +76,27 @@ public class BeanLifecycleSubject {
     	observerContext.notifyOnce = notifyOnce;
 
     	observers.add(observerContext);
-    	
+
+    }
+
+    public void addObserver(String observerId, boolean notifyOnce, BeanRepositoryLifecycleObserver observer) {
+    	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
+    	AssertArgument.isNotNull(observer, "observer");
+
+    	removeObserver(observerId);
+
+    	ObserverContext observerContext = new ObserverContext();
+    	observerContext.observerId = observerId;
+    	observerContext.repositoryBeanLifecycleObserver = observer;
+    	observerContext.notifyOnce = notifyOnce;
+
+    	observers.add(observerContext);
+
     }
 
     public void removeObserver(String observerId) {
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-    	
+    	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
+
     	boolean found = false;
     	for (int i = 0; !found && i < observers.size(); i++) {
     		ObserverContext observerContext = observers.get(i);
@@ -57,15 +109,25 @@ public class BeanLifecycleSubject {
 
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "deprecation" })
 	public void notifyObservers(Object bean) {
     	if(observers.size() > 0) {
 
 			List<ObserverContext> observersClone = (List<ObserverContext>) observers.clone();
 			for(int i = 0; i < observersClone.size(); i++) {
 				ObserverContext observerContext = observersClone.get(i);
-				
-				observerContext.observer.onBeanLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
+
+				if(observerContext.repositoryBeanLifecycleObserver != null) {
+
+					BeanRepositoryLifecycleEvent beanLifecycleEvent = new BeanRepositoryLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
+
+					observerContext.repositoryBeanLifecycleObserver.onBeanLifecycleEvent(beanLifecycleEvent);
+
+				} else {
+
+					observerContext.observer.onBeanLifecycleEvent(executionContext, beanLifecycle, beanId.getName(), bean);
+
+				}
 
 				if(observerContext.notifyOnce) {
 					removeObserver(observerContext.observerId);
@@ -85,9 +147,11 @@ public class BeanLifecycleSubject {
 
 	/**
 	 * @return the beanId
+	 * @deprecated Don't use anymore, not alternative given yet (tell us if you need it)
 	 */
+	@Deprecated
 	public String getBeanId() {
-		return beanId;
+		return beanId.getName();
 	}
 
 	/**
@@ -103,14 +167,26 @@ public class BeanLifecycleSubject {
      *
      * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
      */
-    public class ObserverContext {
+    private class ObserverContext {
 
     	String observerId;
 
     	boolean notifyOnce = false;
 
+    	@Deprecated
     	BeanLifecycleObserver observer;
 
+    	BeanRepositoryLifecycleObserver repositoryBeanLifecycleObserver;
     }
-	
+
+    /**
+	 * @param executionContext
+	 * @param beanId
+	 * @return
+	 */
+	private static BeanId getBeanId(ExecutionContext executionContext, String beanId) {
+		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+
+		return BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanIdList().getBeanId(beanId);
+	}
 }

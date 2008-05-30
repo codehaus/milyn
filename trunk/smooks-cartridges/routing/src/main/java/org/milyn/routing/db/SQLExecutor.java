@@ -15,25 +15,30 @@
 */
 package org.milyn.routing.db;
 
-import org.milyn.SmooksException;
-import org.milyn.db.AbstractDataSource;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.javabean.BeanAccessor;
-import org.w3c.dom.Element;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.AppContext;
+import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
+import org.milyn.db.AbstractDataSource;
+import org.milyn.delivery.annotation.Initialize;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXText;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.w3c.dom.Element;
 
 /**
  * SQLExecutor Visitor.
@@ -57,11 +62,23 @@ public class SQLExecutor implements SAXElementVisitor, DOMElementVisitor {
     @ConfigParam(defaultVal = "false")
     private boolean executeBefore;
 
+    @AppContext
+    private ApplicationContext appContext;
+
+    private BeanId resultSetBeanId;
+
     @Initialize
     public void intitialize() throws SmooksConfigurationException {
         statementExec = new StatementExec(statement);
         if(statementExec.getStatementType() == StatementType.QUERY && resultSetName == null) {
             throw new SmooksConfigurationException("Sorry, query statements must be accompanied by a 'resultSetName' property, under whose value the query results are bound.");
+        }
+
+        if(resultSetName != null) {
+	        BeanRepositoryManager beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
+	        BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
+
+	        resultSetBeanId = beanIdList.register(resultSetName);
         }
     }
 
@@ -95,30 +112,34 @@ public class SQLExecutor implements SAXElementVisitor, DOMElementVisitor {
         }
     }
 
-    private void executeSQL(ExecutionContext executionContext) throws SmooksException {
+
+	private void executeSQL(ExecutionContext executionContext) throws SmooksException {
         Connection connection = AbstractDataSource.getConnection(datasource, executionContext);
-        Map beans = BeanAccessor.getBeanMap(executionContext);
+        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+        Map<String, Object> beanMap = beanRepository.getBeanMap();
 
         try {
             if(!statementExec.isJoin()) {
                 if(statementExec.getStatementType() == StatementType.QUERY) {
-                    beans.put(resultSetName, statementExec.executeUnjoinedQuery(connection));
+                	beanRepository.addBean(resultSetBeanId, statementExec.executeUnjoinedQuery(connection));
                 } else {
                     statementExec.executeUnjoinedUpdate(connection);
                 }
             } else {
                 if(statementExec.getStatementType() == StatementType.QUERY) {
                     List<Map<String, Object>> resultMap = new ArrayList<Map<String, Object>>();
-                    statementExec.executeJoinedQuery(connection, beans, resultMap);
-                    beans.put(resultSetName, resultMap);
+                    statementExec.executeJoinedQuery(connection, beanMap, resultMap);
+                    beanRepository.addBean(resultSetBeanId, resultMap);
                 } else {
-                    if(resultSetName == null) {
-                        statementExec.executeJoinedUpdate(connection, beans);
+                    if(resultSetBeanId == null) {
+                        statementExec.executeJoinedUpdate(connection, beanMap);
                     } else {
-                        Object resultSetObj = beans.get(resultSetName);
+                        Object resultSetObj = beanRepository.getBean(resultSetBeanId);
 
                         if(resultSetObj != null) {
                             try {
+                            	@SuppressWarnings("unchecked")
                                 List<Map<String, Object>> resultSet = (List<Map<String, Object>>) resultSetObj;
                                 statementExec.executeJoinedStatement(connection, resultSet);
                             } catch(ClassCastException e) {
@@ -134,4 +155,5 @@ public class SQLExecutor implements SAXElementVisitor, DOMElementVisitor {
             e.printStackTrace();
         }
     }
+
 }
