@@ -16,21 +16,23 @@
 
 package org.milyn.templating.xslt;
 
-import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.SmooksException;
-import org.milyn.SmooksUtil;
-import org.milyn.javabean.BeanAccessor;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ExecutionContext;
-import org.milyn.templating.util.CharUtils;
-import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+
+import javax.xml.transform.stream.StreamSource;
+
+import junit.framework.TestCase;
+
+import org.milyn.Smooks;
+import org.milyn.SmooksException;
+import org.milyn.SmooksUtil;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.templating.util.CharUtils;
+import org.xml.sax.SAXException;
 
 /**
  * 
@@ -95,12 +97,13 @@ public class XslContentHandlerFactoryTest extends TestCase {
         input = new StringReader("<a><b><c/></b></a>");
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<bind/>", BeanAccessor.getBean(context, "mybeanTemplate"));
+        
+        assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         input = new StringReader("<c/>");
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<bind/>", BeanAccessor.getBean(context, "mybeanTemplate"));
+        assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
     public void test_badxsl() throws IOException, SAXException {

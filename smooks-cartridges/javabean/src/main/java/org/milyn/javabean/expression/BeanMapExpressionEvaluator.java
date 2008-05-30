@@ -15,26 +15,24 @@
 */
 package org.milyn.javabean.expression;
 
+import java.util.Map;
+
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.expression.MVELExpressionEvaluator;
-import org.milyn.javabean.BeanAccessor;
-import org.mvel.MVEL;
-
-import java.io.Serializable;
-import java.util.Map;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 
 /**
  * Javabean Cartridge bean Map expression evaluator.
  * <p/>
  * Evaluates <a href="http://mvel.codehaus.org/">MVEL</a> expressions on java objects
- * bound to the supplied {@link ExecutionContext} via the {@link BeanAccessor}.
+ * bound to the supplied {@link ExecutionContext} via the {@link org.milyn.javabean.repository.BeanRepository}.
  * <p/>
  * Cab be used to selectively target resources based on the
  * contents of the java objects bound to the supplied {@link ExecutionContext}
- * via the {@link BeanAccessor}.
+ * via the {@link org.milyn.javabean.repository.BeanRepository}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -48,12 +46,12 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
     }
 
     public boolean eval(ExecutionContext context) throws ExpressionEvaluationException {
-        Map beans = BeanAccessor.getBeanMap(context);
+        Map beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
         return eval(beans);
     }
 
     public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
-        Map beans = BeanAccessor.getBeanMap(context);
+        Map beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
         return getValue(beans);
     }
 }

@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 
 /**
  * Bean utility methods.
@@ -120,8 +121,9 @@ public abstract class BeanUtils {
     public static Object getBean(String beanId, ExecutionContext execContext) {
         Object bean;
 
+
         // Get the bean instance from the request.  If there is non, it's a bad config!!
-        bean = BeanAccessor.getBean(execContext, beanId);
+        bean =  BeanRepositoryManager.getBeanRepository(execContext).getBean(beanId);
 
         if (bean == null) {
             throw new SmooksConfigurationException("Bean instance [" + beanId + "] not available and bean runtime class not set on configuration.");

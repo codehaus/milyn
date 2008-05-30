@@ -15,8 +15,12 @@
 */
 package org.milyn.templating.xslt;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import ognl.Ognl;
 import ognl.OgnlException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xalan.extensions.XSLProcessorContext;
@@ -24,10 +28,7 @@ import org.apache.xalan.templates.AVT;
 import org.apache.xalan.templates.ElemExtensionCall;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
-import org.milyn.javabean.BeanAccessor;
-
-import java.util.Hashtable;
-import java.util.Map;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 
 /**
  * Javabean access <a href="http://xml.apache.org/xalan-j/">Xalan</a> XSLT extension for XSLT templating.
@@ -118,7 +119,7 @@ public class XalanJavabeanExtension {
 			throw new IllegalStateException(message);
 		}
 		
-		Map beans = BeanAccessor.getBeanMap(activeRequest);
+		Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(activeRequest).getBeanMap();
 		Object parsedExpression = expressionCache.get(ognlExpression);
 		
 		if(parsedExpression == null) {

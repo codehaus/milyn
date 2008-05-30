@@ -15,6 +15,13 @@
 */
 package org.milyn.cdr.annotation;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
@@ -26,13 +33,6 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 
 /**
  * Utility class for processing configuration annotations on a
@@ -93,9 +93,21 @@ public class Configurator {
     }
 
     private static <U extends ContentHandler> void processFieldContextAnnotation(U instance, ApplicationContext appContext) {
-        Field[] fields = instance.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
+    	
+        processFieldContextAnnotation(instance.getClass(), instance, appContext);
+        
+    }
+    
+    private static <U extends ContentHandler> void processFieldContextAnnotation(Class contentHandlerClass, U instance, ApplicationContext appContext) {
+    	Field[] fields = contentHandlerClass.getDeclaredFields();
+    	
+    	// Work back up the Inheritance tree first...
+        Class superClass = contentHandlerClass.getSuperclass();
+        if(superClass != null && ContentHandler.class.isAssignableFrom(superClass)) {
+        	processFieldContextAnnotation(superClass, instance, appContext);
+        }    	
+    	
+    	for (Field field : fields) {
             AppContext appContextAnnotation = field.getAnnotation(AppContext.class);
             if(appContextAnnotation != null) {
                 try {

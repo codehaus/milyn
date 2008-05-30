@@ -14,9 +14,17 @@
  */
 package org.milyn.routing.io;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+
 import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
@@ -24,16 +32,13 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.javabean.BeanAccessor;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
-
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 
 /**
  * OutputStreamRouter is a fragment Visitor (DOM/SAX) that can be used to route
- * context beans ({@link org.milyn.javabean.BeanAccessor} beans) an OutputStream.
+ * context beans ({@link org.milyn.javabean.repository.BeanRepository} beans) an OutputStream.
  * </p>
  * An OutputStreamRouter is used in combination with a concreate implementation of 
  * {@link AbstractOutputStreamResource}, for example a {@link org.milyn.routing.file.FileOutputStreamResource}.
@@ -73,8 +78,21 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
 	/*
 	 * 	beanId is a key that is used to look up a bean in the execution context
 	 */
-    @ConfigParam( use = ConfigParam.Use.REQUIRED )
-    private String beanId;
+    @ConfigParam( name = "beanId", use = ConfigParam.Use.REQUIRED )
+    private String beanIdName;
+    
+    private BeanId beanId;
+    
+    @AppContext
+    private ApplicationContext applicationContext;
+    
+    @Initialize
+    public void initialize() throws SmooksConfigurationException {
+    	
+    	BeanRepositoryManager beanRepositoryManager = BeanRepositoryManager.getInstance(applicationContext);
+    	beanId = beanRepositoryManager.getBeanIdList().getBeanId(beanIdName);
+    	
+    }
     
     //	public
 	
@@ -107,7 +125,7 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
 	
 	private void write( final ExecutionContext executionContext )
 	{
-		Object bean = BeanAccessor.getBean( executionContext, beanId );
+		Object bean = BeanRepositoryManager.getBeanRepository(executionContext).getBean( beanId );
         if ( bean == null )
         {
         	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
