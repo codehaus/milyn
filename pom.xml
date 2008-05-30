@@ -13,7 +13,7 @@
         <milyn.commons.version.base>1.0</milyn.commons.version.base>
         <milyn.commons.version>${milyn.commons.version.base}</milyn.commons.version>
 
-        <milyn.smooks.core.version.base>1.0</milyn.smooks.core.version.base>
+        <milyn.smooks.core.version.base>1.0.1</milyn.smooks.core.version.base>
         <milyn.smooks.core.version>${milyn.smooks.core.version.base}</milyn.smooks.core.version>
 
         <milyn.magger.version.base>0.1</milyn.magger.version.base>

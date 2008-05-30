@@ -32,7 +32,7 @@
     </modules>
 
     <properties>
-        <milyn.smooks.core.version>1.0</milyn.smooks.core.version>
+        <milyn.smooks.core.version>1.0.1</milyn.smooks.core.version>
         <milyn.smooks.servlet.version>${milyn.smooks.core.version}</milyn.smooks.servlet.version>
         <milyn.smooks.misc.version>${milyn.smooks.core.version}</milyn.smooks.misc.version>
         <milyn.smooks.dtd.version>${milyn.smooks.core.version}</milyn.smooks.dtd.version>

@@ -152,8 +152,10 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
                     targetWriter.visitBefore(element, executionContext);
                 }
             } else {
-                // Just acquire ownership of the writer...
-                if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
+                // Just acquire ownership of the writer, but only do so if the action is not a BIND_TO
+                // and default serialization is on.  BIND_TO will not use the writer, so no need to
+                // acquire it for that action...
+                if (getAction() != Action.BIND_TO && executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
                     element.getWriter(this);
                 }
             }
