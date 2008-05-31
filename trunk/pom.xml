@@ -5,25 +5,25 @@
     <groupId>milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.1</version>
+    <version>1.1.1</version> <!-- Will make this version line up in a future release. -->
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
     <properties>
-        <milyn.commons.version.base>1.0</milyn.commons.version.base>
-        <milyn.commons.version>${milyn.commons.version.base}</milyn.commons.version>
+        <milyn.commons.version.base>${milyn.smooks.core.version.base}</milyn.commons.version.base>
+        <milyn.commons.version>${milyn.commons.version.base}-SNAPSHOT</milyn.commons.version>
 
-        <milyn.smooks.core.version.base>1.0</milyn.smooks.core.version.base>
-        <milyn.smooks.core.version>${milyn.smooks.core.version.base}</milyn.smooks.core.version>
+        <milyn.smooks.core.version.base>1.1</milyn.smooks.core.version.base>
+        <milyn.smooks.core.version>${milyn.smooks.core.version.base}-SNAPSHOT</milyn.smooks.core.version>
 
-        <milyn.magger.version.base>0.1</milyn.magger.version.base>
-        <milyn.magger.version>${milyn.magger.version.base}.3</milyn.magger.version>
+        <milyn.magger.version.base>${milyn.smooks.core.version.base}</milyn.magger.version.base>
+        <milyn.magger.version>${milyn.magger.version.base}-SNAPSHOT</milyn.magger.version>
 
-        <milyn.tinak.version.base>0.8</milyn.tinak.version.base>
-        <milyn.tinak.version>${milyn.tinak.version.base}.1</milyn.tinak.version>
+        <milyn.tinak.version.base>${milyn.smooks.core.version.base}</milyn.tinak.version.base>
+        <milyn.tinak.version>${milyn.tinak.version.base}-SNAPSHOT</milyn.tinak.version>
 
-        <milyn.edisax.version.base>0.3</milyn.edisax.version.base>
-        <milyn.edisax.version>${milyn.edisax.version.base}</milyn.edisax.version>
+        <milyn.edisax.version.base>${milyn.smooks.core.version.base}</milyn.edisax.version.base>
+        <milyn.edisax.version>${milyn.edisax.version.base}-SNAPSHOT</milyn.edisax.version>
 
         <xerces.version>2.7.1</xerces.version>
         <xalan.version>2.7.0</xalan.version>
