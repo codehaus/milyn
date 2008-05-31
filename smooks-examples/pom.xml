@@ -6,7 +6,7 @@
     <artifactId>smooks-examples</artifactId>
     <name>Milyn Smooks Examples (Base POM)</name>
     <packaging>pom</packaging>
-    <version>1.1</version>
+    <version>1.1.1</version>
 
     <modules>
         <module>css</module>
@@ -32,7 +32,7 @@
     </modules>
 
     <properties>
-        <milyn.smooks.core.version>1.0</milyn.smooks.core.version>
+        <milyn.smooks.core.version>1.1-SNAPSHOT</milyn.smooks.core.version>
         <milyn.smooks.servlet.version>${milyn.smooks.core.version}</milyn.smooks.servlet.version>
         <milyn.smooks.misc.version>${milyn.smooks.core.version}</milyn.smooks.misc.version>
         <milyn.smooks.dtd.version>${milyn.smooks.core.version}</milyn.smooks.dtd.version>

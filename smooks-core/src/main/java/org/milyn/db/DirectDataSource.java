@@ -50,17 +50,17 @@ public class DirectDataSource extends AbstractDataSource {
     @ConfigParam
     private String password;
 
-    @Initialize
-    public void intitialize() throws ClassNotFoundException {
-        // Register the driver...
-        ClassUtil.forName(driver, getClass());
-    }
-
     public String getName() {
         return datasourceName;
     }
 
     public Connection getConnection() throws SQLException {        
+        // Register the driver...
+        try {
+            ClassUtil.forName(driver, getClass());
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("JDBC Driver '" + driver + "' not available on classpath.");
+        }
         return DriverManager.getConnection(url, username, password);
     }
 
