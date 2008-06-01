@@ -30,6 +30,12 @@ import org.milyn.payload.JavaResult;
 import org.milyn.payload.JavaSource;
 
 /**
+ * The Bean Repository Manager
+ * <p/>
+ * Manages the {@link BeanRepository} of the current {@link ExecutionContext} and the {@link BeanIdList}
+ * of the current {@link ApplicationContext}. It ensures that both objects are correctly instantiated.
+ *  
+ *  
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
@@ -41,6 +47,14 @@ public class BeanRepositoryManager {
 
 	private final BeanIdList beanIdList = new BeanIdList();
 
+	/**
+	 * Returns the instance of the {@link BeanRepositoryManager}, which is bound to the
+	 * given {@link ApplicationContext}. If the {@link BeanRepositoryManager} doesn't
+	 * exist yet, then one is created.
+	 * 
+	 * @param applicationContext The {@link ApplicationContext} to which the instance is bound
+	 * @return The {@link BeanRepositoryManager} instance of the given {@link ApplicationContext}
+	 */
 	public static BeanRepositoryManager getInstance(ApplicationContext applicationContext) {
 		BeanRepositoryManager beanRepositoryManager = (BeanRepositoryManager) applicationContext.getAttribute(CONTEXT_KEY);
 
@@ -56,19 +70,24 @@ public class BeanRepositoryManager {
 
 	}
 
-
+	/**
+	 * The object can only be instantiated with the {@link #getInstance(ApplicationContext)} method.
+	 */
 	private BeanRepositoryManager() {
 	}
 
+	
 	/**
-	 * @return the beanProviderManager
+	 * @return the {@link BeanIdList} of the bound {@link ApplicationContext}
 	 */
 	public BeanIdList getBeanIdList() {
 		return beanIdList;
 	}
 
 	/**
-	 * @return the beanProviderManager
+	 * @return the {@link BeanRepository} of the given {@link ExecutionContext}. If the {@link BeanRepository} does not
+	 * 			exist then one is created. The {@link BeanIdList} which is bound to the {@link ApplicationContext} 
+	 * 			of the given {@link ExecutionContext} is bound to the created {@link BeanRepository}.
 	 */
 	public static BeanRepository getBeanRepository(ExecutionContext executionContext) {
 		BeanRepository beanRepository = (BeanRepository) executionContext.getAttribute(BEAN_REPOSITORY_CONTEXT_KEY);
@@ -84,8 +103,10 @@ public class BeanRepositoryManager {
 	}
 
 	/**
-	 * @param executionContext
-	 * @return
+	 * Creates the BeanRepository
+	 * 
+	 * @param executionContext The {@link ExecutionContext} to which the {@link BeanRepository} is bound 
+	 * @return The new BeanRepository
 	 */
 	private BeanRepository createBeanRepository(ExecutionContext executionContext) {
 		BeanRepository beanRepository;
@@ -93,12 +114,19 @@ public class BeanRepositoryManager {
 		Map<String, Object> beanMap = createBeanMap(executionContext);
 
 		beanRepository = new BeanRepository(executionContext, beanIdList, beanMap);
-
+		
 		return beanRepository;
 	}
 
 
 	/**
+	 * Returns the BeanMap which must be used by the {@link BeanRepository}. If
+	 * a JavaResult or a JavaSource is used with the {@link ExecutionContext} then
+	 * those are used in the creation of the Bean map.
+	 * 
+	 * Bean's that are already in the JavaResult or JavaSource map are given
+	 * a {@link BeanId} in the {@link BeanIdList}.
+	 * 
 	 * @param executionContext
 	 * @return
 	 */

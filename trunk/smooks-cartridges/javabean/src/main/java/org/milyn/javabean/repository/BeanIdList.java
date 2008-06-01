@@ -23,6 +23,14 @@ import java.util.Map;
 import org.milyn.assertion.AssertArgument;
 
 /**
+ * Bean Id List
+ * <p/>
+ * Represents a map of BeanId's. Every BeanId has it own unique index. The index
+ * is incremental. The index starts with zero.
+ * <p/>
+ * Once a BeanId is registered it can never be unregistered.
+ * 
+ * 
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
@@ -33,10 +41,13 @@ public class BeanIdList {
 	private final Map<String, BeanId> beanIdMap = new HashMap<String, BeanId>();
 
 	/**
-	 * registers a string based beanId and returns the {@link BeanId} object.
-	 * if the beanId is already registered then that one is returned.
-	 *
-	 * This method is synchronized.
+	 * registers a beanId name and returns the {@link BeanId} object.
+	 * If the beanId name is already registered then belonging BeanId 
+	 * is returned.
+	 * <p>
+	 * If you are sure that the BeanId is already registered
+	 * then use the {@link #getBeanId(String)} method to retrieve it,
+	 * because it is faster.   
 	 *
 	 */
 	public synchronized BeanId register(String beanIdName) {
@@ -54,9 +65,7 @@ public class BeanIdList {
 	}
 
 	/**
-	 * Returns the BeanId or <code>null</code> if it not registered;
-	 *
-	 * This method is not synchronized.
+	 * @return The BeanId or <code>null</code> if it is not registered;
 	 *
 	 */
 	public BeanId getBeanId(String beanId) {
@@ -64,9 +73,7 @@ public class BeanIdList {
 	}
 
 	/**
-	 * Returns if the string based bean Id is already registered.
-	 *
-	 * This method is not synchronized.
+	 * @return if the bean Id name is already registered.
 	 *
 	 */
 	public boolean containsBeanId(String beanId) {
@@ -74,10 +81,8 @@ public class BeanIdList {
 	}
 
 	/**
-	 * Returns an unmodifiable map where the key is the
+	 * @return An unmodifiable map where the key is the
 	 * string based beanId and the value is the BeanId.
-	 *
-	 * This method is not synchronized.
 	 *
 	 */
 	public Map<String, BeanId> getBeanIdMap() {
@@ -85,7 +90,7 @@ public class BeanIdList {
 	}
 
 	/**
-	 * Returns the current size of the map.
+	 * @return the current size of the map.
 	 *
 	 */
 	public int size() {
