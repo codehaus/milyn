@@ -216,5 +216,38 @@ public class BeanPopulatorTest extends TestCase {
         	assertNotNull(orderItem.getOrder());
         }
     }
+    
+    public void test_populate_Employee() throws SAXException, IOException, InterruptedException {
+        test_populate_Employee("employee-01-smooks-config.xml");
+    }
+
+	/**
+	 * Test with inherited model
+	 * 
+	 * @param string
+	 * @throws IOException 
+	 * @throws SAXException 
+	 */
+	private void test_populate_Employee(String configName) throws IOException, SAXException {
+		
+		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
+		
+        Smooks smooks = new Smooks(packagePath + "/" + configName);
+        ExecutionContext executionContext = smooks.createExecutionContext();
+        
+        JavaResult result = new JavaResult();
+        
+        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("employee-01.xml")));
+        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+
+        Employee employee = (Employee) result.getBean("employee");
+        
+        assertNotNull(employee);
+        
+        assertEquals("111", employee.getFirstName());
+        assertEquals("222", employee.getLastName());
+        assertEquals("333", employee.getEmployeeId());
+        
+	}
 
 }
