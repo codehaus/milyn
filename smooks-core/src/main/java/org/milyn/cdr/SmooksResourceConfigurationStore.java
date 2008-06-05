@@ -104,12 +104,30 @@ public class SmooksResourceConfigurationStore {
         registerInstalledResources("installed-param-decoders.cdrl");
         registerInstalledResources("installed-serializers.cdrl");
 
+        addShutdownHook();
+    }
+
+    private void addShutdownHook() {
         shutdownHook = new Thread() {
             public void run() {
                 _close();
             }
         };
         Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
+    /**
+     * Remove the shutdown hook associated with this store instance.
+     */
+    public void removeShutdownHook() {
+        if(shutdownHook != null) {
+            synchronized (shutdownHook) {
+                if(shutdownHook != null) {
+                    Runtime.getRuntime().removeShutdownHook(shutdownHook);
+                    shutdownHook = null;
+                }
+            }
+        }
     }
 
     private void registerInstalledHandlerFactories() {
@@ -152,11 +170,11 @@ public class SmooksResourceConfigurationStore {
         }
     }
 
-	/**
+    /**
 	 * Load all .cdrl files listed in the BufferedReader stream.
 	 * <p/>
 	 * Because this method uses the ContainerResourceLocator it may be possible
-	 * to load external cdrl files.  If the ContainerResourceLocator is a 
+	 * to load external cdrl files.  If the ContainerResourceLocator is a
 	 * ServletResourceLocator the lines in the BufferedReader param can contain
 	 * external URLs.
 	 * @param cdrlLoadList BufferedReader cdrl list - one cdrl def per line.
@@ -165,16 +183,16 @@ public class SmooksResourceConfigurationStore {
 	public void load(BufferedReader cdrlLoadList) throws IOException {
 		String uri;
 		ContainerResourceLocator resLocator = applicationContext.getResourceLocator();
-		
+
 		while((uri = cdrlLoadList.readLine()) != null) {
 			uri = uri.trim();
 			if(uri.equals("") || uri.charAt(0) == '#') {
 				continue;
 			}
-			
+
 			try {
 				InputStream resource = resLocator.getResource(uri);
-				
+
 				logger.info("Loading Smooks Resources from uri [" + uri + "].");
                 registerResources(uri, resource);
 				logger.debug("[" + uri + "] Loaded.");
@@ -201,14 +219,14 @@ public class SmooksResourceConfigurationStore {
      */
     public void registerResources(String baseURI, InputStream resourceConfigStream) throws SAXException, IOException, URISyntaxException {
         SmooksResourceConfigurationList configList;
-        
+
         if(baseURI == null || baseURI.trim().equals("")) {
             throw new IllegalArgumentException("null or empty 'name' arg in method call.");
         }
         if(resourceConfigStream == null) {
             throw new IllegalArgumentException("null 'resourceConfigStream' arg in method call.");
         }
-        
+
         configList = XMLConfigDigester.digestConfig(resourceConfigStream, baseURI);
         configLists.add(configList);
 
@@ -232,6 +250,7 @@ public class SmooksResourceConfigurationStore {
         }
     }
 
+
     /**
      * Register a {@link SmooksResourceConfiguration} on this context store.
      * <p/>
@@ -245,7 +264,6 @@ public class SmooksResourceConfigurationStore {
         defaultList.add(resourceConfig);
     }
 
-
     /**
      * Get all the added SmooksResourceConfigurationList instances added on this store.
      *
@@ -256,7 +274,7 @@ public class SmooksResourceConfigurationStore {
     }
 
     /**
-	 * Get all the SmooksResourceConfiguration entries registered on this context store 
+	 * Get all the SmooksResourceConfiguration entries registered on this context store
      * for the specified profile set.
 	 * @param profileSet The profile set against which to lookup.
 	 * @return All SmooksResourceConfiguration entries targeted at the specified useragent.
@@ -264,22 +282,22 @@ public class SmooksResourceConfigurationStore {
 	public SmooksResourceConfiguration[] getSmooksResourceConfigurations(ProfileSet profileSet) {
 		Vector allSmooksResourceConfigurationsColl = new Vector();
 		SmooksResourceConfiguration[] allSmooksResourceConfigurations;
-		
+
 		// Iterate through each of the loaded SmooksResourceConfigurationLists.
 		for(int i = 0; i < configLists.size(); i++) {
             SmooksResourceConfigurationList list = configLists.get(i);
 			SmooksResourceConfiguration[] resourceConfigs = list.getTargetConfigurations(profileSet);
-            
+
 			allSmooksResourceConfigurationsColl.addAll(Arrays.asList(resourceConfigs));
 		}
-		
+
 		allSmooksResourceConfigurations = new SmooksResourceConfiguration[allSmooksResourceConfigurationsColl.size()];
 		allSmooksResourceConfigurationsColl.toArray(allSmooksResourceConfigurations);
-		
+
 		return allSmooksResourceConfigurations;
 	}
-	
-	/**
+
+    /**
 	 * Load a Java Object defined by the supplied SmooksResourceConfiguration instance.
 	 * @param resourceConfig SmooksResourceConfiguration instance.
 	 * @return An Object instance from the SmooksResourceConfiguration.
@@ -288,7 +306,7 @@ public class SmooksResourceConfigurationStore {
 		Object object = null;
         String className = ClasspathUtils.toClassName(resourceConfig.getResource());
 
-        // Load the runtime class... 
+        // Load the runtime class...
 		Class classRuntime;
 		try {
 			classRuntime = ClassUtil.forName(className, getClass());
@@ -297,7 +315,7 @@ public class SmooksResourceConfigurationStore {
 			state.initCause(e);
 			throw state;
 		}
-		
+
 		// Try constructing via a SmooksResourceConfiguration constructor...
 		Constructor constructor;
 		try {
@@ -310,7 +328,7 @@ public class SmooksResourceConfigurationStore {
 			state.initCause(e);
 			throw state;
 		}
-		
+
 		// If we still don't have an object, try constructing via the default construtor...
 		if(object == null) {
 			try {
@@ -326,7 +344,7 @@ public class SmooksResourceConfigurationStore {
 			Configurator.configure((ContentHandler)object, resourceConfig, applicationContext);
             allocatedHandlers.add((ContentHandler)object);
         }
-		
+
 		return object;
 	}
 
@@ -348,20 +366,20 @@ public class SmooksResourceConfigurationStore {
         if(type == null) {
             throw new IllegalArgumentException("null 'resourceExtension' arg in method call.");
         }
-        
+
         for(int i = 0; i < configLists.size(); i++) {
             SmooksResourceConfigurationList list = configLists.get(i);
-            
+
             for(int ii = 0; ii < list.size(); ii++) {
                 SmooksResourceConfiguration config = list.get(ii);
                 String selector = config.getSelector();
-                
+
                 if(CDU_CREATOR.equals(selector) && type.equalsIgnoreCase(config.getStringParameter(ContentHandlerFactory.PARAM_RESTYPE))) {
                     return (ContentHandlerFactory) getObject(config);
                 }
             }
         }
-        
+
         throw new UnsupportedContentHandlerTypeException(type);
     }
 
@@ -371,7 +389,7 @@ public class SmooksResourceConfigurationStore {
      */
     public void close() {
         _close();
-        Runtime.getRuntime().removeShutdownHook(shutdownHook);
+        removeShutdownHook();
     }
 
     private void _close() {
