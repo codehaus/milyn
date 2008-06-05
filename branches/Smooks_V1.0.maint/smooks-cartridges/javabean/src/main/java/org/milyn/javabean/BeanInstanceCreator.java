@@ -56,7 +56,7 @@ import org.w3c.dom.Element;
 @VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
         summary = "Ended bean lifecycle. Set bean on any targets.", 
         detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
-public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
+public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
@@ -99,7 +99,8 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     public void initialize() throws SmooksConfigurationException {
     	buildId();
 
-    	beanRuntimeInfo = resolveBeanRuntime(beanClassName);
+        beanClassName = beanClassName.trim();
+        beanRuntimeInfo = resolveBeanRuntime(beanClassName);
         BeanRuntimeInfo.recordBeanRuntimeInfo(beanId, beanRuntimeInfo, appContext);
 
         // Get the details of the bean on which instances of beans created by this class are to be set on.
