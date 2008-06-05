@@ -71,6 +71,9 @@ public abstract class BeanUtils {
         if(beanSetterMethod == null && Character.class.isAssignableFrom(setterParamType)) {
             beanSetterMethod = getMethod(setterName, bean, Character.TYPE);
         }
+        if(beanSetterMethod == null && Short.class.isAssignableFrom(setterParamType)) {
+            beanSetterMethod = getMethod(setterName, bean, Short.TYPE);
+        }
         if(beanSetterMethod == null && Byte.class.isAssignableFrom(setterParamType)) {
             beanSetterMethod = getMethod(setterName, bean, Byte.TYPE);
         }

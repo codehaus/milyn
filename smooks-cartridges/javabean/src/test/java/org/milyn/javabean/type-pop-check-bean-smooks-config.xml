@@ -11,6 +11,8 @@
         	<binding selector="${integerValList}" />
         	<binding selector="${integerValMap}" />
         	
+        	<binding property="byteVal" type="Byte" selector="data byteVal" />
+        	<binding property="shortVal" type="Short" selector="data shortVal" />
             <binding property="intVal" type="Integer" selector="data intVal" />
             <binding property="longVal" type="Long" selector="data longVal" />
             <binding property="boolVal" type="Boolean" selector="data boolVal" />
