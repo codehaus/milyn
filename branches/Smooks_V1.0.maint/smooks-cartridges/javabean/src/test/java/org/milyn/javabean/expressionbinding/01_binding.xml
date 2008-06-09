@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <resource-config selector="message">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">message1</param>
+        <param name="beanClass">org.milyn.javabean.expressionbinding.Message</param>
+        <param name="bindings">
+            <binding property="date">message2.date</binding>
+            <binding property="datePlus1Year" type="MessageDate">
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + (messageDate.year + 1)
+            </binding>
+            <binding property="message2">message2</binding>
+        </param>
+    </resource-config>
+
+    <resource-config selector="message">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">message2</param>
+        <param name="beanClass">java.util.HashMap</param>
+        <param name="bindings">
+            <binding property="date" type="MessageDate">
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + messageDate.year
+            </binding>
+            <binding property="datePlus1Year" type="MessageDate">
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + (messageDate.year + 1)
+            </binding>
+        </param>
+    </resource-config>
+
+    <resource-config selector="message">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">message3</param>
+        <param name="beanClass">java.util.HashMap</param>
+        <param name="bindings">
+            <binding property="date" type="MessageDate">
+                <!--
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + messageDate.year
+                -->
+            </binding>
+        </param>
+    </resource-config>
+
+    <resource-config selector="message">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">messageDate</param>
+        <param name="beanClass">java.util.HashMap</param>
+        <param name="bindings">
+            <binding property="time" selector="message/time" />
+            <binding property="day" selector="message/day" />
+            <binding property="month" selector="message/month" />
+            <binding property="year" selector="message/year" />
+        </param>
+    </resource-config>
+
+    <resource-config selector="decoder:MessageDate">
+        <resource>org.milyn.javabean.decoders.DateDecoder</resource>
+        <param name="format">HH:mm dd/MM/yyyy</param>
+    </resource-config>
+
+</smooks-resource-list>
