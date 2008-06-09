@@ -8,7 +8,7 @@
         <param name="bindings">
             <binding property="date">message2.date</binding>
             <binding property="datePlus1Year" type="MessageDate">
-                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + (messageDate.year + 1)
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + (messageDate.year + 1) + " GMT"
             </binding>
             <binding property="message2">message2</binding>
         </param>
@@ -20,10 +20,10 @@
         <param name="beanClass">java.util.HashMap</param>
         <param name="bindings">
             <binding property="date" type="MessageDate">
-                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + messageDate.year
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + messageDate.year + " GMT"
             </binding>
             <binding property="datePlus1Year" type="MessageDate">
-                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + (messageDate.year + 1)
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + (messageDate.year + 1) + " GMT"
             </binding>
         </param>
     </resource-config>
@@ -35,7 +35,7 @@
         <param name="bindings">
             <binding property="date" type="MessageDate">
                 <!--
-                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + messageDate.year
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + messageDate.year + " GMT"
                 -->
             </binding>
         </param>
@@ -55,7 +55,7 @@
 
     <resource-config selector="decoder:MessageDate">
         <resource>org.milyn.javabean.decoders.DateDecoder</resource>
-        <param name="format">HH:mm dd/MM/yyyy</param>
+        <param name="format">HH:mm dd/MM/yyyy z</param>
     </resource-config>
 
 </smooks-resource-list>
