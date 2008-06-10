@@ -15,15 +15,15 @@
 */
 package org.milyn.javabean.expression;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanAccessor;
-import org.mvel.MVEL;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -40,6 +40,8 @@ import java.util.Map;
  */
 public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implements ExecutionContextExpressionEvaluator {
 
+    private static Log logger = LogFactory.getLog(BeanMapExpressionEvaluator.class);
+
     public BeanMapExpressionEvaluator() {
     }
 
@@ -49,11 +51,31 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
 
     public boolean eval(ExecutionContext context) throws ExpressionEvaluationException {
         Map beans = BeanAccessor.getBeanMap(context);
-        return eval(beans);
+        boolean result = eval(beans);
+
+        if(logger.isDebugEnabled()) {
+            logger.debug("Expression condition evaluation:===========================================================");
+            logger.debug("\tExpression='" + getExpression() + "'");
+            logger.debug("\tBean Map='" + beans + "'");
+            logger.debug("\tResult='" + result + "'");
+            logger.debug("===========================================================================================");
+        }
+
+        return result;
     }
 
     public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
         Map beans = BeanAccessor.getBeanMap(context);
-        return getValue(beans);
+        Object value = getValue(beans);
+
+        if(logger.isDebugEnabled()) {
+            logger.debug("Expression value evaluation:===============================================================");
+            logger.debug("\tExpression='" + getExpression() + "'");
+            logger.debug("\tBean Map='" + beans + "'");
+            logger.debug("\tValue='" + value + "'");
+            logger.debug("===========================================================================================");
+        }
+
+        return value;
     }
 }
