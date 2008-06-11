@@ -34,7 +34,7 @@ import org.milyn.javabean.DecodeType;
  * standard as used by the XML Schema type "<a href="http://www.w3.org/TR/xmlschema-2/#dateTime">dateTime</a>".
  * <p/>
  * This decoder is synchronized on its underlying {@link SimpleDateFormat} instance.
- * @see {@link LocaleAwareDateDecoder}
+ * @see LocaleAwareDateDecoder
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
