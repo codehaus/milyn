@@ -30,7 +30,7 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">${classConfig.beanId}</param>
         <param name="beanClass">${classConfig.beanClass.name}<#if classConfig.array>[]</#if></param>
-        <param name="bingings">
+        <param name="bindings">
             <#list classConfig.bindings as binding>
             <binding <#if binding.boundToProperty>property="${binding.property.name}" </#if><#if !binding.wiring>type="${binding.type}" </#if>selector="${binding.selector}" />
             </#list>

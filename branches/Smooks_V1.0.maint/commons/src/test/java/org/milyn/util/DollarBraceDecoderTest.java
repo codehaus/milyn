@@ -30,6 +30,7 @@ public class DollarBraceDecoderTest  extends TestCase {
         assertEquals("[x, x, y]", DollarBraceDecoder.getTokens("a}aa${x}a${x}a${y}a").toString());
         assertEquals("[x, x, y]", DollarBraceDecoder.getTokens("a}a${a${x}a${x}a${y}a").toString());
         assertEquals("[x, x, y]", DollarBraceDecoder.getTokens("a}a${a${x}a${x}a${y}a${").toString());
+        assertEquals("[orderDetail.orderNum, accounts[0].USERID[2], orderDetail.date]", DollarBraceDecoder.getTokens( "INSERT INTO ORDERS VALUES(${orderDetail.orderNum}, ${accounts[0].USERID[2]}, ${orderDetail.date})").toString());
     }
 
     public void test_replaceTokens() {
@@ -40,6 +41,7 @@ public class DollarBraceDecoderTest  extends TestCase {
         assertEquals("test-?.txt", DollarBraceDecoder.replaceTokens( "test-${currentDate.date?string('yyyy')}.txt", "?"));
         assertEquals("test-?.txt", DollarBraceDecoder.replaceTokens( "test-${currentDate.date?string('yyyy-MM-dd-HH-mm-sss')}.txt", "?"));
         assertEquals("test-?.txt", DollarBraceDecoder.replaceTokens( "test-${currentDate.date?string(\"yyyy-MM-dd-HH-mm-sss\")}.txt", "?"));
+        assertEquals("INSERT INTO ORDERS VALUES(?, ?, ?)", DollarBraceDecoder.replaceTokens( "INSERT INTO ORDERS VALUES(${orderDetail.orderNum}, ${accounts[0].USERID[2]}, ${orderDetail.date})", "?"));
     }
     
 }
