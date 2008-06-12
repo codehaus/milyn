@@ -29,8 +29,24 @@ import java.util.*;
 
 /**
  * Java binding configuration template generator.
+ * <h3>Usage</h3>
+ * From the commandline:
+ * <pre>
+ * {@code
+ *     $JAVA_HOME/bin/java -classpath <classpath> org.milyn.javabean.gen.ConfigGenerator -c <rootBeanClass> -o <outputFilePath> [-p <propertiesFilePath>]
+ * }</pre>
+ * <ul>
+ *  <li>The "-c" commandline arg specifies the root class of the model whose binding config is to be generated.</li>
+ *  <li>The "-o" commandline arg specifies the path and filename for the generated config output.</li>
+ *  <li>The "-p" commandline arg specifies the path and filename optional binding configuration file that specifies aditional binding parameters.</li>
+ * </ul>
  * <p/>
- *
+ * The optional "-p" properties file parameter allows specification of additional config parameters:
+ * <ul>
+ *  <li><b>packages.included</b>: Semi-colon seperated list of packages scoping classes to be included in the binding generation.</li>
+ *  <li><b>packages.excluded</b>: Semi-colon seperated list of packages scoping classes to be excluded in the binding generation.</li>
+ * </ul>
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class ConfigGenerator {
@@ -40,19 +56,19 @@ public class ConfigGenerator {
     public static final String PACKAGES_EXCLUDED = "packages.excluded";
 
     private Writer outputWriter;
-    private Class<?> rootBeanClass;
+    private Class rootBeanClass;
     private List<String> packagesIncluded;
     private List<String> packagesExcluded;
     private Stack classStack = new Stack();
 
-    public void main(String args[]) throws IOException, ClassNotFoundException {
-        if(args.length != 2) {
-            throw new IllegalArgumentException("Expecting 2 arguments specifying:\n\t1. The path to the binding configuration properties file.\n\t2. The output Smooks configuration template.  See class Javadoc.");
-        }
+    public static void main(String args[]) throws IOException, ClassNotFoundException {
+        String rootBeanClassName = getArgument("-c", "Root Bean Class Name", true, args);
+        String outputFileName = getArgument("-o", "Output File Path", true, args);
+        String propertiesFile = getArgument("-p", "Binding Generation Config File Path", false, args);
+        Properties properties = loadProperties(propertiesFile);
+        File outputFile = new File(outputFileName);
 
-        Properties properties = loadProperties(args[0]);
-        File outputFile = new File(args[1]);
-
+        properties.setProperty(ROOT_BEAN_CLASS, rootBeanClassName);
         outputFile.getParentFile().mkdirs();
         Writer outputWriter = new FileWriter(outputFile);
 
@@ -235,22 +251,39 @@ public class ConfigGenerator {
         return packagesSet;
     }
 
-    private Properties loadProperties(String fileName) throws IOException {
-        File propertiesFile = new File(fileName);
-
-        if(!propertiesFile.exists()) {
-            throw new IllegalArgumentException("Binding configuration properties file '" + propertiesFile.getAbsolutePath() + "' doesn't exist.  See class Javadoc.");
-        }
-
+    private static Properties loadProperties(String fileName) throws IOException {
         Properties properties = new Properties();
-        InputStream stream = new FileInputStream(propertiesFile);
 
-        try {
-            properties.load(stream);
-        } finally {
-            stream.close();
+        if(fileName != null) {
+            File propertiesFile = new File(fileName);
+
+            if(!propertiesFile.exists()) {
+                throw new IllegalArgumentException("Binding configuration properties file '" + propertiesFile.getAbsolutePath() + "' doesn't exist.  See class Javadoc.");
+            }
+
+            InputStream stream = new FileInputStream(propertiesFile);
+
+            try {
+                properties.load(stream);
+            } finally {
+                stream.close();
+            }
         }
 
         return properties;
+    }
+
+    private static String getArgument(String argAlias, String argName, boolean mandatory, String[] args) {
+        for(int i = 0; i < args.length; i++) {
+            if(args[i].equalsIgnoreCase(argAlias) && i + 1 < args.length) {
+                return args[i + 1].trim();
+            }
+        }
+
+        if(mandatory) {
+            throw new IllegalArgumentException("Binding configuration error.  Missing value for commandline arg '" + argAlias + "' (" + argName + ")'.");
+        } else {
+            return null;
+        }
     }
 }

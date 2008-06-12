@@ -39,4 +39,8 @@ public class ConfigGeneratortTest extends TestCase {
 
         System.out.println(writer.toString());
     }
+
+    public void test_commandLine() throws ClassNotFoundException, IOException {
+        ConfigGenerator.main(new String[] {"-c", Order.class.getName(), "-o", "./target/binding-config-test.xml"});
+    }
 }
