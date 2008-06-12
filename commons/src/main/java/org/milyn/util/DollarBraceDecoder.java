@@ -27,7 +27,11 @@ import java.util.ArrayList;
  */
 public class DollarBraceDecoder {
 
-    public static final String PATTERN = "\\$\\{[.\\w\\?\\[\\](\\(['\"].[\\w-]['\"]\\))]+\\}";
+    /**
+     * Match against "${}", where there's at least one of any character
+     * except '}' in between the braces ("{}").
+     */
+    public static final String PATTERN = "\\$\\{[^\\}]+\\}";
     private static final Pattern pattern = Pattern.compile(PATTERN);
 
     /**
