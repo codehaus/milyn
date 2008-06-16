@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -40,6 +41,7 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
@@ -54,7 +56,7 @@ import org.w3c.dom.Element;
 @VisitBeforeReport(summary = "Created <b>${resource.parameters.beanId!'undefined'}</b> bean instance.  Associated lifecycle if wired to another bean.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_Before.html")
 @VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
-        summary = "Ended bean lifecycle. Set bean on any targets.", 
+        summary = "Ended bean lifecycle. Set bean on any targets.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
 public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
@@ -75,6 +77,12 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,S
 
     @ConfigParam(use=ConfigParam.Use.OPTIONAL)
     private String setOn; // The name of the bean on which to set this bean
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private MVELExpressionEvaluator beforeBindingExpression;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private MVELExpressionEvaluator afterBindingExpression;
 
     @Config
     private SmooksResourceConfiguration config;
@@ -155,19 +163,22 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,S
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         createAndSetBean(executionContext);
+        beforeBindingExpressionEvaluation(executionContext);
     }
 
-    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+
+	public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         createAndSetBean(executionContext);
+        beforeBindingExpressionEvaluation(executionContext);
     }
-    
+
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext)
 			throws SmooksException {
-		
+
 		visitAfter(executionContext);
 	}
 
@@ -176,33 +187,34 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,S
 	 */
 	public void visitAfter(SAXElement element, ExecutionContext executionContext)
 			throws SmooksException, IOException {
-		
+
 		visitAfter(executionContext);
 	}
 
 	public void visitAfter(ExecutionContext executionContext) {
-		
+
 		Classification thisBeanType = beanRuntimeInfo.getClassification();
-		
+
 		boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 		boolean isSetOn = (setOn != null);
-		
+
 		if(isSetOn || isBeanTypeArray) {
 			Object bean  = BeanUtils.getBean(beanId, executionContext);
-	    	
+
 			if(isBeanTypeArray) {
 				// This bean is an array, we need to convert the List used to create it into
 		        // an array of that type, and add that array to the BeanAccessor, overwriting the list
 		    	bean = convert(bean, executionContext);
 			}
-			
+
 			if(isSetOn) {
 				setOn(bean, executionContext);
 			}
-			
-			
+
+
 		}
-		
+		afterBindingExpressionEvaluation(executionContext);
+
 	}
 
 
@@ -239,9 +251,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,S
     	Object setOnBean = getSetOnTargetBean(executionContext);
 
         if (setOnBean != null) {
-        	
+
             Classification setOnBeanType = setOnBeanRuntimeInfo.getClassification();
-            
+
             // Set the bean instance on another bean. Supports creating an object graph
             if(setOnBeanType == Classification.NON_COLLECTION) {
                 setOnNonCollection(executionContext, bean, setOnBean);
@@ -381,6 +393,27 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,S
 
         return setOnBeanSetterMethod;
     }
+
+
+    /**
+	 * @param executionContext
+	 */
+	private void beforeBindingExpressionEvaluation(ExecutionContext executionContext) {
+		if(beforeBindingExpression != null) {
+			Map<String, Object> beanMap = BeanAccessor.getBeanMap(executionContext);
+			beforeBindingExpression.getValue(beanMap);
+		}
+	}
+
+	/**
+	 * @param executionContext
+	 */
+	private void afterBindingExpressionEvaluation(ExecutionContext executionContext) {
+		if(afterBindingExpression != null) {
+			Map<String, Object> beanMap = BeanAccessor.getBeanMap(executionContext);
+			afterBindingExpression.getValue(beanMap);
+		}
+	}
 
     private String getId() {
 		return id;
