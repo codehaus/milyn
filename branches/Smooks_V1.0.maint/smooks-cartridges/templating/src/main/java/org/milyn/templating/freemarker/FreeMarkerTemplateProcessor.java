@@ -50,7 +50,7 @@ import java.util.Map;
  *
  * @author tfennelly
  */
-@VisitBeforeReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_Before.html")
+@VisitBeforeReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_before.html")
 @VisitAfterReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_After.html")
 public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor {
 
