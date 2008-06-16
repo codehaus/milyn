@@ -36,8 +36,8 @@ public class ExpressionBindingTest extends TestCase {
 
 	private final Log logger = LogFactory.getLog(ExpressionBindingTest.class);
 
-    public void test() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("01_binding.xml"));
+    public void _test_message() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("01_message_smooks_config.xml"));
         JavaResult result = new JavaResult();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("01_message.xml")), result);
@@ -68,5 +68,16 @@ public class ExpressionBindingTest extends TestCase {
         Date messageDate = (Date) message.get("date");
         logger.debug("Date: " + messageDate);
         assertEquals(946143900000L, messageDate.getTime());
+    }
+
+    public void test_order() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("01_order_smooks_config.xml"));
+        JavaResult result = new JavaResult();
+
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("01_order.xml")), result);
+
+        Map<?, ?> order = (Map<?, ?>) result.getBean("order");
+
+        assertEquals(61.95, order.get("totalSum"));
     }
 }
