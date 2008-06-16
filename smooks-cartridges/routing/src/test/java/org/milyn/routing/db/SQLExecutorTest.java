@@ -17,6 +17,7 @@ package org.milyn.routing.db;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.BeanAccessor;
 import org.milyn.payload.StringSource;
@@ -76,7 +77,7 @@ public class SQLExecutorTest extends TestCase {
         assertTrue(orders32 == orders42); // order42 should come from the app context cache
     }
 
-    public void test_ResultsetRowSelector() throws IOException, SAXException, InterruptedException {
+    public void test_ResultsetRowSelector_01() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
         ExecutionContext execContext = smooks.createExecutionContext();
 
@@ -84,5 +85,29 @@ public class SQLExecutorTest extends TestCase {
         Map<String, Object> myOrder = (Map<String, Object>) BeanAccessor.getBean(execContext, "myOrder");
 
         assertEquals("{ORDERNUMBER=2, CUSTOMERNUMBER=2, PRODUCTCODE=456}", myOrder.toString());
+    }
+
+
+    public void test_ResultsetRowSelector_02() throws IOException, SAXException, InterruptedException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-failed-select-01.xml"));
+        ExecutionContext execContext = smooks.createExecutionContext();
+
+        smooks.filter(new StringSource("<doc/>"), null, execContext);
+        Map<String, Object> myOrder = (Map<String, Object>) BeanAccessor.getBean(execContext, "myOrder");
+
+        assertEquals(null, myOrder);
+    }
+
+    public void test_ResultsetRowSelector_03() throws IOException, SAXException, InterruptedException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-failed-select-02.xml"));
+        ExecutionContext execContext = smooks.createExecutionContext();
+
+        BeanAccessor.addBean(execContext, "requiredOrderNum", 9999);
+        try {
+            smooks.filter(new StringSource("<doc/>"), null, execContext);
+            fail("Expected DataSelectionException");
+        } catch(SmooksException e) {
+            assertEquals("Order with ORDERNUMBER=9999 not found in Database", e.getCause().getMessage());
+        }
     }
 }

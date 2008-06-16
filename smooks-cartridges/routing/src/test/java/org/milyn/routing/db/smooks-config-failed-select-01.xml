@@ -24,17 +24,7 @@
         <param name="executeBefore">true</param>
         <param name="resultSetName">orders1</param>
         <param name="beanId">myOrder</param>
-        <param name="where">row.ORDERNUMBER == 2</param>
-        <param name="failedSelectError">Order with ORDERNUMBER=2 not found in Database</param>
-    </resource-config>
-
-    <resource-config selector="$document">
-        <resource>org.milyn.routing.db.SQLExecutor</resource>
-        <param name="datasource">OrdersDS</param>
-        <param name="statement">select * from ORDERS</param>
-        <param name="resultSetName">orders2</param>
-        <param name="resultSetScope">APPLICATION</param>
-        <param name="resultSetTTL">2000</param>
+        <param name="where">row.ORDERNUMBER == 9999999</param> <!-- Invalid order number, but no error message -->
     </resource-config>
 
 </smooks-resource-list>

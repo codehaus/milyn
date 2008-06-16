@@ -27,6 +27,7 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanAccessor;
+import org.milyn.util.FreeMarkerTemplate;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,6 +48,9 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter {
     @ConfigParam(name = "where")
     private MVELExpressionEvaluator whereEvaluator;
 
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
+    private FreeMarkerTemplate failedSelectError;
+
     @ConfigParam
     private String beanId;
 
@@ -58,7 +62,7 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter {
         selectRow(executionContext);
     }
 
-    private void selectRow(ExecutionContext executionContext) {
+    private void selectRow(ExecutionContext executionContext) throws SmooksException {
         Map beanMap = BeanAccessor.getBeanMap(executionContext);
 
         // Clear the last current row value for the bean...
@@ -85,8 +89,13 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter {
                     beanMap.remove("row");
                 }
 
+                Object selectedRow = beanMap.get(beanId);
+                if(selectedRow == null && failedSelectError != null) {
+                    throw new DataSelectionException(failedSelectError.apply(beanMap));
+                }
+
                 if(logger.isDebugEnabled()) {
-                    logger.debug("Selected resultset where '" + whereEvaluator.getExpression() + "': [" + beanMap.get(beanId) + "].");
+                    logger.debug("Selected resultset where '" + whereEvaluator.getExpression() + "': [" + selectedRow + "].");
                 }
             } catch(ClassCastException e) {
                 throw new SmooksException("Bean '" + resultSetName + "' cannot be used as a Reference Data resultset.  The resultset List must contain entries of type Map<String, Object>.");
