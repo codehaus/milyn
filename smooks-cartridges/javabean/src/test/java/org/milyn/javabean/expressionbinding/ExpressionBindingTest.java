@@ -15,20 +15,26 @@
 */
 package org.milyn.javabean.expressionbinding;
 
-import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.payload.JavaResult;
-import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+
+import javax.xml.transform.stream.StreamSource;
+
+import junit.framework.TestCase;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.Smooks;
+import org.milyn.payload.JavaResult;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class ExpressionBindingTest extends TestCase {
+
+	private final Log logger = LogFactory.getLog(ExpressionBindingTest.class);
 
     public void test() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("01_binding.xml"));
@@ -42,19 +48,25 @@ public class ExpressionBindingTest extends TestCase {
 
         assertDateValue(result, "message2");
         assertDateValue(result, "message3");
+        assertDateValue(result, "message4");
 
-        Map message2 = (Map) result.getBean("message2");
+        Map<?, ?> message2 = (Map<?, ?>) result.getBean("message2");
         Date messageDate = (Date) message2.get("datePlus1Year");
-        System.out.println("Date plus 1 year: " + messageDate);
+        logger.debug("Date plus 1 year: " + messageDate);
         assertEquals(977766300000L, messageDate.getTime());
 
-        assertTrue(message2 == message1.getMessage2());        
+        assertTrue(message2 == message1.getMessage2());
+
+        Map<?, ?> message5 = (Map<?, ?>) result.getBean("message5");
+
+        assertEquals(10, message5.get("number"));
+        assertEquals(15, message5.get("numberAddition"));
     }
 
     private void assertDateValue(JavaResult result, String beanId) {
-        Map message = (Map) result.getBean(beanId);
+        Map<?, ?> message = (Map<?, ?>) result.getBean(beanId);
         Date messageDate = (Date) message.get("date");
-        System.out.println("Date: " + messageDate);
+        logger.debug("Date: " + messageDate);
         assertEquals(946143900000L, messageDate.getTime());
     }
 }

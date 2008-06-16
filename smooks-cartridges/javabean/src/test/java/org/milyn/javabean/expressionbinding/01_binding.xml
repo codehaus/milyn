@@ -43,6 +43,32 @@
 
     <resource-config selector="message">
         <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">message4</param>
+        <param name="beanClass">java.util.HashMap</param>
+        <param name="bindings">
+            <binding property="date" type="MessageDate">
+                <![CDATA[
+                messageDate.time + " " + messageDate.day + "/" + messageDate.month + "/" + messageDate.year + " GMT"
+                ]]>
+            </binding>
+        </param>
+    </resource-config>
+
+        <resource-config selector="message">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">message5</param>
+        <param name="beanClass">java.util.HashMap</param>
+        <param name="bindings">
+        	<binding property="numberAddition" type="Integer">
+        		a = message5.number;
+        		a + 5;
+        	</binding>
+            <binding property="number" type="Integer">10</binding>
+        </param>
+    </resource-config>
+
+    <resource-config selector="message">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">messageDate</param>
         <param name="beanClass">java.util.HashMap</param>
         <param name="bindings">
