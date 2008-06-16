@@ -16,6 +16,8 @@
 package org.milyn.routing.db;
 
 import org.milyn.SmooksException;
+import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
@@ -48,6 +50,8 @@ import java.util.Map;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
 @VisitAfterIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
+@VisitBeforeReport(summary = "Execute statement '${resource.parameters.statement}' on Datasource '${resource.parameters.datasource}'.", detailTemplate = "reporting/SQLExecutor.html")
+@VisitAfterReport(summary = "Execute statement '${resource.parameters.statement}' on Datasource '${resource.parameters.datasource}'.", detailTemplate = "reporting/SQLExecutor.html")
 public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor {
 
     @ConfigParam

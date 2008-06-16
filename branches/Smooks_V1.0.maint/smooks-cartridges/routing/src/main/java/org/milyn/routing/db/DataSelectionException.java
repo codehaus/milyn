@@ -13,27 +13,22 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.annotation;
+package org.milyn.routing.db;
 
-import java.lang.annotation.*;
+import org.milyn.SmooksException;
 
 /**
- * Visit If annotation.
- *
+ * Data selection exception.
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-@Inherited
-public abstract @interface VisitAfterIf {
+public class DataSelectionException extends SmooksException {
 
-    /**
-     * The {@link org.milyn.cdr.SmooksResourceConfiguration} condition that
-     * must evaluate to true in order for the visitAfter method to be called.
-     *
-     * @return An inline <a href="http://mvel.codehaus.org/">MVEL</a> expression,
-     * or a reference to a file resource on the classpath.
-     */
-    public abstract String condition();
+    public DataSelectionException(String message) {
+        super(message);
+    }
+
+    public DataSelectionException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
