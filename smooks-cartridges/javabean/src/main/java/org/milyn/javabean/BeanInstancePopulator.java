@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
@@ -41,7 +42,6 @@ import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
@@ -75,7 +75,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String wireBeanId;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private MVELExpressionEvaluator expression;
+    private MVELExpressionEvaluator expression;    
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -299,7 +299,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 	}
 
     private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
-        Map<String, Object> beanMap = BeanAccessor.getBeanMap(executionContext);
+        Map beanMap = BeanAccessor.getBeanMap(executionContext);
         Object dataObject = expression.getValue(beanMap);
 
         if(dataObject instanceof String) {
@@ -324,7 +324,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	{
     		return;
     	}
-
+    	
         Object bean = BeanUtils.getBean(beanId, executionContext);
 
         Classification beanType = beanRuntimeInfo.getClassification();

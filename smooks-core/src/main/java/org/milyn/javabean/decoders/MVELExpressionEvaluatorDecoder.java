@@ -15,10 +15,10 @@
 */
 package org.milyn.javabean.decoders;
 
-import org.milyn.expression.MVELExpressionEvaluator;
-import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DecodeType;
+import org.milyn.expression.MVELExpressionEvaluator;
 
 /**
  * {@link MVELExpressionEvaluator} data decoder impl.
@@ -31,12 +31,8 @@ public class MVELExpressionEvaluatorDecoder implements DataDecoder {
     public Object decode(String data) throws DataDecodeException {
         MVELExpressionEvaluator expressionEvaluator = new MVELExpressionEvaluator();
 
-        try {
-        	expressionEvaluator.setExpression(data);
+        expressionEvaluator.setExpression(data);
 
-        	return expressionEvaluator;
-        } catch (RuntimeException e) {
-			throw new DataDecodeException("Exception while setting the expression on the MVELExpressionEvaluator", e);
-		}
+        return expressionEvaluator;
     }
 }
