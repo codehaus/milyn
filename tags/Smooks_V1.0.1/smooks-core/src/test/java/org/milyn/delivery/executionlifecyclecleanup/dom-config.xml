@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <resource-config selector="a">
+        <resource>org.milyn.delivery.executionlifecyclecleanup.DomAssemblyBefore</resource>
+    </resource-config>
+
+    <resource-config selector="b">
+        <resource>org.milyn.delivery.executionlifecyclecleanup.DomAssemblyAfterWithException</resource>
+    </resource-config>
+
+    <resource-config selector="b">
+        <resource>org.milyn.delivery.executionlifecyclecleanup.DomAssemblyAfter</resource>
+    </resource-config>
+
+    <resource-config selector="c">
+        <resource>org.milyn.delivery.executionlifecyclecleanup.DomProcessingBefore</resource>
+    </resource-config>
+
+    <resource-config selector="d">
+        <resource>org.milyn.delivery.executionlifecyclecleanup.DomProcessingAfter</resource>
+    </resource-config>
+
+</smooks-resource-list>
