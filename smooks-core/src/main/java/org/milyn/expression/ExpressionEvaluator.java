@@ -16,7 +16,6 @@
 package org.milyn.expression;
 
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.util.ClassUtil;
 
 /**
  * Abstract expression evaluator interface.
@@ -62,7 +61,7 @@ public interface ExpressionEvaluator {
 
         public static ExpressionEvaluator createInstance(String className, String conditionExpression) {
             try {
-                ExpressionEvaluator evaluator = (ExpressionEvaluator) ClassUtil.forName(className, Factory.class).newInstance();
+                ExpressionEvaluator evaluator = (ExpressionEvaluator) Class.forName(className).newInstance();
 
                 if(!(evaluator instanceof ExecutionContextExpressionEvaluator)) {
                     throw new SmooksConfigurationException("Unsupported ExpressionEvaluator type '" + className + "'.  Currently only support '" + ExecutionContextExpressionEvaluator.class.getName() + "' implementations.");

@@ -36,10 +36,6 @@
       <priority value="ERROR"/>
    </category>
 
-   <category name="org.milyn.javabean">
-      <priority value="INFO"/>
-   </category>
-
    <!-- ======================= -->
    <!-- Setup the Root category -->
    <!-- ======================= -->

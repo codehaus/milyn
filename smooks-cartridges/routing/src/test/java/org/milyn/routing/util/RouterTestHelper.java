@@ -1,8 +1,7 @@
 package org.milyn.routing.util;
 
 import org.milyn.container.MockExecutionContext;
-import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.jms.TestBean;
 
 public final class RouterTestHelper
@@ -10,13 +9,11 @@ public final class RouterTestHelper
 	private RouterTestHelper() {}
 
 	public static MockExecutionContext createExecutionContext(
-			final String beanIdName,
+			final String beanId,
 			final TestBean bean)
 	{
         final MockExecutionContext executionContext = new MockExecutionContext();
-        
-        BeanId beanId = BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanIdList().register(beanIdName);
-        BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanId, bean);
+        BeanAccessor.addBean( executionContext, beanId, bean );
         return executionContext;
 	}
 

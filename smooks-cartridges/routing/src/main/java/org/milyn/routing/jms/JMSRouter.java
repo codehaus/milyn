@@ -14,25 +14,6 @@
  */
 package org.milyn.routing.jms;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -48,13 +29,21 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
 import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
 import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
 import org.milyn.util.FreeMarkerTemplate;
 import org.w3c.dom.Element;
+
+import javax.jms.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * <p/>
@@ -474,7 +463,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	}
 
     private void setCorrelationID(ExecutionContext execContext, Message message) {
-        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(execContext).getBeanMap();
+        Map beanMap = BeanAccessor.getBeanMap(execContext);
         String correlationId = correlationIdTemplate.apply(beanMap);
 
         try {

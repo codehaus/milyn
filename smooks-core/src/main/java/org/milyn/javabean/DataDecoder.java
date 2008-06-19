@@ -74,16 +74,21 @@ public interface DataDecoder extends ContentHandler {
         private static volatile Map<Class, Class<? extends DataDecoder>> installedDecoders;
 							        
         public static DataDecoder create(final Class targetType) throws DataDecodeException {
-            if(installedDecoders == null) {
-                loadInstalledDecoders();
-            }
+            Class<? extends DataDecoder> decoderType = getInstance(targetType);
 
-            Class<? extends DataDecoder> decoderType = installedDecoders.get(targetType);
             if(decoderType != null) {
                 return newInstance(decoderType);
             }
 
             return null;
+        }
+
+        public static Class<? extends DataDecoder> getInstance(Class targetType) {
+            if(installedDecoders == null) {
+                loadInstalledDecoders();
+            }
+
+            return installedDecoders.get(targetType);
         }
 
         private synchronized static void loadInstalledDecoders() throws DataDecodeException {

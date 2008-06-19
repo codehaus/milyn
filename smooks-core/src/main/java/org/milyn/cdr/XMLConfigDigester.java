@@ -222,8 +222,8 @@ public final class XMLConfigDigester {
             // And add the condition, if defined...
             if(conditionElement != null) {
                 String evaluatorClassName = conditionElement.getAttribute("evaluator");
-                if(evaluatorClassName == null) {
-                    throw new SAXException("smooks-resource/condition must specify an 'evaluator' attribute.  This attribute specifies the " + ExpressionEvaluator.class.getName() + " implementation class used to evaluate the condition expression.");
+                if(evaluatorClassName == null || evaluatorClassName.trim().equals("")) {
+                    evaluatorClassName = "org.milyn.javabean.expression.BeanMapExpressionEvaluator";
                 }
 
                 String evaluatorConditionExpression = DomUtils.getAllText(conditionElement, true);

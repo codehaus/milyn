@@ -25,6 +25,8 @@ import java.util.Map;
  */
 public class TypePopCheckBean {
     // Primitives...
+	private byte byteVal;
+	private short shortVal;
     private int intVal;
     private long longVal;
     private boolean boolVal;
@@ -48,11 +50,39 @@ public class TypePopCheckBean {
     // Map...
     private Map<String, Integer> integerValMap;
 
+    /**
+	 * @return the byteVal
+	 */
+	public byte getByteVal() {
+		return byteVal;
+	}
+
+	/**
+	 * @param byteVal the byteVal to set
+	 */
+	public void setByteVal(byte byteVal) {
+		this.byteVal = byteVal;
+	}
+
+	/**
+	 * @return the shortVal
+	 */
+	public short getShortVal() {
+		return shortVal;
+	}
+
+	/**
+	 * @param shortVal the shortVal to set
+	 */
+	public void setShortVal(short shortVal) {
+		this.shortVal = shortVal;
+	}
+	
     public int getIntVal() {
         return intVal;
     }
 
-    public void setIntVal(int intVal) {
+	public void setIntVal(int intVal) {
         this.intVal = intVal;
     }
 
@@ -144,7 +174,8 @@ public class TypePopCheckBean {
         this.integerValMap = integerValMap;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuffer string = new StringBuffer();
 
         string.append(intVal + ", ");

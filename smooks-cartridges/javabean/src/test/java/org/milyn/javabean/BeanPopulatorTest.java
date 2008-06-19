@@ -30,14 +30,13 @@ import javax.xml.transform.stream.StreamSource;
 import junit.framework.TestCase;
 
 import org.milyn.Smooks;
+import org.milyn.payload.JavaResult;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.io.StreamUtils;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.payload.JavaResult;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
@@ -47,8 +46,8 @@ import org.xml.sax.SAXException;
  */
 public class BeanPopulatorTest extends TestCase {
 
-	private Locale defaultLocale;
-
+	private Locale defaultLocale; 
+	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -59,14 +58,14 @@ public class BeanPopulatorTest extends TestCase {
 		defaultLocale = Locale.getDefault();
 		Locale.setDefault(new Locale("en", "IE"));
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-
+		
 		Locale.setDefault(defaultLocale);
 	}
 
@@ -143,7 +142,7 @@ public class BeanPopulatorTest extends TestCase {
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult(), executionContext);
 
-        MyGoodBean bean = (MyGoodBean)BeanRepositoryManager.getBeanRepository(executionContext).getBean("userBean");
+        MyGoodBean bean = (MyGoodBean)BeanAccessor.getBean("userBean", executionContext);
         assertNotNull("Null bean", bean);
         assertEquals("Myself", bean.getName());
         assertEquals("0861070070", bean.getPhoneNumber());
@@ -154,6 +153,11 @@ public class BeanPopulatorTest extends TestCase {
         test_populate_Order("order-01-smooks-config.xml", true, false);
         test_populate_Order("order-01-smooks-config-sax.xml", true, false);
         test_populate_Order("order-01-smooks-config-arrays.xml", true, false);
+
+        //Backward compatibility tests
+        test_populate_Order("order-01-smooks-config-setOn.xml", false, false);
+        test_populate_Order("order-01-smooks-config-sax-setOn.xml", false, false);
+        test_populate_Order("order-01-smooks-config-arrays-setOn.xml", false, false);
     }
 
     public void test_populate_Order(String configName, boolean parentBinding, boolean orderdResult) throws SAXException, IOException, InterruptedException {
@@ -216,38 +220,5 @@ public class BeanPopulatorTest extends TestCase {
         	assertNotNull(orderItem.getOrder());
         }
     }
-    
-    public void test_populate_Employee() throws SAXException, IOException, InterruptedException {
-        test_populate_Employee("employee-01-smooks-config.xml");
-    }
-
-	/**
-	 * Test with inherited model
-	 * 
-	 * @param string
-	 * @throws IOException 
-	 * @throws SAXException 
-	 */
-	private void test_populate_Employee(String configName) throws IOException, SAXException {
-		
-		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
-		
-        Smooks smooks = new Smooks(packagePath + "/" + configName);
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        
-        JavaResult result = new JavaResult();
-        
-        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("employee-01.xml")));
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
-
-        Employee employee = (Employee) result.getBean("employee");
-        
-        assertNotNull(employee);
-        
-        assertEquals("111", employee.getFirstName());
-        assertEquals("222", employee.getLastName());
-        assertEquals("333", employee.getEmployeeId());
-        
-	}
 
 }

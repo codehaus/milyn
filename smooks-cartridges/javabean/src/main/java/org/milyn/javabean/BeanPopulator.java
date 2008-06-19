@@ -26,8 +26,10 @@ import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AnnotationConstants;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.VisitPhase;
@@ -95,7 +97,7 @@ import org.w3c.dom.NodeList;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Order</b>&lt;/param&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;binding property="header" selector="${header}" /&gt; &lt;-- Wire the header bean to the header property. See header configuration below... --&gt;
- *             &lt;binding property="orderItems" selector="${orderItems}" /&gt; &lt;-- Wire the orderItems ArrayList to the orderItems property. See orderItems configuration below... --&gt;
+ *             &lt;binding property="orderItems" selector="${orderItems}" /&gt; &lt;-- Wire the orderItems ArrayList to the orderItems property. See orderItems configuration below... --&gt;             
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -118,9 +120,9 @@ import org.w3c.dom.NodeList;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Header</b>&lt;/param&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;-- Header bindings... --&gt;
- *             &lt;binding property="date" type="OrderDateLong" selector="header date" /&gt; &lt;-- See OrderDateLong decoder definition below... --&gt;
- *             &lt;binding property="customerNumber" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="header customer @number" /&gt;
- *             &lt;binding property="customerName" selector="header customer" /&gt; &lt;-- Type defaults to String --&gt;
+ *             &lt;binding property="date" type="OrderDateLong" selector="header/date" /&gt; &lt;-- See OrderDateLong decoder definition below... --&gt;
+ *             &lt;binding property="customerNumber" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="header/customer/@number" /&gt;
+ *             &lt;binding property="customerName" selector="header/customer" /&gt; &lt;-- Type defaults to String --&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -131,9 +133,9 @@ import org.w3c.dom.NodeList;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.OrderItem</b>&lt;/param&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;-- OrderItem bindings... --&gt;
- *             &lt;binding property="productId" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="order-item product" /&gt;
- *             &lt;binding property="quantity" type="{@link org.milyn.javabean.decoders.IntegerDecoder Integer}" selector="order-item quantity" /&gt;
- *             &lt;binding property="price" type="{@link org.milyn.javabean.decoders.DoubleDecoder Double}" selector="order-item price" /&gt;
+ *             &lt;binding property="productId" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="order-item/product" /&gt;
+ *             &lt;binding property="quantity" type="{@link org.milyn.javabean.decoders.IntegerDecoder Integer}" selector="order-item/quantity" /&gt;
+ *             &lt;binding property="price" type="{@link org.milyn.javabean.decoders.DoubleDecoder Double}" selector="order-item/price" /&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -156,15 +158,19 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
-    @ConfigParam(name="beanId", defaultVal = AnnotationConstants.NULL_STRING)
-    private String beanIdName;
+    private static final String APP_CONTEXT_KEY_LIFECYCLE_ENDER_CREATED = BeanPopulator.class.getName() + "#LIFECYCLE_ENDER_CREATED";
+    
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String beanId;
 
     @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
 
     @Config
     private SmooksResourceConfiguration config;
-
+    
+    @AppContext
+    private ApplicationContext appContext;
 
     /*******************************************************************************************************
      *  Common Methods.
@@ -182,9 +188,9 @@ public class BeanPopulator implements ConfigurationExpander {
         }
 
         // May need to default the "beanId"...
-        if (beanIdName == null || beanIdName.trim().length() == 0) {
-        	beanIdName = toBeanId(beanClassName);
-            logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'.  Defaulting beanId to '" + beanIdName + "'.");
+        if (beanId == null || beanId.trim().equals("")) {
+            beanId = toBeanId(beanClassName);
+            logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'.  Defaulting beanId to '" + beanId + "'.");
         }
 
         if (config.getStringParameter("attributeName") != null) {
@@ -195,7 +201,7 @@ public class BeanPopulator implements ConfigurationExpander {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
 
-        logger.debug("Bean Populator created for [" + beanIdName + ":" + beanClassName + "].");
+        logger.debug("Bean Populator created for [" + beanId + ":" + beanClassName + "].");
     }
 
     public List<SmooksResourceConfiguration> expandConfigurations() throws SmooksConfigurationException {
@@ -203,7 +209,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         buildInstanceCreatorConfig(resources);
         buildBindingConfigs(resources);
-
+        
         return resources;
     }
 
@@ -212,7 +218,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         // Reset the beanId and beanClass parameters
         resource.removeParameter("beanId");
-        resource.setParameter("beanId", beanIdName);
+        resource.setParameter("beanId", beanId);
         resource.removeParameter("beanClass");
         resource.setParameter("beanClass", beanClassName);
 
@@ -265,9 +271,9 @@ public class BeanPopulator implements ConfigurationExpander {
         // Make sure there's both 'selector' and 'property' attributes...
         selector = getSelectorAttr(bindingConfig);
 
-        //Check if we get a bean binding, if so then we need to change the selector to selector of current config so that the
+        //Check if we get a bean wiring, if so then we need to change the selector to selector of current config so that the
         //BeanInstanceCreator is called on that node instead of one off the child nodes.
-        //The targetBeanId indicates the beanId that should be selected
+        //The wireBeanId indicates the beanId that should be selected
         if(selector.startsWith("${") && selector.endsWith("}")) {
         	wireBeanId = selector.substring(2, selector.length() - 1);
         	selector = config.getSelector();
@@ -284,7 +290,7 @@ public class BeanPopulator implements ConfigurationExpander {
         // Construct the configuraton...
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, BeanInstancePopulator.class.getName());
         resourceConfig.setParameter(VisitPhase.class.getSimpleName(), config.getStringParameter(VisitPhase.class.getSimpleName(), VisitPhase.PROCESSING.toString()));
-        resourceConfig.setParameter("beanId", beanIdName);
+        resourceConfig.setParameter("beanId", beanId);
 
         if(wireBeanId != null) {
             resourceConfig.setParameter("wireBeanId", wireBeanId);
@@ -298,9 +304,20 @@ public class BeanPopulator implements ConfigurationExpander {
         }
 
         if (attributeNameProperty != null && !attributeNameProperty.trim().equals("")) {
-            // The value is comming out of a property on the target element.
+            // The value is comming out of an attribute on the target element.
             // If this attribute is not defined, the value will be taken from the element text...
             resourceConfig.setParameter("valueAttributeName", attributeNameProperty);
+        } else if(wireBeanId == null) {
+            // It's not a bean wiring binding and it's not an attribute value binding. Check
+            // was there a nested expression in the binding.  This expression can be used
+            // to extract the population value...
+            String expression = DomUtils.getAllText(bindingConfig, true);
+            if(expression != null) {
+                expression = expression.trim();
+                if(!expression.equals("")) {
+                    resourceConfig.setParameter("expression", expression);
+                }
+            }
         }
 
         type = DomUtils.getAttributeValue(bindingConfig, "type");
@@ -371,9 +388,11 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private String getSelectorAttr(Element bindingConfig) {
     	String selector = DomUtils.getAttributeValue(bindingConfig, "selector");
+
         if (selector == null) {
-            throw new SmooksConfigurationException("Binding configuration must contain a 'selector' key: " + bindingConfig);
+            selector = config.getSelector();
         }
+
         return selector;
     }
 }

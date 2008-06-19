@@ -15,33 +15,32 @@
 */
 package org.milyn.templating;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-
-import javax.xml.transform.TransformerConfigurationException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Filter;
+import org.milyn.delivery.annotation.VisitBeforeIf;
+import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
-import org.milyn.io.AbstractOutputStreamResource;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
-import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.transform.TransformerConfigurationException;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.Charset;
 
 /**
  * Abstract template processing unit.
@@ -54,7 +53,7 @@ import org.w3c.dom.NodeList;
  */
 public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 
-    private final Log logger = LogFactory.getLog(getClass());
+    private Log logger = LogFactory.getLog(getClass());
     private static boolean legactVisitBeforeParamWarn = false;
 
     protected enum Action {
@@ -74,17 +73,12 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
-    @ConfigParam(name="bindId",  use = ConfigParam.Use.OPTIONAL)
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String bindId;
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String outputStreamResource;
 
-    @AppContext
-    private ApplicationContext applicationContext;
-    
-    private BeanId bindBeanId;
-    
     public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
         if(config.getResource() == null) {
             throw new SmooksConfigurationException("Templating resource undefuned in resource configuration: " + config);
@@ -103,16 +97,6 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
             }
             this.applyTemplateBefore = visitBefore.equalsIgnoreCase("true");
         }
-        
-        if(action == Action.BIND_TO) {
-        	if(bindId == null) {
-                throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
-            } else {
-            	bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdList().register(bindId);
-            }
-        	
-        }
-        
     }
 	
 	protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
@@ -216,9 +200,12 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
                     DomUtils.insertBefore(node, nextSibling);
                 }
             } else if(action == Action.BIND_TO) {
-            	String text = extractTextContent(node, executionContext);
-            	
-            	BeanRepositoryManager.getBeanRepository(executionContext).addBean(bindBeanId, text);
+                if(bindId == null) {
+                    throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
+                } else {
+                    String text = extractTextContent(node, executionContext);
+                    BeanAccessor.addBean(executionContext, bindId, text);
+                }
             } else if(action == Action.REPLACE) {
                 // Don't perform any "replace" actions here!
             }
@@ -265,11 +252,4 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
             }
         }
     }
-
-	/**
-	 * @return the bindBeanId
-	 */
-	public BeanId getBindBeanId() {
-		return bindBeanId;
-	}
 }

@@ -1,6 +1,7 @@
-<#if resource.inline>
-    Applied inlined <a href="http://freemarker.org/">FreeMarker</a> Template.  See Template in Resource Configuration (below).
+<#import "FreeMarkerTemplateProcessor_common.html" as commons>
+<#assign applyTemplateBefore = resource.parameters.applyTemplateBefore!'false'>
+<#if applyTemplateBefore != "true">
+<@commons.outputReourceDetails></@commons.outputReourceDetails>
 <#else>
-    Applied <a href="http://freemarker.org/">FreeMarker</a> Template <b>${resource.resource}</b>.
+Not performing any operation on this visit.  Resource was applied on the visitBefore event for this element.
 </#if>
-Templating action: <b>${resource.parameters.action!'replace'}</b>.

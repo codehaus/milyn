@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
@@ -43,12 +44,7 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
-import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -60,10 +56,10 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
-@VisitBeforeReport(condition = "parameters.containsKey('wireBeanIdName')",
+@VisitBeforeReport(condition = "parameters.containsKey('wireBeanId')",
         summary = "Create bean lifecycle observer for bean <b>${resource.parameters.wireBeanId!'undefined'}</b>.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_Before.html")
-@VisitAfterReport(condition = "!parameters.containsKey('wireBeanIdName')",
+@VisitAfterReport(condition = "!parameters.containsKey('wireBeanId')",
         summary = "Populating <b>${resource.parameters.beanId}</b> with a value from this element.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
 public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor {
@@ -72,11 +68,14 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private String id;
 
-    @ConfigParam(name="beanId")
-    private String beanIdName;
+    @ConfigParam
+    private String beanId;
 
-    @ConfigParam(name="wireBeanId", defaultVal = AnnotationConstants.NULL_STRING)
-    private String wireBeanIdName;
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String wireBeanId;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private MVELExpressionEvaluator expression;    
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -95,12 +94,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     @AppContext
     private ApplicationContext appContext;
-
-    private BeanRepositoryManager beanRepositoryManager;
-
-    private BeanId beanId;
-
-    private BeanId wireBeanId;
 
     private BeanRuntimeInfo beanRuntimeInfo;
     private BeanRuntimeInfo wiredBeanRuntimeInfo;
@@ -121,21 +114,16 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     public void initialize() throws SmooksConfigurationException {
     	buildId();
 
-    	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, appContext);
-        beanWiring = wireBeanIdName != null;
+    	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanId, appContext);
+        beanWiring = wireBeanId != null;
         isAttribute = (valueAttributeName != null);
 
-        beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
-
-        BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
-
-        beanId = beanIdList.getBeanId(beanIdName);
 
         if (setterMethod == null && property == null ) {
         	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
-        		property = wireBeanIdName;
+        		property = wireBeanId;
         	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
-        		throw new SmooksConfigurationException("Binding configuration for beanIdName='" + beanIdName + "' must contain " +
+        		throw new SmooksConfigurationException("Binding configuration for beanId='" + beanId + "' must contain " +
                     "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
                     "  Bean is type '" + beanRuntimeInfo.getPopulateType().getName() + "'.");
         	}
@@ -149,7 +137,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         }
 
         if(logger.isDebugEnabled()) {
-        	logger.debug("Bean Instance Populator created for [" + beanIdName + "].  property=" + property);
+        	logger.debug("Bean Instance Populator created for [" + beanId + "].  property=" + property);
         }
     }
 
@@ -157,7 +145,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	StringBuilder idBuilder = new StringBuilder();
     	idBuilder.append(BeanInstancePopulator.class.getName());
     	idBuilder.append("#");
-    	idBuilder.append(beanIdName);
+    	idBuilder.append(beanId);
 
     	if(property != null) {
     		idBuilder.append("#")
@@ -168,9 +156,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     				 .append(setterMethod)
     				 .append("()");
     	}
-    	if(wireBeanIdName != null) {
+    	if(wireBeanId != null) {
     		idBuilder.append("#")
-    				.append(wireBeanIdName);
+    				.append(wireBeanId);
     	}
 
     	id = idBuilder.toString();
@@ -237,7 +225,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         } else {
             mapPropertyName = DomUtils.getName(element);
         }
-        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+
+        if(expression != null) {
+            bindExpressionValue(mapPropertyName, executionContext);
+        } else {
+            populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+        }
     }
 
     private void bindSaxDataValue(SAXElement element, ExecutionContext executionContext) {
@@ -261,58 +254,60 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             mapPropertyName = element.getName().getLocalPart();
         }
 
-        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+        if(expression != null) {
+            bindExpressionValue(mapPropertyName, executionContext);
+        } else {
+            populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+        }
     }
 
-
-    private BeanId getWireBeanId() {
-    	if(wireBeanId == null) {
-    		wireBeanId = beanRepositoryManager.getBeanIdList().getBeanId(wireBeanIdName);
-    	}
-    	return wireBeanId;
-    }
-
-    private void bindBeanValue(final ExecutionContext executionContext) {
-    	final BeanId targetBeanId = getWireBeanId();
-
-    	final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
-
-    	Object bean = beanRepository.getBean(targetBeanId);
+    private void bindBeanValue(ExecutionContext executionContext) {
+        Object bean = BeanAccessor.getBean(executionContext, wireBeanId);
         if(bean == null) {
 
-            // Register the observer which looks for the creation of the selected bean via its beanIdName. When this observer is triggered then
+            // Register the observer which looks for the creation of the selected bean via its beanId. When this observer is triggered then
             // we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
             // and not the list representation. So we register and observer wo looks for the change from the list to the array
-        	beanRepository.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanRepositoryLifecycleObserver(){
+            BeanAccessor.addBeanLifecycleObserver(executionContext, wireBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanLifecycleObserver(){
 
-                public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+                public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
                     Classification wiredBeanType = getWiredBeanRuntimeInfo().getClassification();
 
-                    beanRepository.associateLifecycles(beanId , targetBeanId);
+                    BeanAccessor.associateLifecycles(executionContext, beanId, targetBeanId);
 
                     if(wiredBeanType == Classification.ARRAY_COLLECTION ) {
 
                         // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
                         // can then set this array
-                    	beanRepository.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
-                            public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+                        BeanAccessor.addBeanLifecycleObserver(executionContext, targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanLifecycleObserver() {
+                            public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String targetBeanId, Object bean) {
 
-                                populateAndSetPropertyValue(property, event.getBean(), executionContext);
+                                populateAndSetPropertyValue(property, bean, executionContext);
 
                             }
                         });
 
                     } else {
-                        populateAndSetPropertyValue(property, event.getBean(), executionContext);
+                        populateAndSetPropertyValue(property, bean, executionContext);
                     }
                 }
-
             });
         } else {
             populateAndSetPropertyValue(property, bean, executionContext);
         }
 	}
+
+    private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
+        Map beanMap = BeanAccessor.getBeanMap(executionContext);
+        Object dataObject = expression.getValue(beanMap);
+
+        if(dataObject instanceof String) {
+            populateAndSetPropertyValue(mapPropertyName, (String) dataObject, executionContext);
+        } else {
+            populateAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
+        }
+    }
 
 
     private void populateAndSetPropertyValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {
@@ -329,8 +324,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	{
     		return;
     	}
-
-        Object bean = BeanRepositoryManager.getBeanRepository(executionContext).getBean(beanId);
+    	
+        Object bean = BeanUtils.getBean(beanId, executionContext);
 
         Classification beanType = beanRuntimeInfo.getClassification();
 
@@ -347,9 +342,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
                 ((Collection)bean).add(dataObject);
             } else if(propertySetterMethod == null) {
             	if(setterMethod != null) {
-                    throw new SmooksConfigurationException("Bean [" + beanIdName + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
                 } else if(property != null) {
-                    throw new SmooksConfigurationException("Bean [" + beanIdName + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                    throw new SmooksConfigurationException("Bean [" + beanId + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
                 }
             }
         } catch (IllegalAccessException e) {
@@ -427,9 +422,16 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 		if(wiredBeanRuntimeInfo == null) {
             // Don't need to synchronize this.  Worse thing that can happen is we initialize it
             // more than once... no biggie...
-            wiredBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(wireBeanIdName, appContext);
+            wiredBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(wireBeanId, appContext);
 		}
 		return wiredBeanRuntimeInfo;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.BeanObserver#getBeanId()
+	 */
+	public String getBeanId() {
+		return beanId;
 	}
 
 	private String getId() {

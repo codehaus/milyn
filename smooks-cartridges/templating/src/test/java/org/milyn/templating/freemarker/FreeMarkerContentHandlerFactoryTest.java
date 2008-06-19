@@ -15,28 +15,22 @@
 */
 package org.milyn.templating.freemarker;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 import junit.framework.TestCase;
-
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
+import org.milyn.payload.JavaSource;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.payload.JavaSource;
+import org.milyn.javabean.BeanAccessor;
 import org.milyn.templating.MyBean;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -98,13 +92,12 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
         smooks.filter(new StreamSource(input), null, context);
-        
-        assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc2</mybean>", BeanAccessor.getBean(context, "mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc1' />");
         smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<mybean>xvalueonc1</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc1</mybean>", BeanAccessor.getBean(context, "mybeanTemplate"));
     }
 
     public void test_template_include() throws SAXException, IOException {

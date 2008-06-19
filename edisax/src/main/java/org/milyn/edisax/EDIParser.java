@@ -16,37 +16,29 @@
 
 package org.milyn.edisax;
 
-import java.io.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.xmlbeans.XmlException;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.io.StreamUtils;
+import org.milyn.schema.ediMessageMapping10.ComponentDocument.Component;
+import org.milyn.schema.ediMessageMapping10.DelimitersDocument.Delimiters;
+import org.milyn.schema.ediMessageMapping10.EdimapDocument;
+import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
+import org.milyn.schema.ediMessageMapping10.FieldDocument.Field;
+import org.milyn.schema.ediMessageMapping10.SegmentDocument.Segment;
+import org.milyn.schema.ediMessageMapping10.SubComponentDocument.SubComponent;
+import org.milyn.xml.XmlUtil;
+import org.xml.sax.*;
+import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.xmlbeans.XmlException;
-import org.milyn.assertion.AssertArgument;
-import org.milyn.io.StreamUtils;
-import org.milyn.schema.ediMessageMapping10.*;
-import org.milyn.schema.ediMessageMapping10.ComponentDocument.Component;
-import org.milyn.schema.ediMessageMapping10.DelimitersDocument.Delimiters;
-import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
-import org.milyn.schema.ediMessageMapping10.FieldDocument.Field;
-import org.milyn.schema.ediMessageMapping10.SegmentDocument.Segment;
-import org.milyn.schema.ediMessageMapping10.SubComponentDocument.SubComponent;
-import org.milyn.xml.XmlUtil;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.AttributesImpl;
+import java.io.*;
 
 /**
  * EDI Parser.
