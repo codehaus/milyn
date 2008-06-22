@@ -14,9 +14,10 @@
  */
 package org.milyn.routing.jms.message.creationstrategies;
 
-import static org.junit.Assert.*;
+import static org.testng.AssertJUnit.*;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
+
 
 /**
  * Unit test for StrategyFactory
@@ -24,6 +25,7 @@ import org.junit.Test;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>				
  *
  */
+@Test ( groups = "unit" )
 public class StrategyFactoryTest
 {
 	@Test

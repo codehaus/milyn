@@ -15,7 +15,8 @@
 */
 package org.milyn.routing.db;
 
-import junit.framework.TestCase;
+
+import static org.testng.AssertJUnit.assertEquals;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -24,24 +25,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.AfterClass;
 import org.milyn.util.HsqlServer;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class StatementExecTest extends TestCase {
+@Test ( groups = "unit" )
+public class StatementExecTest {
 
     private HsqlServer hsqlServer;
 
+    @BeforeMethod
     protected void setUp() throws Exception {
+    	System.out.println("setup");
         hsqlServer = new HsqlServer(9999);
         hsqlServer.execScript(getClass().getResourceAsStream("test.script"));
     }
 
+    @AfterMethod
     protected void tearDown() throws Exception {
+    	System.out.println("teardown");
         hsqlServer.stop();
     }
 
+    @Test
     public void test_unjoined() throws SQLException {
         Connection connection = hsqlServer.getConnection();
         StatementExec exec1 = new StatementExec("select * from CUSTOMERS where CUSTOMERNUMBER = ?");
@@ -56,6 +68,7 @@ public class StatementExecTest extends TestCase {
         assertEquals("[{CUSTOMERNUMBER=1234, CUSTOMERNAME=Tom Fennelly}]", resultSet.toString());
     }
 
+    @Test
     public void test_joined_and_merged() throws SQLException {
         Connection connection = hsqlServer.getConnection();
         StatementExec exec1 = new StatementExec("select * from ORDERS");
@@ -70,6 +83,7 @@ public class StatementExecTest extends TestCase {
         assertEquals("[{ORDERNUMBER=1, CUSTOMERNUMBER=1, PRODUCTCODE=123, CUSTOMERNAME=Tom Fennelly}, {ORDERNUMBER=2, CUSTOMERNUMBER=2, PRODUCTCODE=456, CUSTOMERNAME=Mike Fennelly}, {ORDERNUMBER=3, CUSTOMERNUMBER=1, PRODUCTCODE=789, CUSTOMERNAME=Tom Fennelly}]", resultSet.toString());
     }
 
+    @Test
     public void test_joined_and_unmerged() throws SQLException {
         Connection connection = hsqlServer.getConnection();
         StatementExec exec1 = new StatementExec("select * from ORDERS");
@@ -91,6 +105,7 @@ public class StatementExecTest extends TestCase {
         assertEquals(expected, resultSet2.toString());
     }
 
+    @Test
     public void test_joined_insert_update() throws SQLException {
         Connection connection = hsqlServer.getConnection();
         Map<String, Object> beanMap = new HashMap<String, Object>();
@@ -114,6 +129,7 @@ public class StatementExecTest extends TestCase {
         assertEquals("{ORDERNUMBER=10, CUSTOMERNUMBER=2, PRODUCTCODE=5555}", exec1.executeUnjoinedQuery(connection).get(3).toString());
     }
 
+    @Test
     public void test_bulk_insert() throws SQLException {
         Connection connection = hsqlServer.getConnection();
         List<Map<String, Object>> orders =  new ArrayList<Map<String, Object>>();

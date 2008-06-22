@@ -15,13 +15,13 @@
 
 package org.milyn.routing.file;
 
-import static org.junit.Assert.*;
+import static org.testng.AssertJUnit.*;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.milyn.container.MockExecutionContext;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 /**
  * 	Unit test for FileListAccessor
@@ -29,11 +29,12 @@ import org.milyn.container.MockExecutionContext;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
+@Test ( groups = "unit" )
 public class FileListAccessorTest
 {
 	private MockExecutionContext execContext;
 
-	@Test ( expected = IllegalArgumentException.class )
+	@Test ( expectedExceptions = IllegalArgumentException.class )
 	public void setFileNameNegative()
 	{
 		FileListAccessor.addFileName( null, execContext );
@@ -52,7 +53,7 @@ public class FileListAccessorTest
 		assertTrue( list.size() == 2 );
 	}
 	
-	@Before
+	@BeforeClass
 	public void setup()
 	{
 		execContext = new MockExecutionContext();

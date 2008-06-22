@@ -15,14 +15,13 @@
 
 package org.milyn.routing.file.naming;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.testng.AssertJUnit.*;
 
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,6 +30,7 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>			
  *
  */
+@Test ( groups = "unit" )
 public class TemplatedNamingStrategyTest
 {
 	@Test
