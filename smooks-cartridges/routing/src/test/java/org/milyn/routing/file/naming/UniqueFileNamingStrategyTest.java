@@ -15,9 +15,9 @@
 
 package org.milyn.routing.file.naming;
 
-import static org.junit.Assert.*;
+import static org.testng.AssertJUnit.*;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 /**
  * Test for class DefaultNamingStrategy
@@ -25,6 +25,7 @@ import org.junit.Test;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
+@Test ( groups = "unit" )
 public class UniqueFileNamingStrategyTest
 {
 	private String pattern = "prefix-";

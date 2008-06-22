@@ -14,8 +14,7 @@
  */
 package org.milyn.routing.jms.message.creationstrategies;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.testng.AssertJUnit.*;
 import java.io.IOException;
 
 import javax.jms.JMSException;
@@ -24,11 +23,11 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.routing.jms.TestBean;
 import org.milyn.routing.util.RouterTestHelper;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
 import com.mockrunner.mock.jms.JMSMockObjectFactory;
@@ -39,6 +38,7 @@ import com.mockrunner.mock.jms.MockConnectionFactory;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
+@Test ( groups = "unit")
 public class ObjectMessageCreationStrategyTest
 {
 	private ObjectMessageCreationStrategy strategy = new ObjectMessageCreationStrategy();

@@ -14,15 +14,12 @@
  */
 package org.milyn.routing.jms;
 
+import static org.testng.AssertJUnit.*;
+
 import com.mockrunner.mock.ejb.EJBMockObjectFactory;
 import com.mockrunner.mock.jms.JMSMockObjectFactory;
 import com.mockrunner.mock.jms.MockQueue;
 import com.mockrunner.mock.jms.MockQueueConnectionFactory;
-import junit.framework.TestCase;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
@@ -32,6 +29,8 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.util.RouterTestHelper;
 import org.mockejb.jndi.MockContextFactory;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
 import javax.jms.JMSException;
@@ -56,15 +55,16 @@ public class JMSRouterTest
 	private static MockQueue queue;
 	private static MockQueueConnectionFactory connectionFactory;
 
-	@Test( expected = SmooksConfigurationException.class)
+	@Test( groups = "unit", expectedExceptions = SmooksConfigurationException.class)
 	public void configureWithMissingDestinationType()
 	{
         Configurator.configure( new JMSRouter(), config, new MockApplicationContext() );
 	}
 
-	@Test
+	@Test ( groups = "integration" )
 	public void visitAfter_below_hwmark() throws ParserConfigurationException, JMSException, SAXException, IOException
 	{
+		queue.clear();
 		final String beanId = "beanId";
 		final TestBean bean = RouterTestHelper.createBean();
 
@@ -86,7 +86,7 @@ public class JMSRouterTest
         		bean.toString(), textMessage.getText() );
 	}
 
-    @Test
+    @Test ( groups = "unit" )
     public void visitAfter_above_hwmark_notimeout() throws ParserConfigurationException, JMSException, SAXException, IOException
     {
         final String beanId = "beanId";
@@ -123,7 +123,7 @@ public class JMSRouterTest
         assertEquals(numMessages, consumeThread.numMessagesProcessed);
     }
 
-    @Test
+    @Test ( groups = "unit" )
     public void visitAfter_above_hwmark_timeout() throws ParserConfigurationException, JMSException, SAXException, IOException
     {
         final String beanId = "beanId";
@@ -145,13 +145,13 @@ public class JMSRouterTest
 
         try {
             router.visitAfter( (SAXElement)null, executionContext );
-            TestCase.fail("Expected SmooksRoutingException");
+            fail("Expected SmooksRoutingException");
         } catch(SmooksRoutingException e) {
             assertEquals("Failed to route JMS message to Queue destination 'testQueue'. Timed out (3000 ms) waiting for queue length to drop below High Water Mark (3).  Consider increasing 'highWaterMark' and/or 'highWaterMarkTimeout' param values.", e.getMessage());
         }
     }
 
-	@Test
+    @Test ( groups = "unit" )
 	public void setJndiContextFactory()
 	{
 		final String contextFactory = "org.jnp.interfaces.NamingContextFactory";
@@ -164,7 +164,7 @@ public class JMSRouterTest
         		contextFactory, router.getJndiContectFactory() );
 	}
 
-	@Test
+    @Test ( groups = "unit" )
 	public void setJndiProviderUrl()
 	{
 		final String providerUrl = "jnp://localhost:1099";
@@ -177,7 +177,7 @@ public class JMSRouterTest
         		providerUrl, router.getJndiProviderUrl() );
 	}
 
-	@Test
+    @Test ( groups = "unit" )
 	public void setJndiNamingFactoryUrl()
 	{
 		final String namingFactoryUrlPkgs = "org.jboss.naming:org.jnp.interfaces";
@@ -190,8 +190,8 @@ public class JMSRouterTest
         assertEquals( "NamingFactoryUrlPkg did not match the one set on the Router",
         		namingFactoryUrlPkgs, router.getJndiNamingFactoryUrl() );
 	}
-
-	@BeforeClass
+	
+	@BeforeClass ( groups = { "unit", "integration" })
 	public static void setUpInitialContext() throws Exception
     {
         final EJBMockObjectFactory mockObjectFactory = new EJBMockObjectFactory();

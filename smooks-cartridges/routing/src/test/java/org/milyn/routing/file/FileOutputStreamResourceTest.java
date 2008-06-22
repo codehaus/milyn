@@ -15,9 +15,7 @@
 
 package org.milyn.routing.file;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.testng.AssertJUnit.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,13 +23,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.io.AbstractOutputStreamResource;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import org.w3c.dom.Element;
 
 /**
@@ -39,6 +37,7 @@ import org.w3c.dom.Element;
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  */
+@Test ( groups = "unit" )
 public class FileOutputStreamResourceTest
 {
 	private String resourceName = "testResourceName";
@@ -91,11 +90,10 @@ public class FileOutputStreamResourceTest
 		}
 	}
 	
-	@Before
+	@BeforeClass
 	public void setup()
 	{
     	config = createConfig( resourceName, fileNamePattern, destinationDirectory, listFileName);
-		
 	}
 	
 	//	private

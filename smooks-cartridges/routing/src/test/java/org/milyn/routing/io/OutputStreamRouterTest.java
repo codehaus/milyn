@@ -15,13 +15,13 @@
 
 package org.milyn.routing.io;
 
-import static org.junit.Assert.assertEquals;
+import static org.testng.AssertJUnit.*;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 /**
  * Unit test for {@link OutputStreamRouter}
@@ -29,6 +29,7 @@ import org.milyn.container.MockApplicationContext;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
+@Test ( groups = "unit" )
 public class OutputStreamRouterTest
 {
 	private String resourceName = "testResource";
@@ -44,7 +45,7 @@ public class OutputStreamRouterTest
         assertEquals( resourceName, router.getResourceName() );
 	}
 	
-	@Before
+	@BeforeTest
 	public void setup()
 	{
 		config = createConfig( resourceName, beanId );
