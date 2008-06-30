@@ -28,7 +28,7 @@ How to Run?
 
      Running:
         1.  In the "jms-router" directory, run "mvn clean install".
-        2.  Open a new console window ("Window 1")
+        2.  Open a   new console window ("Window 1")
         3.  In "Window 1", change directory into the "jms-provider" directory.
         4.  In "Window 1", run "mvn activemq:run".
         5.  Open a new console window ("Window 2")

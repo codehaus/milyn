@@ -16,20 +16,24 @@
 
 package org.milyn.edisax;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.schema.ediMessageMapping10.DelimitersDocument.Delimiters;
+import org.xml.sax.InputSource;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-import org.apache.commons.lang.StringUtils;
-import org.milyn.schema.ediMessageMapping10.DelimitersDocument.Delimiters;
-import org.xml.sax.InputSource;
 
 /**
  * Buffered EDI Stream Segment reader.
  * @author tfennelly
  */
 class BufferedSegmentReader {
-    
+
+    private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);
+
     private Reader reader;
     private StringBuffer segmentBuffer = new StringBuffer(512);
     private String[] currentSegmentFields = null;
@@ -99,6 +103,10 @@ class BufferedSegmentReader {
             }
             
             c = reader.read();
+        }
+
+        if(logger.isDebugEnabled()) {
+            logger.debug(segmentBuffer.toString());
         }
         
         currentSegmentNumber++;
