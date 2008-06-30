@@ -27,6 +27,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.routing.file.FileListAccessor;
 import org.xml.sax.SAXException;
@@ -50,8 +51,10 @@ public class Main
     	//	create the source and result 
         final StreamSource source = new StreamSource( new FileInputStream( "target/input-message.xml" ) );
         final StreamResult result = null;
-        
-    	//	perform the transform
+
+        //executionContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+
+        //	perform the transform
         smooks.filter( source, result, executionContext );
         
         //	display the output from the transform

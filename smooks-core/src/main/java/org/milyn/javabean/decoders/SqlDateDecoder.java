@@ -15,8 +15,10 @@
 */
 package org.milyn.javabean.decoders;
 
-import java.util.Date;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DecodeType;
+
+import java.util.Date;
 
 /**
 * {@link java.sql.Date} data decoder.
@@ -27,6 +29,7 @@ import org.milyn.javabean.DataDecodeException;
 *
 * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
 */
+@DecodeType(java.sql.Date.class)
 public class SqlDateDecoder extends DateDecoder
 {
 	@Override

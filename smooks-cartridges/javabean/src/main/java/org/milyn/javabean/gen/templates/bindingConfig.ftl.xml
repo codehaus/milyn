@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <!-- TODO:
+            THIS IS A CONFIGURATION TEMPLATE!!  It is not the finished article.
+
+            1. For each <resource-config>, set the selector to the event element against which the bean instance should
+               be created i.e. on which the beans lifecycle should be associated.
+            2. Update the selector on each <binding> to select the event element/attribute supplying the binding data
+               for that bean property.
+            3. Check the type attribute on the bindings.  Not all will be set; depending on the actual property type.
+               These must be configured by hand e.g. you may need to configure a custom decoder for the field (e.g. for
+               date fields).
+            4. Double check that <binding> config template elements have been added for all relevant properties.  Check
+               this against the actual code.
+
+            Determining the selector values can sometimes be difficult, especially for non XML Sources (Java etc).
+            The Html Reporting tool can be a great help here because it helps you visualise the input message model
+            (against which the selectors will be applied) as seen by Smooks.  So, first off, generate a report using
+            your Source data, but with an empty transformation configuration.  In the report, you can see the model
+            against which you need to add your configurations.  Add the configurations one at a time, rerunning the
+            report to check they are being applied.
+
+            For details on how to run a report, see the Smooks User Guide (http://milyn.codehaus.org/Smooks+User+Guide#SmooksUserGuide-CheckingtheSmooksExecutionProcess).
+    -->
+
+    <#list classConfigs as classConfig>
+
+    <resource-config selector="$TODO$">
+        <resource>org.milyn.javabean.BeanPopulator</resource>
+        <param name="beanId">${classConfig.beanId}</param>
+        <param name="beanClass">${classConfig.beanClass.name}<#if classConfig.array>[]</#if></param>
+        <param name="bindings">
+            <#list classConfig.bindings as binding>
+            <binding <#if binding.boundToProperty>property="${binding.property.name}" </#if><#if !binding.wiring>type="${binding.type}" </#if>selector="${binding.selector}" />
+            </#list>
+        </param>
+    </resource-config>
+    </#list>
+
+</smooks-resource-list>

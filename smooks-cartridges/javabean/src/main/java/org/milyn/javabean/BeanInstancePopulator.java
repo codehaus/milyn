@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
@@ -77,6 +78,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     @ConfigParam(name="wireBeanId", defaultVal = AnnotationConstants.NULL_STRING)
     private String wireBeanIdName;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private MVELExpressionEvaluator expression;    
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -237,7 +241,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         } else {
             mapPropertyName = DomUtils.getName(element);
         }
-        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+
+        if(expression != null) {
+            bindExpressionValue(mapPropertyName, executionContext);
+        } else {
+            populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+        }
     }
 
     private void bindSaxDataValue(SAXElement element, ExecutionContext executionContext) {
@@ -261,7 +270,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             mapPropertyName = element.getName().getLocalPart();
         }
 
-        populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+        if(expression != null) {
+            bindExpressionValue(mapPropertyName, executionContext);
+        } else {
+            populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+        }
     }
 
 
@@ -313,6 +326,17 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             populateAndSetPropertyValue(property, bean, executionContext);
         }
 	}
+
+    private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
+        Map beanMap = BeanAccessor.getBeanMap(executionContext);
+        Object dataObject = expression.getValue(beanMap);
+
+        if(dataObject instanceof String) {
+            populateAndSetPropertyValue(mapPropertyName, (String) dataObject, executionContext);
+        } else {
+            populateAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
+        }
+    }
 
 
     private void populateAndSetPropertyValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {

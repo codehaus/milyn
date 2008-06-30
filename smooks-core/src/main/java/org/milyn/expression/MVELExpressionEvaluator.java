@@ -15,15 +15,16 @@
 */
 package org.milyn.expression;
 
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.container.ExecutionContext;
-import org.mvel.MVEL;
-
 import java.io.Serializable;
+import java.util.HashMap;
+
+import org.milyn.cdr.SmooksConfigurationException;
+import org.mvel.MVEL;
+import org.mvel.integration.impl.MapVariableResolverFactory;
 
 /**
  * <a href="http://mvel.codehaus.org/">MVEL</a> expression evaluator.
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class MVELExpressionEvaluator implements ExpressionEvaluator {
@@ -45,7 +46,8 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
 
     public Object getValue(Object contextObject) throws ExpressionEvaluationException {
         try {
-            return MVEL.executeExpression(compiled, contextObject);
+
+            return MVEL.executeExpression(compiled, contextObject, new MapVariableResolverFactory(new HashMap<String, Object>()));
         } catch(Exception e) {
             throw new ExpressionEvaluationException("Error evaluating MVEL expression '" + expression + "' against object type '" + contextObject.getClass().getName() + "'. " +
                     "Common issues include:" +

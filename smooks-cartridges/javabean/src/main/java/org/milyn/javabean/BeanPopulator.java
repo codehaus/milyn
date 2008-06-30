@@ -118,9 +118,9 @@ import org.w3c.dom.NodeList;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.Header</b>&lt;/param&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;-- Header bindings... --&gt;
- *             &lt;binding property="date" type="OrderDateLong" selector="header date" /&gt; &lt;-- See OrderDateLong decoder definition below... --&gt;
- *             &lt;binding property="customerNumber" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="header customer @number" /&gt;
- *             &lt;binding property="customerName" selector="header customer" /&gt; &lt;-- Type defaults to String --&gt;
+ *             &lt;binding property="date" type="OrderDateLong" selector="header/date" /&gt; &lt;-- See OrderDateLong decoder definition below... --&gt;
+ *             &lt;binding property="customerNumber" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="header/customer/@number" /&gt;
+ *             &lt;binding property="customerName" selector="header/customer" /&gt; &lt;-- Type defaults to String --&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -131,9 +131,9 @@ import org.w3c.dom.NodeList;
  *         &lt;param name="beanClass"&gt;<b>org.milyn.javabean.OrderItem</b>&lt;/param&gt;
  *         &lt;param name="bindings"&gt;
  *             &lt;-- OrderItem bindings... --&gt;
- *             &lt;binding property="productId" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="order-item product" /&gt;
- *             &lt;binding property="quantity" type="{@link org.milyn.javabean.decoders.IntegerDecoder Integer}" selector="order-item quantity" /&gt;
- *             &lt;binding property="price" type="{@link org.milyn.javabean.decoders.DoubleDecoder Double}" selector="order-item price" /&gt;
+ *             &lt;binding property="productId" type="{@link org.milyn.javabean.decoders.LongDecoder Long}" selector="order-item/product" /&gt;
+ *             &lt;binding property="quantity" type="{@link org.milyn.javabean.decoders.IntegerDecoder Integer}" selector="order-item/quantity" /&gt;
+ *             &lt;binding property="price" type="{@link org.milyn.javabean.decoders.DoubleDecoder Double}" selector="order-item/price" /&gt;
  *         &lt;/param&gt;
  *     &lt;/resource-config&gt;
  *
@@ -265,9 +265,9 @@ public class BeanPopulator implements ConfigurationExpander {
         // Make sure there's both 'selector' and 'property' attributes...
         selector = getSelectorAttr(bindingConfig);
 
-        //Check if we get a bean binding, if so then we need to change the selector to selector of current config so that the
+        //Check if we get a bean wiring, if so then we need to change the selector to selector of current config so that the
         //BeanInstanceCreator is called on that node instead of one off the child nodes.
-        //The targetBeanId indicates the beanId that should be selected
+        //The wireBeanId indicates the beanId that should be selected
         if(selector.startsWith("${") && selector.endsWith("}")) {
         	wireBeanId = selector.substring(2, selector.length() - 1);
         	selector = config.getSelector();
@@ -298,9 +298,20 @@ public class BeanPopulator implements ConfigurationExpander {
         }
 
         if (attributeNameProperty != null && !attributeNameProperty.trim().equals("")) {
-            // The value is comming out of a property on the target element.
+            // The value is comming out of an attribute on the target element.
             // If this attribute is not defined, the value will be taken from the element text...
             resourceConfig.setParameter("valueAttributeName", attributeNameProperty);
+        } else if(wireBeanId == null) {
+            // It's not a bean wiring binding and it's not an attribute value binding. Check
+            // was there a nested expression in the binding.  This expression can be used
+            // to extract the population value...
+            String expression = DomUtils.getAllText(bindingConfig, true);
+            if(expression != null) {
+                expression = expression.trim();
+                if(!expression.equals("")) {
+                    resourceConfig.setParameter("expression", expression);
+                }
+            }
         }
 
         type = DomUtils.getAttributeValue(bindingConfig, "type");
@@ -371,9 +382,11 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private String getSelectorAttr(Element bindingConfig) {
     	String selector = DomUtils.getAttributeValue(bindingConfig, "selector");
+
         if (selector == null) {
-            throw new SmooksConfigurationException("Binding configuration must contain a 'selector' key: " + bindingConfig);
+            selector = config.getSelector();
         }
+
         return selector;
     }
 }

@@ -59,8 +59,8 @@ import freemarker.template.TemplateException;
  *
  * @author tfennelly
  */
-@VisitBeforeReport(condition = "false")
-@VisitAfterReport(summary = "Applied FreeMarker Template.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_After.html")
+@VisitBeforeReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_before.html")
+@VisitAfterReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_After.html")
 public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(FreeMarkerTemplateProcessor.class);

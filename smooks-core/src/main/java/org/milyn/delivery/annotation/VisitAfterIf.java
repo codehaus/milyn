@@ -25,6 +25,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+@Inherited
 public abstract @interface VisitAfterIf {
 
     /**
