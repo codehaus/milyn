@@ -15,8 +15,8 @@
 
         <dependency>
             <groupId>milyn</groupId>
-            <artifactId>milyn-edisax</artifactId>
-            <version>${milyn.edisax.version}</version>
+            <artifactId>milyn-edisax-parser</artifactId>
+            <version>${milyn.edisax.parser.version}</version>
         </dependency>
 
     </dependencies>

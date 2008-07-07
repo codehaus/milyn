@@ -10,7 +10,7 @@
     <name>Milyn EdiSax Parser</name>
     <groupId>milyn</groupId>
     <artifactId>milyn-edisax-parser</artifactId>
-    <version>${milyn.edisax.version}</version>
+	<version>${milyn.edisax.parser.version}</version>
 
     <dependencies>
 
@@ -23,7 +23,7 @@
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-edisax-model</artifactId>
-            <version>${milyn.edisax.version}</version>
+            <version>${milyn.edisax.model.version}</version>
         </dependency>
 
     </dependencies>

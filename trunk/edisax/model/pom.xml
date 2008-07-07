@@ -10,7 +10,7 @@
     <name>Milyn EdiSax Configuration Model</name>
     <groupId>milyn</groupId>
     <artifactId>milyn-edisax-model</artifactId>
-    <version>${milyn.edisax.version}</version>
+    <version>${milyn.edisax.model.version}</version>
 
     <dependencies>
 

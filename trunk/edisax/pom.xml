@@ -10,8 +10,13 @@
     <name>Milyn EdiSax</name>
     <groupId>milyn</groupId>
     <artifactId>milyn-edisax</artifactId>
-    <packaging>pom</packaging>
     <version>1.1.1</version>
+    <packaging>pom</packaging>
+
+	<properties>
+		<milyn.edisax.model.version.base>${milyn.smooks.core.version.base}</milyn.edisax.model.version.base>
+        <milyn.edisax.model.version>${milyn.edisax.model.version.base}-SNAPSHOT</milyn.edisax.model.version>
+	</properties>
 
 	<modules>
         <module>model</module>
