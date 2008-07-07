@@ -10,7 +10,8 @@
     <name>Milyn EdiSax</name>
     <groupId>milyn</groupId>
     <artifactId>milyn-edisax</artifactId>
-    <version>${milyn.edisax.version}</version>
+    <packaging>pom</packaging>
+    <version>1.1.1</version>
 
 	<modules>
         <module>model</module>
