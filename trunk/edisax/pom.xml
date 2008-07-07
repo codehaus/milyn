@@ -12,21 +12,10 @@
     <artifactId>milyn-edisax</artifactId>
     <version>${milyn.edisax.version}</version>
 
-    <dependencies>
-
-        <dependency>
-            <groupId>milyn</groupId>
-            <artifactId>milyn-commons</artifactId>
-            <version>${milyn.commons.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>milyn</groupId>
-            <artifactId>milyn-edisax-model</artifactId>
-            <version>${milyn.edisax.version}</version>
-        </dependency>
-
-    </dependencies>
+	<modules>
+        <module>edisax-model</module>
+        <module>edisax-parser</module>
+    </modules>
 
     <repositories>
         <repository>
