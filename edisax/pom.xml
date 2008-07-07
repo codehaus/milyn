@@ -13,8 +13,8 @@
     <version>${milyn.edisax.version}</version>
 
 	<modules>
-        <module>edisax-model</module>
-        <module>edisax-parser</module>
+        <module>model</module>
+        <module>parser</module>
     </modules>
 
     <repositories>
