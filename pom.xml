@@ -22,8 +22,8 @@
         <milyn.tinak.version.base>${milyn.smooks.core.version.base}</milyn.tinak.version.base>
         <milyn.tinak.version>${milyn.tinak.version.base}-SNAPSHOT</milyn.tinak.version>
 
-        <milyn.edisax.version.base>${milyn.smooks.core.version.base}</milyn.edisax.version.base>
-        <milyn.edisax.version>${milyn.edisax.version.base}-SNAPSHOT</milyn.edisax.version>
+		<milyn.edisax.parser.version.base>${milyn.smooks.core.version.base}</milyn.edisax.parser.version.base>
+        <milyn.edisax.parser.version>${milyn.edisax.parser.version.base}-SNAPSHOT</milyn.edisax.parser.version>
 
         <xerces.version>2.7.1</xerces.version>
         <xalan.version>2.7.0</xalan.version>
