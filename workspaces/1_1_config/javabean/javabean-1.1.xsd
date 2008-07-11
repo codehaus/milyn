@@ -23,8 +23,8 @@
                     </xs:sequence>
                     <xs:attribute name="class" type="xs:string" use="required" />
                     <xs:attribute name="beanId" type="xs:string" use="required" />
-                    <xs:attribute name="onElementEvent" type="xs:string" use="required" />
-                    <xs:attribute name="onElementEventNS" type="xs:string" use="optional" />
+                    <xs:attribute name="onElement" type="xs:string" use="required" />
+                    <xs:attribute name="onElementNS" type="xs:string" use="optional" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
