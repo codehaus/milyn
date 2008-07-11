@@ -16,7 +16,7 @@
                     </xs:annotation>
                     <xs:sequence>
                         <xs:choice minOccurs="1" maxOccurs="unbounded" >
-                            <xs:element ref="smooks-javabean:basic"/>
+                            <xs:element ref="smooks-javabean:value"/>
                             <xs:element ref="smooks-javabean:wiring"/>
                             <xs:element ref="smooks-javabean:expression"/>
                         </xs:choice>
@@ -30,7 +30,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="basic">
+    <xs:element name="value">
         <xs:complexType>
             <xs:annotation>
                 <xs:documentation xml:lang="en">Basic Binding Configuration</xs:documentation>

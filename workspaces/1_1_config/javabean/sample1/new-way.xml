@@ -23,11 +23,11 @@
     Set the new bean instance on the "order" bean.
     -->
     <jb:bindings beanId="header" createOnElement="order/header" class="example.model.Header">
-        <jb:basic property="date" data="header/date" type="Date">
+        <jb:value property="date" data="header/date" type="Date">
             <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
-        </jb:basic>
-        <jb:basic property="customerNumber" data="header/customer/@number" type="Long" />
-        <jb:basic property="customerName" data="header/customer" />
+        </jb:value>
+        <jb:value property="customerNumber" data="header/customer/@number" type="Long" />
+        <jb:value property="customerName" data="header/customer" />
     </jb:bindings>
 
     <!--
@@ -35,9 +35,9 @@
     Set the OrderItem instances on the "orderItem".
     -->
     <jb:bindings beanId="orderItem" createOnElement="order/order-item" class="example.model.OrderItem">
-        <jb:basic property="productId" data="order-item/product" type="Long" />
-        <jb:basic property="quantity" data="order-item/quantity" type="Integer" />
-        <jb:basic property="price" data="order-item/price" type="Double"/>
+        <jb:value property="productId" data="order-item/product" type="Long" />
+        <jb:value property="quantity" data="order-item/quantity" type="Integer" />
+        <jb:value property="price" data="order-item/price" type="Double"/>
     </jb:bindings>
 
 </smooks-resource-list>
