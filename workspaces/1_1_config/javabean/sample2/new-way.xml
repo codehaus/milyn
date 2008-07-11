@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean">
 
-    <jb:bindings beanId="order" createOnElement="order" class="org.x.Order">
+    <jb:bindings beanId="order" onElementEvent="order" class="org.x.Order">
         <jb:value property="orderNum" data="order/@orderNum" type="Long" />
         <jb:wiring property="orderItems" beanIdRef="orderItems" />
     </jb:bindings>
 
-    <jb:bindings beanId="orderItems" createOnElement="order" class="java.util.ArrayList">
+    <jb:bindings beanId="orderItems" onElementEvent="order" class="java.util.ArrayList">
         <jb:wiring beanIdRef="orderItem" />
     </jb:bindings>
 
-    <jb:bindings beanId="orderItem" createOnElement="order/orderItem" class="org.x.OrderItem">
+    <jb:bindings beanId="orderItem" onElementEvent="order/orderItem" class="org.x.OrderItem">
         <jb:value property="productId" data="orderItem/@productId" />
         <!-- Calculate and bind the total.  Use the "unboundOrderItemData" to calculate. It's captured below... -->
         <jb:expression property="total">unboundOrderItemData.quantity * unboundOrderItemData.price</jb:expression>
     </jb:bindings>
 
     <!-- Capture the unbound orderItem data. Used in expression binding above... -->
-    <jb:bindings beanId="unboundOrderItemData" createOnElement="order/orderItem" class="java.util.HashMap">
+    <jb:bindings beanId="unboundOrderItemData" onElementEvent="order/orderItem" class="java.util.HashMap">
         <jb:value property="quantity" data="orderItem/@quantity" type="Long" />
         <jb:value property="price" data="orderItem/@price" type="BigDecimal" />
     </jb:bindings>

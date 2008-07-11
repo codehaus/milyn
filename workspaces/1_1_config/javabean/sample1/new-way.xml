@@ -5,7 +5,7 @@
     Create an "example.beans.Order" bean instance when we visit the start of the <order> element.
     Assign the new bean instance to the beanId of "order".
     -->
-    <jb:bindings beanId="order" createOnElement="order" class="example.model.Order">
+    <jb:bindings beanId="order" onElementEvent="order" class="example.model.Order">
         <jb:wiring property="header" beanIdRef="header" />
         <jb:wiring property="orderItems" beanIdRef="orderItems" />
     </jb:bindings>
@@ -14,7 +14,7 @@
     Create an ArrayList bean instance when we visit the start of the <order> element.
     Call it "orderItems" and seet it on the "order".
     -->
-    <jb:bindings beanId="orderItems" createOnElement="order" class="java.util.ArrayList">
+    <jb:bindings beanId="orderItems" onElementEvent="order" class="java.util.ArrayList">
         <jb:wiring beanIdRef="orderItem" />
     </jb:bindings>
 
@@ -22,7 +22,7 @@
     Create an "example.beans.Header" bean instance when we visit the start of the <header> element.
     Set the new bean instance on the "order" bean.
     -->
-    <jb:bindings beanId="header" createOnElement="order/header" class="example.model.Header">
+    <jb:bindings beanId="header" onElementEvent="order/header" class="example.model.Header">
         <jb:value property="date" data="header/date" type="Date">
             <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
         </jb:value>
@@ -34,7 +34,7 @@
     Create an "example.beans.OrderItem" bean instance when we visit the start of the <order-item> element.
     Set the OrderItem instances on the "orderItem".
     -->
-    <jb:bindings beanId="orderItem" createOnElement="order/order-item" class="example.model.OrderItem">
+    <jb:bindings beanId="orderItem" onElementEvent="order/order-item" class="example.model.OrderItem">
         <jb:value property="productId" data="order-item/product" type="Long" />
         <jb:value property="quantity" data="order-item/quantity" type="Integer" />
         <jb:value property="price" data="order-item/price" type="Double"/>

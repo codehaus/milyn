@@ -23,8 +23,8 @@
                     </xs:sequence>
                     <xs:attribute name="class" type="xs:string" use="required" />
                     <xs:attribute name="beanId" type="xs:string" use="required" />
-                    <xs:attribute name="createOnElement" type="xs:string" use="required" />
-                    <xs:attribute name="createOnElementNS" type="xs:string" use="optional" />
+                    <xs:attribute name="onElementEvent" type="xs:string" use="required" />
+                    <xs:attribute name="onElementEventNS" type="xs:string" use="optional" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -33,7 +33,7 @@
     <xs:element name="value">
         <xs:complexType>
             <xs:annotation>
-                <xs:documentation xml:lang="en">Basic Binding Configuration</xs:documentation>
+                <xs:documentation xml:lang="en">Basic "value" based Binding Configuration</xs:documentation>
             </xs:annotation>
             <xs:sequence>
                 <xs:element ref="smooks-javabean:decodeParam" minOccurs="0" maxOccurs="unbounded" />
