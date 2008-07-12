@@ -25,9 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.AfterClass;
 import org.milyn.util.HsqlServer;
-import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -40,17 +39,21 @@ public class StatementExecTest {
 
     private HsqlServer hsqlServer;
 
-    @BeforeMethod
-    protected void setUp() throws Exception {
-    	System.out.println("setup");
-        hsqlServer = new HsqlServer(9999);
+    @BeforeClass
+    public void setUp() throws Exception {
+        hsqlServer = new HsqlServer(9995);
         hsqlServer.execScript(getClass().getResourceAsStream("test.script"));
     }
 
-    @AfterMethod
-    protected void tearDown() throws Exception {
-    	System.out.println("teardown");
+    @AfterClass
+    public void tearDown() throws Exception {
         hsqlServer.stop();
+    }
+    
+    @BeforeMethod
+    public void truncateTables() throws SQLException
+    {
+        hsqlServer.execScript(getClass().getResourceAsStream("test.script"));
     }
 
     @Test
