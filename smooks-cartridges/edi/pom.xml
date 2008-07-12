@@ -26,11 +26,6 @@
             <id>milyn</id>
             <url>http://dist.codehaus.org</url>
         </repository>
-        <repository>
-            <!-- We're picking up the xmlbeans-jsr173-api jar from here. -->
-            <id>maven.it.su.se</id>
-            <url>http://maven.it.su.se/it.su.se/maven2</url>
-        </repository>
     </repositories>
 
 </project>
