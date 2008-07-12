@@ -16,7 +16,7 @@
 
 package org.milyn.edisax;
 
-import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
+import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.xml.sax.SAXException;
 
 /**

@@ -38,8 +38,8 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.ApplicationContext;
 import org.milyn.edisax.EDIParser;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.milyn.xml.SmooksXMLReader;
-import org.milyn.schema.ediMessageMapping10.EdimapDocument;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -109,7 +109,7 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * Overridden so as to set the EDI to XML mapping model on the parser.
 	 */
 	public void parse(InputSource ediSource) throws IOException, SAXException {
-		EdimapDocument.Edimap edi2xmlMappingModel = getMappingModel();
+		Edimap edi2xmlMappingModel = getMappingModel();
 		
 		setMappingModel(edi2xmlMappingModel);
 		super.parse(ediSource);
@@ -124,12 +124,12 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * @throws IOException Error reading resource configuration data (the mapping model).
 	 * @throws SAXException Error parsing mapping model.
 	 */
-	private EdimapDocument.Edimap getMappingModel() throws IOException, SAXException {
-		EdimapDocument.Edimap edi2xmlMappingModel;
+	private Edimap getMappingModel() throws IOException, SAXException {
+		Edimap edi2xmlMappingModel;
 		Hashtable mappings = getMappingTable(executionContext.getContext());
 
 		synchronized (configuration) {
-			edi2xmlMappingModel = (EdimapDocument.Edimap) mappings.get(configuration);
+			edi2xmlMappingModel = (Edimap) mappings.get(configuration);
 			if(edi2xmlMappingModel == null) {
 				InputStream mappingConfigData = getMappingConfigData();
 				

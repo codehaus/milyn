@@ -18,14 +18,15 @@ package org.milyn.edisax;
 
 import junit.framework.TestCase;
 import org.milyn.io.StreamUtils;
-import org.milyn.schema.ediMessageMapping10.EdimapDocument.Edimap;
-import org.milyn.schema.ediMessageMapping10.SegmentDocument.Segment;
+import org.milyn.schema.edi_message_mapping_1_0.Edimap;
+import org.milyn.schema.edi_message_mapping_1_0.Segment;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * @author tfennelly
@@ -57,14 +58,14 @@ public class EDIParserTest extends TestCase {
 		assertEquals("~", map.getDelimiters().getSubComponent());
 		
 		assertEquals("message-x", map.getSegments().getXmltag());
-		Segment[] segments = map.getSegments().getSegmentArray();
-		assertEquals(2, segments.length);
+		List<Segment> segments = map.getSegments().getSegment();
+		assertEquals(2, segments.size());
 		
-		assertEquals(1, segments[0].getSegmentArray().length);
-		assertEquals(1, segments[0].getFieldArray().length);
+		assertEquals(1, segments.get(0).getSegment().size());
+		assertEquals(1, segments.get(0).getField().size());
 
-		assertEquals(0, segments[1].getSegmentArray().length);
-		assertEquals(1, segments[1].getFieldArray().length);
+		assertEquals(0, segments.get(1).getSegment().size());
+		assertEquals(1, segments.get(1).getField().size());
 	}
 	
 	public void test_mappings() throws IOException {
