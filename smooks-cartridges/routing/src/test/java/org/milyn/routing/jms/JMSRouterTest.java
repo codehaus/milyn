@@ -55,7 +55,7 @@ public class JMSRouterTest
 	private static MockQueue queue;
 	private static MockQueueConnectionFactory connectionFactory;
 
-	@Test( groups = "unit", expectedExceptions = SmooksConfigurationException.class)
+	@Test( groups = "integration", expectedExceptions = SmooksConfigurationException.class)
 	public void configureWithMissingDestinationType()
 	{
         Configurator.configure( new JMSRouter(), config, new MockApplicationContext() );

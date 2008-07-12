@@ -5,7 +5,7 @@
         <resource>org.milyn.db.DirectDataSource</resource>
         <param name="datasource">OrdersDS</param>
         <param name="driver">org.hsqldb.jdbcDriver</param>
-        <param name="url">jdbc:hsqldb:hsql://localhost:9999/milyn-hsql-9999</param>
+        <param name="url">jdbc:hsqldb:hsql://localhost:9992/milyn-hsql-9992</param>
         <param name="username">sa</param>
         <param name="password"></param>
         <param name="autoCommit">false</param>
