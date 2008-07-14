@@ -20,16 +20,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.classpath.CascadingContextClassLoader;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
-import org.milyn.payload.FilterResult;
-import org.milyn.payload.FilterSource;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
+import org.milyn.payload.FilterResult;
+import org.milyn.payload.FilterSource;
 import org.milyn.profile.Profile;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
@@ -82,6 +83,7 @@ public class Smooks {
 
     private static Log logger = LogFactory.getLog(Smooks.class);
     private StandaloneApplicationContext context;
+    private ClassLoader classLoader;
 
     /**
      * Public Default Constructor.
@@ -128,6 +130,22 @@ public class Smooks {
     public Smooks(InputStream resourceConfigStream) throws IOException, SAXException {
         this();
         addConfigurations(resourceConfigStream);
+    }
+
+    /**
+     * Get the ClassLoader associated with this Smooks instance.
+     * @return The ClassLoader instance.
+     */
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    /**
+     * Set the ClassLoader associated with this Smooks instance.
+     * @param The ClassLoader instance.
+     */
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     /**
@@ -215,7 +233,7 @@ public class Smooks {
      * @return Execution context instance.
      */
     public ExecutionContext createExecutionContext() {
-        return new StandaloneExecutionContext(Profile.DEFAULT_PROFILE, context);
+        return createExecutionContext(Profile.DEFAULT_PROFILE);
     }
 
     /**
@@ -237,7 +255,16 @@ public class Smooks {
      * @throws UnknownProfileMemberException Unknown target profile.
      */
     public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
-        return new StandaloneExecutionContext(targetProfile, context);
+        if(classLoader != null) {
+            CascadingContextClassLoader cascadingClassLoader = new CascadingContextClassLoader(classLoader);
+            try {
+                return new StandaloneExecutionContext(targetProfile, context);
+            } finally {
+                cascadingClassLoader.resetContextClassLoader();
+            }
+        } else {
+            return new StandaloneExecutionContext(targetProfile, context);
+        }
     }
 
     /**
@@ -268,6 +295,19 @@ public class Smooks {
         AssertArgument.isNotNull(source, "source");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
+        if(classLoader != null) {
+            CascadingContextClassLoader cascadingClassLoader = new CascadingContextClassLoader(classLoader);
+            try {
+                _filter(source, result, executionContext);
+            } finally {
+                cascadingClassLoader.resetContextClassLoader();
+            }
+        } else {
+            _filter(source, result, executionContext);
+        }
+    }
+
+    private void _filter(Source source, Result result, ExecutionContext executionContext) {
         ExecutionEventListener eventListener = executionContext.getEventListener();
 
         try {
