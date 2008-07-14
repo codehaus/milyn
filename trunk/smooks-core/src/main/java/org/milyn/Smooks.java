@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.classpath.CascadingContextClassLoader;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
@@ -142,7 +141,7 @@ public class Smooks {
 
     /**
      * Set the ClassLoader associated with this Smooks instance.
-     * @param The ClassLoader instance.
+     * @param classLoader The ClassLoader instance.
      */
     public void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -256,11 +255,12 @@ public class Smooks {
      */
     public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
         if(classLoader != null) {
-            CascadingContextClassLoader cascadingClassLoader = new CascadingContextClassLoader(classLoader);
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(classLoader);
             try {
                 return new StandaloneExecutionContext(targetProfile, context);
             } finally {
-                cascadingClassLoader.resetContextClassLoader();
+                Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
             return new StandaloneExecutionContext(targetProfile, context);
@@ -296,11 +296,12 @@ public class Smooks {
         AssertArgument.isNotNull(executionContext, "executionContext");
 
         if(classLoader != null) {
-            CascadingContextClassLoader cascadingClassLoader = new CascadingContextClassLoader(classLoader);
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(classLoader);
             try {
                 _filter(source, result, executionContext);
             } finally {
-                cascadingClassLoader.resetContextClassLoader();
+                Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
             _filter(source, result, executionContext);
