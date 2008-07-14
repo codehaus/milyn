@@ -16,17 +16,24 @@
 
 package org.milyn;
 
+import com.sun.org.apache.xerces.internal.parsers.XIncludeParserConfiguration;
+import junit.framework.TestCase;
+import org.milyn.container.ExecutionContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.delivery.JavaContentHandlerFactory;
+import org.milyn.delivery.dom.SmooksDOMFilter;
+import org.milyn.payload.StringResult;
+import org.milyn.payload.StringSource;
+import org.milyn.profile.DefaultProfileSet;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.SmooksDOMFilter;
-import org.milyn.profile.DefaultProfileSet;
-import org.w3c.dom.Node;
-
-import junit.framework.TestCase;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 
@@ -73,6 +80,33 @@ public class SmooksTest extends TestCase {
 			fail("unexpected exception: " + e.getMessage());
 		}
 		assertNotNull("Null transform 'Document' return.", deliveryNode);
-	}	
-	
+	}
+
+    public void test_setClassPath() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_setClassLoader_01.xml"));
+        TestClassLoader classLoader = new TestClassLoader();
+        StringResult result = new StringResult();
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+
+        smooks.setClassLoader(classLoader);
+
+        ExecutionContext execCtx = smooks.createExecutionContext();
+        assertTrue(classLoader.requests.contains(JavaContentHandlerFactory.class.getName()));
+        assertTrue(contextClassLoader == Thread.currentThread().getContextClassLoader());
+
+        classLoader.requests.clear();
+        smooks.filter(new StringSource("<a/>"), result, execCtx);
+        assertEquals("<b></b>", result.getResult());
+        assertTrue(classLoader.requests.contains(XIncludeParserConfiguration.class.getName()));
+        assertTrue(contextClassLoader == Thread.currentThread().getContextClassLoader());
+    }
+
+    private class TestClassLoader extends ClassLoader {
+        private Set requests = new HashSet();
+
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            requests.add(name);
+            return null;
+        }
+    }
 }
