@@ -84,9 +84,9 @@ public class SmooksTest extends TestCase {
 
     public void test_setClassPath() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test_setClassLoader_01.xml"));
-        TestClassLoader classLoader = new TestClassLoader();
-        StringResult result = new StringResult();
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        TestClassLoader classLoader = new TestClassLoader(contextClassLoader);
+        StringResult result = new StringResult();
 
         smooks.setClassLoader(classLoader);
 
@@ -102,11 +102,16 @@ public class SmooksTest extends TestCase {
     }
 
     private class TestClassLoader extends ClassLoader {
+        
         private Set requests = new HashSet();
+
+        public TestClassLoader(ClassLoader contextClassLoader) {
+            super(contextClassLoader);
+        }
 
         public Class<?> loadClass(String name) throws ClassNotFoundException {
             requests.add(name);
-            return null;
+            return super.loadClass(name);
         }
     }
 }
