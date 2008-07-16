@@ -324,6 +324,21 @@ public class XmlUtil {
         }
     }
 
+    /**
+     * Basic DOM namespace aware parse.
+     * @param stream Document stream.
+     * @return Document instance.
+     */
+    public static Document parseStream(InputStream stream) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder;
+
+        factory.setNamespaceAware(true);
+        docBuilder = factory.newDocumentBuilder();
+
+        return docBuilder.parse(stream);
+    }
+
     private static Schema getSchema(EntityResolver entityResolver) throws SAXException, IOException {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
