@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:smooks="http://www.milyn.org/xsd/smooks-1.1.xsd"
+           xmlns:smooks-test01="http://www.milyn.org/xsd/smooks/test-xsd-01.xsd"
+           targetNamespace="http://www.milyn.org/xsd/smooks/test-xsd-01.xsd"
+           elementFormDefault="qualified">
+
+    <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd" />
+
+    <xs:element name="test01" substitutionGroup="smooks:abstract-resource-config">
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="smooks:element-visitor">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">Javabean Bindings Configuration</xs:documentation>
+                    </xs:annotation>
+                    <xs:sequence>
+                        <xs:choice minOccurs="1" maxOccurs="unbounded" >
+                            <xs:element ref="smooks-test01:value"/>
+                        </xs:choice>
+                    </xs:sequence>
+                    <xs:attribute name="aaaa" type="xs:string" />
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="value">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Basic "value" based Binding Configuration</xs:documentation>
+            </xs:annotation>
+            <xs:attribute name="xxxx" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

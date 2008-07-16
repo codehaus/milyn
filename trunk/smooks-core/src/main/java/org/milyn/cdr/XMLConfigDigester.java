@@ -45,8 +45,9 @@ import java.net.URISyntaxException;
  */
 public final class XMLConfigDigester {
 
-    private static final String DTD_V10 = "http://www.milyn.org/dtd/smooksres-list-1.0.dtd";
-    private static final String XSD_V10 = "http://www.milyn.org/xsd/smooks-1.0.xsd";
+    public static final String DTD_V10 = "http://www.milyn.org/dtd/smooksres-list-1.0.dtd";
+    public static final String XSD_V10 = "http://www.milyn.org/xsd/smooks-1.0.xsd";
+    public static final String XSD_V11 = "http://www.milyn.org/xsd/smooks-1.1.xsd";
 
     private static Log logger = LogFactory.getLog(XMLConfigDigester.class);
 
@@ -72,25 +73,25 @@ public final class XMLConfigDigester {
 
     private static void digestConfig(InputStream stream, SmooksResourceConfigurationList list, String baseURI) throws IOException, SAXException, URISyntaxException, SmooksConfigurationException {
         LocalEntityResolver entityResolver;
-        Document archiveDefDoc;
+        Document configDoc;
         String docType;
         byte[] streamBuffer = StreamUtils.readStream(stream);
 
         try {
             entityResolver = getDTDEntityResolver();
-            archiveDefDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.DTD, true);
+            configDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.DTD, true);
         } catch (Exception e) {
             entityResolver = getXSDEntityResolver();
-            archiveDefDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.XSD, true);
+            configDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), entityResolver, XmlUtil.VALIDATION_TYPE.XSD, true);
         }
         docType = entityResolver.getDocType();
 
         if (DTD_V10.equals(docType)) {
             logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use XSD '" + XSD_V10 + "'.");
-            digestV10DTDValidatedConfig(archiveDefDoc, list);
+            digestV10DTDValidatedConfig(configDoc, list);
             logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use XSD '" + XSD_V10 + "'.");
         } else if (XSD_V10.equals(docType)) {
-            digestV10XSDValidatedConfig(baseURI, archiveDefDoc, list);
+            digestV10XSDValidatedConfig(baseURI, configDoc, list);
         } else {
             throw new SAXException("Invalid Content Delivery Resource archive definition file: Must be validated against one of - '" + DTD_V10 + "' or '" + XSD_V10 + "'.");
         }

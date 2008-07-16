@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:t01="http://www.milyn.org/xsd/smooks/test-xsd-01.xsd">
+
+    <resource-config selector="">
+        <resource></resource>
+    </resource-config>
+
+    <t01:test01 aaaa="">
+        <t01:value xxxx="" />
+    </t01:test01>
+
+</smooks-resource-list>
