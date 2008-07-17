@@ -18,11 +18,13 @@ package org.milyn.cdr.xsd11;
 import junit.framework.TestCase;
 import org.milyn.xml.XmlUtil;
 import org.milyn.xml.XsdDOMValidator;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
@@ -37,5 +39,8 @@ public class XSD11Test extends TestCase {
         assertEquals("[http://www.milyn.org/xsd/smooks-1.1.xsd, http://www.milyn.org/xsd/smooks/test-xsd-01.xsd]", validator.getNamespaces().toString());
 
         validator.validate();
+    }
+
+    public void testX() throws URISyntaxException {
     }
 }
