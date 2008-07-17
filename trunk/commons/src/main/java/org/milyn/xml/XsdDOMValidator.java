@@ -148,7 +148,7 @@ public class XsdDOMValidator {
     }
 
     private Source getNamespaceSource(URI namespace) throws SAXException {
-        String resourcePath = "/META-INF/" + namespace.getPath();
+        String resourcePath = "/META-INF" + namespace.getPath();
         InputStream xsdStream = ClassUtil.getResourceAsStream(resourcePath, getClass());
 
         if(xsdStream == null) {
