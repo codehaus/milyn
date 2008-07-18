@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -52,11 +54,12 @@ public final class XMLConfigDigester {
     private static Log logger = LogFactory.getLog(XMLConfigDigester.class);
 
     private SmooksResourceConfigurationList list;
-    private Stack<String> importStack = new Stack<String>();
+    private Stack<SmooksConfig> configStack = new Stack<SmooksConfig>();
     private String currentSchema;
 
     private XMLConfigDigester(SmooksResourceConfigurationList list) {
         this.list = list;
+        configStack.push(new SmooksConfig("root-config"));
     }
 
     /**
@@ -165,11 +168,6 @@ public final class XMLConfigDigester {
     private void digestV10XSDValidatedConfig(String baseURI, Document configDoc) throws SAXException, URISyntaxException, SmooksConfigurationException {
         Element currentElement = configDoc.getDocumentElement();
 
-        if(currentSchema == XSD_V11) {
-            // This must be an import of a v1.1 schema from inside a v1.0 schema.  Not allowed!!
-            throw new SmooksConfigurationException("Unsupported import of a v1.1 configuration from inside a v1.0 configuration.  Path to configuration: '" + getCurrentPath() + "'.");
-        }
-
         currentSchema = XSD_V10;
 
         String defaultSelector = DomUtils.getAttributeValue(currentElement, "default-selector");
@@ -187,16 +185,47 @@ public final class XMLConfigDigester {
                 } else if (DomUtils.getName(configElement).equals("import")) {
                     digestImport(configElement, new URI(baseURI));
                 } else if (DomUtils.getName(configElement).equals("resource-config")) {
-                    digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile);
+                    digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, null);
                 }
             }
         }
     }
 
-    private void digestV11XSDValidatedConfig(String baseURI, Document configDoc) {
-        
+    private void digestV11XSDValidatedConfig(String baseURI, Document configDoc) throws SAXException, URISyntaxException, SmooksConfigurationException {
+        Element currentElement = configDoc.getDocumentElement();
+
+        if(currentSchema == XSD_V10) {
+            // This must be an import of a v1.1 schema based config from inside a v1.0 schema config.  Not allowed!!
+            throw new SmooksConfigurationException("Unsupported import of a v1.1 configuration from inside a v1.0 configuration.  Path to configuration: '" + getCurrentPath() + "'.");
+        }
+
         currentSchema = XSD_V11;
 
+        String defaultSelector = DomUtils.getAttributeValue(currentElement, "default-selector");
+        String defaultNamespace = DomUtils.getAttributeValue(currentElement, "default-selector-namespace");
+        String defaultProfile = DomUtils.getAttributeValue(currentElement, "default-target-profile");
+        String defaultConditionRef = DomUtils.getAttributeValue(currentElement, "default-condition-ref");
+
+        NodeList configNodes = currentElement.getChildNodes();
+
+        for (int i = 0; i < configNodes.getLength(); i++) {
+            if(configNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                Element configElement = (Element) configNodes.item(i);
+
+                if (DomUtils.getName(configElement).equals("condition")) {
+                    String id = DomUtils.getAttributeValue(configElement, "id");
+                    if(id != null) {
+                        addConditionEvaluator(id, digestCondition(configElement));
+                    }
+                } else if (DomUtils.getName(configElement).equals("profiles")) {
+                    digestProfiles(configElement);
+                } else if (DomUtils.getName(configElement).equals("import")) {
+                    digestImport(configElement, new URI(baseURI));
+                } else if (DomUtils.getName(configElement).equals("resource-config")) {
+                    digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
+                }
+            }
+        }
     }
 
     private void digestImport(Element configElement, URI baseURI) throws SAXException, URISyntaxException, SmooksConfigurationException {
@@ -216,17 +245,21 @@ public final class XMLConfigDigester {
 
             // Add the resource URI to the list.  Will fail if it was already loaded
             if(list.addSourceResourceURI(fileURI)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Importing resource configuration '" + file + "' from inside '" + configStack.peek().configFile + "'.");
+                }
+
                 resourceStream = resourceLocator.getResource(file);
-                importStack.push(file);
+                pushConfig(file);
                 digestConfigRecursively(resourceStream, URIUtil.getParent(fileURI).toString()); // the file's parent URI becomes the new base URI.
-                importStack.pop();
+                popConfig();
             }
         } catch (IOException e) {
             throw new SmooksConfigurationException("Failed to load Smooks configuration resource <import> '" + file + "': " + e.getMessage(), e);
         }
     }
 
-    private void digestResourceConfig(Element configElement, String defaultSelector, String defaultNamespace, String defaultProfile) throws SAXException {
+    private void digestResourceConfig(Element configElement, String defaultSelector, String defaultNamespace, String defaultProfile, String defaultConditionRef) throws SAXException {
         String selector = DomUtils.getAttributeValue(configElement, "selector");
         String namespace = DomUtils.getAttributeValue(configElement, "selector-namespace");
         String profiles = DomUtils.getAttributeValue(configElement, "target-profile");
@@ -249,20 +282,10 @@ public final class XMLConfigDigester {
 
             // And add the condition, if defined...
             if(conditionElement != null) {
-                String evaluatorClassName = conditionElement.getAttribute("evaluator");
-                if(evaluatorClassName == null || evaluatorClassName.trim().equals("")) {
-                    evaluatorClassName = "org.milyn.javabean.expression.BeanMapExpressionEvaluator";
-                }
-
-                String evaluatorConditionExpression = DomUtils.getAllText(conditionElement, true);
-                if(evaluatorConditionExpression == null || evaluatorConditionExpression.trim().equals("")) {
-                    throw new SAXException("smooks-resource/condition must specify a condition expression as child text e.g. <condition evaluator=\"....\">A + B > C</condition>.");
-                }
-
-                // And construct it...
-                ExpressionEvaluator evaluator = ExpressionEvaluator.Factory.createInstance(evaluatorClassName, evaluatorConditionExpression);
-
-                // We have a valid ExpressionEvaluator, so set it on the resource...
+                ExpressionEvaluator evaluator = digestCondition(conditionElement);
+                resourceConfig.setConditionEvaluator(evaluator);
+            } else if(defaultConditionRef != null) {
+                ExpressionEvaluator evaluator = getConditionEvaluator(defaultConditionRef);
                 resourceConfig.setConditionEvaluator(evaluator);
             }
         } catch (IllegalArgumentException e) {
@@ -291,6 +314,28 @@ public final class XMLConfigDigester {
             return (Element) elements.item(0);
         }
         return null;
+    }
+
+    private ExpressionEvaluator digestCondition(Element conditionElement) throws SAXException {
+        String idRef = DomUtils.getAttributeValue(conditionElement, "idRef");
+
+        if(idRef != null) {
+            return getConditionEvaluator(idRef);
+        } else {
+            String evaluatorClassName = DomUtils.getAttributeValue(conditionElement, "evaluator");
+
+            if(evaluatorClassName == null || evaluatorClassName.trim().equals("")) {
+                evaluatorClassName = "org.milyn.javabean.expression.BeanMapExpressionEvaluator";
+            }
+
+            String evaluatorConditionExpression = DomUtils.getAllText(conditionElement, true);
+            if(evaluatorConditionExpression == null || evaluatorConditionExpression.trim().equals("")) {
+                throw new SAXException("smooks-resource/condition must specify a condition expression as child text e.g. <condition evaluator=\"....\">A + B > C</condition>.");
+            }
+
+            // And construct it...
+            return ExpressionEvaluator.Factory.createInstance(evaluatorClassName, evaluatorConditionExpression);
+        }
     }
 
     private void digestProfiles(Element profilesElement) {
@@ -334,14 +379,59 @@ public final class XMLConfigDigester {
     public String getCurrentPath() {
         StringBuilder pathBuilder = new StringBuilder();
 
-        for(int i = importStack.size() - 1; i <= 0; i--) {
-            pathBuilder.insert(0, "/[");
-            pathBuilder.insert(0, importStack.get(i));
+        for(int i = configStack.size() - 1; i >= 0; i--) {
             pathBuilder.insert(0, "]");
+            pathBuilder.insert(0, configStack.get(i).configFile);
+            pathBuilder.insert(0, "/[");
         }
 
-        pathBuilder.insert(0, "[root-config]");
-
         return pathBuilder.toString();
+    }
+
+    private void pushConfig(String file) {
+        SmooksConfig config = new SmooksConfig(file);
+
+        config.parent = configStack.peek();
+        configStack.push(config);
+    }
+
+    private void popConfig() {
+        configStack.pop();
+    }
+
+    private void addConditionEvaluator(String id, ExpressionEvaluator evaluator) {
+        assertUniqueConditionId(id);
+        configStack.peek().conditionEvaluators.put(id, evaluator);
+    }
+
+    private ExpressionEvaluator getConditionEvaluator(String idRef) {
+        SmooksConfig smooksConfig = configStack.peek();
+
+        while(smooksConfig != null) {
+            ExpressionEvaluator evaluator = smooksConfig.conditionEvaluators.get(idRef);
+            if(evaluator != null) {
+                return evaluator;
+            }
+            smooksConfig = smooksConfig.parent;
+        }
+
+        throw new SmooksConfigurationException("Unknown condition idRef '" + idRef + "'.");
+    }
+
+    private void assertUniqueConditionId(String id) {
+        if(configStack.peek().conditionEvaluators.containsKey(id)) {
+            throw new SmooksConfigurationException("Duplicate condition ID '" + id + "'.");
+        }
+    }
+
+    private static class SmooksConfig {
+
+        private SmooksConfig parent;
+        private String configFile;
+        private Map<String, ExpressionEvaluator> conditionEvaluators = new HashMap<String, ExpressionEvaluator>();
+
+        private SmooksConfig(String configFile) {
+            this.configFile = configFile;
+        }
     }
 }

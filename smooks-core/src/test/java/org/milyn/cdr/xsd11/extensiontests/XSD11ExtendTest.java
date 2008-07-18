@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.cdr.xsd11;
+package org.milyn.cdr.xsd11.extensiontests;
 
 import junit.framework.TestCase;
 import org.milyn.xml.XmlUtil;
@@ -29,7 +29,7 @@ import java.net.URISyntaxException;
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class XSD11Test extends TestCase {
+public class XSD11ExtendTest extends TestCase {
 
     public void test_validation() throws IOException, SAXException, ParserConfigurationException {
         Document configDoc = XmlUtil.parseStream(getClass().getResourceAsStream("config_01.xml"));
@@ -39,8 +39,5 @@ public class XSD11Test extends TestCase {
         assertEquals("[http://www.milyn.org/xsd/smooks-1.1.xsd, http://www.milyn.org/xsd/smooks/test-xsd-01.xsd]", validator.getNamespaces().toString());
 
         validator.validate();
-    }
-
-    public void testX() throws URISyntaxException {
     }
 }
