@@ -268,6 +268,18 @@ public class Smooks {
     }
 
     /**
+     * Filter the content in the supplied {@link javax.xml.transform.Source} instance.
+     * <p/>
+     * Not producing a {@link Result}.
+     *
+     * @param source           The content Source.
+     * @throws SmooksException Failed to filter.
+     */
+    public void filter(Source source) throws SmooksException {
+        filter(source, null, createExecutionContext());
+    }
+
+    /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
      * to the supplied {@link javax.xml.transform.Result} instance.
      *

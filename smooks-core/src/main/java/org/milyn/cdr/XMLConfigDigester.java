@@ -18,11 +18,15 @@ package org.milyn.cdr;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.Smooks;
+import org.milyn.cdr.extension.ExtensionContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.io.StreamUtils;
 import org.milyn.net.URIUtil;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.util.ClassUtil;
 import org.milyn.xml.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,12 +35,15 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -57,6 +64,27 @@ public final class XMLConfigDigester {
     private Stack<SmooksConfig> configStack = new Stack<SmooksConfig>();
     private String currentSchema;
 
+    private Map<String, Smooks> extendedConfigDigesters = new HashMap<String, Smooks>();
+    private static ThreadLocal<Boolean> extentionDigestOn = new ThreadLocal<Boolean>();
+
+    /**
+     * Private constructor.
+     * <p/>
+     * Never make this constructor (or any other) public.  It's only called from 2 places:
+     * <ul>
+     *  <li>From the {@link #digestConfig(java.io.InputStream, String)} method.</li>
+     *  <li>From the {@link #getExtenededConfigDigester(String)} method.</li>
+     * </ul>
+     *
+     * The {@link #digestConfig(java.io.InputStream, String)} method is public and always calls
+     * {@link #setExtentionDigestOff()}.  The {@link #getExtenededConfigDigester(String)} method is
+     * private and always calls {@link #setExtentionDigestOn()}.  Playing with the
+     * public/private nature of these methods may effect the behavior of the {@link #extentionDigestOn}
+     * ThreadLocal.
+     *
+     *
+     * @param list Config list.
+     */
     private XMLConfigDigester(SmooksResourceConfigurationList list) {
         this.list = list;
         configStack.push(new SmooksConfig("root-config"));
@@ -77,6 +105,7 @@ public final class XMLConfigDigester {
     public static SmooksResourceConfigurationList digestConfig(InputStream stream, String baseURI) throws SAXException, IOException, URISyntaxException, SmooksConfigurationException {
         SmooksResourceConfigurationList list = new SmooksResourceConfigurationList(baseURI);
 
+        setExtentionDigestOff();
         XMLConfigDigester digester = new XMLConfigDigester(list);
 
         digester.digestConfigRecursively(stream, baseURI);
@@ -180,6 +209,9 @@ public final class XMLConfigDigester {
             if(configNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element configElement = (Element) configNodes.item(i);
 
+                // Make sure the element is permitted...
+                assertElementPermitted(configElement);
+
                 if (DomUtils.getName(configElement).equals("profiles")) {
                     digestProfiles(configElement);
                 } else if (DomUtils.getName(configElement).equals("import")) {
@@ -212,6 +244,9 @@ public final class XMLConfigDigester {
             if(configNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element configElement = (Element) configNodes.item(i);
 
+                // Make sure the element is permitted...
+                assertElementPermitted(configElement);
+
                 if (DomUtils.getName(configElement).equals("condition")) {
                     String id = DomUtils.getAttributeValue(configElement, "id");
                     if(id != null) {
@@ -223,7 +258,19 @@ public final class XMLConfigDigester {
                     digestImport(configElement, new URI(baseURI));
                 } else if (DomUtils.getName(configElement).equals("resource-config")) {
                     digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
+                } else {
+                    // It's an extended reousource configuration element
+                    digestExtendedResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
                 }
+            }
+        }
+    }
+
+    private void assertElementPermitted(Element configElement) {
+        if(isExtensionConfig()) {
+            String elementName = DomUtils.getName(configElement);
+            if(!elementName.equals("import") && !elementName.equals("resource-config")) {
+                throw new SmooksConfigurationException("Configuration element '" + elementName + "' not supported in an extension configuration.");
             }
         }
     }
@@ -308,6 +355,117 @@ public final class XMLConfigDigester {
         }
     }
 
+    private void digestExtendedResourceConfig(Element configElement, String defaultSelector, String defaultNamespace, String defaultProfile, String defaultConditionRef) {
+        String configNamespace = configElement.getNamespaceURI();
+        Smooks configDigester = getExtenededConfigDigester(configNamespace);
+        ExecutionContext executionContext = configDigester.createExecutionContext();
+        ExtensionContext extentionContext;
+        Element conditionElement = DomUtils.getElement(configElement, "condition", 1);
+
+        // Create the ExtenstionContext and set it on the ExecutionContext...
+        if(conditionElement != null && (conditionElement.getNamespaceURI().equals(XSD_V10) || conditionElement.getNamespaceURI().equals(XSD_V11))) {
+            extentionContext = new ExtensionContext(this, defaultSelector, defaultNamespace, defaultProfile, digestCondition(conditionElement));
+        } else if(defaultConditionRef != null) {
+            extentionContext = new ExtensionContext(this, defaultSelector, defaultNamespace, defaultProfile, getConditionEvaluator(defaultConditionRef));
+        } else {
+            extentionContext = new ExtensionContext(this, defaultSelector, defaultNamespace, defaultProfile, null);
+        }
+        ExtensionContext.setExtensionContext(extentionContext, executionContext);
+
+        // Filter the extension element through Smooks...
+        configDigester.filter(new DOMSource(configElement), null, executionContext);
+
+        // Copy the created resources from the ExtensionContext and onto the SmooksResourceConfigurationList...
+        List<SmooksResourceConfiguration> resources = extentionContext.getResources();
+        for (SmooksResourceConfiguration resource : resources) {
+            list.add(resource);
+        }
+    }
+
+    private Smooks getExtenededConfigDigester(String configNamespace) {
+        Smooks smooks = extendedConfigDigesters.get(configNamespace);
+
+        if(smooks == null) {
+            URI namespaceURI;
+
+            try {
+                namespaceURI = new URI(configNamespace);
+            } catch (URISyntaxException e) {
+                throw new SmooksConfigurationException("Unable to parse extended config namespace URI '" + configNamespace + "'.", e);
+            }
+
+            String resourcePath = "/META-INF" + namespaceURI.getPath() + "-smooks.xml";
+            File resourceFile = new File(resourcePath);
+            String baseURI = resourceFile.getParent().replace('\\', '/');
+
+            // Validate the extended config...
+            assertExtendedConfigOK(configNamespace, resourcePath);
+
+            // Construct the Smooks instance for processing this config namespace...
+            smooks = new Smooks();
+            setExtentionDigestOn();
+            try {
+                SmooksResourceConfigurationStore configStore = smooks.getApplicationContext().getStore();
+                SmooksResourceConfigurationList extConfigList = new SmooksResourceConfigurationList(baseURI);
+
+                XMLConfigDigester configDigester = new XMLConfigDigester(extConfigList);
+                configDigester.digestConfigRecursively(ClassUtil.getResourceAsStream(resourcePath, getClass()), baseURI);
+                configStore.addSmooksResourceConfigurationList(extConfigList);
+            } catch (Exception e) {
+                throw new SmooksConfigurationException("Failed to construct Smooks instance for processing extended configuration resource '" + resourcePath + "'.", e);
+            } finally {
+                setExtentionDigestOff();
+            }
+
+            // And add it to the Map of extension digesters...
+            extendedConfigDigesters.put(configNamespace, smooks);
+        }
+
+        return smooks;
+    }
+
+    private void assertExtendedConfigOK(String configNamespace, String resourcePath) {
+        InputStream resourceStream = ClassUtil.getResourceAsStream(resourcePath, getClass());
+
+        if (resourceStream == null) {
+            throw new SmooksConfigurationException("Unable to locate Smooks digest configuration '" + resourcePath + "' for extended resource configuration namespace '" + configNamespace + "'.  This resource must be available on the classpath.");
+        }
+
+        Document configDoc;
+        try {
+            configDoc = XmlUtil.parseStream(resourceStream);
+        } catch (Exception e) {
+            throw new SmooksConfigurationException("Unable to parse namespace URI '" + configNamespace + "'.", e);
+        }
+
+        XsdDOMValidator validator;
+        try {
+            validator = new XsdDOMValidator(configDoc);
+        } catch (SAXException e) {
+            throw new SmooksConfigurationException("Unable to create XsdDOMValidator instance for extended resource config '" + resourcePath + "'.", e);
+        }
+
+        String defaultNS = validator.getDefaultNamespace().toString();
+        if (!XSD_V10.equals(defaultNS) && !XSD_V11.equals(defaultNS)) {
+            throw new SmooksConfigurationException("Extended resource configuration '" + resourcePath + "' default namespace must be a valid Smooks configuration namespace.");
+        }
+        if(validator.getNamespaces().size() > 1) {
+            throw new SmooksConfigurationException("Extended resource configuration '" + resourcePath + "' defines configurations from multiple namespaces.  This is not permitted.  Only use configurations from the base Smooks config namespaces e.g. '" + XSD_V11 + "'.");
+        }
+    }
+
+    private static boolean isExtensionConfig() {
+        return extentionDigestOn.get();
+    }
+
+    private static void setExtentionDigestOn() {
+        extentionDigestOn.set(true);
+    }
+
+    private static void setExtentionDigestOff() {
+        extentionDigestOn.set(false);
+    }
+
     private static Element getElementByTagName(Element configElement, String name) {
         NodeList elements = configElement.getElementsByTagName(name);
         if(elements.getLength() != 0) {
@@ -316,7 +474,7 @@ public final class XMLConfigDigester {
         return null;
     }
 
-    private ExpressionEvaluator digestCondition(Element conditionElement) throws SAXException {
+    public ExpressionEvaluator digestCondition(Element conditionElement) throws SmooksConfigurationException {
         String idRef = DomUtils.getAttributeValue(conditionElement, "idRef");
 
         if(idRef != null) {
@@ -330,7 +488,7 @@ public final class XMLConfigDigester {
 
             String evaluatorConditionExpression = DomUtils.getAllText(conditionElement, true);
             if(evaluatorConditionExpression == null || evaluatorConditionExpression.trim().equals("")) {
-                throw new SAXException("smooks-resource/condition must specify a condition expression as child text e.g. <condition evaluator=\"....\">A + B > C</condition>.");
+                throw new SmooksConfigurationException("smooks-resource/condition must specify a condition expression as child text e.g. <condition evaluator=\"....\">A + B > C</condition>.");
             }
 
             // And construct it...
@@ -399,12 +557,12 @@ public final class XMLConfigDigester {
         configStack.pop();
     }
 
-    private void addConditionEvaluator(String id, ExpressionEvaluator evaluator) {
+    public void addConditionEvaluator(String id, ExpressionEvaluator evaluator) {
         assertUniqueConditionId(id);
         configStack.peek().conditionEvaluators.put(id, evaluator);
     }
 
-    private ExpressionEvaluator getConditionEvaluator(String idRef) {
+    public ExpressionEvaluator getConditionEvaluator(String idRef) {
         SmooksConfig smooksConfig = configStack.peek();
 
         while(smooksConfig != null) {

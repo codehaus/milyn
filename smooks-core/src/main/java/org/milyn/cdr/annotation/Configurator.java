@@ -129,7 +129,7 @@ public class Configurator {
 
         // Work back up the Inheritance tree first...
         Class superClass = contentHandlerClass.getSuperclass();
-        if(superClass != null && ContentHandler.class.isAssignableFrom(superClass)) {
+        if(superClass != null) {
             processFieldConfigAnnotations(superClass, instance, config);
         }
 
