@@ -20,6 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.xml.DomUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.w3c.dom.Element;
@@ -35,9 +37,15 @@ import java.util.EmptyStackException;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MapToResourceConfigFromText extends MapToResourceConfig implements DOMVisitBefore {
+public class MapToResourceConfigFromText implements DOMVisitBefore {
 
     private static Log logger = LogFactory.getLog(MapToResourceConfigFromText.class);
+
+    @ConfigParam
+    private String mapTo;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String defaultValue;
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         SmooksResourceConfiguration config;
@@ -46,16 +54,20 @@ public class MapToResourceConfigFromText extends MapToResourceConfig implements 
         try {
             config = ExtensionContext.getExtensionContext(executionContext).getResourceStack().peek();
         } catch (EmptyStackException e) {
-            throw new SmooksException("No SmooksResourceConfiguration available in ExtensionContext stack.  Unable to set SmooksResourceConfiguration property '" + getMapTo() + "' with element text value.");
+            throw new SmooksException("No SmooksResourceConfiguration available in ExtensionContext stack.  Unable to set SmooksResourceConfiguration property '" + mapTo + "' with element text value.");
         }
 
         if (value == null) {
-            logger.debug("Not setting property '" + getMapTo() + "' on resource configuration.  Element '" + DomUtils.getName(element) + "' text value is null.");
-            return;
-        } else {
-            logger.debug("Setting property '" + getMapTo() + "' on resource configuration to a value of '" + value + "'.");
+            value = defaultValue;
         }
 
-        setProperty(config, value, executionContext);
+        if (value == null) {
+            logger.debug("Not setting property '" + mapTo + "' on resource configuration.  Element '" + DomUtils.getName(element) + "' text value is null.  You may need to set a default value in the binding configuration.");
+            return;
+        } else {
+            logger.debug("Setting property '" + mapTo + "' on resource configuration to a value of '" + value + "'.");
+        }
+
+        ResourceConfigUtil.setProperty(config, mapTo, value, executionContext);
     }
 }

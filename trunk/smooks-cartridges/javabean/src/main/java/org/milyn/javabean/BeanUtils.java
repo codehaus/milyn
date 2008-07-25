@@ -34,6 +34,7 @@ import org.milyn.javabean.repository.BeanRepositoryManager;
 public abstract class BeanUtils {
 
     private static Log logger = LogFactory.getLog(BeanUtils.class);
+    public static final String JAVABEAN_NAMESPACE = "http://www.milyn.org/xsd/smooks/javabean-1.1.xsd";
 
     /**
      * Create the bean setter method instance for this visitor.

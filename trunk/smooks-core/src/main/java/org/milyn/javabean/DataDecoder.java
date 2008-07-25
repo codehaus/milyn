@@ -138,7 +138,12 @@ public interface DataDecoder extends ContentHandler {
                 Class decoderType = ClassUtil.forName(className, DataDecoder.class);
                 return newInstance(decoderType);
             } catch (ClassNotFoundException e) {
-                throw new DataDecodeException("DataDecoder Class '" + className + "' is not available on the classpath.");
+                try {
+                    Class decoderType = ClassUtil.forName(typeAlias, DataDecoder.class);
+                    return newInstance(decoderType);
+                } catch (ClassNotFoundException e1) {
+                    throw new DataDecodeException("DataDecoder Class '" + className + "' is not available on the classpath.");
+                }
             }
         }
 
