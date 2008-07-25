@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
+
+    <jb:bindings beanId="order" class="org.milyn.javabean.Order" createOnElement="order">
+        <jb:expression property="header">headerBean</jb:expression>
+        <jb:expression property="orderItems">orderItemList</jb:expression>
+    </jb:bindings>
+
+    <jb:bindings beanId="headerBean" class="org.milyn.javabean.Header" createOnElement="header" createOnElementNS="http://x">
+        <jb:expression property="order">order</jb:expression>
+        <jb:value property="date" data="header/date" type="Date" dataNS="http://y">
+            <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
+            <jb:decodeParam name="locale-language">en</jb:decodeParam>
+            <jb:decodeParam name="locale-country">IE</jb:decodeParam>
+        </jb:value>
+        <jb:value property="customerNumber" data="header/customer/@number" type="Long" />
+        <jb:value property="customerName" data="header/customer" />
+        <jb:value property="privatePerson" data="header/privatePerson" type="Boolean" default="true" />
+    </jb:bindings>
+
+    <jb:bindings beanId="orderItemList" class="java.util.ArrayList" createOnElement="order">
+        <jb:expression execOnElement="order-item">orderItem</jb:expression>
+    </jb:bindings>
+
+    <jb:bindings beanId="orderItem" class="org.milyn.javabean.OrderItem" createOnElement="order-item">
+        <jb:expression property="order">order</jb:expression>
+        <jb:value property="productId" type="Long" data="order-item/product" />
+        <jb:value property="quantity" type="Integer" data="order-item/quantity" />
+        <jb:value property="price" type="Double" data="order-item/price" />
+    </jb:bindings>
+
+</smooks-resource-list>

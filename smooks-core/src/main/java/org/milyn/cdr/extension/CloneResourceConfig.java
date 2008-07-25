@@ -24,30 +24,29 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.w3c.dom.Element;
 
 /**
- * Create a new {@link SmooksResourceConfiguration}.
+ * Create a new {@link org.milyn.cdr.SmooksResourceConfiguration} by cloning the current resource.
  * <p/>
- * The new {@link SmooksResourceConfiguration} is added to the {@link ExtensionContext}. 
+ * The cloned {@link org.milyn.cdr.SmooksResourceConfiguration} is added to the {@link org.milyn.cdr.extension.ExtensionContext}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class NewResourceConfig implements DOMElementVisitor {
+public class CloneResourceConfig implements DOMElementVisitor {
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String resource;
 
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String[] unset;
+
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);
+        SmooksResourceConfiguration config = (SmooksResourceConfiguration) extensionContext.getResourceStack().peek().clone();
+
+        for(String property : unset) {
+            ResourceConfigUtil.unsetProperty(config, property);
+        }
 
         config.setResource(resource);
-
-        // Set the defaults...
-        if(extensionContext.getDefaultSelector() != null) {
-            config.setSelector(extensionContext.getDefaultSelector());
-        }
-        config.setSelectorNamespaceURI(extensionContext.getDefaultNamespace());
-        config.setTargetProfile(extensionContext.getDefaultProfile());
-        config.setConditionEvaluator(extensionContext.getDefaultConditionEvaluator());
 
         extensionContext.addResource(config);
     }
