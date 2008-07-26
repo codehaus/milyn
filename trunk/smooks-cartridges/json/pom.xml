@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>milyn</groupId>
+		<artifactId>smooks-cartridge-base-pom</artifactId>
+		<version>1.1.1</version>
+	</parent>
+    <name>Milyn Smooks Cartridge - JSON</name>
+	<groupId>milyn</groupId>
+	<artifactId>milyn-smooks-json</artifactId>
+	<version>${milyn.smooks.json.version}</version>
+
+    <dependencies>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson</artifactId>
+			<version>0.9.2</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/jackson-0.9.2.jar</systemPath>
+		</dependency>
+	</dependencies>
+
+    <repositories>
+        <repository>
+            <id>milyn</id>
+            <url>http://dist.codehaus.org</url>
+        </repository>
+    </repositories>
+
+</project>
