@@ -29,17 +29,17 @@ import org.w3c.dom.NodeList;
 import java.util.UUID;
 
 /**
- * Selector Attribute Extractor.
+ * Selector Property Resolver.
  * <p/>
  * Some binding selectors can be of the form "order/customer/@customerNumber", where the
- * last token in the selector represents an attribute on the customer element.  This
- * extension visitor breaks up this selector into "order/customer" plus a new property
+ * last token in the selector represents an attribute on the customer element (for example).  This
+ * extension visitor translates this type of selector into "order/customer" plus a new property
  * on the BeanInstancePopulator config named "valueAttributeName" containing a value of
  * "customerNumber".
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SelectorAttributeExtractor implements DOMVisitBefore {
+public class SelectorPropertyResolver implements DOMVisitBefore {
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);

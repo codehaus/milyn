@@ -17,13 +17,14 @@ package org.milyn.javabean.extendedconfig11;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.event.report.HtmlReportGenerator;
+import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -35,8 +36,75 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         JavaResult result = new JavaResult();
         ExecutionContext execContext = smooks.createExecutionContext();
 
-        execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
+        //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
-        System.out.println(result.getResultMap());
+
+        ExtendedOrder order = (ExtendedOrder) result.getBean("order");
+        assertOrderOK(order);
+
+        Map headerHash = (Map) result.getBean("headerBeanHash");
+        assertEquals("{privatePerson=, customer=Joe, date=Wed Nov 15 13:45:28 EST 2006}", headerHash.toString());
+    }
+
+    private void assertOrderOK(ExtendedOrder order) {
+
+        // Order total...
+        assertEquals(54.2d, order.getTotal());
+
+        // Header...
+        assertEquals("Joe", order.getHeader().getCustomerName());
+        assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
+        assertEquals(1163616328000L, order.getHeader().getDate().getTime());
+        assertEquals(true, order.getHeader().getPrivatePerson());
+        assertTrue(order == order.getHeader().getOrder());
+
+        // OrderItems list...
+        assertEquals(2, order.getOrderItems().size());
+        assertTrue(order == order.getOrderItems().get(0).getOrder());
+        assertEquals(8.9d, order.getOrderItems().get(0).getPrice());
+        assertEquals(111, order.getOrderItems().get(0).getProductId());
+        assertEquals(new Integer(2), order.getOrderItems().get(0).getQuantity());
+        assertTrue(order == order.getOrderItems().get(1).getOrder());
+        assertEquals(5.2d, order.getOrderItems().get(1).getPrice());
+        assertEquals(222, order.getOrderItems().get(1).getProductId());
+        assertEquals(new Integer(7), order.getOrderItems().get(1).getQuantity());
+
+        // OrderItems array...
+        assertEquals(2, order.getOrderItemsArray().length);
+        assertTrue(order == order.getOrderItemsArray()[0].getOrder());
+        assertEquals(8.9d, order.getOrderItemsArray()[0].getPrice());
+        assertEquals(111, order.getOrderItemsArray()[0].getProductId());
+        assertEquals(new Integer(2), order.getOrderItemsArray()[0].getQuantity());
+        assertTrue(order == order.getOrderItemsArray()[1].getOrder());
+        assertEquals(5.2d, order.getOrderItemsArray()[1].getPrice());
+        assertEquals(222, order.getOrderItemsArray()[1].getProductId());
+        assertEquals(new Integer(7), order.getOrderItemsArray()[1].getQuantity());
+    }
+
+    public void test_error_for_List_property() throws IOException, SAXException {
+        try {
+            new Smooks(getClass().getResourceAsStream("test_value_02.xml"));
+            fail("Expected SmooksException");
+        } catch(SmooksException e) {
+            assertEquals("'wiring' binding specifies a 'property' attribute.  This is not valid for a List target.", e.getCause().getMessage());
+        }
+    }
+
+    public void test_error_for_Array_property() throws IOException, SAXException {
+        try {
+            new Smooks(getClass().getResourceAsStream("test_value_03.xml"));
+            fail("Expected SmooksException");
+        } catch(SmooksException e) {
+            assertEquals("'wiring' binding specifies a 'property' attribute.  This is not valid for an Array target.", e.getCause().getMessage());
+        }
+    }
+
+    public void test_error_for_no_property_on_non_list_or_array() throws IOException, SAXException {
+        try {
+            new Smooks(getClass().getResourceAsStream("test_value_04.xml"));
+            fail("Expected SmooksException");
+        } catch(SmooksException e) {
+            assertEquals("'wiring' binding for bean class 'org.milyn.javabean.extendedconfig11.ExtendedOrder' must specify a 'property' attribute.", e.getCause().getMessage());
+        }
     }
 }

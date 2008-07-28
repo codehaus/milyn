@@ -37,11 +37,11 @@ public abstract class DocType {
     }
 
     public static DocumentTypeData getDocType(ExecutionContext executionContext) {
-        List<ContentHandlerConfigMap> docTypeUDs = executionContext.getDeliveryConfig().getSmooksResourceConfigurations("doctype");
+        List<SmooksResourceConfiguration> docTypeUDs = executionContext.getDeliveryConfig().getSmooksResourceConfigurations("doctype");
         SmooksResourceConfiguration docTypeSmooksResourceConfiguration = null;
 
         if(docTypeUDs != null && docTypeUDs.size() > 0) {
-            docTypeSmooksResourceConfiguration = docTypeUDs.get(0).getResourceConfig();
+            docTypeSmooksResourceConfiguration = docTypeUDs.get(0);
         }
 
         // Only use the cdrdef if the override flag is set.  The override flag will

@@ -83,10 +83,10 @@ public class AbstractParser {
         }
 
         SmooksResourceConfiguration saxDriverConfig = null;
-        List saxConfigs = deliveryConfig.getSmooksResourceConfigurations("org.xml.sax.driver");
+        List<SmooksResourceConfiguration> saxConfigs = deliveryConfig.getSmooksResourceConfigurations("org.xml.sax.driver");
 
         if(saxConfigs != null && !saxConfigs.isEmpty()) {
-            saxDriverConfig = (SmooksResourceConfiguration)saxConfigs.get(0);
+            saxDriverConfig = saxConfigs.get(0);
         }
 
         return saxDriverConfig;

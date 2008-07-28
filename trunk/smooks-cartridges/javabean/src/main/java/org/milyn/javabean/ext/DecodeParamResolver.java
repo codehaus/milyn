@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class TypeDecodeParamMapper implements DOMVisitBefore {
+public class DecodeParamResolver implements DOMVisitBefore {
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         NodeList decodeParams = element.getElementsByTagNameNS(BeanUtils.JAVABEAN_NAMESPACE, "decodeParam");

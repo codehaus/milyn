@@ -32,7 +32,7 @@ import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.xml.DomUtils;
-import org.milyn.javabean.ext.SelectorAttributeExtractor;
+import org.milyn.javabean.ext.SelectorPropertyResolver;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -279,8 +279,8 @@ public class BeanPopulator implements ConfigurationExpander {
         property = DomUtils.getAttributeValue(bindingConfig, "property");
 
         // Extract the binding config properties from the selector and property values...
-        String attributeNameProperty = SelectorAttributeExtractor.getAttributeNameProperty(selector);
-        String selectorProperty = SelectorAttributeExtractor.getSelectorProperty(selector);
+        String attributeNameProperty = SelectorPropertyResolver.getAttributeNameProperty(selector);
+        String selectorProperty = SelectorPropertyResolver.getSelectorProperty(selector);
 
         // Construct the configuraton...
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, BeanInstancePopulator.class.getName());
