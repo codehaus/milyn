@@ -39,38 +39,48 @@ public class JSONReaderTest extends TestCase {
 
 	public void test_json_types() throws Exception {
 
-        test_progammed_config("01");
+        test_progammed_config("json_types");
 	}
 
 	public void test_json_map() throws Exception {
 
-        test_progammed_config("02");
+        test_progammed_config("json_map");
 	}
 
 	public void test_json_array() throws Exception {
 
-        test_progammed_config("03");
+        test_progammed_config("json_array");
 	}
 
 	public void test_json_map_array() throws Exception {
 
-        test_progammed_config("04");
+        test_progammed_config("json_map_array");
+	}
+
+	public void test_json_array_map() throws Exception {
+
+        test_progammed_config("json_array_map");
+	}
+
+	public void test_json_map_array_map() throws Exception {
+
+        test_progammed_config("json_map_array_map");
 	}
 
     public void test_simple_smooks_config() throws Exception {
-    	test_config_file("05");
+    	test_config_file("simple_smooks_config");
     }
 
     public void test_key_replacement() throws Exception {
-    	test_config_file("06");
+    	test_config_file("key_replacement");
     }
 
     public void test_several_replacements() throws Exception {
-    	test_config_file("07");
+    	test_config_file("several_replacements");
     }
 
     public void test_configured_different_node_names() throws Exception {
-    	test_config_file("08");
+    	test_config_file("configured_different_node_names");
     }
 
 	private void test_progammed_config(String testNumber) throws Exception{
@@ -108,7 +118,7 @@ public class JSONReaderTest extends TestCase {
 
 		byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream(fileExpected));
 
-        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(actual), new ByteArrayInputStream(expected)));
+        assertTrue("Expected XML and result XML are not the same!", StreamUtils.compareCharStreams(new ByteArrayInputStream(actual), new ByteArrayInputStream(expected)));
 
 	}
 }

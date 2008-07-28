@@ -28,9 +28,9 @@
 
         <milyn.smooks.javabean.version.base>${milyn.smooks.core.version}</milyn.smooks.javabean.version.base>
         <milyn.smooks.javabean.version>${milyn.smooks.javabean.version.base}</milyn.smooks.javabean.version>
-        
+
         <milyn.smooks.json.version.base>${milyn.smooks.core.version}</milyn.smooks.json.version.base>
-        <milyn.smooks.json.version>${milyn.smooks.json.version.base}-SNAPSHOT</milyn.smooks.json.version>
+        <milyn.smooks.json.version>${milyn.smooks.json.version.base}</milyn.smooks.json.version>
 
         <milyn.smooks.templating.version.base>${milyn.smooks.core.version}</milyn.smooks.templating.version.base>
         <milyn.smooks.templating.version>${milyn.smooks.templating.version.base}</milyn.smooks.templating.version>
