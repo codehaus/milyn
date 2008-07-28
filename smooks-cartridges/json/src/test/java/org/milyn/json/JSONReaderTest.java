@@ -17,9 +17,7 @@
 package org.milyn.json;
 
 import java.io.ByteArrayInputStream;
-
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -31,16 +29,51 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
 import org.milyn.profile.DefaultProfileSet;
-import org.milyn.xml.XmlUtil;
 
 /**
- * @author tfennelly
+ * @author <a href="mailto:maurice@zeijen.net">maurice@zeijen.net</a>
  */
 public class JSONReaderTest extends TestCase {
 
 	private static final Log logger = LogFactory.getLog(JSONReaderTest.class);
 
-	public void test_01() throws Exception {
+	public void test_json_types() throws Exception {
+
+        test_progammed_config("01");
+	}
+
+	public void test_json_map() throws Exception {
+
+        test_progammed_config("02");
+	}
+
+	public void test_json_array() throws Exception {
+
+        test_progammed_config("03");
+	}
+
+	public void test_json_map_array() throws Exception {
+
+        test_progammed_config("04");
+	}
+
+    public void test_simple_smooks_config() throws Exception {
+    	test_config_file("05");
+    }
+
+    public void test_key_replacement() throws Exception {
+    	test_config_file("06");
+    }
+
+    public void test_several_replacements() throws Exception {
+    	test_config_file("07");
+    }
+
+    public void test_configured_different_node_names() throws Exception {
+    	test_config_file("08");
+    }
+
+	private void test_progammed_config(String testNumber) throws Exception{
 		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration config;
 
@@ -48,44 +81,34 @@ public class JSONReaderTest extends TestCase {
 		SmooksUtil.registerResource(config, smooks);
 		SmooksUtil.registerProfileSet(DefaultProfileSet.create("Order-List-Acme-AcmePartner1", new String[] {"type:Order-List", "from:Acme", "to:AcmePartner1"}), smooks);
 
-        test_01(smooks, "test_01_message_01");
-        test_01(smooks, "test_01_message_02");
-        test_01(smooks, "test_01_message_03");
-        test_01(smooks, "test_01_message_04");
-	}
-
-	private void test_01(Smooks smooks, String filename) throws Exception{
-		DOMResult domResult = new DOMResult();
-
 		ExecutionContext context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        smooks.filter(new StreamSource(getClass().getResourceAsStream(filename + ".jsn")), domResult, context);
+		String result = SmooksUtil.filterAndSerialize(context,  getClass().getResourceAsStream("/test/"+ testNumber +"/input-message.jsn"), smooks);
 
-        String resultXML = XmlUtil.serialize(domResult.getNode().getChildNodes());
-        logger.info(resultXML);
+        if(logger.isDebugEnabled()) {
+        	logger.debug("Result: " + result);
+        }
 
-        byte[] result = resultXML.getBytes();
-        byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream(filename + ".xml"));
-
-        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(result), new ByteArrayInputStream(expected)));
+        assertEquals("/test/" + testNumber + "/expected.xml", result.getBytes());
 	}
 
-//    public void test_02() throws SmooksException, IOException, SAXException {
-//        Smooks smooks = new Smooks();
-//        ExecutionContext context;
-//
-//        smooks.addConfigurations("config", getClass().getResourceAsStream("smooks-config-01.xml"));
-//        context = smooks.createExecutionContext();
-//        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-01.csv"), smooks);
-//        assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result);
-//    }
-//
-//    public void test_03() throws SmooksException, IOException, SAXException {
-//        Smooks smooks = new Smooks();
-//        ExecutionContext context;
-//
-//        smooks.addConfigurations("config", getClass().getResourceAsStream("smooks-config-02.xml"));
-//        context = smooks.createExecutionContext();
-//        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-02.csv"), smooks);
-//        assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result);
-//    }
+    private void test_config_file(String testNumber) throws Exception {
+        Smooks smooks = new Smooks("/test/" + testNumber + "/smooks-config.xml");
+
+        ExecutionContext context = smooks.createExecutionContext();
+        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("/test/" + testNumber + "/input-message.jsn"), smooks);
+
+        if(logger.isDebugEnabled()) {
+        	logger.debug("Result: " + result);
+        }
+
+        assertEquals("/test/" + testNumber + "/expected.xml", result.getBytes());
+    }
+
+	private void assertEquals(String fileExpected, byte[] actual) throws IOException {
+
+		byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream(fileExpected));
+
+        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(actual), new ByteArrayInputStream(expected)));
+
+	}
 }

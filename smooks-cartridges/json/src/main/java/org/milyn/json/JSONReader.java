@@ -36,6 +36,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.xml.DomUtils;
@@ -71,19 +72,15 @@ public class JSONReader implements SmooksXMLReader {
 
 	private static final String KEY_MAP_KEY_ELEMENT = "key";
 
-	private static final String KEY_MAP_KEY_ELEMENT_NAME_ATTRIBUTE = "name";
+	private static final String KEY_MAP_KEY_ELEMENT_FROM_ATTRIBUTE = "from";
 
-	private static final String KEY_MAP_KEY_ELEMENT_VALUE_ATTRIBUTE = "value";
+	private static final String KEY_MAP_KEY_ELEMENT_TO_ATTRIBUTE = "to";
 
 	private static final String XML_ROOT = "json";
 
 	private static final String XML_ARRAY_ELEMENT_NAME = "element";
 
-	private static final String XML_ELEMENT_NAME_WHITESPACE_REPLACEMENT = "_";
-
-	private static final String XML_ELEMENT_NAME_NUMERIC_PREFIX = "n";
-
-	private static final String NULL_REPLACEMENT = "";
+	private static final String DEFAULT_NULL_VALUE_REPLACEMENT = "";
 
     private static final Attributes EMPTY_ATTRIBS = new AttributesImpl();
 
@@ -100,17 +97,29 @@ public class JSONReader implements SmooksXMLReader {
 	@ConfigParam(defaultVal = XML_ARRAY_ELEMENT_NAME)
     private String arrayElementName;
 
-	@ConfigParam(defaultVal = XML_ELEMENT_NAME_WHITESPACE_REPLACEMENT)
-    private String whitspaceReplacement;
+	@ConfigParam(use = Use.OPTIONAL)
+    private String keyWhitspaceReplacement;
 
-	@ConfigParam(defaultVal = XML_ELEMENT_NAME_NUMERIC_PREFIX)
-    private String numericPrefix;
+	@ConfigParam(use = Use.OPTIONAL)
+    private String keyPrefixOnNumeric;
 
-	@ConfigParam(defaultVal = NULL_REPLACEMENT)
-    private String nullReplacement;
+	@ConfigParam(use = Use.OPTIONAL)
+    private String illegalElementNameCharReplacement;
+
+	@ConfigParam(defaultVal = DEFAULT_NULL_VALUE_REPLACEMENT)
+    private String nullValueReplacement;
 
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
+
+
+    private boolean doKeyReplacement = false;
+
+    private boolean doKeyWhitspaceReplacement = false;
+
+    private boolean doPrefixOnNumericKey = false;
+
+    private boolean doIllegalElementNameCharReplacement = false;
 
     private final HashMap<String, String> keyMap = new HashMap<String, String>();
 
@@ -124,52 +133,25 @@ public class JSONReader implements SmooksXMLReader {
 
     @Initialize
     public void initialize() {
+		initKeyMap();
 
-
-		Parameter keyMapParam = config.getParameter(CONFIG_PARAM_KEY_MAP);
-
-        if (keyMapParam != null) {
-            Element keyMapParamElement = keyMapParam.getXml();
-
-            if(keyMapParamElement != null) {
-                NodeList keys = keyMapParamElement.getElementsByTagName(KEY_MAP_KEY_ELEMENT);
-
-                for (int i = 0; keys != null && i < keys.getLength(); i++) {
-                	Element node = (Element)keys.item(i);
-
-                	String name = DomUtils.getAttributeValue(node, KEY_MAP_KEY_ELEMENT_NAME_ATTRIBUTE);
-
-                	if(StringUtils.isBlank(name)) {
-                		throw new SmooksConfigurationException("The 'name' attribute isn't defined or is empty for the key name: " + node);
-                	}
-                	name = name.trim();
-
-                	String value = DomUtils.getAttributeValue(node, KEY_MAP_KEY_ELEMENT_VALUE_ATTRIBUTE);
-                	if(value == null) {
-                		value = DomUtils.getAllText(node, true);
-                		if(StringUtils.isBlank(value)) {
-                			value = null;
-                		}
-                	}
-                	keyMap.put(name, value);
-                }
-
-            } else {
-            	logger.error("Sorry, the key properties must be available as XML DOM. Please configure using XML.");
-            }
-        }
-
+		doKeyReplacement = !keyMap.isEmpty();
+		doKeyWhitspaceReplacement = keyWhitspaceReplacement != null;
+		doPrefixOnNumericKey = keyPrefixOnNumeric != null;
+		doIllegalElementNameCharReplacement = illegalElementNameCharReplacement != null;
     }
 
 
-	/* (non-Javadoc)
-	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
-	 */
+    /*
+     * (non-Javadoc)
+     * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
+     */
 	public void setExecutionContext(ExecutionContext request) {
 		this.request = request;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * @see org.xml.sax.XMLReader#parse(org.xml.sax.InputSource)
 	 */
 	public void parse(InputSource csvInputSource) throws IOException, SAXException {
@@ -251,7 +233,7 @@ public class JSONReader implements SmooksXMLReader {
 	        		String value;
 
 	        		if(t == JsonToken.VALUE_NULL) {
-	        			value = nullReplacement;
+	        			value = nullValueReplacement;
 	        		} else {
 	        			value = jp.getText();
 	        		}
@@ -298,13 +280,79 @@ public class JSONReader implements SmooksXMLReader {
 	 * @return
 	 */
 	private String getElementName(String text) {
-		text = text.replace(" ", whitspaceReplacement);
 
-		if(Character.isDigit(text.charAt(0))) {
-			text = numericPrefix + text;
+		if(doKeyReplacement) {
+
+			text = mapKey(text);
+
+		} else {
+
+			if(doKeyWhitspaceReplacement) {
+				text = text.replace(" ", keyWhitspaceReplacement);
+			}
+
+			if(doPrefixOnNumericKey && Character.isDigit(text.charAt(0))) {
+				text = keyPrefixOnNumeric + text;
+			}
+
+			if(doIllegalElementNameCharReplacement) {
+				text = text.replaceAll("^[.]|[^a-zA-Z0-9_.-]", illegalElementNameCharReplacement);
+			}
+
 		}
-
 		return text;
+	}
+
+	private String mapKey(String key) {
+
+		String mappedKey = keyMap.get(key);
+		if(mappedKey != null) {
+
+			return mappedKey;
+
+		} else {
+
+			return key;
+
+		}
+	}
+
+	/**
+	 *
+	 */
+	private void initKeyMap() {
+		Parameter keyMapParam = config.getParameter(CONFIG_PARAM_KEY_MAP);
+
+       if (keyMapParam != null) {
+           Element keyMapParamElement = keyMapParam.getXml();
+
+           if(keyMapParamElement != null) {
+               NodeList keys = keyMapParamElement.getElementsByTagName(KEY_MAP_KEY_ELEMENT);
+
+               for (int i = 0; keys != null && i < keys.getLength(); i++) {
+               	Element node = (Element)keys.item(i);
+
+               	String name = DomUtils.getAttributeValue(node, KEY_MAP_KEY_ELEMENT_FROM_ATTRIBUTE);
+
+               	if(StringUtils.isBlank(name)) {
+               		throw new SmooksConfigurationException("The 'name' attribute isn't defined or is empty for the key name: " + node);
+               	}
+               	name = name.trim();
+
+               	String value = DomUtils.getAttributeValue(node, KEY_MAP_KEY_ELEMENT_TO_ATTRIBUTE);
+               	if(value == null) {
+               		value = DomUtils.getAllText(node, true);
+               		if(StringUtils.isBlank(value)) {
+               			value = null;
+               		}
+               	}
+               	keyMap.put(name, value);
+               }
+
+           } else {
+           	logger.error("Sorry, the key properties must be available as XML DOM. Please configure using XML.");
+           }
+       }
 	}
 
 	public void setContentHandler(ContentHandler contentHandler) {
