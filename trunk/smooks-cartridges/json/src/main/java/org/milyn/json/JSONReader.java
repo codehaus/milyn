@@ -296,21 +296,34 @@ public class JSONReader implements SmooksXMLReader {
 	        	case END_OBJECT:
 	        	case END_ARRAY:
 
-	        		if(!elementStack.empty()) {
+	        		typeStack.pop();
+
+	        		boolean typeStackPeekIsArray = !typeStack.empty() && typeStack.peek() == Type.ARRAY;
+
+	        		if(!elementStack.empty() && !typeStackPeekIsArray) {
 	        			contentHandler.endElement(XMLConstants.NULL_NS_URI, elementStack.pop(), "");
-	        			typeStack.pop();
 	        		}
 
-	        		if(!typeStack.empty() && typeStack.peek() == Type.ARRAY) {
+
+	        		if(typeStackPeekIsArray) {
 	        			contentHandler.endElement(XMLConstants.NULL_NS_URI, arrayElementName, "");
 	        		}
 	        		break;
 
 	        	case FIELD_NAME:
 
-	        		String name = getElementName(jp.getText());
-	        		contentHandler.startElement(XMLConstants.NULL_NS_URI, name, "", EMPTY_ATTRIBS);
-	        		elementStack.add(name);
+	        		String text = jp.getText();
+
+	        		if(logger.isTraceEnabled()) {
+		        		logger.trace("Field name: " + text);
+		        	}
+
+	        		String name = getElementName(text);
+
+        			contentHandler.startElement(XMLConstants.NULL_NS_URI, name, "", EMPTY_ATTRIBS);
+        			elementStack.add(name);
+
+
 	        		break;
 
 	        	default:
@@ -366,12 +379,19 @@ public class JSONReader implements SmooksXMLReader {
 	 */
 	private String getElementName(String text) {
 
+		boolean replacedKey = false;
 		if(doKeyReplacement) {
 
-			text = mapKey(text);
+			String mappedKey = keyMap.get(text);
 
-		} else {
+			replacedKey = mappedKey != null;
+			if(replacedKey) {
+				text = mappedKey;
+			}
 
+		}
+
+		if(!replacedKey) {
 			if(doKeyWhitspaceReplacement) {
 				text = text.replace(" ", keyWhitspaceReplacement);
 			}
@@ -383,24 +403,10 @@ public class JSONReader implements SmooksXMLReader {
 			if(doIllegalElementNameCharReplacement) {
 				text = text.replaceAll("^[.]|[^a-zA-Z0-9_.-]", illegalElementNameCharReplacement);
 			}
-
 		}
 		return text;
 	}
 
-	private String mapKey(String key) {
-
-		String mappedKey = keyMap.get(key);
-		if(mappedKey != null) {
-
-			return mappedKey;
-
-		} else {
-
-			return key;
-
-		}
-	}
 
 	/**
 	 *

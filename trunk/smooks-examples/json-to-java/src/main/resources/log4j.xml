@@ -36,16 +36,12 @@
       <priority value="ERROR"/>
    </category>
 
-   <category name="org.milyn.json">
-      <priority value="INFO"/>
-   </category>
-
    <!-- ======================= -->
    <!-- Setup the Root category -->
    <!-- ======================= -->
 
    <root>
-   	  <priority value="WARN"/>
+   	  <priority value="ERROR"/>
       <appender-ref ref="CONSOLE"/>
    </root>
 
