@@ -17,7 +17,11 @@ package org.milyn.cdr.xsd11.extensiontests;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
 import org.milyn.xml.XmlUtil;
@@ -27,6 +31,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
@@ -77,5 +82,49 @@ public class XSD11ExtendTest extends TestCase {
             assertEquals("Failed to construct Smooks instance for processing extended configuration resource '/META-INF/xsd/smooks/test-xsd-04.xsd-smooks.xml'.", e.getMessage());
             assertEquals("Configuration element 'profiles' not supported in an extension configuration.", e.getCause().getMessage());
         }
+    }
+
+    public void test_digest_05_simple_default_1() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config_05.1.xml"));
+        ExecutionContext execContext;
+        ContentDeliveryConfig deliveryConf;
+        List<SmooksResourceConfiguration> configList;
+
+        // config_05.1.xml defines a default profile of "xxx", so creating the context without specifying
+        // a profile should exclude the "aa" resource...
+        execContext = smooks.createExecutionContext();
+        deliveryConf = execContext.getDeliveryConfig();
+        configList = deliveryConf.getSmooksResourceConfigurations("aa");
+        assertNull(configList);
+
+        // config_05.1.xml defines a default profile of "xxx", so creating the context by specifying
+        // a profile of "xxx" should include the "aa" resource...
+        execContext = smooks.createExecutionContext("xxx");
+        deliveryConf = execContext.getDeliveryConfig();
+        configList = deliveryConf.getSmooksResourceConfigurations("aa");
+        assertNotNull(configList);
+
+        // Make sure the resource has the other default settings...
+        SmooksResourceConfiguration config = configList.get(0);
+        assertEquals("http://an", config.getSelectorNamespaceURI());
+        assertNotNull(config.getConditionEvaluator());
+    }
+
+    public void test_digest_05_simple_default_2() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config_05.2.xml"));
+        ExecutionContext execContext;
+        ContentDeliveryConfig deliveryConf;
+        List<SmooksResourceConfiguration> configList;
+
+        // config_05.2.xml defines a name attribute, so that should override the default...
+        execContext = smooks.createExecutionContext("xxx");
+        deliveryConf = execContext.getDeliveryConfig();
+        configList = deliveryConf.getSmooksResourceConfigurations("j");
+        assertNotNull(configList);
+
+        // Make sure the resource has the other default settings...
+        SmooksResourceConfiguration config = configList.get(0);
+        assertEquals("http://an", config.getSelectorNamespaceURI());
+        assertNotNull(config.getConditionEvaluator());
     }
 }

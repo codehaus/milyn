@@ -45,7 +45,7 @@ public interface ContentDeliveryConfig {
 	 * defined under that selector (for the device).
 	 * @see #getObjects(String)
 	 */
-	public abstract List<ContentHandlerConfigMap> getSmooksResourceConfigurations(String selector);
+	public abstract List<SmooksResourceConfiguration> getSmooksResourceConfigurations(String selector);
 
 	/**
 	 * Get the {@link SmooksResourceConfiguration} map for the target execution context.

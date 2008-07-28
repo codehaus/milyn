@@ -65,7 +65,7 @@
 
     <resource-config selector="bindings/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">type</param>
+        <param name="attribute">decoder</param>
         <param name="mapTo">type</param>
         <param name="defaultValue">String</param>
     </resource-config>
@@ -77,11 +77,34 @@
     </resource-config>
 
     <resource-config selector="bindings/value">
-        <resource>org.milyn.javabean.ext.SelectorAttributeExtractor</resource>
+        <resource>org.milyn.javabean.ext.SelectorPropertyResolver</resource>
     </resource-config>
 
     <resource-config selector="bindings/value">
-        <resource>org.milyn.javabean.ext.TypeDecodeParamMapper</resource>
+        <resource>org.milyn.javabean.ext.DecodeParamResolver</resource>
+    </resource-config>
+
+    <!--
+        Bean Instance Populator Resource (Wiring)...
+    -->
+
+    <resource-config selector="bindings/wiring">
+        <!-- Clone the BeanInstanceCreator config for the BeanInstancePopulator... -->
+        <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
+        <param name="resource">org.milyn.javabean.BeanInstancePopulator</param>
+        <param name="unset">beanClass</param>
+    </resource-config>
+
+    <resource-config selector="bindings/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">property</param>
+        <param name="mapTo">property</param>
+    </resource-config>
+
+    <resource-config selector="bindings/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">beanIdRef</param>
+        <param name="mapTo">wireBeanId</param>
     </resource-config>
 
     <!--
@@ -116,6 +139,14 @@
     <resource-config selector="bindings/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromText</resource>
         <param name="mapTo">expression</param>
+    </resource-config>
+
+    <!--
+        Bean Instance Populator Resource (Expression)...
+    -->
+
+    <resource-config selector="bindings/*">
+        <resource>org.milyn.javabean.ext.PropertyChecker</resource>
     </resource-config>
 
 </smooks-resource-list>

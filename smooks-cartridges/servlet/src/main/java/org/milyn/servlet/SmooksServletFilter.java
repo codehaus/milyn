@@ -202,9 +202,9 @@ public class SmooksServletFilter implements Filter {
 		ServletResponseWrapper responseWrapper = null; 
 		
 		if(selector != null) {
-			List resourceConfigList = executionContext.getDeliveryConfig().getSmooksResourceConfigurations(selector);
+			List<SmooksResourceConfiguration> resourceConfigList = executionContext.getDeliveryConfig().getSmooksResourceConfigurations(selector);
 			if(resourceConfigList != null && !resourceConfigList.isEmpty()) {
-				responseWrapper = ServletResponseWrapperFactory.createServletResponseWrapper((SmooksResourceConfiguration)resourceConfigList.get(0), executionContext, (HttpServletResponse)response);
+				responseWrapper = ServletResponseWrapperFactory.createServletResponseWrapper(resourceConfigList.get(0), executionContext, (HttpServletResponse)response);
 			}
 		}
 		
