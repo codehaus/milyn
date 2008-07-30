@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>milyn</groupId>
+    <groupId>org.milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
     <version>1.1.1</version> <!-- Will make this version line up in a future release. -->
@@ -160,11 +160,11 @@
     <distributionManagement>
         <repository>
             <id>codehaus.webdav.releases</id>
-            <url>dav:https://dav.codehaus.org/dist</url>
+            <url>dav:https://dav.codehaus.org/repository/milyn/</url>
         </repository>
         <snapshotRepository>
             <id>codehaus.webdav.snapshots</id>
-            <url>dav:https://dav.codehaus.org/dist</url>
+            <url>dav:https://dav.codehaus.org/snapshots.repository/milyn/</url>
         </snapshotRepository>
     </distributionManagement>
 

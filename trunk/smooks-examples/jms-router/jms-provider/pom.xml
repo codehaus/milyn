@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>milyn</groupId>
+        <groupId>org.milyn</groupId>
         <artifactId>milyn-smooks-example-jms-router</artifactId>
         <version>1.0</version>
     </parent>
     <name>Milyn Smooks Example - JMS Router (Provider)</name>
-    <groupId>milyn</groupId>
+    <groupId>org.milyn</groupId>
     <artifactId>milyn-smooks-example-jms-router-provider</artifactId>
     <version>1.0</version>
 

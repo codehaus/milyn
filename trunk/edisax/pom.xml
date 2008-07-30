@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>milyn</groupId>
+        <groupId>org.milyn</groupId>
         <artifactId>milyn</artifactId>
         <version>1.1.1</version>
     </parent>
     <name>Milyn EdiSax</name>
-    <groupId>milyn</groupId>
+    <groupId>org.milyn</groupId>
     <artifactId>milyn-edisax</artifactId>
     <version>1.1.1</version>
     <packaging>pom</packaging>
