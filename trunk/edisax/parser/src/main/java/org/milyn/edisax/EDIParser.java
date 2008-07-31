@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -37,7 +37,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.io.StreamUtils;
 import org.milyn.schema.edi_message_mapping_1_0.Component;
 import org.milyn.schema.edi_message_mapping_1_0.Delimiters;
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
+import org.milyn.schema.edi_message_mapping_1_0.EdiMap;
 import org.milyn.schema.edi_message_mapping_1_0.Field;
 import org.milyn.schema.edi_message_mapping_1_0.Segment;
 import org.milyn.schema.edi_message_mapping_1_0.SubComponent;
@@ -59,29 +59,29 @@ import org.xml.sax.helpers.AttributesImpl;
  * <p/>
  * Generates a stream of SAX events from an EDI message stream based on the supplied
  * {@link #setMappingModel(Edimap) mapping model}.
- * 
+ *
  * <h3>Usage</h3>
  * <pre>
  * 	InputStream ediInputStream = ....
  * 	InputStream <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a> = ....
  * 	{@link org.xml.sax.ContentHandler} contentHandler = ....
- * 		
+ *
  * 	EDIParser parser = new EDIParser();
- * 		
+ *
  * 	parser.setContentHandler(contentHandler);
  * 	parser.{@link #setMappingModel(Edimap) setMappingModel}(EDIParser.{@link #parseMappingModel(InputStream) parseMappingModel}(<a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a>));
  * 	parser.parse(new InputSource(ediInputStream));
- * 	etc... 
+ * 	etc...
  * </pre>
  *
  * <h3>Mapping Model</h3>
  * The EDI to SAX Event mapping is performed based on an "Mapping Model" supplied to
- * the parser.  This model must be based on the 
+ * the parser.  This model must be based on the
  * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
  * schema.
  * <p/>
  * From this schema you can see that segment groups are supported (nested segments), including groups within groups,
- * repeating segments and repeating segment groups.  Be sure to review the 
+ * repeating segments and repeating segment groups.  Be sure to review the
  * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">schema</a>.
  *
  * <h3>Example (Input EDI, EDI to XML Mapping and Output SAX Events)</h3>
@@ -93,12 +93,12 @@ import org.xml.sax.helpers.AttributesImpl;
  * <p/>
  * So the above illustration attempts to highlight the following:
  * <ol>
- * 	<li>How the message delimiters (segment, field, component and sub-component) are specified in the mapping.  In particular, how special 
+ * 	<li>How the message delimiters (segment, field, component and sub-component) are specified in the mapping.  In particular, how special
  * 		characters like the linefeed character are specified using XML Character References.</li>
  * 	<li>How segment groups (nested segments) are specified.  In this case the first 2 segments are part of a group.</li>
  * 	<li>How the actual field, component and sub-component values are specified and mapped to the target SAX events (to generate the XML).</li>
  * </ol>
- * 
+ *
  * <h3>Segment Cardinality</h3>
  * What's not shown above is how the &lt;medi:segment&gt; element supports the 2 optional attributes "minOccurs" and
  * "maxOccurs" (default value of 1 in both cases).  These attributes can be used to control the optional and required
@@ -126,7 +126,7 @@ public class EDIParser implements XMLReader {
     private ContentHandler contentHandler;
     private int depth = 0;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
-    private Edimap mappingModel;
+    private EdiMap mappingModel;
     private Delimiters delimiters;
     private BufferedSegmentReader segmentReader;
 
@@ -142,7 +142,7 @@ public class EDIParser implements XMLReader {
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
      */
-    public static Edimap parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException {
+    public static EdiMap parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
         try {
             return parseMappingModel(new InputStreamReader(mappingConfigStream));
@@ -163,24 +163,24 @@ public class EDIParser implements XMLReader {
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
      */
-    public static Edimap parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
+    public static EdiMap parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
     	AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
-    	
-    	Edimap mappingModel = null;
+
+    	EdiMap mappingModel = null;
     	String mappingConfig;
-    	
+
     	try {
     		mappingConfig = StreamUtils.readStream(mappingConfigStream);
     	} finally {
     		mappingConfigStream.close();
     	}
-    	
+
     	assertMappingConfigValid(new StringReader(mappingConfig));
     	JAXBContext jc;
         try {
             jc = JAXBContext.newInstance("org.milyn.schema.edi_message_mapping_1_0");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            mappingModel = (Edimap) unmarshaller.unmarshal(new StringReader(mappingConfig));
+            mappingModel = (EdiMap) unmarshaller.unmarshal(new StringReader(mappingConfig));
         }catch(JAXBException e)
         {
             throw new SAXException("EDI Mapping Model parse failure.", e);
@@ -193,10 +193,10 @@ public class EDIParser implements XMLReader {
 		delimiters.setField(XmlUtil.removeEntities(delimiters.getField()));
 		delimiters.setComponent(XmlUtil.removeEntities(delimiters.getComponent()));
 		delimiters.setSubComponent(XmlUtil.removeEntities(delimiters.getSubComponent()));
-		
+
 		return mappingModel;
     }
-    
+
     /**
      * Assert that the supplied mapping configuration is valid.
 	 * @param mappingConfigStream
@@ -205,11 +205,11 @@ public class EDIParser implements XMLReader {
 	 */
 	protected static void assertMappingConfigValid(Reader mappingConfigStream) throws IOException, SAXException {
     	AssertArgument.isNotNull(mappingConfigStream, "mapping");
-		
+
    		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
    		Schema schema = factory.newSchema(new StreamSource(EDIParser.class.getResourceAsStream("/schema/edi-message-mapping-1.0.xsd")));
 		Validator validator = schema.newValidator();
-		
+
 		validator.validate(new StreamSource(mappingConfigStream));
 	}
 
@@ -217,15 +217,15 @@ public class EDIParser implements XMLReader {
 	 * Set the EDI mapping model to be used in all subsequent parse operations.
 	 * <p/>
 	 * The model can be generated through a call to {@link #parseMappingModel(InputStream)}.
-	 * 
+	 *
 	 * @param mappingModel The mapping model.
 	 */
-	public void setMappingModel(Edimap mappingModel) {
+	public void setMappingModel(EdiMap mappingModel) {
     	AssertArgument.isNotNull(mappingModel, "mappingModel");
     	this.mappingModel = mappingModel;
     	delimiters = mappingModel.getDelimiters();
     }
-    
+
     /**
      * Parse an EDI InputSource.
      */
@@ -236,10 +236,10 @@ public class EDIParser implements XMLReader {
         if(mappingModel == null) {
             throw new IllegalStateException("'mappingModel' not set.  Cannot parse EDI stream.");
         }
-        
+
         // Create a reader for reading the EDI segments...
         segmentReader = new BufferedSegmentReader(ediInputSource, delimiters);
-        
+
         // Fire the startDocument event, as well as the startElement event...
         contentHandler.startDocument();
         startElement(mappingModel.getSegments().getXmltag(), false);
@@ -248,7 +248,7 @@ public class EDIParser implements XMLReader {
         if(segmentReader.moveToNextSegment()) {
         	mapSegments(mappingModel.getSegments().getSegment());
 
-    		// If we reach the end of the mapping model and we still have more EDI segments in the message.... 
+    		// If we reach the end of the mapping model and we still have more EDI segments in the message....
     		if(segmentReader.hasCurrentSegment()) {
     			throw new EDIParseException(mappingModel, "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s).");
     		}
@@ -270,16 +270,16 @@ public class EDIParser implements XMLReader {
 	private void mapSegments(List<Segment> expectedSegments) throws IOException, SAXException {
 		int segmentMappingIndex = 0; // The current index within the supplied segment list.
 		int segmentProcessingCount = 0; // The number of times the current segment definition from the supplied segment list has been applied to message segments on the incomming EDI message.
-		
+
 		if(expectedSegments.size() == 0) {
 			return;
 		}
-		
+
 		while(segmentMappingIndex < expectedSegments.size() && segmentReader.hasCurrentSegment()) {
 			Segment expectedSegment = expectedSegments.get(segmentMappingIndex);
 			int minOccurs = expectedSegment.getMinOccurs();
 			int maxOccurs = expectedSegment.getMaxOccurs();
-	
+
 			// A negative max value indicates an unbound max....
 			if(maxOccurs < 0) {
 				maxOccurs = Integer.MAX_VALUE;
@@ -288,9 +288,9 @@ public class EDIParser implements XMLReader {
 			if(minOccurs > maxOccurs) {
 				maxOccurs = minOccurs;
 			}
-			
+
 			String[] currentSegmentFields = segmentReader.getCurrentSegmentFields();
-			
+
 			// If the current segment being read from the incomming message doesn't match the expected
 			// segment code....
 			if(!currentSegmentFields[0].equals(expectedSegment.getSegcode())) {
@@ -309,11 +309,11 @@ public class EDIParser implements XMLReader {
 			if(segmentProcessingCount >= maxOccurs) {
 				throw new EDIParseException(mappingModel, "Maximum of " + maxOccurs + " instances of segment [" + expectedSegment.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 			}
-			
+
 			// The current read message segment appears to match that expected according to the mapping model.
 			// Proceed to process the segment fields and the segments sub-segments...
 			mapSegment(currentSegmentFields, expectedSegment);
-			
+
 			// Increment the count on the number of times the current "expected" mapping config has been applied...
 			segmentProcessingCount++;
 
@@ -339,7 +339,7 @@ public class EDIParser implements XMLReader {
 		if(segmentReader.moveToNextSegment()) {
 			mapSegments(expectedSegment.getSegment());
 		}
-		
+
         endElement(expectedSegment.getXmltag(), true);
 	}
 
@@ -362,7 +362,7 @@ public class EDIParser implements XMLReader {
 		for(int i = 0; i < numFields; i++) {
 			String fieldMessageVal = currentSegmentFields[i + 1]; // +1 to skip the segment code
 			Field expectedField = expectedFields.get(i);
-			
+
 			mapField(fieldMessageVal, expectedField, i, segmentCode);
 		}
 	}

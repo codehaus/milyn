@@ -3,37 +3,39 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.smooks.edi;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Hashtable;
+
+import javax.xml.transform.stream.StreamSource;
+
 import junit.framework.TestCase;
+
 import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.dom.DOMParser;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.StringResult;
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
+import org.milyn.schema.edi_message_mapping_1_0.EdiMap;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Hashtable;
 
 /**
  * Tests for SmooksEDIReader.
@@ -77,7 +79,7 @@ public class SmooksEDIParserTest extends TestCase {
 			assertEquals("Error parsing EDI mapping model [<z/>].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getMessage());
 		}
 	}
-	
+
 	public void test_caching() throws IOException, SAXException {
 		byte[] input = StreamUtils.readStream(getClass().getResourceAsStream("edi-input.txt"));
 		Smooks smooks = new Smooks();
@@ -94,19 +96,19 @@ public class SmooksEDIParserTest extends TestCase {
 		// Create 1st parser using the config, and run a parse through it...
 		parser = new DOMParser(smooks.createExecutionContext(), config);
 		parser.parse(new InputStreamReader(new ByteArrayInputStream(input)));
-		
+
 		// Check make sure the parsed and validated model was cached...
 		Hashtable mappingTable = SmooksEDIReader.getMappingTable(smooks.getApplicationContext());
 		assertNotNull("No mapping table in context!", mappingTable);
-		Edimap mappingModel_request1 = (Edimap) mappingTable.get(config);
+		EdiMap mappingModel_request1 = (EdiMap) mappingTable.get(config);
 		assertNotNull("No mapping model in mapping table!", mappingModel_request1);
 
 		// Create 2nd parser using the same config, and run a parse through it...
 		parser = new DOMParser(smooks.createExecutionContext(), config);
 		parser.parse(new InputStreamReader(new ByteArrayInputStream(input)));
-		
+
 		// Make sure the cached model was used on the 2nd parse...
-		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, (Edimap) mappingTable.get(config));
+		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, mappingTable.get(config));
 	}
 
 	private void test(String mapping) throws IOException, SAXException {
@@ -118,14 +120,14 @@ public class SmooksEDIParserTest extends TestCase {
 		// Create and initialise the Smooks config for the parser...
         config = new SmooksResourceConfiguration();
         config.setResource(SmooksEDIReader.class.getName());
-		// Set the mapping config on the resource config... 
+		// Set the mapping config on the resource config...
 		if(mapping != null) {
 			config.setParameter(SmooksEDIReader.MODEL_CONFIG_KEY, mapping);
 		}
 
 		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
 		Document doc = parser.parse(new InputStreamReader(input));
-		
+
 		//System.out.println(XmlUtil.serialize(doc.getChildNodes()));
 		assertEquals(removeCRLF(expected), removeCRLF(XmlUtil.serialize(doc.getChildNodes())));
 	}
@@ -141,14 +143,14 @@ public class SmooksEDIParserTest extends TestCase {
 
     private String removeCRLF(String string) {
 		StringBuffer buffer = new StringBuffer();
-		
+
 		for(int i = 0; i < string.length(); i++) {
 			char character = string.charAt(i);
 			if(character != '\r' && character != '\n') {
 				buffer.append(character);
 			}
 		}
-		
+
 		return buffer.toString();
 	}
 }
