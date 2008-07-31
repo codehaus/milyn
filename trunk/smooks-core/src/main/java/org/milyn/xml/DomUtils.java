@@ -933,7 +933,8 @@ public abstract class DomUtils {
 	 * elements having the same name (and namespace if specified) e.g. if
 	 * searching for the 2nd &ltinput&gt; element, this param needs to
 	 * have a value of 2. 
-	 * @return
+     * @return The element at the requested position, or null if no such child
+     * element exists on the parent element.
 	 */
 	public static Element getElement(Element parent, String localname, int position) {
 		return getElement(parent, localname, position, null);

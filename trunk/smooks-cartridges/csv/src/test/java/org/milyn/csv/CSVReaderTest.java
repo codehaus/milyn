@@ -93,10 +93,15 @@ public class CSVReaderTest extends TestCase {
     }
 
     public void test_03() throws SmooksException, IOException, SAXException {
+        test_03("smooks-config-02.xml");
+        test_03("smooks-config-03.xml");
+    }
+
+    public void test_03(String config) throws SmooksException, IOException, SAXException {
         Smooks smooks = new Smooks();
         ExecutionContext context;
 
-        smooks.addConfigurations("config", getClass().getResourceAsStream("smooks-config-02.xml"));
+        smooks.addConfigurations("config", getClass().getResourceAsStream(config));
         context = smooks.createExecutionContext();
         String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-02.csv"), smooks);
         assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result);
