@@ -2,7 +2,7 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
 	<resource-config selector="org.xml.sax.driver">
-		<resource>org.milyn.smooks.edi.SmooksEDIParser</resource>
+		<resource>org.milyn.smooks.edi.SmooksEDIReader</resource>
 		<param name="mapping-model">
 			<![CDATA[
 			<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">

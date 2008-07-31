@@ -256,6 +256,8 @@ public final class XMLConfigDigester {
                     digestProfiles(configElement);
                 } else if (DomUtils.getName(configElement).equals("import")) {
                     digestImport(configElement, new URI(baseURI));
+                } else if (DomUtils.getName(configElement).equals("reader")) {
+                    digestReaderConfig(configElement, defaultProfile);
                 } else if (DomUtils.getName(configElement).equals("resource-config")) {
                     digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
                 } else {
@@ -303,6 +305,77 @@ public final class XMLConfigDigester {
             }
         } catch (IOException e) {
             throw new SmooksConfigurationException("Failed to load Smooks configuration resource <import> '" + file + "': " + e.getMessage(), e);
+        }
+    }
+
+    private void digestReaderConfig(Element configElement, String defaultProfile) {
+        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("org.xml.sax.driver");
+        String readerClass = DomUtils.getAttributeValue(configElement, "class");
+
+        if(readerClass == null || readerClass.trim().equals("")) {
+            throw new SmooksConfigurationException("Reader 'class' attribute not defined.");
+        }
+
+        resourceConfig.setResource(readerClass);
+
+        // Add the reader resource...
+        configureHandlers(configElement, resourceConfig);
+        configureFeatures(configElement, resourceConfig);
+        configureParams(configElement, resourceConfig);
+
+        list.add(resourceConfig);
+    }
+
+    private void configureHandlers(Element configElement, SmooksResourceConfiguration resourceConfig) {
+        Element handlersElement = DomUtils.getElement(configElement, "handlers", 1);
+
+        if(handlersElement != null) {
+            NodeList handlers = handlersElement.getChildNodes();
+            for(int i = 0; i < handlers.getLength(); i++) {
+                if(handlers.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    Element handler = (Element) handlers.item(i);
+                    String handlerClass = handler.getAttribute("class");
+
+                    resourceConfig.setParameter("sax-handler", handlerClass);
+                }
+            }
+        }
+    }
+
+    private void configureFeatures(Element configElement, SmooksResourceConfiguration resourceConfig) {
+        Element featuresElement = DomUtils.getElement(configElement, "features", 1);
+
+        if(featuresElement != null) {
+            NodeList features = featuresElement.getChildNodes();
+            for(int i = 0; i < features.getLength(); i++) {
+                if(features.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    Element feature = (Element) features.item(i);
+                    String uri = feature.getAttribute("feature");
+
+                    if(DomUtils.getName(feature).equals("setOn")) {
+                        resourceConfig.setParameter("feature-on", uri);
+                    } else {
+                        resourceConfig.setParameter("feature-off", uri);
+                    }
+                }
+            }
+        }
+    }
+
+    private void configureParams(Element configElement, SmooksResourceConfiguration resourceConfig) {
+        Element paramsElement = DomUtils.getElement(configElement, "params", 1);
+
+        if(paramsElement != null) {
+            NodeList params = paramsElement.getChildNodes();
+            for(int i = 0; i < params.getLength(); i++) {
+                if(params.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    Element param = (Element) params.item(i);
+                    String name = param.getAttribute("name");
+                    String value = DomUtils.getAllText(param, true);
+
+                    resourceConfig.setParameter(name, value);
+                }
+            }
         }
     }
 
