@@ -35,15 +35,34 @@
         <freemarker.version>2.3.9</freemarker.version>
     </properties>
 
-    <modules>
-        <module>commons</module>
-        <module>smooks-core</module>
-        <module>magger</module>
-        <module>tinak</module>
-        <module>edisax</module>
-        <module>smooks-cartridges</module>
-        <module>smooks-examples</module>
-    </modules>
+    <profiles>
+        <profile>
+            <id>withexamples</id>
+            <modules>
+                <module>commons</module>
+                <module>smooks-core</module>
+                <module>magger</module>
+                <module>tinak</module>
+                <module>edisax</module>
+                <module>smooks-cartridges</module>
+                <module>smooks-examples</module>
+            </modules>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>noexamples</id>
+            <modules>
+                <module>commons</module>
+                <module>smooks-core</module>
+                <module>magger</module>
+                <module>tinak</module>
+                <module>edisax</module>
+                <module>smooks-cartridges</module>
+            </modules>
+        </profile>
+    </profiles>
 
     <dependencies>
 
