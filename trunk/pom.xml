@@ -159,13 +159,19 @@
 
     <distributionManagement>
         <repository>
-            <id>codehaus.webdav.releases</id>
+            <id>codehaus.maven.repo</id>
+            <name>Milyn Central Maven2 Repository</name>
             <url>dav:https://dav.codehaus.org/repository/milyn/</url>
         </repository>
         <snapshotRepository>
-            <id>codehaus.webdav.snapshots</id>
+            <id>codehaus.maven.repo</id>
+            <name>Milyn Central Maven2 SNAPSHOT Repository</name>
             <url>dav:https://dav.codehaus.org/snapshots.repository/milyn/</url>
         </snapshotRepository>
+        <site>
+            <id>codehaus.maven.repo</id>
+            <url>dav:https://dav.codehaus.org/xfire/</url>
+        </site>
     </distributionManagement>
 
     <reporting>
