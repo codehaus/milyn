@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
@@ -163,7 +164,8 @@ public class EDIParser implements XMLReader {
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
      */
-    public static EdiMap parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
+    @SuppressWarnings("unchecked")
+	public static EdiMap parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
     	AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
 
     	EdiMap mappingModel = null;
@@ -180,7 +182,7 @@ public class EDIParser implements XMLReader {
         try {
             jc = JAXBContext.newInstance("org.milyn.schema.edi_message_mapping_1_0");
             Unmarshaller unmarshaller = jc.createUnmarshaller();
-            mappingModel = (EdiMap) unmarshaller.unmarshal(new StringReader(mappingConfig));
+            mappingModel = ((JAXBElement<EdiMap>) unmarshaller.unmarshal(new StringReader(mappingConfig))).getValue();
         }catch(JAXBException e)
         {
             throw new SAXException("EDI Mapping Model parse failure.", e);
