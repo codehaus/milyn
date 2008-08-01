@@ -44,8 +44,11 @@
 
     <repositories>
         <repository>
-            <id>milyn</id>
-            <url>http://dist.codehaus.org</url>
+            <id>codehaus.m2.snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 </project>
