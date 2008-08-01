@@ -90,7 +90,7 @@
 		<xs:complexContent>
 			<xs:extension base="MappingNode">
 				<xs:sequence>
-					<xs:element name="Component" type="Component" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="component" type="Component" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />
                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
@@ -102,7 +102,7 @@
 		<xs:complexContent>
 			<xs:extension base="MappingNode">
 				<xs:sequence>
-					<xs:element name="SubComponent" type="SubComponent" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element name="sub-component" type="SubComponent" minOccurs="0" maxOccurs="unbounded" />
 				</xs:sequence>
                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />
                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
