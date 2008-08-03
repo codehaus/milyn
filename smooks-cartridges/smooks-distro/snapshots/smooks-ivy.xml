@@ -1,0 +1,62 @@
+<ivy-module version="2.0">
+    <info organisation="org.jboss" module="jbossesb"/>    
+    <dependencies>
+        <dependency org="javax.mail" name="mail" rev="1.4"/>
+
+        <dependency org="asm" name="asm" rev="1.5.3"/>
+        <dependency org="commons-codec" name="commons-codec" rev="1.3"/>
+        <dependency org="commons-collections" name="commons-collections" rev="3.2"/>
+
+        <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1"/>
+        <dependency org="commons-io" name="commons-io" rev="1.3"/>
+        <dependency org="commons-lang" name="commons-lang" rev="2.1"/>
+        <!-- dependency org="commons-net" name="commons-net" rev="2.0.0-652071"/ -->
+        <!-- dependency org="org.apache.commons" name="not-yet-commons-ssl" rev="0.3.7"/ -->
+        <dependency org="groovy" name="groovy-all" rev="1.0"/>
+        <dependency org="com.h2database" name="h2" rev="1.0.68"/>
+        <dependency org="hibernate" name="hibernate3" rev="3.2.4.SP1"/>
+        <dependency org="jboss" name="jboss-cache" rev="1.2.4.SP2"/>
+
+        <dependency org="javassist" name="javassist" rev="3.6.0.GA"/>
+
+        <!-- Only declaring a direct dependency on jaxr-api because there's an issue with
+             the scout-1.0rc1 pom in the repo.  It declares a dep on an unavailable (easily)
+             SNAPSHOT version. -->
+        <dependency org="org.apache.ws.scout" name="jaxr-api" rev="1.0rc1">
+            <exclude org="axis" module="axis"/>
+            <exclude org="geronimo-spec" module="geronimo-spec-activation"/>            
+        </dependency>
+        <dependency org="org.apache.ws.scout" name="scout" rev="1.0rc1">
+            <exclude org="axis" module="axis"/>
+            <exclude org="geronimo-spec" module="geronimo-spec-activation"/>
+        </dependency>
+
+        <dependency org="jboss.aop" name="jboss-aop-jdk50" rev="1.5.6.GA"/>
+        <!-- dependency org="jboss.messaging" name="jboss-messaging-client" rev="1.4.1.CR1"/ -->
+        <dependency org="jboss" name="jboss-system" rev="4.2.2.GA"/>
+        <dependency org="jboss" name="jboss" rev="4.2.2.GA"/>
+        <dependency org="jboss" name="jbossall-client" rev="4.2.2.GA"/>
+        <!-- dependency org="jboss" name="jbossts.jbossts-common" rev="4.2.2.GA"/ -->
+        <!-- dependency org="jgroups" name="jgroups" rev="2.4.1-SP3"/ -->
+        <dependency org="com.jcraft" name="jsch" rev="0.1.38"/>
+        <dependency org="org.apache.juddi" name="juddi" rev="2.0rc5">
+            <exclude org="axis" module="axis"/>
+        </dependency>
+        <dependency org="org.apache.juddi" name="juddi-client" rev="2.0rc5"/>
+        <dependency org="log4j" name="log4j" rev="1.2.14"/>
+        <dependency org="org.mvel" name="mvel" rev="1.3.1-java1.4"/>
+
+        <dependency org="ognl" name="ognl" rev="2.6.9"/>
+        <dependency org="quartz" name="quartz" rev="1.5.2">
+            <exclude org="javax.transaction" module="jta"/>
+            <exclude org="javax.ejb" module="ejb"/>
+        </dependency>
+        <dependency org="org.antlr" name="stringtemplate" rev="3.0"/>
+
+        <!-- dependency org="trove" name="trove" rev="2.1.1"/ -->
+
+        <dependency org="xml-apis" name="xml-apis" rev="1.3.02"/>
+        <dependency org="xmlbeans" name="xmlpublic" rev="2.2.0"/>
+        <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.2.2"/>
+    </dependencies>
+</ivy-module>
