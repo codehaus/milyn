@@ -2,7 +2,6 @@
 
     <property environment="env"/>
     <property name="ivy.install.version" value="2.0.0-beta1" />
-
     <pathconvert targetos="unix" property="ivy.dir">
         <path>
             <pathelement location="${user.home}/.ivy2"/>
@@ -11,15 +10,24 @@
     <condition property="ivy.exists.locally">
         <available file="${ivy.dir}/ivy.jar"/>
     </condition>
+    <property name="ivy.smooks.dir" value="${ivy.dir}/smooks" />
 
     <target name="get-smooks">
         <mkdir dir="${ivy.dir}"/>
+        <mkdir dir="${ivy.smooks.dir}"/>
 
         <antcall target="ivy.getjar" />
+        <antcall target="smooks.getscripts" />
+        <ant antfile="${ivy.smooks.dir}/smooks-snaps-ivy-build.xml">
+            <property name="ivy.lib.dir" value="${basedir}" />
+        </ant>
     </target>
+    <property name="smooks.scripts.dir.url" value="http://svn.codehaus.org/milyn/trunk/smooks-cartridges/smooks-distro/snapshots" />
 
     <target name="smooks.getscripts">
-        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.dir}/ivy.jar" usetimestamp="true"/>
+        <get src="${smooks.scripts.dir.url}/smooks-snaps-ivy-build.xml" dest="${ivy.smooks.dir}/smooks-snaps-ivy-build.xml" usetimestamp="true"/>
+        <get src="${smooks.scripts.dir.url}/smooks-ivy.xml" dest="${ivy.smooks.dir}/ivy.xml" usetimestamp="true"/>
+        <get src="${smooks.scripts.dir.url}/smooks-ivysettings.xml" dest="${ivy.smooks.dir}/smooks-ivysettings.xml" usetimestamp="true"/>
     </target>
 
     <target name="ivy.getjar" unless="ivy.exists.locally">
