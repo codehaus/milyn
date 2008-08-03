@@ -1,0 +1,29 @@
+<project name="Dependencies" default="retrieve" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <property name="ivy.lib.dir" value="${basedir}/build/lib" />
+    <path id="classpath.ivy">
+        <fileset dir="${basedir}/../antlib" includes="ivy-*.jar" />
+    </path>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="classpath.ivy" />
+
+    <target name="ivy.init">
+        <ivy:settings file="${basedir}/ivysettings.xml" />
+    </target>
+
+    <target name="retrieve" depends="ivy.init">
+        <ivy:retrieve />
+    </target>
+
+    <target name="clean" depends="ivy.init">
+        <delete dir="${ivy.lib.dir}" includes="*.jar,ivy-report.css,org.jboss-jbossesb-default.*" failonerror="false" />        
+    </target>
+
+    <target name="cleancache" depends="ivy.init">
+        <ivy:cleancache />
+    </target>
+
+    <target name="report" depends="retrieve" description="--> generates a report of dependencies">
+        <ivy:report todir="${ivy.lib.dir}"/>
+    </target>
+
+</project>

@@ -1,0 +1,29 @@
+<project name="Smooks-SNAPSHOTS-Build" default="get-smooks" basedir=".">
+
+    <property environment="env"/>
+    <property name="ivy.install.version" value="2.0.0-beta1" />
+
+    <pathconvert targetos="unix" property="ivy.dir">
+        <path>
+            <pathelement location="${user.home}/.ivy2"/>
+        </path>
+    </pathconvert>
+    <condition property="ivy.exists.locally">
+        <available file="${ivy.dir}/ivy.jar"/>
+    </condition>
+
+    <target name="get-smooks">
+        <mkdir dir="${ivy.dir}"/>
+
+        <antcall target="ivy.getjar" />
+    </target>
+
+    <target name="smooks.getscripts">
+        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.dir}/ivy.jar" usetimestamp="true"/>
+    </target>
+
+    <target name="ivy.getjar" unless="ivy.exists.locally">
+        <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar" dest="${ivy.dir}/ivy.jar" usetimestamp="true"/>
+    </target>
+
+</project>

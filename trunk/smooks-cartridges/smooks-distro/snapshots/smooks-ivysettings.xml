@@ -1,0 +1,11 @@
+<ivysettings>
+    <settings defaultResolver="chained"/>
+    <resolvers>
+        <chain name="chained">
+            <url name="codehaus.m2.snapshots" m2compatible="true">
+                <artifact pattern="http://snapshots.repository.codehaus.org/[organisation]/[artifact]/[revision]/[artifact]-[revision].[ext]"/>
+            </url>
+            <ibiblio name="ibiblio" m2compatible="true" />
+        </chain>
+    </resolvers>
+</ivysettings>
