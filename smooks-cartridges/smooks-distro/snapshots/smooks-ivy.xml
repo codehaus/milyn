@@ -1,6 +1,0 @@
-<ivy-module version="2.0">
-    <info organisation="org.milyn" module="smooks"/>
-    <dependencies>
-        <dependency org="org.milyn" name="milyn-smooks-csv" rev="1.1-SNAPSHOT"/>
-    </dependencies>
-</ivy-module>
