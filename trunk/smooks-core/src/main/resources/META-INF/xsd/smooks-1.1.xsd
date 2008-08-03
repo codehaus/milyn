@@ -10,7 +10,8 @@
                 <xs:documentation xml:lang="en">List of Smooks Resource Configuration.</xs:documentation>
             </xs:annotation>
             <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" ref="smooks:condition"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:params"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:conditions"/>
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:profiles"/>
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:reader"/>
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="smooks:abstract-resource-config"/>
@@ -181,6 +182,17 @@
                     <xs:attribute name="type" type="xs:string"/>
                 </xs:extension>
             </xs:simpleContent>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="conditions">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Conditions List.</xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element ref="smooks:condition" minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 

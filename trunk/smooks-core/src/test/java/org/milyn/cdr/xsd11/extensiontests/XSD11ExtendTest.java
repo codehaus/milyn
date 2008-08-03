@@ -70,7 +70,7 @@ public class XSD11ExtendTest extends TestCase {
             fail("Expected SmooksConfigurationException");
         } catch (SmooksConfigurationException e) {
             assertEquals("Failed to construct Smooks instance for processing extended configuration resource '/META-INF/xsd/smooks/test-xsd-03.xsd-smooks.xml'.", e.getMessage());
-            assertEquals("Configuration element 'condition' not supported in an extension configuration.", e.getCause().getMessage());
+            assertEquals("Configuration element 'conditions' not supported in an extension configuration.", e.getCause().getMessage());
         }
     }
 

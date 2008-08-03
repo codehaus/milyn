@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd">
 
-    <!-- Duplicate condition ids -->
-    <condition id="config3" evaluator="org.milyn.cdr.xsd11.conditiontests.TestExpressionEvaluator">true</condition>
-    <condition id="config3" evaluator="org.milyn.cdr.xsd11.conditiontests.TestExpressionEvaluator">false</condition>
+    <conditions>
+        <!-- Duplicate condition ids -->
+        <condition id="config3" evaluator="org.milyn.cdr.xsd11.conditiontests.TestExpressionEvaluator">true</condition>
+        <condition id="config3" evaluator="org.milyn.cdr.xsd11.conditiontests.TestExpressionEvaluator">false</condition>
+    </conditions>
 
     <resource-config selector="a">
         <resource>org.milyn.cdr.xsd11.conditiontests.ConditionTestVisitor</resource>

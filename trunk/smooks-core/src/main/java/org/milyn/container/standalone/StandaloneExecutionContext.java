@@ -27,6 +27,7 @@ import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
+import org.milyn.cdr.ParameterAccessor;
 
 /**
  * Standalone Container Request implementation.
@@ -146,6 +147,14 @@ public class StandaloneExecutionContext implements ExecutionContext {
 
     public Throwable getTerminationError() {
         return terminationError;
+    }
+
+    public String getConfigParameter(String name) {
+        return getConfigParameter(name, null);
+    }
+
+    public String getConfigParameter(String name, String defaultVal) {
+        return ParameterAccessor.getStringParameter(name, defaultVal, deliveryConfig);
     }
 
     /* (non-Javadoc)

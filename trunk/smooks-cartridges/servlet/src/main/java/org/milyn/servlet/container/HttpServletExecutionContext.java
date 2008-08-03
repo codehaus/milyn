@@ -28,6 +28,7 @@ import org.milyn.servlet.ServletUAContext;
 import org.milyn.useragent.UAContext;
 import org.milyn.useragent.UnknownUseragentException;
 import org.milyn.useragent.request.HttpRequest;
+import org.milyn.cdr.ParameterAccessor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -178,6 +179,14 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 
     public Throwable getTerminationError() {
         return terminationError;
+    }
+
+    public String getConfigParameter(String name) {
+        return getConfigParameter(name, null);
+    }
+
+    public String getConfigParameter(String name, String defaultVal) {
+        return ParameterAccessor.getStringParameter(name, defaultVal, deliveryConfig);
     }
 
     /* (non-Javadoc)
