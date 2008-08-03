@@ -18,7 +18,7 @@
 
         <antcall target="ivy.getjar" />
         <antcall target="smooks.getscripts" />
-        <ant antfile="${ivy.smooks.dir}/smooks-snaps-ivy-build.xml">
+        <ant antfile="${ivy.smooks.dir}/smooks-snaps-ivy-build.xml" dir="${ivy.smooks.dir}">
             <property name="ivy.lib.dir" value="${basedir}" />
             <property name="ivy.smooks.dir" value="${ivy.smooks.dir}" />
         </ant>
@@ -28,7 +28,7 @@
     <target name="smooks.getscripts">
         <get src="${smooks.scripts.dir.url}/smooks-snaps-ivy-build.xml" dest="${ivy.smooks.dir}/smooks-snaps-ivy-build.xml" usetimestamp="true"/>
         <get src="${smooks.scripts.dir.url}/smooks-ivy.xml" dest="${ivy.smooks.dir}/ivy.xml" usetimestamp="true"/>
-        <get src="${smooks.scripts.dir.url}/smooks-ivysettings.xml" dest="${ivy.smooks.dir}/smooks-ivysettings.xml" usetimestamp="true"/>
+        <get src="${smooks.scripts.dir.url}/smooks-ivysettings.xml" dest="${ivy.smooks.dir}/ivysettings.xml" usetimestamp="true"/>
     </target>
 
     <target name="ivy.getjar" unless="ivy.exists.locally">

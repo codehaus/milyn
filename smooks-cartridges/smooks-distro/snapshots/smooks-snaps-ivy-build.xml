@@ -3,7 +3,7 @@
     <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpath="${ivy.dir}/ivy.jar" />
 
     <target name="ivy.init">        
-        <ivy:settings file="${ivy.smooks.dir}/ccsmooks-ivysettings.xml" />
+        <ivy:settings file="ivysettings.xml" />
     </target>
 
     <target name="retrieve" depends="ivy.init">
