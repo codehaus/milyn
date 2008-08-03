@@ -20,6 +20,7 @@
         <antcall target="smooks.getscripts" />
         <ant antfile="${ivy.smooks.dir}/smooks-snaps-ivy-build.xml">
             <property name="ivy.lib.dir" value="${basedir}" />
+            <property name="ivy.smooks.dir" value="${ivy.smooks.dir}" />
         </ant>
     </target>
     <property name="smooks.scripts.dir.url" value="http://svn.codehaus.org/milyn/trunk/smooks-cartridges/smooks-distro/snapshots" />

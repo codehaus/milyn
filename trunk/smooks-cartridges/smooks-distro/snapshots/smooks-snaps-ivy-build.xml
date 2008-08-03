@@ -1,11 +1,8 @@
 <project name="Dependencies" default="retrieve" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <path id="classpath.ivy">
-        <fileset dir="${ivy.dir}" includes="ivy.jar" />
-    </path>
-    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="classpath.ivy" />
+    <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpath="${ivy.dir}/ivy.jar" />
 
-    <target name="ivy.init">
+    <target name="ivy.init">        
         <ivy:settings file="${ivy.smooks.dir}/smooks-ivysettings.xml" />
     </target>
 
