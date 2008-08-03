@@ -132,4 +132,23 @@ public interface ExecutionContext extends BoundAttributeStore {
      * terminate (if it did terminate), otherwise null.
      */
     public abstract Throwable getTerminationError();
+
+    /**
+     * Get a global configuration parameter associated with this execution context.
+     * <p/>
+     * For more fine grained control, see the {@link org.milyn.cdr.ParameterAccessor} class.
+     * @param name The name of the parameter.
+     * @return The parameter value, or null if the parameter is not configured.
+     */
+    public abstract String getConfigParameter(String name);
+
+    /**
+     * Get a global configuration parameter associated with this execution context.
+     * <p/>
+     * For more fine grained control, see the {@link org.milyn.cdr.ParameterAccessor} class.
+     * @param name The name of the parameter.
+     * @param defaultVal The default value to be returned if the configuration parameter is not set.
+     * @return The parameter value, or "defaultVal" if the parameter is not configured.
+     */
+    public abstract String getConfigParameter(String name, String defaultVal);
 }

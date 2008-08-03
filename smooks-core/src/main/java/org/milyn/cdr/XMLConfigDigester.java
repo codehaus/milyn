@@ -247,11 +247,10 @@ public final class XMLConfigDigester {
                 // Make sure the element is permitted...
                 assertElementPermitted(configElement);
 
-                if (DomUtils.getName(configElement).equals("condition")) {
-                    String id = DomUtils.getAttributeValue(configElement, "id");
-                    if(id != null) {
-                        addConditionEvaluator(id, digestCondition(configElement));
-                    }
+                if (DomUtils.getName(configElement).equals("params")) {
+                    digestParams(configElement);
+                } else if (DomUtils.getName(configElement).equals("conditions")) {
+                    digestConditions(configElement);
                 } else if (DomUtils.getName(configElement).equals("profiles")) {
                     digestProfiles(configElement);
                 } else if (DomUtils.getName(configElement).equals("import")) {
@@ -265,6 +264,17 @@ public final class XMLConfigDigester {
                     digestExtendedResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
                 }
             }
+        }
+    }
+
+    private void digestParams(Element paramsElement) {
+        NodeList paramNodes = paramsElement.getElementsByTagName("param");
+
+        if(paramNodes.getLength() > 0) {
+            SmooksResourceConfiguration globalParamsConfig = new SmooksResourceConfiguration(ParameterAccessor.GLOBAL_PARAMETERS);
+
+            digestParameters(paramsElement, globalParamsConfig);
+            list.add(globalParamsConfig);
         }
     }
 
@@ -545,6 +555,19 @@ public final class XMLConfigDigester {
             return (Element) elements.item(0);
         }
         return null;
+    }
+
+    private void digestConditions(Element conditionsElement) {
+        NodeList conditions = conditionsElement.getElementsByTagName("condition");
+
+        for(int i = 0; i < conditions.getLength(); i++) {
+            Element conditionElement = (Element) conditions.item(i);
+            String id = DomUtils.getAttributeValue(conditionElement, "id");
+    
+            if(id != null) {
+                addConditionEvaluator(id, digestCondition(conditionElement));
+            }
+        }
     }
 
     public ExpressionEvaluator digestCondition(Element conditionElement) throws SmooksConfigurationException {

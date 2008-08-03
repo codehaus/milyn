@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd">
 
-    <condition id="config3" evaluator="org.milyn.cdr.xsd11.conditiontests.TestExpressionEvaluator">true</condition>
+    <conditions>
+        <condition id="config3" evaluator="org.milyn.cdr.xsd11.conditiontests.TestExpressionEvaluator">true</condition>
+    </conditions>
 
     <resource-config selector="a">
         <resource>org.milyn.cdr.xsd11.conditiontests.ConditionTestVisitor</resource>
