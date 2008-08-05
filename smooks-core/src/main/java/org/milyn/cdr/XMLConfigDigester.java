@@ -62,7 +62,6 @@ public final class XMLConfigDigester {
 
     private SmooksResourceConfigurationList list;
     private Stack<SmooksConfig> configStack = new Stack<SmooksConfig>();
-    private String currentSchema;
 
     private Map<String, Smooks> extendedConfigDigesters = new HashMap<String, Smooks>();
     private static ThreadLocal<Boolean> extentionDigestOn = new ThreadLocal<Boolean>();
@@ -134,6 +133,8 @@ public final class XMLConfigDigester {
             String defaultNS = validator.getDefaultNamespace().toString();
 
             validator.validate();
+
+            configStack.peek().defaultNS = defaultNS;
             if(XSD_V10.equals(defaultNS)) {
                 if(validator.getNamespaces().size() > 1) {
                     throw new SmooksConfigurationException("Unsupported use of multiple configuration namespaces from inside a v1.0 Smooks configuration. Configuration extension not supported from a v1.0 configuration.  Use the v1.1 configuration namespace.");
@@ -155,8 +156,6 @@ public final class XMLConfigDigester {
         int cdrIndex = 1;
         Element currentElement;
         String resourceSelector;
-
-        currentSchema = DTD_V10;
 
         currentElement = (Element) XmlUtil.getNode(configDoc, "/smooks-resource-list");
         String defaultSelector = DomUtils.getAttributeValue(currentElement, "default-selector");
@@ -197,8 +196,6 @@ public final class XMLConfigDigester {
     private void digestV10XSDValidatedConfig(String baseURI, Document configDoc) throws SAXException, URISyntaxException, SmooksConfigurationException {
         Element currentElement = configDoc.getDocumentElement();
 
-        currentSchema = XSD_V10;
-
         String defaultSelector = DomUtils.getAttributeValue(currentElement, "default-selector");
         String defaultNamespace = DomUtils.getAttributeValue(currentElement, "default-selector-namespace");
         String defaultProfile = DomUtils.getAttributeValue(currentElement, "default-target-profile");
@@ -225,13 +222,6 @@ public final class XMLConfigDigester {
 
     private void digestV11XSDValidatedConfig(String baseURI, Document configDoc) throws SAXException, URISyntaxException, SmooksConfigurationException {
         Element currentElement = configDoc.getDocumentElement();
-
-        if(currentSchema == XSD_V10) {
-            // This must be an import of a v1.1 schema based config from inside a v1.0 schema config.  Not allowed!!
-            throw new SmooksConfigurationException("Unsupported import of a v1.1 configuration from inside a v1.0 configuration.  Path to configuration: '" + getCurrentPath() + "'.");
-        }
-
-        currentSchema = XSD_V11;
 
         String defaultSelector = DomUtils.getAttributeValue(currentElement, "default-selector");
         String defaultNamespace = DomUtils.getAttributeValue(currentElement, "default-selector-namespace");
@@ -650,7 +640,19 @@ public final class XMLConfigDigester {
     }
 
     private void popConfig() {
-        configStack.pop();
+        SmooksConfig currentConfig = configStack.pop();
+
+        // Make sure we don't have a v1.1 imported from config within a v1.0...
+        if(currentConfig.defaultNS.equals(XSD_V11) && !configStack.isEmpty()) {
+            SmooksConfig parentConfig = configStack.peek();
+
+            if(parentConfig.defaultNS.equals(XSD_V10)) {
+                // This must be an import of a v1.1 schema based config from inside a v1.0 schema config.  Not allowed!!
+                // Push the current config back onto the stack so as to get the correct config path inserted into the exception...
+                configStack.push(currentConfig);
+                throw new SmooksConfigurationException("Unsupported import of a v1.1 configuration from inside a v1.0 configuration.  Path to configuration: '" + getCurrentPath() + "'.");
+            }
+        }
     }
 
     public void addConditionEvaluator(String id, ExpressionEvaluator evaluator) {
@@ -680,6 +682,7 @@ public final class XMLConfigDigester {
 
     private static class SmooksConfig {
 
+        private String defaultNS;
         private SmooksConfig parent;
         private String configFile;
         private Map<String, ExpressionEvaluator> conditionEvaluators = new HashMap<String, ExpressionEvaluator>();
