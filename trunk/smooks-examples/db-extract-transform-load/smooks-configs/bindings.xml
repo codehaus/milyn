@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
 
     <!--
         Virtual Model Binding Configurations for the order message elements...
@@ -15,42 +15,24 @@
         ORDERITEMS (ORDERNUMBER INTEGER, QUANTITY INTEGER, PRODUCT INTEGER, TITLE VARCHAR(50), PRICE DOUBLE)
     -->
 
-    <resource-config selector="message-header">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">message</param>
-        <param name="beanClass">java.util.HashMap</param>
-        <param name="bindings">
-            <binding property="date" selector="message-header date" type="OrderDateDecoder" /> <!-- Defined below -->
-        </param>
-    </resource-config>
+    <jb:bindings beanId="message" class="java.util.HashMap" createOnElement="message-header">
+        <jb:value property="date" data="message-header/date" decoder="Date">
+            <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
+        </jb:value>
+    </jb:bindings>
 
-    <resource-config selector="order">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">order</param>
-        <param name="beanClass">java.util.HashMap</param>
-        <param name="bindings">
-            <binding property="orderNum"      selector="order order-id"     type="Integer" />
-            <binding property="customerUname" selector="order customer-details username" />
-            <binding property="status"        selector="order status-code"  type="Integer" />
-            <binding property="net"           selector="order net-amount"   type="BigDecimal" />
-            <binding property="total"         selector="order total-amount" type="BigDecimal" />
-        </param>
-    </resource-config>
+    <jb:bindings beanId="order" class="java.util.HashMap" createOnElement="order">
+        <jb:value property="orderNum"      data="order/order-id"     decoder="Integer" />
+        <jb:value property="customerUname" data="order/customer-details/username" />
+        <jb:value property="status"        data="order/status-code"  decoder="Integer" />
+        <jb:value property="net"           data="order/net-amount"   decoder="BigDecimal" />
+        <jb:value property="total"         data="order/total-amount" decoder="BigDecimal" />
+    </jb:bindings>
 
-    <resource-config selector="order-item">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">orderItem</param>
-        <param name="beanClass">java.util.HashMap</param>
-        <param name="bindings">
-            <!-- Just bind in all elements of the orderItem into the orderItem map.  Property name is
-                 taken from the element name... -->
-            <binding selector="order-item *" />
-        </param>
-    </resource-config>
-
-    <resource-config selector="decoder:OrderDateDecoder">
-        <resource>org.milyn.javabean.decoders.DateDecoder</resource>
-        <param name="format">EEE MMM dd HH:mm:ss z yyyy</param>
-    </resource-config>
+    <jb:bindings beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
+        <!-- Just bind in all elements of the orderItem into the orderItem map.  Property name is
+             taken from the element name... -->
+        <jb:value data="order-item/*" />
+    </jb:bindings>
 
 </smooks-resource-list>

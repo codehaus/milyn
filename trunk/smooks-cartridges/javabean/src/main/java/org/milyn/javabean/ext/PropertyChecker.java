@@ -70,7 +70,7 @@ public class PropertyChecker implements DOMVisitBefore {
             if (List.class.isAssignableFrom(beanClass)) {
                 return BeanType.LIST;
             } else if (Map.class.isAssignableFrom(beanClass)) {
-                return BeanType.LIST;
+                return BeanType.MAP;
             } else {
                 return BeanType.OTHER;
             }
