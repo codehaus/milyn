@@ -89,29 +89,62 @@ public class SAXElement {
      * @param parent       Parent element, or null if the element is the document root element.
      */
     public SAXElement(String namespaceURI, String localName, String qName, Attributes attributes, SAXElement parent) {
-        if (namespaceURI != null) {
-            int colonIndex = -1;
+        this.name = toQName(namespaceURI, localName, qName);
+        this.attributes = copyAttributes(attributes);
+        this.parent = parent;
+    }
 
-            if (qName != null && (colonIndex = qName.indexOf(':')) != -1) {
+    /**
+     * Public constructor.
+     *
+     * @param name       The element {@link QName}.
+     * @param attributes The attributes attached to the element.  If
+     *                   there are no attributes, it shall be an empty
+     *                   Attributes object.
+     * @param parent     Parent element, or null if the element is the document root element.
+     */
+    public SAXElement(QName name, Attributes attributes, SAXElement parent) {
+        this.name = name;
+        this.attributes = copyAttributes(attributes);
+        this.parent = parent;
+    }
+
+    /**
+     * Create a {@link QName} instance from the supplied element naming parameters.
+     *
+     * @param namespaceURI The Namespace URI, or the empty string if the
+     *                     element has no Namespace URI or if Namespace
+     *                     processing is not being performed.
+     * @param localName    The local name (without prefix), or the
+     *                     empty string if Namespace processing is not being
+     *                     performed.
+     * @param qName        The qualified name (with prefix), or the
+     *                     empty string if qualified names are not available.
+     * @return A {@link QName} instance representing the element named by the supplied parameters.
+     */
+    public static QName toQName(String namespaceURI, String localName, String qName) {
+        if (namespaceURI != null) {
+            int colonIndex;
+
+            if (namespaceURI.length() != 0 && qName != null && (colonIndex = qName.indexOf(':')) != -1) {
                 String prefix = qName.substring(0, colonIndex);
                 String qNameLocalName = qName.substring(colonIndex + 1);
 
-                name = new QName(namespaceURI.intern(), qNameLocalName, prefix);
-            } else if (localName != null && !localName.equals("")) {
-                name = new QName(namespaceURI.intern(), localName);
-            } else if (qName != null && !qName.equals("")) {
-                name = new QName(namespaceURI.intern(), qName);
+                return new QName(namespaceURI.intern(), qNameLocalName, prefix);
+            } else if (localName != null && localName.length() != 0) {
+                return new QName(namespaceURI, localName);
+            } else if (qName != null && qName.length() != 0) {
+                return new QName(namespaceURI, qName);
             } else {
                 thowInvalidNameException(namespaceURI, localName, qName);
             }
-        } else if (localName != null && !localName.equals("")) {
-            name = new QName(localName);
+        } else if (localName != null && localName.length() != 0) {
+            return new QName(localName);
         } else {
             thowInvalidNameException(namespaceURI, localName, qName);
         }
 
-        this.attributes = copyAttributes(attributes);
-        this.parent = parent;
+        return null;
     }
 
     /**
@@ -129,7 +162,7 @@ public class SAXElement {
         return attributesCopy;
     }
 
-    private void thowInvalidNameException(String namespaceURI, String localName, String qName) {
+    private static void thowInvalidNameException(String namespaceURI, String localName, String qName) {
         throw new IllegalArgumentException("Invalid SAXELement name paramaters: namespaceURI='" + namespaceURI + "', localName='" + localName + "', qName='" + qName + "'.");
     }
 
@@ -153,7 +186,7 @@ public class SAXElement {
      * <p/>
      * See <a href="#element-writing">element writing</a>.
      *
-     * @param writer The element writer.
+     * @param writer  The element writer.
      * @param visitor The visitor requesting to set the element writer.
      * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
      */

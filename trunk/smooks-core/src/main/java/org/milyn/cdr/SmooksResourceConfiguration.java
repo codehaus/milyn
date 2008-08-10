@@ -528,6 +528,9 @@ public class SmooksResourceConfiguration {
      * @param expressionEvaluator The {@link org.milyn.expression.ExpressionEvaluator}, or null if no condition is to be used.
      */
     public void setConditionEvaluator(ExpressionEvaluator expressionEvaluator) {
+        if(expressionEvaluator != null && !(expressionEvaluator instanceof ExecutionContextExpressionEvaluator)) {
+            throw new UnsupportedOperationException("Unsupported ExpressionEvaluator type '" + expressionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextExpressionEvaluator.class.getName() + "' implementations.");
+        }
         this.expressionEvaluator = expressionEvaluator;
     }
 
@@ -981,8 +984,8 @@ public class SmooksResourceConfiguration {
      *         otherwise false.
      */
     public boolean isTargetedAtNamespace(String namespace) {
-        if (namespaceURI != null && !namespaceURI.equals(namespace)) {
-            return false;
+        if (namespaceURI != null) {
+            return namespaceURI.equals(namespace);
         }
 
         return true;
@@ -1121,7 +1124,7 @@ public class SmooksResourceConfiguration {
      * @return True if this configuration is targeted at the supplied element, otherwise false.
      */
     public boolean isTargetedAtElement(SAXElement element) {
-        if(!assertConditionTrue()) {
+        if(expressionEvaluator != null && !assertConditionTrue()) {
             return false;
         }
 
@@ -1148,14 +1151,10 @@ public class SmooksResourceConfiguration {
             return true;
         }
         
-        if(expressionEvaluator instanceof ExecutionContextExpressionEvaluator) {
-            ExecutionContextExpressionEvaluator evaluator = (ExecutionContextExpressionEvaluator) expressionEvaluator;
-            ExecutionContext execContext = Filter.getCurrentExecutionContext();
+        ExecutionContextExpressionEvaluator evaluator = (ExecutionContextExpressionEvaluator) expressionEvaluator;
+        ExecutionContext execContext = Filter.getCurrentExecutionContext();
 
-            return evaluator.eval(execContext);
-        }
-
-        throw new UnsupportedOperationException("Unsupported ExpressionEvaluator type '" + expressionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextExpressionEvaluator.class.getName() + "' implementations.");
+        return evaluator.eval(execContext);
     }
 
     /**
