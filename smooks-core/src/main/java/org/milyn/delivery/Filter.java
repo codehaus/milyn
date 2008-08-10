@@ -70,6 +70,8 @@ public abstract class Filter {
 
     public static final String DEFAULT_SERIALIZATION_ON = "default.serialization.on";
 
+    public static final String MAINTAIN_ELEMENT_STACK = "maintain.element.stack";
+
     public static final String REVERSE_VISIT_ORDER_ON_VISIT_AFTER = "reverse.visit.order.on.visit.after";
 
     public static final String TERMINATE_ON_VISITOR_EXCEPTION = "terminate.on.visitor.exception";
