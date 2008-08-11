@@ -189,6 +189,7 @@ public class SmooksResourceConfiguration {
      * array contains a parsed contextual selector.
      */
     private String[] contextualSelector;
+    private boolean isContextualSelector;
     /**
      * Target profile.
      */
@@ -314,6 +315,7 @@ public class SmooksResourceConfiguration {
 
         clone.selector = selector;
         clone.contextualSelector = contextualSelector;
+        clone.isContextualSelector = isContextualSelector;
         clone.targetProfile = targetProfile;
         clone.defaultResource = defaultResource;
         clone.profileTargetingExpressionStrings = profileTargetingExpressionStrings;
@@ -361,6 +363,7 @@ public class SmooksResourceConfiguration {
         this.selector = selector.toLowerCase().intern();
         isXmlDef = selector.startsWith(XML_DEF_PREFIX);
         contextualSelector = parseSelector(this.selector);
+        isContextualSelector = (contextualSelector.length > 1);
     }
 
     public static String[] parseSelector(String selector) {
@@ -1000,7 +1003,7 @@ public class SmooksResourceConfiguration {
      * @return True if the selector is contextual, otherwise false.
      */
     public boolean isSelectorContextual() {
-        return (contextualSelector.length > 1);
+        return isContextualSelector;
     }
 
     /**
@@ -1128,12 +1131,12 @@ public class SmooksResourceConfiguration {
             return false;
         }
 
-        if (!isTargetedAtNamespace(element.getName().getNamespaceURI())) {
+        if (namespaceURI != null && !isTargetedAtNamespace(element.getName().getNamespaceURI())) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
             }
             return false;
-        } else if (isSelectorContextual() && !isTargetedAtElementContext(element)) {
+        } else if (isContextualSelector && !isTargetedAtElementContext(element)) {
             // Note: If the selector is not contextual, there's no need to perform the
             // isTargetedAtElementContext check because we already know the unit is targeted at the
             // element by name - because we looked it up by name in the 1st place (at least that's the assumption).

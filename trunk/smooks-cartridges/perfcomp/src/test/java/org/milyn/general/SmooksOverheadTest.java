@@ -23,10 +23,19 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.InputSource;
 import org.xml.sax.ext.DefaultHandler2;
 import org.milyn.Smooks;
+import org.milyn.payload.JavaResult;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.io.xml.XppDriver;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.io.xml.XppReader;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -35,7 +44,7 @@ public class SmooksOverheadTest extends TestCase {
 
     private static final int NUM_WARMUPS = 10;
     //private static final int NUM_ITERATIONS = 10000000;
-    private static final int NUM_ITERATIONS = 200;
+    private static final int NUM_ITERATIONS = 2000;
 
     public void test_saxonly_timings() throws SAXException, IOException {
         for(int i = 0; i < NUM_WARMUPS; i++) {
@@ -61,18 +70,39 @@ public class SmooksOverheadTest extends TestCase {
         runSmooks("smooks-sax-2vis.xml");
     }
 
+    public void test_smookssax_java1() throws IOException, SAXException {
+        runSmooks("smooks-sax-java1.xml");
+    }
+
+    public void test_smookssax_java2() throws IOException, SAXException {
+        runSmooks("smooks-sax-java2.xml");
+    }
+
+    public void test_smookssax_java3() throws IOException, SAXException {
+        runSmooks("smooks-sax-java3.xml");
+    }
+
+    public void test_smookssax_java4() throws IOException, SAXException {
+        runSmooks("smooks-sax-java4.xml");
+    }
+
     private void runSmooks(String config) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
 
         for(int i = 0; i < NUM_WARMUPS; i++) {
-            smooks.filter(new StreamSource(getMessageReader()));
+            JavaResult javaResult = new JavaResult();
+            smooks.filter(new StreamSource(getMessageReader()), javaResult);
         }
 
         long start = System.currentTimeMillis();
+        JavaResult javaResult = null;
         for(int i = 0; i < NUM_ITERATIONS; i++) {
-            smooks.filter(new StreamSource(getMessageReader()));
+            javaResult = new JavaResult();
+            smooks.filter(new StreamSource(getMessageReader()), javaResult);
         }
         System.out.println("Took: " + (System.currentTimeMillis() - start));
+        List orderItems = (List) javaResult.getBean("orderItemList");
+        System.out.println("Num order items: " + orderItems.size());
     }
 
     private void readBySax() throws SAXException, IOException {
@@ -87,7 +117,27 @@ public class SmooksOverheadTest extends TestCase {
         reader.parse(new InputSource(getMessageReader()));
     }
 
+    public void test_xstream() {
+        //XStream xstream = new XStream(new StaxDriver());
+        XStream xstream = new XStream(new XppDriver());
+        xstream.fromXML(getMessageReader());
+
+        for(int i = 0; i < NUM_WARMUPS; i++) {
+            xstream.fromXML(getMessageReader());
+        }
+
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < NUM_ITERATIONS; i++) {
+            xstream.fromXML(getMessageReader());
+        }
+        System.out.println("Took: " + (System.currentTimeMillis() - start));
+
+        List orderItems = (List) xstream.fromXML(getMessageReader());
+        System.out.println("Num order items: " + orderItems.size());
+    }
+
     private InputStreamReader getMessageReader() {
-        return new InputStreamReader(getClass().getResourceAsStream("order-message.xml"));
+        //return new InputStreamReader(getClass().getResourceAsStream("order-message.xml"));
+        return new InputStreamReader(getClass().getResourceAsStream("orderItem-list-05.xml"));
     }
 }
