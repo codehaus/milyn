@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
-    <params>
+    <resource-config selector="global-parameters">
         <param name="stream.filter.type">SAX</param>
         <param name="default.serialization.on">false</param>      
         <param name="maintain.element.stack">false</param>
-    </params>
+    </resource-config>
 
     <resource-config selector="date">
         <resource>org.milyn.general.SAXVisitor</resource>
