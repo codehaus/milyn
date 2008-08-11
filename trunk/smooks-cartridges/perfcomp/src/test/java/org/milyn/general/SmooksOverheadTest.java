@@ -15,27 +15,24 @@
 */
 package org.milyn.general;
 
-import junit.framework.TestCase;
-import org.xml.sax.helpers.XMLReaderFactory;
-import org.xml.sax.XMLReader;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.InputSource;
-import org.xml.sax.ext.DefaultHandler2;
-import org.milyn.Smooks;
-import org.milyn.payload.JavaResult;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 import javax.xml.transform.stream.StreamSource;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
+
+import junit.framework.TestCase;
+
+import org.milyn.Smooks;
+import org.milyn.payload.JavaResult;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.thoughtworks.xstream.io.xml.XppDriver;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.thoughtworks.xstream.io.xml.XppReader;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -55,7 +52,7 @@ public class SmooksOverheadTest extends TestCase {
         for(int i = 0; i < NUM_ITERATIONS; i++) {
             readBySax();
         }
-        System.out.println("Took: " + (System.currentTimeMillis() - start));
+        System.out.println("SAX only Took: " + (System.currentTimeMillis() - start));
     }
 
     public void test_smookssax_timings_novis() throws IOException, SAXException {
@@ -100,9 +97,11 @@ public class SmooksOverheadTest extends TestCase {
             javaResult = new JavaResult();
             smooks.filter(new StreamSource(getMessageReader()), javaResult);
         }
-        System.out.println("Took: " + (System.currentTimeMillis() - start));
+        System.out.println(config + " took: " + (System.currentTimeMillis() - start));
         List orderItems = (List) javaResult.getBean("orderItemList");
-        System.out.println("Num order items: " + orderItems.size());
+        if(orderItems != null) {
+        	System.out.println("Num order items: " + orderItems.size());
+        }
     }
 
     private void readBySax() throws SAXException, IOException {
@@ -130,7 +129,7 @@ public class SmooksOverheadTest extends TestCase {
         for(int i = 0; i < NUM_ITERATIONS; i++) {
             xstream.fromXML(getMessageReader());
         }
-        System.out.println("Took: " + (System.currentTimeMillis() - start));
+        System.out.println("XStream Took: " + (System.currentTimeMillis() - start));
 
         List orderItems = (List) xstream.fromXML(getMessageReader());
         System.out.println("Num order items: " + orderItems.size());
