@@ -15,24 +15,15 @@
 */
 package example;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Locale;
+import org.milyn.*;
+import org.milyn.container.*;
+import org.milyn.event.report.*;
+import org.milyn.io.*;
+import org.xml.sax.*;
 
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.milyn.Smooks;
-import org.milyn.SmooksException;
-import org.milyn.container.ExecutionContext;
-import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.io.StreamUtils;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.xml.XmlUtil;
-import org.xml.sax.SAXException;
+import javax.xml.transform.stream.*;
+import java.io.*;
+import java.util.*;
 
 /**
  * Simple example main class.
@@ -49,22 +40,22 @@ public class Main {
         smooks = new Smooks("smooks-config.xml");
     }
 
-    protected String runSmooksTransform(ExecutionContext executionContext) throws IOException, SAXException, SmooksException {
+    protected org.milyn.payload.JavaResult runSmooksTransform(ExecutionContext executionContext) throws IOException, SAXException, SmooksException {
     	
     	Locale defaultLocale = Locale.getDefault();
     	Locale.setDefault(new Locale("en", "IE"));
     	
-        DOMResult domResult = new DOMResult();
+        org.milyn.payload.JavaResult javaResult = new org.milyn.payload.JavaResult();
 
         // Configure the execution context to generate a report...
         executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
         // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
+        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), javaResult, executionContext);
 
         Locale.setDefault(defaultLocale);
         
-        return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
+        return javaResult;
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {
@@ -72,18 +63,15 @@ public class Main {
         System.out.println(new String(messageIn));
         System.out.println("======================================\n");
 
-        pause("The EDI input stream can be seen above.  Press 'enter' to see how this stream is transformed into DOM representation...");
+        pause("The EDI input stream can be seen above.  Press 'enter' to see how this stream is transformed the Order Object graph...");
 
         Main smooksMain = new Main();
         ExecutionContext executionContext = smooksMain.smooks.createExecutionContext();
-        System.out.println("==============EDI as XML=============");
-        System.out.println(smooksMain.runSmooksTransform(executionContext));
-        System.out.println("======================================\n\n");
+        org.milyn.payload.JavaResult result = smooksMain.runSmooksTransform(executionContext);
 
-        pause("Now press 'enter' to see how this XML loads into the Order Object graph...");
 
-        System.out.println("==============EDI as Java Object Graph=============");
-        System.out.println(BeanRepositoryManager.getBeanRepository(executionContext).getBean("order"));
+        System.out.println("\n==============EDI as Java Object Graph=============");
+        System.out.println(result.getBean("order"));
         System.out.println("======================================\n\n");
 
         pause("And that's it!  Press 'enter' to finish...");
@@ -108,7 +96,7 @@ public class Main {
         System.out.println("\n");
     }
 
-    public String runSmooksTransform() throws IOException, SAXException {
+    public org.milyn.payload.JavaResult runSmooksTransform() throws IOException, SAXException {
         ExecutionContext executionContext = smooks.createExecutionContext();
         return runSmooksTransform(executionContext);
     }
