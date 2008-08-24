@@ -41,7 +41,7 @@ public class SmooksOverheadTest extends TestCase {
 
     private static final int NUM_WARMUPS = 10;
     //private static final int NUM_ITERATIONS = 10000000;
-    private static final int NUM_ITERATIONS = 2000;
+    private static final int NUM_ITERATIONS = 100;
 
     public void test_saxonly_timings() throws SAXException, IOException {
         for(int i = 0; i < NUM_WARMUPS; i++) {
@@ -137,6 +137,6 @@ public class SmooksOverheadTest extends TestCase {
 
     private InputStreamReader getMessageReader() {
         //return new InputStreamReader(getClass().getResourceAsStream("order-message.xml"));
-        return new InputStreamReader(getClass().getResourceAsStream("orderItem-list-05.xml"));
+        return new InputStreamReader(getClass().getResourceAsStream("big_global.xml"));
     }
 }

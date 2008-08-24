@@ -16,6 +16,27 @@
         </dependency>
 
         <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-core</artifactId>
+            <version>0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-jaxb</artifactId>
+            <version>0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-xpath</artifactId>
+            <version>0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-drools</artifactId>
+            <version>0.6</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-asl</artifactId>
             <version>3.2.0</version>
