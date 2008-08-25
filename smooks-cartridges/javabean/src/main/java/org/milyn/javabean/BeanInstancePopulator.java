@@ -15,43 +15,25 @@
 */
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.logging.*;
+import org.milyn.*;
+import org.milyn.cdr.*;
+import org.milyn.cdr.annotation.*;
+import org.milyn.container.*;
+import org.milyn.delivery.annotation.*;
+import org.milyn.delivery.dom.*;
+import org.milyn.delivery.sax.*;
+import org.milyn.event.report.annotation.*;
+import org.milyn.expression.*;
+import org.milyn.javabean.BeanRuntimeInfo.*;
+import org.milyn.javabean.lifecycle.*;
+import org.milyn.javabean.repository.*;
+import org.milyn.xml.*;
+import org.w3c.dom.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.SmooksException;
-import org.milyn.expression.MVELExpressionEvaluator;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.annotation.AnnotationConstants;
-import org.milyn.cdr.annotation.AppContext;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.sax.SAXUtil;
-import org.milyn.event.report.annotation.VisitAfterReport;
-import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.javabean.BeanRuntimeInfo.Classification;
-import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
-import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.xml.DomUtils;
-import org.w3c.dom.Element;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Bean instance populator visitor class.
@@ -282,7 +264,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	if(wireBeanId == null) {
     		wireBeanId = beanRepositoryManager.getBeanIdList().getBeanId(wireBeanIdName);
     	}
-    	return wireBeanId;
+
+        if(wireBeanId == null) {
+            throw new SmooksConfigurationException("Cannot wire bean with beanId '" + wireBeanIdName + "'.  Unknown beanId.");
+        }
+
+        return wireBeanId;
     }
 
     private void bindBeanValue(final ExecutionContext executionContext) {
