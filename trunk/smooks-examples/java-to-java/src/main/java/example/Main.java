@@ -15,20 +15,15 @@
 */
 package example;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import example.srcmodel.*;
+import example.trgmodel.*;
+import org.milyn.*;
+import org.milyn.container.*;
+import org.milyn.event.report.*;
+import org.milyn.payload.*;
+import org.xml.sax.*;
 
-import org.milyn.Smooks;
-import org.milyn.SmooksException;
-import org.milyn.payload.JavaResult;
-import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.container.ExecutionContext;
-import org.milyn.payload.JavaSource;
-import org.xml.sax.SAXException;
-
-import example.srcmodel.Order;
-import example.trgmodel.LineOrder;
+import java.io.*;
 
 /**
  * Simple example main class.
@@ -68,8 +63,8 @@ public class Main {
         System.out.println(order);
         System.out.println("\n\n");
 
-        System.out.println("This needs to be transformed to XML.");
-        pause("Press 'enter' to display the transformed message...");
+        System.out.println("This needs to be transformed to another Java Object.");
+        pause("Press 'enter' to display the transformed Java Object...");
         lineOrder = smooksMain.runSmooksTransform(order);
         System.out.println("\n");
         System.out.println(lineOrder);
