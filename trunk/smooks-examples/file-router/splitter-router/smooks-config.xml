@@ -1,37 +1,27 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
 
     <!--
     Filter the message using the SAX Filter (i.e. not DOM, so no
     intermediate DOM, so we can process huge messages...
     -->
-    <resource-config selector="global-parameters">
+    <params>
         <param name="stream.filter.type">SAX</param>
-    </resource-config>
+    </params>
 
-    <resource-config selector="order">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">order</param>
-        <param name="beanClass">java.util.Hashtable</param>
-        <param name="bindings">
-            <binding property="orderId" type="Integer" selector="order/@id"/>
-            <binding property="customerNumber" type="Long" selector="header/customer/@number"/>
-            <binding property="customerName" selector="header/customer"/>
-            <binding property="orderItem" selector="${orderItem}"/>
-        </param>
-    </resource-config>
+    <jb:bindings beanId="order" class="java.util.Hashtable" createOnElement="order">
+        <jb:value property="orderId" decoder="Integer" data="order/@id"/>
+        <jb:value property="customerNumber" decoder="Long" data="header/customer/@number"/>
+        <jb:value property="customerName" data="header/customer"/>
+        <jb:wiring property="orderItem" beanIdRef="orderItem" />
+    </jb:bindings>
 
-    <resource-config selector="order-item">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">orderItem</param>
-        <param name="beanClass">java.util.Hashtable</param>
-        <param name="bindings">
-            <binding property="itemId" type="Integer" selector="order-item/@id"/>
-            <binding property="productId" type="Long" selector="order-item/product"/>
-            <binding property="quantity" type="Integer" selector="order-item/quantity"/>
-            <binding property="price" type="Double" selector="order-item/price"/>
-        </param>
-    </resource-config>
+    <jb:bindings beanId="orderItem" class="java.util.Hashtable" createOnElement="order-item">
+        <jb:value property="itemId" decoder="Integer" data="order-item/@id"/>
+        <jb:value property="productId" decoder="Long" data="order-item/product"/>
+        <jb:value property="quantity" decoder="Integer" data="order-item/quantity"/>
+        <jb:value property="price" decoder="Double" data="order-item/price"/>
+    </jb:bindings>
 
     <resource-config selector="order-item">
         <resource>org.milyn.routing.file.FileOutputStreamResource</resource>
