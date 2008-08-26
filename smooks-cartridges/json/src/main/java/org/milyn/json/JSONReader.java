@@ -25,24 +25,20 @@ import java.util.Stack;
 
 import javax.xml.XMLConstants;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.milyn.cdr.Parameter;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
-import org.milyn.xml.DomUtils;
 import org.milyn.xml.SmooksXMLReader;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -155,12 +151,6 @@ public class JSONReader implements SmooksXMLReader {
 
 	private static final String CONFIG_PARAM_KEY_MAP = "keyMap";
 
-	private static final String KEY_MAP_KEY_ELEMENT = "key";
-
-	private static final String KEY_MAP_KEY_ELEMENT_FROM_ATTRIBUTE = "from";
-
-	private static final String KEY_MAP_KEY_ELEMENT_TO_ATTRIBUTE = "to";
-
 	private static final String XML_ROOT = "json";
 
 	private static final String XML_ARRAY_ELEMENT_NAME = "element";
@@ -173,7 +163,7 @@ public class JSONReader implements SmooksXMLReader {
 
     private ContentHandler contentHandler;
 
-	private ExecutionContext request;
+	private ExecutionContext executionContext;
 
 
 	@ConfigParam(defaultVal = XML_ROOT)
@@ -206,7 +196,8 @@ public class JSONReader implements SmooksXMLReader {
 
     private boolean doIllegalElementNameCharReplacement = false;
 
-    private final HashMap<String, String> keyMap = new HashMap<String, String>();
+    private HashMap<String, String> keyMap = new HashMap<String, String>();
+
 
 	@Config
     private SmooksResourceConfiguration config;
@@ -232,7 +223,7 @@ public class JSONReader implements SmooksXMLReader {
      * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
      */
 	public void setExecutionContext(ExecutionContext request) {
-		this.request = request;
+		this.executionContext = request;
 	}
 
 	/*
@@ -243,8 +234,8 @@ public class JSONReader implements SmooksXMLReader {
         if(contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse JSON stream.");
         }
-        if(request == null) {
-            throw new IllegalStateException("Smooks container 'request' not set.  Cannot parse JSON stream.");
+        if(executionContext == null) {
+            throw new IllegalStateException("Smooks container 'executionContext' not set.  Cannot parse JSON stream.");
         }
 
 		// Get a reader for the JSON source...
@@ -418,27 +409,8 @@ public class JSONReader implements SmooksXMLReader {
            Element keyMapParamElement = keyMapParam.getXml();
 
            if(keyMapParamElement != null) {
-               NodeList keys = keyMapParamElement.getElementsByTagName(KEY_MAP_KEY_ELEMENT);
 
-               for (int i = 0; keys != null && i < keys.getLength(); i++) {
-               	Element node = (Element)keys.item(i);
-
-               	String name = DomUtils.getAttributeValue(node, KEY_MAP_KEY_ELEMENT_FROM_ATTRIBUTE);
-
-               	if(StringUtils.isBlank(name)) {
-               		throw new SmooksConfigurationException("The 'name' attribute isn't defined or is empty for the key name: " + node);
-               	}
-               	name = name.trim();
-
-               	String value = DomUtils.getAttributeValue(node, KEY_MAP_KEY_ELEMENT_TO_ATTRIBUTE);
-               	if(value == null) {
-               		value = DomUtils.getAllText(node, true);
-               		if(StringUtils.isBlank(value)) {
-               			value = null;
-               		}
-               	}
-               	keyMap.put(name, value);
-               }
+        	   setKeyMap(KeyMapDigester.digest(keyMapParamElement));
 
            } else {
            	logger.error("Sorry, the key properties must be available as XML DOM. Please configure using XML.");
@@ -454,7 +426,136 @@ public class JSONReader implements SmooksXMLReader {
         return contentHandler;
     }
 
-    /****************************************************************************
+
+	/**
+	 * @return the keyMap
+	 */
+	public HashMap<String, String> getKeyMap() {
+		return keyMap;
+	}
+
+    /**
+	 * @param keyMap the keyMap to set
+	 */
+	public void setKeyMap(HashMap<String, String> keyMap) {
+		this.keyMap = keyMap;
+	}
+
+
+	/**
+	 * @return the rootName
+	 */
+	public String getRootName() {
+		return rootName;
+	}
+
+
+	/**
+	 * @param rootName the rootName to set
+	 */
+	public void setRootName(String rootName) {
+		this.rootName = rootName;
+	}
+
+
+	/**
+	 * @return the arrayElementName
+	 */
+	public String getArrayElementName() {
+		return arrayElementName;
+	}
+
+
+	/**
+	 * @param arrayElementName the arrayElementName to set
+	 */
+	public void setArrayElementName(String arrayElementName) {
+		this.arrayElementName = arrayElementName;
+	}
+
+
+	/**
+	 * @return the keyWhitspaceReplacement
+	 */
+	public String getKeyWhitspaceReplacement() {
+		return keyWhitspaceReplacement;
+	}
+
+
+	/**
+	 * @param keyWhitspaceReplacement the keyWhitspaceReplacement to set
+	 */
+	public void setKeyWhitspaceReplacement(String keyWhitspaceReplacement) {
+		this.keyWhitspaceReplacement = keyWhitspaceReplacement;
+	}
+
+
+	/**
+	 * @return the keyPrefixOnNumeric
+	 */
+	public String getKeyPrefixOnNumeric() {
+		return keyPrefixOnNumeric;
+	}
+
+
+	/**
+	 * @param keyPrefixOnNumeric the keyPrefixOnNumeric to set
+	 */
+	public void setKeyPrefixOnNumeric(String keyPrefixOnNumeric) {
+		this.keyPrefixOnNumeric = keyPrefixOnNumeric;
+	}
+
+
+	/**
+	 * @return the illegalElementNameCharReplacement
+	 */
+	public String getIllegalElementNameCharReplacement() {
+		return illegalElementNameCharReplacement;
+	}
+
+
+	/**
+	 * @param illegalElementNameCharReplacement the illegalElementNameCharReplacement to set
+	 */
+	public void setIllegalElementNameCharReplacement(
+			String illegalElementNameCharReplacement) {
+		this.illegalElementNameCharReplacement = illegalElementNameCharReplacement;
+	}
+
+
+	/**
+	 * @return the nullValueReplacement
+	 */
+	public String getNullValueReplacement() {
+		return nullValueReplacement;
+	}
+
+
+	/**
+	 * @param nullValueReplacement the nullValueReplacement to set
+	 */
+	public void setNullValueReplacement(String nullValueReplacement) {
+		this.nullValueReplacement = nullValueReplacement;
+	}
+
+
+	/**
+	 * @return the encoding
+	 */
+	public Charset getEncoding() {
+		return encoding;
+	}
+
+
+	/**
+	 * @param encoding the encoding to set
+	 */
+	public void setEncoding(Charset encoding) {
+		this.encoding = encoding;
+	}
+
+
+	/****************************************************************************
      *
      * The following methods are currently unimplemnted...
      *
