@@ -15,18 +15,18 @@
 */
 package org.milyn.cdr.extension;
 
+import java.util.EmptyStackException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.xml.DomUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.AnnotationConstants;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMVisitBefore;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
-
-import java.util.EmptyStackException;
 
 /**
  * Map a property value onto the current {@link org.milyn.cdr.SmooksResourceConfiguration} based on an
@@ -68,6 +68,6 @@ public class MapToResourceConfigFromText implements DOMVisitBefore {
             logger.debug("Setting property '" + mapTo + "' on resource configuration to a value of '" + value + "'.");
         }
 
-        ResourceConfigUtil.setProperty(config, mapTo, value, executionContext);
+        ResourceConfigUtil.setProperty(config, mapTo, value, element, executionContext);
     }
 }

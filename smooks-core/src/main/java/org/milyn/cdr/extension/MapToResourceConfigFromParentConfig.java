@@ -15,20 +15,20 @@
 */
 package org.milyn.cdr.extension;
 
+import java.util.EmptyStackException;
+import java.util.Stack;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.AnnotationConstants;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.w3c.dom.Element;
-
-import java.util.EmptyStackException;
-import java.util.Stack;
 
 /**
  * Map a property value from a parent {@link org.milyn.cdr.SmooksResourceConfiguration} and onto
@@ -44,7 +44,7 @@ public class MapToResourceConfigFromParentConfig implements DOMVisitBefore {
     private static Log logger = LogFactory.getLog(MapToResourceConfigFromText.class);
 
     @ConfigParam(defaultVal = "-1")
-    private int parentRelIndex;    
+    private int parentRelIndex;
 
     @ConfigParam
     private String mapFrom;
@@ -68,21 +68,28 @@ public class MapToResourceConfigFromParentConfig implements DOMVisitBefore {
         SmooksResourceConfiguration parentConfig;
         String value;
 
+        String actualMapTo = mapTo;
+
+        //If no mapTo is set then the mapFrom value becomes the mapTo value
+        if(actualMapTo == null) {
+        	actualMapTo = mapFrom;
+        }
+
         // Get the current Config...
         try {
             currentConfig = resourceStack.peek();
         } catch (EmptyStackException e) {
-            throw new SmooksException("No SmooksResourceConfiguration available in ExtensionContext stack.  Unable to set SmooksResourceConfiguration property '" + mapTo + "' with element text value.");
+            throw new SmooksException("No SmooksResourceConfiguration available in ExtensionContext stack.  Unable to set SmooksResourceConfiguration property '" + actualMapTo + "' with element text value.");
         }
 
         // Get the parent Config...
         try {
             parentConfig = resourceStack.get(resourceStack.size() - 1 + parentRelIndex);
         } catch (ArrayIndexOutOfBoundsException e) {
-            throw new SmooksException("No Parent SmooksResourceConfiguration available in ExtensionContext stack at relative index '" + parentRelIndex + "'.  Unable to set SmooksResourceConfiguration property '" + mapTo + "' with value of '" + mapFrom + "' from parent configuration.");
+            throw new SmooksException("No Parent SmooksResourceConfiguration available in ExtensionContext stack at relative index '" + parentRelIndex + "'.  Unable to set SmooksResourceConfiguration property '" + actualMapTo + "' with value of '" + mapFrom + "' from parent configuration.");
         }
 
-        logger.debug("Mapping property '" + mapFrom + "' on parent resource configuration to property'" + mapTo + "'.");
-        ResourceConfigUtil.mapProperty(parentConfig, mapFrom, currentConfig, mapTo, defaultValue, executionContext);
+        logger.debug("Mapping property '" + mapFrom + "' on parent resource configuration to property'" + actualMapTo + "'.");
+        ResourceConfigUtil.mapProperty(parentConfig, mapFrom, currentConfig, actualMapTo, defaultValue, executionContext);
     }
 }

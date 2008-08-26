@@ -3,18 +3,32 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.cdr;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,25 +41,16 @@ import org.milyn.net.URIUtil;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.ClassUtil;
-import org.milyn.xml.*;
+import org.milyn.xml.DomUtils;
+import org.milyn.xml.LocalDTDEntityResolver;
+import org.milyn.xml.LocalEntityResolver;
+import org.milyn.xml.XmlUtil;
+import org.milyn.xml.XsdDOMValidator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 /**
  * Digester class for an XML {@link org.milyn.cdr.SmooksResourceConfiguration} file (.cdrl).
@@ -60,10 +65,10 @@ public final class XMLConfigDigester {
 
     private static Log logger = LogFactory.getLog(XMLConfigDigester.class);
 
-    private SmooksResourceConfigurationList list;
-    private Stack<SmooksConfig> configStack = new Stack<SmooksConfig>();
+    private final SmooksResourceConfigurationList list;
+    private final Stack<SmooksConfig> configStack = new Stack<SmooksConfig>();
 
-    private Map<String, Smooks> extendedConfigDigesters = new HashMap<String, Smooks>();
+    private final Map<String, Smooks> extendedConfigDigesters = new HashMap<String, Smooks>();
     private static ThreadLocal<Boolean> extentionDigestOn = new ThreadLocal<Boolean>();
 
     /**
@@ -237,18 +242,22 @@ public final class XMLConfigDigester {
                 // Make sure the element is permitted...
                 assertElementPermitted(configElement);
 
-                if (DomUtils.getName(configElement).equals("params")) {
-                    digestParams(configElement);
-                } else if (DomUtils.getName(configElement).equals("conditions")) {
-                    digestConditions(configElement);
-                } else if (DomUtils.getName(configElement).equals("profiles")) {
-                    digestProfiles(configElement);
-                } else if (DomUtils.getName(configElement).equals("import")) {
-                    digestImport(configElement, new URI(baseURI));
-                } else if (DomUtils.getName(configElement).equals("reader")) {
-                    digestReaderConfig(configElement, defaultProfile);
-                } else if (DomUtils.getName(configElement).equals("resource-config")) {
-                    digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
+                String elementName = DomUtils.getName(configElement);
+                String namespaceURI = configElement.getNamespaceURI();
+                if(namespaceURI == null || namespaceURI.equals(XSD_V11)) {
+	                if (elementName.equals("params")) {
+	                    digestParams(configElement);
+	                } else if (elementName.equals("conditions")) {
+	                    digestConditions(configElement);
+	                } else if (elementName.equals("profiles")) {
+	                    digestProfiles(configElement);
+	                } else if (elementName.equals("import")) {
+	                    digestImport(configElement, new URI(baseURI));
+	                } else if (elementName.equals("reader")) {
+	                    digestReaderConfig(configElement, defaultProfile);
+	                } else if (elementName.equals("resource-config")) {
+	                    digestResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
+	                }
                 } else {
                     // It's an extended reousource configuration element
                     digestExtendedResourceConfig(configElement, defaultSelector, defaultNamespace, defaultProfile, defaultConditionRef);
@@ -553,7 +562,7 @@ public final class XMLConfigDigester {
         for(int i = 0; i < conditions.getLength(); i++) {
             Element conditionElement = (Element) conditions.item(i);
             String id = DomUtils.getAttributeValue(conditionElement, "id");
-    
+
             if(id != null) {
                 addConditionEvaluator(id, digestCondition(conditionElement));
             }
@@ -684,8 +693,8 @@ public final class XMLConfigDigester {
 
         private String defaultNS;
         private SmooksConfig parent;
-        private String configFile;
-        private Map<String, ExpressionEvaluator> conditionEvaluators = new HashMap<String, ExpressionEvaluator>();
+        private final String configFile;
+        private final Map<String, ExpressionEvaluator> conditionEvaluators = new HashMap<String, ExpressionEvaluator>();
 
         private SmooksConfig(String configFile) {
             this.configFile = configFile;

@@ -16,9 +16,10 @@
 package org.milyn.cdr.extension;
 
 import org.milyn.SmooksException;
-import org.milyn.container.ExecutionContext;
+import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ExecutionContext;
+import org.w3c.dom.Element;
 
 /**
  * Resource Configuration Extension utility class.
@@ -27,7 +28,7 @@ import org.milyn.cdr.annotation.ConfigParam;
  */
 public abstract class ResourceConfigUtil {
 
-    public static void setProperty(SmooksResourceConfiguration config, String setOn, String value, ExecutionContext executionContext) throws SmooksException {
+    public static void setProperty(SmooksResourceConfiguration config, String setOn, String value, Element xml, ExecutionContext executionContext) throws SmooksException {
         if(setOn.equals("selector")) {
             config.setSelector(value);
         } else if(setOn.equals("selectorNamespaceURI(")) {
@@ -42,8 +43,15 @@ public abstract class ResourceConfigUtil {
             ExtensionContext execentionContext = ExtensionContext.getExtensionContext(executionContext);
             config.setConditionEvaluator(execentionContext.getXmlConfigDigester().getConditionEvaluator(value));
         } else {
-            config.setParameter(setOn, value);
+            Parameter param = config.setParameter(setOn, value);
+            if(xml != null) {
+            	param.setXML(xml);
+            }
         }
+    }
+
+    public static void setProperty(SmooksResourceConfiguration config, String setOn, String value, ExecutionContext executionContext) throws SmooksException {
+    	setProperty(config, setOn, value, null, executionContext);
     }
 
     public static void unsetProperty(SmooksResourceConfiguration config, String property) {
