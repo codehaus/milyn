@@ -13,7 +13,7 @@
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:params"/>
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:conditions"/>
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:profiles"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:reader"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:abstract-reader"/>
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="smooks:abstract-resource-config"/>
             </xs:sequence>
             <xs:attribute name="default-target-profile" type="xs:string"/>
@@ -80,19 +80,26 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="reader">
-        <xs:complexType>
-            <xs:annotation>
-                <xs:documentation xml:lang="en">Stream Reader</xs:documentation>
-            </xs:annotation>
-            <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:handlers"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:features"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:params"/>
-            </xs:sequence>
-            <xs:attribute name="class" use="required" type="xs:string"/>
-        </xs:complexType>
-    </xs:element>
+	<xs:complexType name="abstract-reader" abstract="true" />
+	<xs:element name="abstract-reader" type="smooks:abstract-reader" abstract="true" />
+
+	<xs:element name="reader" substitutionGroup="smooks:abstract-reader">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="smooks:abstract-reader">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Stream Reader</xs:documentation>
+					</xs:annotation>
+					<xs:sequence>
+						<xs:element minOccurs="0" maxOccurs="1" ref="smooks:handlers" />
+						<xs:element minOccurs="0" maxOccurs="1" ref="smooks:features" />
+						<xs:element minOccurs="0" maxOccurs="1" ref="smooks:params" />
+					</xs:sequence>
+					<xs:attribute name="class" use="required" type="xs:string" />
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
 
     <xs:element name="features">
         <xs:complexType>
@@ -145,7 +152,7 @@
                 <xs:documentation xml:lang="en">
                     Handler class name.
                     <p/>
-                    This is the Handler class name e.g. an EntityResolver, ErrorHandler implementation etc. 
+                    This is the Handler class name e.g. an EntityResolver, ErrorHandler implementation etc.
                 </xs:documentation>
             </xs:annotation>
             <xs:attribute name="class" type="xs:string" use="required"/>
