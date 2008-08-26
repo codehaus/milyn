@@ -259,14 +259,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         }
     }
 
-
     private BeanId getWireBeanId() {
     	if(wireBeanId == null) {
     		wireBeanId = beanRepositoryManager.getBeanIdList().getBeanId(wireBeanIdName);
     	}
 
         if(wireBeanId == null) {
-            throw new SmooksConfigurationException("Cannot wire bean with beanId '" + wireBeanIdName + "'.  Unknown beanId.");
+            wireBeanId = beanRepositoryManager.getBeanIdList().register(wireBeanIdName);
         }
 
         return wireBeanId;
@@ -287,11 +286,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
                 public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
 
-                    Classification wiredBeanType = getWiredBeanRuntimeInfo().getClassification();
+                    BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
 
                     beanRepository.associateLifecycles(beanId , targetBeanId);
 
-                    if(wiredBeanType == Classification.ARRAY_COLLECTION ) {
+                    if(wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION ) {
 
                         // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
                         // can then set this array

@@ -16,17 +16,12 @@
 
 package org.milyn.javabean.repository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.milyn.assertion.*;
+import org.milyn.container.*;
+import org.milyn.javabean.lifecycle.*;
 
-import org.milyn.assertion.AssertArgument;
-import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
+import java.util.*;
+import java.util.Map.*;
 
 /**
  * Bean Repository
@@ -103,8 +98,43 @@ public class BeanRepository {
 
 		notifyObservers(beanId, BeanLifecycle.BEGIN, bean);
 	}
-	
-	/**
+
+    /**
+     * Add a bean instance under the specified beanId.
+     * <p/>
+     * If performance is important, you should get (and cache) a {@link BeanId} instance
+     * for the beanId String and then use the {@link #addBean(BeanId, Object)} method.
+     *
+     * @param beanId The beanId under which the bean is to be stored.
+     * @param bean The bean instance to be stored.
+     */
+    public void addBean(String beanId, Object bean) {
+        AssertArgument.isNotNull(beanId, "beanId");
+        AssertArgument.isNotNull(bean, "bean");
+
+        addBean(getBeanId(beanId), bean);
+    }
+
+    /**
+     * Get the {@link BeanId} instance for the specified beanId String.
+     * <p/>
+     * Regsiters the beanId if it's not already registered.
+     *
+     * @param beanId The beanId String.
+     * @return The associated {@link BeanId} instance.
+     */
+    public BeanId getBeanId(String beanId) {
+        AssertArgument.isNotNull(beanId, "beanId");
+        BeanId beanIdObj = beanIdList.getBeanId(beanId);
+
+        if(beanIdObj == null) {
+            beanIdObj = beanIdList.register(beanId);
+        }
+        
+        return beanIdObj;
+    }
+
+    /**
      * Looks if a bean instance is set under the {@link BeanId}
      *
      * @param beanId The {@link BeanId} under which is looked.
