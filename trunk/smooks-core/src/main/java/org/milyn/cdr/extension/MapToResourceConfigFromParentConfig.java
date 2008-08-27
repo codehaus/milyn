@@ -89,7 +89,9 @@ public class MapToResourceConfigFromParentConfig implements DOMVisitBefore {
             throw new SmooksException("No Parent SmooksResourceConfiguration available in ExtensionContext stack at relative index '" + parentRelIndex + "'.  Unable to set SmooksResourceConfiguration property '" + actualMapTo + "' with value of '" + mapFrom + "' from parent configuration.");
         }
 
-        logger.debug("Mapping property '" + mapFrom + "' on parent resource configuration to property'" + actualMapTo + "'.");
+        if(logger.isDebugEnabled()) {
+        	logger.debug("Mapping property '" + mapFrom + "' on parent resource configuration to property'" + actualMapTo + "'.");
+        }
         ResourceConfigUtil.mapProperty(parentConfig, mapFrom, currentConfig, actualMapTo, defaultValue, executionContext);
     }
 }
