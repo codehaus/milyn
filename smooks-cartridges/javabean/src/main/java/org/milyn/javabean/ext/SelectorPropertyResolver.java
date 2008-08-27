@@ -15,18 +15,12 @@
 */
 package org.milyn.javabean.ext;
 
-import org.milyn.SmooksException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.extension.ExtensionContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.DOMVisitBefore;
-import org.milyn.javabean.BeanUtils;
-import org.milyn.javabean.DataDecoder;
-import org.milyn.xml.DomUtils;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import java.util.UUID;
+import org.milyn.*;
+import org.milyn.cdr.*;
+import org.milyn.cdr.extension.*;
+import org.milyn.container.*;
+import org.milyn.delivery.dom.*;
+import org.w3c.dom.*;
 
 /**
  * Selector Property Resolver.
@@ -44,18 +38,17 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);
         SmooksResourceConfiguration populatorConfig = extensionContext.getResourceStack().peek();
-        String selector = populatorConfig.getSelector();
-        String valueAttributeName = getAttributeNameProperty(selector);
+        String[] selectorTokens = populatorConfig.getContextualSelector();
+        String valueAttributeName = getAttributeNameProperty(selectorTokens);
 
         if(valueAttributeName != null && !valueAttributeName.trim().equals("")) {
-            populatorConfig.setSelector(getSelectorProperty(selector));
+            populatorConfig.setSelector(getSelectorProperty(selectorTokens));
             populatorConfig.setParameter("valueAttributeName", valueAttributeName);
         }
     }
 
-    public static String getSelectorProperty(String selector) {
+    public static String getSelectorProperty(String[] selectorTokens) {
         StringBuffer selectorProp = new StringBuffer();
-        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
 
         for (String selectorToken : selectorTokens) {
             if (!selectorToken.trim().startsWith("@")) {
@@ -66,9 +59,8 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
         return selectorProp.toString().trim();
     }
 
-    public static String getAttributeNameProperty(String selector) {
+    public static String getAttributeNameProperty(String[] selectorTokens) {
         StringBuffer selectorProp = new StringBuffer();
-        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
 
         for (String selectorToken : selectorTokens) {
             if (selectorToken.trim().startsWith("@")) {
