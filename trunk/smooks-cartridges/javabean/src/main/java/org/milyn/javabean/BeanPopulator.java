@@ -16,25 +16,18 @@
 
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.logging.*;
+import org.milyn.cdr.*;
+import org.milyn.cdr.annotation.*;
+import org.milyn.delivery.*;
+import org.milyn.delivery.annotation.*;
+import org.milyn.delivery.dom.*;
+import org.milyn.javabean.ext.*;
+import org.milyn.xml.*;
+import org.w3c.dom.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.Parameter;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.AnnotationConstants;
-import org.milyn.cdr.annotation.Config;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.delivery.ConfigurationExpander;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.delivery.dom.VisitPhase;
-import org.milyn.xml.DomUtils;
-import org.milyn.javabean.ext.SelectorPropertyResolver;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.io.*;
+import java.util.*;
 
 /**
  * Javabean Populator.
@@ -279,8 +272,9 @@ public class BeanPopulator implements ConfigurationExpander {
         property = DomUtils.getAttributeValue(bindingConfig, "property");
 
         // Extract the binding config properties from the selector and property values...
-        String attributeNameProperty = SelectorPropertyResolver.getAttributeNameProperty(selector);
-        String selectorProperty = SelectorPropertyResolver.getSelectorProperty(selector);
+        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);        
+        String attributeNameProperty = SelectorPropertyResolver.getAttributeNameProperty(selectorTokens);
+        String selectorProperty = SelectorPropertyResolver.getSelectorProperty(selectorTokens);
 
         // Construct the configuraton...
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, BeanInstancePopulator.class.getName());

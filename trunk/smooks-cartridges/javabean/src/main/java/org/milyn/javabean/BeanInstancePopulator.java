@@ -207,7 +207,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         String dataString;
 
         if (isAttribute) {
-            dataString = element.getAttribute(valueAttributeName);
+            dataString = DomUtils.getAttributeValue(element, valueAttributeName);
         } else {
             dataString = DomUtils.getAllText(element, false);
         }
