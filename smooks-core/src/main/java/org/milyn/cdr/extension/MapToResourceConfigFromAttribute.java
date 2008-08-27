@@ -73,10 +73,14 @@ public class MapToResourceConfigFromAttribute implements DOMVisitBefore {
         }
 
         if (value == null) {
-            logger.debug("Not setting property '" + actualMapTo + "' on resource configuration.  Attribute '" + attribute + "' value on element '" + DomUtils.getName(element) + "' is null.  You may need to set a default value in the binding configuration.");
+        	if(logger.isDebugEnabled()) {
+        		logger.debug("Not setting property '" + actualMapTo + "' on resource configuration.  Attribute '" + attribute + "' value on element '" + DomUtils.getName(element) + "' is null.  You may need to set a default value in the binding configuration.");
+        	}
             return;
         } else {
-            logger.debug("Setting property '" + actualMapTo + "' on resource configuration to a value of '" + value + "'.");
+        	if(logger.isDebugEnabled()) {
+        		logger.debug("Setting property '" + actualMapTo + "' on resource configuration to a value of '" + value + "'.");
+        	}
         }
 
         ResourceConfigUtil.setProperty(config, actualMapTo, value, executionContext);

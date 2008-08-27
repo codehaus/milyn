@@ -141,6 +141,15 @@ public class SmooksEDIParserTest extends TestCase {
         assertEquals(removeCRLF(expected), removeCRLF(result.getResult()));
     }
 
+    public void test_v11_extended_config() throws IOException, SAXException {
+        String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("expected.xml")));
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("v11extendedConfig.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("edi-input.txt")), result);
+        assertEquals(removeCRLF(expected), removeCRLF(result.getResult()));
+    }
+
     private String removeCRLF(String string) {
 		StringBuffer buffer = new StringBuffer();
 
