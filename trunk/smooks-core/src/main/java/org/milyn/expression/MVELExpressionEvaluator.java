@@ -74,10 +74,15 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
         	}
 
         } catch(Exception e) {
-            throw new ExpressionEvaluationException("Error evaluating MVEL expression '" + expression + "' against object type '" + contextObject.getClass().getName() + "'. " +
-                    "Common issues include:" +
-                    "\n\t\t1. Referencing variables not bound to the context. In this case add an assertion in the expression." +
-                    "\n\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.", e);
+        	String msg = "Error evaluating MVEL expression '" + expression + "' against object type '" + contextObject.getClass().getName() + "'. " +
+            				"Common issues include:" +
+            				"\n\t\t1. Referencing variable is not bound to the context.";
+        	if(contextObject instanceof Map) {
+        		msg += " In this case use "+ MVEL_VARIABLES_VARIABLE_NAME +".isResolveable('someVar') to check if the variable is bound in the context.";
+        	}
+        	msg += "\n\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.";
+
+            throw new ExpressionEvaluationException(msg, e);
         }
     }
 }
