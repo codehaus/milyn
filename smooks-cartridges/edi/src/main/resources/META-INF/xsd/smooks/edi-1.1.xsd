@@ -3,19 +3,21 @@
            elementFormDefault="qualified"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:smooks="http://www.milyn.org/xsd/smooks-1.1.xsd"
-           xmlns:smooks-edi="http://www.milyn.org/xsd/smooks/edi-1.1.xsd"
-           xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">
+           xmlns:smooks-edi="http://www.milyn.org/xsd/smooks/edi-1.1.xsd">
 
     <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd"/>
 
     <xs:annotation>
-        <xs:documentation xml:lang="en">Smooks JSON Reader Binding Configuration</xs:documentation>
+        <xs:documentation xml:lang="en">Smooks EDI Reader Configuration</xs:documentation>
     </xs:annotation>
 
 
     <xs:element name="reader" type="smooks-edi:reader" substitutionGroup="smooks:abstract-reader"></xs:element>
 
-    <xs:complexType name="reader" mixed="true">
+    <xs:complexType name="reader">
+    	<xs:annotation>
+    		 <xs:documentation xml:lang="en">EDI Reader</xs:documentation>
+    	</xs:annotation>
     	<xs:complexContent>
     		<xs:extension base="smooks:abstract-reader">
     			<xs:attribute name="mappingModel" type="xs:string"
