@@ -8,13 +8,16 @@
     <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd"/>
 
     <xs:annotation>
-        <xs:documentation xml:lang="en">Smooks JSON Reader Binding Configuration</xs:documentation>
+        <xs:documentation xml:lang="en">Smooks JSON Reader Configuration</xs:documentation>
     </xs:annotation>
 
 
     <xs:element name="reader" type="smooks-json:reader" substitutionGroup="smooks:abstract-reader"></xs:element>
 
     <xs:complexType name="reader">
+    	<xs:annotation>
+    		 <xs:documentation xml:lang="en">JSON Reader</xs:documentation>
+    	</xs:annotation>
     	<xs:complexContent>
     		<xs:extension base="smooks:abstract-reader">
     			<xs:sequence>
