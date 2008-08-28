@@ -16,32 +16,25 @@
 
 package org.milyn.edisax;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.List;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.io.StreamUtils;
 import org.milyn.schema.edi_message_mapping_1_0.Component;
-import org.milyn.schema.edi_message_mapping_1_0.Delimiters;
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.milyn.schema.edi_message_mapping_1_0.Field;
 import org.milyn.schema.edi_message_mapping_1_0.Segment;
 import org.milyn.schema.edi_message_mapping_1_0.SubComponent;
-import org.milyn.xml.XmlUtil;
+import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -58,7 +51,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * EDI Parser.
  * <p/>
  * Generates a stream of SAX events from an EDI message stream based on the supplied
- * {@link #setMappingModel(Edimap) mapping model}.
+ * {@link #setMappingModel(EdifactModel) mapping model}.
  * 
  * <h3>Usage</h3>
  * <pre>
@@ -69,7 +62,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * 	EDIParser parser = new EDIParser();
  * 		
  * 	parser.setContentHandler(contentHandler);
- * 	parser.{@link #setMappingModel(Edimap) setMappingModel}(EDIParser.{@link #parseMappingModel(InputStream) parseMappingModel}(<a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a>));
+ * 	parser.{@link #setMappingModel(EdifactModel) setMappingModel}(EDIParser.{@link #parseMappingModel(InputStream) parseMappingModel}(<a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi2SaxMappingConfig</a>));
  * 	parser.parse(new InputSource(ediInputStream));
  * 	etc... 
  * </pre>
@@ -123,18 +116,21 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class EDIParser implements XMLReader {
 
+    private static Log LOG = LogFactory.getLog(EDIParser.class);
+    private static final String DEFINITION_RESOURCE = "edi-definition-Segment-";
+
     private ContentHandler contentHandler;
     private int depth = 0;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
-    private Edimap mappingModel;
-    private Delimiters delimiters;
+
+    private EdifactModel edifactModel;
     private BufferedSegmentReader segmentReader;
 
     /**
      * Parse the supplied mapping model config stream and return the generated EdiMap.
      * <p/>
      * Can be used to set the mapping model to be used during the parsing operation.
-     * See {@link #setMappingModel(Edimap)}.
+     * See {@link #setMappingModel(EdifactModel)}.
      * @param mappingConfigStream Config stream.  Must conform with the
      * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
      * schema.
@@ -142,7 +138,7 @@ public class EDIParser implements XMLReader {
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
      */
-    public static Edimap parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException {
+    public static EdifactModel parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
         try {
             return parseMappingModel(new InputStreamReader(mappingConfigStream));
@@ -155,46 +151,70 @@ public class EDIParser implements XMLReader {
      * Parse the supplied mapping model config stream and return the generated EdiMap.
      * <p/>
      * Can be used to set the mapping model to be used during the parsing operation.
-     * See {@link #setMappingModel(Edimap)}.
+     * See {@link #setMappingModel(EdifactModel)}.
      * @param mappingConfigStream Config stream.  Must conform with the
      * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
      * schema.
-     * @return The Edimap for the mapping model.
+     * @return The EdifactModel for the mapping model.
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
      */
-    public static Edimap parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
-    	AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
-    	
-    	Edimap mappingModel = null;
-    	String mappingConfig;
-    	
+    public static EdifactModel parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
+        AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
+
+        EdifactModel edifactModel;
+        String mappingConfig;
+
     	try {
     		mappingConfig = StreamUtils.readStream(mappingConfigStream);
     	} finally {
     		mappingConfigStream.close();
     	}
-    	
+
     	assertMappingConfigValid(new StringReader(mappingConfig));
-    	JAXBContext jc;
-        try {
-            jc = JAXBContext.newInstance("org.milyn.schema.edi_message_mapping_1_0");
-            Unmarshaller unmarshaller = jc.createUnmarshaller();
-            mappingModel = (Edimap) unmarshaller.unmarshal(new StringReader(mappingConfig));
-        }catch(JAXBException e)
-        {
-            throw new SAXException("EDI Mapping Model parse failure.", e);
+
+        edifactModel = new EdifactModel();
+        edifactModel.parseSequence(new ByteArrayInputStream(mappingConfig.getBytes()));
+
+        getEdifactDefinition(edifactModel);
+
+		return edifactModel;
+    }
+
+    /**
+     * Retrieve external definition file if it exists.
+     * If edi-message-mapping contains a definition element a lookup is first inititated using
+     * the URIResourceLocator. If URIResourceLocator fails to retrieve the definition is retrived from
+     * the resources. If no definition is located an exception is thrown.
+     * @param edifactModel the edifact model.
+     * @throws EDIParseException throws exception if edi-message-mapping contains a definition element
+     * but is unable to locate the definitonfile. 
+     */
+    private static void getEdifactDefinition(EdifactModel edifactModel) throws EDIParseException {
+        InputStream inputStream = null;
+
+        String definitionURI = edifactModel.getSequence().getDefinition() != null ? edifactModel.getSequence().getDefinition().getName() : null;
+        if (definitionURI == null || definitionURI.equals("")) {
+            return;
         }
 
-		// Rewrite any entities used in the delimiter definitions.  Can use entity/character resfs
-		// to define special characters e.g. CR or LF.
-		Delimiters delimiters = mappingModel.getDelimiters();
-		delimiters.setSegment(XmlUtil.removeEntities(delimiters.getSegment()));
-		delimiters.setField(XmlUtil.removeEntities(delimiters.getField()));
-		delimiters.setComponent(XmlUtil.removeEntities(delimiters.getComponent()));
-		delimiters.setSubComponent(XmlUtil.removeEntities(delimiters.getSubComponent()));
-		
-		return mappingModel;
+        try {
+            //Try to locate definition from URIResourceLocator.
+            inputStream = new URIResourceLocator().getResource(definitionURI);
+        } catch (IOException e) {
+            LOG.info("Could not locate resource for uri: " + definitionURI, e);
+        }
+
+        if (inputStream == null) {
+            //Try to locate definition from resources. 
+            inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFINITION_RESOURCE + definitionURI + ".xml");
+        }
+
+        if (inputStream == null) {
+            throw new EDIParseException(null, "Could not locate resource for uri: " + definitionURI);
+        }
+
+        edifactModel.parseDefinition(inputStream);
     }
     
     /**
@@ -220,10 +240,9 @@ public class EDIParser implements XMLReader {
 	 * 
 	 * @param mappingModel The mapping model.
 	 */
-	public void setMappingModel(Edimap mappingModel) {
+	public void setMappingModel(EdifactModel mappingModel) {
     	AssertArgument.isNotNull(mappingModel, "mappingModel");
-    	this.mappingModel = mappingModel;
-    	delimiters = mappingModel.getDelimiters();
+        edifactModel = mappingModel;
     }
     
     /**
@@ -233,29 +252,30 @@ public class EDIParser implements XMLReader {
         if(contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse EDI stream.");
         }
-        if(mappingModel == null) {
+
+        if(edifactModel == null || edifactModel.getSequence() == null) {
             throw new IllegalStateException("'mappingModel' not set.  Cannot parse EDI stream.");
         }
         
         // Create a reader for reading the EDI segments...
-        segmentReader = new BufferedSegmentReader(ediInputSource, delimiters);
+        segmentReader = new BufferedSegmentReader(ediInputSource, edifactModel.getDelimiters());
         
         // Fire the startDocument event, as well as the startElement event...
         contentHandler.startDocument();
-        startElement(mappingModel.getSegments().getXmltag(), false);
+        startElement(edifactModel.getSequence().getSegments().getXmltag(), false);
 
         // Work through all the segments in the model.  Move to the first segment before starting...
         if(segmentReader.moveToNextSegment()) {
-        	mapSegments(mappingModel.getSegments().getSegment());
+        	mapSegments(edifactModel.getSequence().getSegments().getSegment());
 
     		// If we reach the end of the mapping model and we still have more EDI segments in the message.... 
     		if(segmentReader.hasCurrentSegment()) {
-    			throw new EDIParseException(mappingModel, "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s).");
+    			throw new EDIParseException(edifactModel.getSequence(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s).");
     		}
         }
 
         // Fire the endDocument event, as well as the endElement event...
-        endElement(mappingModel.getSegments().getXmltag(), true);
+        endElement(edifactModel.getSequence().getSegments().getXmltag(), true);
         contentHandler.endDocument();
     }
 
@@ -296,7 +316,7 @@ public class EDIParser implements XMLReader {
 			if(!currentSegmentFields[0].equals(expectedSegment.getSegcode())) {
 				// If we haven't read the minimum number of instances of the current "expected" segment, raise an error...
 				if(segmentProcessingCount < minOccurs) {
-					throw new EDIParseException(mappingModel, "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+					throw new EDIParseException(edifactModel.getSequence(), "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 				} else {
 					// Otherwise, move to the next "expected" segment and start the loop again...
 					segmentMappingIndex++;
@@ -307,7 +327,7 @@ public class EDIParser implements XMLReader {
 
 			// Make sure we haven't encountered a message with too many instances of the current expected segment...
 			if(segmentProcessingCount >= maxOccurs) {
-				throw new EDIParseException(mappingModel, "Maximum of " + maxOccurs + " instances of segment [" + expectedSegment.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+				throw new EDIParseException(edifactModel.getSequence(), "Maximum of " + maxOccurs + " instances of segment [" + expectedSegment.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 			}
 			
 			// The current read message segment appears to match that expected according to the mapping model.
@@ -318,7 +338,7 @@ public class EDIParser implements XMLReader {
 			segmentProcessingCount++;
 
 			while(segmentProcessingCount < minOccurs && !segmentReader.hasCurrentSegment()) {
-				throw new EDIParseException(mappingModel, "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+				throw new EDIParseException(edifactModel.getSequence(), "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
 			}
 		}
 	}
@@ -352,7 +372,14 @@ public class EDIParser implements XMLReader {
 	 */
 	private void mapFields(String[] currentSegmentFields, Segment segment) throws SAXException {
         String segmentCode = segment.getSegcode();
-        List<Field> expectedFields = segment.getField();
+
+        //Try to get fields from definition file.
+        List<Field> expectedFields = edifactModel.getFields(segmentCode);
+
+        //Otherwise get fields from edi-message-mapping.
+        if (expectedFields == null) {
+            expectedFields = segment.getField();
+        }
 
         // Make sure all required fields are present in the incoming message...
         assertFieldsOK(currentSegmentFields, segment);
@@ -382,7 +409,7 @@ public class EDIParser implements XMLReader {
 
 		// If there are components defined on this field...
 		if(expectedComponents.size() != 0) {
-			String[] currentFieldComponents = StringUtils.splitPreserveAllTokens(fieldMessageVal, mappingModel.getDelimiters().getComponent());
+			String[] currentFieldComponents = StringUtils.splitPreserveAllTokens(fieldMessageVal, edifactModel.getDelimiters().getComponent());
 
             assertComponentsOK(expectedField, fieldIndex, segmentCode, expectedComponents, currentFieldComponents);
 
@@ -396,7 +423,7 @@ public class EDIParser implements XMLReader {
 	        endElement(expectedField.getXmltag(), true);
 		} else {
             if(expectedField.isRequired() && fieldMessageVal.length() == 0) {
-                throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getSequence(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
 
             contentHandler.characters(fieldMessageVal.toCharArray(), 0, fieldMessageVal.length());
@@ -420,13 +447,13 @@ public class EDIParser implements XMLReader {
 		startElement(expectedComponent.getXmltag(), true);
 
 		if(expectedSubComponents.size() != 0) {
-			String[] currentComponentSubComponents = StringUtils.splitPreserveAllTokens(componentMessageVal, mappingModel.getDelimiters().getSubComponent());
+			String[] currentComponentSubComponents = StringUtils.splitPreserveAllTokens(componentMessageVal, edifactModel.getDelimiters().getSubComponent());
 
             assertSubComponentsOK(expectedComponent, fieldIndex, componentIndex, segmentCode, field, expectedSubComponents, currentComponentSubComponents);
 
             for(int i = 0; i < currentComponentSubComponents.length; i++) {
                 if(expectedSubComponents.get(i).isRequired() && currentComponentSubComponents[i].length() == 0) {
-                    throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + "), sub-component " + (i + 1) + " (" + expectedSubComponents.get(i).getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                    throw new EDIParseException(edifactModel.getSequence(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + "), sub-component " + (i + 1) + " (" + expectedSubComponents.get(i).getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
                 }
 
 				startElement(expectedSubComponents.get(i).getXmltag(), true);
@@ -436,7 +463,7 @@ public class EDIParser implements XMLReader {
 			endElement(expectedComponent.getXmltag(), true);
 		} else {
             if(expectedComponent.isRequired() && componentMessageVal.length() == 0) {
-                throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getSequence(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
 
 			contentHandler.characters(componentMessageVal.toCharArray(), 0, componentMessageVal.length());
@@ -445,7 +472,13 @@ public class EDIParser implements XMLReader {
 	}
 
     private void assertFieldsOK(String[] currentSegmentFields, Segment segment) throws EDIParseException {
-        List<Field> expectedFields = segment.getField();
+        //Try to get fields from definition file.
+        List<Field> expectedFields = edifactModel.getFields(segment.getSegcode());
+
+        //Otherwise get fields from edi-message-mapping.
+        if (expectedFields == null) {
+            expectedFields = segment.getField();
+        }
         int numFieldsExpected = expectedFields.size() + 1; // It's "expectedFields.length + 1" because the segment code is included.
 
         if(currentSegmentFields.length != numFieldsExpected) {
@@ -466,16 +499,24 @@ public class EDIParser implements XMLReader {
             }
 
             if(throwException) {
-                throw new EDIParseException(mappingModel, "Segment [" + segment.getSegcode() + "] expected to contain " + (numFieldsExpected - 1) + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getSequence(), "Segment [" + segment.getSegcode() + "] expected to contain " + (numFieldsExpected - 1) + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
         }
     }
 
     private void assertComponentsOK(Field expectedField, int fieldIndex, String segmentCode, List<Component> expectedComponents, String[] currentFieldComponents) throws EDIParseException {
         if (currentFieldComponents.length != expectedComponents.size()) {
-            boolean throwException = false;
+            boolean throwException = false;            
 
             if (expectedField.isTruncatable()){
+
+                //Bård: When there are no Components in Field it should not throw exception, since
+                //the Field is just created (with Field-separator) for satisfying requirement for Fields
+                //that are required later in Segment.
+                if (currentFieldComponents.length == 0) {
+                    return;
+                }
+
                 int numComponentsMissing = expectedComponents.size() - currentFieldComponents.length;
                 for (int i = expectedComponents.size() - 1; i > (expectedComponents.size() - numComponentsMissing - 1); i--)
                 {
@@ -489,7 +530,7 @@ public class EDIParser implements XMLReader {
             }
 
             if (throwException) {
-                throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain " + expectedComponents.size() + " components.  Actually contains " + currentFieldComponents.length + " components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getSequence(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain " + expectedComponents.size() + " components.  Actually contains " + currentFieldComponents.length + " components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
         }
     }
@@ -499,6 +540,14 @@ public class EDIParser implements XMLReader {
             boolean throwException = false;
 
             if (expectedComponent.isTruncatable()) {
+
+                //Bård: When there are no SubComponents in field it should not throw exception, since
+                //the Component is just created (with Component-separator) for satisfying requirement
+                //for Components that are required later in Field.
+                if (currentComponentSubComponents.length == 0) {
+                    return;
+                }
+
                 int numSubComponentsMissing = expectedSubComponents.size() - currentComponentSubComponents.length;
                 for (int i = expectedSubComponents.size() - 1; i > (expectedSubComponents.size() - numSubComponentsMissing - 1); i--)
                 {
@@ -512,7 +561,7 @@ public class EDIParser implements XMLReader {
             }
 
             if (throwException) {
-                throw new EDIParseException(mappingModel, "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain " + expectedSubComponents.size() + " sub-components.  Actually contains " + currentComponentSubComponents.length + " sub-components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getSequence(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain " + expectedSubComponents.size() + " sub-components.  Actually contains " + currentComponentSubComponents.length + " sub-components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
         }
     }

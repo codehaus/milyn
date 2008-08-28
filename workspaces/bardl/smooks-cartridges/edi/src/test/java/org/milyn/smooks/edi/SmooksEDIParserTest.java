@@ -42,7 +42,11 @@ public class SmooksEDIParserTest extends TestCase {
 
 	private static final String TEST_XML_MAPPING_XML_URI = "classpath:/org/milyn/smooks/edi/edi-to-xml-mapping.xml";
 
-	public void test_inlined() throws IOException, SAXException {
+    public void test_definition_resource() throws IOException, SAXException {
+		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/edi-to-xml-mapping-sequence.xml")));
+		test_definition(mapping);
+	}
+    public void test_inlined() throws IOException, SAXException {
 		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("edi-to-xml-mapping.xml")));
 		test(mapping);
 	}
@@ -108,7 +112,28 @@ public class SmooksEDIParserTest extends TestCase {
 		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, (Edimap) mappingTable.get(config));
 	}
 
-	private void test(String mapping) throws IOException, SAXException {
+    private void test_definition(String mapping) throws IOException, SAXException {
+		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/edi-input-d96a.txt")));
+		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/expected-d96a.xml")));
+		Smooks smooks = new Smooks();
+		SmooksResourceConfiguration config = null;
+
+		// Create and initialise the Smooks config for the parser...
+        config = new SmooksResourceConfiguration();
+        config.setResource(SmooksEDIParser.class.getName());
+		// Set the mapping config on the resource config...
+		if(mapping != null) {
+			config.setParameter(SmooksEDIParser.MODEL_CONFIG_KEY, mapping);
+		}
+
+		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
+		Document doc = parser.parse(new InputStreamReader(input));
+
+		//System.out.println(XmlUtil.serialize(doc.getChildNodes()));
+		assertEquals(removeCRLF(expected), removeCRLF(XmlUtil.serialize(doc.getChildNodes())));
+	}
+
+    private void test(String mapping) throws IOException, SAXException {
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-input.txt")));
 		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("expected.xml")));
 		Smooks smooks = new Smooks();

@@ -1,39 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema
-	targetNamespace="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd"
-	xmlns:mapping="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	elementFormDefault="qualified">
-
+<xs:schema xmlns:mapping="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd" elementFormDefault="qualified">
 	<xs:element name="edimap">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="mapping:description" minOccurs="1"
-					maxOccurs="1" />
-				<xs:element ref="mapping:delimiters" minOccurs="1"
-					maxOccurs="1" />
-				<xs:element ref="mapping:segments" minOccurs="1"
-					maxOccurs="1" />
+				<xs:element ref="mapping:definition" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>
+							The definition element specifies the name (and sometimes the location) of the file contining the definition of segments in the edi-message-mapping.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="mapping:description"/>
+				<xs:element ref="mapping:delimiters"/>
+				<xs:element ref="mapping:segments"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
-	<xs:element name="description">
+	<xs:element name="definition">
 		<xs:complexType>
-			<xs:attribute name="name" use="required" type="xs:string" />
-			<xs:attribute name="version" use="required" type="xs:string" />
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>
+						The name of the definition file containing definitions of segments 
+						occurring within the EDI message.
+						
+						Ex. "un-ecfact" - locates definition for un-ecfact in Smooks resources.
+						      "file:///path/to/file.xml" - retrieves file from filesystem.
+						      "http://webaddress?name=un-ecfact" - retrieves file via http.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="truncatableFields" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>
+						Specifies whether Fields in edi-definition should be truncatable. This setting overwrites
+						truncatable attribute for all Fields in edi-definition
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="truncatableComponents" type="xs:string" use="optional">
+				<xs:annotation>
+					<xs:documentation>
+						Specifies whether Components in edi-definition should be truncatable. This setting overwrites
+						truncatable attribute for all Components in edi-definition.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-
+	<xs:element name="description">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="version" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="delimiters">
 		<xs:complexType>
-			<xs:attribute name="segment" use="required"
-				type="xs:string" />
-			<xs:attribute name="field" use="required" type="xs:string" />
-			<xs:attribute name="component" use="required"
-				type="xs:string" />
-			<xs:attribute name="sub-component" use="required"
-				type="xs:string">
+			<xs:attribute name="segment" type="xs:string" use="required"/>
+			<xs:attribute name="field" type="xs:string" use="required"/>
+			<xs:attribute name="component" type="xs:string" use="required"/>
+			<xs:attribute name="sub-component" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>
 						The delimiter attributes mark the boundary
@@ -49,35 +75,29 @@
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:element name="segments">
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="mapping:mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:segment" minOccurs="1"
-							maxOccurs="unbounded" />
+						<xs:element ref="mapping:segment" maxOccurs="unbounded"/>
 					</xs:sequence>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:complexType name="mapping-node">
-		<xs:attribute name="xmltag" use="required" type="xs:string" />
+		<xs:attribute name="xmltag" type="xs:string" use="required"/>
 	</xs:complexType>
-
 	<xs:element name="segment">
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="mapping:mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:field" minOccurs="1"
-							maxOccurs="unbounded" />
-						<xs:element ref="mapping:segment" minOccurs="0"
-							maxOccurs="unbounded" />
+						<xs:element ref="mapping:field" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="mapping:segment" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-					<xs:attribute name="minOccurs" type="xs:int" default="1" use="optional">
+					<xs:attribute name="minOccurs" type="xs:int" use="optional" default="1">
 						<xs:annotation>
 							<xs:documentation>
 								The minimum number of times the segment must appear in this
@@ -85,7 +105,7 @@
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
-					<xs:attribute name="maxOccurs" type="xs:int" default="1" use="optional">
+					<xs:attribute name="maxOccurs" type="xs:int" use="optional" default="1">
 						<xs:annotation>
 							<xs:documentation>
 								The maximum number of times the segment must appear in this
@@ -95,48 +115,44 @@
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="segcode" type="xs:string" use="required"/>
-                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
+					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:element name="field">
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="mapping:mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:component" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="mapping:component" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />
-                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
+					<xs:attribute name="required" type="xs:boolean" use="optional" default="false"/>
+					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:element name="component">
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="mapping:mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:sub-component" minOccurs="0" maxOccurs="unbounded" />
+						<xs:element ref="mapping:sub-component" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
-                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />
-                    <xs:attribute name="truncatable" use="optional" type="xs:boolean" default="false" />
+					<xs:attribute name="required" type="xs:boolean" use="optional" default="false"/>
+					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-
 	<xs:element name="sub-component">
 		<xs:complexType>
 			<xs:complexContent>
 				<xs:extension base="mapping:mapping-node">
-                    <xs:attribute name="required" use="optional" type="xs:boolean" default="false" />                    
-                </xs:extension>
+					<xs:attribute name="required" type="xs:boolean" use="optional" default="false"/>
+				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>

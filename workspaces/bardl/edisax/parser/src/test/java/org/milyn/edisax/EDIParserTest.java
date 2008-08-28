@@ -47,7 +47,7 @@ public class EDIParserTest extends TestCase {
 	}
 	
 	public void test_parseMappingModel() throws IOException, SAXException {
-		Edimap map = EDIParser.parseMappingModel(getClass().getResourceAsStream("edi-mapping_01.xml"));
+		EdifactModel map = EDIParser.parseMappingModel(getClass().getResourceAsStream("edi-mapping_01.xml"));
 		
 		// Some basic checks on the model produced by xmlbeans...
 		
@@ -57,8 +57,8 @@ public class EDIParserTest extends TestCase {
 		assertEquals("^", map.getDelimiters().getComponent());
 		assertEquals("~", map.getDelimiters().getSubComponent());
 		
-		assertEquals("message-x", map.getSegments().getXmltag());
-		List<Segment> segments = map.getSegments().getSegment();
+		assertEquals("message-x", map.getSequence().getSegments().getXmltag());
+		List<Segment> segments = map.getSequence().getSegments().getSegment();
 		assertEquals(2, segments.size());
 		
 		assertEquals(1, segments.get(0).getSegment().size());

@@ -37,6 +37,7 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.ApplicationContext;
 import org.milyn.edisax.EDIParser;
+import org.milyn.edisax.EdifactModel;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.milyn.xml.SmooksXMLReader;
@@ -109,7 +110,7 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * Overridden so as to set the EDI to XML mapping model on the parser.
 	 */
 	public void parse(InputSource ediSource) throws IOException, SAXException {
-		Edimap edi2xmlMappingModel = getMappingModel();
+		EdifactModel edi2xmlMappingModel = getMappingModel();
 		
 		setMappingModel(edi2xmlMappingModel);
 		super.parse(ediSource);
@@ -124,17 +125,17 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * @throws IOException Error reading resource configuration data (the mapping model).
 	 * @throws SAXException Error parsing mapping model.
 	 */
-	private Edimap getMappingModel() throws IOException, SAXException {
-		Edimap edi2xmlMappingModel;
-		Hashtable mappings = getMappingTable(executionContext.getContext());
+	private EdifactModel getMappingModel() throws IOException, SAXException {
+        EdifactModel edifactModel = null;
+        Hashtable mappings = getMappingTable(executionContext.getContext());
 
 		synchronized (configuration) {
-			edi2xmlMappingModel = (Edimap) mappings.get(configuration);
+			Edimap edi2xmlMappingModel = (Edimap) mappings.get(configuration);
 			if(edi2xmlMappingModel == null) {
 				InputStream mappingConfigData = getMappingConfigData();
 				
 				try {
-					edi2xmlMappingModel = EDIParser.parseMappingModel(new InputStreamReader(mappingConfigData, encoding));
+					edifactModel = EDIParser.parseMappingModel(new InputStreamReader(mappingConfigData, encoding));
 				} catch (IOException e) {
                     IOException newE = new IOException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".");
 					newE.initCause(e);
@@ -142,14 +143,15 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 				} catch (SAXException e) {
 					throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
 				}
-				mappings.put(configuration, edi2xmlMappingModel);
-				logger.info("Parsed, validated and cached EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
+                //TODO: Uncertain whether to put sequence mapping or whole edifactModel into Map.
+                mappings.put(configuration, edifactModel.getSequence());
+				logger.info("Parsed, validated and cached EDI mapping model [" + edifactModel.getSequence().getDescription().getName() + ", Version " + edifactModel.getSequence().getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
 			} else if(logger.isInfoEnabled()) {
-				logger.info("Found EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
+				logger.info("Found EDI mapping model [" + edifactModel.getSequence().getDescription().getName() + ", Version " + edifactModel.getSequence().getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
 			}
 		}
 		
-		return edi2xmlMappingModel;
+		return edifactModel;
 	}
 
 	/**
