@@ -15,15 +15,12 @@
 */
 package org.milyn.expression;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import org.milyn.cdr.*;
+import org.mvel.*;
+import org.mvel.integration.impl.*;
 
-import org.milyn.cdr.SmooksConfigurationException;
-import org.mvel.MVEL;
-import org.mvel.integration.VariableResolver;
-import org.mvel.integration.VariableResolverFactory;
-import org.mvel.integration.impl.MapVariableResolverFactory;
+import java.io.*;
+import java.util.*;
 
 /**
  * <a href="http://mvel.codehaus.org/">MVEL</a> expression evaluator.
@@ -76,7 +73,7 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
         } catch(Exception e) {
         	String msg = "Error evaluating MVEL expression '" + expression + "' against object type '" + contextObject.getClass().getName() + "'. " +
             				"Common issues include:" +
-            				"\n\t\t1. Referencing variable is not bound to the context.";
+            				"\n\t\t1. Referencing a variable that is not bound into the context.";
         	if(contextObject instanceof Map) {
         		msg += " In this case use "+ MVEL_VARIABLES_VARIABLE_NAME +".isResolveable('someVar') to check if the variable is bound in the context.";
         	}
