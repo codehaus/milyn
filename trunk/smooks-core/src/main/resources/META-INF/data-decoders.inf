@@ -11,7 +11,6 @@ org.milyn.javabean.decoders.DoubleDecoder
 org.milyn.javabean.decoders.FloatDecoder
 org.milyn.javabean.decoders.FreeMarkerTemplateDecoder
 org.milyn.javabean.decoders.IntegerDecoder
-org.milyn.javabean.decoders.LocaleAwareDateDecoder
 org.milyn.javabean.decoders.LongDecoder
 org.milyn.javabean.decoders.MappingDecoder
 org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder
