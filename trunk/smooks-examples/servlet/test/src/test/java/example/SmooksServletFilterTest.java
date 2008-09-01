@@ -15,19 +15,12 @@
 */
 package example;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.meterware.httpunit.*;
+import junit.framework.*;
+import org.milyn.io.*;
+import org.xml.sax.*;
 
-import junit.framework.TestCase;
-
-import org.milyn.io.StreamUtils;
-import org.xml.sax.SAXException;
-
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+import java.io.*;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -36,7 +29,7 @@ public class SmooksServletFilterTest extends TestCase {
 
     public void test_firefox() throws IOException, SAXException {
         WebConversation wc = new WebConversation();
-        WebRequest req = new GetMethodWebRequest("http://localhost:8080/smooks-test/index.html");
+        WebRequest req = new GetMethodWebRequest("http://localhost:19191/smooks-test/index.html");
 
         req.setHeaderField("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11");
         WebResponse resp = wc.getResponse(req);
@@ -48,7 +41,7 @@ public class SmooksServletFilterTest extends TestCase {
 
     public void x_test_msie() throws IOException, SAXException {
         WebConversation wc = new WebConversation();
-        WebRequest req = new GetMethodWebRequest("http://localhost:8080/smooks-test/index.html");
+        WebRequest req = new GetMethodWebRequest("http://localhost:19191/smooks-test/index.html");
 
         req.setHeaderField("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322)");
         WebResponse resp = wc.getResponse(req);
