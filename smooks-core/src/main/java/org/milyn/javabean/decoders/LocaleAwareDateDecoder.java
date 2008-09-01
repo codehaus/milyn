@@ -1,11 +1,9 @@
 package org.milyn.javabean.decoders;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Locale;
+import org.milyn.cdr.*;
 
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
+import java.text.*;
+import java.util.*;
 
 /**
  * LocaleAwareDateDecoder is a decoder 'helper' that can be subclassed
@@ -24,7 +22,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
-public class LocaleAwareDateDecoder
+public abstract class LocaleAwareDateDecoder
 {
     /**
      * Date format configuration key.

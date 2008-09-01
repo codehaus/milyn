@@ -15,11 +15,10 @@
 
 package org.milyn.javabean.decoders;
 
-import java.util.Locale;
+import junit.framework.*;
+import org.milyn.cdr.*;
 
-import junit.framework.TestCase;
-
-import org.milyn.cdr.SmooksResourceConfiguration;
+import java.util.*;
 
 /**
  * Unit test for LocaleAwareDateDedoderTest
@@ -59,7 +58,7 @@ public class LocaleAwareDateDecoderTest extends TestCase
 
 	public void setUp()
 	{
-	    decoder = new LocaleAwareDateDecoder();
+	    decoder = new LocaleAwareDateDecoder() {};
 
 	}
 
