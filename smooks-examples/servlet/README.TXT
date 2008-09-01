@@ -27,6 +27,6 @@ How to Run?
 
     Running:
         2. Change directory to the war directory
-        1. "mvn clean install tomcat:run"
-        3. Open a Firefox browser and browse to http://localhost:8080/example-servlet/
-        4. Open an Internet Explorer browser and browse to http://localhost:8080/example-servlet/
+        1. "mvn clean install jetty:run"
+        3. Open a Firefox browser and browse to http://localhost:19191/example-servlet/
+        4. Open an Internet Explorer browser and browse to http://localhost:19191/example-servlet/

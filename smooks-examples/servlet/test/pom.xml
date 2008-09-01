@@ -82,6 +82,9 @@
 										</properties>
 									</deployable>
 								</deployables>
+                                <properties>
+                                    <cargo.servlet.port>19191</cargo.servlet.port>
+                                </properties>
 							</configuration>
 						</configuration>
 						<executions>
