@@ -15,11 +15,10 @@
 */
 package org.milyn.javabean;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.milyn.cdr.*;
+import org.milyn.container.*;
 
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.container.ApplicationContext;
+import java.util.*;
 
 /**
  * Java bean runtime info.
@@ -62,7 +61,6 @@ public class BeanRuntimeInfo {
         ARRAY_COLLECTION,
         COLLECTION_COLLECTION,
         MAP_COLLECTION,
-
     }
 
     public static void recordBeanRuntimeInfo(String beanId, BeanRuntimeInfo beanRuntimeInfo, ApplicationContext appContext) {

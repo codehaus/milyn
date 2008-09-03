@@ -15,32 +15,26 @@
 */
 package org.milyn.javabean.gen;
 
-import junit.framework.TestCase;
-import org.milyn.javabean.Order;
-
-import java.io.StringWriter;
-import java.io.IOException;
-import java.util.Properties;
-
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ConfigGeneratortTest extends TestCase {
+public class ConfigGeneratortTest extends junit.framework.TestCase {
 
-    public void test() throws ClassNotFoundException, IOException {
-        Properties properties = new Properties();
-        StringWriter writer = new StringWriter();
+    public void test() throws ClassNotFoundException, java.io.IOException {
+        java.util.Properties properties = new java.util.Properties();
+        java.io.StringWriter writer = new java.io.StringWriter();
 
-        properties.setProperty(ConfigGenerator.ROOT_BEAN_CLASS, Order.class.getName());
+        properties.setProperty(ConfigGenerator.ROOT_BEAN_CLASS, org.milyn.javabean.Order.class.getName());
 
         ConfigGenerator generator = new ConfigGenerator(properties, writer);
 
         generator.generate();
 
-        System.out.println(writer.toString());
+        String expected = org.milyn.io.StreamUtils.readStreamAsString(getClass().getResourceAsStream("expected-01.xml"));
+        assertTrue("Generated config not as expected.", org.milyn.io.StreamUtils.compareCharStreams(new java.io.StringReader(expected), new java.io.StringReader(writer.toString())));
     }
 
-    public void test_commandLine() throws ClassNotFoundException, IOException {
-        ConfigGenerator.main(new String[] {"-c", Order.class.getName(), "-o", "./target/binding-config-test.xml"});
+    public void test_commandLine() throws ClassNotFoundException, java.io.IOException {
+        ConfigGenerator.main(new String[] {"-c", org.milyn.javabean.Order.class.getName(), "-o", "./target/binding-config-test.xml"});
     }
 }

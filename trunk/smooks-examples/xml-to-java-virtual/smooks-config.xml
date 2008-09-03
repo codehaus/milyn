@@ -1,73 +1,51 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
 
     <!--
-    Create an "example.beans.Order" bean instance when we visit the start of the <order> element.
-    Assign the new bean instance to the beanId of "order".
+        The "xml-to-java-virtual" sample config is the same as that of the "xml-to-java" sample accept for the fact that
+        xml-to-java-virtual uses HashMaps (virtual) in place of a fully defined (physical) object model.
     -->
-    <resource-config selector="order">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">order</param>
-        <param name="beanClass">java.util.HashMap</param>
-        <param name="bindings">
-        	<binding name="header" selector="${header}" />
-        	<binding name="orderItems" selector="${orderItems}" />
-        </param>
-    </resource-config>
+
+    <!--
+    Create an "java.util.HashMap" bean instance when we visit the start of the <order> element.
+    Assign the new bean instance to the beanId of "order".
+    Wire in the "header" and "orderItems" beans.
+    -->
+    <jb:bindings beanId="order" class="java.util.HashMap" createOnElement="order">
+        <jb:wiring property="header" beanIdRef="header" />
+        <jb:wiring property="orderItems" beanIdRef="orderItems" />
+    </jb:bindings>
 
     <!--
     Create an ArrayList bean instance when we visit the start of the <order> element.
-    Call it "orderItems" and seet it on the "order".
+    This bean is wired into the "order" bean.
     -->
-    <resource-config selector="order">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">orderItems</param>
-        <param name="beanClass">java.util.ArrayList</param>
-        <param name="bindings">
-        	<binding selector="${orderItem}" />
-        </param>
-    </resource-config>
+    <jb:bindings beanId="orderItems" class="java.util.ArrayList" createOnElement="order">
+        <jb:wiring beanIdRef="orderItem" />
+    </jb:bindings>
 
     <!--
-    Create an "example.beans.Header" bean instance when we visit the start of the <header> element.
-    Set the new bean instance on the "order" bean.
+    Create an "java.util.HashMap" bean instance when we visit the start of the <header> element.
+    This bean is wired into the "order" bean.
     -->
-    <resource-config selector="header">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">header</param>
-        <param name="beanClass">java.util.HashMap</param>
-        <param name="bindings">
-            <!-- Header bindings... -->
-            <binding property="date" type="OrderDateLong" selector="header date" />
-            <binding property="customerNumber" type="Long" selector="header customer @number" />
-            <binding property="customerName" selector="header customer" />
-        </param>
-    </resource-config>
+    <jb:bindings beanId="header" class="java.util.HashMap" createOnElement="header">
+        <jb:value property="date" decoder="Date" data="header/date">
+            <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
+            <jb:decodeParam name="locale-language">en</jb:decodeParam>
+            <jb:decodeParam name="locale-country">IE</jb:decodeParam>
+        </jb:value>
+        <jb:value property="customerNumber" decoder="Long" data="header/customer/@number" />
+        <jb:value property="customerName" data="header/customer" />
+    </jb:bindings>
 
     <!--
-    Create an "example.beans.OrderItem" bean instance when we visit the start of the <order-item> element.
-    Set the OrderItem instances on the "orderItem".
+    Create an "java.util.HashMap" bean instance when we visit the start of the <order-item> element.
+    This bean is wired into the "orderItems" ArrayList bean.
     -->
-    <resource-config selector="order-item">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">orderItem</param>
-        <param name="beanClass">java.util.HashMap</param>
-        <param name="bindings">
-            <!-- OrderItem bindings... -->
-            <binding property="productId" type="Long" selector="order-item product" />
-            <binding property="quantity" type="Integer" selector="order-item quantity" />
-            <binding property="price" type="Double" selector="order-item price" />
-        </param>
-    </resource-config>
-
-    <!--
-    Configure a special decoder for the <date> field of the <header> - to set the date format.
-    -->
-    <resource-config selector="decoder:OrderDateLong">
-        <resource>org.milyn.javabean.decoders.DateDecoder</resource>
-        <param name="format">EEE MMM dd HH:mm:ss z yyyy</param>
-        <param name="locale-language">en</param>
-        <param name="locale-country">IE</param>        
-    </resource-config>
+    <jb:bindings beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
+        <jb:value property="productId" decoder="Long" data="order-item/product" />
+        <jb:value property="quantity" decoder="Integer" data="order-item/quantity" />
+        <jb:value property="price" decoder="Double" data="order-item/price" />
+    </jb:bindings>
 
 </smooks-resource-list>
