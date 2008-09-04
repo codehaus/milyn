@@ -16,14 +16,15 @@
 package org.milyn.javabean.decoders;
 
 import junit.framework.TestCase;
-import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.javabean.DataDecoder;
 
+import java.io.File;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.Arrays;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -45,6 +46,8 @@ public class InstalledDecodersTest extends TestCase {
         assertTrue(DataDecoder.Factory.create(Calendar.class) instanceof CalendarDecoder);
         assertTrue(DataDecoder.Factory.create(String[].class) instanceof CSVDecoder);
         assertTrue(DataDecoder.Factory.create(Charset.class) instanceof CharsetDecoder);
+        assertTrue(DataDecoder.Factory.create(File.class) instanceof FileDecoder);
+        assertTrue(DataDecoder.Factory.create(Class.class) instanceof ClassDecoder);
         assertNull(DataDecoder.Factory.create(getClass()));
     }
 
