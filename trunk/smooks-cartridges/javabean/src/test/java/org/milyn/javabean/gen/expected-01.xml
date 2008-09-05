@@ -4,13 +4,16 @@
     <!-- TODO:
             THIS IS A CONFIGURATION TEMPLATE!!  It is not the finished article.
 
-            1. For each <resource-config>, set the selector to the event element against which the bean instance should
-               be created i.e. on which the beans lifecycle should be associated.
-            2. Update the data attribute on each <jb:value> binding config to select the event element/attribute
-               supplying the binding data for that bean property.
-            3. Check the decoder attribute on the <jb:value> binding configs.  Not all will be set; depending on the
-               actual property type.  These must be configured by hand e.g. you may need to configure <jb:decodeParam>
-               sub-elements for the decoder on some of the bindings (e.g. for date fields).
+            1. For each <jb:bindings> element, set the createOnElement attribute to the event element that should
+               be used to create the bean instance.
+            2. Update the <jb:value data> attributes to select the event element/attribute supplying the binding
+               data for that bean property.
+            3. Check the <jb:value decoder> attributes.  Not all will be set, depending on the actual property type.
+               These must be configured by hand e.g. you may need to configure <jb:decodeParam>
+               sub-elements for the decoder on some of the bindings.  E.g. for a date field:
+                    <jb:value property="date" data="header/date" decoder="Date">
+                        <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
+                    </jb:value>
             4. Double-check the binding config elements (<jb:value> and <jb:wiring>), making sure all Java properties
                have been covered in the generated configuration.
 
