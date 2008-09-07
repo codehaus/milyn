@@ -53,6 +53,24 @@
 				<referenceQualifier>BGI</referenceQualifier>
 				<referenceNr>PG-NR</referenceNr>
 			</REFERENCE>
+			<sgroup2>
+				<PartyQualifier>II</PartyQualifier>
+				<PARTY_IDENTIFICATION>
+					<partyId>0158</partyId>
+					<codeListQualifier></codeListQualifier>
+					<codeListAgencyCode>87</codeListAgencyCode>
+				</PARTY_IDENTIFICATION>
+				<NAME_ADDRESS>
+				</NAME_ADDRESS>
+				<PARTY_NAME>
+					<partyName1>COMPANY INC</partyName1>
+				</PARTY_NAME>
+				<STREET>
+				</STREET>
+				<City>TOWN</City>
+				<Country></Country>
+				<PostCode>422 80</PostCode>
+			</sgroup2>
 		</RFF>
 		<RFF>
 			<REFERENCE>

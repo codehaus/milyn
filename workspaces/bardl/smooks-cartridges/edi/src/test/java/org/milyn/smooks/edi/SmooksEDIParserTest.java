@@ -26,9 +26,10 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.io.StreamUtils;
 import org.milyn.delivery.dom.DOMParser;
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.milyn.xml.XmlUtil;
 import org.milyn.Smooks;
+import org.milyn.edisax.EdifactModel;
+import org.milyn.edisax.EDIParseException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -42,9 +43,13 @@ public class SmooksEDIParserTest extends TestCase {
 
 	private static final String TEST_XML_MAPPING_XML_URI = "classpath:/org/milyn/smooks/edi/edi-to-xml-mapping.xml";
 
-    public void test_definition_resource() throws IOException, SAXException {
-		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/edi-to-xml-mapping-sequence.xml")));
-		test_definition(mapping);
+    public void test_cyclic_dependency() throws IOException, SAXException {
+		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("cyclicDependencyTest/edi-to-xml-mapping.xml")));
+		test_cyclic_dependency(mapping);
+	}
+    public void test_import_resource() throws IOException, SAXException {
+		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/edi-to-xml-mapping.xml")));
+		test_import(mapping);
 	}
     public void test_inlined() throws IOException, SAXException {
 		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("edi-to-xml-mapping.xml")));
@@ -101,20 +106,21 @@ public class SmooksEDIParserTest extends TestCase {
 		// Check make sure the parsed and validated model was cached...
 		Hashtable mappingTable = SmooksEDIParser.getMappingTable(smooks.getApplicationContext());
 		assertNotNull("No mapping table in context!", mappingTable);
-		Edimap mappingModel_request1 = (Edimap) mappingTable.get(config);
-		assertNotNull("No mapping model in mapping table!", mappingModel_request1);
+
+        EdifactModel mappingModel_request1 = (EdifactModel) mappingTable.get(config);
+        assertNotNull("No mapping model in mapping table!", mappingModel_request1);
 
 		// Create 2nd parser using the same config, and run a parse through it...
 		parser = new DOMParser(smooks.createExecutionContext(), config);
 		parser.parse(new InputStreamReader(new ByteArrayInputStream(input)));
 		
 		// Make sure the cached model was used on the 2nd parse...
-		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, (Edimap) mappingTable.get(config));
+		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, (EdifactModel) mappingTable.get(config));
 	}
 
-    private void test_definition(String mapping) throws IOException, SAXException {
-		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/edi-input-d96a.txt")));
-		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/expected-d96a.xml")));
+    private void test_import(String mapping) throws IOException, SAXException {
+		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/edi-input.txt")));
+		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("definitionTest/expected.xml")));
 		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration config = null;
 
@@ -132,6 +138,30 @@ public class SmooksEDIParserTest extends TestCase {
 		//System.out.println(XmlUtil.serialize(doc.getChildNodes()));
 		assertEquals(removeCRLF(expected), removeCRLF(XmlUtil.serialize(doc.getChildNodes())));
 	}
+
+    private void test_cyclic_dependency(String mapping) throws IOException, SAXException {
+		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("cyclicDependencyTest/edi-input.txt")));
+
+		Smooks smooks = new Smooks();
+		SmooksResourceConfiguration config = null;
+
+		// Create and initialise the Smooks config for the parser...
+        config = new SmooksResourceConfiguration();
+        config.setResource(SmooksEDIParser.class.getName());
+		// Set the mapping config on the resource config...
+		if(mapping != null) {
+			config.setParameter(SmooksEDIParser.MODEL_CONFIG_KEY, mapping);
+		}
+
+		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
+        try {
+            parser.parse(new InputStreamReader(input));
+            assert false : "Parser should fail when importing importing message mappings with cyclic dependency";
+        } catch (Exception e) {
+            assert true : "Parser should fail when importing importing message mappings with cyclic dependency";
+        }
+
+    }
 
     private void test(String mapping) throws IOException, SAXException {
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-input.txt")));

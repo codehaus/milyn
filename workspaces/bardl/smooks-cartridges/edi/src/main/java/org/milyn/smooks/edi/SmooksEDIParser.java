@@ -39,7 +39,6 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.EdifactModel;
 import org.milyn.resource.URIResourceLocator;
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -126,13 +125,13 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 	 * @throws SAXException Error parsing mapping model.
 	 */
 	private EdifactModel getMappingModel() throws IOException, SAXException {
-        EdifactModel edifactModel = null;
+        EdifactModel edifactModel;
         Hashtable mappings = getMappingTable(executionContext.getContext());
 
 		synchronized (configuration) {
-			Edimap edi2xmlMappingModel = (Edimap) mappings.get(configuration);
-			if(edi2xmlMappingModel == null) {
-				InputStream mappingConfigData = getMappingConfigData();
+            edifactModel = (EdifactModel) mappings.get(configuration);
+            if(edifactModel == null) {
+                InputStream mappingConfigData = getMappingConfigData();
 				
 				try {
 					edifactModel = EDIParser.parseMappingModel(new InputStreamReader(mappingConfigData, encoding));
@@ -143,11 +142,10 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 				} catch (SAXException e) {
 					throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
 				}
-                //TODO: Uncertain whether to put sequence mapping or whole edifactModel into Map.
-                mappings.put(configuration, edifactModel.getSequence());
-				logger.info("Parsed, validated and cached EDI mapping model [" + edifactModel.getSequence().getDescription().getName() + ", Version " + edifactModel.getSequence().getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
+                mappings.put(configuration, edifactModel);
+				logger.info("Parsed, validated and cached EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
 			} else if(logger.isInfoEnabled()) {
-				logger.info("Found EDI mapping model [" + edifactModel.getSequence().getDescription().getName() + ", Version " + edifactModel.getSequence().getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
+				logger.info("Found EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
 			}
 		}
 		

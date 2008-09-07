@@ -3,7 +3,7 @@
 	<xs:element name="edimap">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="mapping:definition" minOccurs="0">
+				<xs:element ref="mapping:import" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>
 							The definition element specifies the name (and sometimes the location) of the file contining the definition of segments in the edi-message-mapping.
@@ -15,18 +15,28 @@
 				<xs:element ref="mapping:segments"/>
 			</xs:sequence>
 		</xs:complexType>
+		<xs:unique name="uniqueNamespaces">
+			<xs:selector xpath="import"/>
+			<xs:field xpath="@namespace"/>
+		</xs:unique>
 	</xs:element>
-	<xs:element name="definition">
+	<xs:element name="import">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>
-						The name of the definition file containing definitions of segments 
-						occurring within the EDI message.
-						
-						Ex. "un-ecfact" - locates definition for un-ecfact in Smooks resources.
-						      "file:///path/to/file.xml" - retrieves file from filesystem.
-						      "http://webaddress?name=un-ecfact" - retrieves file via http.
+A URI reference that specifies one or more namespaces for use in this schema. If no prefix is assigned, the schema components of the namespace can be used with unqualified references
+
+Ex. "un-ecfact" - locates definition for un-ecfact in Smooks resources.
+	  "file:///path/to/file.xml" - retrieves file from filesystem.
+	  "http://webaddress?name=un-ecfact" - retrieves file via http.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="namespace" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>
+A URI reference that specifies one or more namespaces for use in this schema. If no prefix is assigned, the schema components of the namespace can be used with unqualified references
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
@@ -115,6 +125,7 @@
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="segcode" type="xs:string" use="required"/>
+					<xs:attribute name="segref" type="xs:string" use="optional"/>
 					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
 				</xs:extension>
 			</xs:complexContent>

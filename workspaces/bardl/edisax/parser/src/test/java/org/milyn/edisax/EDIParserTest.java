@@ -18,7 +18,6 @@ package org.milyn.edisax;
 
 import junit.framework.TestCase;
 import org.milyn.io.StreamUtils;
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.milyn.schema.edi_message_mapping_1_0.Segment;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -57,8 +56,8 @@ public class EDIParserTest extends TestCase {
 		assertEquals("^", map.getDelimiters().getComponent());
 		assertEquals("~", map.getDelimiters().getSubComponent());
 		
-		assertEquals("message-x", map.getSequence().getSegments().getXmltag());
-		List<Segment> segments = map.getSequence().getSegments().getSegment();
+		assertEquals("message-x", map.getEdimap().getSegments().getXmltag());
+		List<Segment> segments = map.getEdimap().getSegments().getSegment();
 		assertEquals(2, segments.size());
 		
 		assertEquals(1, segments.get(0).getSegment().size());

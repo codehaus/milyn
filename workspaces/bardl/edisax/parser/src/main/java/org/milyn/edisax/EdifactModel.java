@@ -3,58 +3,49 @@ package org.milyn.edisax;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.schema.edi_message_mapping_1_0.*;
-import org.milyn.schema.edi_message_mapping_1_0.Component;
 import org.milyn.schema.edi_message_mapping_1_0.Edimap;
-import org.milyn.schema.edi_message_mapping_1_0.Field;
-import org.milyn.schema.edi_message_mapping_1_0.SubComponent;
-import org.milyn.schema.edi_definition_1_0.*;
+import org.milyn.resource.URIResourceLocator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.io.InputStream;
+import java.io.IOException;
 
 /**
- * EdifactModel contains edi-message-mapping model and edi-definition if it exists.
- *
- *
+ * EdifactModel contains all logic for unmarshalling and handling imports for the
+ * edi-message-mapping model.
  */
 public class EdifactModel {
     private static Log LOG = LogFactory.getLog(EdifactModel.class);
 
-    private org.milyn.schema.edi_message_mapping_1_0.Edimap sequence;
-    private Map<String, List<Field>> definitionMap;
+    private org.milyn.schema.edi_message_mapping_1_0.Edimap edimap;
 
-    private static JAXBContext JAXB_DEF;
-    private static JAXBContext JAXB_SEQ;
+    private static JAXBContext JAXB_EDIMAP;
 
     static {
         try {
-            JAXB_DEF = JAXBContext.newInstance(org.milyn.schema.edi_definition_1_0.Edimap.class);
-            JAXB_SEQ = JAXBContext.newInstance(org.milyn.schema.edi_message_mapping_1_0.Edimap.class);
+            JAXB_EDIMAP = JAXBContext.newInstance(org.milyn.schema.edi_message_mapping_1_0.Edimap.class);
         } catch (JAXBException e) {
             LOG.error("Could not create new instance of JAXBContext.", e);
         }
     }
 
     /**
-     * Returns the edi-message-mapping containing the sequence definition of edifact format.
+     * Returns the edimap containing the parser logic.
      * @return edi-message-mapping.
      */
-    public Edimap getSequence() {
-        return sequence;
+    public Edimap getEdimap() {
+        return edimap;
     }
 
     /**
-     * Sets the edi-message-mapping containing the sequence definition of edifact format.
-     * @param sequence the edi-message-mapping
+     * Sets the edimap containing the parser logic.
+     * @param edimap the edi-message-mapping
      */
-    public void setSequence(Edimap sequence) {
-        this.sequence = sequence;
+    public void setEdimap(Edimap edimap) {
+        this.edimap = edimap;
     }
 
     /**
@@ -62,128 +53,251 @@ public class EdifactModel {
      * @return delimiters.
      */
     public Delimiters getDelimiters() {
-        return sequence.getDelimiters();
+        return edimap.getDelimiters();
     }
 
     /**
-     * Returns a List<Field> given a segment code. All field-lists are
-     * located in a Map with the segment code as key.
-     * @param segCode specifies which segment definition that should be located.
-     * @return list of fields.
+     * Parse the edifact edimap specified in the edi-message-mapping.
+     * @param inputStream the edi-message-mapping.
+     * @throws EDIParseException is thrown when EdifactModel is unable to initialize edimap.
      */
-    public List<Field> getFields(String segCode) {
-        if (definitionMap == null) {
+    public void parseSequence(InputStream inputStream) throws EDIParseException {
+
+        //To prevent circular dependency the name/url of all imported urls are stored in a dependency tree.
+        //If a name/url already exists in a parent node, we have a circular dependency.
+        DependencyTree<String> tree = new DependencyTree<String>();
+
+        edimap = unmarshallEdimap(inputStream);
+        importFiles(tree.getRoot(), edimap, tree);
+        
+    }
+
+    /**
+     * Handle all imports for the specified edimap. The parent Node is used by the
+     * DependencyTree tree to keep track of previous imports for preventing cyclic dependency.
+     * @param parent The node representing the importing file.
+     * @param edimap The importing edimap.
+     * @param tree The DependencyTree for preventing cyclic dependency in import.
+     * @throws EDIParseException Thrown when a cyclic dependency is detected.
+     */
+    private void importFiles(Node<String> parent, Edimap edimap, DependencyTree<String> tree) throws EDIParseException {
+        Edimap importedEdimap;
+        Node<String> child, conflictNode;
+        for (Import imp : edimap.getImport()) {
+            child = new Node<String>(imp.getName());
+            conflictNode = tree.add(parent, child);
+            if ( conflictNode != null ) {
+                throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + imp.getName() + "] and [" + conflictNode.getValue() + "]");
+            }
+            importedEdimap = unmarshallEdimap(findUrl(imp.getName()));
+            importFiles(child, importedEdimap, tree);
+            Map<String, Segment> importedSegments = createImportMap(importedEdimap);
+
+            for (Segment segment : edimap.getSegments().getSegment()) {
+                applyImportOnSegment(segment, imp, importedSegments);
+            }
+        }
+    }
+
+    /**
+     * Inserts data from imported segment into the importing segment. Continues through all
+     * the child segments of the importing segment.
+     * @param segment the importing segment.
+     * @param imp import information like url and namespace.
+     * @param importedSegments the imported segment.
+     * @throws EDIParseException Thrown when a segref attribute in importing segment contains
+     * a value not located in the imported segment but with the namespace referencing the imported file.
+     */
+    private void applyImportOnSegment(Segment segment, Import imp, Map<String, Segment> importedSegments) throws EDIParseException {
+        if (segment.getSegref() != null && segment.getSegref().startsWith(imp.getNamespace()+":")) {
+            String key = segment.getSegref().substring(segment.getSegref().indexOf(':') + 1);
+            Segment importedSegment = importedSegments.get(key);
+
+            if (importedSegment == null) {
+                throw new EDIParseException(edimap, "Referenced segment [" + key + "] does not exist in imported edi-message-mapping [" + imp.getName() + "]");
+            }
+            insertImportedSegmentInfo(segment, importedSegment, imp.getTruncatableFields(), imp.getTruncatableComponents());
+        }
+
+        for (Segment seg : segment.getSegment()) {
+            applyImportOnSegment(seg, imp, importedSegments);
+        }
+    }
+
+    /**
+     * Inserts fields and segments from the imported segment into the importing segment. Also
+     * overrides the truncatable attributes in Fields and Components of the imported file if
+     * values are set to true or false in truncatableFields or truncatableComponents.
+     * @param segment the importing segment.
+     * @param importedSegment the imported segment.
+     * @param truncatableFields a global attribute for overriding the truncatable attribute in imported segment.
+     * @param truncatableComponents a global attribute for overriding the truncatable attribute in imported segment.
+     */
+    private void insertImportedSegmentInfo(Segment segment, Segment importedSegment, String truncatableFields, String truncatableComponents) {
+        //Overwrite all existing fields in segment, but add additional segments to existing segments.
+        segment.getField().clear();
+        segment.getField().addAll(importedSegment.getField());                
+        segment.getSegment().addAll(0, segment.getSegment());
+
+        //If global truncatable attributes are set in importing mapping, then
+        //override the attributes in the imported files.
+        if (truncatableFields != null || truncatableComponents != null) {
+            for ( Field field : segment.getField()) {
+                field.setTruncatable(isTruncatable(truncatableFields, field.isTruncatable()));
+                if ( truncatableComponents != null ) {
+                    for (Component component : field.getComponent()) {
+                        component.setTruncatable(isTruncatable(truncatableComponents, component.isTruncatable()));
+                    }
+                }
+            }
+        }        
+    }
+
+    /**
+     * Creates a Map given an Edimap. All segments in edimap are stored as values in the Map
+     * with the corresponding segcode as key.
+     * @param edimap the edimap containing segments to be inserted into Map.
+     * @return Map containing all segment in edimap.
+     */
+    private Map<String, Segment> createImportMap(Edimap edimap) {
+        HashMap<String, Segment> result = new HashMap<String, Segment>();
+        for (Segment segment : edimap.getSegments().getSegment()) {
+            result.put(segment.getSegcode(), segment);
+        }
+        return result;
+    }
+
+    /**
+     * Unmarshalls an Edimap in the form of an inputStream.
+     * @param inputStream the edimap.
+     * @return the unmarshalled edimap.
+     * @throws EDIParseException Thrown when jaxb is unable to unmarshall the InputStream into Edimap.
+     */
+    private Edimap unmarshallEdimap(InputStream inputStream) throws EDIParseException {
+        Edimap edimap;
+
+        try {
+            Unmarshaller _unmarshaller = JAXB_EDIMAP.createUnmarshaller();
+            edimap = (Edimap)_unmarshaller.unmarshal(inputStream);
+        } catch (JAXBException e) {
+            throw new EDIParseException( e.getMessage(), e);
+        }
+
+        return edimap;
+    }
+
+    /**
+     * Returns the InputStream of the specified url.
+     * @param url the url to locate.
+     * @return InputStream of the specified url.
+     * @throws EDIParseException Thrown when unable to locate the specified url.
+     */
+    private InputStream findUrl(String url) throws EDIParseException {
+        InputStream inputStream;
+
+        if (url == null || url.equals("")) {
             return null;
         }
-        return definitionMap.get(segCode);
-    }
 
-    /**
-     * Parse the edifact sequence specified in the edi-message-mapping.
-     * @param inputStream the edi-message-mapping.
-     */
-    public void parseSequence(InputStream inputStream) {
+        //Try to locate definition from URIResourceLocator.
         try {
-            Unmarshaller _unmarshaller = JAXB_SEQ.createUnmarshaller();
-            sequence = (org.milyn.schema.edi_message_mapping_1_0.Edimap)_unmarshaller.unmarshal(inputStream);
-        } catch (JAXBException e) {
-            LOG.error("Could not parse xml containing edifact sequence.", e);
+            inputStream = new URIResourceLocator().getResource(url);
+        } catch (IOException e) {
+            throw new EDIParseException(edimap, "Unable to locate resource [" + url + "]");
         }
+
+        return inputStream;
     }
 
     /**
-     * Parse the edifact definitions specified in the edi-definition. The edi-definition is not
-     * stored in EdifactModel. Each SegmentDefinition is instead stored in the definitionMap for
-     * fast lookup during parsing.
-     * @param inputStream the edi-definition.
+     * Returns truncatable attributes specified in import element in the importing edi-message-mapping
+     * if it exists. Otherwise it sets value of the truncatable attribute found the imported segment.
+     * @param truncatableImporting truncatable value found in import element in importing edi-message-mapping.
+     * @param truncatableImported truncatable value found in imported segment.
+     * @return truncatable from importing edi-message-mapping if it exists, otherwise return value from imported segment.
      */
-    public void parseDefinition(InputStream inputStream) {
-        try {
-            Unmarshaller _unmarshaller = JAXB_DEF.createUnmarshaller();
-            org.milyn.schema.edi_definition_1_0.Edimap definition = (org.milyn.schema.edi_definition_1_0.Edimap)_unmarshaller.unmarshal(inputStream);
+    private Boolean isTruncatable(String truncatableImporting, boolean truncatableImported) {
+        Boolean result = truncatableImported;
+        if (truncatableImporting != null) {
+            result = Boolean.parseBoolean( truncatableImporting );
+        }
+        return result;
+    }
 
-            //Insert segment definitions into hashmap.
-            definitionMap = new HashMap<String, List<Field>>();
-            for (SegmentDefinition sdefinition : definition.getSegmentDefinitions().getSegmentDefinition()) {
-                definitionMap.put(sdefinition.getSegcode(), convertFieldDefinitions(sdefinition.getField()));
+    
+    /************************************************************************
+     * Private classes  used for locating and preventing cyclic dependency. *
+     ************************************************************************/
+
+    private class DependencyTree<T> {
+        Node<T> root;
+
+        public DependencyTree() {
+            root = new Node<T>(null);
+        }
+
+        public Node<T> getRoot() {
+            return root;
+        }
+
+        /**
+         * Add child to parent Node if value does not exist in direct path from child to root
+         * node, i.e. in any ancestralnode.
+         * @param parent parent node
+         * @param child the child node to add.
+         * @return null if the value in child is not in confilct with value in any ancestor Node, otherwise return the conflicting ancestor Node. 
+         */
+        public Node<T> add(Node<T> parent, Node<T> child){
+            Node<T> node = parent;
+            while (node != null ) {
+                if (node != root && node.getValue().equals(child.getValue())) {
+                    return node;
+                }
+                node = node.getParent();
             }
-        } catch (JAXBException e) {
-            LOG.error("Could not parse xml containing edifact definition.", e);
+            child.setParent(parent);
+            parent.getChildren().add(child);
+            return null;
+        }
+
+        public List<T> getUniqueValues() {
+            List<T> result = new ArrayList<T>();
+            return getUniqueValuesForNode(root, result);
+        }
+
+        private List<T> getUniqueValuesForNode(Node<T> node, List<T> list) {
+            if ( node.getValue() != null && !list.contains( node.getValue() ) ) {
+                list.add(node.getValue());
+            }
+            return list;
         }
     }
 
-    /**
-     * Converts all fields of type org.milyn.schema.edi_definition_1_0.Field into
-     * type org.milyn.schema.edi_message_mapping_1_0.Field.
-     * @param fields the fields to convert.
-     * @return return converted fields.
-     */
-    private List<Field> convertFieldDefinitions(List<org.milyn.schema.edi_definition_1_0.Field> fields) {
-        List<Field> result = new ArrayList<Field>();
-        Field newField;
+    private class Node<T> {
+        private T value;
+        private Node<T> parent;
+        private List<Node<T>> children;
 
-        for (org.milyn.schema.edi_definition_1_0.Field field : fields) {
-            newField = new Field();
-            newField.setRequired(field.isRequired());
-            newField.setTruncatable( isTruncatable( sequence.getDefinition().getTruncatableFields(), field.isTruncatable()) );
-            newField.setXmltag(field.getXmltag());
-            newField.getComponent().addAll(convertComponentDefinitions(field.getComponent()));
-            result.add(newField);
+        public Node(T value) {
+            children = new ArrayList<Node<T>>();
+            this.value = value;
         }
-        return result;
-    }
 
-    /**
-     * Converts all Components of type org.milyn.schema.edi_definition_1_0.Component into
-     * type org.milyn.schema.edi_message_mapping_1_0.Component. 
-     * @param components the component to convert.
-     * @return return converted components.
-     */
-    private List<Component> convertComponentDefinitions(List<org.milyn.schema.edi_definition_1_0.Field.Component> components) {
-        List<Component> result = new ArrayList<Component>();
-        Component newComponent;
-        for (org.milyn.schema.edi_definition_1_0.Field.Component component : components) {
-            newComponent = new Component();
-            newComponent.setRequired(component.isRequired());
-            newComponent.setTruncatable( isTruncatable(sequence.getDefinition().getTruncatableComponents(), component.isTruncatable()) );
-            newComponent.setXmltag(component.getXmltag());
-            newComponent.getSubComponent().addAll( convertSubComponentDefinitions(component.getSubComponent()) );
-            result.add(newComponent);
+        public T getValue() {
+            return value;
         }
-        return result;
-    }
 
-    /**
-     * Converts all SubComponents of type org.milyn.schema.edi_definition_1_0.SubComponent into
-     * type org.milyn.schema.edi_message_mapping_1_0.SubComponent.
-     * @param subComponents the subComponents to convert.
-     * @return return converted subComponents.
-     */
-    private List<SubComponent> convertSubComponentDefinitions(List<org.milyn.schema.edi_definition_1_0.SubComponent> subComponents) {
-        List<SubComponent> result = new ArrayList<SubComponent>();
-        SubComponent newSubComponent;
-        for (org.milyn.schema.edi_definition_1_0.SubComponent component : subComponents) {
-            newSubComponent = new SubComponent();
-            newSubComponent.setRequired(component.isRequired());
-            newSubComponent.setXmltag(component.getXmltag());
-            result.add(newSubComponent);
+        public Node<T> getParent() {
+            return parent;
         }
-        return result;
-    }
 
-    /**
-     * Returns truncatable set in edi-message-mapping if it exists. Otherwise it sets value
-     * found in the edi-definition.
-     * @param truncatableMessageMapping truncatable value found in edi-message-mapping
-     * @param truncatableDefinition truncatable value found in edi-definition
-     * @return truncatable from edi-message-mapping if it exists, otherwise return value from edi-definition.
-     */
-    private Boolean isTruncatable(String truncatableMessageMapping, boolean truncatableDefinition) {
-        Boolean result = truncatableDefinition;
-        if (truncatableMessageMapping != null) {
-            result = Boolean.parseBoolean( truncatableMessageMapping );
+        public void setParent(Node<T> parent) {
+            this.parent = parent;
         }
-        return result;
+
+        public List<Node<T>> getChildren() {
+            return children;
+        }
     }
 }
 

@@ -27,7 +27,16 @@ public class EDIParseException extends SAXException {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
+    /**
+	 * Public constructor.	 
+	 * @param message Exception message.
+     * @param cause Exception cause
+	 */
+	public EDIParseException(String message, Exception cause) {
+		super(message, cause);
+	}
+
+    /**
 	 * Public constructor.
 	 * @param mappingModel The mapping model for the message on which the exception was encoutered.
 	 * @param message Exception message.

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>        
-<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-definition-1.0.xsd">
+<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">    
 
-	<medi:description name="D96A" version="1.0" />
+    <medi:description name="D96A" version="1.0" />
 
-	<medi:segmentDefinitions>        
+	<medi:segments>
 
-        <medi:segmentDefinition segcode="UNH">
+        <medi:segment segcode="UNH">
 			<medi:field xmltag="MessageReferenceNr" required="true"/>
             <medi:field xmltag="MESSAGE_IDENTIFIER" required="true">
                 <medi:component xmltag="messageType" required="true"/>
@@ -39,9 +39,9 @@
                 <medi:component xmltag="scenarioReleaseNr" />
                 <medi:component xmltag="controllingAgencyCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="BGM">
+        <medi:segment segcode="BGM">
             <medi:field xmltag="DOCUMENT">
                 <medi:component xmltag="documentNameCode" />
                 <medi:component xmltag="codeListQualifier" />
@@ -51,17 +51,17 @@
             <medi:field xmltag="DocumentNumber" />
             <medi:field xmltag="MessageFunctionCode" />
             <medi:field xmltag="ResponseTypeCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="DTM">
+        <medi:segment segcode="DTM">
             <medi:field xmltag="DATE_TIME_PERIOD" required="true">
                 <medi:component xmltag="dateTimePeriodQualifier" required="true"/>
                 <medi:component xmltag="dateTimePeriod" />
                 <medi:component xmltag="dateTimePeriodFormatQualifier" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="PAI">
+        <medi:segment segcode="PAI">
             <medi:field xmltag="PAYMENT_INSTRUCTION_DETAILS" required="true">
                 <medi:component xmltag="paymentConditionCode" />
                 <medi:component xmltag="paymentGuaranteeCode" />
@@ -70,9 +70,9 @@
                 <medi:component xmltag="codeListAgencyCode" />
                 <medi:component xmltag="paymentChannelCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="ALI">
+        <medi:segment segcode="ALI">
             <medi:field xmltag="CountryOfOriginCode"/>
             <medi:field xmltag="DutyRegimeTypeCode"/>
             <medi:field xmltag="SpecialConditionsCode1"/>
@@ -80,9 +80,9 @@
             <medi:field xmltag="SpecialConditionsCode3"/>
             <medi:field xmltag="SpecialConditionsCode4"/>
             <medi:field xmltag="SpecialConditionsCode5"/>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="IMD">
+        <medi:segment segcode="IMD">
             <medi:field xmltag="ItemDescriptionTypeCode" />
             <medi:field xmltag="ItemCharacteristicCode" />
             <medi:field xmltag="ITEM_DESCRIPTION">
@@ -94,9 +94,9 @@
                 <medi:component xmltag="languageCode" />
             </medi:field>
             <medi:field xmltag="surfaceIndicatorCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="FTX">
+        <medi:segment segcode="FTX">
             <medi:field xmltag="TextSubjectQualifier" required="true"/>
             <medi:field xmltag="TextFunctionCode" />
             <medi:field xmltag="TEXT_REFERENCE">
@@ -112,18 +112,18 @@
                 <medi:component xmltag="freeText5" />
             </medi:field>
             <medi:field xmltag="languageType" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="RFF">
+        <medi:segment segcode="RFF">
             <medi:field xmltag="REFERENCE" required="true">
                 <medi:component xmltag="referenceQualifier" required="true"/>
                 <medi:component xmltag="referenceNr" />
                 <medi:component xmltag="lineNr" />
                 <medi:component xmltag="referenceVersionNr" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
         
-        <medi:segmentDefinition segcode="NAD">
+        <medi:segment segcode="NAD">
             <medi:field xmltag="PartyQualifier" required="true"/>
             <medi:field xmltag="PARTY_IDENTIFICATION">
                 <medi:component xmltag="partyId" required="true"/>
@@ -155,9 +155,9 @@
             <medi:field xmltag="Country" />
             <medi:field xmltag="PostCode" />
             <medi:field xmltag="CountryCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="LOC">
+        <medi:segment segcode="LOC">
             <medi:field xmltag="LocationQualifier" required="true"/>
             <medi:field xmltag="LOCATION_ID" >
                 <medi:component xmltag="locationId" />
@@ -178,9 +178,9 @@
                 <medi:component xmltag="relatedLocation" />
             </medi:field>
             <medi:field xmltag="relationCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="FII">
+        <medi:segment segcode="FII">
             <medi:field xmltag="PartyQualifier" required="true"/>
             <medi:field xmltag="ACCOUNT_ID" >
                 <medi:component xmltag="accountHolderNumber" />
@@ -199,9 +199,9 @@
                 <medi:component xmltag="institutionBranchPlace" />
             </medi:field>
             <medi:field xmltag="CountryCode"/>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="DOC">
+        <medi:segment segcode="DOC">
             <medi:field xmltag="DOCUMENT_NAME" required="true">
                 <medi:component xmltag="documentNameCode" />
                 <medi:component xmltag="codeListQualifier" />
@@ -217,24 +217,24 @@
             <medi:field xmltag="CommunicationChannelIdCode" />
             <medi:field xmltag="NumberOfCopiesRequired" />
             <medi:field xmltag="NumberOfOriginalsRequired" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="CTA">
+        <medi:segment segcode="CTA">
             <medi:field xmltag="ContactFunctionCode" />
             <medi:field xmltag="DEPARTMENT_EMPLOYEE_DETAILS">
                 <medi:component xmltag="departmentEmployeeId" />
                 <medi:component xmltag="departmentEmployee" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="COM">
+        <medi:segment segcode="COM">
             <medi:field xmltag="COMMUNICATION_CONTACT" required="true">
                 <medi:component xmltag="comunicationNumber" required="true"/>
                 <medi:component xmltag="communicationChannelQualifier" required="true"/>
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="TAX" xmltag="invoiceRow">
+        <medi:segment segcode="TAX" xmltag="invoiceRow">
             <medi:field xmltag="taxFunctionQualifier" required="true"/>
             <medi:field xmltag="TAX_TYPE" >
                 <medi:component xmltag="taxTypeCode" />
@@ -259,9 +259,9 @@
             </medi:field>
             <medi:field xmltag="TaxCategoryCode" />
             <medi:field xmltag="PartyTaxIdNr" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="MOA">
+        <medi:segment segcode="MOA">
             <medi:field xmltag="MONETARY_AMOUNT" required="true">
                 <medi:component xmltag="monetaryAmountTypeQualifier" required="true"/>
                 <medi:component xmltag="monetaryAmount" />
@@ -269,9 +269,9 @@
                 <medi:component xmltag="currencyQualifier" />
                 <medi:component xmltag="statusCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="CUX">
+        <medi:segment segcode="CUX">
             <medi:field xmltag="CURRENCY_DETAILS" >
                 <medi:component xmltag="currencyDetailsQualifier" required="true"/>
                 <medi:component xmltag="currencyCode" />
@@ -286,9 +286,9 @@
             </medi:field>
             <medi:field xmltag="ExhangeRate" />
             <medi:field xmltag="CurrencyMarketExchangeCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="PAT">
+        <medi:segment segcode="PAT">
             <medi:field xmltag="paymentTermsTypeQualifier" required="true"/>
             <medi:field xmltag="PAYMENT_TERMS" >
                 <medi:component xmltag="identificationTermsId" required="true"/>
@@ -303,9 +303,9 @@
                 <medi:component xmltag="periodTypeCode" />
                 <medi:component xmltag="nrOfPeriods" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="PCD">
+        <medi:segment segcode="PCD">
             <medi:field xmltag="PERCENTAGE_DETAILS" required="true">
                 <medi:component xmltag="percentageQualifier" required="true"/>
                 <medi:component xmltag="percentage" />
@@ -313,9 +313,9 @@
                 <medi:component xmltag="codeListQualifier" />
                 <medi:component xmltag="codeListAgencyCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="TDT">
+        <medi:segment segcode="TDT">
             <medi:field xmltag="TransportStageQualifier" required="true"/>
             <medi:field xmltag="ConveyanceReferenceNr" />
             <medi:field xmltag="TRANSPORT_MODE">
@@ -346,9 +346,9 @@
                 <medi:component xmltag="nationalityOfTransportMeansCode" />
             </medi:field>
             <medi:field xmltag="TransportOwnershipCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="TOD">
+        <medi:segment segcode="TOD">
             <medi:field xmltag="DeliveryTermsFunctionCode" />
             <medi:field xmltag="TransportChargeCode" />
             <medi:field xmltag="DELIVERY_TERMS">
@@ -358,9 +358,9 @@
                 <medi:component xmltag="deliveryTerms1" />
                 <medi:component xmltag="deliveryTerms2" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="PAC">
+        <medi:segment segcode="PAC">
             <medi:field xmltag="NumberOfPackages" />
             <medi:field xmltag="PACKAGING_DETAILS">
                 <medi:component xmltag="packagingLevelCode" />
@@ -379,9 +379,9 @@
                 <medi:component xmltag="paymentResponsibiltyCode" />
                 <medi:component xmltag="loadContentsCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="MEA">
+        <medi:segment segcode="MEA">
             <medi:field xmltag="measurementApplQualifier" required="true"/>
             <medi:field xmltag="MEASUREMENT_DETAILS">
                 <medi:component xmltag="measurementDimensionCode" />
@@ -397,9 +397,9 @@
                 <medi:component xmltag="significantDigits" />
             </medi:field>
             <medi:field xmltag="SurfaceIndicatorCode"/>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="PCI">
+        <medi:segment segcode="PCI">
             <medi:field xmltag="MarketingInstructionsCode"/>
             <medi:field xmltag="MARKS_LABELS">
                 <medi:component xmltag="shippingMarks" required="true" />
@@ -419,9 +419,9 @@
                 <medi:component xmltag="codeListQualifier" />
                 <medi:component xmltag="codeListAgencyCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="GIN">
+        <medi:segment segcode="GIN">
             <medi:field xmltag="ItemNrQualifier" required="true"/>
             <medi:field xmltag="ID_NR_RANGE" required="true">
                 <medi:component xmltag="idNumber" required="true" />
@@ -443,9 +443,9 @@
                 <medi:component xmltag="idNumber" required="true" />
                 <medi:component xmltag="idNumber" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="ALC">
+        <medi:segment segcode="ALC">
             <medi:field xmltag="AllowanceChargeQualifier" required="true"/>
             <medi:field xmltag="ALLOWANCE_CHARGE_INFO" >
                 <medi:component xmltag="allowanceChargeNr"  />
@@ -460,35 +460,35 @@
                 <medi:component xmltag="specialService1" />
                 <medi:component xmltag="specialService2" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="QTY">
+        <medi:segment segcode="QTY">
             <medi:field xmltag="QUANTITY_DETAILS" required="true">
                 <medi:component xmltag="quantityQualifier" required="true"/>
                 <medi:component xmltag="quantity" required="true"/>
                 <medi:component xmltag="measureUnitQualifier" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="RNG">
+        <medi:segment segcode="RNG">
             <medi:field xmltag="RangeTypeQualifier" required="true" />
             <medi:field xmltag="RANGE" >
                 <medi:component xmltag="measureUnitQualifier" required="true"/>
                 <medi:component xmltag="rangeMinimum"/>
                 <medi:component xmltag="rangeMaximum" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="RTE">
+        <medi:segment segcode="RTE">
             <medi:field xmltag="RATE_DETAILS" required="true" >
                 <medi:component xmltag="rateTypeQualifier" required="true"/>
                 <medi:component xmltag="ratePerUnit" required="true"/>
                 <medi:component xmltag="unitPriceBasis" />
                 <medi:component xmltag="measureUnitQualifier"/>
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="RCS">
+        <medi:segment segcode="RCS">
             <medi:field xmltag="SectorSubjectQualifier" required="true" />
             <medi:field xmltag="REQUIREMENT_ID" >
                 <medi:component xmltag="requirementId" required="true"/>
@@ -497,14 +497,14 @@
                 <medi:component xmltag="requirement"/>
             </medi:field>
             <medi:field xmltag="ActionRequestCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="AJT">
+        <medi:segment segcode="AJT">
             <medi:field xmltag="AdjustmentReasonCode" required="true" />
             <medi:field xmltag="LineItemNumber" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="INP">
+        <medi:segment segcode="INP">
             <medi:field xmltag="PARTIES_TO_INSTRUCTION" >
                 <medi:component xmltag="partyEnactingInstructionId" required="true"/>
                 <medi:component xmltag="recipientOfInstructionId"/>
@@ -521,9 +521,9 @@
                 <medi:component xmltag="partyName"/>
             </medi:field>
             <medi:field xmltag="ActionRequestCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="PIA">
+        <medi:segment segcode="PIA">
             <medi:field xmltag="ProductIdFunctionQualifier" required="true"/>
             <medi:field xmltag="ITEM_NUMBER_ID" required="true">
                 <medi:component xmltag="itemNumber" />
@@ -555,9 +555,9 @@
                 <medi:component xmltag="codeListQualifier" />
                 <medi:component xmltag="codeListAgencyCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="GIR">
+        <medi:segment segcode="GIR">
             <medi:field xmltag="SetIdQualifier" required="true"/>
             <medi:field xmltag="ID_NUMBER" required="true">
                 <medi:component xmltag="idNumber" required="true"/>
@@ -584,9 +584,9 @@
                 <medi:component xmltag="idNumberQualifier" />
                 <medi:component xmltag="statusCode" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="QVR">
+        <medi:segment segcode="QVR">
             <medi:field xmltag="QUANTITY_DIFF_INFO">
                 <medi:component xmltag="quantityDiff" required="true"/>
                 <medi:component xmltag="quantityQualifier" />
@@ -598,9 +598,9 @@
                 <medi:component xmltag="codeListAgencyCode" />
                 <medi:component xmltag="changeReason" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="EQD">
+        <medi:segment segcode="EQD">
             <medi:field xmltag="EquipmentQualifier" required="true"/>
             <medi:field xmltag="EQUIPMENT_IDENTIFICATION">
                 <medi:component xmltag="equipmentIdNr" />
@@ -617,9 +617,9 @@
             <medi:field xmltag="EquipmentSupplierCode"/>
             <medi:field xmltag="EquipmentStatusCode"/>
             <medi:field xmltag="FullEmptyIndicatorCode"/>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="PRI">
+        <medi:segment segcode="PRI">
             <medi:field xmltag="PRICE_INFORMATION" >
                 <medi:component xmltag="priceQualifier" required="true"/>
                 <medi:component xmltag="price" />
@@ -629,9 +629,9 @@
                 <medi:component xmltag="measureUnitQualifier" />
             </medi:field>
             <medi:field xmltag="SubLinePriceChangeCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="APR">
+        <medi:segment segcode="APR">
             <medi:field xmltag="ClassOfTradeCode" />
             <medi:field xmltag="PRICE_MULTIPLIER INFO" >
                 <medi:component xmltag="priceMultiplier" required="true"/>
@@ -643,26 +643,26 @@
                 <medi:component xmltag="codeListAgencyCode" />
                 <medi:component xmltag="changeReason" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="UNS">
+        <medi:segment segcode="UNS">
             <medi:field xmltag="SectionId" required="true"/>            
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="CNT">
+        <medi:segment segcode="CNT">
             <medi:field xmltag="CONTROL" required="true">
                 <medi:component xmltag="controlQualifier" required="true"/>
                 <medi:component xmltag="controlValue" required="true"/>
                 <medi:component xmltag="measureUnitQualifier" />
             </medi:field>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="UNT">
+        <medi:segment segcode="UNT">
             <medi:field xmltag="NumberOfSegments" required="true"/>
             <medi:field xmltag="MessageReferenceNr" required="true"/>
-        </medi:segmentDefinition>
+        </medi:segment>
 
-        <medi:segmentDefinition segcode="LIN">
+        <medi:segment segcode="LIN">
             <medi:field xmltag="LineItemNr" />
             <medi:field xmltag="ActionRequestCode" />
             <medi:field xmltag="ITEM_NUMBER_ID">
@@ -677,8 +677,8 @@
             </medi:field>
             <medi:field xmltag="ConfigurationLevel" />
             <medi:field xmltag="ConfigurationCode" />
-        </medi:segmentDefinition>
+        </medi:segment>
 
-    </medi:segmentDefinitions>
+    </medi:segments>
 	
 </medi:edimap>
