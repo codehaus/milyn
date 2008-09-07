@@ -25,34 +25,30 @@
 			<xs:attribute name="name" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>
-A URI reference that specifies one or more namespaces for use in this schema. If no prefix is assigned, the schema components of the namespace can be used with unqualified references
-
-Ex. "un-ecfact" - locates definition for un-ecfact in Smooks resources.
-	  "file:///path/to/file.xml" - retrieves file from filesystem.
-	  "http://webaddress?name=un-ecfact" - retrieves file via http.
+A URI reference that specifies the name and location of external schema for use in this schema. 
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="namespace" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>
-A URI reference that specifies one or more namespaces for use in this schema. If no prefix is assigned, the schema components of the namespace can be used with unqualified references
+A namespace is used in combination with URI specified in the name attribute. The namespace must have a unique value within the same schema.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="truncatableFields" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>
-						Specifies whether Fields in edi-definition should be truncatable. This setting overwrites
-						truncatable attribute for all Fields in edi-definition
+Specifies whether Fields in edi-definition should be truncatable. This setting overwrites
+truncatable attribute for all Fields in edi-definition
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="truncatableComponents" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>
-						Specifies whether Components in edi-definition should be truncatable. This setting overwrites
-						truncatable attribute for all Components in edi-definition.
+Specifies whether Components in edi-definition should be truncatable. This setting overwrites
+truncatable attribute for all Components in edi-definition.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
