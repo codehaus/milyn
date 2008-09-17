@@ -132,6 +132,10 @@ public interface DataDecoder extends ContentHandler {
          * @throws DataDecodeException Failed to load alias decoder.
          */
         public static DataDecoder create(String typeAlias) throws DataDecodeException {
+            if(typeAlias == null) {
+                return new StringDecoder();
+            }
+
             String className = StringDecoder.class.getPackage().getName() + "." + typeAlias + "Decoder";
 
             try {
