@@ -13,9 +13,9 @@
 
     <dependencies>
 		<dependency>
-			<groupId>org.milyn.thirdparty</groupId>
-			<artifactId>jackson</artifactId>
-			<version>0.9.2</version>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-lgpl</artifactId>
+			<version>0.9.3</version>
 		</dependency>
 	</dependencies>
 
