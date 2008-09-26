@@ -15,19 +15,7 @@
 */
 package org.milyn.templating.freemarker;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
 import junit.framework.TestCase;
-
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 import org.milyn.cdr.ParameterAccessor;
@@ -38,6 +26,16 @@ import org.milyn.payload.JavaSource;
 import org.milyn.templating.MyBean;
 import org.xml.sax.SAXException;
 
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author tfennelly
@@ -47,6 +45,24 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
     public void testFreeMarkerTrans_01() throws SAXException, IOException {
         testFreeMarkerTrans_01("test-configs-01.cdrl");
         testFreeMarkerTrans_01("test-configs-01-SAX.cdrl");
+    }
+
+    public void test_nodeModel_1() throws IOException, SAXException {
+        Smooks smooks = new Smooks("/org/milyn/templating/freemarker/test-configs-05.cdrl");
+
+        test_ftl(smooks, "<a><b><c>cvalue1</c><c>cvalue2</c><c>cvalue3</c></b></a>", "'cvalue1''cvalue2''cvalue3'");
+    }
+
+    public void test_nodeModel_2() throws IOException, SAXException {
+        Smooks smooks = new Smooks("/org/milyn/templating/freemarker/test-configs-06.cdrl");
+
+        test_ftl(smooks, "<a><b><c>cvalue1</c><c>cvalue2</c><c>cvalue3</c></b></a>", "<a><b><x>'cvalue1'</x><x>'cvalue2'</x><x>'cvalue3'</x></b></a>");
+    }
+
+    public void test_nodeModel_3() throws IOException, SAXException {
+        Smooks smooks = new Smooks("/org/milyn/templating/freemarker/test-configs-07.cdrl");
+
+        test_ftl(smooks, "<a><b javabind='javaval'><c>cvalue1</c><c>cvalue2</c><c>cvalue3</c></b></a>", "'cvalue1''cvalue2''cvalue3' javaVal=javaval");
     }
 
     public void testFreeMarkerTrans_01(String config) throws SAXException, IOException {

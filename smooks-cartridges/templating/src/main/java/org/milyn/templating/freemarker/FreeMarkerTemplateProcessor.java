@@ -15,19 +15,19 @@
 */
 package org.milyn.templating.freemarker;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.URL;
-import java.util.Map;
-
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
+import freemarker.cache.URLTemplateLoader;
+import freemarker.ext.dom.NodeModel;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.delivery.sax.DefaultSAXElementSerializer;
@@ -44,18 +44,28 @@ import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import freemarker.cache.FileTemplateLoader;
-import freemarker.cache.MultiTemplateLoader;
-import freemarker.cache.TemplateLoader;
-import freemarker.cache.URLTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <a href="http://freemarker.org/">FreeMarker</a> template application ProcessingUnit.
  * <p/>
  * See {@link org.milyn.templating.freemarker.FreeMarkerContentHandlerFactory}.
+ * <p/>
+ * <b>NOTE</b> that this visitor supports the extra "<b>useNodeModel</b>" parameter when
+ * using DOM based filtering.  When set to true (default=false), the targeted
+ * DOM element will be attached to the model that is passed to the FreeMarker
+ * templating engine.  This allows the DOM model to be referenced from within
+ * the FreeMarker template, with the targeted element name being the "root"
+ * name when forming expressions.  See <a href="http://freemarker.org">freemarker.org</a>
+ * for more info.
  *
  * @author tfennelly
  */
@@ -65,6 +75,9 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
 
     private static Log logger = LogFactory.getLog(FreeMarkerTemplateProcessor.class);
 
+    @ConfigParam(defaultVal = "false")
+    private boolean useNodeModel;
+    
     private Template template;
     private SmooksResourceConfiguration config;
     private DefaultSAXElementSerializer targetWriter;
@@ -112,8 +125,15 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
             Writer writer = new StringWriter();
             
             Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
+            Map<String, Object> model = beans;
 
-            template.process(beans, writer);
+            if(useNodeModel) {
+                model = new HashMap<String, Object>();
+                model.putAll(beans);
+                model.put(DomUtils.getName(element), NodeModel.wrap(element));
+            }
+
+            template.process(model, writer);
             writer.flush();
             templatingResult = writer.toString();
         } catch (TemplateException e) {
