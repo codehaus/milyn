@@ -31,18 +31,28 @@ import org.milyn.javabean.DataDecoder;
 public class MappingDecoder implements DataDecoder {
     
     private SmooksResourceConfiguration resourceConfig;
+    private boolean strict = true;
 
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
         this.resourceConfig = resourceConfig;
+        strict = resourceConfig.getBoolParameter("strict", true);
     }
 
     public Object decode(String data) throws DataDecodeException {
         String mappingValue = resourceConfig.getStringParameter(data);
 
         if(mappingValue == null) {
-            throw new DataDecodeException("Mapping <param> for data '" + data + "' not defined.");
+            if(strict) {
+                throw new DataDecodeException("Mapping <param> for data '" + data + "' not defined.");
+            } else {
+                return data;
+            }
         }
 
         return mappingValue;
+    }
+
+    public void setStrict(boolean strict) {
+        this.strict = strict;
     }
 }
