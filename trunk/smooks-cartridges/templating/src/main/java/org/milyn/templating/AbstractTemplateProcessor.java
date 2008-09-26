@@ -15,12 +15,6 @@
 */
 package org.milyn.templating;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-
-import javax.xml.transform.TransformerConfigurationException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -30,8 +24,6 @@ import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.annotation.VisitBeforeIf;
-import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.io.AbstractOutputStreamResource;
@@ -44,6 +36,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.transform.TransformerConfigurationException;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.Charset;
 
 /**
  * Abstract template processing unit.
