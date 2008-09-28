@@ -18,17 +18,21 @@ package org.milyn.delivery.sax;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.io.NullWriter;
 import org.milyn.cdr.ParameterAccessor;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.*;
+import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.delivery.ExecutionLifecycleCleanable;
+import org.milyn.delivery.ExecutionLifecycleCleanableList;
+import org.milyn.delivery.Filter;
+import org.milyn.delivery.VisitSequence;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
+import org.milyn.io.NullWriter;
 import org.milyn.xml.DocType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -39,7 +43,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * SAX Handler.
@@ -64,6 +67,7 @@ public class SAXHandler extends DefaultHandler2 {
     private boolean reverseVisitOrderOnVisitAfter;
     private boolean terminateOnVisitorException;
     private ExecutionLifecycleCleanableList cleanupList;
+    private DynamicSAXElementVisitorList dynamicVisitorList;
 
     public SAXHandler(ExecutionContext executionContext, Writer writer) {
         this.execContext = executionContext;
@@ -94,6 +98,8 @@ public class SAXHandler extends DefaultHandler2 {
         }
 
         cleanupList = new ExecutionLifecycleCleanableList(executionContext);
+
+        dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext, cleanupList);
     }
 
     public void cleanup() {
@@ -153,6 +159,19 @@ public class SAXHandler extends DefaultHandler2 {
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         boolean flush = false;
+
+        // Apply the dynamic visitors...
+        List<SAXVisitAfter> dynamicVisitAfters = dynamicVisitorList.getVisitAfters();
+        if(!dynamicVisitAfters.isEmpty()) {
+            for (SAXVisitAfter dynamicVisitAfter : dynamicVisitAfters) {
+                try {
+                    dynamicVisitAfter.visitAfter(currentProcessor.element, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicVisitAfter.getClass().getName() + "' while processing the visitAfter event.";
+                    processVisitorException(t, errorMsg);
+                }
+            }
+        }
 
         if(currentProcessor.elementVisitorConfig != null) {
             List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfterMappings = currentProcessor.elementVisitorConfig.getVisitAfters();
@@ -268,6 +287,19 @@ public class SAXHandler extends DefaultHandler2 {
                 throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
             }
         }
+
+        // Apply the dynamic visitors...
+        List<SAXVisitBefore> dynamicVisitBefores = dynamicVisitorList.getVisitBefores();
+        if(!dynamicVisitBefores.isEmpty()) {
+            for (SAXVisitBefore dynamicVisitBefore : dynamicVisitBefores) {
+                try {
+                    dynamicVisitBefore.visitBefore(currentProcessor.element, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicVisitBefore.getClass().getName() + "' while processing the visitBefore event.";
+                    processVisitorException(t, errorMsg);
+                }
+            }
+        }
     }
 
     private void onChildElement(SAXElement childElement) {
@@ -298,9 +330,23 @@ public class SAXHandler extends DefaultHandler2 {
                 throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
             }
         }
+
+        // Apply the dynamic visitors...
+        List<SAXVisitChildren> dynamicChildVisitors = dynamicVisitorList.getChildVisitors();
+        if(!dynamicChildVisitors.isEmpty()) {
+            for (SAXVisitChildren dynamicChildVisitor : dynamicChildVisitors) {
+                try {
+                    dynamicChildVisitor.onChildElement(currentProcessor.element, childElement, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicChildVisitor.getClass().getName() + "' while processing the onChildElement event.";
+                    processVisitorException(t, errorMsg);
+                }
+            }
+        }
     }
 
     private void visitAfter(ContentHandlerConfigMap<SAXVisitAfter> afterMapping) {
+
         try {
             if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                 if(afterMapping.isLifecycleCleanable()) {
@@ -347,6 +393,20 @@ public class SAXHandler extends DefaultHandler2 {
                     defaultSerializer.onChildText(currentProcessor.element, textWrapper, execContext);
                 } catch (IOException e) {
                     throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
+                }
+            }
+        }
+
+        // Apply the dynamic visitors...
+        List<SAXVisitChildren> dynamicChildVisitors = dynamicVisitorList.getChildVisitors();
+        if(!dynamicChildVisitors.isEmpty()) {
+            for (SAXVisitChildren dynamicChildVisitor : dynamicChildVisitors) {
+                try {
+                    textWrapper.setText(ch, start, length, currentTextType);
+                    dynamicChildVisitor.onChildText(currentProcessor.element, textWrapper, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicChildVisitor.getClass().getName() + "' while processing the onChildText event.";
+                    processVisitorException(t, errorMsg);
                 }
             }
         }
@@ -424,6 +484,10 @@ public class SAXHandler extends DefaultHandler2 {
             eventListener.onEvent(new ElementVisitEvent(element, configMapping, visitSequence, error));
         }
 
+        processVisitorException(error, errorMsg);
+    }
+
+    private void processVisitorException(Throwable error, String errorMsg) {
         if(terminateOnVisitorException) {
             if(error instanceof SmooksException) {
                 throw (SmooksException) error;

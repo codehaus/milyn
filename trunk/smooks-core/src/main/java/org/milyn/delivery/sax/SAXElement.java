@@ -264,4 +264,12 @@ public class SAXElement {
     public String toString() {
         return getName().toString();
     }
+
+    public final boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    public final int hashCode() {
+        return super.hashCode();
+    }
 }
