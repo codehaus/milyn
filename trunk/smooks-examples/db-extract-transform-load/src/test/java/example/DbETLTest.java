@@ -41,8 +41,8 @@ public class DbETLTest extends TestCase {
             List<Map<String, Object>> orderItems = main.getOrderItems();
 
             assertEquals(2, orders.size());
-            assertEquals("{ORDERNUMBER=1, USERNAME=user1, STATUS=0, NET=59.970001220703125, TOTAL=64.91999816894531, ORDDATE=2006-11-15}", orders.get(0).toString());
-            assertEquals("{ORDERNUMBER=2, USERNAME=user2, STATUS=0, NET=81.30000305175781, TOTAL=91.05999755859375, ORDDATE=2006-11-15}", orders.get(1).toString());
+            assertEquals("{ORDERNUMBER=1, USERNAME=user1, STATUS=0, NET=59.97, TOTAL=64.92, ORDDATE=2006-11-15}", orders.get(0).toString());
+            assertEquals("{ORDERNUMBER=2, USERNAME=user2, STATUS=0, NET=81.3, TOTAL=91.06, ORDDATE=2006-11-15}", orders.get(1).toString());
             assertEquals(4, orderItems.size());
             assertEquals("{ORDERNUMBER=1, QUANTITY=1, PRODUCT=364, TITLE=The 40-Year-Old Virgin, PRICE=28.98}", orderItems.get(0).toString());
             assertEquals("{ORDERNUMBER=1, QUANTITY=1, PRODUCT=299, TITLE=Pulp Fiction, PRICE=30.99}", orderItems.get(1).toString());
