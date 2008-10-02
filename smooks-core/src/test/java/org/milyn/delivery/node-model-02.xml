@@ -6,7 +6,7 @@
     </resource-config>
 
     <resource-config selector="order-item,product">
-        <resource>org.milyn.delivery.DomModelCatcher</resource>
+        <resource>org.milyn.delivery.ModelCatcher</resource>
     </resource-config>
 
 </smooks-resource-list>

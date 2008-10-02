@@ -30,7 +30,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
 */
-public class DomModelCatcher implements SAXVisitAfter, DOMVisitAfter {
+public class ModelCatcher implements SAXVisitAfter, DOMVisitAfter {
 
     public static List<Element> elements = new ArrayList<Element>();
 

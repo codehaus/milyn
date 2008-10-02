@@ -44,7 +44,6 @@ public abstract class Filter {
      */
     public static final String STREAM_FILTER_TYPE = "stream.filter.type";
 
-
     /**
      * Filter type enumeration.
      */

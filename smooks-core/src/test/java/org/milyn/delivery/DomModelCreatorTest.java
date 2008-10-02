@@ -31,7 +31,7 @@ import java.io.IOException;
 public class DomModelCreatorTest extends TestCase {
 
     protected void setUp() throws Exception {
-        DomModelCatcher.elements.clear();
+        ModelCatcher.elements.clear();
     }
 
     public void test_sax_01() throws IOException, SAXException {
@@ -65,7 +65,7 @@ public class DomModelCreatorTest extends TestCase {
                 XmlUtil.serialize(nodeModel.getModels().get("order-item"), true)));
 
         // Check all the order-item models added...
-        assertEquals(2, DomModelCatcher.elements.size());
+        assertEquals(2, ModelCatcher.elements.size());
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "        <order-item>\n" +
@@ -73,7 +73,7 @@ public class DomModelCreatorTest extends TestCase {
                 "            <quantity>2</quantity>\n" +
                 "            <price>8.90</price>\n" +
                 "        </order-item>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(0), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(0), true)));
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "        <order-item>\n" +
@@ -81,7 +81,7 @@ public class DomModelCreatorTest extends TestCase {
                 "            <quantity>7</quantity>\n" +
                 "            <price>5.20</price>\n" +
                 "        </order-item>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(1), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(1), true)));
     }
 
     public void test_sax_02() throws IOException, SAXException {
@@ -119,29 +119,29 @@ public class DomModelCreatorTest extends TestCase {
                 XmlUtil.serialize(nodeModel.getModels().get("product"), true)));
 
         // Check all the order-item models added...
-        assertEquals(4, DomModelCatcher.elements.size());
+        assertEquals(4, ModelCatcher.elements.size());
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "<product>111</product>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(0), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(0), true)));
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "<order-item>\n" +
                 "            <quantity>2</quantity>\n" +
                 "            <price>8.90</price>\n" +
                 "        </order-item>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(1), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(1), true)));
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "<product>222</product>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(2), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(2), true)));
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "<order-item>\n" +
                 "            <quantity>7</quantity>\n" +
                 "            <price>5.20</price>\n" +
                 "        </order-item>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(3), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(3), true)));
     }
 
     public void test_dom() throws IOException, SAXException {
@@ -184,7 +184,7 @@ public class DomModelCreatorTest extends TestCase {
                 XmlUtil.serialize(nodeModel.getModels().get("order-item"), true)));
 
         // Check all the order-item models added...
-        assertEquals(2, DomModelCatcher.elements.size());
+        assertEquals(2, ModelCatcher.elements.size());
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "        <order-item>\n" +
@@ -192,7 +192,7 @@ public class DomModelCreatorTest extends TestCase {
                 "            <quantity>2</quantity>\n" +
                 "            <price>8.90</price>\n" +
                 "        </order-item>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(0), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(0), true)));
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "        <order-item>\n" +
@@ -200,7 +200,7 @@ public class DomModelCreatorTest extends TestCase {
                 "            <quantity>7</quantity>\n" +
                 "            <price>5.20</price>\n" +
                 "        </order-item>",
-                XmlUtil.serialize(DomModelCatcher.elements.get(1), true)));
+                XmlUtil.serialize(ModelCatcher.elements.get(1), true)));
     }
 
 }

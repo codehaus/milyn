@@ -82,7 +82,7 @@ public class SAXHandler extends DefaultHandler2 {
         SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementSerializer.class.getName());
         resource.setDefaultResource(true);
 
-        defaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, executionContext.getDeliveryConfig());
+        defaultSerializationOn = executionContext.isDefaultSerializationOn();
         if(defaultSerializationOn) {
             // If it's not explicitly configured off, we auto turn it off if the NullWriter is configured...
             defaultSerializationOn = !(writer instanceof NullWriter);
