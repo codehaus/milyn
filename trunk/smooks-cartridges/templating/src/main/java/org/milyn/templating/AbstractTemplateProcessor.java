@@ -53,6 +53,11 @@ import java.nio.charset.Charset;
  */
 public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 
+    /**
+     * Template split point processing instruction.
+     */
+    public static final String TEMPLATE_SPLIT_PI = "<\\?TEMPLATE-SPLIT-PI\\?>";
+
     private final Log logger = LogFactory.getLog(getClass());
     private static boolean legactVisitBeforeParamWarn = false;
 

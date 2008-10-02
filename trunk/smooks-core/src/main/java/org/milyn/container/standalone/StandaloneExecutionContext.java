@@ -16,18 +16,19 @@
 
 package org.milyn.container.standalone;
 
+import org.milyn.cdr.ParameterAccessor;
+import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.ContentDeliveryConfigBuilder;
+import org.milyn.delivery.Filter;
+import org.milyn.event.ExecutionEventListener;
+import org.milyn.profile.ProfileSet;
+import org.milyn.profile.UnknownProfileMemberException;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Hashtable;
-
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryConfigBuilder;
-import org.milyn.profile.ProfileSet;
-import org.milyn.profile.UnknownProfileMemberException;
-import org.milyn.cdr.ParameterAccessor;
 
 /**
  * Standalone Container Request implementation.
@@ -43,6 +44,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
     private ApplicationContext context;
     private ExecutionEventListener executionListener;
     private Throwable terminationError;
+    private boolean isDefaultSerializationOn;
 
     /**
 	 * Public Constructor.
@@ -81,6 +83,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		setContentEncoding(contentEncoding);
         targetProfileSet = context.getProfileStore().getProfileSet(targetProfile);        
         deliveryConfig = ContentDeliveryConfigBuilder.getConfig(targetProfileSet, context);
+        isDefaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, deliveryConfig);
     }
 
     public void setDocumentSource(URI docSource) {
@@ -155,6 +158,10 @@ public class StandaloneExecutionContext implements ExecutionContext {
 
     public String getConfigParameter(String name, String defaultVal) {
         return ParameterAccessor.getStringParameter(name, defaultVal, deliveryConfig);
+    }
+
+    public boolean isDefaultSerializationOn() {
+        return isDefaultSerializationOn;
     }
 
     /* (non-Javadoc)

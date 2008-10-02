@@ -189,6 +189,10 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
         return ParameterAccessor.getStringParameter(name, defaultVal, deliveryConfig);
     }
 
+    public boolean isDefaultSerializationOn() {
+        return true;
+    }
+
     /* (non-Javadoc)
       * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
       */

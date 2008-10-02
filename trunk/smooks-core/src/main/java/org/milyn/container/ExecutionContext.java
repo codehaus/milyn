@@ -151,4 +151,21 @@ public interface ExecutionContext extends BoundAttributeStore {
      * @return The parameter value, or "defaultVal" if the parameter is not configured.
      */
     public abstract String getConfigParameter(String name, String defaultVal);
+
+    /**
+     * Is default serialization on for this execution context.
+     * <p/>
+     * This is controlled by the {@link org.milyn.delivery.Filter#DEFAULT_SERIALIZATION_ON}
+     * global param.  Default Serialization is on by default.
+     * <p/>
+     * <b>Example Configuration:</b>
+     * <pre>
+     * &lt;params&gt;
+     *     &lt;param name="default.serialization.on"&gt;false&lt;/param&gt;
+     * &lt;/params&gt;
+     * </pre>
+     *
+     * @return True if default serialization is on, otherwise false.
+     */
+    public boolean isDefaultSerializationOn();
 }

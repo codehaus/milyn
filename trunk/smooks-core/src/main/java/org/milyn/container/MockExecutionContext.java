@@ -16,20 +16,20 @@
 
 package org.milyn.container;
 
+import org.milyn.cdr.ParameterAccessor;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.dom.MockContentDeliveryConfig;
+import org.milyn.event.ExecutionEventListener;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.profile.Profile;
+import org.milyn.profile.ProfileSet;
+import org.milyn.util.IteratorEnumeration;
+
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.dom.MockContentDeliveryConfig;
-import org.milyn.util.IteratorEnumeration;
-import org.milyn.profile.ProfileSet;
-import org.milyn.profile.DefaultProfileSet;
-import org.milyn.profile.Profile;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.cdr.ParameterAccessor;
 
 /**
  * 
@@ -132,6 +132,10 @@ public class MockExecutionContext implements ExecutionContext {
 
     public String getConfigParameter(String name, String defaultVal) {
         return ParameterAccessor.getStringParameter(name, defaultVal, deliveryConfig);
+    }
+
+    public boolean isDefaultSerializationOn() {
+        return true;
     }
 
     /* (non-Javadoc)
