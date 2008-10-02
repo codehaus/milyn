@@ -16,9 +16,11 @@
 
 package org.milyn.javabean;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.*;
 import org.milyn.cdr.*;
 import org.milyn.cdr.annotation.*;
+import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.*;
 import org.milyn.delivery.annotation.*;
 import org.milyn.delivery.dom.*;
@@ -156,9 +158,14 @@ public class BeanPopulator implements ConfigurationExpander {
     @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
 
+    @ConfigParam(defaultVal = "true")
+    private boolean create;
+
     @Config
     private SmooksResourceConfiguration config;
 
+    @AppContext
+    private ApplicationContext appContext;
 
     /*******************************************************************************************************
      *  Common Methods.
@@ -171,9 +178,10 @@ public class BeanPopulator implements ConfigurationExpander {
     @Initialize
     public void initialize() throws SmooksConfigurationException {
         // One of "beanId" or "beanClass" must be specified...
-        if (beanClassName == null || beanClassName.trim().equals("")) {
+        if (beanClassName == null || StringUtils.isBlank(beanClassName)) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
         }
+        beanClassName = beanClassName.trim();
 
         // May need to default the "beanId"...
         if (beanIdName == null || beanIdName.trim().length() == 0) {
@@ -212,6 +220,10 @@ public class BeanPopulator implements ConfigurationExpander {
 
         // Remove the bindings param...
         resource.removeParameter("bindings");
+
+        if(!create) {
+        	resource.setSelector(SmooksResourceConfiguration.DOCUMENT_VOID_SELECTOR);
+        }
 
         // Reset the resource...
         resource.setResource(BeanInstanceCreator.class.getName());
@@ -267,12 +279,11 @@ public class BeanPopulator implements ConfigurationExpander {
         	selector = config.getSelector();
         }
 
-
         setterMethod = DomUtils.getAttributeValue(bindingConfig, "setterMethod");
         property = DomUtils.getAttributeValue(bindingConfig, "property");
 
         // Extract the binding config properties from the selector and property values...
-        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);        
+        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
         String attributeNameProperty = SelectorPropertyResolver.getAttributeNameProperty(selectorTokens);
         String selectorProperty = SelectorPropertyResolver.getSelectorProperty(selectorTokens);
 

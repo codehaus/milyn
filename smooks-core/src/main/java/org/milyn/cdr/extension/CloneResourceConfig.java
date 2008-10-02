@@ -42,8 +42,10 @@ public class CloneResourceConfig implements DOMElementVisitor {
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);
         SmooksResourceConfiguration config = (SmooksResourceConfiguration) extensionContext.getResourceStack().peek().clone();
 
-        for(String property : unset) {
-            ResourceConfigUtil.unsetProperty(config, property);
+        if(unset != null) {
+	        for(String property : unset) {
+	            ResourceConfigUtil.unsetProperty(config, property);
+	        }
         }
 
         config.setResource(resource);
