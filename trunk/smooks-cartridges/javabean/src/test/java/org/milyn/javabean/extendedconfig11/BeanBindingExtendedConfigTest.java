@@ -19,11 +19,18 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.Header;
+import org.milyn.javabean.OrderItem;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,13 +47,13 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
 
         ExtendedOrder order = (ExtendedOrder) result.getBean("order");
-        assertOrderOK(order);
+        assertOrderOK(order, true);
 
         Map headerHash = (Map) result.getBean("headerBeanHash");
         assertEquals("{privatePerson=, customer=Joe, date=Wed Nov 15 13:45:28 EST 2006}", headerHash.toString());
     }
 
-    private void assertOrderOK(ExtendedOrder order) {
+    private void assertOrderOK(ExtendedOrder order, boolean checkArrays) {
 
         // Order total...
         assertEquals(54.2d, order.getTotal());
@@ -69,16 +76,18 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         assertEquals(222, order.getOrderItems().get(1).getProductId());
         assertEquals(new Integer(7), order.getOrderItems().get(1).getQuantity());
 
-        // OrderItems array...
-        assertEquals(2, order.getOrderItemsArray().length);
-        assertTrue(order == order.getOrderItemsArray()[0].getOrder());
-        assertEquals(8.9d, order.getOrderItemsArray()[0].getPrice());
-        assertEquals(111, order.getOrderItemsArray()[0].getProductId());
-        assertEquals(new Integer(2), order.getOrderItemsArray()[0].getQuantity());
-        assertTrue(order == order.getOrderItemsArray()[1].getOrder());
-        assertEquals(5.2d, order.getOrderItemsArray()[1].getPrice());
-        assertEquals(222, order.getOrderItemsArray()[1].getProductId());
-        assertEquals(new Integer(7), order.getOrderItemsArray()[1].getQuantity());
+        if(checkArrays) {
+	        // OrderItems array...
+	        assertEquals(2, order.getOrderItemsArray().length);
+	        assertTrue(order == order.getOrderItemsArray()[0].getOrder());
+	        assertEquals(8.9d, order.getOrderItemsArray()[0].getPrice());
+	        assertEquals(111, order.getOrderItemsArray()[0].getProductId());
+	        assertEquals(new Integer(2), order.getOrderItemsArray()[0].getQuantity());
+	        assertTrue(order == order.getOrderItemsArray()[1].getOrder());
+	        assertEquals(5.2d, order.getOrderItemsArray()[1].getPrice());
+	        assertEquals(222, order.getOrderItemsArray()[1].getProductId());
+	        assertEquals(new Integer(7), order.getOrderItemsArray()[1].getQuantity());
+        }
     }
 
     public void test_error_for_List_property() throws IOException, SAXException {
@@ -105,6 +114,44 @@ public class BeanBindingExtendedConfigTest extends TestCase {
             fail("Expected SmooksException");
         } catch(SmooksException e) {
             assertEquals("'wiring' binding for bean class 'org.milyn.javabean.extendedconfig11.ExtendedOrder' must specify a 'property' attribute.", e.getCause().getMessage());
+        }
+    }
+
+    public void test_order_update() throws IOException, SAXException {
+    	 Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_05.xml"));
+
+    	 ExtendedOrder inExtendedOrder = new ExtendedOrder();
+    	 List<OrderItem> inOrderItems = new ArrayList<OrderItem>();
+    	 Header inHeader = new Header();
+
+         JavaResult result = new JavaResult();
+    	 result.getResultMap().put("order", inExtendedOrder);
+    	 result.getResultMap().put("orderItemList", inOrderItems);
+    	 result.getResultMap().put("headerBean", inHeader);
+
+         ExecutionContext execContext = smooks.createExecutionContext();
+
+         //execContext.setEventListener(new HtmlReportGenerator("/target/report.html"));
+         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+
+         ExtendedOrder order = (ExtendedOrder) result.getBean("order");
+
+         assertSame(inExtendedOrder, order);
+         assertSame(inOrderItems, order.getOrderItems());
+         assertSame(inHeader, order.getHeader());
+
+         assertOrderOK(order, false);
+    }
+
+    public void test_error_for_no_wireOnElement() throws IOException, SAXException {
+        try {
+            new Smooks(getClass().getResourceAsStream("test_value_06.xml"));
+            fail("Expected SmooksException");
+        } catch(SmooksException e) {
+            assertEquals("The bindings attribute 'createOnElement' and wiring attribute 'wireOnElement' are both not set. " +
+            		"One of them must at least be set. If the result of this binding should be a new populated Object then " +
+            		"you need to set the 'createOnElement' bindings attribute. If you want to update an existing object in " +
+            		"the bean context then you must set the 'wireOnElement' attribute.", e.getCause().getMessage());
         }
     }
 }

@@ -14,6 +14,12 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">createOnElement</param>
         <param name="mapTo">selector</param>
+
+        <!--
+        	If not set then the $void selector is used to make sure that the  BeanInstanceCreator gets
+            initialized but never executed on an element.
+        -->
+        <param name="defaultValue">$void</param>
     </resource-config>
 
     <resource-config selector="bindings">
@@ -105,6 +111,22 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanIdRef</param>
         <param name="mapTo">wireBeanId</param>
+    </resource-config>
+
+    <resource-config selector="bindings/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">wireOnElement</param>
+        <param name="mapTo">selector</param>
+    </resource-config>
+
+    <resource-config selector="bindings/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">wireOnElementNS</param>
+        <param name="mapTo">selector-namespace</param>
+    </resource-config>
+
+    <resource-config selector="bindings/wiring">
+    	<resource>org.milyn.javabean.ext.WireOnElementChecker</resource>
     </resource-config>
 
     <!--

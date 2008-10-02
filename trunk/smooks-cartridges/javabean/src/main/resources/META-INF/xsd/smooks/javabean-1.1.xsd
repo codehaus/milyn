@@ -48,7 +48,7 @@
                             </xs:documentation>
                         </xs:annotation>
                     </xs:attribute>
-                    <xs:attribute name="createOnElement" type="xs:string" use="required">
+                    <xs:attribute name="createOnElement" type="xs:string">
                         <xs:annotation>
                             <xs:documentation xml:lang="en">
                                 The Source data event stream element event to use to control the timing of the creating.
@@ -60,11 +60,14 @@
                                 in the "class" attribute) will be created when an element event for the element "orderItem"
                                 (with a parent element of "order") is encountered in the Source data event stream. The
                                 created bean instance will then be bound into the bean context under the specified
-                                "beanId".
+                                "beanId".<p />
+                                <h3>When not set?</h3>
+                                If the createOnElement is not set then no bean will be created. The existing bean in the bean context
+                                will be used to do the value binding, expression binding and the object wiring on.
                             </xs:documentation>
                         </xs:annotation>
                     </xs:attribute>
-                    <xs:attribute name="createOnElementNS" type="xs:anyURI" use="optional">
+                    <xs:attribute name="createOnElementNS" type="xs:anyURI">
                         <xs:annotation>
                             <xs:documentation xml:lang="en">Namespace control for the "createOnElement" attribute.
                             </xs:documentation>
@@ -207,6 +210,20 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
+            <xs:attribute name="wireOnElement" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">
+                                The Source data event stream element event to use to control when the bean needs to be wired or
+                                when the cartridge needs to register a listener for the bean to be wired.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
+                    <xs:attribute name="wireOnElementNS" type="xs:anyURI">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">Namespace control for the "wireOnElement" attribute.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -273,7 +290,7 @@
     &lt;jb:decodeParam name="locale-language"&gt;en&lt;/jb:decodeParam&gt;
     &lt;jb:decodeParam name="locale-country"&gt;IE&lt;/jb:decodeParam&gt;
 &lt;/jb:value&gt;
-</pre>                    
+</pre>
                 </xs:documentation>
             </xs:annotation>
             <xs:simpleContent>
