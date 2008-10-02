@@ -15,8 +15,12 @@
     (header etc) and then one per "order-item".
 
     These models are used in the FreeMarker templating resources
-    defined below.  Smooks is relying on your selection to ensure
-    that individual models are not too big (re memory).
+    defined below.  You need to make sure you set the selector such
+    that the total memory footprint is as low as possible.  In this
+    example, the "order" model will contain everything accept the
+    <order-item> data (the main bulk of data in the message).  The
+    "order-item" model only contains the current <order-item> data
+    (i.e. there's max 1 order-item in memory at any one time).
     -->
     <resource-config selector="order,order-item">
         <resource>org.milyn.delivery.DomModelCreator</resource>
