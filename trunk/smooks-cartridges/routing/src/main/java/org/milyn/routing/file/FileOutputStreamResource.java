@@ -15,6 +15,18 @@
 
 package org.milyn.routing.file;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
+import org.milyn.templating.freemarker.FreeMarkerUtils;
+import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
+import org.milyn.io.AbstractOutputStreamResource;
+import org.milyn.routing.SmooksRoutingException;
+import org.milyn.util.DollarBraceDecoder;
+import org.milyn.util.FreeMarkerTemplate;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
@@ -24,18 +36,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.SmooksException;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.routing.SmooksRoutingException;
-import org.milyn.util.DollarBraceDecoder;
-import org.milyn.util.FreeMarkerTemplate;
 
 /**
  * FileOutputStreamResouce is a {@link AbstractOutputStreamResource} implementation
@@ -121,7 +121,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 
     @Override
 	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws SmooksRoutingException, IOException {
-        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
         String destinationDirName = destinationDirectoryTemplate.apply(beanMap);
         File destinationDirectory = new File(destinationDirName);
 
@@ -199,7 +199,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
         }
 
         String newFileName;
-        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
 
         //	BeanAccessor guarantees to return a beanMap... run the filename pattern
         // through FreeMarker to generate the file name...
@@ -272,7 +272,8 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     }
 
     private String getListFileName(ExecutionContext executionContext) {
-        return listFileNameTemplate.apply(BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap());
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
+        return listFileNameTemplate.apply(beanMap);
     }
 
     public static class SplitFilenameFilter implements FileFilter {

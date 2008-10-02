@@ -18,13 +18,21 @@ package org.milyn.delivery.sax;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
-import org.milyn.event.report.FlatReportGenerator;
 import org.milyn.io.StreamUtils;
+import org.milyn.xml.XmlUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Attr;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -39,6 +47,20 @@ public class SAXFilterTest extends TestCase {
 
         smooks.filter(new StreamSource(new StringReader(input)), new StreamResult(writer), execContext);
         assertEquals(StreamUtils.trimLines(new StringReader(input)).toString(), StreamUtils.trimLines(new StringReader(writer.toString())).toString());
+    }
+
+    public void test() throws IOException, SAXException, ParserConfigurationException {
+        Document document = XmlUtil.parseStream(getClass().getResourceAsStream("test-02.xml"));
+        Element root = document.getDocumentElement();
+        Attr a = root.getAttributeNodeNS("http://y", "a");
+        Attr b = root.getAttributeNode("b");
+
+        String name = a.getName();
+        String localName = a.getLocalName();
+        String namespace = a.getNamespaceURI();
+        String value = a.getValue();
+
+        System.out.println(document);
     }
 
     public void test_reader_stream() throws SAXException, IOException {

@@ -16,6 +16,9 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.assertion.AssertArgument;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -271,5 +274,47 @@ public class SAXElement {
 
     public final int hashCode() {
         return super.hashCode();
+    }
+
+    /**
+     * Create a DOM {@link Element} instance from this {@link SAXElement}
+     * instance.
+     * @param document The document to use to create the DOM Element.
+     * @return The DOM Element.
+     */
+    public Element toDOMElement(Document document) {
+        Element element;
+
+        if(name.getNamespaceURI() != null) {
+            if(name.getPrefix().length() != 0) {
+                element = document.createElementNS(name.getNamespaceURI(), name.getPrefix() + ":" + name.getLocalPart());
+            } else {
+                element = document.createElementNS(name.getNamespaceURI(), name.getLocalPart());
+            }
+        } else {
+            element = document.createElement(name.getLocalPart());
+        }
+
+        int attributeCount = attributes.getLength();
+        for(int i = 0; i < attributeCount; i++) {
+            String namespace = attributes.getURI(i);
+            String value = attributes.getValue(i);
+
+            if(namespace != null) {
+                String qName = attributes.getQName(i);
+                Attr attribute = document.createAttributeNS(namespace, qName);
+
+                attribute.setValue(value);
+                element.setAttributeNode(attribute);
+            } else {
+                String localName = attributes.getLocalName(i);
+                Attr attribute = document.createAttribute(localName);
+
+                attribute.setValue(value);
+                element.setAttributeNode(attribute);
+            }
+        }
+        
+        return element;
     }
 }
