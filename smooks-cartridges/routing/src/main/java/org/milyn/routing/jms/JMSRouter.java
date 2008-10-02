@@ -14,9 +14,28 @@
  */
 package org.milyn.routing.jms;
 
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
+import org.milyn.templating.freemarker.FreeMarkerUtils;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
+import org.milyn.delivery.annotation.Uninitialize;
+import org.milyn.delivery.annotation.VisitAfterIf;
+import org.milyn.delivery.annotation.VisitBeforeIf;
+import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXElementVisitor;
+import org.milyn.delivery.sax.SAXText;
+import org.milyn.routing.SmooksRoutingException;
+import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
+import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
+import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
+import org.milyn.util.FreeMarkerTemplate;
+import org.w3c.dom.Element;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -32,29 +51,9 @@ import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.SmooksException;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.ConfigParam.Use;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.delivery.annotation.Uninitialize;
-import org.milyn.delivery.annotation.VisitAfterIf;
-import org.milyn.delivery.annotation.VisitBeforeIf;
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.routing.SmooksRoutingException;
-import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
-import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
-import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
-import org.milyn.util.FreeMarkerTemplate;
-import org.w3c.dom.Element;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * <p/>
@@ -225,30 +224,35 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
     @Initialize
     public void initialize() throws SmooksConfigurationException, JMSException {
     	Context context = null;
-    	try
+        boolean initialized = false;
+
+        try
 		{
+            if(correlationIdPattern != null) {
+                correlationIdTemplate = new FreeMarkerTemplate(correlationIdPattern);
+            }
+
 	    	context = new InitialContext();
 			destination = (Destination) context.lookup( jmsProperties.getDestinationName() );
 			msgProducer = createMessageProducer( destination, context );
 			setMessageProducerProperties( );
-		}
+
+            initialized = true;
+        }
     	catch (NamingException e)
 		{
     		final String errorMsg = "NamingException while trying to lookup [" + jmsProperties.getDestinationName() + "]";
-            releaseJMSResources();
     		logger.error( errorMsg, e );
     		throw new SmooksConfigurationException( errorMsg, e );
-		} catch (JMSException e) {
-            releaseJMSResources();
         } finally {
     		if ( context != null )
     		{
 				try { context.close(); } catch (NamingException e) { logger.warn( "NamingException while trying to close initial Context"); }
     		}
-    	}
 
-        if(correlationIdPattern != null) {
-            correlationIdTemplate = new FreeMarkerTemplate(correlationIdPattern);
+            if(!initialized) {
+                releaseJMSResources();
+            }
         }
     }
 
@@ -474,7 +478,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	}
 
     private void setCorrelationID(ExecutionContext execContext, Message message) {
-        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(execContext).getBeanMap();
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(execContext);
         String correlationId = correlationIdTemplate.apply(beanMap);
 
         try {

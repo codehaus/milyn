@@ -17,20 +17,19 @@ package org.milyn.templating.freemarker;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.SmooksUtil;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Filter;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.payload.JavaSource;
+import org.milyn.payload.StringResult;
+import org.milyn.payload.StringSource;
 import org.milyn.templating.MyBean;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -48,20 +47,35 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
     }
 
     public void test_nodeModel_1() throws IOException, SAXException {
+        test_nodeModel_1(Filter.StreamFilterType.DOM);
+        test_nodeModel_1(Filter.StreamFilterType.SAX);
+    }
+    public void test_nodeModel_1(Filter.StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks("/org/milyn/templating/freemarker/test-configs-05.cdrl");
 
+        Filter.setFilterType(smooks, filterType);
         test_ftl(smooks, "<a><b><c>cvalue1</c><c>cvalue2</c><c>cvalue3</c></b></a>", "'cvalue1''cvalue2''cvalue3'");
     }
 
     public void test_nodeModel_2() throws IOException, SAXException {
+        test_nodeModel_2(Filter.StreamFilterType.DOM);
+        test_nodeModel_2(Filter.StreamFilterType.SAX);
+    }
+    public void test_nodeModel_2(Filter.StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks("/org/milyn/templating/freemarker/test-configs-06.cdrl");
 
+        Filter.setFilterType(smooks, filterType);
         test_ftl(smooks, "<a><b><c>cvalue1</c><c>cvalue2</c><c>cvalue3</c></b></a>", "<a><b><x>'cvalue1'</x><x>'cvalue2'</x><x>'cvalue3'</x></b></a>");
     }
 
     public void test_nodeModel_3() throws IOException, SAXException {
+        test_nodeModel_3(Filter.StreamFilterType.DOM);
+        test_nodeModel_3(Filter.StreamFilterType.SAX);
+    }
+    public void test_nodeModel_3(Filter.StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks("/org/milyn/templating/freemarker/test-configs-07.cdrl");
 
+        Filter.setFilterType(smooks, filterType);
         test_ftl(smooks, "<a><b javabind='javaval'><c>cvalue1</c><c>cvalue2</c><c>cvalue3</c></b></a>", "'cvalue1''cvalue2''cvalue3' javaVal=javaval");
     }
 
@@ -230,9 +244,10 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
     }
 
     private void test_ftl(Smooks smooks, ExecutionContext context, String input, String expected) {
-        InputStream stream = new ByteArrayInputStream(input.getBytes());
-        String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
+        StringResult result = new StringResult();
 
-        assertEquals(expected, result);
+        smooks.filter(new StringSource(input), result, context);
+
+        assertEquals(expected, result.getResult());
     }        
 }

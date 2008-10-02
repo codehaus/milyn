@@ -9,19 +9,9 @@
         <param name="stream.filter.type">SAX</param>
     </params>
 
-    <jb:bindings beanId="order" class="java.util.Hashtable" createOnElement="order">
-        <jb:value property="orderId" decoder="Integer" data="order/@id"/>
-        <jb:value property="customerNumber" decoder="Long" data="header/customer/@number"/>
-        <jb:value property="customerName" data="header/customer"/>
-        <jb:wiring property="orderItem" beanIdRef="orderItem"/>
-    </jb:bindings>
-
-    <jb:bindings beanId="orderItem" class="java.util.Hashtable" createOnElement="order-item">
-        <jb:value property="itemId" decoder="Integer" data="order-item/@id"/>
-        <jb:value property="productId" decoder="Long" data="order-item/product"/>
-        <jb:value property="quantity" decoder="Integer" data="order-item/quantity"/>
-        <jb:value property="price" decoder="Double" data="order-item/price"/>
-    </jb:bindings>
+    <resource-config selector="order,order-item">
+        <resource>org.milyn.delivery.DomModelCreator</resource>
+    </resource-config>
 
     <resource-config selector="order-item">
         <resource>org.milyn.routing.jms.JMSRouter</resource>
@@ -29,12 +19,18 @@
         <param name="beanId">orderItem_xml</param>
         <param name="destinationName">smooks.exampleQueue</param>
         <param name="highWaterMark">3</param>
-        <param name="correlationIdPattern">${order.orderId}-${order.orderItem.itemId}</param>        
+        <param name="correlationIdPattern">${order.@id}-${.vars["order-item"].@id}</param> <!-- Need to use special FreeMarker variable ".vars" -->
     </resource-config>
 
     <resource-config selector="order-item">
-        <resource>target/classes/orderitem-split.ftl</resource>
+        <!--
+            Note in the template that we need to use the special FreeMarker variable ".vars"
+            because of the hyphenated variable names ("order-item"). See http://freemarker.org/docs/ref_specvar.html.
+        -->
+        <resource>/orderitem-split.ftl</resource>
         <param name="action">bindto</param>
+        <!-- The following config binds the templating result into the bean context, from where
+             it can be accessed by the JMSRouter (configured above). -->
         <param name="bindId">orderItem_xml</param>
     </resource-config>
 

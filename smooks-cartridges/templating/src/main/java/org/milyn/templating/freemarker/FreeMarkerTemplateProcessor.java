@@ -19,7 +19,6 @@ import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.cache.URLTemplateLoader;
-import freemarker.ext.dom.NodeModel;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -27,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.delivery.sax.DefaultSAXElementSerializer;
@@ -38,6 +36,7 @@ import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.io.AbstractOutputStreamResource;
+import org.milyn.io.NullWriter;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.xml.DomUtils;
@@ -51,7 +50,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -74,9 +72,6 @@ import java.util.Map;
 public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(FreeMarkerTemplateProcessor.class);
-
-    @ConfigParam(defaultVal = "false")
-    private boolean useNodeModel;
     
     private Template template;
     private SmooksResourceConfiguration config;
@@ -123,15 +118,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         String templatingResult;
         try {
             Writer writer = new StringWriter();
-            
-            Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
-            Map<String, Object> model = beans;
-
-            if(useNodeModel) {
-                model = new HashMap<String, Object>();
-                model.putAll(beans);
-                model.put(DomUtils.getName(element), NodeModel.wrap(element));
-            }
+            Map<String, Object> model = FreeMarkerUtils.getMergedModel(executionContext);
 
             template.process(model, writer);
             writer.flush();
@@ -178,6 +165,11 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
                 if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
                     targetWriter.visitBefore(element, executionContext);
                 }
+            } else if (getAction() == Action.REPLACE) {
+                Writer currentWriter = element.getWriter(this);
+                NullWriter newWriter = new NullWriter(currentWriter);
+
+                element.setWriter(newWriter, this);
             } else if (getAction() != Action.REPLACE && getAction() != Action.BIND_TO) {
                 // write the start of the element...
                 if (executionContext.getDeliveryConfig().isDefaultSerializationOn()) {
@@ -245,7 +237,12 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
                 }
                 // apply the template...
                 applyTemplate(element, executionContext);
-            } else if (getAction() == Action.REPLACE || getAction() == Action.BIND_TO) {
+            } else if (getAction() == Action.REPLACE) {
+                // Reset the writer and then apply the template...
+                NullWriter nullWriter = (NullWriter) element.getWriter(this);
+                element.setWriter(nullWriter.getParentWriter(), this);
+                applyTemplate(element, executionContext);
+            } else if (getAction() == Action.BIND_TO) {
                 // just apply the template...
                 applyTemplate(element, executionContext);
             }
@@ -261,7 +258,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         if (getAction() == Action.BIND_TO) {
             Writer writer = new StringWriter();
             applyTemplate(element, executionContext, writer);
-            
+
             BeanRepositoryManager.getBeanRepository(executionContext).addBean(getBindBeanId(), writer.toString());
         } else {
             Writer writer = element.getWriter(this);
@@ -271,8 +268,8 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
 
     private void applyTemplate(SAXElement element, ExecutionContext executionContext, Writer writer) throws SmooksException {
         try {
-        	Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
-            template.process(beans, writer);
+            Map<String, Object> model = FreeMarkerUtils.getMergedModel(executionContext);
+            template.process(model, writer);
             writer.flush();
         } catch (TemplateException e) {
             throw new SmooksException("Failed to apply FreeMarker template to fragment '" + SAXUtil.getXPath(element) + "'.  Resource: " + config, e);
@@ -282,9 +279,11 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
     }
 
     private static class ContextClassLoaderTemplateLoader extends URLTemplateLoader {
+
         @Override
 		protected URL getURL(String name) {
             return Thread.currentThread().getContextClassLoader().getResource(name);
         }
+
     }
 }

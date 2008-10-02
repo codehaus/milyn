@@ -154,6 +154,20 @@ public abstract class StreamUtils {
         return false;
     }
 
+
+    /**
+     * Compares the 2 streams.
+     * <p/>
+     * Calls {@link #trimLines(java.io.Reader)} on each stream before comparing.
+     * @param s1 Stream 1.
+     * @param s2 Stream 2.
+     * @return True if the streams are equal not including leading and trailing
+     * whitespace on each line and blank lines, otherwise returns false.
+     */
+    public static boolean compareCharStreams(String s1, String s2) {
+        return compareCharStreams(new StringReader(s1), new StringReader(s2));
+    }
+
     /**
      * Read the lines lines of characters from the stream and trim each line
      * i.e. remove all leading and trailing whitespace.

@@ -61,20 +61,25 @@ public class WriterUtil {
 
     public static void writeText(String text, TextType textType, Writer writer) throws IOException {
         if(writer != null) {
-            if(textType == TextType.TEXT) {
-                writer.write(text);
-            } else if(textType == TextType.COMMENT) {
-                writer.write("<!--");
-                writer.write(text);
-                writer.write("-->");
-            } else if(textType == TextType.CDATA) {
-                writer.write("<![CDATA[");
-                writer.write(text);
-                writer.write("]]>");
-            } else if(textType == TextType.ENTITY) {
-                writer.write("&");
-                writer.write(HTMLEntityLookup.getEntityRef(text.charAt(0)));
-                writer.write(';');
+            switch (textType) {
+                case TEXT:
+                    writer.write(text);
+                    break;
+                case CDATA:
+                    writer.write("<![CDATA[");
+                    writer.write(text);
+                    writer.write("]]>");
+                    break;
+                case COMMENT:
+                    writer.write("<!--");
+                    writer.write(text);
+                    writer.write("-->");
+                    break;
+                case ENTITY:
+                    writer.write("&");
+                    writer.write(HTMLEntityLookup.getEntityRef(text.charAt(0)));
+                    writer.write(';');
+                    break;
             }
         }
     }
