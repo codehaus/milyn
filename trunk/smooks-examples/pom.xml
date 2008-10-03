@@ -30,7 +30,7 @@
         <module>freemarker-huge-transform</module>
         <module>jms-router</module>
         <module>json-to-java</module>
-        <!--<module>sj-testimonial</module>-->
+        <module>sj-testimonial</module>
     </modules>
 
     <properties>
@@ -74,7 +74,7 @@
             <version>1.2.14</version>
             <scope>test</scope>
         </dependency>
-        
+
     </dependencies>
 
     <build>

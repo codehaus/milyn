@@ -80,6 +80,11 @@
 
     <resource-config selector="bindings/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">setterMethod</param>
+    </resource-config>
+
+    <resource-config selector="bindings/value">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">decoder</param>
         <param name="mapTo">type</param>
         <param name="defaultValue">String</param>
@@ -112,6 +117,11 @@
     <resource-config selector="bindings/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">property</param>
+    </resource-config>
+
+    <resource-config selector="bindings/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">setterMethod</param>
     </resource-config>
 
     <resource-config selector="bindings/wiring">
@@ -169,6 +179,11 @@
     <resource-config selector="bindings/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">property</param>
+    </resource-config>
+
+    <resource-config selector="bindings/expression">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">setterMethod</param>
     </resource-config>
 
     <resource-config selector="bindings/expression">

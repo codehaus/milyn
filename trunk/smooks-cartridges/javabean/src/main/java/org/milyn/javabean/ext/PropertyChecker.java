@@ -42,20 +42,30 @@ public class PropertyChecker implements DOMVisitBefore {
         MAP,
         OTHER
     }
-    
+
     public void visitBefore(Element element, ExecutionContext execContext) throws SmooksException {
         BeanType beanType = getBeanType(element);
         boolean isPropertSpecified = (DomUtils.getAttributeValue(element, "property") != null);
+        boolean isSetterMethodSpecified = (DomUtils.getAttributeValue(element, "setterMethod") != null);
         String bindingType = DomUtils.getName(element);
 
+        if(isPropertSpecified && isSetterMethodSpecified) {
+        	throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'property' and a 'setterMethod' attribute.  Only one of both may be set.");
+        }
         if(isPropertSpecified && beanType == BeanType.LIST) {
             throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'property' attribute.  This is not valid for a List target.");
         }
         if(isPropertSpecified && beanType == BeanType.ARRAY) {
             throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'property' attribute.  This is not valid for an Array target.");
         }
-        if(!isPropertSpecified && beanType == BeanType.OTHER) {
-            throw new SmooksConfigurationException("'" + bindingType + "' binding for bean class '" + getBeanTypeName(element) + "' must specify a 'property' attribute.");
+        if(isSetterMethodSpecified && beanType == BeanType.LIST) {
+            throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'setterMethod' attribute.  This is not valid for a List target.");
+        }
+        if(isSetterMethodSpecified && beanType == BeanType.ARRAY) {
+            throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'setterMethod' attribute.  This is not valid for an Array target.");
+        }
+        if(!isPropertSpecified && !isSetterMethodSpecified && beanType == BeanType.OTHER) {
+            throw new SmooksConfigurationException("'" + bindingType + "' binding for bean class '" + getBeanTypeName(element) + "' must specify a 'property' or 'setterMethod' attribute.");
         }
     }
 
