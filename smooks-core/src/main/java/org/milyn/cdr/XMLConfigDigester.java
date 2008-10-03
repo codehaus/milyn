@@ -318,14 +318,19 @@ public final class XMLConfigDigester {
     }
 
     private void digestReaderConfig(Element configElement, String defaultProfile) {
-        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("org.xml.sax.driver");
-        String readerClass = DomUtils.getAttributeValue(configElement, "class");
+    	String profiles = DomUtils.getAttributeValue(configElement, "targetProfile");
+
+    	String readerClass = DomUtils.getAttributeValue(configElement, "class");
 
         if(readerClass == null || readerClass.trim().equals("")) {
             throw new SmooksConfigurationException("Reader 'class' attribute not defined.");
         }
 
-        resourceConfig.setResource(readerClass);
+        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(
+        		"org.xml.sax.driver",
+        		(profiles != null ? profiles : defaultProfile),
+        		readerClass);
+
 
         // Add the reader resource...
         configureHandlers(configElement, resourceConfig);

@@ -31,7 +31,6 @@
     <resource-config selector="bindings">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanId</param>
-        <param name="mapTo">beanId</param>
     </resource-config>
 
     <resource-config selector="bindings">
@@ -42,8 +41,12 @@
 
     <resource-config selector="bindings">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">targetProfile</param>
+    </resource-config>
+
+    <resource-config selector="bindings">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">extendLifecycle</param>
-        <param name="mapTo">extendLifecycle</param>
     </resource-config>
 
     <!--
@@ -73,7 +76,6 @@
     <resource-config selector="bindings/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">property</param>
-        <param name="mapTo">property</param>
     </resource-config>
 
     <resource-config selector="bindings/value">
@@ -86,7 +88,6 @@
     <resource-config selector="bindings/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">default</param>
-        <param name="mapTo">default</param>
     </resource-config>
 
     <resource-config selector="bindings/value">
@@ -111,7 +112,6 @@
     <resource-config selector="bindings/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">property</param>
-        <param name="mapTo">property</param>
     </resource-config>
 
     <resource-config selector="bindings/wiring">
@@ -169,7 +169,6 @@
     <resource-config selector="bindings/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">property</param>
-        <param name="mapTo">property</param>
     </resource-config>
 
     <resource-config selector="bindings/expression">

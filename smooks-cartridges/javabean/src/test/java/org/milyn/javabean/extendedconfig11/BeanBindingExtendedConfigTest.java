@@ -166,6 +166,8 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
 		smooks.filter(new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result, execContext);
+
+		assertFlatResult(result);
 	}
 
     public void test_flat_xml_set_global() throws IOException, SAXException {
@@ -177,6 +179,8 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
 		smooks.filter(new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result, execContext);
+
+		assertFlatResult(result);
 	}
 
 
@@ -190,4 +194,27 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		assertEquals(3, root.get(0).size());
 		assertEquals(3, root.get(1).size());
     }
+
+	public void test_profile() throws IOException, SAXException {
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_09.xml"));
+
+		JavaResult result = new JavaResult();
+
+		ExecutionContext execContext = smooks.createExecutionContext("A");
+
+		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+		smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+
+		ExtendedOrder order =  (ExtendedOrder) result.getBean("order");
+		assertEquals(2d, order.getTotal());
+
+		execContext = smooks.createExecutionContext("B");
+
+		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+		smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+
+		order =  (ExtendedOrder) result.getBean("order");
+		assertEquals(4d, order.getTotal());
+
+	}
 }
