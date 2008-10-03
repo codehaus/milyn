@@ -2,7 +2,7 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
 
 	<params>
-		<param name="bean-populating.default.extend.lifecycle">true</param>
+		<param name="binding.extend.lifecycle">true</param>
 	</params>
 
 	<jb:bindings beanId="root" class="java.util.ArrayList" createOnElement="root">

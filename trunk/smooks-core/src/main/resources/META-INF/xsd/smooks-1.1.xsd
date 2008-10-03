@@ -13,7 +13,7 @@
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:params"/>
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:conditions"/>
                 <xs:element minOccurs="0" maxOccurs="1" ref="smooks:profiles"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="smooks:abstract-reader"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="smooks:abstract-reader"/>
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="smooks:abstract-resource-config"/>
             </xs:sequence>
             <xs:attribute name="default-target-profile" type="xs:string"/>
@@ -62,6 +62,13 @@
                 <xs:choice>
                     <xs:element minOccurs="0" maxOccurs="1" ref="smooks:condition"/>
                 </xs:choice>
+                <xs:attribute name="targetProfile" type="xs:string">
+       				<xs:annotation>
+       					<xs:documentation xml:lang="en">
+       						Defines the target profile
+       					</xs:documentation>
+       				</xs:annotation>
+       			</xs:attribute>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -80,8 +87,11 @@
         </xs:complexType>
     </xs:element>
 
-	<xs:complexType name="abstract-reader" abstract="true" />
-	<xs:element name="abstract-reader" type="smooks:abstract-reader" abstract="true" />
+    <xs:complexType name="abstract-reader" abstract="true">
+        <xs:attribute name="targetProfile" type="xs:string"></xs:attribute>
+    </xs:complexType>
+
+    <xs:element name="abstract-reader" type="smooks:abstract-reader" abstract="true" />
 
 	<xs:element name="reader" substitutionGroup="smooks:abstract-reader">
 		<xs:complexType>

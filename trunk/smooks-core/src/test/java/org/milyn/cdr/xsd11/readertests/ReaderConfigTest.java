@@ -29,7 +29,7 @@ import java.util.List;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class ReaderConfigTest extends TestCase {
-    
+
     public void test_01() throws IOException, SAXException {
         try {
             new Smooks(getClass().getResourceAsStream("config_01.xml"));
@@ -41,9 +41,11 @@ public class ReaderConfigTest extends TestCase {
 
     public void test_02() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config_02.xml"));
-        SmooksResourceConfiguration readerConfig = AbstractParser.getSAXParserConfiguration(smooks.createExecutionContext().getDeliveryConfig());
+        SmooksResourceConfiguration readerConfig = AbstractParser.getSAXParserConfiguration(smooks.createExecutionContext("A").getDeliveryConfig());
 
         assertEquals("com.ZZZZReader", readerConfig.getResource());
+
+        assertEquals("A", readerConfig.getTargetProfile());
 
         List handlers = readerConfig.getParameters("sax-handler");
         assertEquals("[com.X, com.Y]", handlers.toString());
