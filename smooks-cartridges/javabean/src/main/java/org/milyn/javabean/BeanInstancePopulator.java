@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -43,6 +44,7 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.decoders.BooleanDecoder;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
@@ -71,6 +73,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);
 
+    private static String EC_DEFAULT_EXTEND_LIFECYCLE = BeanInstancePopulator.class + "#" + BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE;
+
     private String id;
 
     @ConfigParam(name="beanId")
@@ -96,6 +100,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     @ConfigParam(name="default", defaultVal = AnnotationConstants.NULL_STRING)
     private String defaultVal;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private Boolean extendLifecycle;
 
     @AppContext
     private ApplicationContext appContext;
@@ -197,6 +204,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	if(!beanWiring && !isAttribute) {
             bindDomDataValue(element, executionContext);
     	}
+    	if(beanWiring) {
+    		extendLifecycle(executionContext);
+    	}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -226,6 +236,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     	if(!beanWiring && !isAttribute) {
             bindSaxDataValue(element, executionContext);
+    	}
+    	if(beanWiring) {
+    		extendLifecycle(executionContext);
     	}
     }
 
@@ -297,11 +310,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	if(wireBeanId == null) {
     		wireBeanId = beanRepositoryManager.getBeanIdList().getBeanId(wireBeanIdName);
     	}
-		
+
 		if(wireBeanId == null) {
             wireBeanId = beanRepositoryManager.getBeanIdList().register(wireBeanIdName);
         }
-		
+
         return wireBeanId;
     }
 
@@ -346,6 +359,49 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             populateAndSetPropertyValue(property, bean, executionContext);
         }
 	}
+
+    /**
+     * Checks if we need to stop listening for the bean begin lifecycle.
+     * If we need to stop listening then it will remove the lifecycle observer.
+     *
+     * @param executionContext
+     */
+    private void extendLifecycle(ExecutionContext executionContext) {
+
+    	Boolean doExtendLifecycle = extendLifecycle;
+    	if(doExtendLifecycle == null) {
+    		doExtendLifecycle = isDefaultExtendLifecycle(executionContext);
+        }
+    	if(!doExtendLifecycle) {
+    		final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+    		beanRepository.removeBeanLifecycleObserver(getWireBeanId(), BeanLifecycle.BEGIN, getId());
+    	}
+    }
+
+    /**
+     * This method efficiently returns the global configuration {@link BeanPopulator.GLOBAL_WIRE_AFTER_ELEMENT}.
+     *
+     * @param executionContext
+     * @return the global parameter for wire after element
+     */
+    private boolean isDefaultExtendLifecycle(ExecutionContext executionContext) {
+
+    	//Look in the execution context to see if we can find the property there
+    	Boolean defaultExtendLifecycle = (Boolean) executionContext.getAttribute(EC_DEFAULT_EXTEND_LIFECYCLE);
+
+    	//if we can't find it there then we need to search the global-parameters and add the result
+    	//to the execution context
+    	if(defaultExtendLifecycle == null) {
+
+    		String wireAfterElementStr = executionContext.getConfigParameter(BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE, "false");
+
+    		defaultExtendLifecycle = Boolean.parseBoolean(wireAfterElementStr.trim());
+
+    		executionContext.setAttribute(EC_DEFAULT_EXTEND_LIFECYCLE, defaultExtendLifecycle);
+    	}
+    	return defaultExtendLifecycle;
+    }
 
     private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
         Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();

@@ -19,6 +19,8 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.event.report.HtmlReportGenerator;
+import org.milyn.javabean.B;
 import org.milyn.javabean.Header;
 import org.milyn.javabean.OrderItem;
 import org.milyn.javabean.repository.BeanRepository;
@@ -153,5 +155,39 @@ public class BeanBindingExtendedConfigTest extends TestCase {
             		"you need to set the 'createOnElement' bindings attribute. If you want to update an existing object in " +
             		"the bean context then you must set the 'wireOnElement' attribute.", e.getCause().getMessage());
         }
+    }
+
+    public void test_flat_xml_set_in_binding() throws IOException, SAXException {
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_07.xml"));
+
+		JavaResult result = new JavaResult();
+
+		ExecutionContext execContext = smooks.createExecutionContext();
+
+		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+		smooks.filter(new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result, execContext);
+	}
+
+    public void test_flat_xml_set_global() throws IOException, SAXException {
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_08.xml"));
+
+		JavaResult result = new JavaResult();
+
+		ExecutionContext execContext = smooks.createExecutionContext();
+
+		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+		smooks.filter(new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result, execContext);
+	}
+
+
+	public void assertFlatResult(JavaResult result) {
+		@SuppressWarnings("unchecked")
+    	ArrayList<ArrayList<B>> root = (ArrayList<ArrayList<B>>) result.getBean("root");
+
+		assertNotNull("root should not be null", root);
+
+		assertEquals(2, root.size());
+		assertEquals(3, root.get(0).size());
+		assertEquals(3, root.get(1).size());
     }
 }
