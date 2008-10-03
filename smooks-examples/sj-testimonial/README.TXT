@@ -1,13 +1,13 @@
 About This Usecase::
 ===================
-    This use case transformation has been donated by the Swedish Railway (SJ) where 
-	it is used to retreive information about train compositions (rollingstock). 
+    This use case transformation has been donated by the Swedish Railway (SJ) where
+	it is used to retrieve information about train compositions (rollingstock).
 	The data that is the source of the transformation "lives" in a mainframe computer
 	and is exported as a batch job to a file. The source data can be found in the file
 	input-message.xml
-	
+
     In this example, we simply configure in the EdiSax parser to process the EDI
-    stream into Java Object model. 
+    stream into Java Object model.
 
     See:
         1. The "Main" class in src/main/java/example/Main.java.
@@ -24,3 +24,7 @@ How to Run?
     Running:
         1. "mvn clean install"
         2. "mvn exec:java"
+
+Note
+===========
+We update this usecase to the latest Smooks version.

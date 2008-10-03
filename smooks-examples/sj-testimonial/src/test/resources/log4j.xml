@@ -2,7 +2,7 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
-   
+
 	<appender name="console" class="org.apache.log4j.ConsoleAppender">
 	      <param name="Target" value="System.out"/>
 	      <param name="Threshold" value="debug.out"/>
@@ -15,12 +15,12 @@
 		<level value="ERROR"/>
 		<appender-ref ref="console"/>
 	</logger>
-	
+
 	<logger name="org.milyn">
-		<level value="debug" />
+		<level value="INFO" />
 		<appender-ref ref="console"/>
 	</logger>
-	
+
   <root>
    </root>
 

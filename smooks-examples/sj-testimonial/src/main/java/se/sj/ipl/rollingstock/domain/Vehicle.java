@@ -35,14 +35,14 @@ public class Vehicle implements Serializable
 	private Schedule schedule;
 	private int positionInTrainAssembly;
 	private String route;
-	
+
 	public Vehicle() { }
-	
-	public Vehicle(String vehicleId, String litt, String originalLitt, String ticketId, 
+
+	public Vehicle(String vehicleId, String litt, String originalLitt, String ticketId,
        String vehicleType, Weight weight, Weight dynamicWeight, Weight brakeWeight,
        Length length, int nrOfAxles, Speed speed, String serviceType, boolean canDoorsBeLocked,
        List<PhoneNumber> phoneNumbers, PassengerCarConfiguration passengerCarConfiguration,
-       List<Comment> comments, String nextAssignment, Schedule schedule, int positionInTrainAssembly			       
+       List<Comment> comments, String nextAssignment, Schedule schedule, int positionInTrainAssembly
 	   )
 	{
 		if ( vehicleId == null)
@@ -56,7 +56,7 @@ public class Vehicle implements Serializable
 		if ( vehicleType == null)
 			throw new IllegalArgumentException("vehicleType must not be null");
 		if ( weight == null)
-			throw new IllegalArgumentException("weight must not be null");		
+			throw new IllegalArgumentException("weight must not be null");
 		if ( dynamicWeight == null || !vehicleType.equals("LOK"))
 			throw new IllegalArgumentException("dynamicWeight must not be null and vehicleType set to LOK");
 		if ( brakeWeight == null)
@@ -71,7 +71,7 @@ public class Vehicle implements Serializable
 			throw new IllegalArgumentException("nextAssignment must not be null");
 		if ( schedule == null)
 			throw new IllegalArgumentException("schedule must not be null");
-		
+
 		this.vehicleId = vehicleId;
 		this.litt = litt;
 		this.originalLitt = originalLitt;
@@ -90,21 +90,21 @@ public class Vehicle implements Serializable
 		this.comments = comments;
 		this.nextAssignment = nextAssignment;
 		this.schedule = schedule;
-		this.positionInTrainAssembly = positionInTrainAssembly;		
+		this.positionInTrainAssembly = positionInTrainAssembly;
 	}
-	
+
 	public int getId() { return id; }
 	public void setId(int id) { this.id = id; }
-	
+
 	public String getVehicleId() { return vehicleId; }
 	public void setVehicleId(String id) { this.vehicleId = id; }
 
 	public String getLitt() { return litt; }
 	public void setLitt(String litt) { this.litt = litt; }
-	
+
 	public String getOriginalLitt() { return originalLitt; }
 	public void setOriginalLitt(String originalLitt) { this.originalLitt = originalLitt; }
-	
+
 	public String getVehicleType() { return vehicleType; }
 	public void setVehicleType(String vehicleType) { this.vehicleType = vehicleType; }
 
@@ -113,49 +113,49 @@ public class Vehicle implements Serializable
 
 	public String getServiceType() { return serviceType; }
 	public void setServiceType(String service) { this.serviceType = service; }
-	
+
 	public int getPositionInTrainAssembly(){return positionInTrainAssembly;}
 	public void setPositionInTrainAssembly(int positionInTrainAssembly){this.positionInTrainAssembly = positionInTrainAssembly;}
 
 	public String getTicketId() { return ticketId; }
 	public void setTicketId(String ticketId) { this.ticketId = ticketId; }
-	
+
 	public String getNextAssignment(){return nextAssignment;}
 	public void setNextAssignment(String nextAssignment){this.nextAssignment = nextAssignment;}
-	
+
 	public boolean isCanDoorsBeLocked() { return canDoorsBeLocked; }
 	public void setCanDoorsBeLocked( boolean canDoorsBeLocked)  {  this.canDoorsBeLocked = canDoorsBeLocked;  }
 
 	public String getRoute() { return route; }
-	public void setRoute(String route) { this.route = route; }	
-	
+	public void setRoute(String route) { this.route = route; }
+
 	public Weight getWeight() { return weight; }
 	public void setWeight(Weight weight) { this.weight = weight; }
-	
+
 	public Weight getDynamicWeight() { return dynamicWeight; }
 	public void setDynamicWeight(Weight dynamicWeight) { this.dynamicWeight = dynamicWeight; }
-	
+
 	public Weight getDynamicBrakeWeight() { return brakeWeight; }
 	public void setDynamicBrakeWeight(Weight dynamicBrakeWeight) { this.brakeWeight = dynamicBrakeWeight; }
-	
+
 	public Speed getSpeed() { return speed; }
 	public void setSpeed(Speed speed) { this.speed = speed; }
-	
+
 	public Length getLength() { return length; }
 	public void setLength(Length length) { this.length = length; }
-	
+
 	public List<PhoneNumber> getPhoneNumbers() { return phoneNumbers; }
 	public void setPhoneNumbers(List<PhoneNumber> phoneNumbers) { this.phoneNumbers = phoneNumbers; }
-			
+
 	public List<Comment> getComments() { return comments; }
 	public void setComments(List<Comment> comments) { this.comments = comments; }
-		
+
 	public PassengerCarConfiguration getPassengerCarConfiguration() { return passengerCarConfiguration; }
 	public void setPassengerCarConfiguration(PassengerCarConfiguration passenger) { this.passengerCarConfiguration = passenger; }
 
 	public Schedule getSchedule() { return schedule; }
 	public void setSchedule(Schedule schedule) { this.schedule = schedule; }
-	
+
 	public int hashCode()
 	{
 		int hash = 7;
@@ -177,7 +177,7 @@ public class Vehicle implements Serializable
 		hash = hash * 31 * ( nextAssignment == null  ? 0 : nextAssignment.hashCode() ) ;
 		return hash;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -187,10 +187,10 @@ public class Vehicle implements Serializable
 			return false;
 		if (obj.getClass() != this.getClass())
 			return false;
-		
+
 		Vehicle vehicle = ( Vehicle ) obj;
 		return	( vehicleId == vehicle.vehicleId ) &&
-				( litt != null && litt.equals( vehicle.litt ) &&  
+				( litt != null && litt.equals( vehicle.litt ) &&
 				( originalLitt != null && originalLitt.equals( vehicle.originalLitt ) ) &&
 				( ticketId != null && ticketId.equals( vehicle.ticketId ) ) ) &&
 				( vehicleType != null && vehicleType.equals( vehicle.vehicleType  ) ) &&
@@ -206,7 +206,7 @@ public class Vehicle implements Serializable
 				( positionInTrainAssembly == vehicle.positionInTrainAssembly ) &&
 				( nextAssignment != null && nextAssignment.equals( vehicle.nextAssignment ) ) ;
 	}
-	
+
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -229,6 +229,7 @@ public class Vehicle implements Serializable
 		sb.append( ", passengerCarConfiguration=" ).append( passengerCarConfiguration );
 		sb.append( ", posistionInTrainAssembly=" ).append( positionInTrainAssembly );
 		sb.append( ", nextAssignment=" ).append( nextAssignment );
+		sb.append( ", schedule=" ).append( schedule );
 		sb.append("]").append(vehicleId);
 		return sb.toString();
 	}

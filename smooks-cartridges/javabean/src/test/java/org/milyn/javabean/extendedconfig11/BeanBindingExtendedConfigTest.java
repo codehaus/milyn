@@ -115,7 +115,16 @@ public class BeanBindingExtendedConfigTest extends TestCase {
             new Smooks(getClass().getResourceAsStream("test_value_04.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
-            assertEquals("'wiring' binding for bean class 'org.milyn.javabean.extendedconfig11.ExtendedOrder' must specify a 'property' attribute.", e.getCause().getMessage());
+            assertEquals("'wiring' binding for bean class 'org.milyn.javabean.extendedconfig11.ExtendedOrder' must specify a 'property' or 'setterMethod' attribute.", e.getCause().getMessage());
+        }
+    }
+
+    public void test_error_for_property_and_setterMethod() throws IOException, SAXException {
+        try {
+            new Smooks(getClass().getResourceAsStream("test_value_10.xml"));
+            fail("Expected SmooksException");
+        } catch(SmooksException e) {
+            assertEquals("'wiring' binding specifies a 'property' and a 'setterMethod' attribute.  Only one of both may be set.", e.getCause().getMessage());
         }
     }
 
