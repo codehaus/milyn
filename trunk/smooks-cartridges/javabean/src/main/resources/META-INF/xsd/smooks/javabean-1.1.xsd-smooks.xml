@@ -40,6 +40,12 @@
         <param name="mapTo">beanClass</param>
     </resource-config>
 
+    <resource-config selector="bindings">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">extendLifecycle</param>
+        <param name="mapTo">extendLifecycle</param>
+    </resource-config>
+
     <!--
         Bean Instance Populator Resource (Value)...
     -->
@@ -49,6 +55,7 @@
         <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
         <param name="resource">org.milyn.javabean.BeanInstancePopulator</param>
         <param name="unset">beanClass</param>
+        <param name="unset">extendLifecycle</param>
     </resource-config>
 
     <resource-config selector="bindings/value">
@@ -126,6 +133,12 @@
     </resource-config>
 
     <resource-config selector="bindings/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">wireOnElementNS</param>
+        <param name="mapTo">selector-namespace</param>
+    </resource-config>
+
+    <resource-config selector="bindings/wiring">
     	<resource>org.milyn.javabean.ext.WireOnElementChecker</resource>
     </resource-config>
 
@@ -138,6 +151,7 @@
         <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
         <param name="resource">org.milyn.javabean.BeanInstancePopulator</param>
         <param name="unset">beanClass</param>
+        <param name="unset">extendLifecycle</param>
     </resource-config>
 
     <resource-config selector="bindings/expression">

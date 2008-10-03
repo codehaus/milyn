@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
+	<resource-config selector="global-parameters">
+        <param name="binding.extend.lifecycle">true</param>
+    </resource-config>
+
     <resource-config selector="data">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">data</param>
@@ -10,7 +14,7 @@
         	<binding selector="${integerValArray}" />
         	<binding selector="${integerValList}" />
         	<binding selector="${integerValMap}" />
-        	
+
         	<binding property="byteVal" type="Byte" selector="data byteVal" />
         	<binding property="shortVal" type="Short" selector="data shortVal" />
             <binding property="intVal" type="Integer" selector="data intVal" />
@@ -64,7 +68,7 @@
         <param name="beanClass">java.util.LinkedHashMap</param>
         <param name="bindings">
         	<binding selector="${mixedMap}" />
-        	
+
             <binding               type="Integer" selector="integerValMap byelement *" />
             <binding property="@x" type="Integer" selector="integerValMap byattribute integerVal" />
         </param>
@@ -76,7 +80,7 @@
         <param name="beanClass">java.util.LinkedHashMap</param>
         <param name="bindings">
         	<binding selector="${mixedIntValArray}" />
-        	
+
             <binding property="intVal" type="Integer" selector="mixedMap intVal" />
             <binding property="longVal" type="Long" selector="mixedMap longVal" />
             <binding property="boolVal" type="Boolean" selector="mixedMap boolVal" />

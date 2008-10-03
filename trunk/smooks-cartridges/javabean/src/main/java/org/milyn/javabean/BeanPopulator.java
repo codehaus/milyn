@@ -152,6 +152,8 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
+    public static String GLOBAL_DEFAULT_EXTEND_LIFECYCLE = "binding.extend.lifecycle";
+
     @ConfigParam(name="beanId", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanIdName;
 
@@ -160,6 +162,9 @@ public class BeanPopulator implements ConfigurationExpander {
 
     @ConfigParam(defaultVal = "true")
     private boolean create;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String extendLifecycle;
 
     @Config
     private SmooksResourceConfiguration config;
@@ -346,6 +351,10 @@ public class BeanPopulator implements ConfigurationExpander {
             selectorNamespace = config.getSelectorNamespaceURI();
         }
         resourceConfig.setSelectorNamespaceURI(selectorNamespace);
+
+        if (extendLifecycle != null) {
+        	resourceConfig.setParameter("extendLifecycle", extendLifecycle);
+        }
 
         return resourceConfig;
     }
