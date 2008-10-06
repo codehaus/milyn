@@ -1,13 +1,13 @@
 About This Example:
 ===================
     This is a very simple example that illustrates how Smooks to
-    configure in a non-XML stream reader (CSV) into Smooks.
+    configure in a non-XML stream parser (CSV) into Smooks.
 
     This capability enables Smooks to be used for processing any
     hierarchical data, and not just XML.
 
     The EDI-to-XML and EDI-to-Java examples also illustrate this
-    capability, but for an EDI message stream.
+    capability, but for an EDI message stream. 
 
     See:
         1. The "Main" class in src/main/java/example/Main.java.

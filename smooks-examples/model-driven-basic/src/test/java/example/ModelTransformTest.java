@@ -16,11 +16,12 @@
 package example;
 
 import junit.framework.TestCase;
-import org.milyn.io.StreamUtils;
-import org.xml.sax.SAXException;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
+
+import org.xml.sax.SAXException;
+import org.milyn.io.StreamUtils;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

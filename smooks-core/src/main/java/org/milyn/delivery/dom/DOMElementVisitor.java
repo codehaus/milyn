@@ -16,6 +16,11 @@
 
 package org.milyn.delivery.dom;
 
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentDeliveryUnit;
+import org.milyn.SmooksException;
+import org.w3c.dom.Element;
+
 /**
  * Element <b>Visitor</b> (GoF) interface for DOM.
  * <p/>
@@ -38,5 +43,23 @@ package org.milyn.delivery.dom;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface DOMElementVisitor extends DOMVisitBefore, DOMVisitAfter {
+public interface DOMElementVisitor extends ContentDeliveryUnit {
+
+    /**
+     * Visit the supplied element <b>before</b> visiting its child elements.
+     *
+     * @param element          The DOM element being visited.
+     * @param executionContext Request relative instance.
+     * @throws SmooksException Element processing failure.
+     */
+    public abstract void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException;
+
+    /**
+     * Visit the supplied element <b>after</b> visiting its child elements.
+     *
+     * @param element          The DOM element being visited.
+     * @param executionContext Request relative instance.
+     * @throws SmooksException Element processing failure.
+     */
+    public abstract void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException;
 }

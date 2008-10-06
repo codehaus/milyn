@@ -16,20 +16,17 @@
 
 package org.milyn.container;
 
-import org.milyn.cdr.ParameterAccessor;
-import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.dom.MockContentDeliveryConfig;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.profile.DefaultProfileSet;
-import org.milyn.profile.Profile;
-import org.milyn.profile.ProfileSet;
-import org.milyn.util.IteratorEnumeration;
-
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
-import java.util.Map;
+
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.dom.MockContentDeliveryConfig;
+import org.milyn.util.IteratorEnumeration;
+import org.milyn.profile.ProfileSet;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.container.standalone.StandaloneApplicationContext;
 
 /**
  * 
@@ -39,22 +36,16 @@ public class MockExecutionContext implements ExecutionContext {
 
 	public String contextPath;
 	public URI docSource;
-	public ProfileSet profileSet = new DefaultProfileSet(Profile.DEFAULT_PROFILE);
+	public ProfileSet profileSet = new DefaultProfileSet(StandaloneApplicationContext.OPEN_PROFILE_NAME);
 	public ContentDeliveryConfig deliveryConfig = new MockContentDeliveryConfig();
 	public MockApplicationContext context = new MockApplicationContext();
 	private Hashtable attributes = new Hashtable();
 	public LinkedHashMap parameters = new LinkedHashMap();
 	public Hashtable headers = new Hashtable();
 	public Hashtable elementListTable = new Hashtable();
-    private String contentEncoding;
-    private ExecutionEventListener executionListener;
-    private Throwable terminationError;
+	
 
-    public void setDocumentSource(URI docSource) {
-        this.docSource = docSource;
-    }
-
-    public URI getDocumentSource() {
+	public URI getDocumentSource() {
 		return docSource;
 	}
 
@@ -102,45 +93,9 @@ public class MockExecutionContext implements ExecutionContext {
 		return deliveryConfig;
 	}
 
-    public void setContentEncoding(String contentEncoding) throws IllegalArgumentException {
-        this.contentEncoding = contentEncoding;
-    }
-
-    public String getContentEncoding() {
-        return contentEncoding;
-    }
-
-    public void setEventListener(ExecutionEventListener listener) {
-        this.executionListener = listener;
-    }
-
-    public ExecutionEventListener getEventListener() {
-        return executionListener;
-    }
-
-    public void setTerminationError(Throwable terminationError) {
-        this.terminationError = terminationError;
-    }
-
-    public Throwable getTerminationError() {
-        return terminationError;
-    }
-
-    public String getConfigParameter(String name) {
-        return getConfigParameter(name, null);
-    }
-
-    public String getConfigParameter(String name, String defaultVal) {
-        return ParameterAccessor.getStringParameter(name, defaultVal, deliveryConfig);
-    }
-
-    public boolean isDefaultSerializationOn() {
-        return true;
-    }
-
-    /* (non-Javadoc)
-      * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
-      */
+	/* (non-Javadoc)
+	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.String, java.lang.Object)
+	 */
 	public void setAttribute(Object key, Object value) {
 		attributes.put(key, value);
 	}
@@ -161,10 +116,5 @@ public class MockExecutionContext implements ExecutionContext {
     
     public MockContentDeliveryConfig getMockDeliveryConfig() {
         return (MockContentDeliveryConfig) this.deliveryConfig;
-    }
-    
-    public Map getAttributes()
-    {
-    	return attributes;
     }
 }

@@ -47,42 +47,42 @@ import org.w3c.dom.Element;
  * available during the Processing phase.
  * <p/>
  * Triggered on &lt;style&gt; and &lt;link&gt; elements. Reads and parses the referenced CSS
- * using the {@link org.milyn.magger.CSSParser Magger CSSParser}.  Makes the gathered CSS data available to
+ * using the {@link org.milyn.magger.CSSParser Magger CSSParser}.  Makes the gathered CSS data available to 
  * processing units via the {@link org.milyn.css.CSSAccessor} class.
- * <h3>Configuration</h3>
+ * <h3>.cdrl Configuration</h3>
  * <pre>
- * &lt;resource-config selector="style"&gt;
- *  &lt;resource&gt;org.milyn.css.CSSStyleScraper&lt;/resource&gt;
- *
- *  &lt;!-- (Optional) Only filter the CSS if the 'media' attribute lists
+ * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="style" 
+ * 	path="org.milyn.cdres.css.CSSStyleScraper" &gt;
+ * 
+ * 	&lt;!-- (Optional) Only filter the CSS if the 'media' attribute lists
  * 		one of the requesting devices profiles. Default true. --&gt;
  * 	&lt;param name="<b>checkMediaAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
- *
+ * 
  * 	&lt;!-- (Optional) Only filter the CSS if the 'type' attribute equals
  * 		'text/css'. Default true. --&gt;
  * 	&lt;param name="<b>checkTypeAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
- * &lt;/resource-config&gt;
- *
- * &lt;resource-config selector="link"&gt;
- *  &lt;resource&gt;org.milyn.css.CSSStyleScraper&lt;/resource&gt;
- *
+ * &lt;/smooks-resource&gt;
+ * 
+ * &lt;smooks-resource	useragent="<i>device/profile</i>" selector="link" 
+ * 	path="org.milyn.cdres.css.CssStyleScraper" &gt;
+ * 
  * 	&lt;!-- (Optional) Only filter the CSS if the 'media' attribute, if present, lists
  * 		one of the requesting devices profiles. Default true. --&gt;
  * 	&lt;param name="<b>checkMediaAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
- *
+ * 
  * 	&lt;!-- (Optional) Only filter the CSS if the 'type' attribute, if present, equals
  * 		'text/css'. Default true. --&gt;
  * 	&lt;param name="<b>checkTypeAttribute</b>"&gt;<i>true/false</i>&lt;/param&gt;
- *
+ * 
  * 	&lt;!-- (Optional) Only filter the CSS if the 'rel' attribute, if present,
  * 		contains the keyword 'stylesheet'. Default true. --&gt;
  * 	&lt;param name="<b>checkRelAttributeForStylesheet</b>"&gt;<i>true/false</i>&lt;/param&gt;
- *
+ * 
  * 	&lt;!-- (Optional) Only filter the CSS if the 'rel' attribute, if present,
  * 		<b>does not</b> contains the keyword 'alternate'. Default true. --&gt;
  * 	&lt;param name="<b>checkRelAttributeForAlternate</b>"&gt;<i>true/false</i>&lt;/param&gt;
- * &lt;/resource-config&gt;</pre>
- *
+ * &lt;/smooks-resource&gt;</pre>
+ * 
  * See {@link org.milyn.cdr.SmooksResourceConfiguration}.
  * @author tfennelly
  */
@@ -94,21 +94,21 @@ public class CSSStyleScraper implements DOMElementVisitor {
 	private boolean checkTypeAttribute = true;
 	private boolean checkRelAttributeForStylesheet = true;
 	private boolean checkRelAttributeForAlternate = true;
-
+	
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
 		checkMediaAttribute = resourceConfig.getBoolParameter("checkMediaAttribute", true);
 		checkTypeAttribute = resourceConfig.getBoolParameter("checkTypeAttribute", true);
 		checkRelAttributeForStylesheet = resourceConfig.getBoolParameter("checkRelAttributeForStylesheet", true);
-		checkRelAttributeForAlternate = resourceConfig.getBoolParameter("checkRelAttributeForAlternate", true);
+		checkRelAttributeForAlternate = resourceConfig.getBoolParameter("checkRelAttributeForAlternate", true);		
 	}
 
     public void visitBefore(Element element, ExecutionContext executionContext) {
     }
-
+	
 	public void visitAfter(Element element, ExecutionContext request) {
 		String media = DomUtils.getAttributeValue(element, "media");
 		String type = DomUtils.getAttributeValue(element, "type");
-
+		
 		if(checkMediaAttribute && media != null && !hasMediaProfile(media, request.getTargetProfiles())) {
 			logger.info("Bypassing style. [" + request.getDocumentSource() + "]. Requesting device [" + request.getTargetProfiles() + "] does not have required media profile [" + media + "].");
 			return;
@@ -130,13 +130,13 @@ public class CSSStyleScraper implements DOMElementVisitor {
 
 	private boolean hasMediaProfile(String media, ProfileSet profileSet) {
 		StringTokenizer tokenizer = new StringTokenizer(media, ",");
-
+		
 		while(tokenizer.hasMoreTokens()) {
 			if(profileSet.isMember(tokenizer.nextToken().trim())) {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
 
@@ -144,11 +144,11 @@ public class CSSStyleScraper implements DOMElementVisitor {
 		// The style may be enclosed in comment or cdata section nodes.
 		// Extract all "character" data!
 		String style = DomUtils.getAllText(element, false);
-
+		
 		if(!style.trim().equals("")) {
 			try {
 				CharArrayReader reader;
-
+				
 				reader = new CharArrayReader(style.toCharArray());
 				parseCSS(element, request, media, new InputSource(reader));
 			} catch(Throwable throwable) {
@@ -185,7 +185,7 @@ public class CSSStyleScraper implements DOMElementVisitor {
 			logger.warn("Bypassing linked style element css. [" + request.getDocumentSource() + "]. Invalid css link 'href' [" + href + "].");
 			return;
 		}
-
+		
 		// Get the CSS stream.
 		try {
 			cssStream = request.getContext().getResourceLocator().getResource(cssURI.toString());
@@ -201,12 +201,12 @@ public class CSSStyleScraper implements DOMElementVisitor {
 			logger.warn("Unable to parse linked css. [" + request.getDocumentSource() + "]", throwable);
 		}
 	}
-
+	
 	private void parseCSS(Element element, ExecutionContext request, String media, InputSource inputSource) throws CSSException, IOException {
 		CSSParser parser = new CSSParser(request.getContext().getResourceLocator());
 		CSSStylesheet styleSheet;
 		StyleSheetStore store;
-
+		
 		store = StyleSheetStore.getStore(request);
 		styleSheet = parser.parse(inputSource, request.getDocumentSource(), null, null);
 		store.add(styleSheet, element);

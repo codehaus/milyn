@@ -16,27 +16,27 @@
 
 package org.milyn.templating.xslt;
 
-import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.container.ExecutionContext;
-import org.milyn.container.standalone.StandaloneExecutionContext;
+import junit.framework.ComparisonFailure;
 import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
+import org.milyn.templating.TemplatingUtils;
+import org.milyn.SmooksStandalone;
+import org.milyn.container.standalone.StandaloneContainerRequest;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Compare performance of raw XSLT Vs XSLT via Smooks.
@@ -46,10 +46,10 @@ import java.util.List;
 public class PerformanceComparisonTest extends TestCase {
 
     private Templates xslTemplate;
-    private Smooks smooksTransformer_xsltonly;
-    private Smooks smooksTransformer_xsltjava;
+    private SmooksStandalone smooksTransformer_xsltonly;
+    private SmooksStandalone smooksTransformer_xsltjava;
 
-    private static final double TEST_DURATION_MINS = 1;
+    private static final double TEST_DURATION_MINS = 5;
     private static final long SLEEP_DURATION = 10;
     private static final int NUM_TRANS_PER_ITERATION = 1;
     private static boolean compareResults = false;
@@ -192,10 +192,12 @@ public class PerformanceComparisonTest extends TestCase {
         System.out.println("\n");
     }
 
-    private Smooks initialiseSmooksTransformer(String smooksConfig) throws IOException, SAXException {
-        Smooks smooksTransformer = new Smooks();
+    private SmooksStandalone initialiseSmooksTransformer(String smooksConfig) throws IOException, SAXException {
+        SmooksStandalone smooksTransformer = new SmooksStandalone();
 
-        smooksTransformer.addConfigurations("order-transforms", getClass().getResourceAsStream(smooksConfig + "/smooks-transforms.xml"));
+        smooksTransformer.registerUseragent("devicename");
+        TemplatingUtils.registerCDUCreators(smooksTransformer.getContext());
+        smooksTransformer.registerResources("order-transforms", getClass().getResourceAsStream(smooksConfig + "/smooks-transforms.xml"));
 
         return smooksTransformer;
     }
@@ -205,11 +207,11 @@ public class PerformanceComparisonTest extends TestCase {
         private boolean finished = false;
         private String packageName;
         private Templates xslTemplate;
-        private Smooks smooksTransformer_xsltonly;
-        private Smooks smooksTransformer_xsltjava;
+        private SmooksStandalone smooksTransformer_xsltonly;
+        private SmooksStandalone smooksTransformer_xsltjava;
         private PerformancePack performancePack;
 
-        public PerformanceThread(String packageName, Templates xslTemplate, Smooks smooksTransformer_xsltonly, Smooks smooksTransformer_xsltjava) {
+        public PerformanceThread(String packageName, Templates xslTemplate, SmooksStandalone smooksTransformer_xsltonly, SmooksStandalone smooksTransformer_xsltjava) {
             this.packageName = packageName;
             this.xslTemplate = xslTemplate;
             this.smooksTransformer_xsltonly = smooksTransformer_xsltonly;
@@ -235,8 +237,8 @@ public class PerformanceComparisonTest extends TestCase {
     private static class PerformancePack {
 
         private Templates xslTemplate;
-        private Smooks smooksTransformer_xsltonly;
-        private Smooks smooksTransformer_xsltjava;
+        private SmooksStandalone smooksTransformer_xsltonly;
+        private SmooksStandalone smooksTransformer_xsltjava;
 
         private byte[] messageBytesIn;
         private String messageOutExpected;
@@ -250,7 +252,7 @@ public class PerformanceComparisonTest extends TestCase {
         private int processCount;
         private String packageName;
 
-        private static PerformancePack runComparisons(String packageName, Templates xslTemplate, Smooks smooksTransformer_xsltonly, Smooks smooksTransformer_xsltjava) throws IOException, SAXException, TransformerException, InterruptedException {
+        private static PerformancePack runComparisons(String packageName, Templates xslTemplate, SmooksStandalone smooksTransformer_xsltonly, SmooksStandalone smooksTransformer_xsltjava) throws IOException, SAXException, TransformerException, InterruptedException {
             PerformancePack pack = new PerformancePack(packageName, xslTemplate, smooksTransformer_xsltonly, smooksTransformer_xsltjava);
 
             pack.runComparisons();
@@ -258,7 +260,7 @@ public class PerformanceComparisonTest extends TestCase {
             return pack;
         }
 
-        private PerformancePack(String packageName, Templates xslTemplate, Smooks smooksTransformer_xsltonly, Smooks smooksTransformer_xsltjava) throws IOException, SAXException, TransformerConfigurationException {
+        private PerformancePack(String packageName, Templates xslTemplate, SmooksStandalone smooksTransformer_xsltonly, SmooksStandalone smooksTransformer_xsltjava) throws IOException, SAXException, TransformerConfigurationException {
             messageBytesIn = StreamUtils.readStream(getClass().getResourceAsStream("input_messages/" + packageName + "/order-message.xml"));
             messageOutExpected = new String(StreamUtils.readStream(getClass().getResourceAsStream("input_messages/" + packageName + "/order-expected.xml")));
 
@@ -311,7 +313,7 @@ public class PerformanceComparisonTest extends TestCase {
             return time;
         }
 
-        private long performSmooksTransforms(Smooks smooksTransformer, String name) throws IOException, SAXException {
+        private long performSmooksTransforms(SmooksStandalone smooksTransformer, String name) throws IOException, SAXException {
             // Now test how fast it is...
             long start = System.currentTimeMillis();
             for(int i = 0; i < NUM_TRANS_PER_ITERATION; i++) {
@@ -340,7 +342,7 @@ public class PerformanceComparisonTest extends TestCase {
                 }
                 result = writer.toString();
             } else {
-                message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), XmlUtil.VALIDATION_TYPE.NONE, false);
+                message = XmlUtil.parseStream(new ByteArrayInputStream(messageBytesIn), false, false);
                 result = message.createElement("result");
                 if(isSynchronized) {
                     synchronized(xslTemplate) {
@@ -356,19 +358,17 @@ public class PerformanceComparisonTest extends TestCase {
             return result;
         }
 
-        private Document applySmooks(Smooks smooksTransformer) throws SAXException, IOException {
-            Document message = null;
-
-            ExecutionContext executionContext = smooksTransformer.createExecutionContext();
-            DOMResult result = new DOMResult();
+        private Document applySmooks(SmooksStandalone smooksTransformer) throws SAXException, IOException {
+            Document message;
 
             if(serializeSmooksRes) {
-                smooksTransformer.filter(new StreamSource(new ByteArrayInputStream(messageBytesIn)),
-                                         result, (StandaloneExecutionContext) executionContext);
-                message = (Document) result.getNode();
+                StandaloneContainerRequest request = smooksTransformer.createRequest("devicename", null);
+                CharArrayWriter writer = new CharArrayWriter();
+
+                message = (Document)smooksTransformer.filter(request, new ByteArrayInputStream(messageBytesIn));
+                smooksTransformer.serialize(request, message, writer);
             } else {
-                smooksTransformer.filter(new StreamSource(new ByteArrayInputStream(messageBytesIn)),
-                                         null, (StandaloneExecutionContext) executionContext);
+                message = (Document)smooksTransformer.filter("devicename", new ByteArrayInputStream(messageBytesIn));
             }
 
             processCount++;

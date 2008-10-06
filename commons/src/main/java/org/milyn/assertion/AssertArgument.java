@@ -71,7 +71,7 @@ public abstract class AssertArgument {
 	 */
 	public static void isNotNullAndNotEmpty(String arg, String argName)
 			throws IllegalArgumentException {
-		if (arg == null || arg.trim().length() == 0) {
+		if (arg == null || arg.trim().equals("")) {
 			throw new IllegalArgumentException("null or empty '" + argName
 					+ "' arg in method call.");
 		}

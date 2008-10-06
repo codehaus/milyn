@@ -15,23 +15,17 @@
 */
 package example;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Locale;
-
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
-
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.container.ExecutionContext;
-import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
+import org.milyn.io.StreamUtils;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.dom.DOMResult;
+import java.io.*;
 
 /**
  * Simple example main class.
@@ -42,25 +36,16 @@ public class Main {
     private static byte[] messageIn = readInputMessage();
 
     protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
-    	
-    	Locale defaultLocale = Locale.getDefault();
-    	Locale.setDefault(new Locale("en", "IE"));
-    	
+
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
          // Create an exec context - no profiles....
-        ExecutionContext executionContext = smooks.createExecutionContext();
-
-        DOMResult domResult = new DOMResult();
-
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 
         // Filter the input message to the outputWriter, using the execution context...
+        DOMResult domResult = new DOMResult();
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
-       
-        Locale.setDefault(defaultLocale);
-        
+
         return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
     }
 

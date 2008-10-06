@@ -15,19 +15,15 @@
 */
 package org.milyn.delivery.dom.serialize;
 
+import org.w3c.dom.*;
+import org.milyn.container.ExecutionContext;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.xml.DomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.SmooksException;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.xml.DomUtils;
-import org.milyn.xml.Namespace;
-import org.w3c.dom.*;
 
-import java.io.IOException;
 import java.io.Writer;
+import java.io.IOException;
 
 /**
  * {@link ExecutionContext} object serializer.
@@ -37,12 +33,21 @@ import java.io.Writer;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ContextObjectSerializationUnit implements SerializationUnit, SAXElementVisitor {
+public class ContextObjectSerializationUnit extends AbstractSerializationUnit {
 
     private static Log logger = LogFactory.getLog(ContextObjectSerializationUnit.class);
 
+    /**
+     * Public constructor.
+     *
+     * @param resourceConfig Unit SmooksResourceConfiguration.
+     */
+    public ContextObjectSerializationUnit(SmooksResourceConfiguration resourceConfig) {
+        super(resourceConfig);
+    }
+
     public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
-        String key = getContextKey(element);
+        String key = DomUtils.getAttributeValue(element, "key");
 
         if(key != null) {
             Object object = executionContext.getAttribute(key);
@@ -55,10 +60,6 @@ public class ContextObjectSerializationUnit implements SerializationUnit, SAXEle
         } else {
             logger.warn("Invalid <context-object> specification at '" + DomUtils.getXPath(element) + "'. 'key' attribute not specified.");
         }
-    }
-
-    public static String getContextKey(Element element) {
-        return DomUtils.getAttributeValue(element, "key");
     }
 
     public void writeElementEnd(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
@@ -90,32 +91,12 @@ public class ContextObjectSerializationUnit implements SerializationUnit, SAXEle
      * @return The &lt;context-object/&gt; element.
      */
     public static Element createElement(Document ownerDocument, String key) {
-        Element resultElement = ownerDocument.createElementNS(Namespace.SMOOKS_URI, "context-object");
+        Element resultElement = ownerDocument.createElement("context-object");
         Comment comment = ownerDocument.createComment(" The actual message payload is set on the associated Smooks ExecutionContext under the key '" + key + "'.  Alternatively, you can use Smooks to serialize the message. ");
 
         resultElement.setAttribute("key", key);
         resultElement.appendChild(comment);
 
         return resultElement;
-    }
-
-    public static boolean isContextObjectElement(Element element) {
-        if(DomUtils.getName(element).equals("context-object") && Namespace.SMOOKS_URI.equals(element.getNamespaceURI())) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 }

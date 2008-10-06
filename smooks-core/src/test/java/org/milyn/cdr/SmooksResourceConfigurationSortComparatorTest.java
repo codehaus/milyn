@@ -1,7 +1,8 @@
 package org.milyn.cdr;
 
-import junit.framework.TestCase;
 import org.milyn.profile.DefaultProfileSet;
+
+import junit.framework.TestCase;
 
 public class SmooksResourceConfigurationSortComparatorTest extends TestCase {
 
@@ -15,35 +16,35 @@ public class SmooksResourceConfigurationSortComparatorTest extends TestCase {
 	public void test_getSpecificity_selector() {
 		//  100 -> Explicit selector (non-xmldef, non-wildcard)
 		//    0 -> Null namespace
-		//    5 -> "*".
-		assertSpecificityOK(105.0, "selector", null, "*");
+		//    5 -> Null Useragent => defaults to "*".
+		assertSpecificityOK(105.0, "selector", null, null);
 
 		//   10 -> XmlDef selector
 		//    0 -> Null namespace
-        //    5 -> "*".
-		assertSpecificityOK(15.0, SmooksResourceConfiguration.XML_DEF_PREFIX + "selector", null, "*");
+		//    5 -> Null Useragent => defaults to "*".
+		assertSpecificityOK(15.0, SmooksResourceConfiguration.XML_DEF_PREFIX + "selector", null, null);
 
 		//    5 -> Wildcard selector "*".
 		//    0 -> Null namespace
-        //    5 -> "*".
-		assertSpecificityOK(10.0, "*", null, "*");
+		//    5 -> Null Useragent => defaults to "*".
+		assertSpecificityOK(10.0, "*", null, null);
 
 		//  110 -> Explicit contextual selector - 2 deep
 		//    0 -> Null namespace
-        //    5 -> "*".
-		assertSpecificityOK(115.0, "table tr", null, "*");
+		//    5 -> Null Useragent => defaults to "*".
+		assertSpecificityOK(115.0, "table tr", null, null);
 
 		//  110 -> Explicit contextual selector - 3 deep
 		//    0 -> Null namespace
-        //    5 -> "*".
-		assertSpecificityOK(125.0, "table tr td", null, "*");
+		//    5 -> Null Useragent => defaults to "*".
+		assertSpecificityOK(125.0, "table tr td", null, null);
 	}
 
 	public void test_getSpecificity_namespace() {
 		//  100 -> Explicit selector (non-xmldef, non-wildcard)
 		//   10 -> Namespace specified.
 		//    5 -> Null Useragent => defaults to "*".
-		assertSpecificityOK(115.0, "selector", "http://namespace", "*");
+		assertSpecificityOK(115.0, "selector", "http://namespace", null);
 	}
 
 	public void test_getSpecificity_useragent() {

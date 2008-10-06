@@ -1,27 +1,32 @@
 package org.milyn.servlet.delivery;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.SmooksException;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.Filter;
-import org.milyn.payload.FilterResult;
-import org.milyn.payload.FilterSource;
-import org.milyn.delivery.dom.SmooksDOMFilter;
-import org.milyn.servlet.http.HeaderAction;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.io.ByteArrayOutputStream;
+import java.io.CharArrayReader;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.util.List;
-import java.util.Vector;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.dom.SmooksDOMFilter;
+import org.milyn.xml.Parser;
+import org.milyn.servlet.http.HeaderAction;
+import org.milyn.servlet.parse.HTMLSAXParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * XML/XHTML/HTML Servlet Response Wrapper.
@@ -34,6 +39,15 @@ import java.util.Vector;
  */
 public class XMLServletResponseWrapper extends ServletResponseWrapper {
 
+	/**
+	 * Default parser configuration.
+	 */
+	private static SmooksResourceConfiguration defaultSAXParserConfig;
+	/**
+	 * Request specific SAX parser configuration.  If not specified
+	 * (See {@link Parser}), {@link #defaultSAXParserConfig} is used.
+	 */
+	private SmooksResourceConfiguration requestSAXParserConfig;
 	/**
 	 * Logger.
 	 */
@@ -49,7 +63,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	/**
 	 * Smooks delivery instance.
 	 */
-	private Filter smooksFilter;
+	private SmooksDOMFilter smooks;
 	/**
 	 * The CharArrayWriter capturing the content.
 	 */
@@ -64,7 +78,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	private List removeHeaderActions = new Vector();
 	/**
 	 * Key for access a request bound DOM passed from a down-stream
-	 * Servlet or Filter.
+	 * Servlet or Phase.
 	 */
 	public static final String SOURCE_DOCUMENT = XMLServletResponseWrapper.class.toString();
 	
@@ -75,10 +89,15 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	 */
 	public XMLServletResponseWrapper(ExecutionContext executionContext, HttpServletResponse originalResponse) {
 		super(executionContext, originalResponse);
-        smooksFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
+		smooks = new SmooksDOMFilter(executionContext);
+		requestSAXParserConfig = Parser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
 		initHeaderActions(executionContext.getDeliveryConfig().getObjects("http-response-header"));
 	}
-
+	
+	static {
+		defaultSAXParserConfig = new SmooksResourceConfiguration("org.xml.sax.driver", HTMLSAXParser.class.getName());
+	}
+	
 	/**
 	 * Initialise the 'add' and 'remove' header actions.
 	 * <p/>
@@ -187,17 +206,15 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 	 * @see org.milyn.delivery.response.ServletResponseWrapper#deliverResponse()
 	 */
 	public void deliverResponse() throws IOException {
+		ServletOutputStream targetOutputStream;
 		OutputStreamWriter writer;
-		ByteArrayOutputStream outBuffer = new ByteArrayOutputStream(1024 * 10);
+		HtmlByteArrayOutputStream outStream = new HtmlByteArrayOutputStream(1024 * 10);
 		char[] content;
 
 		modifyResponseHeaders();
 		
-		writer = new OutputStreamWriter(outBuffer, getCharacterEncoding()) {
-            public void close() throws IOException {
-                super.close();
-            }
-        };
+		targetOutputStream = getResponse().getOutputStream();
+		writer = new OutputStreamWriter(outStream, getCharacterEncoding());
 		content = charArrayWriter.toCharArray();
 		
 		try {
@@ -205,29 +222,31 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 			Document sourceDoc = (Document)getContainerRequest().getAttribute(XMLServletResponseWrapper.SOURCE_DOCUMENT);
 			
 			if(sourceDoc == null) {
-				Source source = new StreamSource(new CharArrayReader(content));
-                Result result = new StreamResult(writer);
+				Reader inputReader = new CharArrayReader(content);
+                Parser parser;
+                
+                if(requestSAXParserConfig != null) {
+                	parser = new Parser(getContainerRequest(), requestSAXParserConfig);
+                } else {
+                	parser = new Parser(getContainerRequest(), defaultSAXParserConfig);
+                }
 
-                // Attach the source and result to the context...
-                FilterSource.setSource(source, getContainerRequest());
-                FilterResult.setResult(result, getContainerRequest());
-
-                Filter.setCurrentExecutionContext(getContainerRequest());
                 try {
-                    smooksFilter.doFilter(source, result);
-                } finally {
-                    Filter.removeCurrentExecutionContext();
-                }
+                    sourceDoc = parser.parse(inputReader);
+                } catch (SAXException e) {
+                    throw new SmooksException("Unable to filter InputStream for target useragent [" + getContainerRequest().getTargetProfiles().getBaseProfile() + "].", e);
+                } 
+
+				logger.info("Filtering content stream from down-stream Servlet/Phase.");
+                deliveryNode = smooks.filter(sourceDoc);
 			} else {
-				logger.info("Filtering W3C DOM from down-stream Servlet/Filter.");
-                if(smooksFilter instanceof SmooksDOMFilter) {
-                    SmooksDOMFilter domFilter = (SmooksDOMFilter) smooksFilter;
-                    deliveryNode = domFilter.filter(sourceDoc);
-                    domFilter.serialize(deliveryNode, writer);
-                }
-            }
-			super.setIntHeader("Content-Length", outBuffer.size());
-			getResponse().getOutputStream().write(outBuffer.toByteArray(), 0, outBuffer.size());
+				logger.info("Filtering W3C DOM from down-stream Servlet/Phase.");
+				deliveryNode = smooks.filter(sourceDoc);
+			}
+			smooks.serialize(deliveryNode, writer);
+			writer.flush();
+			super.setIntHeader("Content-Length", outStream.size());
+			outStream.writeToTarget(targetOutputStream);
 		} catch (SmooksException e) {
 			IOException ioE = new IOException("Unable to deliver response.");
 			PrintWriter printWriter = new PrintWriter(writer);
@@ -246,7 +265,7 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 			
 			throw ioE;
 		} finally {
-			getResponse().getOutputStream().flush();
+			targetOutputStream.flush();
 		}
 	}
 
@@ -480,6 +499,15 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
 		public void close() {
 			super.close();
 			charArrayWriter.close();
+		}
+	}
+
+	private class HtmlByteArrayOutputStream extends ByteArrayOutputStream {
+		public HtmlByteArrayOutputStream(int size) {
+			super(size);
+		}
+		private void writeToTarget(OutputStream outStream) throws IOException {
+			outStream.write(buf, 0, count);
 		}
 	}
 }

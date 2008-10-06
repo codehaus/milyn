@@ -3,44 +3,39 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.javabean;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
+import java.util.Calendar;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.MockExecutionContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.xml.XmlUtil;
+import org.milyn.Smooks;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
-import org.milyn.Smooks;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.Configurator;
-import org.milyn.container.ExecutionContext;
-import org.milyn.container.MockApplicationContext;
-import org.milyn.io.StreamUtils;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.payload.JavaResult;
-import org.milyn.util.ClassUtil;
-import org.xml.sax.SAXException;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMResult;
 
 /**
  *
@@ -48,82 +43,63 @@ import org.xml.sax.SAXException;
  */
 public class BeanPopulatorTest extends TestCase {
 
-	private Locale defaultLocale;
+    public void testX() throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
 
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-
-		defaultLocale = Locale.getDefault();
-		Locale.setDefault(new Locale("en", "IE"));
-	}
-
-	/* (non-Javadoc)
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-
-		Locale.setDefault(defaultLocale);
-	}
+        sdf.clone();
+        Date date = sdf.parse("Wed Nov 15 13:45:28 EST 2006");
+        Calendar cal = (Calendar) sdf.getCalendar().clone();
+        System.out.println(cal.getTime());
+        System.out.println(cal.getTimeZone());
+    }
 
     public void testConstructorConfigValidation() {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
+        
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
 
-        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
-
-        config.setParameter("beanId", "x");
+        config.setParameter("beanId", " ");
         config.setParameter("beanClass", " ");
 
-        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
+        config.setParameter("setterName", "setX");
+
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  Both 'beanId' and 'beanClass' params are unspecified.");
+
+        config.removeParameter("beanClass");
+        config.setParameter("beanClass", MyBadBean.class.getName());
+
+        testConstructorConfigValidation(config, "doesn't have a public default constructor");
+
+        config.removeParameter("beanClass");
+        config.setParameter("beanClass", MyGoodBean.class.getName());
+
+        config.setParameter("attributeName", "attributeX");
+
+        new ProcessingPhaseBeanPopulator().setConfiguration(config);
     }
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
         try {
-            Configurator.configure(new BeanPopulator(), config, new MockApplicationContext());
+            new ProcessingPhaseBeanPopulator().setConfiguration(config);
             fail("Expected SmooksConfigurationException - " + expected);
         } catch(SmooksConfigurationException e) {
-            Throwable t = e.getCause();
-            if(t.getMessage().indexOf(expected) == -1) {
-                e.printStackTrace();
-                fail("Expected message to contain [" + expected + "]. Actual [" + t.getMessage() + "]");
+            if(e.getMessage().indexOf(expected) == -1) {
+                fail("Expected message to contain [" + expected + "]. Actual [" + e.getMessage() + "]");
             }
         }
     }
 
-    public void test_TypePopCheckBean() throws ParseException, IOException, SAXException {
-        test_TypePopCheckBean("type-pop-check-bean-smooks-config.xml");
-        test_TypePopCheckBean("type-pop-check-bean-smooks-config-sax.xml");
-    }
-
-    public void test_TypePopCheckBean(String configName) throws ParseException, IOException, SAXException {
-        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
-        Smooks smooks = new Smooks(packagePath + "/" + configName);
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        JavaResult result = new JavaResult(true);
-
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result, executionContext);
-
-        TypePopCheckBean bean = (TypePopCheckBean) result.getBean("data");
-        assertEquals("1, 2, true, 3.0, 4.0, a, 5, 1163616328000, 6, 7, 8, [9, 10, 11], [12, 13, 14], {integerVal1=15, integerVal2=16, integerVal3=17, integerVal4=18, integerVal5=19, integerVal6=20, integerVal=21, mixedMap={intVal=1, longVal=2, boolVal=true, floatVal=3.0, doubleVal=4.0, charVal=a, integerVal=5, mixedIntValArray=[6, 7, 8]}},", bean.toString().trim());
-    }
-
-    /*
     public void test_visit_validateSetterName() throws SAXException, IOException {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", ProcessingPhaseBeanPopulator.class.getName());
         MockExecutionContext request = new MockExecutionContext();
         Document doc = XmlUtil.parseStream(getClass().getResourceAsStream("testxml.txt"), XmlUtil.VALIDATION_TYPE.NONE, true);
-
+        
         config.setParameter("beanId", "userBean");
         config.setParameter("beanClass", MyGoodBean.class.getName());
         config.setParameter("attributeName", "phoneNumber");
         config.setParameter("setterName", "setX");
-        BeanPopulator pppu = new BeanPopulator();
-        Configurator.configure(pppu, config);
+        ProcessingPhaseBeanPopulator pppu = new ProcessingPhaseBeanPopulator();
+        pppu.setConfiguration(config);
         try {
             pppu.visitBefore(doc.getDocumentElement(), request);
             fail("Expected SmooksConfigurationException");
@@ -131,160 +107,58 @@ public class BeanPopulatorTest extends TestCase {
             assertEquals("Bean [userBean] configuration invalid.  Bean setter method [setX(java.lang.String)] not found on type [org.milyn.javabean.MyGoodBean].  You may need to set a 'decoder' on the binding config.", e.getMessage());
         }
     }
-    */
 
+    public void test_visit_1() throws SAXException, IOException {
+        test_visit_userBean("expanded-config.xml");
+    }
     public void test_visit_2() throws SAXException, IOException {
-        test_visit_userBean("compressed-config.xml");
+        test_visit_userBean("compressed-config.xml");        
     }
 
     public void test_visit_userBean(String configName) throws SAXException, IOException {
 
-        Smooks smooks = new Smooks(getClass().getResourceAsStream(configName));
-        ExecutionContext executionContext = smooks.createExecutionContext();
+        Smooks smooks = new Smooks();
+
+        smooks.addConfigurations(configName, getClass().getResourceAsStream(configName));
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult(), executionContext);
 
-        MyGoodBean bean = (MyGoodBean)BeanRepositoryManager.getBeanRepository(executionContext).getBean("userBean");
+        MyGoodBean bean = (MyGoodBean)BeanAccessor.getBean("userBean", executionContext);
         assertNotNull("Null bean", bean);
         assertEquals("Myself", bean.getName());
         assertEquals("0861070070", bean.getPhoneNumber());
         assertEquals("Skeagh Bridge...", bean.getAddress());
     }
 
-    public void test_populate_Order() throws SAXException, IOException, InterruptedException {
-        test_populate_Order("order-01-smooks-config.xml");
-        test_populate_Order("order-01-smooks-config-sax.xml");
-        test_populate_Order("order-01-smooks-config-arrays.xml");
-    }
+    public void test_populate_Order() throws SAXException, IOException {
 
-    private void test_populate_Order(String configName) throws SAXException, IOException, InterruptedException {
+        Smooks smooks = new Smooks();
 
-        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
-        Smooks smooks = new Smooks(packagePath + "/" + configName);
-        ExecutionContext executionContext = smooks.createExecutionContext();
+        smooks.addConfigurations("order-01-smooks-config.xml", getClass().getResourceAsStream("order-01-smooks-config.xml"));
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
 
-        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
-        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), new DOMResult(), executionContext);
 
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        Order order = (Order)BeanAccessor.getBean("order", executionContext);
 
-        Order order = (Order) result.getBean("order");
-
-
-        assertOrder(order);
-    }
-
-    public void test_update_Order() throws SAXException, IOException, InterruptedException {
-    	test_update_Order("order-01-smooks-config-update.xml");
-    }
-
-    private void test_update_Order(String configName) throws SAXException, IOException, InterruptedException {
-
-        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
-
-        Order inOrder = new Order();
-        Header inHeader = new Header();
-        List<OrderItem> inOrderItems = new ArrayList<OrderItem>();
-
-        JavaResult result = new JavaResult();
-        result.getResultMap().put("order", inOrder);
-   	 	result.getResultMap().put("orderItemList", inOrderItems);
-   	 	result.getResultMap().put("header", inHeader);
-
-
-        Smooks smooks = new Smooks(packagePath + "/" + configName);
-
-        ExecutionContext executionContext = smooks.createExecutionContext();
-
-        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
-
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
-
-        Order order = (Order) result.getBean("order");
-
-        assertSame(inOrder, order);
-        assertSame(inOrderItems, order.getOrderItems());
-        assertSame(inHeader, order.getHeader());
-
-        assertOrder(order);
-
-    }
-
-    private void assertOrder(Order order) {
-
-    	assertNotNull(order);
+        assertNotNull(order);
         assertNotNull(order.getHeader());
+        assertNotNull(order.getOrderItems());
+        assertEquals(2, order.getOrderItems().size());
 
         assertEquals(1163616328000L, order.getHeader().getDate().getTime());
         assertEquals("Joe", order.getHeader().getCustomerName());
         assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
 
-        assertNotNull(order.getHeader().getOrder());
-
-        assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
-
-        List<OrderItem> orderItems = order.getOrderItems();
-        OrderItem[] orderItemsArray = order.getOrderItemsArray();
-
-        assertTrue(orderItems != null || orderItemsArray != null);
-
-        if(orderItemsArray != null) {
-            orderItems = Arrays.asList(orderItemsArray);
-        }
-
-        assertEquals(2, orderItems.size());
-
-        OrderItem orderItem = orderItems.get(0);
+        OrderItem orderItem = order.getOrderItems().get(0);
         assertEquals(8.90d, orderItem.getPrice());
         assertEquals(111, orderItem.getProductId());
         assertEquals(new Integer(2), orderItem.getQuantity());
 
-        if(orderItemsArray == null) {
-        	assertNotNull(orderItem.getOrder());
-        }
-
-        orderItem = orderItems.get(1);
+        orderItem = order.getOrderItems().get(1);
         assertEquals(5.20d, orderItem.getPrice());
         assertEquals(222, orderItem.getProductId());
         assertEquals(new Integer(7), orderItem.getQuantity());
-
-        if(orderItemsArray == null) {
-        	assertNotNull(orderItem.getOrder());
-        }
-
     }
-
-    public void test_populate_Employee() throws SAXException, IOException, InterruptedException {
-        test_populate_Employee("employee-01-smooks-config.xml");
-    }
-
-	/**
-	 * Test with inherited model
-	 *
-	 * @param string
-	 * @throws IOException
-	 * @throws SAXException
-	 */
-	private void test_populate_Employee(String configName) throws IOException, SAXException {
-
-		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
-
-        Smooks smooks = new Smooks(packagePath + "/" + configName);
-        ExecutionContext executionContext = smooks.createExecutionContext();
-
-        JavaResult result = new JavaResult();
-
-        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("employee-01.xml")));
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
-
-        Employee employee = (Employee) result.getBean("employee");
-
-        assertNotNull(employee);
-
-        assertEquals("111", employee.getFirstName());
-        assertEquals("222", employee.getLastName());
-        assertEquals("333", employee.getEmployeeId());
-
-	}
-
 }

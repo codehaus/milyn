@@ -17,14 +17,14 @@
 package org.milyn.servlet.http;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.AbstractContentDeliveryUnit;
 
 /**
  * The HeaderAction class performs a HTTP header operation on the
  * content delivery response. 
  * @author tfennelly
  */
-public class HeaderAction implements ContentHandler {
+public class HeaderAction extends AbstractContentDeliveryUnit {
 	/**
 	 * Add action param value def.
 	 */
@@ -36,7 +36,7 @@ public class HeaderAction implements ContentHandler {
 	/**
 	 * Action for this instance.
 	 */
-    private int action;
+	private int action;
 	/**
 	 * Action target header name.
 	 */
@@ -50,7 +50,9 @@ public class HeaderAction implements ContentHandler {
 	 * Public constructor.
 	 * @param resourceConfig action smooks-resource instance.
 	 */
-	public void setConfiguration(SmooksResourceConfiguration resourceConfig) {
+	public HeaderAction(SmooksResourceConfiguration resourceConfig) {
+		super(resourceConfig);
+		
 		if(resourceConfig == null) {
 			IllegalStateException state = new IllegalStateException("Bad HeaderAction defintion.");
 			state.initCause(new IllegalArgumentException("null 'unitDef' arg in constructor call."));
@@ -139,6 +141,12 @@ public class HeaderAction implements ContentHandler {
 	 */
 	public String toString() {
 		return "HeaderAction: " + action + ", " + headerName + ", " + headerValue;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ContentDeliveryUnit#setConfiguration(org.milyn.cdr.SmooksResourceConfiguration)
+	 */
+	public void setConfiguration(SmooksResourceConfiguration config) {
 	}
 }
  

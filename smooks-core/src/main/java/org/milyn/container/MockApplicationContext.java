@@ -17,12 +17,9 @@
 package org.milyn.container;
 
 import java.util.Hashtable;
-import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
-import org.milyn.profile.ProfileStore;
-import org.milyn.profile.DefaultProfileStore;
 
 /**
  * 
@@ -30,8 +27,7 @@ import org.milyn.profile.DefaultProfileStore;
  */
 public class MockApplicationContext implements ApplicationContext {
 	public MockContainerResourceLocator containerResourceLocator = new MockContainerResourceLocator();
-    public ProfileStore profileStore = new DefaultProfileStore();
-    private Hashtable attributes = new Hashtable();
+	private Hashtable attributes = new Hashtable();
 	
 	/* (non-Javadoc)
 	 * @see org.milyn.container.ApplicationContext#getResourceLocator()
@@ -74,18 +70,5 @@ public class MockApplicationContext implements ApplicationContext {
 		}
 		
 		return cdrarStore;
-	}
-
-    public ProfileStore getProfileStore() {
-        return profileStore;
-    }
-
-    public void setResourceLocator(ContainerResourceLocator resourceLocator) {
-        throw new UnsupportedOperationException("Can't set the locator on the Mock using this method.  Set it through the publicly accessible  property.");
-    }
-    
-    public Map getAttributes()
-    {
-    	return attributes;
-    }
+	}	
 }

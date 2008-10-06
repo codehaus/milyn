@@ -16,7 +16,10 @@
 
 package org.milyn.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Character utilities.
@@ -24,18 +27,7 @@ import java.io.*;
  */
 public abstract class CharUtils {
 
-    /**
-	 * Compares the 2 Strings.
-	 * @param s1 Stream 1.
-	 * @param s2 Stream 2.
-	 * @return True if the streams are equal not including leading and trailing
-	 * whitespace on each line and blank lines, otherwise returns false.
-	 */
-    public static boolean compareStrings(String s1, String s2) {
-        return compareCharStreams(new ByteArrayInputStream(s1.getBytes()), new ByteArrayInputStream(s2.getBytes()));
-    }
-
-    /**
+	/**
 	 * Compares the 2 streams.
 	 * <p/>
 	 * Calls {@link #trimLines(InputStream)} on each stream before comparing.

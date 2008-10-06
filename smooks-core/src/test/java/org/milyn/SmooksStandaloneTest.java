@@ -19,34 +19,39 @@ package org.milyn;
 import java.io.ByteArrayInputStream;
 import java.io.CharArrayWriter;
 import java.io.IOException;
+import java.io.File;
 
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ExecutionContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.container.standalone.PreconfiguredSmooks;
-import org.milyn.profile.DefaultProfileSet;
 import org.milyn.util.DomUtil;
+import org.milyn.util.ClassUtil;
 import org.milyn.xml.XmlUtil;
+import org.milyn.profile.DefaultProfileSet;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import junit.framework.TestCase;
+
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Source;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
+
 public class SmooksStandaloneTest extends TestCase {
-	
-	Log log = LogFactory.getLog( SmooksStandaloneTest.class );
-	
+
     public void testProcess() {
         Smooks smooks = null;
         try {
             smooks = new PreconfiguredSmooks();
-            ExecutionContext context = smooks.createExecutionContext("msie6");
+            StandaloneExecutionContext context = smooks.createExecutionContext("msie6");
             String response = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("html_2.html"), smooks);
-            log.debug(response);
+            System.out.println(response);
             Document doc = DomUtil.parse(response);
 
             assertNull(XmlUtil.getNode(doc, "html/body/xxx"));
@@ -74,13 +79,13 @@ public class SmooksStandaloneTest extends TestCase {
 
         // Transform the same message for each useragent...
         String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
-        ExecutionContext context = smooks.createExecutionContext("message-target1");
+        StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
         String result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
-        log.debug(result);
+        System.out.println(result);
         assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", result);
         context = smooks.createExecutionContext("message-target2");
         result = SmooksUtil.filterAndSerialize(context, new ByteArrayInputStream(message.getBytes()), smooks);
-        log.debug(result);
+        System.out.println(result);
         assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><ccc>999</ccc></zzz>", result);
     }
 
@@ -102,11 +107,10 @@ public class SmooksStandaloneTest extends TestCase {
         // Transform the same message for each useragent...
         String message = "<aaa><bbb>888</bbb><ccc>999</ccc></aaa>";
 
-        ExecutionContext context = smooks.createExecutionContext("message-target1");
+        StandaloneExecutionContext context = smooks.createExecutionContext("message-target1");
         CharArrayWriter writer = new CharArrayWriter();
         smooks.filter(new StreamSource(new ByteArrayInputStream(message.getBytes())), new StreamResult(writer), context);
 
         assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
     }
-    
 }

@@ -19,7 +19,7 @@ package org.milyn.delivery.dom.serialize;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
@@ -36,22 +36,23 @@ import org.w3c.dom.Text;
  * Default SerialisationUnit where none defined.
  * @author tfennelly
  */
-public class DefaultSerializationUnit implements SerializationUnit {
+public class DefaultSerializationUnit extends AbstractSerializationUnit {
 
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
     private boolean closeEmptyElements = false;
 
-    /* (non-Javadoc)
-     * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)
-     */
-    public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
-        writeElementStart(element, writer);
+    /**
+	 * Public constructor.
+	 * @param resourceConfig
+	 */
+	public DefaultSerializationUnit(SmooksResourceConfiguration resourceConfig) {
+		super(resourceConfig);
+        closeEmptyElements = resourceConfig.getBoolParameter("closeEmptyElements", false);
     }
 
-    /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)
 	 */
-	public void writeElementStart(Element element, Writer writer) throws IOException {
+	public void writeElementStart(Element element, Writer writer, ExecutionContext executionContext) throws IOException {
 		writer.write((int)'<');
         writer.write(element.getTagName());
         writeAttributes(element.getAttributes(), writer);
@@ -87,14 +88,7 @@ public class DefaultSerializationUnit implements SerializationUnit {
 			writer.write(enclosingChar);
 		}
 	}
-
-    /* (non-Javadoc)
-     * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer)
-     */
-    public void writeElementEnd(Element element, Writer writer) throws IOException {
-        writeElementEnd(element, writer, null);
-    }
-
+	
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementEnd(org.w3c.dom.Element, java.io.Writer)
 	 */

@@ -16,48 +16,47 @@
 
 package org.milyn;
 
+import java.io.*;
+import java.util.LinkedHashMap;
+import java.net.URISyntaxException;
+import java.net.URI;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.delivery.Filter;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.event.types.FilterLifecycleEvent;
-import org.milyn.net.URIUtil;
-import org.milyn.payload.FilterResult;
-import org.milyn.payload.FilterSource;
-import org.milyn.profile.Profile;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.dom.SmooksDOMFilter;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.net.URIUtil;
+import org.w3c.dom.Node;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.Result;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
+import javax.xml.transform.stream.StreamResult;
 
 /**
- * Smooks executor class.
+ * Smooks standalone execution class.
  * <p/>
  * Additional configurations can be carried out on the {@link org.milyn.Smooks} instance
  * through the {@link org.milyn.SmooksUtil} class.
  * <p/>
  * The basic usage scenario for this class might be as follows:
  * <ol>
- * <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor}/{@link org.milyn.delivery.sax.SAXElementVisitor} to
+ * <li>Develop (or reuse) an implementation of {@link org.milyn.delivery.dom.DOMElementVisitor} to
  * perform some transformation/analysis operation on a message.  There are a number of prebuilt
  * and reuseable implemntations available as
  * "<a target="new" href="http://milyn.codehaus.org/Smooks#Smooks-smookscartridges">Smooks Cartridges</a>".</li>
- * <li>Write a {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration} to target the {@link org.milyn.delivery.dom.DOMElementVisitor}/{@link org.milyn.delivery.sax.SAXElementVisitor}
+ * <li>Write a {@link org.milyn.cdr.SmooksResourceConfiguration resource configuration} to target the {@link org.milyn.delivery.dom.DOMElementVisitor}
  * implementation at the target fragment of the message being processed.</li>
  * <li>Apply the logic as follows:
  * <pre>
@@ -69,9 +68,9 @@ import java.net.URISyntaxException;
  * </pre>
  * </li>
  * </ol>
- * Remember, you can implement and apply multiple {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}/{@link org.milyn.delivery.sax.SAXElementVisitor}
+ * Remember, you can implement and apply multiple {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}
  * within the context of a single filtering operation.  You can also target
- * {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors}/{@link org.milyn.delivery.sax.SAXElementVisitor} based on target profiles, and so use a single
+ * {@link org.milyn.delivery.dom.DOMElementVisitor DOMElementVisitors} based on target profiles, and so use a single
  * configuration to process multiple messages by sharing profiles across your message set.
  * <p/>
  * See <a target="new" href="http://milyn.codehaus.org/Tutorials">Smooks Tutorials</a>.
@@ -82,7 +81,7 @@ public class Smooks {
 
     private static Log logger = LogFactory.getLog(Smooks.class);
     private StandaloneApplicationContext context;
-    private ClassLoader classLoader;
+    private boolean initialised = false;
 
     /**
      * Public Default Constructor.
@@ -111,40 +110,6 @@ public class Smooks {
     public Smooks(String resourceURI) throws IOException, SAXException {
         this();
         addConfigurations(resourceURI);
-    }
-
-    /**
-     * Public constructor.
-     * <p/>
-     * Adds the set of {@link SmooksResourceConfiguration resources} via the {@link #addConfigurations(java.io.InputStream)}.
-     * <p/>
-     * Additional resource configurations can be added through calls to
-     * <code>addConfigurations</code> method set.
-     *
-     * @param resourceConfigStream XML resource configuration stream.
-     * @throws IOException  Error reading resource stream.
-     * @throws SAXException Error parsing the resource stream.
-     * @see SmooksResourceConfiguration
-     */
-    public Smooks(InputStream resourceConfigStream) throws IOException, SAXException {
-        this();
-        addConfigurations(resourceConfigStream);
-    }
-
-    /**
-     * Get the ClassLoader associated with this Smooks instance.
-     * @return The ClassLoader instance.
-     */
-    public ClassLoader getClassLoader() {
-        return classLoader;
-    }
-
-    /**
-     * Set the ClassLoader associated with this Smooks instance.
-     * @param classLoader The ClassLoader instance.
-     */
-    public void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
     }
 
     /**
@@ -188,7 +153,7 @@ public class Smooks {
      *
      * @param baseURI The base URI string for the resource configuration list. See
      *                    {@link org.milyn.resource.URIResourceLocator}.
-     * @param resourceConfigStream The resource configuration stream.
+     * @param resourceConfigStream
      * @throws IOException  Error reading resource stream.
      * @throws SAXException Error parsing the resource stream.
      */
@@ -203,158 +168,145 @@ public class Smooks {
     }
 
     /**
-     * Add a set of resource configurations to this Smooks instance.
-     * <p/>
-     * Calls {@link #addConfigurations(String, java.io.InputStream)} with a baseURI of "./",
-     * which is the default base URI on all {@link org.milyn.resource.URIResourceLocator}
-     * instances.
-     *
-     * @param resourceConfigStream The resource configuration stream.
-     * @throws IOException  Error reading resource stream.
-     * @throws SAXException Error parsing the resource stream.
-     */
-    public void addConfigurations(InputStream resourceConfigStream) throws SAXException, IOException {
-        addConfigurations("./", resourceConfigStream);
-    }
-
-    /**
-     * Create a {@link ExecutionContext} instance for use on this Smooks instance.
+     * Create a {@link StandaloneExecutionContext} instance for use on this Smooks instance.
      * <p/>
      * The created context is profile agnostic and should be used where profile based targeting is not in use.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
+     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.standalone.StandaloneExecutionContext)}.
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
-     * caller with a mechanism for interacting with the content {@link org.milyn.delivery.dom.SmooksDOMFilter filtering} phases.
+     * caller with a mechanism for interacting with the content {@link SmooksDOMFilter filtering} phases.
      *
      * @return Execution context instance.
      */
-    public ExecutionContext createExecutionContext() {
-        return createExecutionContext(Profile.DEFAULT_PROFILE);
+    public StandaloneExecutionContext createExecutionContext() {
+        return new StandaloneExecutionContext(StandaloneApplicationContext.OPEN_PROFILE_NAME, new LinkedHashMap(), context);
     }
 
     /**
-     * Create a {@link ExecutionContext} instance for use on this Smooks instance.
+     * Create a {@link StandaloneExecutionContext} instance for use on this Smooks instance.
      * <p/>
      * The created context is profile aware and should be used where profile based targeting is in use. In this case,
      * the transfromation/analysis resources must be configured with profile targeting information.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
+     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.standalone.StandaloneExecutionContext)}.
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
-     * caller with a mechanism for interacting with the content {@link org.milyn.delivery.dom.SmooksDOMFilter filtering} phases.
+     * caller with a mechanism for interacting with the content {@link SmooksDOMFilter filtering} phases.
      *
      * @param targetProfile The target profile ({@link ProfileSet base profile}) on behalf of whom the filtering/serialisation
      *                      filter is to be executed.
      * @return Execution context instance.
      * @throws UnknownProfileMemberException Unknown target profile.
      */
-    public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
-        if(classLoader != null) {
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(classLoader);
-            try {
-                return new StandaloneExecutionContext(targetProfile, context);
-            } finally {
-                Thread.currentThread().setContextClassLoader(contextClassLoader);
-            }
-        } else {
-            return new StandaloneExecutionContext(targetProfile, context);
-        }
+    public StandaloneExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
+        return new StandaloneExecutionContext(targetProfile, new LinkedHashMap(), context);
     }
 
     /**
-     * Filter the content in the supplied {@link javax.xml.transform.Source} instance.
+     * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
+     * to the supplied {@link javax.xml.transform.Result} instance.
      * <p/>
-     * Not producing a {@link Result}.
-     *
-     * @param source           The content Source.
-     * @throws SmooksException Failed to filter.
-     */
-    public void filter(Source source) throws SmooksException {
-        filter(source, null, createExecutionContext());
-    }
-
-    /**
-     * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
-     * to the supplied {@link javax.xml.transform.Result} instance.
+     * This method always executes the {@link SmooksDOMFilter visit phases} of content
+     * processing.  It will also execute the serialization phase if the
+     * supplied result is a {@link javax.xml.transform.stream.StreamResult}.
+     * <p/>
+     * SAX based Source and Result are not yet supported.
      *
      * @param source           The content Source.
      * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
      *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
-     * @throws SmooksException Failed to filter.
-     */
-    public void filter(Source source, Result result) throws SmooksException {
-        filter(source, result, createExecutionContext());
-    }
-
-    /**
-     * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
-     * to the supplied {@link javax.xml.transform.Result} instance.
-     *
-     * @param source           The content Source.
-     * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
-     *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
-     * @param executionContext The {@link ExecutionContext} for this filter operation. See
+     * @param executionContext The {@link StandaloneExecutionContext} for this filter operation. See
      *                         {@link #createExecutionContext(String)}.
      * @throws SmooksException Failed to filter.
      */
-    public void filter(Source source, Result result, ExecutionContext executionContext) throws SmooksException {
+    public void filter(Source source, Result result, StandaloneExecutionContext executionContext) throws SmooksException {
         AssertArgument.isNotNull(source, "source");
+        AssertArgument.isNotNull(result, "result");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
-        if(classLoader != null) {
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(classLoader);
-            try {
-                _filter(source, result, executionContext);
-            } finally {
-                Thread.currentThread().setContextClassLoader(contextClassLoader);
-            }
-        } else {
-            _filter(source, result, executionContext);
+        if (!(source instanceof StreamSource) && !(source instanceof DOMSource)) {
+            throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported.");
         }
-    }
+        if (!(result instanceof StreamResult) && !(result instanceof DOMResult)) {
+            throw new IllegalArgumentException(result.getClass().getName() + " Result types not yet supported.");
+        }
 
-    private void _filter(Source source, Result result, ExecutionContext executionContext) {
-        ExecutionEventListener eventListener = executionContext.getEventListener();
-
+        SmooksDOMFilter smooks = new SmooksDOMFilter(executionContext);
         try {
-            Filter.setCurrentExecutionContext(executionContext);
-            try {
-                if(eventListener != null) {
-                    eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.STARTED));
+            Node resultNode;
+
+            // Filter the Source....
+            if (source instanceof StreamSource) {
+                StreamSource streamSource = (StreamSource) source;
+
+                if(streamSource.getInputStream() != null) {
+                    resultNode = smooks.filter(new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding()));
+                } else if(streamSource.getReader() != null) {
+                    resultNode = smooks.filter(streamSource.getReader());
+                } else {
+                    throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
                 }
-
-                Filter messageFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
-
-                Filter.setFilter(messageFilter);
-                try {
-                    // Attach the source and result to the context...
-                    FilterSource.setSource(source, executionContext);
-                    FilterResult.setResult(result, executionContext);
-
-                    messageFilter.doFilter(source, result);
-                } catch(SmooksException e) {
-                    executionContext.setTerminationError(e);
-                    throw e;
-                } catch (Throwable t) {
-                    executionContext.setTerminationError(t);
-                    throw new SmooksException("Smooks Filtering operation failed.", t);
-                } finally {
-                    messageFilter.cleanup();
-                    Filter.removeCurrentFilter();
+            } else {
+                Node node = ((DOMSource) source).getNode();
+                if (!(node instanceof Document)) {
+                    throw new IllegalArgumentException("DOMSource Source types must contain a Document node.");
                 }
-            } finally {
-                Filter.removeCurrentExecutionContext();
+                resultNode = smooks.filter((Document) node);
             }
+
+            // Populate the Result
+            if (result instanceof StreamResult) {
+                Writer writer;
+                StreamResult streamResult = ((StreamResult) result);
+
+                if (streamResult.getOutputStream() != null) {
+                    writer = new OutputStreamWriter(streamResult.getOutputStream(), executionContext.getContentEncoding());
+                } else if (streamResult.getWriter() != null) {
+                    writer = streamResult.getWriter();
+                } else {
+                    throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
+                }
+                try {
+                    smooks.serialize(resultNode, writer);
+                } catch (IOException e) {
+                    logger.error("Error writing result to output stream.", e);
+                }
+            } else {
+                ((DOMResult) result).setNode(resultNode);
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new Error("Unexpected exception.  Encoding has already been validated as being unsupported.", e);
         } finally {
-            if(eventListener != null) {
-                eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.FINISHED));
+            if (source instanceof StreamSource) {
+                try {
+                    StreamSource streamSource = (StreamSource) source;
+
+                    if(streamSource.getInputStream() != null) {
+                        streamSource.getInputStream().close();
+                    } else if(streamSource.getReader() != null) {
+                        streamSource.getReader().close();
+                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to close input stream/reader.", e);
+                }
+            }
+            if (result instanceof StreamResult) {
+                StreamResult streamResult = ((StreamResult) result);
+
+                try {
+                    if (streamResult.getOutputStream() != null) {
+                        streamResult.getOutputStream().close();
+                    } else if (streamResult.getWriter() != null) {
+                        streamResult.getWriter().close();
+                    }
+                } catch (IOException e) {
+                    logger.warn("Failed to close output stream/writer.", e);
+                }
             }
         }
     }
@@ -365,17 +317,7 @@ public class Smooks {
      *
      * @return The Smooks {@link org.milyn.container.ApplicationContext}.
      */
-    public ApplicationContext getApplicationContext() {
+    public StandaloneApplicationContext getApplicationContext() {
         return context;
-    }
-
-    /**
-     * Close this Smooks instance and all associated resources.
-     * <p/>
-     * Should result in the {@link org.milyn.delivery.annotation.Uninitialize uninitialization}
-     * of all allocated {@link org.milyn.delivery.ContentHandler} instances.
-     */
-    public void close() {
-        context.getStore().close();
     }
 }

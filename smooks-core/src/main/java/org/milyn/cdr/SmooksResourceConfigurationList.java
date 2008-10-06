@@ -71,15 +71,8 @@ public class SmooksResourceConfigurationList {
      */
     public void add(SmooksResourceConfiguration config) {
         AssertArgument.isNotNull(config, "config");
-        String[] selectors = config.getSelector().split(",");
-
-        for(String selector : selectors) {
-            SmooksResourceConfiguration clone = (SmooksResourceConfiguration) config.clone();
-
-            clone.setSelector(selector.trim());
-            list.add(clone);
-            logger.debug("Smooks ResourceConfiguration [" + clone + "] added to list [" + name + "].");
-        }
+        list.add(config);
+        logger.debug("Smooks ResourceConfiguration [" + config + "] added to list [" + name + "].");
     }
 
     /**
@@ -171,8 +164,10 @@ public class SmooksResourceConfigurationList {
 
         if(loadedResources.contains(resource)) {
             URI lastLoaded = loadedResources.get(loadedResources.size() - 1);
+            URI originalLoader = loadedResources.get(Math.max(0, loadedResources.indexOf(resource) - 1));
 
-            logger.info("Not adding resource config import '" + resource + "'.  This resource is already loaded on this list.");
+            logger.info("Not adding resource config import '" + resource + "' (specified in resource config '" + lastLoaded + "').  " +
+                    "'" + resource + "' is already loaded on this list (by '" + originalLoader + "').");
 
             return false;
         }

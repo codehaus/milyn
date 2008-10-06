@@ -17,12 +17,8 @@
 package org.milyn.cdr;
 
 import java.util.List;
-import java.util.Map;
 
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.assertion.AssertArgument;
-import org.milyn.Smooks;
-import org.milyn.SmooksUtil;
 
 /**
  * Accessor class for looking up profile specific attributes.
@@ -45,7 +41,7 @@ public abstract class ParameterAccessor {
 	/**
 	 * Device parameters .cdrl lookup string.
 	 */
-	public static final String GLOBAL_PARAMETERS = "global-parameters";
+	public static final String DEVICE_PARAMETERS = "device-parameters";
 
 	/**
 	 * Get the named parameter instance (decode).
@@ -129,58 +125,31 @@ public abstract class ParameterAccessor {
 
 	/**
 	 * Get the named parameter.
-     * <p/>
-     * Calls {@link org.milyn.delivery.ContentDeliveryConfig#getSmooksResourceConfigurations()}
-     * to get the configurations map and then passes that to
-     * {@link #getParameter(String, java.util.Map)}, returning its return value.
-     *
 	 * @param name Parameter name.
 	 * @param config Device Delivery Configuration.
 	 * @return The Parameter instance for the named parameter, or null if not defined.
 	 */
 	public static Parameter getParamter(String name, ContentDeliveryConfig config) {
-        AssertArgument.isNotNullAndNotEmpty(name, "name");
-        AssertArgument.isNotNull(config, "config");
+		List list;		
+		
+		if(name == null || (name = name.trim()).equals("")) {
+			throw new IllegalArgumentException("null or empty 'name' arg in method call.");
+		}
+		if(config == null) {
+			throw new IllegalArgumentException("null 'config' arg in method call.");
+		}
 
-        return getParameter(name, config.getSmooksResourceConfigurations());
+		list = config.getSmooksResourceConfigurations(DEVICE_PARAMETERS);
+		if(list != null) {
+			for(int i = 0; i < list.size(); i++) {
+				SmooksResourceConfiguration resourceConfig = (SmooksResourceConfiguration)list.get(i);
+				Parameter param = resourceConfig.getParameter(name);
+				if(param != null) {
+					return param;
+				}
+			}
+		}
+		
+		return null;
 	}
-
-    /**
-     * Get the named parameter from the supplied resource config map.
-     * <p/>
-     * This method works by looking up
-     *
-     * @param name The parameter name.
-     * @param resourceConfigurations The resource configuration map.
-     * @return The parameter value, or null if not found.
-     */
-    public static Parameter getParameter(String name, Map<String, List<SmooksResourceConfiguration>> resourceConfigurations) {
-        AssertArgument.isNotNullAndNotEmpty(name, "name");
-        AssertArgument.isNotNull(resourceConfigurations, "resourceConfigurations");
-        List<SmooksResourceConfiguration> configList = resourceConfigurations.get(GLOBAL_PARAMETERS);
-
-        if(configList != null) {
-            // Backward compatibility...
-            List<SmooksResourceConfiguration> cbConfigList = resourceConfigurations.get("device-parameters");
-            if(cbConfigList != null) {
-                configList.addAll(cbConfigList);
-            }
-
-            for (SmooksResourceConfiguration resourceConfig : configList) {
-                Parameter param = resourceConfig.getParameter(name);
-                if(param != null) {
-                    return param;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public static void setParameter(String name, String value, Smooks smooks) {
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration(ParameterAccessor.GLOBAL_PARAMETERS);
-
-        config.setParameter(name, value);
-        SmooksUtil.registerResource(config, smooks);
-    }
 }

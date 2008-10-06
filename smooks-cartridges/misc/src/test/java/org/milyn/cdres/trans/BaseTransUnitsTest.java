@@ -17,7 +17,6 @@
 package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.Configurator;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -28,18 +27,20 @@ public class BaseTransUnitsTest extends TestCase {
 
 	public void test_RenameAttributeTU() {
 		Document doc = parseCPResource("testpage1.html");
-		SmooksResourceConfiguration resourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
 		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
 		RenameAttributeTU tu;
 
-		resourceConfiguration.setParameter("attributeName", "attrib1");
-		resourceConfiguration.setParameter("attributeNewName", "attrib2");
-		tu = Configurator.configure(new RenameAttributeTU(), resourceConfiguration);
+		SmooksResourceConfiguration.setParameter("attributeName", "attrib1");
+		SmooksResourceConfiguration.setParameter("attributeNewName", "attrib2");
+		tu = new RenameAttributeTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
         tu.visitAfter(body, null);
 		assertEquals("Default overwrite protection failed.", "value2", body.getAttribute("attrib2"));
 
-		resourceConfiguration.setParameter("overwrite", "true");
-        tu = Configurator.configure(new RenameAttributeTU(), resourceConfiguration);
+		SmooksResourceConfiguration.setParameter("overwrite", "true");
+		tu = new RenameAttributeTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 		tu.visitAfter(body, null);
 		assertFalse("Rename failed to remove target attribute.", body.hasAttribute("attrib1"));
 		assertEquals("Overwrite failed.", "value1", body.getAttribute("attrib2"));
@@ -47,12 +48,13 @@ public class BaseTransUnitsTest extends TestCase {
 
 	public void test_RemoveAttributeTU() {
 		Document doc = parseCPResource("testpage1.html");
-		SmooksResourceConfiguration resourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
 		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
 		RemoveAttributeTU tu;
 
-		resourceConfiguration.setParameter("attributeName", "attrib1");
-        tu = Configurator.configure(new RemoveAttributeTU(), resourceConfiguration);
+		SmooksResourceConfiguration.setParameter("attributeName", "attrib1");
+		tu = new RemoveAttributeTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 
 		assertTrue("XPath failed - test corrupted.", body.hasAttribute("attrib1"));
 		tu.visitAfter(body, null);
@@ -61,12 +63,13 @@ public class BaseTransUnitsTest extends TestCase {
 
 	public void test_RenameElementTU() {
 		Document doc = parseCPResource("testpage1.html");
-		SmooksResourceConfiguration resourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
 		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
 		RenameElementTU tu;
 
-		resourceConfiguration.setParameter("replacementElement", "head");
-        tu = Configurator.configure(new RenameElementTU(), resourceConfiguration);
+		SmooksResourceConfiguration.setParameter("replacementElement", "head");
+		tu = new RenameElementTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 
 		tu.visitAfter(body, null);
 		assertNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/body"));
@@ -75,12 +78,13 @@ public class BaseTransUnitsTest extends TestCase {
 
 	public void test_RenameElementTU_root_element() {
 		Document doc = parseCPResource("testpage1.html");
-		SmooksResourceConfiguration resourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
 		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
 		RenameElementTU tu;
 
-		resourceConfiguration.setParameter("replacementElement", "head");
-        tu = Configurator.configure(new RenameElementTU(), resourceConfiguration);
+		SmooksResourceConfiguration.setParameter("replacementElement", "head");
+		tu = new RenameElementTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 
 		tu.visitAfter(body, null);
 		assertNull("Failed to rename target element.", XmlUtil.getNode(doc, "/html/body"));
@@ -89,11 +93,12 @@ public class BaseTransUnitsTest extends TestCase {
 
 	public void test_RemoveElementTU() {
 		Document doc = parseCPResource("testpage1.html");
-		SmooksResourceConfiguration resourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
 		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
 		RemoveElementTU tu;
 
-        tu = Configurator.configure(new RemoveElementTU(), resourceConfiguration);
+		tu = new RemoveElementTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 
 		tu.visitAfter(body, null);
 		assertNull("Failed to remove target element.", XmlUtil.getNode(doc, "/html/body"));
@@ -101,11 +106,12 @@ public class BaseTransUnitsTest extends TestCase {
 
 	public void test_RemoveElementTU_root_element() {
 		Document doc = parseCPResource("testpage1.html");
-		SmooksResourceConfiguration resourceConfiguration = new SmooksResourceConfiguration("html", "xxx");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("html", "xxx");
 		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
 		RemoveElementTU tu;
 
-        tu = Configurator.configure(new RemoveElementTU(), resourceConfiguration);
+		tu = new RemoveElementTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 
 		// So remove the root element...
 		tu.visitAfter(doc.getDocumentElement(), null);
@@ -118,18 +124,20 @@ public class BaseTransUnitsTest extends TestCase {
 	
 	public void test_SetAttributeTU() {
 		Document doc = parseCPResource("testpage1.html");
-		SmooksResourceConfiguration resourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
+		SmooksResourceConfiguration SmooksResourceConfiguration = new SmooksResourceConfiguration("body", "device", "xxx");
 		Element body = (Element)XmlUtil.getNode(doc, "/html/body");
 		SetAttributeTU tu;
 
-		resourceConfiguration.setParameter("attributeName", "attrib1");
-		resourceConfiguration.setParameter("attributeValue", "value3");
-        tu = Configurator.configure(new SetAttributeTU(), resourceConfiguration);
+		SmooksResourceConfiguration.setParameter("attributeName", "attrib1");
+		SmooksResourceConfiguration.setParameter("attributeValue", "value3");
+		tu = new SetAttributeTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 		tu.visitAfter(body, null);
 		assertEquals("Default overwrite protection failed.", "value1", body.getAttribute("attrib1"));
 
-		resourceConfiguration.setParameter("overwrite", "true");
-        tu = Configurator.configure(new SetAttributeTU(), resourceConfiguration);
+		SmooksResourceConfiguration.setParameter("overwrite", "true");
+		tu = new SetAttributeTU();
+        tu.setConfiguration(SmooksResourceConfiguration);
 		tu.visitAfter(body, null);
 		assertEquals("Overwrite failed.", "value3", body.getAttribute("attrib1"));
 	}

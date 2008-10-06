@@ -16,7 +16,8 @@
 
 package org.milyn.cdres.trans;
 
-import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.xml.DomUtils;
@@ -44,8 +45,11 @@ import org.w3c.dom.Element;
  */
 public class RemoveElementTU implements DOMElementVisitor {
 
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "true")
-	private boolean keepChildContent;
+	private boolean keepChildContent;	
+
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
+		keepChildContent = resourceConfig.getBoolParameter("keepChildContent", true);
+	}
 
     public void visitBefore(Element element, ExecutionContext executionContext) {
     }

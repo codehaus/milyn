@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 import org.milyn.profile.DefaultProfileSet;
-import org.milyn.container.ExecutionContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.magger.CSSProperty;
 import org.milyn.magger.CSSStylesheet;
 import org.milyn.xml.XmlUtil;
@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 public class CssAccessorTest extends TestCase {
 
     private Smooks smooks;
-    private ExecutionContext execContext;
+    private StandaloneExecutionContext request;
 	private StyleSheetStore store;
 	
 	/* (non-Javadoc)
@@ -43,9 +43,9 @@ public class CssAccessorTest extends TestCase {
         smooks = new Smooks();
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"screen", "audio"}), smooks);
 
-        execContext = smooks.createExecutionContext("device1");
-        execContext.setDocumentSource(URI.create("http://x.com"));
-        store = StyleSheetStore.getStore(execContext);
+        request = smooks.createExecutionContext("device1");
+        request.setDocumentSource(URI.create("http://x.com"));
+        store = StyleSheetStore.getStore(request);
 	}
 
 	public void test_getProperty_1() {
@@ -61,7 +61,7 @@ public class CssAccessorTest extends TestCase {
 		styleSheet1 = CssTestUtil.parseCSS("style1.css");
 		store.add(styleSheet1, style);
 		
-		CSSAccessor cssAccessor = CSSAccessor.getInstance(execContext);
+		CSSAccessor cssAccessor = CSSAccessor.getInstance(request);
 		
 		CSSProperty propVal_p = cssAccessor.getProperty(p, "font-size");
 		assertNotNull(propVal_p);

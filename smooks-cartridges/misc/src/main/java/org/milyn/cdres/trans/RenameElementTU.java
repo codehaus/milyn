@@ -18,7 +18,6 @@ package org.milyn.cdres.trans;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.xml.DomUtils;
@@ -53,14 +52,18 @@ import org.w3c.dom.Element;
  */
 public class RenameElementTU implements DOMElementVisitor {
 
-    @ConfigParam
-    private String replacementElement;
-
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "true")
-	private boolean keepChildContent;
-
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "true")
-	private boolean keepAttributes;
+	private String replacementElement;
+	private boolean keepChildContent;	
+	private boolean keepAttributes;	
+	
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
+		replacementElement = resourceConfig.getStringParameter("replacementElement");
+		if(replacementElement == null) {
+			throw new IllegalStateException(RenameElementTU.class + " cdres must define a 'replacementElement' param.");
+		}
+		keepChildContent = resourceConfig.getBoolParameter("keepChildContent", true);
+		keepAttributes = resourceConfig.getBoolParameter("keepAttributes", true);
+	}
 
     public void visitBefore(Element element, ExecutionContext executionContext) {
     }

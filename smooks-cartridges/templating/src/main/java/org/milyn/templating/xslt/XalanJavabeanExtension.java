@@ -15,8 +15,8 @@
 */
 package org.milyn.templating.xslt;
 
+import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 
 import ognl.Ognl;
 import ognl.OgnlException;
@@ -27,8 +27,8 @@ import org.apache.xalan.extensions.XSLProcessorContext;
 import org.apache.xalan.templates.AVT;
 import org.apache.xalan.templates.ElemExtensionCall;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.Filter;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.delivery.dom.SmooksDOMFilter;
+import org.milyn.javabean.BeanAccessor;
 
 /**
  * Javabean access <a href="http://xml.apache.org/xalan-j/">Xalan</a> XSLT extension for XSLT templating.
@@ -111,7 +111,7 @@ public class XalanJavabeanExtension {
 			throw new OgnlException("'ognl' expression not specified, or is blank.");
 		}
 		
-		ExecutionContext activeRequest = Filter.getCurrentExecutionContext();
+		ExecutionContext activeRequest = SmooksDOMFilter.getContainerRequest();
 		
 		if(activeRequest == null) {
 			String message = getClass().getName() + " can only be used within the context of a SmooksDOMFilter operation..";
@@ -119,7 +119,7 @@ public class XalanJavabeanExtension {
 			throw new IllegalStateException(message);
 		}
 		
-		Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(activeRequest).getBeanMap();
+		HashMap beans = BeanAccessor.getBeans(activeRequest);
 		Object parsedExpression = expressionCache.get(ognlExpression);
 		
 		if(parsedExpression == null) {

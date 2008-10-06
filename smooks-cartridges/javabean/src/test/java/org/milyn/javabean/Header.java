@@ -9,8 +9,6 @@ public class Header {
     private Date date;
     private Long customerNumber;
     private String customerName;
-    private boolean privatePerson;
-    private Order order;
 
     public Date getDate() {
         return date;
@@ -35,20 +33,4 @@ public class Header {
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
-
-	public boolean getPrivatePerson() {
-		return privatePerson;
-	}
-
-	public void setPrivatePerson(boolean privatePerson ) {
-		this.privatePerson = privatePerson;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
 }

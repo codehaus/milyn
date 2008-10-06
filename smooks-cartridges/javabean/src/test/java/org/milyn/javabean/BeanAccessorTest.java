@@ -3,336 +3,68 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.javabean;
 
-import junit.framework.TestCase;
+import java.util.List;
 
-import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.repository.BeanIdList;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+
+import junit.framework.TestCase;
 
 /**
  *
  * @author tfennelly
  */
-@SuppressWarnings("deprecation")
 public class BeanAccessorTest extends TestCase {
 
-	private ExecutionContext executionContext;
-
-	/**
-	 * Tests adding a bean
-	 */
-	public void test_add_bean() {
+    /*
+     * Test method for 'org.milyn.javabean.BeanAccessor.getBean(String, ExecutionContext)'
+     */
+    public void test_BeanAccessor() {
+        MockExecutionContext request = new MockExecutionContext();
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
-
-        getBeanIdList().register("bean1");
-        getBeanIdList().register("bean2");
-
-        assertNull(BeanAccessor.getBean(executionContext, "bean1"));
-        assertNull(BeanAccessor.getBean(executionContext, "bean2"));
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-        BeanAccessor.addBean(executionContext, "bean2", bean2);
-
-        assertEquals(bean1, BeanAccessor.getBean(executionContext, "bean1"));
-        assertEquals(bean2, BeanAccessor.getBean(executionContext, "bean2"));
-
-        assertEquals(2, BeanAccessor.getBeanMap(executionContext).size());
-        assertEquals(bean1, BeanAccessor.getBeanMap(executionContext).get("bean1"));
-        assertEquals(bean2, BeanAccessor.getBeanMap(executionContext).get("bean2"));
-    }
-
-	/**
-	 * Test adding and replacing a bean
-	 */
-	public void test_add_and_replace_bean() {
-        Object bean1 = new MyGoodBean();
-        Object newBean1 = new MyGoodBean();
-
-        getBeanIdList().register("bean1");
-
-        assertNull(BeanAccessor.getBean(executionContext, "bean1"));
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertEquals(bean1, BeanAccessor.getBean(executionContext, "bean1"));
-
-        BeanAccessor.addBean(executionContext, "bean1", newBean1);
-
-        assertEquals(newBean1, BeanAccessor.getBean(executionContext, "bean1"));
-    }
-
-	/**
-	 * Test adding and replacing a bean
-	 */
-	public void test_change_bean() {
-        Object bean1 = new MyGoodBean();
-        Object newBean1 = new MyGoodBean();
-
-        getBeanIdList().register("bean1");
-        getBeanIdList().register("notExisting");
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertEquals(bean1, BeanAccessor.getBean(executionContext, "bean1"));
-
-        BeanAccessor.changeBean(executionContext, "bean1", newBean1);
-
-        assertEquals(newBean1, BeanAccessor.getBean(executionContext, "bean1"));
-
-        boolean fired = false;
-
+        
+        assertNull(BeanAccessor.getBean("bean1", request));
+        
+        // Test that we get an error if calling addBean twice with different 'addToList' flags...
+        BeanAccessor.addBean("blah", bean1, request, false);
         try {
-        	BeanAccessor.changeBean(executionContext, "notExisting", new Object());
-        } catch (IllegalStateException e) {
-        	fired = true;
-		}
-        assertTrue(fired);
+            BeanAccessor.addBean("blah", bean1, request, true);
+        } catch(IllegalArgumentException e) {
+            assertEquals("bean [blah] already exists on request and is not a List.  Arg 'addToList' set to true - this is inconsistent!!", e.getMessage());
+        }
+        BeanAccessor.addBean("blahx", bean1, request, true);
+        try {
+            BeanAccessor.addBean("blahx", bean1, request, false);
+        } catch(IllegalArgumentException e) {
+            assertEquals("bean [blahx] already exists on request and is a List.  Arg 'addToList' set to false - this is inconsistent!!", e.getMessage());
+        }
+ 
+        // Add a non-List bean...
+        BeanAccessor.addBean("a", bean1, request, false);
+        assertEquals(bean1, BeanAccessor.getBean("a", request));
+        BeanAccessor.addBean("a", bean2, request, false);
+        assertEquals(bean2, BeanAccessor.getBean("a", request));
+        assertEquals(bean2, BeanAccessor.getBeans(request).get("a"));
+        
+        // Add a bean to a bean list...
+        BeanAccessor.addBean("b", bean1, request, true);
+        assertEquals(bean1, BeanAccessor.getBean("b", request));
+        BeanAccessor.addBean("b", bean2, request, true);
+        assertEquals(bean2, BeanAccessor.getBean("b", request));
+        List list = (List)BeanAccessor.getBeans(request).get("bList");
+        assertEquals(2, list.size());
     }
-
-
-	/**
-	 * Test adding and replacing a bean
-	 */
-	public void test_lifecycle_associates() {
-        Object parent = new MyGoodBean();
-        Object child = new MyGoodBean();
-        Object child2 = new MyGoodBean();
-        Object childChild = new MyGoodBean();
-
-        getBeanIdList().register("parent");
-        getBeanIdList().register("child");
-        getBeanIdList().register("child2");
-        getBeanIdList().register("childChild");
-
-        // check single level association
-        BeanAccessor.addBean(executionContext, "parent", parent);
-        BeanAccessor.addBean(executionContext, "child", child);
-        BeanAccessor.associateLifecycles(executionContext, "parent", "child");
-
-        assertEquals(parent, BeanAccessor.getBean(executionContext, "parent"));
-        assertEquals(child, BeanAccessor.getBean(executionContext, "child"));
-
-        BeanAccessor.addBean(executionContext, "parent", parent);
-
-        assertEquals(parent, BeanAccessor.getBean(executionContext, "parent"));
-        assertNull(BeanAccessor.getBean(executionContext, "child"));
-
-        BeanAccessor.addBean(executionContext, "child", child);
-        BeanAccessor.associateLifecycles(executionContext, "parent", "child");
-
-        BeanAccessor.addBean(executionContext, "child2", child2);
-        BeanAccessor.associateLifecycles(executionContext, "parent", "child2");
-
-        BeanAccessor.addBean(executionContext, "parent", parent);
-
-        assertEquals(parent, BeanAccessor.getBean(executionContext, "parent"));
-        assertNull(BeanAccessor.getBean(executionContext, "child"));
-        assertNull(BeanAccessor.getBean(executionContext, "child2"));
-
-        // check full tree association
-        BeanAccessor.addBean(executionContext, "child", child);
-        BeanAccessor.addBean(executionContext, "childChild", childChild);
-        BeanAccessor.associateLifecycles(executionContext, "parent", "child");
-        BeanAccessor.associateLifecycles(executionContext, "child", "childChild");
-
-        assertEquals(parent, BeanAccessor.getBean(executionContext, "parent"));
-        assertEquals(child, BeanAccessor.getBean(executionContext, "child"));
-        assertEquals(childChild, BeanAccessor.getBean(executionContext, "childChild"));
-
-        BeanAccessor.addBean(executionContext, "parent", parent);
-
-        assertEquals(parent, BeanAccessor.getBean(executionContext, "parent"));
-        assertNull(BeanAccessor.getBean(executionContext, "child"));
-        assertNull(BeanAccessor.getBean(executionContext, "childChild"));
-
-        // check partially tree association
-        BeanAccessor.addBean(executionContext, "child", child);
-        BeanAccessor.addBean(executionContext, "childChild", childChild);
-        BeanAccessor.associateLifecycles(executionContext, "parent", "child");
-        BeanAccessor.associateLifecycles(executionContext, "child", "childChild");
-
-        BeanAccessor.addBean(executionContext, "child", child);
-
-        assertEquals(parent, BeanAccessor.getBean(executionContext, "parent"));
-        assertEquals(child, BeanAccessor.getBean(executionContext, "child"));
-        assertNull(BeanAccessor.getBean(executionContext, "childChild"));
-	}
-
-	/**
-	 * replace with easy mock framework for more control
-	 *
-	 * Test adding and replacing a bean
-	 */
-	public void test_bean_lifecycle_begin_observers_associates() {
-        final Object bean1 = new MyGoodBean();
-        final Object bean2 = new MyGoodBean();
-
-        getBeanIdList().register("bean1");
-        getBeanIdList().register("bean2");
-
-        MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
-
-        //Add first time
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-
-        observer.reset();
-
-        //Add second time
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-
-        observer.reset();
-
-        //Add another bean
-        BeanAccessor.addBean(executionContext, "bean2", bean2);
-
-        assertFalse(observer.isFired());
-
-        // The following tests are generic for all types of Lifecycle events
-
-        //register override
-        MockBeanLifecycleObserver observer2 = new MockBeanLifecycleObserver();
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer2);
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertFalse(observer.isFired());
-        assertTrue(observer2.isFired());
-
-        observer2.reset();
-
-        //multi observers
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2", false, observer2);
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-        assertTrue(observer2.isFired());
-
-        observer.reset();
-        observer2.reset();
-
-        //unregister one
-        BeanAccessor.removeBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2");
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-        assertFalse(observer2.isFired());
-
-        observer.reset();
-
-        //unregister last
-        BeanAccessor.removeBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1");
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertFalse(observer.isFired());
-        assertFalse(observer2.isFired());
-
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2", false, new BeanLifecycleObserver() {
-
-        	public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
-        		assertEquals(executionContext, executionContext);
-        		assertEquals(BeanLifecycle.BEGIN, lifecycle);
-        		assertEquals("bean1", beanId);
-        		assertEquals(bean1, bean);
-        	}
-
-        });
-
-	}
-
-
-	/**
-	 * replace with easy mock framework for more control
-	 *
-	 * Test adding and replacing a bean
-	 */
-	public void test_bean_lifecycle_change_observers_associates() {
-        Object bean = new MyGoodBean();
-
-        getBeanIdList().register("bean");
-
-        MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
-        MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean", BeanLifecycle.CHANGE, "observerChange", false, observerChange);
-
-        //Add first time
-        BeanAccessor.addBean(executionContext, "bean", bean);
-
-        assertFalse(observerChange.isFired());
-
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean", BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
-
-        //now do the change
-        BeanAccessor.changeBean(executionContext, "bean", bean);
-
-        assertTrue(observerChange.isFired());
-        assertFalse(observerBegin.isFired());
-
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		executionContext = new MockExecutionContext();
-	}
-
-
-	/**
-	 *
-	 */
-	private BeanIdList getBeanIdList() {
-		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
-
-        return beanRepositoryManager.getBeanIdList();
-	}
-
-	/**
-	 * @return
-	 */
-	private BeanRepositoryManager getRepositoryManager() {
-		return BeanRepositoryManager.getInstance(executionContext.getContext());
-	}
-
-    public class MockBeanLifecycleObserver implements BeanLifecycleObserver {
-
-    	private boolean fired = false;
-
-    	public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
-    		fired = true;
-    	}
-
-    	public boolean isFired() {
-    		return fired;
-    	}
-
-    	public void reset() {
-    		fired = false;
-    	}
-    }
-
 }

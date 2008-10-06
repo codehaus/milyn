@@ -16,33 +16,48 @@
 
 package org.milyn.delivery.dom;
 
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.delivery.ContentHandlerConfigMapTable;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import java.util.*;
+import org.milyn.delivery.dom.ProcessingSet;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
+import org.milyn.dtd.DTDStore.DTDObjectContainer;
 
 /**
  * Mock ContentDeliveryConfig for DOM. 
  * @author tfennelly
  */
-public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
+public class MockContentDeliveryConfig implements DOMContentDeliveryConfig {
 
-    private Map<String, List<SmooksResourceConfiguration>> resourceConfigTable = new LinkedHashMap<String, List<SmooksResourceConfiguration>>();
-	public ContentHandlerConfigMapTable assemblyBefores = new ContentHandlerConfigMapTable();
-    public ContentHandlerConfigMapTable assemblyAfters = new ContentHandlerConfigMapTable();
-    public ContentHandlerConfigMapTable processingBefores = new ContentHandlerConfigMapTable();
-    public ContentHandlerConfigMapTable processingAfters = new ContentHandlerConfigMapTable();
-    public ContentHandlerConfigMapTable serializationUnits = new ContentHandlerConfigMapTable();
-	public Map objectsHash = new LinkedHashMap();
+	public Map<String, List<ContentDeliveryUnitConfigMap>> resourceConfigs = new Hashtable<String, List<ContentDeliveryUnitConfigMap>>();
+	public ContentDeliveryUnitConfigMapTable assemblyUnits = new ContentDeliveryUnitConfigMapTable();
+	public ContentDeliveryUnitConfigMapTable processingSets = new ContentDeliveryUnitConfigMapTable();
+    public ContentDeliveryUnitConfigMapTable serializationUnits = new ContentDeliveryUnitConfigMapTable();
+	public Hashtable objectsHash = new Hashtable();
+	
 
-    public MockContentDeliveryConfig() {
-        setSmooksResourceConfigurations(resourceConfigTable);
-        setAssemblyVisitBefores(assemblyBefores);
-        setAssemblyVisitAfters(assemblyAfters);
-        setProcessingVisitBefores(processingBefores);
-        setProcessingVisitAfters(processingAfters);
-        setSerailizationVisitors(serializationUnits);
+    public ContentDeliveryUnitConfigMapTable getAssemblyUnits() {
+        return assemblyUnits;
     }
+
+	public ContentDeliveryUnitConfigMapTable getProcessingUnits() {
+		return processingSets;
+	}
+
+    public ContentDeliveryUnitConfigMapTable getSerailizationUnits() {
+        return serializationUnits;
+    }
+
+	public List<ContentDeliveryUnitConfigMap> getSmooksResourceConfigurations(String nodeDef) {
+		return resourceConfigs.get(nodeDef);
+	}
+	
+	public Map<String, List<ContentDeliveryUnitConfigMap>> getSmooksResourceConfigurations() {
+		return resourceConfigs;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.ContentDeliveryConfig#getObjects(java.lang.String)
@@ -60,4 +75,13 @@ public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
 		}
 		objects.add(object);
 	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ContentDeliveryConfig#getDTD()
+	 */
+	public DTDObjectContainer getDTD() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -17,9 +17,9 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.event.report.HtmlReportGenerator;
+import org.milyn.templating.TemplatingUtils;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.ExecutionContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -38,12 +38,11 @@ public class Main {
 
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
+        // Register the templating CDU creators - tell Smooks how to handle .xsl resources...
+        TemplatingUtils.registerCDUCreators(smooks);
          // Create an exec context - no profiles....
-        ExecutionContext executionContext = smooks.createExecutionContext();
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
         CharArrayWriter outputWriter = new CharArrayWriter();
-
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
         // Filter the input message to the outputWriter, using the execution context...
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);

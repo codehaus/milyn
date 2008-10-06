@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-	This cdrl config defines the Content Handler Creators
+	This cdrl config defines the Content Delivery Unit Creators
 	for this cartridge.
 -->
 
@@ -11,7 +11,7 @@
 		Groovy Scripting Support.
 	-->
 	<resource-config>
-	    <resource type="class">org.milyn.smooks.scripting.GroovyContentHandlerFactory</resource>
+	    <resource type="class">org.milyn.smooks.scripting.GroovyContentDeliveryUnitCreator</resource>
 		<param name="restype">groovy</param>
 	</resource-config>
 	

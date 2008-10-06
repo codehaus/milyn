@@ -21,14 +21,12 @@ import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.dtd.DTDStore;
-import org.milyn.container.ExecutionContext;
-import org.milyn.event.types.ConfigBuilderEvent;
 
 /**
  * Content delivery configuration.
  * <p/>
  * Provides access to Content Delivery Resources 
- * (e.g. {@link ContentHandler Content Delivery Units})
+ * (e.g. {@link org.milyn.delivery.ContentDeliveryUnit Content Delivery Units})
  * and other information for the targeted profile.
  * @author tfennelly
  */
@@ -45,7 +43,7 @@ public interface ContentDeliveryConfig {
 	 * defined under that selector (for the device).
 	 * @see #getObjects(String)
 	 */
-	public abstract List<SmooksResourceConfiguration> getSmooksResourceConfigurations(String selector);
+	public abstract List<ContentDeliveryUnitConfigMap> getSmooksResourceConfigurations(String selector);
 
 	/**
 	 * Get the {@link SmooksResourceConfiguration} map for the target execution context.
@@ -57,7 +55,7 @@ public interface ContentDeliveryConfig {
 	 * {@link org.milyn.cdr.SmooksResourceConfiguration#getSelector() selector}, with each value being a
 	 * {@link List} of preordered {@link SmooksResourceConfiguration} instances.
 	 */
-	public abstract Map<String, List<SmooksResourceConfiguration>> getSmooksResourceConfigurations();
+	public abstract Map<String, List<ContentDeliveryUnitConfigMap>> getSmooksResourceConfigurations();
 	
 	/**
 	 * Get a list of {@link Object}s from the {@link SmooksResourceConfiguration}s specified by the selector.
@@ -76,29 +74,9 @@ public interface ContentDeliveryConfig {
 	 */
 	public abstract List getObjects(String selector);
 
-    /**
-     * Get a new stream filter for the content delivery configuration.
-     * @return The stream filter.
-     * @param executionContext Execution context.
-     */
-    public abstract Filter newFilter(ExecutionContext executionContext);
-
-    /**
+	/**
 	 * Get the DTD ({@link org.milyn.dtd.DTDStore.DTDObjectContainer}) for this delivery context.
 	 * @return The DTD ({@link org.milyn.dtd.DTDStore.DTDObjectContainer}) for this delivery context.
 	 */
 	public abstract DTDStore.DTDObjectContainer getDTD();
-
-    /**
-     * Get the list of Execution Events generated during the build of
-     * the configuration.
-     * @return The list of events.
-     */
-    public abstract List<ConfigBuilderEvent> getConfigBuilderEvents();
-
-    /**
-     * Is default serialization on..
-     * @return True if default serialization is on, otherwise false.
-     */
-    public abstract boolean isDefaultSerializationOn();
 }

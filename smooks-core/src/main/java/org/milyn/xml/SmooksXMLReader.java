@@ -16,14 +16,14 @@
 
 package org.milyn.xml;
 
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentHandler;
 import org.xml.sax.XMLReader;
 
 /**
  * Smooks XMLReader.
  * <p/>
- * {@link org.milyn.delivery.dom.DOMParser} allows you to target a specific SAX Parser at a specific message type.
+ * {@link org.milyn.xml.Parser} allows you to target a specific SAX Parser at a specific message type.
  * This lets you parse a stream of any type, convert it to a stream of SAX event and so treat the stream
  * as an XML data stream, even when the stream is non-XML.
  * <p/>
@@ -32,7 +32,13 @@ import org.xml.sax.XMLReader;
  *
  * @author tfennelly
  */
-public interface SmooksXMLReader extends XMLReader, ContentHandler {
+public interface SmooksXMLReader extends XMLReader {
+
+	/**
+	 * Set the Parser configuration on the implementing class.
+	 * @param config Parser configuration.
+	 */
+	public void setConfiguration(SmooksResourceConfiguration config);
 
 	/**
 	 * Set the Smooks {@link ExecutionContext} on the implementing class.

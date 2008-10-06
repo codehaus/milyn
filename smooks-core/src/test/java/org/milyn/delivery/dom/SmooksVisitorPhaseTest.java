@@ -16,14 +16,11 @@
 package org.milyn.delivery.dom;
 
 import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.io.StreamUtils;
-import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.container.ExecutionContext;
-import org.milyn.event.BasicExecutionEventListener;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -39,8 +36,6 @@ import java.util.List;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class SmooksVisitorPhaseTest extends TestCase {
-	
-	Log log = LogFactory.getLog( SmooksVisitorPhaseTest.class );
 
     public void test_phase_selection() throws IOException, SAXException {
         Smooks smooks = new Smooks();
@@ -52,41 +47,31 @@ public class SmooksVisitorPhaseTest extends TestCase {
         config = (DOMContentDeliveryConfig) execContext.getDeliveryConfig();
 
         // Check the assembly units...
-        List<ContentHandlerConfigMap<DOMVisitBefore>> assemblyVBs = config.getAssemblyVisitBefores().getMappings("a");
-        List<ContentHandlerConfigMap<DOMVisitAfter>> assemblyVAs = config.getAssemblyVisitAfters().getMappings("a");
-        assertEquals(2, assemblyVBs.size());
-        assertTrue(assemblyVBs.get(0).getContentHandler() instanceof AssemblyVisitor1);
-        assertTrue(assemblyVBs.get(1).getContentHandler() instanceof ConfigurableVisitor);
-        assertEquals(2, assemblyVAs.size());
-        assertTrue(assemblyVAs.get(0).getContentHandler() instanceof AssemblyVisitor1);
-        assertTrue(assemblyVAs.get(1).getContentHandler() instanceof ConfigurableVisitor);
+        List<ContentDeliveryUnitConfigMap> assemblyUnits = config.getAssemblyUnits().getMappings("a");
+        assertEquals(2, assemblyUnits.size());
+        assertTrue(assemblyUnits.get(0).getContentDeliveryUnit() instanceof AssemblyVisitor1);
+        assertTrue(assemblyUnits.get(1).getContentDeliveryUnit() instanceof ConfigurableVisitor);
 
-        List<ContentHandlerConfigMap<DOMVisitBefore>> processingVBs = config.getProcessingVisitBefores().getMappings("a");
-        List<ContentHandlerConfigMap<DOMVisitAfter>> processingVAs = config.getProcessingVisitAfters().getMappings("a");
-        assertEquals(2, processingVBs.size());
-        assertTrue(processingVBs.get(0).getContentHandler() instanceof ProcessorVisitor1);
-        assertTrue(processingVBs.get(1).getContentHandler() instanceof ConfigurableVisitor);
-        assertEquals(2, processingVAs.size());
-        assertTrue(processingVAs.get(0).getContentHandler() instanceof ProcessorVisitor1);
-        assertTrue(processingVAs.get(1).getContentHandler() instanceof ConfigurableVisitor);
+        List<ContentDeliveryUnitConfigMap> processingUnits = config.getProcessingUnits().getMappings("a");
+        assertEquals(2, processingUnits.size());
+        assertTrue(processingUnits.get(0).getContentDeliveryUnit() instanceof ProcessorVisitor1);
+        assertTrue(processingUnits.get(1).getContentDeliveryUnit() instanceof ConfigurableVisitor);
     }
+
 
     public void test_filtering() throws IOException, SAXException {
         Smooks smooks = new Smooks();
-        BasicExecutionEventListener eventListener = new BasicExecutionEventListener();
 
         smooks.addConfigurations("config2.xml", getClass().getResourceAsStream("config2.xml"));
         // Create an exec context - no profiles....
-        ExecutionContext executionContext = smooks.createExecutionContext();
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext();
         CharArrayWriter outputWriter = new CharArrayWriter();
 
         // Filter the input message to the outputWriter, using the execution context...
-        executionContext.setEventListener(eventListener);
         smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml1.xml")), new StreamResult(outputWriter), executionContext);
 
-        log.debug(outputWriter.toString());
+        System.out.println(outputWriter.toString());
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("testxml1-expected.xml"));
-        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(outputWriter.toString().getBytes())));
-        assertEquals(36, eventListener.getEvents().size());
+        assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(outputWriter.toString().getBytes())));        
     }
 }

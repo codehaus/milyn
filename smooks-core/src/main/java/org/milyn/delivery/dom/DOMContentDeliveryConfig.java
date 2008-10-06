@@ -15,68 +15,35 @@
 */
 package org.milyn.delivery.dom;
 
-import org.milyn.delivery.AbstractContentDeliveryConfig;
-import org.milyn.delivery.ContentHandlerConfigMapTable;
-import org.milyn.delivery.Filter;
-import org.milyn.delivery.dom.serialize.SerializationUnit;
-import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
+import org.milyn.delivery.dom.ProcessingSet;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * DOM specific {@link org.milyn.delivery.ContentDeliveryConfig} implementation.
- * 
+ * Content Delivery Configuration for DOM.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
+public interface DOMContentDeliveryConfig extends ContentDeliveryConfig {
 
-    private ContentHandlerConfigMapTable<DOMVisitBefore> assemblyVisitBefores;
-    private ContentHandlerConfigMapTable<DOMVisitAfter> assemblyVisitAfters;
+    /**
+     * Get the Assembly Unit table for this delivery context.
+     * @return The Assembly Unit table for this delivery context.
+     */
+    public abstract ContentDeliveryUnitConfigMapTable getAssemblyUnits();
 
-    private ContentHandlerConfigMapTable<DOMVisitBefore> processingVisitBefores;
-    private ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters;
+    /**
+     * Get the Processing Unit table for this delivery context.
+     * @return The Processing Unit table for this delivery context.
+     */
+    public abstract ContentDeliveryUnitConfigMapTable getProcessingUnits();
 
-    private ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors;
-
-    public ContentHandlerConfigMapTable<DOMVisitBefore> getAssemblyVisitBefores() {
-        return assemblyVisitBefores;
-    }
-
-    public void setAssemblyVisitBefores(ContentHandlerConfigMapTable<DOMVisitBefore> assemblyVisitBefores) {
-        this.assemblyVisitBefores = assemblyVisitBefores;
-    }
-
-    public ContentHandlerConfigMapTable<DOMVisitAfter> getAssemblyVisitAfters() {
-        return assemblyVisitAfters;
-    }
-
-    public void setAssemblyVisitAfters(ContentHandlerConfigMapTable<DOMVisitAfter> assemblyVisitAfters) {
-        this.assemblyVisitAfters = assemblyVisitAfters;
-    }
-
-    public ContentHandlerConfigMapTable<DOMVisitBefore> getProcessingVisitBefores() {
-        return processingVisitBefores;
-    }
-
-    public void setProcessingVisitBefores(ContentHandlerConfigMapTable<DOMVisitBefore> processingVisitBefores) {
-        this.processingVisitBefores = processingVisitBefores;
-    }
-
-    public ContentHandlerConfigMapTable<DOMVisitAfter> getProcessingVisitAfters() {
-        return processingVisitAfters;
-    }
-
-    public void setProcessingVisitAfters(ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters) {
-        this.processingVisitAfters = processingVisitAfters;
-    }
-
-    public ContentHandlerConfigMapTable<SerializationUnit> getSerailizationVisitors() {
-        return serailizationVisitors;
-    }
-
-    public void setSerailizationVisitors(ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors) {
-        this.serailizationVisitors = serailizationVisitors;
-    }
-
-    public Filter newFilter(ExecutionContext executionContext) {
-        return new SmooksDOMFilter(executionContext);
-    }
+    /**
+     * Get the SerializationUnit table for this delivery context.
+     * @return The SerializationUnit table for this delivery context.
+     */
+    public abstract ContentDeliveryUnitConfigMapTable getSerailizationUnits();
 }

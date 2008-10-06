@@ -1,8 +1,7 @@
-<order xmlns="http://x">
+<order>
     <header>
-        <y:date xmlns:y="http://y">Wed Nov 15 13:45:28 EST 2006</y:date>
+        <date>Wed Nov 15 13:45:28 EST 2006</date>
         <customer number="123123">Joe</customer>
-        <privatePerson></privatePerson>
     </header>
     <order-items>
         <order-item>

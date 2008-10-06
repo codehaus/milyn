@@ -39,6 +39,9 @@ import org.w3c.dom.Element;
 @Phase(VisitPhase.ASSEMBLY)
 public class RemoveElementAU implements DOMElementVisitor {
 
+    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
+	}
+
     public void visitBefore(Element element, ExecutionContext executionContext) {
         element.getParentNode().removeChild(element);
     }
@@ -47,5 +50,19 @@ public class RemoveElementAU implements DOMElementVisitor {
 	 * @see org.milyn.delivery.dom.DOMElementVisitor#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext request) {
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ContentDeliveryUnit#getShortDescription()
+	 */
+	public String getShortDescription() {
+		return "Removes and element from the document during the assembly phase.";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ContentDeliveryUnit#getDetailDescription()
+	 */
+	public String getDetailDescription() {
+		return "Removes and element from the document during the assembly phase.";
 	}
 }

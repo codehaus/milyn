@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.List;
-import java.net.URISyntaxException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -46,15 +45,14 @@ import org.milyn.servlet.container.ServletApplicationContext;
 import org.milyn.servlet.delivery.ServletResponseWrapper;
 import org.milyn.servlet.delivery.ServletResponseWrapperFactory;
 import org.milyn.servlet.delivery.XMLServletResponseWrapper;
-import org.xml.sax.SAXException;
 
- /**
- * Smooks Servlet Filter.
+/**
+ * Smooks Servlet Phase.
  * <p/>
- * This Servlet Filter plugs Smooks into a Servlet Container via
+ * This Servlet Phase plugs {@link org.milyn.delivery.dom.SmooksDOMFilter} into a Servlet Container via
  * the {@link org.milyn.servlet.delivery.XMLServletResponseWrapper}.
  * <p/>
- * This Filter can also be configured to filter other response types in a useragent optimizable
+ * This Phase can also be configured to filter other response types in a useragent optimizable
  * fashion e.g. filter using a differnt image filter depending on the requesting browser.
  * See {@link org.milyn.servlet.delivery.ServletResponseWrapperFactory}.
  * <p/>
@@ -64,7 +62,7 @@ import org.xml.sax.SAXException;
  * 
  * <h3>Requirements</h3>
  * <ul>
- * 	<li>JDK 1.5</li>
+ * 	<li>JDK 1.4+</li>
  * 	<li>Servlet Specification 2.3+ compliant container</li>
  * </ul>
  * 
@@ -73,9 +71,11 @@ import org.xml.sax.SAXException;
  * <ol>
  * 	<li>Download the Smooks Core distribution (and its dependencies) from 
  * 		<a href="http://milyn.codehaus.org/downloads">Milyn Downloads</a>.</li>
+ *  <li>Download the Smooks Servlet distribution (and its dependencies) from 
+ *      <a href="http://milyn.codehaus.org/downloads">Milyn Downloads</a>.</li>
  * 	<li>Install all jars in your webapps WEB-INF/lib folder</li>
  * </ol>
- * To enable this Filter in your Servlet container simply
+ * To enable this Phase in your Servlet container simply
  * add the following to the application web.xml file.
  * <pre>
  * &lt;filter&gt;
@@ -87,18 +87,32 @@ import org.xml.sax.SAXException;
  *	&lt;url-pattern&gt;*.jsp&lt;/url-pattern&gt;
  * &lt;/filter-mapping&gt;</pre>
  * 
+ * <h3 id="cdu-config">Content Delivery Unit Configuration</h3>
+ * How does Smooks load Content Delivery Units in a Servlet container?  This section tries
+ * to explain how this works at present.  
+ * <div class="indent">
+ * <h4>Webapp WEB-INF Structure</h4>
+ * The following illustration shows a sample Smooks Content Delivery Unit/Resource 
+ * configuration in a Servlet container.  Smooks uses the "smooks-cdr.lst" file to
+ * load the {@link org.milyn.cdr.SmooksResourceConfiguration .cdrl} files from the cdr 
+ * folder.  Make sure to read the docs on the {@link org.milyn.cdr.SmooksResourceConfiguration .cdrl configuration files}.
+ * See <a href="http://milyn.codehaus.org/Tutorials">Milyn Tutorials</a> for examples 
+ * of using this Cartridge.
+ * <p/>
+ * <div align="center"><img src="doc-files/cdu-servlet-structure.png" border="1" /></div>
+ * </div>
  * @author tfennelly
  */
 public class SmooksServletFilter implements Filter {
 
     /**
-     * Smooks config application property name.
+     * Smooks cdrar list URL application property name.
      */
-	private static final String SMOOKS_CONFIG_PARAM = "SmooksConfig";
+	private static final String SMOOKS_CDRAR_LIST_CONFIG_PARAM = "SmooksCdrarListUrl";
     /**
      * Default smooks cdrar list config file.
      */
-    private static final String DEFAULT_CONFIG = "/smooks-config.xml";
+    private static final String DEFAULT_CONFIG = "/smooks-cdr.lst";
 	/**
 	 * Smooks view on the servlet context.
 	 */
@@ -120,10 +134,9 @@ public class SmooksServletFilter implements Filter {
 			servletConfig = new FilterToServletConfigAdapter(config);
 			smooksContainerContext = new ServletApplicationContext(config.getServletContext(), servletConfig);
 			loadConfigStore();
-            DeviceProfiler.setProfileStore(smooksContainerContext.getProfileStore(), servletConfig.getServletContext());
-            logger.info("Smooks Servlet Filter initalised.");
+			logger.info("Smooks Servlet Phase initalised.");
 		} catch(Exception e) {
-			throw new ServletException("Smooks configuration load failure.", e);
+			throw new ServletException("CDRArchive list load failure.", e);
 		}		
 	}
 
@@ -132,14 +145,16 @@ public class SmooksServletFilter implements Filter {
 	 * @throws IllegalArgumentException
 	 * @throws IOException
 	 */
-	private void loadConfigStore() throws IllegalArgumentException, IOException, SAXException, URISyntaxException {
+	private void loadConfigStore() throws IllegalArgumentException, IOException {
 		ContainerResourceLocator containerResLocator;
-		InputStream smooksConfigStream;
+		BufferedReader listBufferedReader;
+		InputStream cdrarListStream;
 		
 		containerResLocator = smooksContainerContext.getResourceLocator();
-		smooksConfigStream = containerResLocator.getResource(SMOOKS_CONFIG_PARAM, DEFAULT_CONFIG);
-        smooksContainerContext.getStore().registerResources("smooks-config", smooksConfigStream);
-		logger.info("Smooks Config Store load complete.");
+		cdrarListStream = containerResLocator.getResource(SMOOKS_CDRAR_LIST_CONFIG_PARAM, DEFAULT_CONFIG);
+		listBufferedReader = new BufferedReader(new InputStreamReader(cdrarListStream));
+		smooksContainerContext.getStore().load(listBufferedReader);
+		logger.info("Config Store load complete.");
 	}
 
 	/* (non-Javadoc)
@@ -202,9 +217,9 @@ public class SmooksServletFilter implements Filter {
 		ServletResponseWrapper responseWrapper = null; 
 		
 		if(selector != null) {
-			List<SmooksResourceConfiguration> resourceConfigList = executionContext.getDeliveryConfig().getSmooksResourceConfigurations(selector);
+			List resourceConfigList = executionContext.getDeliveryConfig().getSmooksResourceConfigurations(selector);
 			if(resourceConfigList != null && !resourceConfigList.isEmpty()) {
-				responseWrapper = ServletResponseWrapperFactory.createServletResponseWrapper(resourceConfigList.get(0), executionContext, (HttpServletResponse)response);
+				responseWrapper = ServletResponseWrapperFactory.createServletResponseWrapper((SmooksResourceConfiguration)resourceConfigList.get(0), executionContext, (HttpServletResponse)response);
 			}
 		}
 		
@@ -215,9 +230,7 @@ public class SmooksServletFilter implements Filter {
 	 * @see javax.servlet.Phase#destroy()
 	 */
 	public void destroy() {
-        smooksContainerContext.getStore().close();
-        servletConfig.getServletContext().removeAttribute(DeviceProfiler.PROFILE_STORE_CTX_KEY);
-    }
+	}
 
 	/**
 	 * Adaptorfor Phase to Servlet config.

@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
  */
 public class Parameter {
 	public static final String PARAM_TYPE_PREFIX = "param-type:";
-	private final String name;
+	private String name;
 	String value;
 	private String type;
 	private Object objValue;
@@ -82,7 +82,7 @@ public class Parameter {
 	 * {@link ParameterDecoder} using the parameter type - selector="decoder-<i>&lt;type&gt;</i>".
 	 * @param deliveryConfig Requesting device {@link ContentDeliveryConfig}.
 	 * @return Decoded value.
-	 * @throws ParameterDecodeException Unable to decode parameter value.
+	 * @throws ParameterDecodeException Unable to decode parameter value. 
 	 */
 	public Object getValue(ContentDeliveryConfig deliveryConfig) throws ParameterDecodeException {
 		if(objValue == null) {
@@ -106,14 +106,13 @@ public class Parameter {
 				}
 			}
 		}
-
+		
 		return objValue;
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
 	public String toString() {
 		return value;
 	}
@@ -125,7 +124,7 @@ public class Parameter {
      *
      * @param xml Parameter configuration xml.
      */
-    public void setXML(Element xml) {
+    protected void setXML(Element xml) {
         this.xml = xml;
     }
 

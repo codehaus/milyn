@@ -76,8 +76,7 @@ public class DefaultProfileStore implements ProfileStore {
 		}
 
 		store.put(profileSet.getBaseProfile().trim().toLowerCase(), profileSet);
-        expandProfiles();
-    }
+	}
 
     /**
      * Expand out the profile sets in this profile store.
@@ -156,7 +155,7 @@ public class DefaultProfileStore implements ProfileStore {
 	 * @author tfennelly
 	 */
 	static class UnitTest {
-		public static void addProfileSet(ProfileStore store, ProfileSet profileSet) {
+		public static void addProfileSet(DefaultProfileStore store, ProfileSet profileSet) {
 			store.addProfileSet(profileSet);
 		}
 	}

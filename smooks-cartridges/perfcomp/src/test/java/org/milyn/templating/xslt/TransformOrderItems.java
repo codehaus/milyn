@@ -1,24 +1,24 @@
 package org.milyn.templating.xslt;
 
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.process.ProcessingUnit;
+import org.milyn.container.ContainerRequest;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.xml.XmlUtil;
 import org.milyn.xml.DomUtils;
-import org.milyn.SmooksException;
 import org.w3c.dom.Element;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import java.util.List;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class TransformOrderItems implements DOMElementVisitor {
+public class TransformOrderItems implements ProcessingUnit {
     
-
-    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-    }
-
-    public void visitAfter(Element order, ExecutionContext executionContext) throws SmooksException {
-        List<Element> orderItems = TransformOrderItem.getOrderItems(executionContext);
+    public void visit(Element order, ContainerRequest containerRequest) {
+        List<Element> orderItems = TransformOrderItem.getOrderItems(containerRequest);
         Element orderLines = order.getOwnerDocument().createElement("OrderLines");
 
         // Add the OrderLines element
@@ -33,5 +33,12 @@ public class TransformOrderItems implements DOMElementVisitor {
         DomUtils.insertBefore(doc.createTextNode("<OrderLines>"), firstOrderItem);
         order.appendChild(doc.createTextNode("</OrderLines>"));
         */
+    }
+
+    public boolean visitBefore() {
+        return false;
+    }
+
+    public void setConfiguration(SmooksResourceConfiguration smooksResourceConfiguration) throws SmooksConfigurationException {
     }
 }

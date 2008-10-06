@@ -1,24 +1,38 @@
 /*
-	Milyn - Copyright (C) 2006
+ Milyn - Copyright (C) 2006
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
-	Foundation.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License (version 2.1) as published by the Free Software 
+ Foundation.
 
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+ 
+ See the GNU Lesser General Public License for more details:    
+ http://www.gnu.org/licenses/lgpl.txt
+ */
 
-	See the GNU Lesser General Public License for more details:
-	http://www.gnu.org/licenses/lgpl.txt
-*/
 package org.milyn.delivery;
 
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+
 /**
- * Deprecated.
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
- * @deprecated Use {@link ContentHandler}.
+ * Content Delivery Unit interface definition.
+ * </p>
+ * Base interface for all content delivery components.  See extending interfaces.
+ * 
+ * @author tfennelly
  */
-public interface ContentDeliveryUnit extends ContentHandler {
+public interface ContentDeliveryUnit {
+	
+	/**
+	 * Set the resource configuration for the delivery unit.
+	 * @param resourceConfig The configuration.
+	 * @since Version 0.8
+	 * @throws SmooksConfigurationException Invalid configuration.
+	 */
+	public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException;
 }

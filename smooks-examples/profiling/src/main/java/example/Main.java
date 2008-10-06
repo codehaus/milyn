@@ -17,14 +17,14 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
-import org.milyn.container.ExecutionContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.util.Arrays;
 
 /**
  * Simple example main class.
@@ -41,14 +41,11 @@ public class Main {
         smooks = new Smooks("smooks-config.xml");
     }
 
-    protected String runSmooksTransform(String targetProfile) throws IOException {
+    protected String runSmooksTransform(String targetProfile) {
 
         // Create an exec context for the target profile....
-        ExecutionContext executionContext = smooks.createExecutionContext(targetProfile);
+        StandaloneExecutionContext executionContext = smooks.createExecutionContext(targetProfile);
         CharArrayWriter outputWriter = new CharArrayWriter();
-
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
         // Filter the input message to the outputWriter, using the execution context...
         smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
@@ -69,7 +66,7 @@ public class Main {
         transformForProfile("message-exchange-5", smooksMain);
     }
 
-    private static void transformForProfile(String targetProfile, Main smooksMain) throws IOException {
+    private static void transformForProfile(String targetProfile, Main smooksMain) {
         readCommandPrompt(targetProfile);
         System.out.println("\n");
         System.out.println(smooksMain.runSmooksTransform(targetProfile));

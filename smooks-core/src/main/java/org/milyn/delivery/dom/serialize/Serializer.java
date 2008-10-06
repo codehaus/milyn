@@ -16,30 +16,30 @@
 
 package org.milyn.delivery.dom.serialize;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.ResourceConfigurationNotFoundException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.ParameterAccessor;
-import org.milyn.cdr.annotation.Configurator;
-import org.milyn.container.ExecutionContext;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.delivery.ContentHandlerConfigMap;
-import org.milyn.delivery.ContentHandlerConfigMapTable;
-import org.milyn.delivery.Filter;
-import org.milyn.event.types.ResourceTargetingEvent;
-import org.milyn.event.types.ElementPresentEvent;
-import org.milyn.event.types.DOMFilterLifecycleEvent;
-import org.milyn.delivery.dom.DOMContentDeliveryConfig;
-import org.milyn.xml.DocType;
-import org.milyn.xml.DomUtils;
-import org.milyn.SmooksException;
-import org.w3c.dom.*;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 import java.util.Vector;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.cdr.ResourceConfigurationNotFoundException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMapTable;
+import org.milyn.delivery.dom.DOMContentDeliveryConfig;
+import org.milyn.xml.DomUtils;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
+import org.w3c.dom.Element;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 /**
  * Node serializer.
@@ -70,22 +70,13 @@ public class Serializer {
 	/**
 	 * Target content delivery context SerializationUnit definitions.
 	 */
-	private ContentHandlerConfigMapTable<SerializationUnit> serializationUnits;
-    /**
-     * Turn default serialization on/off.  Default is "true".
-     */
-    private boolean defaultSerializationOn;
-    /**
+	private ContentDeliveryUnitConfigMapTable serializationUnits;
+	/**
 	 * Default SerializationUnit.
 	 */
 	private List defaultSUs;
-    /**
-     * Event Listener.
-     */
-    private ExecutionEventListener eventListener;
-    private boolean terminateOnVisitorException;
 
-    /**
+	/**
 	 * Public constructor.
 	 * @param node Node to be serialized.
 	 * @param executionContext Target device context.
@@ -98,23 +89,17 @@ public class Serializer {
 		}
 		this.node = node;
 		this.executionContext = executionContext;
-        eventListener = executionContext.getEventListener();
 		// Get the delivery context for the device.
 		deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 		// Initialise the serializationUnits member
-		serializationUnits = deliveryConfig.getSerailizationVisitors();
+		serializationUnits = deliveryConfig.getSerailizationUnits();
 		// Set the default SerializationUnit
-        defaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, executionContext.getDeliveryConfig());
-        if(defaultSerializationOn) {
-            defaultSUs = serializationUnits.getMappings("*");
-            if(defaultSUs == null) {
-                SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
-                resourceConfig.setDefaultResource(true);
-                defaultSUs = new Vector();
-                defaultSUs.add(new ContentHandlerConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
-            }
-        }
-        terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
+		defaultSUs = (List)serializationUnits.getMappings("*");
+		if(defaultSUs == null) {
+			SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
+			defaultSUs = new Vector();
+			defaultSUs.add(new ContentDeliveryUnitConfigMap(new DefaultSerializationUnit(resourceConfig), resourceConfig));
+		}
 	}
 	
 	/**
@@ -135,25 +120,46 @@ public class Serializer {
 			throw new IllegalArgumentException("null 'writer' arg passed in method call.");
 		} 
 
-        // Register the DOM phase events...
-        if(eventListener != null) {
-            eventListener.onEvent(new DOMFilterLifecycleEvent(DOMFilterLifecycleEvent.DOMEventType.SERIALIZATION_STARTED));
-        }
-
-        if(node instanceof Document) {
+		if(node instanceof Document) {
 			Document doc = (Document)node;
 			Element rootElement = doc.getDocumentElement();
+			String rootElementName = DomUtils.getName(rootElement);
+			SmooksResourceConfiguration docTypeSmooksResourceConfiguration = null;
 
-            DocType.DocumentTypeData docTypeData = DocType.getDocType(executionContext);
-            if(docTypeData != null) {
-                DocType.serializeDoctype(docTypeData, writer);
-                if(docTypeData.getXmlns() != null) {
-                    rootElement.setAttribute("xmlns", docTypeData.getXmlns());
-                } else {
-                    rootElement.removeAttribute("xmlns");
-                }
-            }
+			// Check for a DOCTYPE decl SmooksResourceConfigurations for this delivery context.
+			docTypeUDs = deliveryConfig.getSmooksResourceConfigurations("doctype");
+			if(docTypeUDs != null && docTypeUDs.size() > 0) {
+				docTypeSmooksResourceConfiguration = (SmooksResourceConfiguration)docTypeUDs.get(0);
+			}
+			
+			// Only use the cdrdef if the override flag is set.  The override flag will
+			// cause this DOCTYPE to override any DOCYTPE decl from the source doc.
+			if(docTypeSmooksResourceConfiguration != null && docTypeSmooksResourceConfiguration.getBoolParameter("override", true)) {
+				String path = docTypeSmooksResourceConfiguration.getResource();
+                
+				if(path != null) {
+					writer.write(new String(docTypeSmooksResourceConfiguration.getBytes()));
+				} else {
+					String publicId = docTypeSmooksResourceConfiguration.getStringParameter("publicId", "!!publicId undefined - fix smooks-resource!!");
+					String systemId = docTypeSmooksResourceConfiguration.getStringParameter("systemId", "!!systemId undefined - fix smooks-resource!!");
+					String xmlns = docTypeSmooksResourceConfiguration.getStringParameter("xmlns");
 
+					serializeDoctype(publicId, systemId, rootElementName, writer);
+					if(xmlns != null) {
+						rootElement.setAttribute("xmlns", xmlns);
+					} else {
+						rootElement.removeAttribute("xmlns");
+					}
+				}
+			} else {
+				// If there's no SmooksResourceConfiguration doctypes defined, was there a DOCTYPE decl in 
+				// the source Document?  If there was, write this out as the DOCTYPE.
+				DocumentType docType = doc.getDoctype();
+				
+				if(docType != null) {
+					serializeDoctype(docType.getPublicId(), docType.getSystemId(), rootElementName, writer);
+				}
+			}
             recursiveDOMWrite(rootElement, writer, true);
 		} else {
             // Write the DOM, the child elements of the node
@@ -213,65 +219,47 @@ public class Serializer {
 
 		elementSU = getSerializationUnit(element, isRoot);
 		try {
-            if(elementSU != null) {
-                elementSU.writeElementStart(element, writer, executionContext);
-            }
-
-            if(children != null && children.getLength() > 0) {
+			elementSU.writeElementStart(element, writer, executionContext);
+	
+			if(children != null && children.getLength() > 0) {
 				int childCount = children.getLength();
 	
 				for(int i = 0; i < childCount; i++) {
 					Node childNode = children.item(i);
 					
-                    if(elementSU != null) {
-                        switch(childNode.getNodeType()) {
-                            case Node.CDATA_SECTION_NODE: {
-                                elementSU.writeElementCDATA((CDATASection)childNode, writer, executionContext);
-                                break;
-                            }
-                            case Node.COMMENT_NODE: {
-                                elementSU.writeElementComment((Comment)childNode, writer, executionContext);
-                                break;
-                            }
-                            case Node.ELEMENT_NODE: {
-                                if(elementSU.writeChildElements()) {
-                                    recursiveDOMWrite((Element)childNode, writer, false);
-                                }
-                                break;
-                            }
-                            case Node.ENTITY_REFERENCE_NODE: {
-                                elementSU.writeElementEntityRef((EntityReference)childNode, writer, executionContext);
-                                break;
-                            }
-                            case Node.TEXT_NODE: {
-                                elementSU.writeElementText((Text)childNode, writer, executionContext);
-                                break;
-                            }
-                            default: {
-                                elementSU.writeElementNode(childNode, writer, executionContext);
-                                break;
-                            }
-                        }
-                    } else if(childNode.getNodeType() == Node.ELEMENT_NODE) {
-                        recursiveDOMWrite((Element)childNode, writer, false);
-                    }
-                }
+					switch(childNode.getNodeType()) {
+						case Node.CDATA_SECTION_NODE: {
+							elementSU.writeElementCDATA((CDATASection)childNode, writer, executionContext);
+							break;
+						}		
+						case Node.COMMENT_NODE: { 
+							elementSU.writeElementComment((Comment)childNode, writer, executionContext);
+							break;
+						}		
+						case Node.ELEMENT_NODE: { 
+							if(elementSU.writeChildElements()) {
+								recursiveDOMWrite((Element)childNode, writer, false);
+							}
+							break;
+						}		
+						case Node.ENTITY_REFERENCE_NODE: { 
+							elementSU.writeElementEntityRef((EntityReference)childNode, writer, executionContext);
+							break;
+						}		
+						case Node.TEXT_NODE: { 
+							elementSU.writeElementText((Text)childNode, writer, executionContext);
+							break;
+						}		
+						default: {
+							elementSU.writeElementNode(childNode, writer, executionContext);
+							break;
+						}
+					}
+				}
 			}
-            if(elementSU != null) {
-    			elementSU.writeElementEnd(element, writer, executionContext);
-            }
-        } catch(Throwable thrown) {
-            String error = "Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-
-            if(terminateOnVisitorException) {
-                if(thrown instanceof SmooksException) {
-                    throw (SmooksException) thrown;
-                } else {
-                    throw new SmooksException(error, thrown);
-                }
-            } else {
-                logger.error(error, thrown);
-            }
+			elementSU.writeElementEnd(element, writer, executionContext);
+		} catch(Throwable thrown) {
+			logger.error("Failed to apply serialization unit [" + elementSU.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].", thrown);
 		}
 	}
 
@@ -283,16 +271,11 @@ public class Serializer {
 	 */
 	private SerializationUnit getSerializationUnit(Element element, boolean isRoot) {
 		String elementName = DomUtils.getName(element);
-        List<ContentHandlerConfigMap<SerializationUnit>> elementSUs;
+        List<ContentDeliveryUnitConfigMap> elementSUs;
 
-        // Register the "presence" of the element...
-        if(eventListener != null) {
-            eventListener.onEvent(new ElementPresentEvent(element));
-        }
-        
         if(isRoot) {
             // The document as a whole (root node) can also be targeted through the "$document" selector.
-            elementSUs = serializationUnits.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
+            elementSUs = serializationUnits.getMappings(new String[] {elementName, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR});
         } else {
             elementSUs = serializationUnits.getMappings(elementName);
         }
@@ -300,33 +283,25 @@ public class Serializer {
         if(elementSUs == null || elementSUs.isEmpty()) {
 			elementSUs = defaultSUs;
 		}
+		int numSUs = elementSUs.size();
+		
+		for(int i = 0; i < numSUs; i++) {
+            ContentDeliveryUnitConfigMap configMap = elementSUs.get(i);
+            SmooksResourceConfiguration config = configMap.getResourceConfig(); 
 
-        if(elementSUs != null) {
-            int numSUs = elementSUs.size();
+            // Make sure the serialization unit is targeted at this element.
+            if(!config.isTargetedAtElement(element)) {
+                continue;
+            }            
 
-            for(int i = 0; i < numSUs; i++) {
-                ContentHandlerConfigMap configMap = elementSUs.get(i);
-                SmooksResourceConfiguration config = configMap.getResourceConfig();
-
-                // Make sure the serialization unit is targeted at this element.
-                if(!config.isTargetedAtElement(element)) {
-                    continue;
-                }
-
-                // Register the targeting event...
-                if(eventListener != null) {
-                    eventListener.onEvent(new ResourceTargetingEvent(element, config));
-                }
-
-                if(logger.isDebugEnabled()) {
-                    logger.debug("Applying serialisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
-                }
-
-                // This is the one, return it...
-                return (SerializationUnit)configMap.getContentHandler();
-            }
-        }
-        
-        return null;
+    		if(logger.isDebugEnabled()) {
+    			logger.debug("Applying serialisation resource [" + config + "] to element [" + DomUtils.getXPath(element) + "].");
+    		}
+            
+            // This is the one, return it...
+            return (SerializationUnit)configMap.getContentDeliveryUnit();
+		}
+		
+		throw new IllegalStateException("At least 1 SerializationUnit needs to be configured for an element. " + element.getTagName() + " has no configured SerializationUnit.");
 	}
 }

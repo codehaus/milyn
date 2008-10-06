@@ -1,5 +1,7 @@
 package org.milyn.delivery.dom;
 
+import org.milyn.delivery.dom.Phase;
+import org.milyn.delivery.dom.VisitPhase;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.SmooksResourceConfiguration;

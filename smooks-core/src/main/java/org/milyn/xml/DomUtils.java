@@ -541,7 +541,7 @@ public abstract class DomUtils {
 
 		Node parent = node.getParentNode();
         if(parent == null) {
-			logger.debug("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
+			logger.warn("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
 			return 0;
 		}
 
@@ -582,18 +582,18 @@ public abstract class DomUtils {
 
 		Node parent1 = node1.getParentNode();
         if(parent1 == null) {
-			logger.debug("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
 			return 0;
 		}
 		
 		Node parent2 = node2.getParentNode();
         if(parent2 == null) {
-			logger.debug("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
 			return 0;
 		}
 		
 		if(parent1 != parent2) {
-			logger.debug("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
 			return 0;
 		}
 		
@@ -620,7 +620,7 @@ public abstract class DomUtils {
 
 		Node parent = node.getParentNode();
         if(parent == null) {
-			logger.debug("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
+			logger.warn("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
 			return 0;
 		}
 
@@ -657,18 +657,18 @@ public abstract class DomUtils {
 
 		Node parent1 = node1.getParentNode();
         if(parent1 == null) {
-			logger.debug("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
 			return 0;
 		}
 		
 		Node parent2 = node2.getParentNode();
         if(parent2 == null) {
-			logger.debug("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
 			return 0;
 		}
 		
 		if(parent1 != parent2) {
-			logger.debug("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
+			logger.warn("Cannot count nodes between [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
 			return 0;
 		}
 		
@@ -695,7 +695,7 @@ public abstract class DomUtils {
 
 		Node parent = node.getParentNode();
 		if(parent == null) {
-			logger.debug("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
+			logger.warn("Cannot count nodes before [" + node + "]. [" + node + "] has no parent.");
 			return 0;
 		}
 		
@@ -728,7 +728,7 @@ public abstract class DomUtils {
 
 		Node parent = node.getParentNode();
 		if(parent == null) {
-			logger.debug("Cannot get text before node [" + node + "]. [" + node + "] has no parent.");
+			logger.warn("Cannot get text before node [" + node + "]. [" + node + "] has no parent.");
 			return "";
 		}
 		
@@ -762,18 +762,18 @@ public abstract class DomUtils {
 
 		Node parent1 = node1.getParentNode();
         if(parent1 == null) {
-			logger.debug("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
+			logger.warn("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. [" + node1 + "] has no parent.");
 			return "";
 		}
 		
 		Node parent2 = node2.getParentNode();
         if(parent2 == null) {
-			logger.debug("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
+			logger.warn("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. [" + node2 + "] has no parent.");
 			return "";
 		}
 		
 		if(parent1 != parent2) {
-			logger.debug("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
+			logger.warn("Cannot get text between nodes [" + node1 + "] and [" + node2 + "]. These nodes do not share the same sparent.");
 			return "";
 		}
 
@@ -852,19 +852,7 @@ public abstract class DomUtils {
 		return xpathToken;
 	}
 
-    public static int getDepth(Element element) {
-        Node parent = element.getParentNode();
-        int depth = 0;
-
-        while(parent != null && parent.getNodeType() == Node.ELEMENT_NODE) {
-            depth++;
-            parent = parent.getParentNode();
-        }
-
-        return depth;
-    }
-
-    /**
+	/**
 	 * Get the combined text from all the text, comment and cdata DOM nodes
 	 * contained within the supplied parent element. 
 	 * @param parent The parent DOM element.
@@ -933,8 +921,7 @@ public abstract class DomUtils {
 	 * elements having the same name (and namespace if specified) e.g. if
 	 * searching for the 2nd &ltinput&gt; element, this param needs to
 	 * have a value of 2. 
-     * @return The element at the requested position, or null if no such child
-     * element exists on the parent element.
+	 * @return
 	 */
 	public static Element getElement(Element parent, String localname, int position) {
 		return getElement(parent, localname, position, null);

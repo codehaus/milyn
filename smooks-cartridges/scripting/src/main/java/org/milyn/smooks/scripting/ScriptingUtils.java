@@ -25,7 +25,6 @@ import java.io.InputStream;
 /**
  * Utility class for the Scripting Cartridge.
  * @author tfennelly
- * @deprecated No need to do this anymore.  The classpath is scanned.
  */
 public class ScriptingUtils {
 

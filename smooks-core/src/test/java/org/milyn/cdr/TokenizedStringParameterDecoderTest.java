@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.Configurator;
 
 import junit.framework.TestCase;
 
@@ -61,7 +60,7 @@ public class TokenizedStringParameterDecoderTest extends TestCase {
 		
         decoderConfig = new SmooksResourceConfiguration(Parameter.PARAM_TYPE_PREFIX + type, "org.milyn.cdr.TokenizedStringParameterDecoder");
         decoderConfig.setParameter(Parameter.PARAM_TYPE_PREFIX, type);
-        decoder = Configurator.configure(new TokenizedStringParameterDecoder(), decoderConfig);
+        decoder = new TokenizedStringParameterDecoder(decoderConfig);
         
 		return (Collection)decoder.decodeValue(value);
 	}

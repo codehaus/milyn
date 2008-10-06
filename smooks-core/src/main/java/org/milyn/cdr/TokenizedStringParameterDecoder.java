@@ -70,7 +70,8 @@ public class TokenizedStringParameterDecoder extends ParameterDecoder {
 	 * Public constructor.
 	 * @param resourceConfig Configuration.
 	 */
-	public void setConfiguration(SmooksResourceConfiguration resourceConfig) {
+	public TokenizedStringParameterDecoder(SmooksResourceConfiguration resourceConfig) {
+		super(resourceConfig);
 		delims = resourceConfig.getStringParameter("delims", ",");
 		returnDelims = resourceConfig.getBoolParameter("returnDelims", false);
 		trimTokens = resourceConfig.getBoolParameter("trimTokens", true);

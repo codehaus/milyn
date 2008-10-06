@@ -16,15 +16,19 @@
 
 package org.milyn.container.standalone;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Hashtable;
-import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
 import org.milyn.profile.*;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.URIResourceLocator;
+import org.xml.sax.SAXException;
 
 /**
  * Standalone container execution context for Smooks.
@@ -35,7 +39,15 @@ import org.milyn.resource.URIResourceLocator;
  */
 public class StandaloneApplicationContext implements ApplicationContext {
 
-    private Hashtable attributes = new Hashtable();
+    /**
+     * The open profile is a special profile for {@link org.milyn.container.ExecutionContext}
+     * instances that are not interested in using profiles.
+     */
+    public static final String OPEN_PROFILE_NAME = Profile.class.getName() + "#OPEN_PROFILE_NAME";
+
+    private static Log logger = LogFactory.getLog(StandaloneApplicationContext.class);
+	private Hashtable attributes = new Hashtable();
+	private Hashtable sessions = new Hashtable();
 	private ContainerResourceLocator resourceLocator;	
 	private SmooksResourceConfigurationStore resStore;
 	private DefaultProfileStore profileStore = new DefaultProfileStore();
@@ -50,7 +62,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
         ((URIResourceLocator)resourceLocator).setBaseURI(URI.create(URIResourceLocator.SCHEME_CLASSPATH + ":/"));
         resStore = new SmooksResourceConfigurationStore(this);
         // Add the open profile...
-        profileStore.addProfileSet(new DefaultProfileSet(Profile.DEFAULT_PROFILE));
+        profileStore.addProfileSet(new DefaultProfileSet(OPEN_PROFILE_NAME));
     }
 
 	/* (non-Javadoc)
@@ -77,7 +89,6 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	public ContainerResourceLocator getResourceLocator() {
 		return resourceLocator;
 	}
-
     public void setResourceLocator(ContainerResourceLocator resourceLocator) {
         this.resourceLocator = resourceLocator;
     }
@@ -86,16 +97,11 @@ public class StandaloneApplicationContext implements ApplicationContext {
 		return resStore;
 	}
 
-    /**
+	/**
 	 * Get the ProfileStore in use within the Standalone Context.
 	 * @return The ProfileStore.
 	 */
-	public ProfileStore getProfileStore() {
+	public DefaultProfileStore getProfileStore() {
 		return profileStore;
-	}
-	
-	public Map getAttributes()
-	{
-		return attributes;
 	}
 }

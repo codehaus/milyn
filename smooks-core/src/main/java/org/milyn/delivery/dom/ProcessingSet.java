@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.delivery.dom.DOMElementVisitor;
 
 /**
@@ -34,7 +34,7 @@ public class ProcessingSet {
 	/**
 	 * ProcessingUnit instances.
 	 */
-	private List<ContentHandlerConfigMap> processingUnits = new ArrayList<ContentHandlerConfigMap>();
+	private List<ContentDeliveryUnitConfigMap> processingUnits = new ArrayList<ContentDeliveryUnitConfigMap>();
 
 	/**
 	 * Add to the ProcessingSet.
@@ -42,8 +42,8 @@ public class ProcessingSet {
 	 * @param resourceConfig Corresponding resource config.
 	 */
 	public void addProcessingUnit(DOMElementVisitor processingUnit, SmooksResourceConfiguration resourceConfig) {
-        ContentHandlerConfigMap mapInst =
-            new ContentHandlerConfigMap(processingUnit, resourceConfig);
+        ContentDeliveryUnitConfigMap mapInst = 
+            new ContentDeliveryUnitConfigMap(processingUnit, resourceConfig);
 
         processingUnits.add(mapInst);
 	}
@@ -52,7 +52,7 @@ public class ProcessingSet {
 	 * Get the list of ProcessingUnit instances to be applied.
 	 * @return List of ProcessingUnit instances.
 	 */
-	public List<ContentHandlerConfigMap> getProcessingUnits() {
+	public List<ContentDeliveryUnitConfigMap> getProcessingUnits() {
 		return processingUnits;
 	}
 }

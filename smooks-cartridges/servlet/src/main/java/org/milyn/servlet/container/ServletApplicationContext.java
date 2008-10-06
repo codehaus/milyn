@@ -16,8 +16,6 @@
 
 package org.milyn.servlet.container;
 
-import java.util.Map;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
@@ -26,8 +24,6 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
-import org.milyn.profile.ProfileStore;
-import org.milyn.profile.DefaultProfileStore;
 
 /**
  * ApplicationContext adapter for the javax.servlet.ServletContext interface.
@@ -48,8 +44,6 @@ public class ServletApplicationContext implements ApplicationContext {
 	 */
 	private SmooksResourceConfigurationStore resStore;
     
-    private DefaultProfileStore profileStore = new DefaultProfileStore();
-
 	/**
 	 * Public constructor.
 	 * @param servletContext ServletContext instance.
@@ -102,24 +96,11 @@ public class ServletApplicationContext implements ApplicationContext {
 		return resStore;
 	}
 
-    public ProfileStore getProfileStore() {
-        return profileStore;
-    }
-
-    public void setResourceLocator(ContainerResourceLocator resourceLocator) {
-        throw new UnsupportedOperationException("Cannot set the resource locator on the " + ServletApplicationContext.class.getName() + " class.");
-    }
-
-    /**
+	/**
 	 * Get the associated ServletContext instance.
 	 * @return ServletContext for this ServletApplicationContext.
 	 */
 	public ServletContext getServletContext() {
 		return servletContext;
-	}
-	
-	public Map getAttributes()
-	{
-		throw new UnsupportedOperationException( "Method getAttributes is not implemented" ); 
 	}
 }

@@ -16,33 +16,27 @@
 
 package org.milyn.servlet.container;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.event.ExecutionEventListener;
-import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentDeliveryConfigBuilder;
-import org.milyn.profile.ProfileSet;
-import org.milyn.servlet.ServletUAContext;
-import org.milyn.useragent.UAContext;
-import org.milyn.useragent.UnknownUseragentException;
-import org.milyn.useragent.request.HttpRequest;
-import org.milyn.cdr.ParameterAccessor;
+import java.net.URI;
+import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.util.Enumeration;
-import java.util.Map;
+
+import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.dom.ContentDeliveryConfigImpl;
+import org.milyn.useragent.UAContext;
+import org.milyn.useragent.UnknownUseragentException;
+import org.milyn.useragent.request.HttpRequest;
+import org.milyn.servlet.ServletUAContext;
+import org.milyn.profile.ProfileSet;
 
 /**
  * Smooks ExecutionContext implementation for the HttpServlet container.
  * @author tfennelly
  */
 public class HttpServletExecutionContext implements ExecutionContext, HttpRequest {
-
-    private static Log logger = LogFactory.getLog(HttpServletExecutionContext.class);
 
     /**
 	 * HttpServletRequest instance.
@@ -53,7 +47,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	 */
 	private UAContext uaContext;
 	/**
-	 * Requesting device ContentDeliveryConfigBuilder.
+	 * Requesting device ContentDeliveryConfigImpl.
 	 */
 	private ContentDeliveryConfig deliveryConfig;
 	/**
@@ -64,13 +58,8 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	 * Request URI.
 	 */
 	private URI requestURI;
-    /**
-     * Execution Listener.
-     */
-    private ExecutionEventListener executionListener;
-    private Throwable terminationError;
 
-    /**
+	/**
 	 * Public Constructor.
 	 * @param servletRequest HttpServletRequest instance.
 	 * @param servletConfig ServletConfig instance.
@@ -86,14 +75,10 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		this.servletRequest = servletRequest;
 		this.applicationContext = containerContext;
 		uaContext = ServletUAContext.getInstance(servletRequest, servletConfig);
-		deliveryConfig = ContentDeliveryConfigBuilder.getConfig(uaContext.getProfileSet(), containerContext);
+		deliveryConfig = ContentDeliveryConfigImpl.getInstance(uaContext.getProfileSet(), containerContext);
 	}
 
-    public void setDocumentSource(URI docSource) {
-        logger.error("Cannot set the document source on this context implementation.");
-    }
-
-    /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see org.milyn.container.ExecutionContext#getDocumentSource()
 	 */
 	public URI getDocumentSource() {
@@ -157,45 +142,9 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		return deliveryConfig;
 	}
 
-    public void setContentEncoding(String contentEncoding) throws IllegalArgumentException {
-        logger.error("Cannot set the contentEncoding on this context implementation.");
-    }
-
-    public String getContentEncoding() {
-        return servletRequest.getCharacterEncoding();
-    }
-
-    public void setEventListener(ExecutionEventListener listener) {
-        this.executionListener = listener;
-    }
-
-    public ExecutionEventListener getEventListener() {
-        return executionListener;
-    }
-
-    public void setTerminationError(Throwable terminationError) {
-        this.terminationError = terminationError;
-    }
-
-    public Throwable getTerminationError() {
-        return terminationError;
-    }
-
-    public String getConfigParameter(String name) {
-        return getConfigParameter(name, null);
-    }
-
-    public String getConfigParameter(String name, String defaultVal) {
-        return ParameterAccessor.getStringParameter(name, defaultVal, deliveryConfig);
-    }
-
-    public boolean isDefaultSerializationOn() {
-        return true;
-    }
-
-    /* (non-Javadoc)
-      * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
-      */
+	/* (non-Javadoc)
+	 * @see org.milyn.container.BoundAttributeStore#setAttribute(java.lang.Object, java.lang.Object)
+	 */
 	public void setAttribute(Object key, Object value) {
 		servletRequest.setAttribute(key.toString(), value);
 	}
@@ -221,10 +170,5 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	 */
 	public HttpServletRequest getServletRequest() {
 		return servletRequest;
-	}
-	
-	public Map getAttributes()
-	{
-		throw new UnsupportedOperationException( "Method getAttributes is not implemented" ); 
 	}
 }

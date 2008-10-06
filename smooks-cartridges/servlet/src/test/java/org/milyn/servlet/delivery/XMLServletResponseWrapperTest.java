@@ -17,18 +17,19 @@
 package org.milyn.servlet.delivery;
 
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.servlet.ServletOutputStream;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.delivery.dom.MockContentDeliveryConfig;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.dom.DOMVisitBefore;
-import org.milyn.delivery.dom.DOMVisitAfter;
+import org.milyn.delivery.dom.ProcessingSet;
+import org.milyn.delivery.ContentDeliveryUnitConfigMap;
 import org.milyn.xml.DomUtils;
 import org.milyn.servlet.http.HeaderAction;
 import org.w3c.dom.Element;
@@ -72,8 +73,8 @@ public class XMLServletResponseWrapperTest extends TestCase {
 	public void test_deliverResponse_OutputStream() {
 		addHeaderAction("add", "header-x", "value-x", (MockContentDeliveryConfig) mockCR.deliveryConfig);
 		addHeaderAction("remove", "header-y", "value-y", (MockContentDeliveryConfig) mockCR.deliveryConfig);
-		addProcessingUnit("W", new MyTestTU("x", true), (MockContentDeliveryConfig) mockCR.deliveryConfig);
-		addProcessingUnit("Y", new MyTestTU("z", false), (MockContentDeliveryConfig) mockCR.deliveryConfig);
+		addTransUnit("W", new MyTestTU("x", true), (MockContentDeliveryConfig) mockCR.deliveryConfig);
+		addTransUnit("Y", new MyTestTU("z", false), (MockContentDeliveryConfig) mockCR.deliveryConfig);
 
 		XMLServletResponseWrapper wrapper = new XMLServletResponseWrapper(mockCR, mockSR);
 		MockServletOutputStream mockOS = new MockServletOutputStream();
@@ -131,13 +132,14 @@ public class XMLServletResponseWrapperTest extends TestCase {
 			wrapper.deliverResponse();
 			wrapper.close();
 			
-			assertEquals("Wrong SmooksDOMFilter delivery response.", "<x>sometext<a></a></x>", mockOS.getContents());
+			assertEquals("Wrong SmooksDOMFilter delivery response.", "<X>sometext<A></A></X>", mockOS.getContents());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private static class MyTestTU implements DOMElementVisitor {
+		private static SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("X", "X", "X");
 		private String newName;
 		private boolean visitBefore;
 		public MyTestTU(String newName, boolean visitBefore) {
@@ -165,17 +167,10 @@ public class XMLServletResponseWrapperTest extends TestCase {
         resourceConfig.setParameter("header-name", headerName);
         resourceConfig.setParameter("header-value", headerValue);
         
-        deliveryConfig.addObject("http-response-header", Configurator.configure(new HeaderAction(), resourceConfig));
+        deliveryConfig.addObject("http-response-header", new HeaderAction(resourceConfig));
     }
 
-    private void addProcessingUnit(String targetElement, DOMElementVisitor processingUnit, MockContentDeliveryConfig deliveryConfig) {
-        // Ignoring assembly units for now!!
-
-        if(processingUnit instanceof DOMVisitBefore) {
-            deliveryConfig.processingBefores.addMapping(targetElement, new SmooksResourceConfiguration(targetElement, processingUnit.getClass().getName()), processingUnit);
-        }
-        if(processingUnit instanceof DOMVisitAfter) {
-            deliveryConfig.processingAfters.addMapping(targetElement, new SmooksResourceConfiguration(targetElement, processingUnit.getClass().getName()), processingUnit);
-        }
+    private void addTransUnit(String targetElement, DOMElementVisitor processingUnit, MockContentDeliveryConfig deliveryConfig) {
+        deliveryConfig.processingSets.addMapping(targetElement, new SmooksResourceConfiguration(targetElement, processingUnit.getClass().getName()), processingUnit);
     }
 }

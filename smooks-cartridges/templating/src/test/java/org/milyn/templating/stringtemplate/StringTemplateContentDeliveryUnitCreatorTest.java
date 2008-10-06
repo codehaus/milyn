@@ -19,17 +19,15 @@ package org.milyn.templating.stringtemplate;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-
-import javax.xml.transform.stream.StreamSource;
-
-import junit.framework.TestCase;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
-import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.templating.TemplatingUtils;
 import org.xml.sax.SAXException;
+
+import junit.framework.TestCase;
 
 /**
  *
@@ -38,7 +36,12 @@ import org.xml.sax.SAXException;
 public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
     public void testStringTemplateTrans_01() throws SAXException, IOException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs.cdrl"));
+        Smooks smooks = new Smooks();
+
+        // Configure Smooks
+        SmooksUtil.registerProfileSet(DefaultProfileSet.create("useragent", new String[] {"profile1"}), smooks);
+        TemplatingUtils.registerCDUCreators(smooks);
+        smooks.addConfigurations("test-configs.cdrl", getClass().getResourceAsStream("test-configs.cdrl"));
 
         test_st(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
         // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
@@ -47,26 +50,9 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
     private void test_st(Smooks smooks, String input, String expected) {
         InputStream stream = new ByteArrayInputStream(input.getBytes());
-        ExecutionContext context = smooks.createExecutionContext();
+        StandaloneExecutionContext context = smooks.createExecutionContext("useragent");
         String result = SmooksUtil.filterAndSerialize(context, stream, smooks);
 
         assertEquals(expected, result);
-    }
-
-    public void test_st_bind() throws SAXException, IOException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-02.cdrl"));
-        StringReader input;
-        ExecutionContext context;
-
-        context = smooks.createExecutionContext();
-        input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
-        smooks.filter(new StreamSource(input), null, context);
-        
-        assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
-
-        context = smooks.createExecutionContext();
-        input = new StringReader("<c x='xvalueonc2' />");
-        smooks.filter(new StreamSource(input), null, context);
-        assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 }

@@ -35,7 +35,7 @@ import junit.framework.TestCase;
 public class GroovyContentDeliveryUnitCreatorTest extends TestCase {
 
 	public void test_badscript() {
-		GroovyContentHandlerFactory creator = new GroovyContentHandlerFactory();
+		GroovyContentDeliveryUnitCreator creator = new GroovyContentDeliveryUnitCreator();
 		SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", "classpath:/org/milyn/smooks/scripting/MyGroovyScript_bad.groovy");
 		
 		try {
@@ -64,7 +64,7 @@ public class GroovyContentDeliveryUnitCreatorTest extends TestCase {
 	}
 	
 	private void test_goodscript(SmooksResourceConfiguration config) throws InstantiationException, IllegalArgumentException, IOException, SAXException {
-		GroovyContentHandlerFactory creator = new GroovyContentHandlerFactory();
+		GroovyContentDeliveryUnitCreator creator = new GroovyContentDeliveryUnitCreator();
 		
 		config.setParameter("new-name", "yyy");
 		DOMElementVisitor resource = (DOMElementVisitor) creator.create(config);

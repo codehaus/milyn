@@ -19,8 +19,6 @@ package org.milyn.dtd;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.milyn.profile.DefaultProfileSet;
 
 import junit.framework.TestCase;
@@ -30,8 +28,6 @@ import junit.framework.TestCase;
  * @author tfennelly
  */
 public class DTDStoreTest extends TestCase {
-	
-	Log log = LogFactory.getLog(DTDStore.class);
 
 	/**
 	 * @param arg0
@@ -92,7 +88,7 @@ public class DTDStoreTest extends TestCase {
 			l1 = dtdContainer.getElementAttributes("html");
 			l2 = dtdContainer.getElementAttributes("html");
 		} catch (ElementNotDefined e) {
-			log.debug( "ElementNotDefined exception was throws: ", e);
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 		
@@ -119,8 +115,8 @@ public class DTDStoreTest extends TestCase {
 		DTDStore.addDTD(profileSet, getClass().getResourceAsStream(name));
 		DTDStore.DTDObjectContainer dtdContainer = DTDStore.getDTDObject(profileSet);
 		
-		log.debug("-------- " + name + " ---------");
-		log.debug(Arrays.asList(dtdContainer.getEmptyElements()));
+		System.out.println("-------- " + name + " ---------");
+		System.out.println(Arrays.asList(dtdContainer.getEmptyElements()));
 	}
 	
 	public void testPrint() {

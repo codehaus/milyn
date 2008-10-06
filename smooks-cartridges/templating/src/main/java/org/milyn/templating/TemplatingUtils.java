@@ -26,7 +26,6 @@ import org.milyn.SmooksUtil;
 /**
  * Utility class for the templating Cartridge.
  * @author tfennelly
- * @deprecated No need to do this anymore.  The classpath is scanned.
  */
 public class TemplatingUtils {
     

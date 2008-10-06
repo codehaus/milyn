@@ -25,8 +25,7 @@ import java.util.HashMap;
  */
 public class Warehouse {
 
-    private int id;
-    private String name;
+    private int id = -1;
 
     public int getId() {
         return id;
@@ -37,10 +36,15 @@ public class Warehouse {
     }
 
     public String getName() {
-        return name;
+        return warehouses.get(id);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    // Enrich the model.  This data could come from a database, .properties file etc
+    private static Map<Integer, String> warehouses = new HashMap<Integer, String>();
+    static {
+        warehouses.put(-1, "$$-Unset-$$");
+        warehouses.put(1, "Dublin");
+        warehouses.put(2, "Belfast");
+        warehouses.put(3, "Cork");
     }
 }

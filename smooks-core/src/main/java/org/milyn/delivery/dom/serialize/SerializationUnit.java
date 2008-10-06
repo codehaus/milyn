@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentHandler;
+import org.milyn.delivery.ContentDeliveryUnit;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Element;
@@ -51,7 +51,7 @@ import org.w3c.dom.Text;
  * See <a href="../package-summary.html">Delivery Overview</a>.
  * @author tfennelly
  */
-public interface SerializationUnit extends ContentHandler {
+public interface SerializationUnit extends ContentDeliveryUnit {
 
 	/**
 	 * Write the element start portion; the element name and it's

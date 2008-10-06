@@ -23,7 +23,6 @@ import java.io.FileInputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URISyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,50 +76,44 @@ public class URIResourceLocator implements ContainerResourceLocator {
     }
 
     public InputStream getResource(String uri) throws IllegalArgumentException, IOException {
-        ResolvedURI resolvedURI = new ResolvedURI(uri, resolveURI(uri));
-
-        return getResource(resolvedURI);
+        return getResource(resolveURI(uri));
     }
 
-    private InputStream getResource(ResolvedURI uri) throws IllegalArgumentException, IOException {
+    private InputStream getResource(URI uri) throws IllegalArgumentException, IOException {
         URL url;
-        String scheme = uri.resolvedURI.getScheme();
-        InputStream stream;
+        String scheme = uri.getScheme();
+        InputStream stream = null;
 
-        // Try the filesystem first, based on both the resolved and unresolved URIs,
-        // ... then try the classpath (if there's no scheme or the scheme is "classpath"),
-        // ... then try it as a URL...
-        File fileUnresolved = new File(uri.inputURI);
-        File fileResolved = null;
+        if (scheme == null || scheme.equals(SCHEME_CLASSPATH)) {
+            String path = uri.getPath();
 
-        if(scheme == null) {
-            fileResolved = new File(uri.resolvedURI.getPath());
-        }
-
-        if (fileUnresolved.exists()) {
-            stream = new FileInputStream(fileUnresolved);
-        } else if (fileResolved != null && fileResolved.exists()) {
-            stream = new FileInputStream(fileResolved);
-        } else if (scheme == null || scheme.equals(SCHEME_CLASSPATH)) {
-            String path = uri.resolvedURI.getPath();
-
-            if (path == null || path.trim().equals("")) {
+            if (path == null) {
                 throw new IllegalArgumentException("Unable to locate resource [" + uri +
                         "].  Resource path not specified in URI.");
             }
-            if (path.charAt(0) != '/') {
-                path = "/" + path;
+
+            // Try the filesystem first (only if there's no scheme), then try the classpath...
+            File file = new File(path);
+            if (scheme == null && file.exists()) {
+                stream = new FileInputStream(file);
+            } else {
+                if (!uri.isAbsolute()) {
+                    path = "/" + path;
+                }
+                stream = ClassUtil.getResourceAsStream(path, getClass());
             }
-            stream = ClassUtil.getResourceAsStream(path, getClass());
+
+            if (stream == null) {
+                throw new IOException("Failed to access data stream for resource [" + path + "]. No scheme specified. Tried filesystem and classpath.");
+            }
         } else {
-            url = uri.resolvedURI.toURL();
+            url = uri.toURL();
             URLConnection connection = url.openConnection();
 
             stream = connection.getInputStream();
-        }
-
-        if (stream == null) {
-            throw new IOException("Failed to access data stream for resource [" + uri.inputURI + "]. Tried filesystem, classpath and URL.");
+            if (stream == null) {
+                throw new IOException("Failed to access data stream for " + uri.getScheme() + " resource [" + uri + "].");
+            }
         }
 
         return stream;
@@ -174,14 +167,4 @@ public class URIResourceLocator implements ContainerResourceLocator {
             this.baseURI = baseURI;
 		}
 	}
-
-    private static class ResolvedURI {
-        private String inputURI;
-        private URI resolvedURI;
-
-        private ResolvedURI(String inputURI, URI resolvedURI) {
-            this.inputURI = inputURI;
-            this.resolvedURI = resolvedURI;
-        }
-    }
 }

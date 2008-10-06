@@ -16,29 +16,29 @@
 
 package org.milyn.css;
 
-import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.SmooksUtil;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.container.MockContainerResourceLocator;
-import org.milyn.container.standalone.StandaloneApplicationContext;
-import org.milyn.magger.CSSProperty;
-import org.milyn.profile.DefaultProfileSet;
-import org.milyn.xml.XmlUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 
+import org.milyn.Smooks;
+import org.milyn.SmooksUtil;
+import org.milyn.profile.DefaultProfileSet;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.container.MockContainerResourceLocator;
+import org.milyn.container.standalone.StandaloneApplicationContext;
+import org.milyn.container.standalone.StandaloneExecutionContext;
+import org.milyn.magger.CSSProperty;
+import org.milyn.xml.XmlUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import junit.framework.TestCase;
+
 public class CssStyleScraperTest extends TestCase {
 
     private Smooks smooks;
-    private ExecutionContext execContext;
-    private ApplicationContext appContext;
+    private StandaloneExecutionContext execContext;
+    private StandaloneApplicationContext appContext;
     
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
@@ -48,7 +48,7 @@ public class CssStyleScraperTest extends TestCase {
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"blah"}), smooks);
         execContext = smooks.createExecutionContext("device1");
         execContext.setDocumentSource(URI.create("http://milyn.codehaus.org/myapp/aaa/mypage.html"));
-        appContext = smooks.getApplicationContext();
+        appContext = (StandaloneApplicationContext) smooks.getApplicationContext();
     }
 		
 	public void testProcessPageCSS() {
