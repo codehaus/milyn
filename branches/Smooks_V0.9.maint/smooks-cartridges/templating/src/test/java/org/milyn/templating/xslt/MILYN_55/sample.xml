@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <resource-config selector="cdu-creator">
+        <resource type="class">org.milyn.templating.xslt.XslContentDeliveryUnitCreator</resource>
+        <param name="restype">xsl</param>
+    </resource-config>
+
+    <resource-config selector="Order">
+        <resource type="xsl"><![CDATA[<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://xxxxx.se/quota/request/taxud"
+    exclude-result-prefixes="ns">
+    <xsl:output method="xml" />
+
+    <xsl:template match="/">
+        <xsl:apply-templates select="Order/OrderLines" />
+    </xsl:template>
+
+    <xsl:template match="*">
+        <xsl:element name="{local-name()}">
+            <xsl:for-each select="@*">
+                <xsl:attribute name="{local-name()}">
+                    <xsl:value-of select="." />
+                </xsl:attribute>
+            </xsl:for-each>
+            <xsl:apply-templates select="*|text()" />
+        </xsl:element>
+    </xsl:template>
+</xsl:stylesheet>]]></resource>
+	</resource-config>
+
+</smooks-resource-list>
+
+
