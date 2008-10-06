@@ -16,15 +16,6 @@
 
 package org.milyn.templating.xslt;
 
-import java.io.*;
-import java.net.URI;
-
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,10 +28,25 @@ import org.milyn.templating.AbstractTemplateProcessingUnit;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.milyn.xml.Namespace;
-import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
 
 
 /**
@@ -305,15 +311,20 @@ public class XslContentDeliveryUnitCreator implements ContentDeliveryUnitCreator
         }
 
         private void performTransform(Element element, Element transRes, Document ownerDoc) throws TransformerException {
+            Node transformNode = element;
             Transformer transformer;
             transformer = xslTemplate.newTransformer();
 
+            if(element == element.getOwnerDocument().getDocumentElement()) {
+                transformNode = element.getOwnerDocument();
+            }
+
             if(false && !isTemplatelet && streamResult) {
                 CharArrayWriter writer = new CharArrayWriter();
-                transformer.transform(new DOMSource(element), new StreamResult(writer));
+                transformer.transform(new DOMSource(transformNode), new StreamResult(writer));
                 transRes.appendChild(ownerDoc.createTextNode(writer.toString()));
             } else {
-                transformer.transform(new DOMSource(element), new DOMResult(transRes));
+                transformer.transform(new DOMSource(transformNode), new DOMResult(transRes));
             }
         }
     }
