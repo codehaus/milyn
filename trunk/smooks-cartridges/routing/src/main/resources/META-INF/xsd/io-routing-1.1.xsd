@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.milyn.org/xsd/smooks/io-routing-1.1.xsd"
+           elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:smooks="http://www.milyn.org/xsd/smooks-1.1.xsd"
+           xmlns:smooks-io-routing="http://www.milyn.org/xsd/smooks/io-routing-1.1.xsd">
+
+    <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">Smooks IO Routing Configuration</xs:documentation>
+    </xs:annotation>
+
+
+    <xs:element name="outputStream" type="smooks-io-routing:outputStream" substitutionGroup="smooks:abstract-resource-config" />
+
+    <xs:complexType name="outputStream">
+    	<xs:annotation>
+    		<xs:documentation xml:lang="en">
+    			Output stream
+    		</xs:documentation>
+    	</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="smooks:element-visitor">
+    			<xs:attribute name="resourceName" type="xs:string" use="required" />
+    			<xs:attribute name="beanId" type="xs:string" use="required" />
+    			<xs:attribute name="encoding" type="xs:string" use="optional" default="UTF-8"/>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+</xs:schema>

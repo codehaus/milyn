@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.milyn.org/xsd/smooks/jms-routing-1.1.xsd"
+           elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:smooks="http://www.milyn.org/xsd/smooks-1.1.xsd"
+           xmlns:smooks-jms-routing="http://www.milyn.org/xsd/smooks/jms-routing-1.1.xsd">
+
+    <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">Smooks JMS Routing Configuration</xs:documentation>
+    </xs:annotation>
+
+
+    <xs:element name="router" type="smooks-jms-routing:router" substitutionGroup="smooks:abstract-resource-config" />
+
+    <xs:complexType name="router">
+    	<xs:annotation>
+    		<xs:documentation xml:lang="en">
+    			JMS Router
+    		</xs:documentation>
+    	</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="smooks:element-visitor">
+    			<xs:sequence>
+    				<xs:element name="message" type="smooks-jms-routing:message" minOccurs="0" maxOccurs="1" />
+    				<xs:element name="connection" type="smooks-jms-routing:connection" minOccurs="0" maxOccurs="1" />
+    				<xs:element name="session" type="smooks-jms-routing:session" minOccurs="0" maxOccurs="1" />
+					<xs:element name="jndi" type="smooks-jms-routing:jndi" minOccurs="0" maxOccurs="1" />
+    				<xs:element name="highWaterMark" type="smooks-jms-routing:highWaterMark" minOccurs="0" maxOccurs="1" />
+    			</xs:sequence>
+    			<xs:attribute name="beanId" type="xs:string" use="required" />
+    			<xs:attribute name="destination" type="xs:string" use="required" />
+    			<xs:attribute name="executeBefore" type="xs:boolean" use="optional" default="false"/>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="highWaterMark">
+        <xs:attribute name="mark" type="xs:int" use="optional" default="200" />
+    	<xs:attribute name="timeout" type="xs:int" use="optional" default="60000" />
+    	<xs:attribute name="pollFrequency" type="xs:int" use="optional" default="1000" />
+    </xs:complexType>
+
+    <xs:complexType name="jndi">
+        <xs:attribute name="contextFactory" type="xs:string" use="optional" default="org.jnp.interfaces.NamingContextFactory" />
+    	<xs:attribute name="providerUrl" type="xs:string" use="optional" default="jnp://localhost:1099" />
+    	<xs:attribute name="namingFactory" type="xs:string" use="optional" default="org.jboss.naming:java.naming.factory.url.pkgs" />
+    </xs:complexType>
+
+    <xs:complexType name="connection">
+        <xs:attribute name="factoryName" type="xs:string" use="optional" default="ConnectionFactory"/>
+    	<xs:attribute name="securityPrincipal" type="xs:string" use="optional" />
+    	<xs:attribute name="securityCredential" type="xs:string" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="session">
+        <xs:attribute name="transacted" type="xs:boolean" use="optional" default="false"/>
+    	<xs:attribute name="acknowledgeMode" type="smooks-jms-routing:acknowledgeMode" use="optional" default="AUTO_ACKNOWLEDGE"/>
+    </xs:complexType>
+
+    <xs:complexType name="message">
+        <xs:attribute name="messageType" type="smooks-jms-routing:messageType" use="optional" default="TextMessage"/>
+    	<xs:attribute name="correlationIdPattern" type="xs:string" use="optional" />
+    	<xs:attribute name="deliveryMode" type="smooks-jms-routing:deliveryMode" use="optional" default="persistent" />
+    	<xs:attribute name="priority" type="xs:int" use="optional" default="4" />
+    	<xs:attribute name="timeToLive" type="xs:long" use="optional" default="0" />
+    </xs:complexType>
+
+    <xs:simpleType name="acknowledgeMode">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="AUTO_ACKNOWLEDGE" />
+    		<xs:enumeration value="CLIENT_ACKNOWLEDGE" />
+    		<xs:enumeration value="DUPS_OK_ACKNOWLEDGE" />
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="messageType">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="TextMessage" />
+    		<xs:enumeration value="ObjectMessage" />
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="deliveryMode">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="persistent" />
+    		<xs:enumeration value="non-persistent" />
+    	</xs:restriction>
+    </xs:simpleType>
+</xs:schema>
