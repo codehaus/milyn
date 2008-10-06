@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.milyn.org/xsd/smooks/db-routing-1.1.xsd"
+           elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:smooks="http://www.milyn.org/xsd/smooks-1.1.xsd"
+           xmlns:smooks-db-routing="http://www.milyn.org/xsd/smooks/db-routing-1.1.xsd">
+
+    <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">Smooks SQL Routing Configuration</xs:documentation>
+    </xs:annotation>
+
+
+    <xs:element name="executor" type="smooks-db-routing:executor" substitutionGroup="smooks:abstract-resource-config" />
+
+    <xs:complexType name="executor">
+    	<xs:annotation>
+    		<xs:documentation xml:lang="en">
+    			SQL Executor
+    		</xs:documentation>
+    	</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="smooks:element-visitor">
+    			<xs:sequence>
+    				<xs:element name="statement" type="xs:string" minOccurs="1" 	maxOccurs="1">
+    				</xs:element>
+    				<xs:element name="resultSet" type="smooks-db-routing:resultSet"  minOccurs="0" maxOccurs="1" />
+    			</xs:sequence>
+    			<xs:attribute name="datasource" type="xs:string" use="required" />
+    			<xs:attribute name="executeBefore" type="xs:boolean" use="optional" default="false"/>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+
+	<xs:element name="resultsetRowSelector" type="smooks-db-routing:resultsetRowSelector" substitutionGroup="smooks:abstract-resource-config" />
+
+    <xs:complexType name="resultsetRowSelector">
+    	<xs:annotation>
+    		<xs:documentation xml:lang="en">
+    			ResultSet row selector
+    		</xs:documentation>
+    	</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="smooks:element-visitor">
+    			<xs:sequence>
+    				<xs:element name="where" type="xs:string" minOccurs="1" maxOccurs="1" />
+    				<xs:element name="failedSelectError" type="xs:string"  minOccurs="0" maxOccurs="1" />
+    			</xs:sequence>
+    			<xs:attribute name="resultSetName" type="xs:string" use="required" />
+    			<xs:attribute name="beanId" type="xs:string" use="required" />
+    			<xs:attribute name="executeBefore" type="xs:boolean" use="optional" default="false"/>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="resultSetScopeType">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="EXECUTION"></xs:enumeration>
+    		<xs:enumeration value="APPLICATION"></xs:enumeration>
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="resultSet">
+    	<xs:attribute name="name" type="xs:string" use="optional"/>
+		<xs:attribute name="scope" type="smooks-db-routing:resultSetScopeType" default="EXECUTION"/>
+		<xs:attribute name="timeToLive" type="xs:long" default="900000"/>
+    </xs:complexType>
+
+</xs:schema>

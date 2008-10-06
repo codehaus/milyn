@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.milyn.org/xsd/smooks/file-routing-1.1.xsd"
+           elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:smooks="http://www.milyn.org/xsd/smooks-1.1.xsd"
+           xmlns:smooks-file-routing="http://www.milyn.org/xsd/smooks/file-routing-1.1.xsd">
+
+    <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation xml:lang="en">Smooks file Routing Configuration</xs:documentation>
+    </xs:annotation>
+
+
+    <xs:element name="outputStream" type="smooks-file-routing:outputStream" substitutionGroup="smooks:abstract-resource-config" />
+
+    <xs:complexType name="outputStream">
+    	<xs:annotation>
+    		<xs:documentation xml:lang="en">
+    			File output stream
+    		</xs:documentation>
+    	</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="smooks:element-visitor">
+    			<xs:sequence>
+    				<xs:element name="highWaterMark" type="smooks-file-routing:highWaterMark" minOccurs="0" maxOccurs="1" />
+    			</xs:sequence>
+    			<xs:attribute name="resourceName" type="xs:string" use="required" />
+    			<xs:attribute name="fileNamePattern" type="xs:string" use="required" />
+    			<xs:attribute name="destinationDirectoryPattern" type="xs:string" use="required" />
+				<xs:attribute name="encoding" type="xs:string" use="optional" default="UTF-8"/>
+    			<xs:attribute name="listFileNamePattern" type="xs:string" use="optional" />
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="highWaterMark">
+        <xs:attribute name="mark" type="xs:int" use="optional" default="200" />
+    	<xs:attribute name="timeout" type="xs:int" use="optional" default="60000" />
+    	<xs:attribute name="pollFrequency" type="xs:int" use="optional" default="1000" />
+    </xs:complexType>
+</xs:schema>
