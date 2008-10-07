@@ -95,6 +95,10 @@ truncatable attribute for all Components in edi-definition.
 	<xs:complexType name="mapping-node">
 		<xs:attribute name="xmltag" type="xs:string" use="required"/>
 	</xs:complexType>
+	<xs:complexType name="value-node">
+		<xs:attribute name="xmltag" type="xs:string" use="required"/>
+		<xs:attribute name="value" type="xs:string" use="optional"/>
+	</xs:complexType>
 	<xs:element name="segment">
 		<xs:complexType>
 			<xs:complexContent>
@@ -130,7 +134,7 @@ truncatable attribute for all Components in edi-definition.
 	<xs:element name="field">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
+				<xs:extension base="mapping:value-node">
 					<xs:sequence>
 						<xs:element ref="mapping:component" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
@@ -143,7 +147,7 @@ truncatable attribute for all Components in edi-definition.
 	<xs:element name="component">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
+				<xs:extension base="mapping:value-node">
 					<xs:sequence>
 						<xs:element ref="mapping:sub-component" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
@@ -156,7 +160,7 @@ truncatable attribute for all Components in edi-definition.
 	<xs:element name="sub-component">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
+				<xs:extension base="mapping:value-node">
 					<xs:attribute name="required" type="xs:boolean" use="optional" default="false"/>
 				</xs:extension>
 			</xs:complexContent>

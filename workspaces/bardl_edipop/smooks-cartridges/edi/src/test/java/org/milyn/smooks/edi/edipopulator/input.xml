@@ -1,0 +1,22 @@
+<invoice>
+    <date>2008-09-30</date>
+    <customer>
+        <user>bardl</user>
+        <name>bard</name>
+        <lastname>langoy</lastname>
+        <state>bergen</state>
+    </customer>
+    <order>
+        <id>123</id>
+        <quantity>2</quantity>
+    </order>
+    <order>
+        <id>456</id>
+        <quantity>3</quantity>
+        <unitprice>100</unitprice>
+    </order>
+    <order>
+        <id>789</id>
+        <quantity>1</quantity>
+    </order>
+</invoice>

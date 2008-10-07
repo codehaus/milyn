@@ -16,10 +16,7 @@
 
 package org.milyn.smooks.edi;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Hashtable;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -28,12 +25,16 @@ import org.milyn.io.StreamUtils;
 import org.milyn.delivery.dom.DOMParser;
 import org.milyn.xml.XmlUtil;
 import org.milyn.Smooks;
+import org.milyn.container.ExecutionContext;
 import org.milyn.edisax.EdifactModel;
 import org.milyn.edisax.EDIParseException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
+
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
 
 /**
  * Tests for SmooksEDIParser.
@@ -43,6 +44,9 @@ public class SmooksEDIParserTest extends TestCase {
 
 	private static final String TEST_XML_MAPPING_XML_URI = "classpath:/org/milyn/smooks/edi/edi-to-xml-mapping.xml";
 
+    public void test_edi_populator() throws IOException, SAXException {
+        test_populator();
+    }
     public void test_cyclic_dependency() throws IOException, SAXException {
 		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("cyclicDependencyTest/edi-to-xml-mapping.xml")));
 		test_cyclic_dependency(mapping);
@@ -116,6 +120,22 @@ public class SmooksEDIParserTest extends TestCase {
 		
 		// Make sure the cached model was used on the 2nd parse...
 		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, (EdifactModel) mappingTable.get(config));
+	}
+
+    private void test_populator() throws IOException, SAXException {
+		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edipopulator/input.xml")));
+        InputStream config = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edipopulator/smooks-config.xml")));
+        String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("edipopulator/expected.edi")));
+		Smooks smooks = new Smooks();
+        smooks.addConfigurations(config);
+        ExecutionContext context = smooks.createExecutionContext();
+
+        ByteArrayOutputStream _baos = new ByteArrayOutputStream();
+        StreamResult _result = new StreamResult(_baos);
+        smooks.filter(new StreamSource(input), _result, context);
+
+        //System.out.println(new String(_baos.toByteArray()));
+		assertEquals(removeCRLF(expected), removeCRLF(new String(_baos.toByteArray())));
 	}
 
     private void test_import(String mapping) throws IOException, SAXException {

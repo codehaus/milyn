@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+
+    <!--
+    Filter the message using the SAX Filter.
+    OBSERVE! default.serialization.on must be set to false to prevent sax-event not mapped
+    in the resource-configs from benig written to Result.
+    -->
+    <resource-config selector="global-parameters">
+        <param name="stream.filter.type">SAX</param>
+        <param name="default.serialization.on">false</param>
+    </resource-config>
+
+    <!-- ==================================================================================
+    Define the EdiPopulator resource that will use the data bound from the xml message
+    into the edi data model.
+    =================================================================================== -->
+
+    <!--
+        The EDIModelCreator is used to map create the model from the edi-message-mapping-1.0.xml
+        located at the uri specified in the ediModel parameter.
+    -->
+    <resource-config selector="$document">
+        <resource>org.milyn.smooks.edi.EDIModelCreator</resource>
+        <param name="id">customerModel</param>
+        <param name="ediModel">edipopulator/edi-mapping-model.xml</param>
+    </resource-config>
+
+    <!--
+        The EDIPopulator inserts the value in binding selector into the ediModel
+        matching the modelId. The location in the ediModel is specified by the
+        binding edipath.        
+    -->
+    <resource-config selector="date">
+        <resource>org.milyn.smooks.edi.EDIPopulator</resource>
+        <param name="modelId">customerModel</param>
+        <param name="bindings">
+            <binding selector="date" ediPath="MLS.date"/>            
+        </param>
+    </resource-config>
+
+    <resource-config selector="order">
+        <resource>org.milyn.smooks.edi.EDIPopulator</resource>
+        <param name="modelId">customerModel</param>
+        <param name="newSegment">HDR.ORD</param>
+        <param name="bindings">
+            <binding selector="order id" ediPath="HDR.order-id"/>
+            <binding selector="order quantity" ediPath="HDR.ORD.quantity"/>
+            <binding selector="order unitprice" ediPath="HDR.ORD.price"/>            
+        </param>
+    </resource-config>
+
+    <resource-config selector="customer">
+        <resource>org.milyn.smooks.edi.EDIPopulator</resource>
+        <param name="modelId">customerModel</param>
+        <param name="newSegment">HDR.CUS</param>
+        <param name="bindings">
+            <binding selector="customer user" ediPath="HDR.CUS.username"/>
+            <binding selector="customer name" ediPath="HDR.CUS.name.firstname"/>
+            <binding selector="customer lastname" ediPath="HDR.CUS.name.lastname"/>
+            <binding selector="customer state" ediPath="HDR.CUS.state"/>
+        </param>
+    </resource-config>
+
+</smooks-resource-list>

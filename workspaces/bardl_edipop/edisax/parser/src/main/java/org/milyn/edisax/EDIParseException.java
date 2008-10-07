@@ -28,6 +28,14 @@ public class EDIParseException extends SAXException {
 	private static final long serialVersionUID = 1L;
 
     /**
+	 * Public constructor.
+	 * @param message Exception message.
+	 */
+	public EDIParseException(String message) {
+		super(message);
+	}
+
+    /**
 	 * Public constructor.	 
 	 * @param message Exception message.
      * @param cause Exception cause
