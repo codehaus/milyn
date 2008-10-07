@@ -45,7 +45,7 @@ public class SmooksEDIParserTest extends TestCase {
 	private static final String TEST_XML_MAPPING_XML_URI = "classpath:/org/milyn/smooks/edi/edi-to-xml-mapping.xml";
 
     public void test_edi_populator() throws IOException, SAXException {
-        test_populator();
+        test_populator("");
     }
     public void test_cyclic_dependency() throws IOException, SAXException {
 		String mapping = new String(StreamUtils.readStream(getClass().getResourceAsStream("cyclicDependencyTest/edi-to-xml-mapping.xml")));
@@ -122,7 +122,7 @@ public class SmooksEDIParserTest extends TestCase {
 		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, (EdifactModel) mappingTable.get(config));
 	}
 
-    private void test_populator() throws IOException, SAXException {
+    private void test_populator(String mapping) throws IOException, SAXException {
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edipopulator/input.xml")));
         InputStream config = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edipopulator/smooks-config.xml")));
         String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("edipopulator/expected.edi")));
