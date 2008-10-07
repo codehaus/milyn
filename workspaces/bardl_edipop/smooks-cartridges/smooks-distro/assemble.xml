@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="assemble" name="Assembly">
+
+    <property name="version" value="1.0.1"/>
+
+    <property name="mainDistroName" value="smooks-${version}"/>
+    <property name="mainTargetdir" value="target/${mainDistroName}"/>
+
+    <property name="examplesDistroName" value="smooks-examples-${version}"/>
+    <property name="exampleTargetdir" value="target/${examplesDistroName}"/>
+
+    <target name="assemble">
+        <condition property="iswindows">
+            <os family="windows"/>
+        </condition>
+
+        <antcall target="windows-assemble"/>
+        <antcall target="non-windows-assemble"/>
+    </target>
+
+    <target if="iswindows" name="windows-assemble">
+        <antcall target="run-assemble">
+            <param name="mvnexec" value="mvn.bat"/>
+        </antcall>
+    </target>
+
+    <target unless="iswindows" name="non-windows-assemble">
+        <antcall target="run-assemble">
+            <param name="mvnexec" value="mvn"/>
+        </antcall>
+    </target>
+
+    <target name="run-assemble">
+        <exec dir="../../" executable="${mvnexec}">
+            <arg line="clean install"/>
+        </exec>
+
+        <exec dir="../../" executable="${mvnexec}">
+            <arg line="javadoc:javadoc"/>
+        </exec>
+
+        <exec dir="../../" executable="${mvnexec}">
+            <arg line="idea:clean eclipse:clean"/>
+        </exec>
+        <exec dir="../../smooks-examples" executable="${mvnexec}">
+            <arg line="clean"/>
+        </exec>
+        <exec dir="./" executable="${mvnexec}">
+            <arg line="project-info-reports:dependencies"/>
+        </exec>
+
+        <antcall target="buildMainDistro"/>
+        <antcall target="buildExamplesDistro"/>
+    </target>
+
+    <target name="buildMainDistro">
+
+        <property name="docsdir" value="${mainTargetdir}/docs"/>
+        <property name="javadocdir" value="${docsdir}/javadoc"/>
+
+        <mkdir dir="${mainTargetdir}"/>
+        <mkdir dir="${javadocdir}"/>
+
+        <copy todir="${mainTargetdir}">
+            <fileset dir="./">
+                <include name="README.html"/>
+                <include name="LICENSE.txt"/>
+            </fileset>
+            <fileset dir="target/site"/>
+            <fileset dir="../../" includes="smooks-examples/**"/>
+            <fileset dir="target" includes="lib/*.jar"/>
+        </copy>
+
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-core"/>
+            <param name="target" value="${javadocdir}/smooks"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../commons"/>
+            <param name="target" value="${javadocdir}/commons"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../edisax"/>
+            <param name="target" value="${javadocdir}/edisax"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../magger"/>
+            <param name="target" value="${javadocdir}/magger"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../tinak"/>
+            <param name="target" value="${javadocdir}/tinak"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/css"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/css"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/csv"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/csv"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/edi"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/edi"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/javabean"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/javabean"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/misc"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/misc"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/routing"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/routing"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/scripting"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/scripting"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/servlet"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/servlet"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/templating"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/templating"/>
+        </antcall>
+
+        <!-- Download the distro docs... -->
+        <java classname="org.milyn.distro.html.Downloader" fork="true" failonerror="true" maxmemory="128m">
+            <arg value="http://docs.codehaus.org/display/MILYN/Smooks+User+Guide?decorator=printable"/>
+            <arg value="${docsdir}/SmooksUserGuide_v${version}.html"/>
+            <classpath>
+                <pathelement location="target/classes" />
+                <fileset dir="target/lib" />
+            </classpath>
+        </java>
+
+        <!-- Zip up the main distro... -->
+        <zip destfile="target/${mainDistroName}.zip" basedir="target" includes="${mainDistroName}/**"/>
+    </target>
+
+    <target name="buildExamplesDistro">
+
+        <mkdir dir="${exampleTargetdir}"/>
+
+        <copy todir="${exampleTargetdir}">
+            <fileset dir="../../smooks-examples"/>
+        </copy>
+
+        <!-- Zip up the examples distro... -->
+        <zip destfile="target/${examplesDistroName}.zip" basedir="target" includes="${examplesDistroName}/**"/>
+    </target>
+
+    <target name="move-javadoc">
+        <mkdir dir="${target}"/>
+        <move todir="${target}">
+            <fileset dir="${source}/target/site/apidocs"/>
+        </move>
+    </target>
+
+</project>
+
