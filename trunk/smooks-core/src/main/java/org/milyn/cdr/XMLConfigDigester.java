@@ -303,15 +303,14 @@ public final class XMLConfigDigester {
             URI fileURI = resourceLocator.resolveURI(file);
 
             // Add the resource URI to the list.  Will fail if it was already loaded
-            if(list.addSourceResourceURI(fileURI)) {
+            pushConfig(file, fileURI);
+            try {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Importing resource configuration '" + file + "' from inside '" + configStack.peek().configFile + "'.");
                 }
 
                 resourceStream = resourceLocator.getResource(file);
                 try {
-                    pushConfig(file);
-
                     List<Element> importParams = DomUtils.getElements(importElement, "param", null);
                     if(!importParams.isEmpty()) {
                         // Inject parameters into import config...
@@ -328,10 +327,11 @@ public final class XMLConfigDigester {
                     } else {
                         digestConfigRecursively(new InputStreamReader(resourceStream), URIUtil.getParent(fileURI).toString()); // the file's parent URI becomes the new base URI.
                     }
-                popConfig();
                 } finally {
                     resourceStream.close();
                 }
+            } finally {
+                popConfig();                
             }
         } catch (IOException e) {
             throw new SmooksConfigurationException("Failed to load Smooks configuration resource <import> '" + file + "': " + e.getMessage(), e);
@@ -667,10 +667,17 @@ public final class XMLConfigDigester {
         return pathBuilder.toString();
     }
 
-    private void pushConfig(String file) {
+    private void pushConfig(String file, URI fileURI) {
+        for (SmooksConfig smooksConfig : configStack) {
+            if(fileURI.equals(smooksConfig.fileURI)) {
+                throw new SmooksConfigurationException("Invalid circular reference to config file '" + fileURI + "' from inside config file '" + getCurrentPath() + "'.");
+            }
+        }
+
         SmooksConfig config = new SmooksConfig(file);
 
         config.parent = configStack.peek();
+        config.fileURI = fileURI;
         configStack.push(config);
     }
 
@@ -721,6 +728,7 @@ public final class XMLConfigDigester {
         private SmooksConfig parent;
         private final String configFile;
         private final Map<String, ExpressionEvaluator> conditionEvaluators = new HashMap<String, ExpressionEvaluator>();
+        public URI fileURI;
 
         private SmooksConfig(String configFile) {
             this.configFile = configFile;
