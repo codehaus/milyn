@@ -16,20 +16,6 @@
 
 package org.milyn.cdr;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
@@ -51,6 +37,21 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.dom.DOMSource;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Digester class for an XML {@link org.milyn.cdr.SmooksResourceConfiguration} file (.cdrl).
@@ -112,24 +113,24 @@ public final class XMLConfigDigester {
         setExtentionDigestOff();
         XMLConfigDigester digester = new XMLConfigDigester(list);
 
-        digester.digestConfigRecursively(stream, baseURI);
+        digester.digestConfigRecursively(new InputStreamReader(stream), baseURI);
 
         return list;
     }
 
-    private void digestConfigRecursively(InputStream stream, String baseURI) throws IOException, SAXException, URISyntaxException, SmooksConfigurationException {
+    private void digestConfigRecursively(Reader stream, String baseURI) throws IOException, SAXException, URISyntaxException, SmooksConfigurationException {
         Document configDoc;
-        byte[] streamBuffer = StreamUtils.readStream(stream);
+        String streamData = StreamUtils.readStream(stream);
 
         try {
-            configDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer), getDTDEntityResolver(), XmlUtil.VALIDATION_TYPE.DTD, true);
+            configDoc = XmlUtil.parseStream(new StringReader(streamData), getDTDEntityResolver(), XmlUtil.VALIDATION_TYPE.DTD, true);
             logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use XSD '" + XSD_V10 + "'.");
             digestV10DTDValidatedConfig(configDoc);
             logger.warn("Using a deprecated Smooks configuration DTD '" + DTD_V10 + "'.  Update configuration to use XSD '" + XSD_V10 + "'.");
         } catch (Exception e) {
             // Must be an XSD based config...
             try {
-                configDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer));
+                configDoc = XmlUtil.parseStream(new StringReader(streamData));
             } catch (ParserConfigurationException ee) {
                 throw new SAXException("Unable to parse Smooks configuration.", ee);
             }
@@ -286,8 +287,8 @@ public final class XMLConfigDigester {
         }
     }
 
-    private void digestImport(Element configElement, URI baseURI) throws SAXException, URISyntaxException, SmooksConfigurationException {
-        String file = DomUtils.getAttributeValue(configElement, "file");
+    private void digestImport(Element importElement, URI baseURI) throws SAXException, URISyntaxException, SmooksConfigurationException {
+        String file = DomUtils.getAttributeValue(importElement, "file");
         URIResourceLocator resourceLocator;
         InputStream resourceStream;
 
@@ -308,9 +309,29 @@ public final class XMLConfigDigester {
                 }
 
                 resourceStream = resourceLocator.getResource(file);
-                pushConfig(file);
-                digestConfigRecursively(resourceStream, URIUtil.getParent(fileURI).toString()); // the file's parent URI becomes the new base URI.
+                try {
+                    pushConfig(file);
+
+                    List<Element> importParams = DomUtils.getElements(importElement, "param", null);
+                    if(!importParams.isEmpty()) {
+                        // Inject parameters into import config...
+                        String importConfig = StreamUtils.readStreamAsString(resourceStream);
+
+                        for (Element importParam : importParams) {
+                            String paramName = DomUtils.getAttributeValue(importParam, "name");
+                            String paramValue = XmlUtil.serialize(importParam.getChildNodes());
+
+                            importConfig = importConfig.replaceAll("@" + paramName + "@", paramValue);
+                        }
+
+                        digestConfigRecursively(new StringReader(importConfig), URIUtil.getParent(fileURI).toString()); // the file's parent URI becomes the new base URI.
+                    } else {
+                        digestConfigRecursively(new InputStreamReader(resourceStream), URIUtil.getParent(fileURI).toString()); // the file's parent URI becomes the new base URI.
+                    }
                 popConfig();
+                } finally {
+                    resourceStream.close();
+                }
             }
         } catch (IOException e) {
             throw new SmooksConfigurationException("Failed to load Smooks configuration resource <import> '" + file + "': " + e.getMessage(), e);
@@ -496,7 +517,7 @@ public final class XMLConfigDigester {
                 SmooksResourceConfigurationList extConfigList = new SmooksResourceConfigurationList(baseURI);
 
                 XMLConfigDigester configDigester = new XMLConfigDigester(extConfigList);
-                configDigester.digestConfigRecursively(ClassUtil.getResourceAsStream(resourcePath, getClass()), baseURI);
+                configDigester.digestConfigRecursively(new InputStreamReader(ClassUtil.getResourceAsStream(resourcePath, getClass())), baseURI);
                 configStore.addSmooksResourceConfigurationList(extConfigList);
             } catch (Exception e) {
                 throw new SmooksConfigurationException("Failed to construct Smooks instance for processing extended configuration resource '" + resourcePath + "'.", e);

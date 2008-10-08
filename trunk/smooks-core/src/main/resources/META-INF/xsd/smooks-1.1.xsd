@@ -81,6 +81,9 @@
                     <xs:annotation>
                         <xs:documentation xml:lang="en">Smooks Resource Configuration Import</xs:documentation>
                     </xs:annotation>
+                    <xs:sequence>
+                        <xs:element ref="smooks:param" minOccurs="0" maxOccurs="unbounded" />
+                    </xs:sequence>
                     <xs:attribute name="file" use="required" type="xs:anyURI"/>
                 </xs:extension>
             </xs:complexContent>

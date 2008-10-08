@@ -16,7 +16,6 @@
 
 package org.milyn.xml;
 
-import org.milyn.io.StreamUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -24,8 +23,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.milyn.io.StreamUtils;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -44,9 +45,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -291,13 +292,31 @@ public class XmlUtil {
     public static Document parseStream(InputStream stream,
                                        EntityResolver entityResolver, VALIDATION_TYPE validation,
                                        boolean expandEntityRefs) throws SAXException, IOException {
+
+        return parseStream(new InputStreamReader(stream), entityResolver, validation, expandEntityRefs);
+    }
+
+    /**
+     * Parse the XML stream and return the associated W3C Document object.
+     *
+     * @param stream           The stream to be parsed.
+     * @param entityResolver   Entity resolver to be used during the parse.
+     * @param validation       Validation type to be carried out on the document.
+     * @param expandEntityRefs Expand entity References as per
+     *                         {@link javax.xml.parsers.DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
+     * @return The W3C Document object associated with the input stream.
+     */
+    public static Document parseStream(Reader stream,
+                                       EntityResolver entityResolver, VALIDATION_TYPE validation,
+                                       boolean expandEntityRefs) throws SAXException, IOException {
         if (stream == null) {
-            throw new IllegalArgumentException(
-                    "null 'stream' arg in method call.");
+            throw new IllegalArgumentException("null 'stream' arg in method call.");
         }
+        
         try {
+            String streamData = StreamUtils.readStream(stream);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = null;
+            DocumentBuilder docBuilder;
 
             // Setup validation...
             if (validation == VALIDATION_TYPE.DTD) {
@@ -306,9 +325,7 @@ public class XmlUtil {
                 try {
                     Schema schema = getSchema(entityResolver);
 
-                    stream = new ByteArrayInputStream(StreamUtils.readStream(stream));
-                    schema.newValidator().validate(new StreamSource(stream));
-                    stream.reset();
+                    schema.newValidator().validate(new StreamSource(new StringReader(streamData)));
                 } catch (IllegalArgumentException e) {
                     throw new SAXException("Unable to validate document.  Installed parser '" + factory.getClass().getName() + "' doesn't support JAXP 1.2", e);
                 }
@@ -321,7 +338,7 @@ public class XmlUtil {
             }
             docBuilder.setErrorHandler(XMLParseErrorHandler.getInstance());
 
-            return docBuilder.parse(stream);
+            return docBuilder.parse(new InputSource(new StringReader(streamData)));
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException("Unable to parse XML stream - XML Parser not configured correctly.", e);
         } catch (FactoryConfigurationError e) {
@@ -335,13 +352,22 @@ public class XmlUtil {
      * @return Document instance.
      */
     public static Document parseStream(InputStream stream) throws ParserConfigurationException, IOException, SAXException {
+        return parseStream(new InputStreamReader(stream));
+    }
+
+    /**
+     * Basic DOM namespace aware parse.
+     * @param stream Document stream.
+     * @return Document instance.
+     */
+    public static Document parseStream(Reader stream) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
 
         factory.setNamespaceAware(true);
         docBuilder = factory.newDocumentBuilder();
 
-        return docBuilder.parse(stream);
+        return docBuilder.parse(new InputSource(stream));
     }
 
     private static Schema getSchema(EntityResolver entityResolver) throws SAXException, IOException {
