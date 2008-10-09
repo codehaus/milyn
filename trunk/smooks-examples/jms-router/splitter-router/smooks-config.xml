@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
+<smooks-resource-list
+	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+	xmlns:jms="http://www.milyn.org/xsd/smooks/jms-routing-1.1.xsd">
 
     <!--
     Filter the message using the SAX Filter (i.e. not DOM, so no
@@ -13,14 +15,13 @@
         <resource>org.milyn.delivery.DomModelCreator</resource>
     </resource-config>
 
-    <resource-config selector="order-item">
-        <resource>org.milyn.routing.jms.JMSRouter</resource>
-        <param name="executeBefore">false</param>
-        <param name="beanId">orderItem_xml</param>
-        <param name="destinationName">smooks.exampleQueue</param>
-        <param name="highWaterMark">3</param>
-        <param name="correlationIdPattern">${order.@id}-${.vars["order-item"].@id}</param> <!-- Need to use special FreeMarker variable ".vars" -->
-    </resource-config>
+	<jms:router	routeOnElement="order-item"	beanId="orderItem_xml" destination="smooks.exampleQueue">
+		<jms:message>
+			<!-- Need to use special FreeMarker variable ".vars" -->
+			<jms:correlationIdPattern>${order.@id}-${.vars["order-item"].@id}</jms:correlationIdPattern>
+		</jms:message>
+		<jms:highWaterMark mark="3"/>
+	</jms:router>
 
     <resource-config selector="order-item">
         <!--

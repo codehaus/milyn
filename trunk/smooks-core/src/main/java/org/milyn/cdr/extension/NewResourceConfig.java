@@ -21,16 +21,19 @@ import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
  * Create a new {@link SmooksResourceConfiguration}.
  * <p/>
- * The new {@link SmooksResourceConfiguration} is added to the {@link ExtensionContext}. 
+ * The new {@link SmooksResourceConfiguration} is added to the {@link ExtensionContext}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class NewResourceConfig implements DOMElementVisitor {
+
+	public static final String PARAMETER_TARGET_PROFILE = "targetProfile";
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String resource;
@@ -46,7 +49,12 @@ public class NewResourceConfig implements DOMElementVisitor {
             config.setSelector(extensionContext.getDefaultSelector());
         }
         config.setSelectorNamespaceURI(extensionContext.getDefaultNamespace());
-        config.setTargetProfile(extensionContext.getDefaultProfile());
+
+        String targetProfile = DomUtils.getAttributeValue(element, PARAMETER_TARGET_PROFILE);
+        if(targetProfile == null) {
+        	targetProfile = extensionContext.getDefaultProfile();
+        }
+        config.setTargetProfile(targetProfile);
         config.setConditionEvaluator(extensionContext.getDefaultConditionEvaluator());
 
         extensionContext.addResource(config);

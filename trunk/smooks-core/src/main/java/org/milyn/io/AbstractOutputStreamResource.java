@@ -1,14 +1,14 @@
 /*
  * Milyn - Copyright (C) 2006
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License (version 2.1) as published
  * by the Free Software Foundation.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.
- * 
+ *
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
@@ -25,13 +25,14 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.w3c.dom.Element;
 
 import java.io.*;
 import java.nio.charset.Charset;
 
 /**
- * AbstractOuputStreamResource is the base class for handling output stream 
+ * AbstractOuputStreamResource is the base class for handling output stream
  * resources in Smooks.
  * <p/>
  * Note that a {@link Writer} can also be opened on a stream resource.  If a {@link Writer}
@@ -45,25 +46,25 @@ import java.nio.charset.Charset;
  *    &lt;param name="writerEncoding"&gt;UTF-8&lt;/param&gt; &lt;!-- Optional --&gt;
  * &lt;/resource-config&gt;
  * </pre>
- * 
+ *
  * Description of configuration properties:
  * <ul>
  * <li><code>resource</code>: should be a concreate implementation of this class</li>
  * <li><code>resourceName</code>: the name of this resouce. Will be used to identify this resource</li>
  * <li><code>writerEncoding</code>: (Optional) the encoding to be used by any writers opened on this resource (Default is "UTF-8")</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, ExecutionLifecycleCleanable 
+public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, ExecutionLifecycleCleanable
 {
 	Log log = LogFactory.getLog( AbstractOutputStreamResource.class );
-	
+
     protected static final String RESOURCE_CONTEXT_KEY_PREFIX = AbstractOutputStreamResource.class.getName() + "#outputresource:";
-    
+
     private static final String OUTPUTSTREAM_CONTEXT_KEY_PREFIX = AbstractOutputStreamResource.class.getName() + "#outputstream:";
-    
+
     @ConfigParam
     private String resourceName;
 
@@ -71,10 +72,10 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
     private Charset writerEncoding;
 
     //	public
-	
+
 	/**
 	 * Retrieve/create an output stream that is appropriate for the concreate implementation
-	 * 
+	 *
 	 * @param executionContext Execution Context.
 	 * @return OutputStream specific to the concreate implementation
 	 */
@@ -82,7 +83,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
 
     /**
 	 * Return the name of this resource
-	 * 
+	 *
 	 * @return <code>String</code>	- the name of the resource
 	 */
 	public String getResourceName() {
@@ -100,7 +101,9 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
 
 	public void visitAfter( final SAXElement element, final ExecutionContext executionContext ) throws SmooksException, IOException
 	{
-		closeResource( executionContext );
+		if(closeCondition( executionContext )) {
+			closeResource( executionContext );
+		}
 	}
 
 	public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
@@ -110,12 +113,18 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
 
 	public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
 	{
-		closeResource( executionContext );
+		if(closeCondition( executionContext )) {
+			closeResource( executionContext );
+		}
 	}
-	
+
 	public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
 	{
 		closeResource( executionContext );
+	}
+
+	protected boolean closeCondition(ExecutionContext executionContext) {
+		return true;
 	}
 
     /**
@@ -128,12 +137,12 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
      */
     public static OutputStream getOutputStream(
     		final String resourceName,
-            final ExecutionContext executionContext) throws SmooksException 
+            final ExecutionContext executionContext) throws SmooksException
     {
         String resourceKey = OUTPUTSTREAM_CONTEXT_KEY_PREFIX + resourceName;
         Object resourceIOObj = executionContext.getAttribute( resourceKey );
 
-        if( resourceIOObj == null ) 
+        if( resourceIOObj == null )
         {
             AbstractOutputStreamResource resource = (AbstractOutputStreamResource) executionContext.getAttribute( RESOURCE_CONTEXT_KEY_PREFIX + resourceName );
             OutputStream outputStream = openOutputStream(resource, resourceName, executionContext);
@@ -170,7 +179,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
             AbstractOutputStreamResource resource = (AbstractOutputStreamResource) executionContext.getAttribute( RESOURCE_CONTEXT_KEY_PREFIX + resourceName );
             OutputStream outputStream = openOutputStream(resource, resourceName, executionContext);
             Writer outputStreamWriter = new OutputStreamWriter(outputStream, resource.getWriterEncoding());
-            
+
             executionContext.setAttribute( resourceKey, outputStreamWriter );
             return outputStreamWriter;
         } else {
@@ -205,12 +214,12 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
      * <p/>
      * Classes overriding this method must call super on this method. This will
      * probably need to be done before performing any aditional cleanup.
-	 * 
+	 *
 	 * @param executionContext Smooks ExecutionContext
-	 */ 
+	 */
     protected void closeResource( final ExecutionContext executionContext )
 	{
-		try 
+		try
 		{
             Closeable output = (Closeable) executionContext.getAttribute( OUTPUTSTREAM_CONTEXT_KEY_PREFIX + getResourceName() );
             close( output );
@@ -226,7 +235,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
 	{
         executionContext.setAttribute( RESOURCE_CONTEXT_KEY_PREFIX + getResourceName(), this );
 	}
-	
+
 	private void close( final Closeable closeable)
 	{
 		if ( closeable == null )
@@ -248,7 +257,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
         try
 		{
 			closeable.close();
-		} 
+		}
 		catch (IOException e)
 		{
 			log.error( "IOException while trying to close output resource '" + resourceName + "': ", e );

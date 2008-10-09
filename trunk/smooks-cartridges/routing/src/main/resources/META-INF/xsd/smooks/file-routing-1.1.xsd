@@ -23,13 +23,16 @@
     	<xs:complexContent>
     		<xs:extension base="smooks:element-visitor">
     			<xs:sequence>
+    				<xs:element name="fileNamePattern" type="xs:string" minOccurs="1" maxOccurs="1" />
+    				<xs:element name="destinationDirectoryPattern" type="xs:string" minOccurs="1" maxOccurs="1" />
+    				<xs:element name="listFileNamePattern" type="xs:string" minOccurs="1" maxOccurs="1" />
     				<xs:element name="highWaterMark" type="smooks-file-routing:highWaterMark" minOccurs="0" maxOccurs="1" />
+    				<xs:element name="closeOnCondition" type="xs:string" minOccurs="0" maxOccurs="1" />
+
     			</xs:sequence>
+    			<xs:attribute name="bindOnElement" type="xs:string" use="required" />
     			<xs:attribute name="resourceName" type="xs:string" use="required" />
-    			<xs:attribute name="fileNamePattern" type="xs:string" use="required" />
-    			<xs:attribute name="destinationDirectoryPattern" type="xs:string" use="required" />
-				<xs:attribute name="encoding" type="xs:string" use="optional" default="UTF-8"/>
-    			<xs:attribute name="listFileNamePattern" type="xs:string" use="optional" />
+    			<xs:attribute name="encoding" type="xs:string" use="optional" default="UTF-8"/>
     		</xs:extension>
     	</xs:complexContent>
     </xs:complexType>

@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list
+	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+	xmlns:edi="http://www.milyn.org/xsd/smooks/edi-1.1.xsd">
 
     <!--
     Configure the EDI Reader to process the message stream into a stream of SAX events.
     -->
-    <resource-config selector="org.xml.sax.driver">
-	    <resource>org.milyn.smooks.edi.SmooksEDIReader</resource>
-		<param name="mapping-model">/example/edi-to-xml-order-mapping.xml</param>
-	</resource-config>
+    <edi:reader mappingModel="/example/edi-to-xml-order-mapping.xml" />
 
 </smooks-resource-list>

@@ -20,9 +20,14 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.io.AbstractOutputStreamResource;
+import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.util.DollarBraceDecoder;
 import org.milyn.util.FreeMarkerTemplate;
@@ -70,9 +75,18 @@ import java.util.regex.Pattern;
  * 		directory so that the number of files drops below the highWaterMark.
  * <li><i>highWaterMarkPollFrequency</i>: number of ms to wait between checks on the High Water Mark, while
  *      waiting for it to drop.
+ * <li><i>closeOnCondition</i>: An MVEL expression. If it returns true then the output stream is closed on the visitAfter event
+ * 		else it is kept open. If the expression is not set then output stream gets closed by default.
  * </ul>
+ * <p>
+ * <b>When does a new file get created?</b><br>
+ * As soon as an object tries to retrieve the Writer or the OutputStream from this OutputStreamResource and
+ * the Stream isn't open then a new file is created. Using the 'closeOnCondition' property you can control
+ * whenn a stream get closed. As long as the stream isn't closed, the same file is used to write too. At then
+ * end of the filter process the stream always gets closed. Nothing stays open.
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class FileOutputStreamResource extends AbstractOutputStreamResource
 {
@@ -103,6 +117,9 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     private long highWaterMarkTimeout;
     @ConfigParam(defaultVal = "1000")
     private long highWaterMarkPollFrequency;
+
+    @ConfigParam(use=Use.OPTIONAL, decoder = MVELExpressionEvaluatorDecoder.class)
+    private MVELExpressionEvaluator closeOnCondition;
 
     //	public
 
@@ -173,6 +190,21 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
 
             throw new SmooksRoutingException("Failed to route message to Filesystem destination '" + destinationDirectory.getAbsolutePath() + "'. Timed out (" + highWaterMarkTimeout + " ms) waiting for the number of '" + listFileNamePattern + "' files to drop below High Water Mark (" + highWaterMark + ").  Consider increasing 'highWaterMark' and/or 'highWaterMarkTimeout' param values.");
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.milyn.io.AbstractOutputStreamResource#closeCondition(org.milyn.container.ExecutionContext)
+     */
+    @Override
+    protected boolean closeCondition(ExecutionContext executionContext) {
+
+    	if( closeOnCondition == null ) {
+    		return true;
+    	}
+
+    	BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+    	return closeOnCondition.eval(beanRepository.getBeanMap());
     }
 
     @Override

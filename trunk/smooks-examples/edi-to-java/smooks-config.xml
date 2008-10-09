@@ -1,16 +1,13 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
+<smooks-resource-list
+	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+	xmlns:edi="http://www.milyn.org/xsd/smooks/edi-1.1.xsd"
+	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
 
     <!--
     Configure the EDI Reader to parse the message stream into a stream of SAX events.
     -->
-    <reader class="org.milyn.smooks.edi.SmooksEDIReader">
-        <params>
-            <!-- Generate the event stream based on this "mapping model". -->
-            <param name="mapping-model">/example/edi-to-xml-order-mapping.xml</param>
-        </params>
-    </reader>
-
+    <edi:reader mappingModel="/example/edi-to-xml-order-mapping.xml" />
 
     <!--
     Create an "example.beans.Order" bean instance when we visit the start of the <order> element.
@@ -41,7 +38,7 @@
 
     <!--
     Create an "example.beans.Customer" bean instance when we visit the start of the
-    <customer-details> element. 
+    <customer-details> element.
 	This bean is wired into the "header" bean.
     -->
     <jb:bindings beanId="customer" class="example.model.Customer" createOnElement="customer-details">
@@ -51,8 +48,8 @@
         <jb:value property="lastName" data="customer-details/name/lastname" />
         <jb:value property="state" data="customer-details/state" />
     </jb:bindings>
-	
-	<!-- 
+
+	<!--
 	Create an ArrayList when we visit the start of the <order> element.
 	The "orderItem" beans are wired into this list and this list is wired into the "order" bean.
 	 -->
