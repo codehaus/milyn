@@ -24,6 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.helpers.AttributesImpl;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SmooksResourceConfigurationTest extends TestCase {
@@ -239,6 +240,12 @@ public class SmooksResourceConfigurationTest extends TestCase {
         assertTrue(rc22.isTargetedAtElementContext(e));
 
         assertTrue(!rc23.isTargetedAtElementContext(e));
+    }
+
+    public void test_attributeSelector() {        
+        // Test that the attribute part of the selector doesn't get lowercased...
+        SmooksResourceConfiguration resource = new SmooksResourceConfiguration("a/b/@myAttribute");
+        assertEquals("[a, b, @myAttribute]", Arrays.asList(resource.getContextualSelector()).toString());
     }
 
     public void test_isTargetedAtElement_SAX_rooted() {
