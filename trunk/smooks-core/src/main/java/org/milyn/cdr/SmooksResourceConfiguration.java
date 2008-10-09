@@ -353,7 +353,19 @@ public class SmooksResourceConfiguration {
         if (selector == null || selector.trim().equals("")) {
             throw new IllegalArgumentException("null or empty 'selector' arg in constructor call.");
         }
-        this.selector = selector.toLowerCase().intern();
+        selector = selector.toLowerCase().intern();
+
+        // If there's a "$document" token in the selector, but it's not at the very start,
+        // then we have an invalid selector...
+        int docSelectorIndex = selector.trim().indexOf(DOCUMENT_FRAGMENT_SELECTOR);
+        if(docSelectorIndex != -1 && docSelectorIndex > 0) {
+            throw new SmooksConfigurationException("Invalid selector '" + selector + "'.  '" + DOCUMENT_FRAGMENT_SELECTOR + "' token can only exist at the start of the selector.");
+        }
+
+        if(selector.startsWith("/")) {
+            selector = DOCUMENT_FRAGMENT_SELECTOR + selector;
+        }
+        this.selector = selector;
         isXmlDef = selector.startsWith(XML_DEF_PREFIX);
         contextualSelector = parseSelector(selector);
         isContextualSelector = (contextualSelector.length > 1);
@@ -361,6 +373,10 @@ public class SmooksResourceConfiguration {
 
     public static String[] parseSelector(String selector) {
         String[] splitTokens;
+
+        if(selector.startsWith("/")) {
+            selector = selector.substring(1);
+        }
 
         // Parse the selector in case it's a contextual selector...
         if (selector.indexOf('/') != -1) {
@@ -1030,26 +1046,35 @@ public class SmooksResourceConfiguration {
      */
     public boolean isTargetedAtElementContext(Element element) {
         Node currentNode = element;
+        Index index = new Index();
+
+        if (currentNode == null || currentNode.getNodeType() != Node.ELEMENT_NODE) {
+            return false;
+        }
+
+        index.i = contextualSelector.length - 1;
 
         // Check the element name(s).
-        for (int i = contextualSelector.length - 1; i >= 0; i--) {
-            if (currentNode == null || currentNode.getNodeType() != Node.ELEMENT_NODE) {
-                return false;
-            }
-
+        while (index.i >= 0) {
             Element currentElement = (Element) currentNode;
             String elementName = DomUtils.getName(currentElement);
+            Node parentNode;
+            String parentElementName = null;
 
-            if (contextualSelector[i].equals("*")) {
-                // match
-            } else if (!contextualSelector[i].equalsIgnoreCase(elementName)) {
+            parentNode = currentElement.getParentNode();
+            if(parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
+                parentElementName = DomUtils.getName((Element)parentNode);
+            }
+
+            if(!isTargetedAtElementContext(elementName, parentElementName, index)) {
                 return false;
             }
 
-            // Go the next parent node...
-            if (i > 0) {
-                currentNode = currentNode.getParentNode();
+            if (parentElementName == null) {
+                return true;
             }
+
+            currentNode = parentNode;
         }
 
         return true;
@@ -1070,24 +1095,80 @@ public class SmooksResourceConfiguration {
      */
     public boolean isTargetedAtElementContext(SAXElement element) {
         SAXElement currentElement = element;
+        Index index = new Index();
+
+        if (currentElement == null) {
+            return false;
+        }
+
+        index.i = contextualSelector.length - 1;
 
         // Check the element name(s).
-        for (int i = contextualSelector.length - 1; i >= 0; i--) {
-            if (currentElement == null) {
-                return false;
-            }
-
+        while (index.i >= 0) {
             String elementName = currentElement.getName().getLocalPart();
+            SAXElement parentElement = currentElement.getParent();
+            String parentElementName = null;
 
-            if (contextualSelector[i].equals("*")) {
-                // match
-            } else if (!contextualSelector[i].equalsIgnoreCase(elementName)) {
+            if(parentElement != null) {
+                parentElementName = parentElement.getName().getLocalPart();
+            }
+
+            if(!isTargetedAtElementContext(elementName, parentElementName, index)) {
                 return false;
             }
 
-            // Go the next parent node...
-            if (i > 0) {
-                currentElement = currentElement.getParent();
+            if (parentElement == null) {
+                return true;
+            }
+
+            currentElement = parentElement;
+        }
+
+        return true;
+    }
+
+    private boolean isTargetedAtElementContext(String elementName, String parentElementName, Index index) {
+        if (contextualSelector[index.i].equals("*")) {
+            index.i--;
+        } else if (contextualSelector[index.i].equals("**")) {
+            if(index.i == 0) {
+                // No more tokens to match and ** matches everything
+                return true;
+            } else if(index.i == 1) {
+                if(parentElementName == null && contextualSelector[index.i - 1].equals(DOCUMENT_FRAGMENT_SELECTOR)) {
+                    // we're at the root of the document and the only selector left is
+                    // the document selector.  Pass..
+                    return true;
+                } else if(parentElementName == null) {
+                    // we're at the root of the document, yet there are still
+                    // unmatched tokens in the selector.  Fail...
+                    return false;
+                }
+            } else if(parentElementName == null) {
+                // we're at the root of the document, yet there are still
+                // unmatched tokens in the selector.  Fail...
+                return false;
+            }
+
+            String parentContextToken = contextualSelector[index.i - 1];
+
+            // decrement if the parent context token is * or **,
+            // or if the parent node is an element whose name matches
+            // that of the parent context token, or if the parent context token is * or **...
+            if(parentContextToken.equals("*") || parentContextToken.equals("**")) {
+                index.i--;
+            } else if(parentContextToken.equalsIgnoreCase(parentElementName)) {
+                index.i--;
+            }
+        } else if (!contextualSelector[index.i].equalsIgnoreCase(elementName)) {
+            return false;
+        } else {
+            index.i--;
+        }
+
+        if (parentElementName == null) {
+            if(index.i >= 0 && !contextualSelector[index.i].equals("**")) {
+                return contextualSelector[index.i].equals(DOCUMENT_FRAGMENT_SELECTOR);
             }
         }
 
@@ -1225,5 +1306,9 @@ public class SmooksResourceConfiguration {
         builder.append("</resource-config>");
 
         return builder.toString();
+    }
+
+    private class Index {
+        private int i;
     }
 }

@@ -264,6 +264,15 @@ public class SAXElement {
         return parent;
     }
 
+    /**
+     * Set parent element.
+     *
+     * @param parent Parent element, or null if it's the documnent root.
+     */
+    public void setParent(SAXElement parent) {
+        this.parent = parent;
+    }
+
     public String toString() {
         return getName().toString();
     }
