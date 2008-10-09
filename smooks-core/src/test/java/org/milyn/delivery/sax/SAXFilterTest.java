@@ -19,13 +19,8 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
-import org.milyn.xml.XmlUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Attr;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
@@ -47,20 +42,6 @@ public class SAXFilterTest extends TestCase {
 
         smooks.filter(new StreamSource(new StringReader(input)), new StreamResult(writer), execContext);
         assertEquals(StreamUtils.trimLines(new StringReader(input)).toString(), StreamUtils.trimLines(new StringReader(writer.toString())).toString());
-    }
-
-    public void test() throws IOException, SAXException, ParserConfigurationException {
-        Document document = XmlUtil.parseStream(getClass().getResourceAsStream("test-02.xml"));
-        Element root = document.getDocumentElement();
-        Attr a = root.getAttributeNodeNS("http://y", "a");
-        Attr b = root.getAttributeNode("b");
-
-        String name = a.getName();
-        String localName = a.getLocalName();
-        String namespace = a.getNamespaceURI();
-        String value = a.getValue();
-
-        System.out.println(document);
     }
 
     public void test_reader_stream() throws SAXException, IOException {
@@ -135,8 +116,20 @@ public class SAXFilterTest extends TestCase {
         assertEquals(7, SAXVisitor03.childText.size());
     }
 
-    public void test_contextual() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-03.xml"));
+    public void test_contextual_1() throws IOException, SAXException {
+        test_contextual("smooks-config-03.xml");
+    }
+
+    public void test_contextual_2() throws IOException, SAXException {
+        test_contextual("smooks-config-03.01.xml");
+    }
+
+    public void test_contextual_3() throws IOException, SAXException {
+        test_contextual("smooks-config-03.02.xml");
+    }
+
+    public void test_contextual(String config) throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
         ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
 
