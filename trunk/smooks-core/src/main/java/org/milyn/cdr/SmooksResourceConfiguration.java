@@ -353,7 +353,7 @@ public class SmooksResourceConfiguration {
         if (selector == null || selector.trim().equals("")) {
             throw new IllegalArgumentException("null or empty 'selector' arg in constructor call.");
         }
-        selector = selector.toLowerCase().intern();
+        this.selector = selector.toLowerCase().intern();
 
         // If there's a "$document" token in the selector, but it's not at the very start,
         // then we have an invalid selector...
@@ -365,7 +365,6 @@ public class SmooksResourceConfiguration {
         if(selector.startsWith("/")) {
             selector = DOCUMENT_FRAGMENT_SELECTOR + selector;
         }
-        this.selector = selector;
         isXmlDef = selector.startsWith(XML_DEF_PREFIX);
         contextualSelector = parseSelector(selector);
         isContextualSelector = (contextualSelector.length > 1);
