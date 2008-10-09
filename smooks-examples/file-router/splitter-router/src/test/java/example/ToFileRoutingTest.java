@@ -99,7 +99,7 @@ public class ToFileRoutingTest extends TestCase {
         assertTrue(file5.exists());
         assertTrue(file6.exists());
         assertTrue(file7.exists());
-        assertTrue(listFile.exists());        
+        assertTrue(listFile.exists());
     }
 
     private void startSmooksThread(Filter.StreamFilterType filterType) {

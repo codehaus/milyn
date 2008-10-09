@@ -23,10 +23,11 @@
     	<xs:complexContent>
     		<xs:extension base="smooks:element-visitor">
     			<xs:sequence>
-    				<xs:element name="statement" type="xs:string" minOccurs="1" 	maxOccurs="1">
+    				<xs:element name="statement" type="xs:string" minOccurs="1" maxOccurs="1">
     				</xs:element>
     				<xs:element name="resultSet" type="smooks-db-routing:resultSet"  minOccurs="0" maxOccurs="1" />
     			</xs:sequence>
+    			<xs:attribute name="executeOnElement" type="xs:string" use="required" />
     			<xs:attribute name="datasource" type="xs:string" use="required" />
     			<xs:attribute name="executeBefore" type="xs:boolean" use="optional" default="false"/>
     		</xs:extension>
@@ -47,6 +48,7 @@
     				<xs:element name="where" type="xs:string" minOccurs="1" maxOccurs="1" />
     				<xs:element name="failedSelectError" type="xs:string"  minOccurs="0" maxOccurs="1" />
     			</xs:sequence>
+    			<xs:attribute name="selectRowOnElement" type="xs:string" use="required" />
     			<xs:attribute name="resultSetName" type="xs:string" use="required" />
     			<xs:attribute name="beanId" type="xs:string" use="required" />
     			<xs:attribute name="executeBefore" type="xs:boolean" use="optional" default="false"/>

@@ -12,9 +12,9 @@
     </xs:annotation>
 
 
-    <xs:element name="outputStream" type="smooks-io-routing:outputStream" substitutionGroup="smooks:abstract-resource-config" />
+    <xs:element name="router" type="smooks-io-routing:router" substitutionGroup="smooks:abstract-resource-config" />
 
-    <xs:complexType name="outputStream">
+    <xs:complexType name="router">
     	<xs:annotation>
     		<xs:documentation xml:lang="en">
     			Output stream
@@ -22,6 +22,7 @@
     	</xs:annotation>
     	<xs:complexContent>
     		<xs:extension base="smooks:element-visitor">
+    			<xs:attribute name="routeOnElement" type="xs:string" use="required" />
     			<xs:attribute name="resourceName" type="xs:string" use="required" />
     			<xs:attribute name="beanId" type="xs:string" use="required" />
     			<xs:attribute name="encoding" type="xs:string" use="optional" default="UTF-8"/>

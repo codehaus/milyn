@@ -41,11 +41,6 @@
 
     <resource-config selector="bindings">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">targetProfile</param>
-    </resource-config>
-
-    <resource-config selector="bindings">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">extendLifecycle</param>
     </resource-config>
 
