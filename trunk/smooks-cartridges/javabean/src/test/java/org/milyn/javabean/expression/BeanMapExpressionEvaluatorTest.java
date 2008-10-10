@@ -59,4 +59,21 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
                     e.getMessage());
         }
     }
+
+    public void testEditingContextVariable() {
+    	Object test = new Object();
+
+    	ExecutionContext ec = new MockExecutionContext();
+    	ec.setAttribute("test", test);
+
+    	Object result1 = new BeanMapExpressionEvaluator("EC.getAttribute('test')").getValue(ec);
+
+    	assertSame(test, result1);
+
+    	ec.setAttribute("boolean", false);
+
+    	boolean result2 = new BeanMapExpressionEvaluator("EC.getAttribute('boolean')").eval(ec);
+
+    	assertFalse(result2);
+    }
 }

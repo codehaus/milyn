@@ -19,11 +19,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.expression.ContextMapPair;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,12 +37,19 @@ import java.util.Map;
  * Cab be used to selectively target resources based on the
  * contents of the java objects bound to the supplied {@link ExecutionContext}
  * via the {@link org.milyn.javabean.repository.BeanRepository}.
+ * <p/>
+ * The special EC variable gives access to the EditingContext.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implements ExecutionContextExpressionEvaluator {
 
-    private static Log logger = LogFactory.getLog(BeanMapExpressionEvaluator.class);
+    /**
+	 *
+	 */
+	public static final String MVEL_EXECUTION_CONTEXT_KEY = "EC";
+
+	private static Log logger = LogFactory.getLog(BeanMapExpressionEvaluator.class);
 
     public BeanMapExpressionEvaluator() {
     }
@@ -50,32 +59,35 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
     }
 
     public boolean eval(ExecutionContext context) throws ExpressionEvaluationException {
-        Map beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
-        boolean result = eval(beans);
-
-        if(logger.isDebugEnabled()) {
-            logger.debug("Expression condition evaluation:===========================================================");
-            logger.debug("\tExpression='" + getExpression() + "'");
-            logger.debug("\tBean Map='" + beans + "'");
-            logger.debug("\tResult='" + result + "'");
-            logger.debug("===========================================================================================");
-        }
-
-        return result;
+        return (Boolean) getValue(context);
     }
 
     public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
-        Map beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
-        Object value = getValue(beans);
+    	Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
+
+    	Map<String, Object> ecMap = getEditingContextMap(context);
+
+        Object value = getValue(new ContextMapPair(beans, ecMap));
 
         if(logger.isDebugEnabled()) {
             logger.debug("Expression value evaluation:===============================================================");
             logger.debug("\tExpression='" + getExpression() + "'");
             logger.debug("\tBean Map='" + beans + "'");
+            logger.debug("\tEditingContext='" + context + "'");
             logger.debug("\tValue='" + value + "'");
             logger.debug("===========================================================================================");
         }
 
         return value;
     }
+
+	/**
+	 * @param context
+	 * @return
+	 */
+	private Map<String, Object> getEditingContextMap(ExecutionContext context) {
+		Map<String, Object> ecMap = new HashMap<String, Object>();
+    	ecMap.put(MVEL_EXECUTION_CONTEXT_KEY, context);
+		return ecMap;
+	}
 }
