@@ -54,29 +54,41 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
 	public Object getValue(final Object contextObject) throws ExpressionEvaluationException {
         try {
 
-        	if(contextObject instanceof Map) {
+        	if (contextObject instanceof ContextMapList){
+
+           		MapVariableResolverFactory prevFactory = null;
+        		for(Map<String, Object> context : (ContextMapList) contextObject) {
+
+        			MapVariableResolverFactory factory = new MapVariableResolverFactory(context);
+
+        			if(prevFactory != null) {
+        				factory.setNextFactory(prevFactory);
+        			}
+
+        			prevFactory = factory;
+        		}
+
+        		return getValue(prevFactory);
+
+        	} else if(contextObject instanceof Map) {
 
         		// We use two variableResolverFactories so that variables created in MVEL Scripts are put in the empty HashMap
         		// of the second VariableResolverFactory and not in the contextObject Map.
-        		MapVariableResolverFactory contextVariableResolverFactory = new MapVariableResolverFactory((Map) contextObject);
+        		MapVariableResolverFactory vrFactory = new MapVariableResolverFactory((Map) contextObject);
 
-	        	MapVariableResolverFactory variableResolverFactory = new MapVariableResolverFactory(new HashMap<String, Object>());
-	        	variableResolverFactory.setNextFactory(contextVariableResolverFactory);
+	        	return getValue(vrFactory);
 
-	        	// The VARS variable contains the MVELVariables object which get access to toe variableResolverFactory to be able to
-	        	// do look in the variables of the resolver factory
-	        	variableResolverFactory.createVariable(MVEL_VARIABLES_VARIABLE_NAME, new MVELVariables(variableResolverFactory));
-
-	        	return  MVEL.executeExpression(compiled, variableResolverFactory);
         	} else {
+
         		return MVEL.executeExpression(compiled, contextObject, new MapVariableResolverFactory(new HashMap<String, Object>()));
+
         	}
 
         } catch(Exception e) {
         	String msg = "Error evaluating MVEL expression '" + expression + "' against object type '" + contextObject.getClass().getName() + "'. " +
             				"Common issues include:" +
             				"\n\t\t1. Referencing a variable that is not bound into the context.";
-        	if(contextObject instanceof Map) {
+        	if(contextObject instanceof Map || contextObject instanceof ContextMapList) {
         		msg += " In this case use "+ MVEL_VARIABLES_VARIABLE_NAME +".isdef(\"someVar\") to check if the variable is bound in the context.";
         	}
         	msg += "\n\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.";
@@ -84,6 +96,22 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
             throw new ExpressionEvaluationException(msg, e);
         }
     }
+
+	/**
+	 * @param vrFactory
+	 * @return
+	 */
+	protected Object getValue(MapVariableResolverFactory vrFactory) {
+
+		MapVariableResolverFactory variableResolverFactory = new MapVariableResolverFactory(new HashMap<String, Object>());
+		variableResolverFactory.setNextFactory(vrFactory);
+
+		// The VARS variable contains the MVELVariables object which gets access to the variableResolverFactory to be able to
+		// do lookups in the variables of the resolver factory
+		variableResolverFactory.createVariable(MVEL_VARIABLES_VARIABLE_NAME, new MVELVariables(variableResolverFactory));
+
+		return  MVEL.executeExpression(compiled, variableResolverFactory);
+	}
 
 
 }
