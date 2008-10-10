@@ -27,22 +27,22 @@ import java.util.Map.*;
  * Bean Repository
  * <p/>
  * This class represents a repository of bean's and the means to get and
- * set there instances. 
+ * set there instances.
  * <p/>
- * This class uses a {@link BeanIdList} to optimize the access performance. If
+ * This class uses a {@link BeanIdRegister} to optimize the access performance. If
  * all the {@link BeanId} objects are registered with the BeanIdList before this object
  * is created then you get direct access performance. If you regularly register new
- * {@link BeanId} objects with the {@link BeanIdList}, after this object is created
- * then the BeanRepository needs to sync up with the {@link BeanIdList}. That 
+ * {@link BeanId} objects with the {@link BeanIdRegister}, after this object is created
+ * then the BeanRepository needs to sync up with the {@link BeanIdRegister}. That
  * sync process takes some time, so it is adviced to register all the BeanId's up front.
  * <p/>
- * Only {@link BeanId} objects from the {@link BeanIdList}, which is set on 
+ * Only {@link BeanId} objects from the {@link BeanIdRegister}, which is set on
  * this BeanRepository, can be used with almost all of the methods.
  * <p/>
  * For ease of use it is also possible to get the bean by it's beanId name. This has however
  * not the direct access performance because a Map lookup is done. It is advised to use
  * the {@link BeanId} to get the bean from the repository.
- * 
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
@@ -54,20 +54,22 @@ public class BeanRepository {
 
 	private final ArrayList<RepositoryEntry> repositoryEntries;
 
-	private final BeanIdList beanIdList;
+	private final BeanIdRegister beanIdRegister;
+
+	private final RepositoryBeanMapAdapter repositoryBeanMapAdapter = new RepositoryBeanMapAdapter();
 
 	/**
 	 * Create the BeanRepository
-	 * 
+	 *
 	 * @param executionContext The {@link ExecutionContext} to which this object is bound to.
-	 * @param beanIdList The {@link BeanIdList} to which this object is bound to.
+	 * @param beanIdList The {@link BeanIdRegister} to which this object is bound to.
 	 * @param beanMap The {@link Map} in which the bean's will be set. It is important not to modify this map outside of
 	 * the BeanRepository! It is only provided as constructor parameter because in some situations we need to controll
 	 * which {@link Map} is used.
 	 */
-	public BeanRepository(ExecutionContext executionContext, BeanIdList beanIdList, Map<String, Object> beanMap) {
+	public BeanRepository(ExecutionContext executionContext, BeanIdRegister beanIdList, Map<String, Object> beanMap) {
 		this.executionContext = executionContext;
-		this.beanIdList = beanIdList;
+		this.beanIdRegister = beanIdList;
 		this.beanMap = beanMap;
 
 		repositoryEntries = new ArrayList<RepositoryEntry>(beanIdList.size());
@@ -110,7 +112,6 @@ public class BeanRepository {
      */
     public void addBean(String beanId, Object bean) {
         AssertArgument.isNotNull(beanId, "beanId");
-        AssertArgument.isNotNull(bean, "bean");
 
         addBean(getBeanId(beanId), bean);
     }
@@ -125,12 +126,12 @@ public class BeanRepository {
      */
     public BeanId getBeanId(String beanId) {
         AssertArgument.isNotNull(beanId, "beanId");
-        BeanId beanIdObj = beanIdList.getBeanId(beanId);
+        BeanId beanIdObj = beanIdRegister.getBeanId(beanId);
 
         if(beanIdObj == null) {
-            beanIdObj = beanIdList.register(beanId);
+            beanIdObj = beanIdRegister.register(beanId);
         }
-        
+
         return beanIdObj;
     }
 
@@ -166,7 +167,7 @@ public class BeanRepository {
 	}
 
 	/**
-     * Changes a bean instance of the given {@link BeanId}. The difference to {@link #addBean(BeanId, Object)} 
+     * Changes a bean instance of the given {@link BeanId}. The difference to {@link #addBean(BeanId, Object)}
      * is that the bean must exist, the associated beans aren't removed and the observers of the
      * {@link BeanLifecycle#CHANGE} event are notified.
      *
@@ -187,7 +188,29 @@ public class BeanRepository {
     		throw new IllegalStateException("The bean '" + beanId + "' can't be changed because it isn't in the repository.");
     	}
 	}
-	
+
+	/**
+	 * Removes a bean and all its associated lifecycle beans from the bean map
+	 *
+	 * @param beanId The beanId to remove the beans from.
+	 */
+	public Object removeBean(BeanId beanId) {
+		AssertArgument.isNotNull(beanId, "beanId");
+
+		Object old = getBean(beanId);
+
+		removeBean(beanId.getIndex());
+
+		return old;
+	}
+
+	public void clear() {
+
+		for(RepositoryEntry entry : repositoryEntries) {
+			entry.setValue(null);
+		}
+	}
+
 	/**
      * Associates the lifeCycle of the childBeanId with the parentBeanId. When the parentBean gets overwritten via the
      * addBean method then the associated child beans will get removed from the bean map.
@@ -210,7 +233,7 @@ public class BeanRepository {
             associations.add(childId);
         }
     }
-	
+
 	/**
      * Registers an observer which observers when a bean gets added.
      *
@@ -251,23 +274,37 @@ public class BeanRepository {
 	}
 
 	/**
-	 * @return An unmodifiable Map of the bean instances.
-	 * Values can be null if they are never set.
+	 * This returns a map which is backed by this repository. Changes made in the map
+	 * are reflected back into the repository.
+     * There are some important side notes:
+     *
+     * <ul>
+     *   <li> The write performance of the map isn't as good as the write performance of the
+     *     	  BeanRepository because it needs to find or register the BeanId every time.
+     *        The read performance are as good as any normal Map.</li>
+     *   <li> The {@link #entrySet()} method returns an UnmodifiableSet </li>
+     *   <li> When a bean gets removed from the BeanRepository then only the value of the
+     *        map entry is set to null. This means that null values should be regarded as
+     *        deleted beans. That is also why the size() of the bean map isn't accurate. It
+     *        also counts the null value entries.
+     * </ul>
+     *
+     * Only use the Map if you absolutely needed it else you should use the BeanRepository.
 	 */
 	public Map<String, Object> getBeanMap() {
-		return Collections.unmodifiableMap(beanMap);
+		return repositoryBeanMapAdapter;
 	}
 
 
     /**
-	 * Checks if the repository is still in sync with 
-	 * then {@link BeanIdList}.
+	 * Checks if the repository is still in sync with
+	 * then {@link BeanIdRegister}.
 	 */
 	private void checkUpdatedBeanIdList() {
-		
+
 		//We only check if the size is difference because it
 		//is not possible to remove BeanIds from the BeanIdList
-		if(repositoryEntries.size() != beanIdList.size()) {
+		if(repositoryEntries.size() != beanIdRegister.size()) {
 
 			updateBeanMap();
 
@@ -276,13 +313,13 @@ public class BeanRepository {
 
 	/**
 	 * Sync's the BeanRepositories bean map with
-	 * the bean map from the {@link BeanIdList}. All
+	 * the bean map from the {@link BeanIdRegister}. All
 	 * missing keys that are in the BeanIdList's map are added
-	 * to the BeanRepositories map. 
+	 * to the BeanRepositories map.
 	 */
 	private void updateBeanMap() {
 
-		for(String beanId : beanIdList.getBeanIdMap().keySet()) {
+		for(String beanId : beanIdRegister.getBeanIdMap().keySet()) {
 
 			if(!beanMap.containsKey(beanId) ) {
 				beanMap.put(beanId, null);
@@ -294,16 +331,16 @@ public class BeanRepository {
 	/**
 	 * Sync's the repository entry list by copying all the
 	 * {@link Entry} instances from the bean map to the bean list. The
-	 * {@link Entry} instances are put at the same index as the index of the 
-	 * corresponding BeanId. This ensures that direct access to the BeanId his 
+	 * {@link Entry} instances are put at the same index as the index of the
+	 * corresponding BeanId. This ensures that direct access to the BeanId his
 	 * value is possible.
 	 */
 	private void updateRepositoryEntries() {
-		repositoryEntries.addAll(Collections.nCopies((beanIdList.size() - repositoryEntries.size()), (RepositoryEntry)null));
+		repositoryEntries.addAll(Collections.nCopies((beanIdRegister.size() - repositoryEntries.size()), (RepositoryEntry)null));
 
 		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
 
-			BeanId beanId = beanIdList.getBeanId(beanMapEntry.getKey());
+			BeanId beanId = beanIdRegister.getBeanId(beanMapEntry.getKey());
 
 			int index = beanId.getIndex();
 			if(repositoryEntries.get(index) == null) {
@@ -314,10 +351,10 @@ public class BeanRepository {
 	}
 
 	/**
-	 * Removes the bean instance from a BeanId. 
+	 * Removes the bean instance from a BeanId.
 	 * The integer index is directly used for performance reasons.
 	 * All associating child instances are also removed.
-	 * 
+	 *
 	 * @param index The index of the BeanId.
 	 */
 	private void removeBean(int index) {
@@ -329,7 +366,7 @@ public class BeanRepository {
 	/**
 	 * Remove all bean instances of the associating BeanId's of the parent bean id.
 	 * The integer index is directly used for performance reasons.
-	 * 
+	 *
 	 * @param parentId The index of the parent BeanId.
 	 */
 	private void cleanAssociatedLifecycleBeans(int parentId) {
@@ -348,8 +385,8 @@ public class BeanRepository {
 
 	/**
 	 * Notify all the observers from the given {@link BeanId} that the given
-	 * {@link BeanLifecycle} event happend. 
-	 * 
+	 * {@link BeanLifecycle} event happend.
+	 *
 	 * @param beanId The {@link BeanId} from which the observers are notified.
 	 * @param lifecycle The {@link BeanLifecycle} to be notified of
 	 * @param bean The bean instance
@@ -362,9 +399,11 @@ public class BeanRepository {
     	}
     }
 
+
+
     /**
      * Returns the {@link BeanLifecycleSubjectGroup} of the given {@link BeanId}.
-     * 
+     *
      * @param beanId The BeanId from which the {@link BeanLifecycleSubjectGroup} needs to be returned
      * @param createIfNotExist If the {@link BeanLifecycleSubjectGroup needs to be created if it not already exists
      * @return The {@link BeanLifecycleSubjectGroup} if found or created else <code>null</code>.
@@ -392,7 +431,7 @@ public class BeanRepository {
      * <p/>
      * Represents an entry of a BeanId and provides an platform of all the objects
      * that needed for that entry
-     * 
+     *
      * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
      *
      */
@@ -459,4 +498,137 @@ public class BeanRepository {
 
     }
 
+    /**
+     * This Map Adapter enables that the bean repository can be used as a normal map.
+     * There are some important side notes:
+     *
+     * <ul>
+     *   <li> The write performance of the map isn't as good as the write performance of the
+     *     	  BeanRepository because it needs to find or register the BeanId every time.
+     *        The read performance are as good as any normal Map.</li>
+     *   <li> The {@link #entrySet()} method returns an UnmodifiableSet </li>
+     *   <li> When a bean gets removed from the BeanRepository then only the value of the
+     *        map entry is set to null. This means that null values should be regarded as
+     *        deleted beans. That is also why the size() of the bean map isn't accurate. It
+     *        also counts the null value entries.
+     * </ul>
+     *
+     * Only use the Map if you absolutely needed it else you should use the BeanRepository.
+     *
+     * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+     *
+     */
+    private class RepositoryBeanMapAdapter implements Map<String, Object> {
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#clear()
+		 */
+		public void clear() {
+			BeanRepository.this.clear();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#containsKey(java.lang.Object)
+		 */
+		public boolean containsKey(Object key) {
+			return beanMap.containsKey(key);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#containsValue(java.lang.Object)
+		 */
+		public boolean containsValue(Object value) {
+			return beanMap.containsValue(value);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#entrySet()
+		 */
+		public Set<java.util.Map.Entry<String, Object>> entrySet() {
+			return Collections.unmodifiableSet(beanMap.entrySet());
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#get(java.lang.Object)
+		 */
+		public Object get(Object key) {
+			return beanMap.get(key);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#isEmpty()
+		 */
+		public boolean isEmpty() {
+			return beanMap.isEmpty();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#keySet()
+		 */
+		public Set<String> keySet() {
+			return beanMap.keySet();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
+		 */
+		public Object put(String key, Object value) {
+			AssertArgument.isNotNull(key, "key");
+
+			BeanId beanId = beanIdRegister.getBeanId(key);
+
+			Object old = null;
+			if(beanId == null) {
+				beanId = beanIdRegister.register(key);
+			} else {
+				old = getBean(beanId);
+			}
+
+			addBean(beanId, value);
+
+			return old;
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#putAll(java.util.Map)
+		 */
+		public void putAll(Map<? extends String, ? extends Object> map) {
+			AssertArgument.isNotNull(map, "map");
+
+			for(Entry<? extends String, ? extends Object> entry : map.entrySet()) {
+
+				addBean(entry.getKey(), entry.getValue());
+
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#remove(java.lang.Object)
+		 */
+		public Object remove(Object key) {
+			AssertArgument.isNotNull(key, "key");
+
+			if(key instanceof String == false) {
+				return null;
+			}
+			BeanId beanId = beanIdRegister.getBeanId((String)key);
+
+			return beanId == null ? null : removeBean(beanId);
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#size()
+		 */
+		public int size() {
+			return beanMap.size();
+		}
+
+		/* (non-Javadoc)
+		 * @see java.util.Map#values()
+		 */
+		public Collection<Object> values() {
+			return beanMap.values();
+		}
+
+    }
 }

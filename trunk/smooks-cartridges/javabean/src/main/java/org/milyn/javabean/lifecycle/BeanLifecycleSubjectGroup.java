@@ -118,6 +118,6 @@ public class BeanLifecycleSubjectGroup {
 	private static BeanId getBeanId(ExecutionContext executionContext, String beanId) {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
 
-		return BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanIdList().getBeanId(beanId);
+		return BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanIdRegister().getBeanId(beanId);
 	}
 }

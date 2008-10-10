@@ -32,10 +32,10 @@ import org.milyn.payload.JavaSource;
 /**
  * The Bean Repository Manager
  * <p/>
- * Manages the {@link BeanRepository} of the current {@link ExecutionContext} and the {@link BeanIdList}
+ * Manages the {@link BeanRepository} of the current {@link ExecutionContext} and the {@link BeanIdRegister}
  * of the current {@link ApplicationContext}. It ensures that both objects are correctly instantiated.
- *  
- *  
+ *
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
@@ -45,13 +45,13 @@ public class BeanRepositoryManager {
 
 	private static final String BEAN_REPOSITORY_CONTEXT_KEY = BeanRepository.class.getName() + "#CONTEXT_KEY";
 
-	private final BeanIdList beanIdList = new BeanIdList();
+	private final BeanIdRegister beanIdRegister = new BeanIdRegister();
 
 	/**
 	 * Returns the instance of the {@link BeanRepositoryManager}, which is bound to the
 	 * given {@link ApplicationContext}. If the {@link BeanRepositoryManager} doesn't
 	 * exist yet, then one is created.
-	 * 
+	 *
 	 * @param applicationContext The {@link ApplicationContext} to which the instance is bound
 	 * @return The {@link BeanRepositoryManager} instance of the given {@link ApplicationContext}
 	 */
@@ -76,17 +76,17 @@ public class BeanRepositoryManager {
 	private BeanRepositoryManager() {
 	}
 
-	
+
 	/**
-	 * @return the {@link BeanIdList} of the bound {@link ApplicationContext}
+	 * @return the {@link BeanIdRegister} of the bound {@link ApplicationContext}
 	 */
-	public BeanIdList getBeanIdList() {
-		return beanIdList;
+	public BeanIdRegister getBeanIdRegister() {
+		return beanIdRegister;
 	}
 
 	/**
 	 * @return the {@link BeanRepository} of the given {@link ExecutionContext}. If the {@link BeanRepository} does not
-	 * 			exist then one is created. The {@link BeanIdList} which is bound to the {@link ApplicationContext} 
+	 * 			exist then one is created. The {@link BeanIdRegister} which is bound to the {@link ApplicationContext}
 	 * 			of the given {@link ExecutionContext} is bound to the created {@link BeanRepository}.
 	 */
 	public static BeanRepository getBeanRepository(ExecutionContext executionContext) {
@@ -104,8 +104,8 @@ public class BeanRepositoryManager {
 
 	/**
 	 * Creates the BeanRepository
-	 * 
-	 * @param executionContext The {@link ExecutionContext} to which the {@link BeanRepository} is bound 
+	 *
+	 * @param executionContext The {@link ExecutionContext} to which the {@link BeanRepository} is bound
 	 * @return The new BeanRepository
 	 */
 	private BeanRepository createBeanRepository(ExecutionContext executionContext) {
@@ -113,8 +113,8 @@ public class BeanRepositoryManager {
 
 		Map<String, Object> beanMap = createBeanMap(executionContext);
 
-		beanRepository = new BeanRepository(executionContext, beanIdList, beanMap);
-		
+		beanRepository = new BeanRepository(executionContext, beanIdRegister, beanMap);
+
 		return beanRepository;
 	}
 
@@ -123,10 +123,10 @@ public class BeanRepositoryManager {
 	 * Returns the BeanMap which must be used by the {@link BeanRepository}. If
 	 * a JavaResult or a JavaSource is used with the {@link ExecutionContext} then
 	 * those are used in the creation of the Bean map.
-	 * 
+	 *
 	 * Bean's that are already in the JavaResult or JavaSource map are given
-	 * a {@link BeanId} in the {@link BeanIdList}.
-	 * 
+	 * a {@link BeanId} in the {@link BeanIdRegister}.
+	 *
 	 * @param executionContext
 	 * @return
 	 */
@@ -159,8 +159,8 @@ public class BeanRepositoryManager {
 
 			for(String beanId : beanMap.keySet()) {
 
-				if(!beanIdList.containsBeanId(beanId)) {
-					beanIdList.register(beanId);
+				if(!beanIdRegister.containsBeanId(beanId)) {
+					beanIdRegister.register(beanId);
 				}
 
 	        }

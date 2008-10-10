@@ -16,6 +16,9 @@
 
 package org.milyn.javabean.repository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 import org.milyn.container.ExecutionContext;
@@ -33,7 +36,6 @@ public class BeanRepositoryTest extends TestCase {
 
 	private ExecutionContext executionContext;
 
-
 	/**
 	 * Tests adding a bean
 	 */
@@ -41,8 +43,8 @@ public class BeanRepositoryTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
 
-        BeanId beanId1 = getBeanIdList().register("bean1");
-        BeanId beanId2 = getBeanIdList().register("bean2");
+        BeanId beanId1 = getBeanIdRegister().register("bean1");
+        BeanId beanId2 = getBeanIdRegister().register("bean2");
 
         BeanRepository beanRepository = getBeanRepository();
 
@@ -72,7 +74,7 @@ public class BeanRepositoryTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        BeanId beanId1 = getBeanIdList().register("bean1");
+        BeanId beanId1 = getBeanIdRegister().register("bean1");
 
         BeanRepository beanRepository = getBeanRepository();
 
@@ -94,8 +96,8 @@ public class BeanRepositoryTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        BeanId beanId1 = getBeanIdList().register("bean1");
-        BeanId beanIdNE = getBeanIdList().register("notExisting");
+        BeanId beanId1 = getBeanIdRegister().register("bean1");
+        BeanId beanIdNE = getBeanIdRegister().register("notExisting");
 
 
         BeanRepository beanRepository = getBeanRepository();
@@ -128,10 +130,10 @@ public class BeanRepositoryTest extends TestCase {
         Object child2 = new MyGoodBean();
         Object childChild = new MyGoodBean();
 
-        BeanId brIdParent = getBeanIdList().register("parent");
-        BeanId brIdChild = getBeanIdList().register("child");
-        BeanId brIdChild2 = getBeanIdList().register("child2");
-        BeanId brIdChildChild = getBeanIdList().register("childChild");
+        BeanId brIdParent = getBeanIdRegister().register("parent");
+        BeanId brIdChild = getBeanIdRegister().register("child");
+        BeanId brIdChild2 = getBeanIdRegister().register("child2");
+        BeanId brIdChildChild = getBeanIdRegister().register("childChild");
 
         BeanRepository beanRepository = getBeanRepository();
 
@@ -190,8 +192,6 @@ public class BeanRepositoryTest extends TestCase {
 	}
 
 	/**
-	 * replace with easy mock framework for more control
-	 *
 	 * Test adding and replacing a bean
 	 */
 	public void _test_bean_lifecycle_begin_observers_associates() {
@@ -199,8 +199,8 @@ public class BeanRepositoryTest extends TestCase {
         final Object bean1 = new MyGoodBean();
         final Object bean2 = new MyGoodBean();
 
-        final BeanId beanId1 = getBeanIdList().register("bean1");
-        final BeanId beanId2 = getBeanIdList().register("bean2");
+        final BeanId beanId1 = getBeanIdRegister().register("bean1");
+        final BeanId beanId2 = getBeanIdRegister().register("bean2");
 
         BeanRepository beanRepository = getBeanRepository();
 
@@ -286,14 +286,12 @@ public class BeanRepositoryTest extends TestCase {
 
 
 	/**
-	 * replace with easy mock framework for more control
-	 *
 	 * Test adding and replacing a bean
 	 */
 	public void test_bean_lifecycle_change_observers_associates() {
         Object bean = new MyGoodBean();
 
-        BeanId beanId = getBeanIdList().register("bean");
+        BeanId beanId = getBeanIdRegister().register("bean");
 
         BeanRepository beanRepository = getBeanRepository();
 
@@ -316,6 +314,66 @@ public class BeanRepositoryTest extends TestCase {
 
 	}
 
+	/**
+	 * Test adding and replacing a bean
+	 */
+	public void test_bean_map() {
+		Object bean1 = new Object();
+		Object bean2 = new Object();
+		Object bean3 = new Object();
+		Object bean4 = new Object();
+
+		BeanId beanId1 = getBeanIdRegister().register("bean1");
+
+		BeanRepository beanRepository = getBeanRepository();
+		Map<String, Object> beanMap = beanRepository.getBeanMap();
+
+		beanRepository.addBean(beanId1, bean1);
+
+		assertEquals(1, beanMap.size());
+		assertEquals(bean1, beanMap.get(beanId1.getName()));
+
+		beanMap.put("bean2", bean2);
+
+		BeanId beanId2 = beanRepository.getBeanId("bean2");
+
+		assertEquals(bean2, beanRepository.getBean(beanId2));
+		assertEquals(bean2, beanMap.get(beanId2.getName()));
+
+		assertTrue(beanMap.containsKey("bean2"));
+		assertFalse(beanMap.containsKey("x"));
+
+		assertTrue(beanMap.containsValue(bean1));
+		assertFalse(beanMap.containsValue(new Object()));
+
+		assertFalse(beanMap.isEmpty());
+
+		beanMap.remove("bean1");
+
+		assertNull(beanMap.get("bean1"));
+		assertNull(beanRepository.getBean("bean1"));
+
+		assertEquals(2, beanMap.entrySet().size());
+		assertEquals(2, beanMap.keySet().size());
+		assertEquals(2, beanMap.values().size());
+
+		Map<String, Object> toPut = new HashMap<String, Object>();
+		toPut.put("bean3", bean3);
+		toPut.put("bean4", bean4);
+
+		beanMap.putAll(toPut);
+
+		assertEquals(4, beanMap.size());
+		assertEquals(bean3, beanRepository.getBean("bean3"));
+		assertEquals(bean4, beanRepository.getBean("bean4"));
+
+		beanMap.clear();
+
+		assertNull(beanRepository.getBean("bean1"));
+		assertNull(beanRepository.getBean("bean2"));
+		assertNull(beanRepository.getBean("bean3"));
+		assertNull(beanRepository.getBean("bean4"));
+	}
 
 	@Override
 	protected void setUp() throws Exception {
@@ -327,18 +385,16 @@ public class BeanRepositoryTest extends TestCase {
 	/**
 	 *
 	 */
-	private BeanIdList getBeanIdList() {
+	private BeanIdRegister getBeanIdRegister() {
 		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
 
-        return beanRepositoryManager.getBeanIdList();
+        return beanRepositoryManager.getBeanIdRegister();
 	}
 
 	/**
 	 *
 	 */
 	private BeanRepository getBeanRepository() {
-		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
-
         return BeanRepositoryManager.getBeanRepository(executionContext);
 	}
 

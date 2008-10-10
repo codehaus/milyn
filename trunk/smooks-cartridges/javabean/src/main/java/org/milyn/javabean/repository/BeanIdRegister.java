@@ -29,12 +29,12 @@ import org.milyn.assertion.AssertArgument;
  * is incremental. The index starts with zero.
  * <p/>
  * Once a BeanId is registered it can never be unregistered.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class BeanIdList {
+public class BeanIdRegister {
 
 	private int index = 0;
 
@@ -42,12 +42,12 @@ public class BeanIdList {
 
 	/**
 	 * registers a beanId name and returns the {@link BeanId} object.
-	 * If the beanId name is already registered then belonging BeanId 
+	 * If the beanId name is already registered then belonging BeanId
 	 * is returned.
 	 * <p>
 	 * If you are sure that the BeanId is already registered
 	 * then use the {@link #getBeanId(String)} method to retrieve it,
-	 * because it is faster.   
+	 * because it is faster.
 	 *
 	 */
 	public synchronized BeanId register(String beanIdName) {

@@ -39,7 +39,7 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
@@ -87,8 +87,8 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     	buildId();
 
     	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
-    	BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
-        beanId = beanIdList.register(beanIdName);
+    	BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
+        beanId = beanIdRegister.register(beanIdName);
 
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, beanClassName, appContext);
 

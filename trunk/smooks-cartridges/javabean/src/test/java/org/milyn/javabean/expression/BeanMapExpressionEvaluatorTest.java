@@ -54,7 +54,7 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
             fail("Expected ExpressionEvaluationException");
         } catch(ExpressionEvaluationException e) {
             assertEquals("Error evaluating MVEL expression 'x.y' against object type 'java.util.HashMap'. Common issues include:\n" +
-                    "\t\t1. Referencing a variable that is not bound into the context. In this case use VARS.isResolveable('someVar') to check if the variable is bound in the context.\n" +
+                    "\t\t1. Referencing a variable that is not bound into the context. In this case use VARS.isdef(\"someVar\") to check if the variable is bound in the context.\n" +
                     "\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.",
                     e.getMessage());
         }

@@ -112,7 +112,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
         	if(bindId == null) {
                 throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
             } else {
-            	bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdList().register(bindId);
+            	bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
             }
         	
         }

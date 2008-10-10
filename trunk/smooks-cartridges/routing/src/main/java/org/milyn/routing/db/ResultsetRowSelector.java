@@ -38,7 +38,7 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.util.FreeMarkerTemplate;
@@ -74,10 +74,10 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
 
     @Initialize
     public void intitialize() throws SmooksConfigurationException {
-    	BeanIdList beanIdList = BeanRepositoryManager.getInstance(appContext).getBeanIdList();
+    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
 
-    	beanId = beanIdList.register(beanIdName);
-    	resultSetBeanId = beanIdList.register(resultSetName);
+    	beanId = beanIdRegister.register(beanIdName);
+    	resultSetBeanId = beanIdRegister.register(resultSetName);
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {

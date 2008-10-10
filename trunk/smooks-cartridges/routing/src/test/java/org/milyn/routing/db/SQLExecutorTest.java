@@ -27,7 +27,7 @@ import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.payload.StringSource;
@@ -134,9 +134,9 @@ public class SQLExecutorTest
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-failed-select-02.xml"));
         ExecutionContext execContext = smooks.createExecutionContext();
         BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
-        BeanIdList beanIdList =  BeanRepositoryManager.getInstance(execContext.getContext()).getBeanIdList();
+        BeanIdRegister beanIdRegister =  BeanRepositoryManager.getInstance(execContext.getContext()).getBeanIdRegister();
 
-        BeanId requiredOrderNumId = beanIdList.register("requiredOrderNum");
+        BeanId requiredOrderNumId = beanIdRegister.register("requiredOrderNum");
 
         beanRepository.addBean(requiredOrderNumId, 9999);
         try {

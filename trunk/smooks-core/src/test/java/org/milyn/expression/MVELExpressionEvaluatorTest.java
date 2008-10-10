@@ -41,6 +41,23 @@ public class MVELExpressionEvaluatorTest extends TestCase {
 		assertFalse("Expected false", result);
 	}
 
+	public void test_vars_isdef() {
+
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		evaluator.setExpression("VARS.isdef('value')");
+		boolean result = evaluator.eval(map);
+
+		assertFalse("Expected false", result);
+
+		map.put("value", new Object());
+
+		result = evaluator.eval(map);
+
+		assertTrue("Expected true", result);
+
+	}
+
 	public void test_vars_resolvable() {
 
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -72,6 +89,30 @@ public class MVELExpressionEvaluatorTest extends TestCase {
 		result = evaluator.eval(map);
 
 		assertFalse("Expected false", result);
+	}
+
+	public void test_vars_get() {
+		Object var = new Object();
+
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		evaluator.setExpression("VARS.get('value') == null");
+		boolean result = evaluator.eval(map);
+
+		assertTrue("Expected true", result);
+
+		map.put("value", var);
+
+		result = evaluator.eval(map);
+
+		assertFalse("Expected false", result);
+
+		evaluator.setExpression("VARS.get('value')");
+
+		Object resultObj = evaluator.getValue(map);
+
+		assertSame(var, resultObj);
+
 	}
 
 	@Override
