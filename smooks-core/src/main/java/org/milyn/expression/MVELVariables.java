@@ -15,6 +15,15 @@
 */
 package org.milyn.expression;
 
+import org.mvel.integration.VariableResolver;
+
+/**
+ * The MVELVariables is utility class for MVEL. It can be used to
+ * inspect the MVEL Variable Context.
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ *
+ */
 public class MVELVariables {
 
 	private org.mvel.integration.VariableResolverFactory variableResolverFactory;
@@ -25,12 +34,47 @@ public class MVELVariables {
 		this.variableResolverFactory = variableResolverFactory;
 	}
 
-	public boolean isResolveable(String var) {
+	/**
+	 * Returns true if the variable is defined within the MVEL Context.
+	 *
+	 * @param var
+	 * @return
+	 */
+	public boolean isdef(String var) {
 		return variableResolverFactory.isResolveable(var);
 	}
 
+	/**
+	 * Returns true if the variable is defined within the MVEL Context.
+	 *
+	 * @param var
+	 * @return
+	 */
+	public boolean isResolveable(String var) {
+		return isdef(var);
+	}
+
+	/**
+	 * Returns true if the variable is not defined within the MVEL Context.
+	 *
+	 * @param var
+	 * @return
+	 */
 	public boolean isUnresolveable(String var) {
 		return !isResolveable(var);
+	}
+
+	/**
+	 * Returns the value of the variable or null if it is not defined.
+	 *
+	 * @param var
+	 * @return
+	 */
+	public Object get(String var) {
+		if(isdef(var)) {
+			return variableResolverFactory.getVariableResolver(var).getValue();
+		}
+		return null;
 	}
 
 }

@@ -16,6 +16,7 @@
 package org.milyn.expression;
 
 import org.milyn.cdr.*;
+import org.milyn.container.ExecutionContext;
 import org.mvel.*;
 import org.mvel.integration.impl.*;
 
@@ -48,6 +49,7 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
         return (Boolean) getValue(contextObject);
     }
 
+
     @SuppressWarnings("unchecked")
 	public Object getValue(final Object contextObject) throws ExpressionEvaluationException {
         try {
@@ -75,11 +77,13 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
             				"Common issues include:" +
             				"\n\t\t1. Referencing a variable that is not bound into the context.";
         	if(contextObject instanceof Map) {
-        		msg += " In this case use "+ MVEL_VARIABLES_VARIABLE_NAME +".isResolveable('someVar') to check if the variable is bound in the context.";
+        		msg += " In this case use "+ MVEL_VARIABLES_VARIABLE_NAME +".isdef(\"someVar\") to check if the variable is bound in the context.";
         	}
         	msg += "\n\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.";
 
             throw new ExpressionEvaluationException(msg, e);
         }
     }
+
+
 }

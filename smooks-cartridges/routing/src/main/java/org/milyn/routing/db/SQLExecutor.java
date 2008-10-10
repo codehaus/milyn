@@ -42,7 +42,7 @@ import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
@@ -96,9 +96,9 @@ public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVis
 
         if(resultSetName != null) {
 	        BeanRepositoryManager beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
-	        BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
+	        BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
 
-	        resultSetBeanId = beanIdList.register(resultSetName);
+	        resultSetBeanId = beanIdRegister.register(resultSetName);
         }
         rsAppContextKey = datasource + ":" + statement;
     }

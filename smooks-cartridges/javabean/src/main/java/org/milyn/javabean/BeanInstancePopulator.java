@@ -49,7 +49,7 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.xml.DomUtils;
@@ -138,9 +138,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
         beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
-        BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
+        BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
 
-        beanId = beanIdList.getBeanId(beanIdName);
+        beanId = beanIdRegister.getBeanId(beanIdName);
 
         if (setterMethod == null && property == null ) {
         	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
@@ -308,11 +308,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private BeanId getWireBeanId() {
     	if(wireBeanId == null) {
-    		wireBeanId = beanRepositoryManager.getBeanIdList().getBeanId(wireBeanIdName);
+    		wireBeanId = beanRepositoryManager.getBeanIdRegister().getBeanId(wireBeanIdName);
     	}
 
 		if(wireBeanId == null) {
-            wireBeanId = beanRepositoryManager.getBeanIdList().register(wireBeanIdName);
+            wireBeanId = beanRepositoryManager.getBeanIdRegister().register(wireBeanIdName);
         }
 
         return wireBeanId;
