@@ -116,7 +116,7 @@ public class EdifactModel {
             if (importedSegment == null) {
                 throw new EDIParseException(edimap, "Referenced segment [" + key + "] does not exist in imported edi-message-mapping [" + imp.getName() + "]");
             }
-            insertImportedSegmentInfo(segment, importedSegment, imp.getTruncatableFields(), imp.getTruncatableComponents());
+            insertImportedSegmentInfo(segment, importedSegment, imp.isTruncatableFields(), imp.isTruncatableComponents());
         }
 
         for (Segment seg : segment.getSegment()) {
@@ -133,7 +133,7 @@ public class EdifactModel {
      * @param truncatableFields a global attribute for overriding the truncatable attribute in imported segment.
      * @param truncatableComponents a global attribute for overriding the truncatable attribute in imported segment.
      */
-    private void insertImportedSegmentInfo(Segment segment, Segment importedSegment, String truncatableFields, String truncatableComponents) {
+    private void insertImportedSegmentInfo(Segment segment, Segment importedSegment, Boolean truncatableFields, Boolean truncatableComponents) {
         //Overwrite all existing fields in segment, but add additional segments to existing segments.
         segment.getField().clear();
         segment.getField().addAll(importedSegment.getField());                
@@ -216,10 +216,10 @@ public class EdifactModel {
      * @param truncatableImported truncatable value found in imported segment.
      * @return truncatable from importing edi-message-mapping if it exists, otherwise return value from imported segment.
      */
-    private Boolean isTruncatable(String truncatableImporting, boolean truncatableImported) {
+    private Boolean isTruncatable(Boolean truncatableImporting, boolean truncatableImported) {
         Boolean result = truncatableImported;
         if (truncatableImporting != null) {
-            result = Boolean.parseBoolean( truncatableImporting );
+            result = truncatableImporting;
         }
         return result;
     }

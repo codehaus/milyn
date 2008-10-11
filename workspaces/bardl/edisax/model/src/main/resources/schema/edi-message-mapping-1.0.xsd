@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) by Bård Langöy (Diamo AB) -->
 <xs:schema xmlns:mapping="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd" elementFormDefault="qualified">
 	<xs:element name="edimap">
 		<xs:complexType>
@@ -36,7 +37,7 @@ A namespace is used in combination with URI specified in the name attribute. The
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="truncatableFields" type="xs:string" use="optional">
+			<xs:attribute name="truncatableFields" type="xs:boolean" use="optional">
 				<xs:annotation>
 					<xs:documentation>
 Specifies whether Fields in edi-definition should be truncatable. This setting overwrites
@@ -44,7 +45,7 @@ truncatable attribute for all Fields in edi-definition
 					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="truncatableComponents" type="xs:string" use="optional">
+			<xs:attribute name="truncatableComponents" type="xs:boolean" use="optional">
 				<xs:annotation>
 					<xs:documentation>
 Specifies whether Components in edi-definition should be truncatable. This setting overwrites
