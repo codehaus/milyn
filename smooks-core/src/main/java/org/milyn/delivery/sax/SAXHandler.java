@@ -68,6 +68,7 @@ public class SAXHandler extends DefaultHandler2 {
     private boolean terminateOnVisitorException;
     private ExecutionLifecycleCleanableList cleanupList;
     private DynamicSAXElementVisitorList dynamicVisitorList;
+    private StringBuilder cdataNodeBuilder = new StringBuilder();
 
     public SAXHandler(ExecutionContext executionContext, Writer writer) {
         this.execContext = executionContext;
@@ -365,6 +366,14 @@ public class SAXHandler extends DefaultHandler2 {
 
     private SAXText textWrapper = new SAXText();
     public void characters(char[] ch, int start, int length) throws SAXException {
+        if(currentTextType != TextType.CDATA) {
+            _characters(ch, start, length);
+        } else {
+            cdataNodeBuilder.append(ch, start, length);
+        }
+    }
+
+    private void _characters(char[] ch, int start, int length) {
         if(currentProcessor != null && !currentProcessor.isNullProcessor) {
             if(currentProcessor.elementVisitorConfig != null) {
                 List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
@@ -443,10 +452,19 @@ public class SAXHandler extends DefaultHandler2 {
 
     public void startCDATA() throws SAXException {
         currentTextType = TextType.CDATA;
+        cdataNodeBuilder.setLength(0);
     }
 
     public void endCDATA() throws SAXException {
-        currentTextType = TextType.TEXT;
+        try {
+            char[] chars = new char[cdataNodeBuilder.length()];
+
+            cdataNodeBuilder.getChars(0, chars.length, chars, 0);
+            _characters(chars, 0, chars.length);
+            currentTextType = TextType.TEXT;
+        } finally {
+            cdataNodeBuilder.setLength(0);
+        }
     }
 
     public void startEntity(String name) throws SAXException {
