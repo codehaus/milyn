@@ -44,7 +44,6 @@ public class MILYN_203_Test extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("in-message.xml")), result);
-        System.out.println(result.getResult());
         assertTrue(StreamUtils.compareCharStreams(new InputStreamReader(getClass().getResourceAsStream("in-message.xml")), new StringReader(result.getResult())));
     }
 
