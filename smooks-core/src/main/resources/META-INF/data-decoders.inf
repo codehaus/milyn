@@ -9,6 +9,7 @@ org.milyn.javabean.decoders.CharsetDecoder
 org.milyn.javabean.decoders.CSVDecoder
 org.milyn.javabean.decoders.DateDecoder
 org.milyn.javabean.decoders.DoubleDecoder
+org.milyn.javabean.decoders.EnumDecoder
 org.milyn.javabean.decoders.FileDecoder
 org.milyn.javabean.decoders.FloatDecoder
 org.milyn.javabean.decoders.FreeMarkerTemplateDecoder
