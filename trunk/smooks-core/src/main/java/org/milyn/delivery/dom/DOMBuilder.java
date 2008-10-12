@@ -49,6 +49,7 @@ public class DOMBuilder extends DefaultHandler2 {
     private Stack nodeStack = new Stack();
     private boolean inEntity = false;
     private HashSet emptyElements = new HashSet();
+    private StringBuilder cdataNodeBuilder = new StringBuilder();
 
     static {
     	try {
@@ -219,7 +220,7 @@ public class DOMBuilder extends DefaultHandler2 {
                 }
                 break;
             case Node.CDATA_SECTION_NODE:
-                ((CDATASection)currentNode).setData(new String(ch, start, length));
+                cdataNodeBuilder.append(ch, start, length);
                 break;
             default:
                 break;
@@ -241,10 +242,13 @@ public class DOMBuilder extends DefaultHandler2 {
         currentNode = (Node)nodeStack.peek();
         currentNode.appendChild(newCDATASection);
         nodeStack.push(newCDATASection);
+        cdataNodeBuilder.setLength(0);
     }
 
     public void endCDATA() throws SAXException {
-        nodeStack.pop();
+        CDATASection cdata = (CDATASection) nodeStack.pop();
+        cdata.setData(cdataNodeBuilder.toString());
+        cdataNodeBuilder.setLength(0);
     }
 
     public void comment(char[] ch, int start, int length) throws SAXException {
