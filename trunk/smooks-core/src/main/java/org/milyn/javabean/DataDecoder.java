@@ -32,24 +32,22 @@ import java.util.HashMap;
  * the decoder implementation.
  * <p/>
  * There are a number of pre-installed decoders in the {@link org.milyn.javabean.decoders}
- * package.  Smooks will attempt to automatically load a data type decoder from the
- * {@link org.milyn.javabean.decoders} package, but only after it has attempted to load
- * the decoder from the {@link org.milyn.container.ExecutionContext context} configuration,
- * using a selector key of "decoder:<u>type</u>", where "type" is the type alias used on the
- * property binding configuration (see the "OrderDateLong" definition in the sample
- * in org.milyn.javabean.BeanPopulator in the Javabeans Cartridge.
- * <p/>
- * If one of the decoders in {@link org.milyn.javabean.decoders} is not what's needed, simply
- * implement a new decoder using this interface.  If you want the decoder to be automatically
- * picked up from the type alias specified on the binding configuration (e.g in the same way
- * as the decoders for types "Long", "Integer" etc are picked up) simply package the new decoder
- * in the {@link org.milyn.javabean.decoders} package and follow the class naming convention of
- * "<i>type</i>Decoder".
- * <p/>
- * Some type decoders will however need to be configured as a Smooks resource
- * because they will require configuration of one sort or another.  For an example of this,
- * look at the "OrderDateLong" decoder definition in the sample
- * in org.milyn.javabean.BeanPopulator in the Javabeans Cartridge.
+ * package.  DataDecoders are used in a numkber of places in Smooks:
+ * <ul>
+ *     <li>Component configuration value decoding.</li>
+ *     <li>JavaBean Cartridge.  Used to decode the binding value.</li>
+ * </ul>
+ * Smooks can automatically select an appropriate DataDecoder for a given purpose (via the
+ * {@link org.milyn.javabean.DataDecoder.Factory} factory class) if the decoder is:
+ * <ol>
+ *     <li>Annotated with the {@link DecodeType} annotation.</li>
+ *     <li>Specified in the "/META-INF/data-decoders.inf" file on the classpath.  Obviously this file can
+ *         exist on any number of classpath URIs.  If defining custom decoders, just add the
+ *         "/META-INF/data-decoders.inf" file to your .jar file (or somewhere on the classpath).  Smooks will
+ *         find all such files on the classpath.</li>
+ * </ol>
+ * Note how all the decoders in this package follow a well defined naming pattern of "<i>type</i>Decoder",
+ * where type is the Java datatype to which the implementation decodes.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
