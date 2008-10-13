@@ -14,41 +14,27 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.smooks.scripting;
+package org.milyn.smooks.scripting.groovy;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
+import junit.framework.TestCase;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import junit.framework.TestCase;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 /**
  * @author tfennelly
  */
-public class GroovyContentDeliveryUnitCreatorTest extends TestCase {
-
-	public void test_badscript() {
-		GroovyContentHandlerFactory creator = new GroovyContentHandlerFactory();
-		SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", "classpath:/org/milyn/smooks/scripting/MyGroovyScript_bad.groovy");
-		
-		try {
-			creator.create(config);
-			fail("Expected InstantiationException");
-		} catch (InstantiationException e) {
-			assertEquals("Invalid Groovy script classpath:/org/milyn/smooks/scripting/MyGroovyScript_bad.groovy.  Must implement one of the following Smooks interfaces:\n\t\t1. " + DOMElementVisitor.class.getName()  + ", or\n\t\t2. " + SerializationUnit.class.getName() + ".", e.getMessage());
-		}
-	}
+public class GroovyContentHandlerFactoryTest extends TestCase {
 
 	public void test_goodscript_by_URI() throws InstantiationException, IllegalArgumentException, IOException, SAXException {
-		test_goodscript_by_URI("classpath:/org/milyn/smooks/scripting/MyGroovyScript.groovy");
-		test_goodscript_by_URI("/org/milyn/smooks/scripting/MyGroovyScript.groovy");
+		test_goodscript_by_URI("classpath:/org/milyn/smooks/scripting/groovy/MyGroovyScript.groovy");
+		test_goodscript_by_URI("/org/milyn/smooks/scripting/groovy/MyGroovyScript.groovy");
 	}
 
 	public void test_goodscript_by_Inlining() throws InstantiationException, IllegalArgumentException, IOException, SAXException {

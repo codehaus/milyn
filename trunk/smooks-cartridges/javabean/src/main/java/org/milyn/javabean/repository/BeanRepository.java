@@ -77,6 +77,16 @@ public class BeanRepository {
 		updateBeanMap();
 	}
 
+    /**
+     * Get the {@link BeanRepository} of the given {@link ExecutionContext}.
+     *
+     * @return the {@link BeanRepository} of the given {@link ExecutionContext}.
+     * @see {@link BeanRepositoryManager#getBeanRepository(org.milyn.container.ExecutionContext)}.
+     */
+    public static BeanRepository getInstance(ExecutionContext executionContext) {
+        return BeanRepositoryManager.getBeanRepository(executionContext);
+    }
+
 	/**
      * Add a bean instance under the specified {@link BeanId}.
      *
