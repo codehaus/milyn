@@ -128,7 +128,7 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
         smooks.filter(new StreamSource(input), null, context);
-        
+
         assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         context = smooks.createExecutionContext();
@@ -143,7 +143,7 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         test_ftl(smooks, "<a><c/></a>",
                          "<a><maintemplate><included>blah</included></maintemplate></a>");
     }
-    
+
     public void testInsertBefore() throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-insert-before.cdrl"));
 
@@ -249,5 +249,5 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         smooks.filter(new StringSource(input), result, context);
 
         assertEquals(expected, result.getResult());
-    }        
+    }
 }

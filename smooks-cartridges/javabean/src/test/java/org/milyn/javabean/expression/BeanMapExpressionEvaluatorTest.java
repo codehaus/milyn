@@ -15,15 +15,18 @@
 */
 package org.milyn.javabean.expression;
 
-import junit.framework.*;
-import org.milyn.*;
-import org.milyn.container.*;
-import org.milyn.expression.*;
-import org.xml.sax.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
 
-import javax.xml.transform.stream.*;
-import java.io.*;
-import java.util.*;
+import javax.xml.transform.stream.StreamSource;
+
+import junit.framework.TestCase;
+
+import org.milyn.Smooks;
+import org.milyn.container.ExecutionContext;
+import org.milyn.expression.ExpressionEvaluationException;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -58,22 +61,5 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
                     "\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.",
                     e.getMessage());
         }
-    }
-
-    public void testEditingContextVariable() {
-    	Object test = new Object();
-
-    	ExecutionContext ec = new MockExecutionContext();
-    	ec.setAttribute("test", test);
-
-    	Object result1 = new BeanMapExpressionEvaluator("EC.getAttribute('test')").getValue(ec);
-
-    	assertSame(test, result1);
-
-    	ec.setAttribute("boolean", false);
-
-    	boolean result2 = new BeanMapExpressionEvaluator("EC.getAttribute('boolean')").eval(ec);
-
-    	assertFalse(result2);
     }
 }
