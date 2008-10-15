@@ -22,7 +22,7 @@
 		<db:resultSet name="orders1" />
 	</db:executor>
 
-	<db:resultsetRowSelector
+	<db:resultSetRowSelector
 		selectRowOnElement="$document"
 		resultSetName="orders1"
 		beanId="myOrder"
@@ -30,7 +30,7 @@
 
 		<db:where>row.ORDERNUMBER == 2</db:where>
 		<db:failedSelectError>Order with ORDERNUMBER=2 not found in Database</db:failedSelectError>
-	</db:resultsetRowSelector>
+	</db:resultSetRowSelector>
 
 	<db:executor
 		executeOnElement="$document"

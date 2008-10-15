@@ -15,10 +15,19 @@
 
 package org.milyn.routing.file;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
@@ -29,18 +38,9 @@ import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.routing.SmooksRoutingException;
+import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.util.DollarBraceDecoder;
 import org.milyn.util.FreeMarkerTemplate;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * FileOutputStreamResouce is a {@link AbstractOutputStreamResource} implementation
@@ -76,7 +76,7 @@ import java.util.regex.Pattern;
  * <li><i>highWaterMarkPollFrequency</i>: number of ms to wait between checks on the High Water Mark, while
  *      waiting for it to drop.
  * <li><i>closeOnCondition</i>: An MVEL expression. If it returns true then the output stream is closed on the visitAfter event
- * 		else it is kept open. If the expression is not set then output stream gets closed by default.
+ * 		else it is kept open. If the expression is not set then output stream is closed by default.
  * </ul>
  * <p>
  * <b>When does a new file get created?</b><br>

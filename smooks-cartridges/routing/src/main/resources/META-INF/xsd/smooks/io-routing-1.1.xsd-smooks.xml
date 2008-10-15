@@ -32,4 +32,10 @@
         <param name="mapTo">writerEncoding</param>
     </resource-config>
 
+	<resource-config selector="router">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">executeBefore</param>
+        <param name="mapTo">visitBefore</param>
+    </resource-config>
+
 </smooks-resource-list>
