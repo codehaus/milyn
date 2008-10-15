@@ -12,28 +12,28 @@
     </xs:annotation>
 
     <xs:element name="bindings" substitutionGroup="smooks:abstract-resource-config">
+    	<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Javabean Bindings Configuration.
+				<h3>Bean Instance Creation</h3>
+				Instances of the class specified in the
+				"class" attribute are created and bound into
+				the bean context under the ID specified by
+				the "beanId" attribute. The bean instance is
+				created (and bound) when the element event
+				specified in the "createOnElement" attribute
+				is encountered in the Source data event
+				stream (see also "createOnElementNS").
+				<h3>Bean Property/Member Population</h3>
+				Bean property/member population is
+				controlled by the binding sub-elements
+				nested inside this element. Use your IDE to
+				discover these elements.
+			</xs:documentation>
+		</xs:annotation>
         <xs:complexType>
         	<xs:complexContent>
         		<xs:extension base="smooks:element-visitor">
-        			<xs:annotation>
-        				<xs:documentation xml:lang="en">
-        					Javabean Bindings Configuration.
-        					<h3>Bean Instance Creation</h3>
-        					Instances of the class specified in the
-        					"class" attribute are created and bound into
-        					the bean context under the ID specified by
-        					the "beanId" attribute. The bean instance is
-        					created (and bound) when the element event
-        					specified in the "createOnElement" attribute
-        					is encountered in the Source data event
-        					stream (see also "createOnElementNS").
-        					<h3>Bean Property/Member Population</h3>
-        					Bean property/member population is
-        					controlled by the binding sub-elements
-        					nested inside this element. Use your IDE to
-        					discover these elements.
-        				</xs:documentation>
-        			</xs:annotation>
         			<xs:sequence>
         				<xs:choice minOccurs="0"
         					maxOccurs="unbounded">
@@ -118,14 +118,14 @@
     </xs:element>
 
     <xs:element name="value">
+    	<xs:annotation>
+	        <xs:documentation xml:lang="en">
+	            Basic "value" based binding configuration.
+	            <p/>
+	            This binding type is used to bind data from the source message event stream.
+	        </xs:documentation>
+        </xs:annotation>
         <xs:complexType>
-            <xs:annotation>
-                <xs:documentation xml:lang="en">
-                    Basic "value" based binding configuration.
-                    <p/>
-                    This binding type is used to bind data from the source message event stream.
-                </xs:documentation>
-            </xs:annotation>
             <xs:sequence>
                 <xs:element ref="smooks-javabean:decodeParam" minOccurs="0" maxOccurs="unbounded"/>
             </xs:sequence>
@@ -235,14 +235,14 @@
     </xs:element>
 
     <xs:element name="wiring">
+		<xs:annotation>
+      		<xs:documentation xml:lang="en">
+      			Wiring based binding configuration.
+      			<p />
+      			This binding type is used to "wire" beans together.
+      		</xs:documentation>
+      	</xs:annotation>
         <xs:complexType>
-        	<xs:annotation>
-        		<xs:documentation xml:lang="en">
-        			Wiring based binding configuration.
-        			<p />
-        			This binding type is used to "wire" beans together.
-        		</xs:documentation>
-        	</xs:annotation>
         	<xs:attribute name="property" type="xs:string">
         		<xs:annotation>
         			<xs:documentation xml:lang="en">
@@ -303,10 +303,10 @@
     </xs:element>
 
     <xs:element name="expression">
+		<xs:annotation>
+            <xs:documentation xml:lang="en">Expression based Configuration</xs:documentation>
+        </xs:annotation>
         <xs:complexType>
-            <xs:annotation>
-                <xs:documentation xml:lang="en">Expression based Configuration</xs:documentation>
-            </xs:annotation>
             <xs:simpleContent>
                 <xs:extension base="xs:string">
                     <xs:attribute name="property" type="xs:string">
@@ -360,17 +360,16 @@
     </xs:element>
 
     <xs:element name="decodeParam">
-        <xs:complexType>
-            <xs:annotation>
-                <xs:documentation xml:lang="en">
-                    Data Decode Parameter.
-                    <p/>
-                    Some decoders may require parameters in order to complete the decoding process e.g. the
-                    <a href="http://milyn.codehaus.org/javadoc/smooks/org/milyn/javabean/decoders/DateDecoder.html">DateDecoder</a>.
-                    These parameters can be specified by adding &lt;decodeParam&gt; sub-elements to the &lt;value&gt;
-                    binding element. Review the Decoder's Javadoc for details of the custom parameters.
-                    <p/>
-                    <u>Example:</u>
+		<xs:annotation>
+             <xs:documentation xml:lang="en">
+                 Data Decode Parameter.
+                 <p/>
+                 Some decoders may require parameters in order to complete the decoding process e.g. the
+                 <a href="http://milyn.codehaus.org/javadoc/smooks/org/milyn/javabean/decoders/DateDecoder.html">DateDecoder</a>.
+                 These parameters can be specified by adding &lt;decodeParam&gt; sub-elements to the &lt;value&gt;
+                 binding element. Review the Decoder's Javadoc for details of the custom parameters.
+                 <p/>
+                 <u>Example:</u>
 <pre>
 &lt;jb:value property="date" data="header/date" decoder="<a href="http://milyn.codehaus.org/javadoc/smooks/org/milyn/javabean/decoders/DateDecoder.html">Date</a>"&gt;
     &lt;jb:decodeParam name="format"&gt;EEE MMM dd HH:mm:ss z yyyy&lt;/jb:decodeParam&gt;
@@ -378,8 +377,10 @@
     &lt;jb:decodeParam name="locale-country"&gt;IE&lt;/jb:decodeParam&gt;
 &lt;/jb:value&gt;
 </pre>
-                </xs:documentation>
-            </xs:annotation>
+             </xs:documentation>
+         </xs:annotation>
+        <xs:complexType>
+
             <xs:simpleContent>
                 <xs:extension base="xs:string">
                     <xs:attribute name="name" type="xs:string" use="required">
