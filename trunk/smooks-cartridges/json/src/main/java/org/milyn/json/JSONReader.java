@@ -61,7 +61,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * &lt;resource-config selector="org.xml.sax.driver"&gt;
  *  &lt;resource&gt;org.milyn.json.JSONReader&lt;/resource&gt;
  *  &lt;!--
- *      (Optional) The element name of the xml document root. Default of 'json'.
+ *      (Optional) The element name of the SAX document root. Default of 'json'.
  *  --&gt;
  *  &lt;param name="<b>rootName</b>"&gt;<i>&lt;root-name&gt;</i>&lt;/param&gt;
  *  &lt;!--
@@ -69,19 +69,19 @@ import org.xml.sax.helpers.AttributesImpl;
  *  --&gt;
  *  &lt;param name="<b>arrayElementName</b>"&gt;<i>&lt;array-element-name&gt;</i>&lt;/param&gt;
  *  &lt;!--
- *      (Optional) The replacement string for json NULL values. Default is an empty string.
+ *      (Optional) The replacement string for JSON NULL values. Default is an empty string.
  *  --&gt;
  *  &lt;param name="<b>nullValueReplacement</b>"&gt;<i>&lt;null-value-replacement&gt;</i>&lt;/param&gt;
  *  &lt;!--
- *      (Optional) The replacement character for whitespaces in a json map key. Default not defined, so that for whitespaces is not searched.
+ *      (Optional) The replacement character for whitespaces in a json map key. By default this not defined, so that the reader doesn't search for whitespaces.
  *  --&gt;
  *  &lt;param name="<b>keyWhitspaceReplacement</b>"&gt;<i>&lt;key-whitspace-replacement&gt;</i>&lt;/param&gt;
  *  &lt;!--
- *      (Optional) The character to add if the node name starts with a number. Default not defined, so that for element names that start with a number is not searced.
+ *      (Optional) The prefix character to add if the JSON node name starts with a number. By default this is not defined, so that the reader doesn't search for element names that start with a number.
  *  --&gt;
  *  &lt;param name="<b>keyPrefixOnNumeric</b>"&gt;<i>&lt;key-prefix-on-numeric&gt;</i>&lt;/param&gt;
  *  &lt;!--
- *      (Optional) If illegal characters are encountered in a element name then they are replaced with this value. Default not defined, so that for illegal characters is not searced.
+ *      (Optional) If illegal characters are encountered in a JSON element name then they are replaced with this value. By default this is not defined, so that the reader doesn't doesn't search for illegal characters.
  *  --&gt;
  *  &lt;param name="<b>illegalElementNameCharReplacement</b>"&gt;<i>&lt;illegal-element-name-char-replacement&gt;</i>&lt;/param&gt;
  *  &lt;!--
