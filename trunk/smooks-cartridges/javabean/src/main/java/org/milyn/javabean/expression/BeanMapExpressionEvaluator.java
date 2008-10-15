@@ -15,18 +15,16 @@
 */
 package org.milyn.javabean.expression;
 
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.expression.ContextMapPair;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.repository.BeanRepositoryManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Javabean Cartridge bean Map expression evaluator.
@@ -65,15 +63,12 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
     public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
     	Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
 
-    	Map<String, Object> ecMap = getEditingContextMap(context);
-
-        Object value = getValue(new ContextMapPair(beans, ecMap));
+        Object value = getValue(beans);
 
         if(logger.isDebugEnabled()) {
             logger.debug("Expression value evaluation:===============================================================");
             logger.debug("\tExpression='" + getExpression() + "'");
             logger.debug("\tBean Map='" + beans + "'");
-            logger.debug("\tEditingContext='" + context + "'");
             logger.debug("\tValue='" + value + "'");
             logger.debug("===========================================================================================");
         }
@@ -81,13 +76,4 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
         return value;
     }
 
-	/**
-	 * @param context
-	 * @return
-	 */
-	private Map<String, Object> getEditingContextMap(ExecutionContext context) {
-		Map<String, Object> ecMap = new HashMap<String, Object>();
-    	ecMap.put(MVEL_EXECUTION_CONTEXT_KEY, context);
-		return ecMap;
-	}
 }
