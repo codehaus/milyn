@@ -14,10 +14,28 @@
  */
 package org.milyn.routing.jms;
 
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
+
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueBrowser;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
@@ -34,26 +52,9 @@ import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
 import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
 import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
+import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.util.FreeMarkerTemplate;
 import org.w3c.dom.Element;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
 
 /**
  * <p/>
@@ -103,7 +104,7 @@ import java.util.Map;
  * <li><i>acknowledgeMode</i>: the acknowledge mode to use. One of 'AUTO_ACKNOWLEDGE'(default), 'CLIENT_ACKNOWLEDGE', 'DUPS_OK_ACKNOWLEDGE'.
  * <li><i>transacted</i>: determines if the session should be transacted. Defaults to 'false'.
  * <li><i>correlationIdPattern</i>: JMS Correlation pattern that will be used for the outgoing message. Supports templating.
- * <li><i>messageType</i>: type of JMS Message that should be sent. 'TextMessage'(default) or 'ObjectMessage'.
+ * <li><i>messageType</i>: type of JMS Message that should be sent. 'TextMessage'(default), 'ObjectMessage' or 'MapMessage'.
  * <li><i>highWaterMark</i>: max number of messages that can be sitting in the JMS Destination at any any time. Default is 200.
  * <li><i>highWaterMarkTimeout</i>: number of ms to wait for the system to process JMS Messages from the JMS destination
  * 		so that the number of JMS Messages drops below the highWaterMark. Default is 60000 ms.

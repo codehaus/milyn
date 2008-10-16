@@ -33,6 +33,7 @@ public final class StrategyFactory
 
 	public static final String TEXT_MESSAGE = "TextMessage";
 	public static final String OBJECT_MESSAGE = "ObjectMessage";
+	public static final String MAP_MESSAGE = "MapMessage";
 
 	public MessageCreationStrategy createStrategy( final String messageType )
 	{
@@ -43,6 +44,10 @@ public final class StrategyFactory
 		else if ( messageType.equals( OBJECT_MESSAGE ))
 		{
 			return new ObjectMessageCreationStrategy();
+		}
+		else if ( messageType.equals( MAP_MESSAGE ))
+		{
+			return new MapMessageCreationStrategy();
 		}
 
 		throw new IllegalArgumentException( "No strategy for messageType [" + messageType + "] was found.");

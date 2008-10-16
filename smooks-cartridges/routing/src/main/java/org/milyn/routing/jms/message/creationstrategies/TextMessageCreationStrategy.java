@@ -39,7 +39,7 @@ public class TextMessageCreationStrategy implements MessageCreationStrategy
 	{
         final Object bean = BeanRepositoryManager.getBeanRepository(context).getBean( beanId );
         if(bean == null) {
-            throw new SmooksException("Bean bindId '" + beanId + "' not available in the bean repository of this execution context.  Check the order in which your resources are being applied (in Smooks configuration).");
+            throw new SmooksException("Bean beandId '" + beanId + "' not available in the bean repository of this execution context.  Check the order in which your resources are being applied (in Smooks configuration).");
         }
         return createTextMessage( bean.toString(), jmsSession );
 	}

@@ -43,7 +43,7 @@
     			<xs:attribute name="beanId" type="xs:string" use="required" >
     				<xs:annotation>
 			    		<xs:documentation xml:lang="en">
-			    			The beanId of the bean in the bean context to be written to the OutputStream
+			    			The beanId of the bean from the bean context to be written to the OutputStream.
 			    		</xs:documentation>
 			    	</xs:annotation>
     			</xs:attribute>

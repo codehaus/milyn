@@ -11,10 +11,10 @@ public final class RouterTestHelper
 
 	public static MockExecutionContext createExecutionContext(
 			final String beanIdName,
-			final TestBean bean)
+			final Object bean)
 	{
         final MockExecutionContext executionContext = new MockExecutionContext();
-        
+
         BeanId beanId = BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanIdRegister().register(beanIdName);
         BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanId, bean);
         return executionContext;
