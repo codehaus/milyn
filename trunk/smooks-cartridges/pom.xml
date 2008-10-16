@@ -22,7 +22,10 @@
 
         <milyn.smooks.dtd.version.base>${milyn.smooks.core.version}</milyn.smooks.dtd.version.base>
         <milyn.smooks.dtd.version>${milyn.smooks.dtd.version.base}</milyn.smooks.dtd.version>
-
+		
+        <milyn.smooks.calc.version.base>${milyn.smooks.core.version}</milyn.smooks.calc.version.base>
+        <milyn.smooks.calc.version>${milyn.smooks.calc.version.base}</milyn.smooks.calc.version>
+		
         <milyn.smooks.css.version.base>${milyn.smooks.core.version}</milyn.smooks.css.version.base>
         <milyn.smooks.css.version>${milyn.smooks.css.version.base}</milyn.smooks.css.version>
 
@@ -60,6 +63,7 @@
         <module>servlet</module>
         <module>templating</module>
         <module>routing</module>
+		<module>calc</module>
         <!-- module>perfcomp</module -->
     </modules>
 
