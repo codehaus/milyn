@@ -117,7 +117,7 @@ public class JMSRouterTest
 
         // wait for the thread to finish...
         while(consumeThread.running) {
-            JMSRouterTest.sleep(500);            
+            JMSRouterTest.sleep(500);
         }
 
         assertEquals(numMessages, consumeThread.numMessagesProcessed);
@@ -190,7 +190,7 @@ public class JMSRouterTest
         assertEquals( "NamingFactoryUrlPkg did not match the one set on the Router",
         		namingFactoryUrlPkgs, router.getJndiNamingFactoryUrl() );
 	}
-	
+
 	@BeforeClass ( groups = { "unit", "integration" })
 	public static void setUpInitialContext() throws Exception
     {
@@ -233,7 +233,7 @@ public class JMSRouterTest
                     numMessagesProcessed++;
                 }
             }
-            
+
             running = false;
         }
     }
