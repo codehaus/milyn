@@ -16,7 +16,7 @@
 package org.milyn.persistence.dao.ibatis;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.persistence.dao.DAORegister;
+import org.milyn.persistence.dao.DaoRegister;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -24,7 +24,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class ClientRegister implements DAORegister<ClientDAOAdapter>{
+public class ClientRegister implements DaoRegister<ClientDa0Adapter>{
 
 	private final SqlMapClient sqlMapClient;
 
@@ -41,14 +41,14 @@ public class ClientRegister implements DAORegister<ClientDAOAdapter>{
 	 * (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegister#getDAO(java.lang.String)
 	 */
-	public ClientDAOAdapter getDAO(final String name) {
-		return new ClientDAOAdapter(sqlMapClient);
+	public ClientDa0Adapter getDAO(final String name) {
+		return new ClientDa0Adapter(sqlMapClient);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegister#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final ClientDAOAdapter dao) {
+	public void returnDAO(final ClientDa0Adapter dao) {
 	}
 }

@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao;
+package org.milyn.persistence.dao.invoker;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,10 +22,19 @@ import java.util.Map;
  * @author maurice_zeijen
  *
  */
-public interface QueryFinder<E> extends Dao<E> {
+public interface DaoInvoker {
 
-	Collection<E> findByQuery(String query, Object[] parameters);
+	void persist(Object obj);
 
-	Collection<E> findByQuery(String query, Map<String, ?> parameters);
+	Object merge(Object obj);
 
+	void flush();
+
+	Collection<?> findByQuery(String query, Object[] parameters);
+
+	Collection<?> findByQuery(String query, Map<String, ?> parameters);
+
+//	Collection<?> findBy(String name, Object[] parameters);
+
+	Object findBy(String name, Map<String, ?> parameters);
 }

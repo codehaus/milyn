@@ -18,7 +18,7 @@ package org.milyn.persistence.dao.register;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.milyn.persistence.dao.DAORegister;
+import org.milyn.persistence.dao.DaoRegister;
 
 
 
@@ -26,7 +26,7 @@ import org.milyn.persistence.dao.DAORegister;
  * @author maurice_zeijen
  *
  */
-public class MapRegister<T> implements DAORegister<T> {
+public class MapRegister<T> implements DaoRegister<T> {
 
 	private final HashMap<String, T> map;
 

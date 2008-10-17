@@ -16,31 +16,13 @@
 package org.milyn.persistence.dao;
 
 /**
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface DAORegister<T> {
+public interface NamedDao<E> {
 
-	/**
-	 * Returns the DAO using its name to locate it.
-	 * If the repository only has one DAO, like
-	 * for instance a facade for the
-	 * Session or an EntityManager object
-	 *
-	 * @param key The key of the DAO
-	 * @return The DAO
-	 */
-	T getDAO(String key);
+	void persist(String name, E entity);
 
-	/**
-	 * Returns the DAO to the registery. This is
-	 * usefull if the registery has some
-	 * locking or pooling mechanism. If it
-	 * doesn't then this class can simply
-	 * ignore it.
-	 *
-	 * @param dao
-	 */
-	void returnDAO(T dao);
+	E merge(String name, E entity);
 
 }

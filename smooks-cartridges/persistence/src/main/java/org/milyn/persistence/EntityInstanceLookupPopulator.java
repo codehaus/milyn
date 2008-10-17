@@ -44,9 +44,9 @@ import org.milyn.javabean.BeanUtils;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
-import org.milyn.persistence.dao.DAORegister;
-import org.milyn.persistence.dao.invoker.DAOInvoker;
-import org.milyn.persistence.dao.invoker.DAOInvokerFactory;
+import org.milyn.persistence.dao.DaoRegister;
+import org.milyn.persistence.dao.invoker.DaoInvoker;
+import org.milyn.persistence.dao.invoker.DaoInvokerFactory;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -247,13 +247,13 @@ public class EntityInstanceLookupPopulator implements DOMElementVisitor, SAXElem
 
     @SuppressWarnings("unchecked")
 	private Collection<?> lookup(final Object dataObject, final ExecutionContext executionContext) {
-    	final DAORegister emr = PersistenceUtil.getDAORegister(executionContext);
+    	final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
     	Object daoObj = null;
     	try {
     		daoObj = emr.getDAO(daoName);
 
-    		final DAOInvoker daoInvocation = DAOInvokerFactory.getInstance().create(daoObj, appContext);
+    		final DaoInvoker daoInvocation = DaoInvokerFactory.getInstance().create(daoObj, appContext);
 
 	    	return daoInvocation.findByQuery(query, new Object[] { dataObject });
 
