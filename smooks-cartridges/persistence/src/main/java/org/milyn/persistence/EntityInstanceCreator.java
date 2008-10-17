@@ -36,7 +36,8 @@ import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.BeanRuntimeInfo;
 import org.milyn.javabean.BeanUtils;
 import org.milyn.persistence.dao.DAORegister;
-import org.milyn.persistence.dao.invoker.DAOInvokerContext;
+import org.milyn.persistence.dao.invoker.DAOInvoker;
+import org.milyn.persistence.dao.invoker.DAOInvokerFactory;
 import org.w3c.dom.Element;
 
 
@@ -172,17 +173,17 @@ public class EntityInstanceCreator implements DOMElementVisitor, SAXElementVisit
 				throw new IllegalStateException("The DAO registery returned null while getting the DAO [" + daoName + "]");
 			}
 
-			final DAOInvokerContext daoInvocation = new DAOInvokerContext(daoObj, appContext);
+			final DAOInvoker daoInvoker = DAOInvokerFactory.getInstance().create(daoObj, appContext);
 
 			if (persist) {
 				switch (persistMode) {
 
 				case PERSIST:
-					daoInvocation.persist(beanResult);
+					daoInvoker.persist(beanResult);
 					break;
 
 				case MERGE:
-					beanResult = daoInvocation.merge(beanResult);
+					beanResult = daoInvoker.merge(beanResult);
 					//BeanAccessor.addBean(beanId, beanResult);
 					break;
 
@@ -194,7 +195,7 @@ public class EntityInstanceCreator implements DOMElementVisitor, SAXElementVisit
 			}
 
 			if (flush) {
-				daoInvocation.flush();
+				daoInvoker.flush();
 			}
 
 

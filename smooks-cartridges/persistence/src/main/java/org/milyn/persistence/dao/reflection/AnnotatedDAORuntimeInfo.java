@@ -15,8 +15,7 @@
 */
 package org.milyn.persistence.dao.reflection;
 
-import static org.milyn.persistence.util.ClassUtils.containsAssignableClass;
-import static org.milyn.persistence.util.ClassUtils.indexOffFirstAssignableClass;
+import static org.milyn.persistence.util.ClassUtils.*;
 
 import java.lang.reflect.Method;
 import java.util.Collection;

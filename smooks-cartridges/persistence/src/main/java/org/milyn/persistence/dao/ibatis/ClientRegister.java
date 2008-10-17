@@ -15,10 +15,10 @@
 */
 package org.milyn.persistence.dao.ibatis;
 
-import org.milyn.assertion.*;
-import org.milyn.persistence.dao.*;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.persistence.dao.DAORegister;
 
-import com.ibatis.sqlmap.client.*;
+import com.ibatis.sqlmap.client.SqlMapClient;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

@@ -15,13 +15,16 @@
 */
 package org.milyn.persistence.dao.ibatis;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Map;
 
-import org.milyn.persistence.*;
-import org.milyn.persistence.dao.*;
+import org.milyn.persistence.DAOException;
+import org.milyn.persistence.dao.Finder;
+import org.milyn.persistence.dao.NamedDAO;
+import org.milyn.persistence.dao.NamedFlushable;
 
-import com.ibatis.sqlmap.client.*;
+import com.ibatis.sqlmap.client.SqlMapClient;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

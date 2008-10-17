@@ -1,8 +1,7 @@
 // Copyright 2007 Fusionsoft, Inc. All rights reserved.
 package org.milyn.annotation;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
