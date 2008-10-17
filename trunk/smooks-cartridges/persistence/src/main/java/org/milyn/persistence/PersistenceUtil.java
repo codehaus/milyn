@@ -18,7 +18,7 @@ package org.milyn.persistence;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.persistence.dao.DAORegister;
+import org.milyn.persistence.dao.DaoRegister;
 
 
 /**
@@ -43,13 +43,13 @@ public final class PersistenceUtil {
 
 	}
 
-	public static DAORegister<?> getDAORegister(final ExecutionContext executionContext) {
+	public static DaoRegister<?> getDAORegister(final ExecutionContext executionContext) {
 
-		return (DAORegister<?>) executionContext.getAttribute(PersistenceUtil.getDAORegisterAttributeName(executionContext.getDeliveryConfig())) ;
+		return (DaoRegister<?>) executionContext.getAttribute(PersistenceUtil.getDAORegisterAttributeName(executionContext.getDeliveryConfig())) ;
 
 	}
 
-	public static void  setDAORegister(final ExecutionContext executionContext, final DAORegister<?> registery) {
+	public static void  setDAORegister(final ExecutionContext executionContext, final DaoRegister<?> registery) {
 
 		executionContext.setAttribute(getDAORegisterAttributeName(executionContext.getDeliveryConfig()), registery) ;
 

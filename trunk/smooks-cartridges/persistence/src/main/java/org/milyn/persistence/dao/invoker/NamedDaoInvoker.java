@@ -13,45 +13,21 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence;
+package org.milyn.persistence.dao.invoker;
+
+import java.util.Map;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class DAOException extends RuntimeException {
+public interface NamedDaoInvoker {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3109595433510634027L;
+	void persist(String name, Object obj);
 
-	/**
-	 *
-	 */
-	public DAOException() {
-	}
+	Object merge(String name, Object obj);
 
-	/**
-	 * @param message
-	 */
-	public DAOException(String message) {
-		super(message);
-	}
+	void flush(String name);
 
-	/**
-	 * @param cause
-	 */
-	public DAOException(Throwable cause) {
-		super(cause);
-	}
-
-	/**
-	 * @param message
-	 * @param cause
-	 */
-	public DAOException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
+	Object findBy(String name, Map<String, ?> parameters);
 }

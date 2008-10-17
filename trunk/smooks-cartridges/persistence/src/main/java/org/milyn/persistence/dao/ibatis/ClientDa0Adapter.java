@@ -19,9 +19,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.milyn.persistence.DAOException;
+import org.milyn.persistence.DaoException;
 import org.milyn.persistence.dao.Finder;
-import org.milyn.persistence.dao.NamedDAO;
+import org.milyn.persistence.dao.NamedDao;
 import org.milyn.persistence.dao.NamedFlushable;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -30,14 +30,14 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class ClientDAOAdapter implements NamedDAO<Object>, Finder<Object>, NamedFlushable  {
+public class ClientDa0Adapter implements NamedDao<Object>, Finder<Object>, NamedFlushable  {
 
 	private final SqlMapClient sqlMapClient;
 
 	/**
 	 * @param sqlMapClient
 	 */
-	public ClientDAOAdapter(SqlMapClient sqlMapClient) {
+	public ClientDa0Adapter(SqlMapClient sqlMapClient) {
 		this.sqlMapClient = sqlMapClient;
 	}
 
@@ -48,7 +48,7 @@ public class ClientDAOAdapter implements NamedDAO<Object>, Finder<Object>, Named
 		try {
 			sqlMapClient.update(name, entity);
 		} catch (SQLException e) {
-			throw new DAOException("Exception throw while executing update with statement id '" + name + "' and entity '" + entity + "'", e);
+			throw new DaoException("Exception throw while executing update with statement id '" + name + "' and entity '" + entity + "'", e);
 		}
 		return entity;
 	}
@@ -60,7 +60,7 @@ public class ClientDAOAdapter implements NamedDAO<Object>, Finder<Object>, Named
 		try {
 			sqlMapClient.insert(name, entity);
 		} catch (SQLException e) {
-			throw new DAOException("Exception throw while executing insert with statement id '" + name + "' and entity '" + entity + "'", e);
+			throw new DaoException("Exception throw while executing insert with statement id '" + name + "' and entity '" + entity + "'", e);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class ClientDAOAdapter implements NamedDAO<Object>, Finder<Object>, Named
 		try {
 			return sqlMapClient.queryForList(name, parameters);
 		} catch (SQLException e) {
-			throw new DAOException("Exception throw while executing query with statement id '" + name + "' and parameters '" + parameters + "'", e);
+			throw new DaoException("Exception throw while executing query with statement id '" + name + "' and parameters '" + parameters + "'", e);
 		}
 	}
 

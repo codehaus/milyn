@@ -18,14 +18,14 @@ package org.milyn.persistence.dao.jpa;
 import javax.persistence.EntityManager;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.persistence.dao.DAORegister;
+import org.milyn.persistence.dao.DaoRegister;
 
 
 /**
  * @author maurice_zeijen
  *
  */
-public class EntityManagerRegister implements DAORegister<EntityManagerDAOAdapter> {
+public class EntityManagerRegister implements DaoRegister<EntityManagerDaoAdapter> {
 
 	private final EntityManager entityManager;
 
@@ -41,15 +41,15 @@ public class EntityManagerRegister implements DAORegister<EntityManagerDAOAdapte
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#getDAO(java.lang.String)
 	 */
-	public EntityManagerDAOAdapter getDAO(final String name) {
+	public EntityManagerDaoAdapter getDAO(final String name) {
 
-		return new EntityManagerDAOAdapter(entityManager);
+		return new EntityManagerDaoAdapter(entityManager);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final EntityManagerDAOAdapter dao) {
+	public void returnDAO(final EntityManagerDaoAdapter dao) {
 	}
 
 }

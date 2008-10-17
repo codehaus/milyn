@@ -13,19 +13,21 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao;
+package org.milyn.persistence.dao.annotation;
 
-import java.util.Collection;
-import java.util.Map;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author maurice_zeijen
  *
  */
-public interface QueryFinder<E> extends Dao<E> {
-
-	Collection<E> findByQuery(String query, Object[] parameters);
-
-	Collection<E> findByQuery(String query, Map<String, ?> parameters);
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Dao {
 
 }

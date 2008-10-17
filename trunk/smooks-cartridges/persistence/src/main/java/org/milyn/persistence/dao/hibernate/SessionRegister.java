@@ -17,14 +17,14 @@ package org.milyn.persistence.dao.hibernate;
 
 import org.hibernate.Session;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.persistence.dao.DAORegister;
+import org.milyn.persistence.dao.DaoRegister;
 
 
 /**
  * @author maurice_zeijen
  *
  */
-public class SessionRegister implements DAORegister<SessionDAOAdapter> {
+public class SessionRegister implements DaoRegister<SessionDaoAdapter> {
 
 	private final Session session;
 
@@ -40,15 +40,15 @@ public class SessionRegister implements DAORegister<SessionDAOAdapter> {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#getDAO(java.lang.String)
 	 */
-	public SessionDAOAdapter getDAO(final String name) {
+	public SessionDaoAdapter getDAO(final String name) {
 
-		return new SessionDAOAdapter(session);
+		return new SessionDaoAdapter(session);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final SessionDAOAdapter dao) {
+	public void returnDAO(final SessionDaoAdapter dao) {
 	}
 
 }

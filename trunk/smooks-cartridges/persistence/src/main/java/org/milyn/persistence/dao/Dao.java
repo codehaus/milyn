@@ -15,17 +15,15 @@
 */
 package org.milyn.persistence.dao;
 
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * @author maurice_zeijen
  *
  */
-public interface QueryFinder<E> extends Dao<E> {
+public interface Dao<E> {
 
-	Collection<E> findByQuery(String query, Object[] parameters);
+	void persist(E entity);
 
-	Collection<E> findByQuery(String query, Map<String, ?> parameters);
+	E merge(E entity);
 
 }
