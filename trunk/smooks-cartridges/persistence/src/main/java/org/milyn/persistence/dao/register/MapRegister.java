@@ -13,12 +13,13 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.registery;
+package org.milyn.persistence.dao.register;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.milyn.persistence.dao.DAORegister;
+
 
 
 /**
@@ -27,7 +28,26 @@ import org.milyn.persistence.dao.DAORegister;
  */
 public class MapRegister<T> implements DAORegister<T> {
 
-	private final HashMap<String, T> map = new HashMap<String, T>();
+	private final HashMap<String, T> map;
+
+	/**
+	 *
+	 */
+	public MapRegister() {
+		map = new HashMap<String, T>();
+	}
+
+	/**
+	 *
+	 */
+	@SuppressWarnings("unchecked")
+	public MapRegister(Map<String, T> map) {
+		if(map instanceof HashMap) {
+			this.map = (HashMap<String, T>) ((HashMap<String, T>) map).clone();
+		} else {
+			this.map = new HashMap<String, T>(map);
+		}
+	}
 
 	public T put(final String key, final T dao) {
 
@@ -77,6 +97,14 @@ public class MapRegister<T> implements DAORegister<T> {
 	@Override
 	public int hashCode() {
 		return map.hashCode();
+	}
+
+	@Override
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return map.toString();
 	}
 
 	/* (non-Javadoc)

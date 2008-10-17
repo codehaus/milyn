@@ -15,56 +15,39 @@
 */
 package org.milyn.persistence.dao.invoker;
 
-import java.util.Map;
-
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.container.BoundAttributeStore;
+import org.milyn.container.ApplicationContext;
 import org.milyn.persistence.dao.NamedDAO;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class NamedDAOInvokerContext {
+public class NamedDAOInvokerFactory {
 
-	private NamedDAOInvoker invoker;
+	private static final NamedDAOInvokerFactory instance = new NamedDAOInvokerFactory();
 
-	/**
-	 *
-	 */
-	public NamedDAOInvokerContext(final Object dao, final BoundAttributeStore attributestore) {
-		AssertArgument.isNotNull(dao, "dao");
+	private static final String REPOSITORY_KEY = DAOInvokerFactory.class.getName() + "#REPOSITORY_KEY";
 
-		initializeInvoker(dao, attributestore);
+	public static final NamedDAOInvokerFactory getInstance() {
+		return instance;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void initializeInvoker(final Object dao, final BoundAttributeStore attributestore) {
+	private NamedDAOInvokerFactory() {
+	}
+
+
+	public NamedDAOInvoker create(final Object dao, final ApplicationContext applicationContext) {
+		AssertArgument.isNotNull(dao, "dao");
+		AssertArgument.isNotNull(applicationContext, "applicationContext");
 
 		if(dao instanceof NamedDAO) {
-			invoker = new InterfaceNamedDAOInvoker((NamedDAO<? super Object>) dao);
+			return new InterfaceNamedDAOInvoker((NamedDAO<? super Object>) dao);
 		} else {
 
 			throw new NotImplementedException("Only the NamedDAO Interface method is supported now");
 		}
-	}
-
-
-	public void persist(String name, final Object obj) {
-		invoker.persist(name, obj);
-	}
-
-	public Object merge(String name, final Object obj) {
-		return invoker.merge(name, obj);
-	}
-
-	public void flush(String name) {
-		invoker.flush(name);
-	}
-
-	public Object findBy(final String name, final Map<String, ?> parameters) {
-		return invoker.findBy(name, parameters);
 	}
 
 }

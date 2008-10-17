@@ -15,7 +15,7 @@
 */
 package org.milyn.persistence.util;
 
-import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
