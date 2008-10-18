@@ -16,8 +16,8 @@
 
 package org.milyn.edisax;
 
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
 import org.xml.sax.SAXException;
+import org.milyn.edisax.model.internal.Edimap;
 
 /**
  * EDI message parsing exception.

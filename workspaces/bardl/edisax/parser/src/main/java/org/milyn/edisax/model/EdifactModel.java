@@ -1,36 +1,25 @@
-package org.milyn.edisax;
+package org.milyn.edisax.model;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.schema.edi_message_mapping_1_0.*;
-import org.milyn.schema.edi_message_mapping_1_0.Edimap;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.EDIParseException;
+import org.milyn.edisax.model.internal.*;
 import org.milyn.resource.URIResourceLocator;
+import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.util.*;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * EdifactModel contains all logic for unmarshalling and handling imports for the
+/**                                          
+ * EdifactModel contains all logic for handling imports for the
  * edi-message-mapping model.
  */
 public class EdifactModel {
-    private static Log LOG = LogFactory.getLog(EdifactModel.class);
 
-    private org.milyn.schema.edi_message_mapping_1_0.Edimap edimap;
-
-    private static JAXBContext JAXB_EDIMAP;
-
-    static {
-        try {
-            JAXB_EDIMAP = JAXBContext.newInstance(org.milyn.schema.edi_message_mapping_1_0.Edimap.class);
-        } catch (JAXBException e) {
-            LOG.error("Could not create new instance of JAXBContext.", e);
-        }
-    }
+    private org.milyn.edisax.model.internal.Edimap edimap;
 
     /**
      * Returns the edimap containing the parser logic.
@@ -59,15 +48,17 @@ public class EdifactModel {
     /**
      * Parse the edifact edimap specified in the edi-message-mapping.
      * @param inputStream the edi-message-mapping.
-     * @throws EDIParseException is thrown when EdifactModel is unable to initialize edimap.
+     * @throws org.milyn.edisax.EDIParseException is thrown when EdifactModel is unable to initialize edimap.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when edi-message-mapping contains multiple or no namespace declaration.
+     * @throws java.io.IOException is thrown when error occurs when parsing edi-message-mapping.
      */
-    public void parseSequence(InputStream inputStream) throws EDIParseException {
+    public void parseSequence(InputStream inputStream) throws SAXException, EDIConfigurationException, IOException {
 
         //To prevent circular dependency the name/url of all imported urls are stored in a dependency tree.
         //If a name/url already exists in a parent node, we have a circular dependency.
         DependencyTree<String> tree = new DependencyTree<String>();
 
-        edimap = unmarshallEdimap(inputStream);
+        edimap = EDIConfigDigester.digestConfig(inputStream);
         importFiles(tree.getRoot(), edimap, tree);
         
     }
@@ -79,8 +70,10 @@ public class EdifactModel {
      * @param edimap The importing edimap.
      * @param tree The DependencyTree for preventing cyclic dependency in import.
      * @throws EDIParseException Thrown when a cyclic dependency is detected.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when edi-message-mapping contains multiple or no namespace declaration.
+     * @throws java.io.IOException is thrown when error occurs when parsing edi-message-mapping.
      */
-    private void importFiles(Node<String> parent, Edimap edimap, DependencyTree<String> tree) throws EDIParseException {
+    private void importFiles(Node<String> parent, Edimap edimap, DependencyTree<String> tree) throws SAXException, EDIConfigurationException, IOException {
         Edimap importedEdimap;
         Node<String> child, conflictNode;
         for (Import imp : edimap.getImport()) {
@@ -89,7 +82,8 @@ public class EdifactModel {
             if ( conflictNode != null ) {
                 throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + imp.getName() + "] and [" + conflictNode.getValue() + "]");
             }
-            importedEdimap = unmarshallEdimap(findUrl(imp.getName()));
+            //importedEdimap = unmarshallEdimap(findUrl(imp.getName()));
+            importedEdimap = EDIConfigDigester.digestConfig(findUrl(imp.getName()));
             importFiles(child, importedEdimap, tree);
             Map<String, Segment> importedSegments = createImportMap(importedEdimap);
 
@@ -165,25 +159,6 @@ public class EdifactModel {
             result.put(segment.getSegcode(), segment);
         }
         return result;
-    }
-
-    /**
-     * Unmarshalls an Edimap in the form of an inputStream.
-     * @param inputStream the edimap.
-     * @return the unmarshalled edimap.
-     * @throws EDIParseException Thrown when jaxb is unable to unmarshall the InputStream into Edimap.
-     */
-    private Edimap unmarshallEdimap(InputStream inputStream) throws EDIParseException {
-        Edimap edimap;
-
-        try {
-            Unmarshaller _unmarshaller = JAXB_EDIMAP.createUnmarshaller();
-            edimap = (Edimap)_unmarshaller.unmarshal(inputStream);
-        } catch (JAXBException e) {
-            throw new EDIParseException( e.getMessage(), e);
-        }
-
-        return edimap;
     }
 
     /**

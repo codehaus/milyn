@@ -28,7 +28,7 @@ import java.util.Arrays;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.lang.StringUtils;
-import org.milyn.schema.edi_message_mapping_1_0.Delimiters;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;

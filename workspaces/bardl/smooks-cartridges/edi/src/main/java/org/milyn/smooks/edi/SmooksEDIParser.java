@@ -37,7 +37,8 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.ApplicationContext;
 import org.milyn.edisax.EDIParser;
-import org.milyn.edisax.EdifactModel;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.model.EdifactModel;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.InputSource;
@@ -141,7 +142,9 @@ public class SmooksEDIParser extends EDIParser implements SmooksXMLReader {
 					throw newE;
 				} catch (SAXException e) {
 					throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
-				}
+				} catch (EDIConfigurationException e) {
+                    throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
+                }
                 mappings.put(configuration, edifactModel);
 				logger.info("Parsed, validated and cached EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
 			} else if(logger.isInfoEnabled()) {

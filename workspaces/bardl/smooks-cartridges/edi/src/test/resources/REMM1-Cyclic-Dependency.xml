@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>        
-<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">
+<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.1.xsd">
 
     <medi:import name="REMM2-Cyclic-Dependency.xml" namespace="un" truncatableFields="true" truncatableComponents="true" />
     
     <medi:description name="un-cefact" version="1.0" />
 
-	<medi:segments>
+    <medi:delimiters segment="&#39;" field="+" component=":" sub-component="~"/>
 
-        <medi:segment segcode="UNH" segref="un:UNH"/>
+    <medi:segments xmltag="REMM2">
 
-        <medi:segment segcode="BGM">
+        <medi:segment segcode="UNH" xmltag="UNH" segref="un:UNH"/>
+
+        <medi:segment segcode="BGM" xmltag="BGM">
             <medi:field xmltag="DOCUMENT">
                 <medi:component xmltag="documentNameCode" />
                 <medi:component xmltag="codeListQualifier" />

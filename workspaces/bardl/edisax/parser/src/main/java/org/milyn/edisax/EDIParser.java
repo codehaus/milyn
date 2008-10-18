@@ -30,10 +30,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.io.StreamUtils;
-import org.milyn.schema.edi_message_mapping_1_0.Component;
-import org.milyn.schema.edi_message_mapping_1_0.Field;
-import org.milyn.schema.edi_message_mapping_1_0.Segment;
-import org.milyn.schema.edi_message_mapping_1_0.SubComponent;
+import org.milyn.edisax.model.internal.Component;
+import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.model.internal.SubComponent;
+import org.milyn.edisax.model.EdifactModel;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -137,7 +138,7 @@ public class EDIParser implements XMLReader {
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
      */
-    public static EdifactModel parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException {
+    public static EdifactModel parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
         try {
             return parseMappingModel(new InputStreamReader(mappingConfigStream));
@@ -150,7 +151,7 @@ public class EDIParser implements XMLReader {
      * Parse the supplied mapping model config stream and return the generated EdiMap.
      * <p/>
      * Can be used to set the mapping model to be used during the parsing operation.
-     * See {@link #setMappingModel(EdifactModel)}.
+     * See {@link #setMappingModel(org.milyn.edisax.model.EdifactModel)}.
      * @param mappingConfigStream Config stream.  Must conform with the
      * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
      * schema.
@@ -158,7 +159,7 @@ public class EDIParser implements XMLReader {
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
      */
-    public static EdifactModel parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException {
+    public static EdifactModel parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
 
         EdifactModel edifactModel;
@@ -170,7 +171,7 @@ public class EDIParser implements XMLReader {
     		mappingConfigStream.close();
     	}
 
-    	assertMappingConfigValid(new StringReader(mappingConfig));
+    	//assertMappingConfigValid(new StringReader(mappingConfig));
 
         edifactModel = new EdifactModel();
         edifactModel.parseSequence(new ByteArrayInputStream(mappingConfig.getBytes()));
@@ -179,69 +180,6 @@ public class EDIParser implements XMLReader {
 
 		return edifactModel;
     }
-
-//    /**
-//     * Retrieve external definition file if it exists.
-//     * If edi-message-mapping contains a definition element a lookup is first inititated using
-//     * the URIResourceLocator. If URIResourceLocator fails to retrieve the definition is retrived from
-//     * the resources. If no definition is located an exception is thrown.
-//     * @param edifactModel the edifact model.
-//     * @throws EDIParseException throws exception if edi-message-mapping contains a definition element
-//     * but is unable to locate the definitonfile.
-//     */
-//    private static void getEdifactDefinition(EdifactModel edifactModel) throws EDIParseException {
-//        InputStream inputStream = null;
-//
-//        String definitionURI = edifactModel.getEdimap().getImport() != null ? edifactModel.getEdimap().getImport().getName() : null;
-//        if (definitionURI == null || definitionURI.equals("")) {
-//            return;
-//        }
-//
-//        try {
-//            //Try to locate definition from URIResourceLocator.
-//            inputStream = new URIResourceLocator().getResource(definitionURI);
-//        } catch (IOException e) {
-//            LOG.info("Could not locate resource for uri: " + definitionURI, e);
-//        }
-//
-//        if (inputStream == null) {
-//            //Try to locate definition from resources.
-//            System.out.println("********** definitionname: " +  DEFINITION_RESOURCE + definitionURI + ".xml");
-//            URL _url = Thread.currentThread().getContextClassLoader().getResource(DEFINITION_RESOURCE + definitionURI + ".xml");
-//            System.out.println("********** URL: " +  _url);
-//            System.out.println("********** ResourceDirectory: " +  Thread.currentThread().getContextClassLoader().getResource(""));
-//            try {
-//                inputStream = EDIParser.class.getClass().getResourceAsStream(DEFINITION_RESOURCE + definitionURI + ".xml");
-//                System.out.println("********** inputStream (test): " + inputStream);
-//            } catch (Exception e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
-//            inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFINITION_RESOURCE + definitionURI + ".xml");
-//            System.out.println("********** inputStream: " + inputStream);
-//        }
-//
-//        if (inputStream == null) {
-//            throw new EDIParseException(edifactModel.getEdimap(), "Could not locate resource for uri: " + definitionURI);
-//        }
-//
-//        edifactModel.parseDefinition(inputStream);
-//    }
-    
-    /**
-     * Assert that the supplied mapping configuration is valid.
-	 * @param mappingConfigStream
-     * @throws IOException Failed to read the schema.
-     * @throws SAXException Invalid configuration.
-	 */
-	protected static void assertMappingConfigValid(Reader mappingConfigStream) throws IOException, SAXException {
-    	AssertArgument.isNotNull(mappingConfigStream, "mapping");
-		
-   		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-   		Schema schema = factory.newSchema(new StreamSource(EDIParser.class.getResourceAsStream("/schema/edi-message-mapping-1.0.xsd")));
-		Validator validator = schema.newValidator();
-		
-		validator.validate(new StreamSource(mappingConfigStream));
-	}
 
 	/**
 	 * Set the EDI mapping model to be used in all subsequent parse operations.

@@ -18,7 +18,9 @@ package org.milyn.edisax;
 
 import junit.framework.TestCase;
 import org.milyn.io.StreamUtils;
-import org.milyn.schema.edi_message_mapping_1_0.Segment;
+import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.EDIConfigDigester;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -34,18 +36,24 @@ public class EDIParserTest extends TestCase {
 
 	public void test_validation() throws IOException, SAXException {
 		// Valid doc...
-		EDIParser.assertMappingConfigValid(new InputStreamReader(getClass().getResourceAsStream("edi-mapping_01.xml")));
-		
-		// Invalid doc...
+        try {
+            EDIConfigDigester.digestConfig(getClass().getResourceAsStream("edi-mapping_01.xml"));
+        } catch (EDIConfigurationException e) {
+            fail("Digesting edi-mapping_01.xml should not fail.");
+        }
+
+        // Invalid doc...
 		try {
-			EDIParser.assertMappingConfigValid(new InputStreamReader(getClass().getResourceAsStream("edi-mapping_02.xml")));
+			EDIConfigDigester.digestConfig(getClass().getResourceAsStream("edi-mapping_02.xml"));
 			fail("Expected SAXException");
 		} catch (SAXException e) {
 			// OK
-		}
-	}
+        } catch (EDIConfigurationException e) { 
+            fail("Expected SAXException");
+        }
+    }
 	
-	public void test_parseMappingModel() throws IOException, SAXException {
+	public void test_parseMappingModel() throws IOException, SAXException, EDIConfigurationException {
 		EdifactModel map = EDIParser.parseMappingModel(getClass().getResourceAsStream("edi-mapping_01.xml"));
 		
 		// Some basic checks on the model produced by xmlbeans...
@@ -134,10 +142,12 @@ public class EDIParserTest extends TestCase {
 			if(!exceptionMessage.equals(expected)) {
 				assertEquals("Unexpected exception on testpack [" + testpack + "].  ", expected, exceptionMessage);
 			}
-		}
-	}
+		} catch (EDIConfigurationException e) {
+            assert false : e;
+        }
+    }
 
-	public void test_x() throws IOException, SAXException {
+	public void test_x() throws IOException, SAXException, EDIConfigurationException {
 		InputStream ediInputStream = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-input.txt")));
 		InputStream edi2SaxMappingConfig = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-to-xml-mapping.xml")));
 		ContentHandler contentHandler = new DefaultHandler();

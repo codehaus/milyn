@@ -19,7 +19,7 @@ package org.milyn.edisax;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.schema.edi_message_mapping_1_0.Delimiters;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
@@ -44,7 +44,7 @@ class BufferedSegmentReader {
     /**
      * Construct the stream reader.
      * @param ediInputSource EDI Stream input source.
-     * @param segmentDelimiter Segment delimiter String.
+     * @param delimiters Segment delimiter String.
      */
     protected BufferedSegmentReader(InputSource ediInputSource, Delimiters delimiters) {
         reader = ediInputSource.getCharacterStream();

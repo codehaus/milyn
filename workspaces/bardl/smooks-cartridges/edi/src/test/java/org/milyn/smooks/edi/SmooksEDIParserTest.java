@@ -28,8 +28,7 @@ import org.milyn.io.StreamUtils;
 import org.milyn.delivery.dom.DOMParser;
 import org.milyn.xml.XmlUtil;
 import org.milyn.Smooks;
-import org.milyn.edisax.EdifactModel;
-import org.milyn.edisax.EDIParseException;
+import org.milyn.edisax.model.EdifactModel;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
