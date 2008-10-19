@@ -9,7 +9,8 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.w3c.dom.Node
+import org.milyn.delivery.dom.DOMVisitAfter;
 
 /**
  * Date Formatting class.
@@ -19,7 +20,7 @@ import org.w3c.dom.Node;
  *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class DateFormatter implements DOMElementVisitor {
+public class DateFormatter implements DOMVisitAfter {
 
     private SimpleDateFormat dateDecodeFormat;
     private Properties outputFields;
@@ -32,10 +33,6 @@ public class DateFormatter implements DOMElementVisitor {
         assert inputFormat != '';
         dateDecodeFormat = new SimpleDateFormat(inputFormat);
         outputFields = parseOutputFields(outputFormats);
-    }
-
-    public void visitBefore(Element element, ExecutionContext executionContext) {
-        // Doing nothing on this visit - leave it until after
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) {
