@@ -484,15 +484,33 @@ public class XmlUtil {
      * @throws DOMException Unable to serialise the DOM.
      */
     public static String serialize(final Node node, boolean format) throws DOMException {
-        return serialize(new NodeList() {
-            public Node item(int index) {
-                return node;
-            }
+        StringWriter writer = new StringWriter();
+        serialize(node, format, writer);
+        return writer.toString();
+    }
 
-            public int getLength() {
-                return 1;
-            }
-        }, format);
+    /**
+     * Serialise the supplied W3C DOM subtree.
+     *
+     * @param node The DOM node to be serialized.
+     * @param format Format the output.
+     * @param writer The target writer for serialization.
+     * @throws DOMException Unable to serialise the DOM.
+     */
+    public static void serialize(final Node node, boolean format, Writer writer) throws DOMException {
+        if(node.getNodeType() == Node.DOCUMENT_NODE) {
+            serialize(node.getChildNodes(), format, writer);
+        } else {
+            serialize(new NodeList() {
+                public Node item(int index) {
+                    return node;
+                }
+
+                public int getLength() {
+                    return 1;
+                }
+            }, format, writer);
+        }
     }
 
     /**
@@ -504,6 +522,21 @@ public class XmlUtil {
      * @throws DOMException Unable to serialise the DOM.
      */
     public static String serialize(NodeList nodeList, boolean format) throws DOMException {
+        StringWriter writer = new StringWriter();
+        serialize(nodeList, format, writer);
+        return writer.toString();
+    }
+
+    /**
+     * Serialise the supplied W3C DOM subtree.
+     *
+     * @param nodeList The DOM subtree as a NodeList.
+     * @param format Format the output.
+     * @param writer The target writer for serialization.
+     * @throws DOMException Unable to serialise the DOM.
+     */
+    public static void serialize(NodeList nodeList, boolean format, Writer writer) throws DOMException {
+
         if (nodeList == null) {
             throw new IllegalArgumentException(
                     "null 'subtree' NodeIterator arg in method call.");
@@ -528,7 +561,6 @@ public class XmlUtil {
                 transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "4");
             }
 
-            StringWriter writer = new StringWriter();
             int listLength = nodeList.getLength();
 
             // Iterate through the Node List.
@@ -543,8 +575,6 @@ public class XmlUtil {
                     transformer.transform(new DOMSource(node), new StreamResult(writer));
                 }
             }
-
-            return writer.toString();
         } catch (Exception e) {
             DOMException domExcep = new DOMException(
                     DOMException.INVALID_ACCESS_ERR,
