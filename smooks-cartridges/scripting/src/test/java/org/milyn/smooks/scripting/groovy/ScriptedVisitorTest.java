@@ -18,6 +18,7 @@ package org.milyn.smooks.scripting.groovy;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.io.StreamUtils;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
 import org.xml.sax.SAXException;
@@ -158,6 +159,59 @@ public class ScriptedVisitorTest extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+    }
+
+    public void test_templated_ext_08() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-08.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        assertEquals("<a><b><xxx/></b></a>", result.getResult());
+    }
+
+    public void test_templated_ext_09() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-09.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource(shoppingList), result);
+        assertTrue(StreamUtils.compareCharStreams(
+                "<shopping>\n" +
+                "    <category type=\"groceries\">\n" +
+                "        <item>Luxury Chocolate</item>\n" +
+                "        <item>Luxury Coffee</item>\n" +
+                "    </category>\n" +
+                "    <category type=\"supplies\">\n" +
+                "        <item>Paper</item>\n" +
+                "        <item quantity=\"6\" when=\"Urgent\">Pens</item>\n" +
+                "    </category>\n" +
+                "    <category type=\"present\">\n" +
+                "        <item>Mum's Birthday</item>\n" +
+                "        <item when=\"Oct 15\">Monica's Birthday</item>\n" +
+                "    </category>\n" +
+                "</shopping>",
+                result.getResult()));
+    }
+
+    public void test_templated_ext_10() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-10.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource(shoppingList), result);
+        assertTrue(StreamUtils.compareCharStreams(
+                "<shopping>\n" +
+                "    <category type=\"groceries\"><item>Chocolate</item><item>Coffee</item></category>\n" +
+                "    <category type=\"supplies\"><item>Paper</item><item quantity=\"6\">Pens</item></category>\n" +
+                "    <category type=\"present\"><item when=\"Aug 10\">Kathryn's Birthday</item></category>\n" +
+                "</shopping>",
+                result.getResult()));
+    }
+
+    public void test_templated_ext_11() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-11.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource(shoppingList), result);
+        assertEquals("<category type=\"supplies\"><item>Paper</item><item quantity=\"6\">Pens</item></category>", result.getResult());
     }
 
     private static String shoppingList =

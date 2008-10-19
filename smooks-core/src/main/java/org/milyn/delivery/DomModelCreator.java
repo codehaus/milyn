@@ -93,21 +93,27 @@ public class DomModelCreator implements DOMVisitBefore, SAXVisitBefore, SAXVisit
         domCreatorStack.push(domCreator);
     }
 
-    private void popCreator(ExecutionContext executionContext) {
+    public Document popCreator(ExecutionContext executionContext) {
         Stack<DOMCreator> domCreatorStack = (Stack<DOMCreator>) executionContext.getAttribute(DOMCreator.class);
 
         if(domCreatorStack == null) {
             throw new IllegalStateException("No DOM Creator Stack available.");
         } else {
-            // Remove the current DOMCreators from the dynamic visitor list...
-            if(!domCreatorStack.isEmpty()) {
-                DOMCreator removedCreator = domCreatorStack.pop();
-                DynamicSAXElementVisitorList.removeDynamicVisitor(removedCreator, executionContext);
-            }
+            try {
+                // Remove the current DOMCreators from the dynamic visitor list...
+                if(!domCreatorStack.isEmpty()) {
+                    DOMCreator removedCreator = domCreatorStack.pop();
+                    DynamicSAXElementVisitorList.removeDynamicVisitor(removedCreator, executionContext);
 
-            // Reinstate parent DOMCreators in the dynamic visitor list...
-            if(!domCreatorStack.isEmpty()) {
-                DynamicSAXElementVisitorList.addDynamicVisitor(domCreatorStack.peek(), executionContext);
+                    return removedCreator.document;
+                } else {
+                    return null;
+                }
+            } finally {
+                // Reinstate parent DOMCreators in the dynamic visitor list...
+                if(!domCreatorStack.isEmpty()) {
+                    DynamicSAXElementVisitorList.addDynamicVisitor(domCreatorStack.peek(), executionContext);
+                }
             }
         }
     }
