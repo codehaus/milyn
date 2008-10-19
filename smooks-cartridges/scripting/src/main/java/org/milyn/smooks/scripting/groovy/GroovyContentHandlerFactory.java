@@ -19,6 +19,7 @@ package org.milyn.smooks.scripting.groovy;
 import groovy.lang.GroovyClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
@@ -27,10 +28,8 @@ import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Resource;
-import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.FreeMarkerTemplate;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -38,57 +37,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * {@link DOMElementVisitor} for the <a href="http://groovy.codehaus.org/">Groovy</a> scripting language.
+ * {@link Visitor} Factory class for the <a href="http://groovy.codehaus.org/">Groovy</a> scripting language.
  * <p/>
- * The Groovy script must implement one (and only one) of the following interfaces:
+ * Supports Groovy classes and scripts:
  * <ol>
- * 	<li>{@link DOMElementVisitor}, or</li>
- * 	<li>{@link org.milyn.delivery.dom.serialize.SerializationUnit}.</li>
+ *  <li><b>Class</b>: You can implement a Groovy class that implements one or all of the {@link Visitor} interfaces.</li> 
+ *  <li><b>Script</b>: You can implement a simple Groovy script.  This factory will apply a template to the script,
+ *                      creating a Groovy class to be executed by Smooks.</li> 
  * </ol>
- * Since Groovy v1.0 doesn't support annotations, you'll need to set the "visit phase" for all
- * {@link DOMElementVisitor} implementations via the "VisitPhase" parameter.  See
- * the {@link DOMElementVisitor} javadoc.  Alternatively, you can try using Groovy 1.1, which is supposed
- * to support annotations. 
- * 
- * <h2>Registering GroovyContentHandlerFactory to Handle "groovy" Resources</h2>
- * So this configuration tells Smooks how to handle "groovy" resource configuration types i.e. resources with
- * a restype of "groovy", or resources with a ".groovy" file extension in their path.
+ *
+ * <h2>Example Configuration</h2>
  * <pre>
- * &lt;resource-config selector="cdu-creator"&gt;
- *     &lt;resource&gt;<b>org.milyn.smooks.scripting.GroovyContentHandlerFactory</b>&lt;/resource&gt;
- *     &lt;param name="<b>restype</b>"&gt;groovy&lt;/param&gt;
- * &lt;/resource-config&gt;
- * </pre>
- * 
- * <h4>2. Targeting "groovy" Resources</h4>
- * <a href="http://groovy.codehaus.org/">Groovy</a> scripts can be defined and target in either
- * of 2 ways:
- * <ol>
- *  <li>By specifying the ".groovy" script in the resource path attribute (a {@link org.milyn.resource.URIResourceLocator URI}).</li>
- *  <li>By inlining the groovy script directly into the resource configuration.</li>
- * </ol>
- * <p/>
- * <u>URI based Groovy Scripting:</u><br/>
- * Note, the groovy resource specified in the path attribute must have a file extension of ".groovy".
- * <pre>
- * &lt;smooks-resource  selector="<i>target-element</i>"&gt;
- *     &lt;resource&gt;<b>{@link org.milyn.resource.URIResourceLocator URI}</b>&lt;/resource&gt;
- *     &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
- *                      the setConfiguration()
- *                      method. --&gt;
- * &lt;/smooks-resource&gt;
- * </pre>
- * <p/>
- * <u>Inlined Groovy Scripting:</u>
- * <pre>
- * &lt;smooks-resource  selector="<i>target-element</i>"&gt;
- *     &lt;resource <b>type="groovy"</b>&gt;
- *         <b><i>inlined groovy script, optionally wrapped in XML Comment or CDATA sections...</i></b>
- *     &lt;/resource&gt;
- *     &lt;!-- (Optional)  Zero or more &lt;param&gt; instances to be supplied to the Groovy script through
- *                      the setConfiguration()
- *                      method. --&gt;
- * &lt;/smooks-resource&gt;
+ * &lt;?xml version="1.0"?&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd"&gt;
+ *
+ *     &lt;g:groovy executeOnElement="c"&gt;
+ *         &lt;g:script&gt;
+ *             element = DomUtils.renameElement(element, "xxx", true, true);
+ *             element.setAttribute("newElementAttribute", "1234");
+ *         &lt;/g:script&gt;
+ *     &lt;/g:groovy&gt;
+ *
+ * &lt;/smooks-resource-list&gt;
  * </pre>
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

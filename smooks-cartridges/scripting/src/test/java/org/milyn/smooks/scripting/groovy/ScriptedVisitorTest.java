@@ -37,8 +37,28 @@ public class ScriptedVisitorTest extends TestCase {
         assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
     }
 
+    public void test_templated_ext_01() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-01.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
+    }
+
     public void test_templated_02() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-02.xml"));
+        StringResult result = new StringResult();
+
+        try {
+            smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+            fail("Expected SmooksException.");
+        } catch(SmooksException e) {
+            assertEquals("Unable to filter InputStream for target profile [org.milyn.profile.Profile#default_profile].", e.getMessage());
+        }
+    }
+
+    public void test_templated_ext_02() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-02.xml"));
         StringResult result = new StringResult();
 
         try {
@@ -57,8 +77,24 @@ public class ScriptedVisitorTest extends TestCase {
         assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
     }
 
+    public void test_templated_ext_03() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-03.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
+    }
+
     public void test_templated_04() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-04.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        assertEquals("<a><b><c><car make=\"Holden\" name=\"HSV Maloo\" year=\"2006\"><country>Australia</country><record type=\"speed\">Production Pickup Truck with speed of 271kph</record></car><car make=\"Peel\" name=\"P50\" year=\"1962\"><country>Isle of Man</country><record type=\"size\">Smallest Street-Legal Car at 99cm wide and 59 kg in weight</record></car><car make=\"Bugatti\" name=\"Royale\" year=\"1931\"><country>France</country><record type=\"price\">Most Valuable Car at $15 million</record></car></c></b></a>", result.getResult());
+    }
+
+    public void test_templated_ext_04() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-04.xml"));
         StringResult result = new StringResult();
 
         smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
@@ -85,6 +121,36 @@ public class ScriptedVisitorTest extends TestCase {
                 "    <item>Mum's Birthday</item><item when=\"Oct 15\">Monica's Birthday</item></category>\n" +
                 "</shopping>",
                 result.getResult());
+    }
+
+    public void test_templated_ext_05() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-05.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource(shoppingList), result);
+        assertEquals(
+                "<shopping>\n" +
+                "    <category type=\"groceries\">\n" +
+                "        <item>Luxury Chocolate</item>\n" +
+                "        <item>Luxury Coffee</item>\n" +
+                "    </category>\n" +
+                "    <category type=\"supplies\">\n" +
+                "        <item>Paper</item>\n" +
+                "        <item quantity=\"6\" when=\"Urgent\">Pens</item>\n" +
+                "    </category>\n" +
+                "    <category type=\"present\">\n" +
+                "        \n" +
+                "    <item>Mum's Birthday</item><item when=\"Oct 15\">Monica's Birthday</item></category>\n" +
+                "</shopping>",
+                result.getResult());
+    }
+
+    public void test_templated_ext_06() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-06.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        assertEquals("<a><b><newElX newElementAttribute=\"1234\"></newElX></b></a>", result.getResult());
     }
 
     private static String shoppingList =

@@ -31,12 +31,14 @@ public abstract class ResourceConfigUtil {
     public static void setProperty(SmooksResourceConfiguration config, String setOn, String value, Element xml, ExecutionContext executionContext) throws SmooksException {
         if(setOn.equals("selector")) {
             config.setSelector(value);
-        } else if(setOn.equals("selectorNamespaceURI(")) {
+        } else if(setOn.equals("resource")) {
+            config.setResource(value);
+        } else if(setOn.equals("resourceType")) {
+            config.setResourceType(value);
+        } else if(setOn.equals("selectorNamespaceURI")) {
             config.setSelectorNamespaceURI(value);
         } else if(setOn.equals("defaultResource")) {
             config.setDefaultResource(Boolean.parseBoolean(value));
-        } else if(setOn.equals("resourceType")) {
-            config.setResourceType(value);
         } else if(setOn.equals("targetProfile")) {
             config.setTargetProfile(value);
         } else if(setOn.equals("conditionRef")) {
@@ -57,12 +59,14 @@ public abstract class ResourceConfigUtil {
     public static void unsetProperty(SmooksResourceConfiguration config, String property) {
         if(property.equals("selector")) {
             config.setSelector(null);
-        } else if(property.equals("selectorNamespaceURI(")) {
+        } else if(property.equals("resource")) {
+            config.setResource(null);
+        } else if(property.equals("resourceType")) {
+            config.setResourceType(null);
+        } else if(property.equals("selectorNamespaceURI")) {
             config.setSelectorNamespaceURI(null);
         } else if(property.equals("defaultResource")) {
             config.setDefaultResource(false);
-        } else if(property.equals("resourceType")) {
-            config.setResourceType(null);
         } else if(property.equals("targetProfile")) {
             config.setTargetProfile(null);
         } else if(property.equals("conditionRef")) {
@@ -75,12 +79,14 @@ public abstract class ResourceConfigUtil {
     public static void mapProperty(SmooksResourceConfiguration fromConfig, String fromProperty, SmooksResourceConfiguration toConfig, String toProperty, String defaultValue, ExecutionContext executionContext) throws SmooksException {
         if(fromProperty.equals("selector")) {
             setProperty(toConfig, toProperty, fromConfig.getSelector(), executionContext);
-        } else if(fromProperty.equals("selectorNamespaceURI(")) {
+        } else if(fromProperty.equals("resource")) {
+            setProperty(toConfig, toProperty, fromConfig.getResource(), executionContext);
+        } else if(fromProperty.equals("resourceType")) {
+            setProperty(toConfig, toProperty, fromConfig.getResourceType(), executionContext);
+        } else if(fromProperty.equals("selectorNamespaceURI")) {
             setProperty(toConfig, toProperty, fromConfig.getSelectorNamespaceURI(), executionContext);
         } else if(fromProperty.equals("defaultResource")) {
             setProperty(toConfig, toProperty, Boolean.toString(fromConfig.isDefaultResource()), executionContext);
-        } else if(fromProperty.equals("resourceType")) {
-            setProperty(toConfig, toProperty, fromConfig.getResourceType(), executionContext);
         } else if(fromProperty.equals("targetProfile")) {
             setProperty(toConfig, toProperty, fromConfig.getTargetProfile(), executionContext);
         } else if(fromProperty.equals("conditionRef")) {
