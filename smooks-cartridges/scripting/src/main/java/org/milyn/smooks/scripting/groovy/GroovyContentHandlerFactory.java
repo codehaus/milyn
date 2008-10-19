@@ -30,6 +30,7 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.FreeMarkerTemplate;
+import org.milyn.xml.DomUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -39,22 +40,73 @@ import java.util.Map;
 /**
  * {@link Visitor} Factory class for the <a href="http://groovy.codehaus.org/">Groovy</a> scripting language.
  * <p/>
- * Supports Groovy classes and scripts:
- * <ol>
- *  <li><b>Class</b>: You can implement a Groovy class that implements one or all of the {@link Visitor} interfaces.</li> 
- *  <li><b>Script</b>: You can implement a simple Groovy script.  This factory will apply a template to the script,
- *                      creating a Groovy class to be executed by Smooks.</li> 
- * </ol>
+ * Implement DOM or SAX visitors using the Groovy scripting language.
+ *
+ * <h2>Usage Tips</h2>
+ * <ul>
+ *  <li><b>Imports</b>: Imports can be added via the "imports" element.  A number of classes are automatically imported:
+ *      <ul>
+ *          <li>{@link DomUtils org.milyn.xml.DomUtils}</li>
+ *          <li>{@link org.milyn.javabean.repository.BeanRepository}</li>
+ *          <li>{@link org.w3c.dom org.w3c.dom.*}</li>
+ *          <li>groovy.xml.dom.DOMCategory, groovy.xml.dom.DOMUtil, groovy.xml.DOMBuilder</li>
+ *      </ul>
+ *  </li>
+ *  <li><b>Visited Element</b>: The visited element is available to the script through the variable "element".  It is also available
+ *      under a variable name equal to the element name, but only if the element name contains alpha-numeric
+ *      characters only.</li>
+ *  <li><b>SAX or DOM</b>: When writing the script, you need to be consious of which filter type is being used i.e. SAX or DOM.
+ *      If using the DOM filter, the element will be of type {@link org.w3c.dom.Element}.  If using the SAX filter, the element
+ *      will be of type {@link org.milyn.delivery.sax.SAXElement}.  So obviously, you cannot perform DOM based manipulations
+ *      when the SAX filter is being used (i.e. on {@link org.milyn.delivery.sax.SAXElement}) and visa versa.</li>
+ *  <li><b>Execute Before/After</b>: By default, the script is executed on the visitAfter event.  You can direct it to be
+ *      executed on the visitBefore by setting the "executeBefore" attribute to "true".</li>
+ *  <li><b>Comment/CDATA Script Wrapping</b>: If the script contains special XML characters, it can be wrapped in an XML
+ *       Comment or CDATA section.  See example below.</li>
+ * </ul>
  *
  * <h2>Example Configuration</h2>
+ * Take an XML message such as:
+ * <pre>
+ * &lt;shopping&gt;
+ *     &lt;category type="groceries"&gt;
+ *         &lt;item&gt;Chocolate&lt;/item&gt;
+ *         &lt;item&gt;Coffee&lt;/item&gt;
+ *     &lt;/category&gt;
+ *     &lt;category type="supplies"&gt;
+ *         &lt;item&gt;Paper&lt;/item&gt;
+ *         &lt;item quantity="4"&gt;Pens&lt;/item&gt;
+ *     &lt;/category&gt;
+ *     &lt;category type="present"&gt;
+ *         &lt;item when="Aug 10"&gt;Kathryn's Birthday&lt;/item&gt;
+ *     &lt;/category&gt;
+ * &lt;/shopping&gt;
+ * </pre>
+ *
+ * Using Groovy, we want to modify the "supplies" category in the shopping list, adding 2 to the
+ * quantity, where the item is "Pens".  To do this, we write a simple little Groovy script and target
+ * it at the &lt;category&gt; elements in the message.  The script simple iterates over the &lt;item&gt; elements
+ * in the category and increments the quantity by 2, where the category type is "supplies" and the item is "Pens":
+ *
  * <pre>
  * &lt;?xml version="1.0"?&gt;
- * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:g="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd"&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:g="<a href="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">http://www.milyn.org/xsd/smooks/groovy-1.1.xsd</a>"&gt;
  *
- *     &lt;g:groovy executeOnElement="c"&gt;
+ *     &lt;g:groovy executeOnElement="category"&gt;
  *         &lt;g:script&gt;
- *             element = DomUtils.renameElement(element, "xxx", true, true);
- *             element.setAttribute("newElementAttribute", "1234");
+ *             &lt;!--
+ *             use(DOMCategory) {
+ *
+ *                 // modify supplies: we need an extra 2 pens
+ *                 if (category.'@type' == 'supplies') {
+ *                     category.item.each { item -&gt;
+ *                         if (item.text() == 'Pens') {
+ *                             item['@quantity'] = item.'@quantity'.toInteger() + 2
+ *                         }
+ *                     }
+ *                 }
+ *             }
+ *             --&gt;
  *         &lt;/g:script&gt;
  *     &lt;/g:groovy&gt;
  *

@@ -28,6 +28,7 @@
         <module>db-extract-transform-load</module>
         <module>file-router</module>
         <module>freemarker-huge-transform</module>
+        <module>groovy</module>
         <module>jms-router</module>
         <module>json-to-java</module>
         <module>sj-testimonial</module>

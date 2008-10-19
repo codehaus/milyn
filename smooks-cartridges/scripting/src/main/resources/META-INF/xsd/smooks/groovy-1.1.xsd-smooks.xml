@@ -29,6 +29,11 @@
         <param name="value">groovy</param>
     </resource-config>
 
+    <resource-config selector="groovy/imports">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromText</resource>
+        <param name="mapTo">imports</param>
+    </resource-config>
+
     <resource-config selector="groovy/script">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromText</resource>
         <param name="mapTo">resource</param>

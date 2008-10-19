@@ -153,6 +153,13 @@ public class ScriptedVisitorTest extends TestCase {
         assertEquals("<a><b><newElX newElementAttribute=\"1234\"></newElX></b></a>", result.getResult());
     }
 
+    public void test_templated_ext_07() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-07.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+    }
+
     private static String shoppingList =
             "<shopping>\n" +
             "    <category type=\"groceries\">\n" +

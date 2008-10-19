@@ -1,4 +1,4 @@
-package org.milyn.smooks.scripting.groovy
+package org.milyn.smooks.scripting.groovy;
 
 import groovy.xml.dom.DOMUtil;
 import groovy.xml.dom.DOMCategory;

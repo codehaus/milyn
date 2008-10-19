@@ -223,9 +223,9 @@ public class ContentDeliveryConfigBuilder {
 
             if(filterTypeParam == null) {
                 filterType = Filter.StreamFilterType.DOM;
-                logger.info("All configured XML Element Content Handler resource configurations can be " +
+                logger.debug("All configured XML Element Content Handler resource configurations can be " +
                         "applied using the SAX or DOM Stream Filter.  Defaulting to DOM Filter.  Set '" + ParameterAccessor.GLOBAL_PARAMETERS + ":"
-                        + Filter.STREAM_FILTER_TYPE + "'.  Turn on debug logging for more info.");
+                        + Filter.STREAM_FILTER_TYPE + "'.");
                 logger.debug("You can explicitly select the Filter type as follows:\n" +
                         "\t\t<resource-config selector=\"" + ParameterAccessor.GLOBAL_PARAMETERS + "\">\n" +
                         "\t\t\t<param name=\"" + Filter.STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
