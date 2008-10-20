@@ -58,10 +58,6 @@ import java.util.Map;
  *  <li><b>Visited Element</b>: The visited element is available to the script through the variable "element".  It is also available
  *      under a variable name equal to the element name, but only if the element name contains alpha-numeric
  *      characters only.</li>
- *  <li><b>SAX or DOM</b>: When writing the script, you need to be consious of which filter type is being used i.e. SAX or DOM.
- *      If using the DOM filter, the element will be of type {@link Element}.  If using the SAX filter, the element
- *      will be of type {@link SAXElement}.  So obviously, you cannot perform DOM based manipulations
- *      when the SAX filter is being used (i.e. on {@link SAXElement}) and visa versa.</li>
  *  <li><b>Execute Before/After</b>: By default, the script is executed on the visitAfter event.  You can direct it to be
  *      executed on the visitBefore by setting the "executeBefore" attribute to "true".</li>
  *  <li><b>Comment/CDATA Script Wrapping</b>: If the script contains special XML characters, it can be wrapped in an XML
