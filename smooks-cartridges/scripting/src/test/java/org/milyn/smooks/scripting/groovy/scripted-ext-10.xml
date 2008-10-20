@@ -24,6 +24,8 @@
                     }
                 }
             }
+
+            writeFragment(category);
             -->
         </g:script>
     </g:groovy>

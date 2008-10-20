@@ -10,7 +10,8 @@
     -->
     <g:groovy executeOnElement="c">
         <g:script>
-            DomUtils.renameElement(element, "xxx", true, true);
+            element = DomUtils.renameElement(element, "xxx", true, true);
+            writeFragment(element);
         </g:script>
     </g:groovy>
 

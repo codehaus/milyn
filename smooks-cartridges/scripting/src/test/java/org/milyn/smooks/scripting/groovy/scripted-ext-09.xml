@@ -38,6 +38,8 @@
                 // check the when attributes
                 assert shopping.'**'.item.'@when'.grep{it} == ["Urgent", "Oct 15"]
             }
+
+            writeFragment(shopping);
             -->
         </g:script>
         <param name="format">true</param>
