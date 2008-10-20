@@ -171,7 +171,7 @@ public class AnnotatedDaoRuntimeInfo {
 			throw new RuntimeException("A second method annotated with the ["+ Merge.class.getName() +"] annotation is found. Only one method per class is allowed to be annotated with this annotation.");
 		}
 		if(method.getParameterTypes().length == 0) {
-			throw new RuntimeException("The Merge annotated method ["+ method +"] of the DAO class [" + daoClass.getName() + "] doesn't have a parameter, which it need.s");
+			throw new RuntimeException("The Merge annotated method ["+ method +"] of the DAO class [" + daoClass.getName() + "] doesn't have a parameter, which it need.");
 		}
 		if(method.getParameterTypes().length > 1) {
 			throw new RuntimeException("The Merge annotated method ["+ method +"] of the DAO class [" + daoClass.getName() + "] has more then 1 parameter, which isn't allowed.");

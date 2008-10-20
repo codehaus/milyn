@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.ibatis;
+package org.milyn.persistence.dao.adapter.ibatis;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -30,14 +30,14 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class ClientDa0Adapter implements NamedDao<Object>, Finder<Object>, NamedFlushable  {
+public class ClientDaoAdapter implements NamedDao<Object>, Finder<Object>, NamedFlushable  {
 
 	private final SqlMapClient sqlMapClient;
 
 	/**
 	 * @param sqlMapClient
 	 */
-	public ClientDa0Adapter(SqlMapClient sqlMapClient) {
+	public ClientDaoAdapter(SqlMapClient sqlMapClient) {
 		this.sqlMapClient = sqlMapClient;
 	}
 

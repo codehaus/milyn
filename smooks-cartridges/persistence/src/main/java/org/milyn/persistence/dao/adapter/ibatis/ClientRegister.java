@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.ibatis;
+package org.milyn.persistence.dao.adapter.ibatis;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.persistence.dao.DaoRegister;
@@ -24,7 +24,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class ClientRegister implements DaoRegister<ClientDa0Adapter>{
+public class ClientRegister implements DaoRegister<ClientDaoAdapter>{
 
 	private final SqlMapClient sqlMapClient;
 
@@ -41,14 +41,14 @@ public class ClientRegister implements DaoRegister<ClientDa0Adapter>{
 	 * (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegister#getDAO(java.lang.String)
 	 */
-	public ClientDa0Adapter getDAO(final String name) {
-		return new ClientDa0Adapter(sqlMapClient);
+	public ClientDaoAdapter getDAO(final String name) {
+		return new ClientDaoAdapter(sqlMapClient);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegister#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final ClientDa0Adapter dao) {
+	public void returnDAO(final ClientDaoAdapter dao) {
 	}
 }

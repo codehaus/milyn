@@ -32,7 +32,7 @@ import org.milyn.persistence.dao.annotation.Persist;
  *
  */
 @Dao
-public interface AnnotatedDao {
+public interface FullAnnotatedDao {
 
 	@Persist
 	void persistIt(final Object entity);

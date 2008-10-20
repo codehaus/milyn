@@ -13,13 +13,14 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.hibernate;
+package org.milyn.persistence.dao.adapter.jpa;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.milyn.assertion.AssertArgument;
 import org.milyn.persistence.dao.Dao;
 import org.milyn.persistence.dao.Finder;
@@ -28,25 +29,32 @@ import org.milyn.persistence.dao.QueryFinder;
 
 
 /**
+ * This is an adapter for the EntityManager. This enables
+ * simple queries on a EntityManager.<br>
+ * <br>
+ * Prefixing a query with a @ makes sure that
+ * the query is handled as a named query. The @
+ * is off course removed before the named query is called
+ *
  * @author maurice_zeijen
  *
  */
-public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFinder<Object>, Flushable {
+public class EntityManagerDaoAdapter implements Dao<Object>, Finder<Object>, QueryFinder<Object>, Flushable {
 
-	private final Session session;
+	private final EntityManager entityManager;
 
 	/**
-	 *
+	 * @param entityManager
 	 */
-	public SessionDaoAdapter(final Session session) {
-		this.session = session;
+	public EntityManagerDaoAdapter(final EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAO#flush()
 	 */
 	public void flush() {
-		session.flush();
+		entityManager.flush();
 	}
 
 	/* (non-Javadoc)
@@ -55,9 +63,7 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 	public Object merge(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.saveOrUpdate(entity);
-
-		return entity;
+		return entityManager.merge(entity);
 	}
 
 	/* (non-Javadoc)
@@ -66,30 +72,29 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 	public void persist(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.save(entity);
-
+		entityManager.persist(entity);
 	}
 
+
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.lang.Object[])
+	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> findBy(final String name, final Object[] parameters) {
-
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
 
-		final Query query = session.getNamedQuery(name);
+		final Query emQuery = entityManager.createNamedQuery(name);
 
 		for(int i = 0; i < parameters.length; i++) {
 
-			query.setParameter(i+1, parameters[i]);
+			emQuery.setParameter(i+1, parameters[i]);
 
 		}
 
-		return query.list();
-
+		return emQuery.getResultList();
 	}
+
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
@@ -99,21 +104,22 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
 
-		final Query query = session.getNamedQuery(name);
+		final Query emQuery = entityManager.createNamedQuery(name);
 
 		for(final String key : parameters.keySet()) {
 
-			query.setParameter(key, parameters.get(key));
+			emQuery.setParameter(key, parameters.get(key));
 
 		}
-		return query.list();
+		return emQuery.getResultList();
 	}
 
+
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.lang.Object[])
+	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> findByQuery(final String query, final Object[] parameters) {
+	public Collection findByQuery(final String query, final Object[] parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -122,24 +128,22 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 			return findBy(query.substring(1), parameters);
 		}
 
-		final Query sesQuery = session.createQuery(query);
+		final Query emQuery = entityManager.createQuery(query);
 
 		for(int i = 0; i < parameters.length; i++) {
 
-			sesQuery.setParameter(i+1, parameters[i]);
+			emQuery.setParameter(i+1, parameters[i]);
 
 		}
 
-		return sesQuery.list();
+		return emQuery.getResultList();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> findByQuery(final String query,
-			final Map<String, ?> parameters) {
-
+	public Collection findByQuery(final String query, final Map<String, ?> parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -148,14 +152,16 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 			return findBy(query.substring(1), parameters);
 		}
 
-		final Query sesQuery = session.createQuery(query);
+		final Query emQuery = entityManager.createQuery(query);
 
 		for(final String key : parameters.keySet()) {
 
-			sesQuery.setParameter(key, parameters.get(key));
+			emQuery.setParameter(key, parameters.get(key));
 
 		}
-		return sesQuery.list();
+		return emQuery.getResultList();
 	}
+
+
 
 }

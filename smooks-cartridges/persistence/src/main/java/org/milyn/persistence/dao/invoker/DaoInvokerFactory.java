@@ -31,7 +31,7 @@ public class DaoInvokerFactory {
 
 	private static final DaoInvokerFactory instance = new DaoInvokerFactory();
 
-	private static final String REPOSITORY_KEY = DaoInvokerFactory.class.getName() + "#REPOSITORY_KEY";
+	public static final String REPOSITORY_KEY = DaoInvokerFactory.class.getName() + "#REPOSITORY_KEY";
 
 	public static final DaoInvokerFactory getInstance() {
 		return instance;
@@ -55,7 +55,7 @@ public class DaoInvokerFactory {
 
 				final AnnotatedDaoRuntimeInfoRepository repository = getAnnotatedDAORuntimeInfoRepository(applicationContext);
 
-				return new AnnotatedDaoInvoker(dao, repository);
+				return new AnnotatedDaoInvoker(dao, repository.get(dao.getClass()));
 
 			} else {
 				throw new IllegalArgumentException("The DAO argument doesn't implement the [" + Dao.class.getName() + "] interface " +

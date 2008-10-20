@@ -28,7 +28,7 @@ public class NamedDaoInvokerFactory {
 
 	private static final NamedDaoInvokerFactory instance = new NamedDaoInvokerFactory();
 
-	private static final String REPOSITORY_KEY = DaoInvokerFactory.class.getName() + "#REPOSITORY_KEY";
+	//public static final String REPOSITORY_KEY = DaoInvokerFactory.class.getName() + "#REPOSITORY_KEY";
 
 	public static final NamedDaoInvokerFactory getInstance() {
 		return instance;
@@ -38,6 +38,7 @@ public class NamedDaoInvokerFactory {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public NamedDaoInvoker create(final Object dao, final ApplicationContext applicationContext) {
 		AssertArgument.isNotNull(dao, "dao");
 		AssertArgument.isNotNull(applicationContext, "applicationContext");
