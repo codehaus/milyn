@@ -13,6 +13,7 @@ import org.milyn.delivery.DomModelCreator
 import org.milyn.delivery.DOMModel
 import org.milyn.delivery.dom.DOMVisitBefore
 import org.milyn.delivery.dom.DOMVisitAfter
+import org.milyn.delivery.dom.serialize.Serializer
 import org.milyn.xml.*;
 import org.milyn.io.NullWriter;
 
@@ -78,7 +79,13 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
         def writeFragment = { outNode ->
-            XmlUtil.serialize((Node)outNode, format, writer);
+            if(outNode.getNodeType() == Node.ELEMENT_NODE) {
+                Serializer.recursiveDOMWrite((Element) outNode, writer);
+            } else if(outNode.getNodeType() == Node.DOCUMENT_NODE) {
+                Serializer.recursiveDOMWrite(outNode.getDocumentElement(), writer);
+            } else {
+                throw new SmooksException("Call to 'writeFragment' with a non Document/Element Node.  Node type: " + outNode.getClass().getName());
+            }
         }
 
         ${visitorScript}
