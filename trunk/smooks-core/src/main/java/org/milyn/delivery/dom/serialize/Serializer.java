@@ -329,4 +329,65 @@ public class Serializer {
         
         return null;
 	}
+
+    private static DefaultSerializationUnit defaultSerializer = new DefaultSerializationUnit();
+    static {
+        defaultSerializer.setCloseEmptyElements(true);
+    }
+
+    /**
+     * Recursively write the DOM tree to the supplied writer.
+     * @param element Element to write.
+     * @param writer Writer to use.
+     * @throws IOException Exception writing to Writer.
+     */
+    public static void recursiveDOMWrite(Element element, Writer writer) throws IOException {
+        NodeList children = element.getChildNodes();
+
+        try {
+            defaultSerializer.writeElementStart(element, writer);
+
+            if(children != null && children.getLength() > 0) {
+                int childCount = children.getLength();
+
+                for(int i = 0; i < childCount; i++) {
+                    Node childNode = children.item(i);
+
+                    switch(childNode.getNodeType()) {
+                        case Node.CDATA_SECTION_NODE: {
+                            defaultSerializer.writeElementCDATA((CDATASection)childNode, writer, null);
+                            break;
+                        }
+                        case Node.COMMENT_NODE: {
+                            defaultSerializer.writeElementComment((Comment)childNode, writer, null);
+                            break;
+                        }
+                        case Node.ELEMENT_NODE: {
+                            recursiveDOMWrite((Element)childNode, writer);
+                            break;
+                        }
+                        case Node.ENTITY_REFERENCE_NODE: {
+                            defaultSerializer.writeElementEntityRef((EntityReference)childNode, writer, null);
+                            break;
+                        }
+                        case Node.TEXT_NODE: {
+                            defaultSerializer.writeElementText((Text)childNode, writer, null);
+                            break;
+                        }
+                        default: {
+                            defaultSerializer.writeElementNode(childNode, writer, null);
+                            break;
+                        }
+                    }
+                }
+            }
+            defaultSerializer.writeElementEnd(element, writer);
+        } catch(Throwable thrown) {
+            if(thrown instanceof SmooksException) {
+                throw (SmooksException) thrown;
+            } else {
+                throw new SmooksException("Serailization Error.", thrown);
+            }
+        }
+    }
 }
