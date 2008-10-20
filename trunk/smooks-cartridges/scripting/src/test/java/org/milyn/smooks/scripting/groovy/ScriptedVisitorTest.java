@@ -197,6 +197,7 @@ public class ScriptedVisitorTest extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filter(new StringSource(shoppingList), result);
+        System.out.println(result.getResult());
         assertTrue(StreamUtils.compareCharStreams(
                 "<shopping>\n" +
                 "    <category type=\"groceries\"><item>Chocolate</item><item>Coffee</item></category>\n" +

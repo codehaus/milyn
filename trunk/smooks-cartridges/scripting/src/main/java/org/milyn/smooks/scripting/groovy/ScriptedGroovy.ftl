@@ -10,6 +10,7 @@ import org.milyn.SmooksException;
 import org.milyn.javabean.repository.BeanRepository;
 
 import org.milyn.delivery.DomModelCreator
+import org.milyn.delivery.DOMModel
 import org.milyn.delivery.dom.DOMVisitBefore
 import org.milyn.delivery.dom.DOMVisitAfter
 import org.milyn.xml.*;
@@ -21,6 +22,7 @@ import org.milyn.delivery.sax.SAXElement;
 
 import java.io.IOException;
 import org.w3c.dom.*;
+import java.util.Map;
 
 ${imports}
 
@@ -36,12 +38,14 @@ class ${visitorName} implements DOMVisitBefore, SAXVisitBefore {
     public void visitBefore(Element element, ExecutionContext executionContext) {
         Element ${elementName} = element;
         Document document = element.getOwnerDocument();
+        Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
         ${visitorScript}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         SAXElement ${elementName} = element;
+        Map nodeModels = DOMModel.getModel(executionContext).getModels();
         
         ${visitorScript}
     }
@@ -52,6 +56,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
     private SmooksResourceConfiguration config;
     private DomModelCreator modelCreator;
     private boolean format = false;
+    private boolean isWritingFragment = false;
 
 	public void setConfiguration(SmooksResourceConfiguration config) {
 		this.config = config;
@@ -60,6 +65,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
 		    modelCreator = new DomModelCreator();
 		}
 		format = config.getBoolParameter("format", false);
+		isWritingFragment = config.getBoolParameter("writeFragment", false);		
 	}
 
     public void visitAfter(Element element, ExecutionContext executionContext) {
@@ -69,6 +75,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
     public void visitAfter(Element element, ExecutionContext executionContext, Writer writer) {
         Element ${elementName} = element;
         Document document = element.getOwnerDocument();
+        Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
         def writeFragment = { outNode ->
             XmlUtil.serialize((Node)outNode, format, writer);
@@ -78,11 +85,10 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        Writer currentWriter = element.getWriter(this);
-
         if(modelCreator != null) {
-            if(executionContext.isDefaultSerializationOn()) {
-                // If Default Serialization is on, we want to block output to the
+            if(isWritingFragment) {
+                Writer currentWriter = element.getWriter(this);
+                // If fragment writing is on, we want to block output to the
                 // output stream...
                 element.setWriter(new NullWriter(currentWriter), this);
             }
@@ -98,20 +104,20 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
             Document fragmentDoc = modelCreator.popCreator(executionContext);
             Element fragmentElement = fragmentDoc.getDocumentElement();
 
-            Writer writer = element.getWriter(this);
-            if(writer instanceof NullWriter) {
-                // Reset the writer...
-                writer = ((NullWriter)writer).getParentWriter();
-                element.setWriter(writer, this);
-            }
+            if(isWritingFragment) {
+                Writer writer = element.getWriter(this);
+                if(writer instanceof NullWriter) {
+                    // Reset the writer...
+                    writer = ((NullWriter)writer).getParentWriter();
+                    element.setWriter(writer, this);
+                }
 
-            if(executionContext.isDefaultSerializationOn()) {
-                visitAfter(fragmentElement, executionContext);
-                XmlUtil.serialize((Node) fragmentDoc, format, writer);
-            } else {
                 visitAfter(fragmentElement, executionContext, writer);
+            } else {
+                visitAfter(fragmentElement, executionContext);
             }
         } else {
+            Map nodeModels = DOMModel.getModel(executionContext).getModels();
             ${visitorScript}
         }
     }

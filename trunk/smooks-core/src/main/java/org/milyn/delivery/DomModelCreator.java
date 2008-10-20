@@ -39,8 +39,59 @@ import java.util.Stack;
  * DOM Node Model creator.
  * <p/>
  * Adds the visited element as a node model.
+ *
+ * <h2>Mixing DOM and SAX</h2>
+ * When used with SAX filtering, this visitor will construct a DOM Fragment of the visited
+ * element.  This allows DOM utilities to be used in a Streaming environment.
  * <p/>
- * For SAX filtering, this visitor will construct a deep DOM model of the visited element.
+ * When 1+ models are nested inside each other, outer models will never contain data from the
+ * inner models i.e. the same fragments will never cooexist inside two models.
+ * <p/>
+ * Take the following message as an example:
+ * <pre>
+ * &lt;order id='332'&gt;
+ *     &lt;header&gt;
+ *         &lt;customer number="123"&gt;Joe&lt;/customer&gt;
+ *     &lt;/header&gt;
+ *     &lt;order-items&gt;
+ *         &lt;order-item id='1'&gt;
+ *             &lt;product&gt;1&lt;/product&gt;
+ *             &lt;quantity&gt;2&lt;/quantity&gt;
+ *             &lt;price&gt;8.80&lt;/price&gt;
+ *         &lt;/order-item&gt;
+ *         &lt;order-item id='2'&gt;
+ *             &lt;product&gt;2&lt;/product&gt;
+ *             &lt;quantity&gt;2&lt;/quantity&gt;
+ *             &lt;price&gt;8.80&lt;/price&gt;
+ *         &lt;/order-item&gt;
+ *         &lt;order-item id='3'&gt;
+ *             &lt;product&gt;3&lt;/product&gt;
+ *             &lt;quantity&gt;2&lt;/quantity&gt;
+ *             &lt;price&gt;8.80&lt;/price&gt;
+ *         &lt;/order-item&gt;
+ *    &lt;/order-items&gt;
+ * &lt;/order&gt;
+ * </pre>
+ * The {@link DomModelCreator} can be configured to create models for the "order" and "order-item"
+ * message fragments:
+ * <pre>
+ * &lt;resource-config selector="order,order-item"&gt;
+ *     &lt;resource&gt;org.milyn.delivery.DomModelCreator&lt;/resource&gt;
+ * &lt;/resource-config&gt;
+ * </pre>
+ * In this case, the "order" model will never contain "order-item" model data (order-item elements are nested
+ * inside the order element).  The in memory model for the "order" will simply be:
+ * <pre>
+ * &lt;order id='332'&gt;
+ *     &lt;header&gt;
+ *         &lt;customer number="123"&gt;Joe&lt;/customer&gt;
+ *     &lt;/header&gt;
+ *     &lt;order-items /&gt;
+ * &lt;/order&gt;
+ * </pre>
+ * Added to this is the fact that there will only ever be 0 or 1 "order-item" models in memory
+ * at any given time, with each new "order-item" model overwriting the previous "order-item" model.
+ * All this ensures that the memory footprint is kept to a minimum.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */

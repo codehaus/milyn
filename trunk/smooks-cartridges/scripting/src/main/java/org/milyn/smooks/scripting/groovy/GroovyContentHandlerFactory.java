@@ -25,12 +25,15 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.DomModelCreator;
 import org.milyn.delivery.Visitor;
+import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.FreeMarkerTemplate;
 import org.milyn.xml.DomUtils;
+import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -56,14 +59,33 @@ import java.util.Map;
  *      under a variable name equal to the element name, but only if the element name contains alpha-numeric
  *      characters only.</li>
  *  <li><b>SAX or DOM</b>: When writing the script, you need to be consious of which filter type is being used i.e. SAX or DOM.
- *      If using the DOM filter, the element will be of type {@link org.w3c.dom.Element}.  If using the SAX filter, the element
- *      will be of type {@link org.milyn.delivery.sax.SAXElement}.  So obviously, you cannot perform DOM based manipulations
- *      when the SAX filter is being used (i.e. on {@link org.milyn.delivery.sax.SAXElement}) and visa versa.</li>
+ *      If using the DOM filter, the element will be of type {@link Element}.  If using the SAX filter, the element
+ *      will be of type {@link SAXElement}.  So obviously, you cannot perform DOM based manipulations
+ *      when the SAX filter is being used (i.e. on {@link SAXElement}) and visa versa.</li>
  *  <li><b>Execute Before/After</b>: By default, the script is executed on the visitAfter event.  You can direct it to be
  *      executed on the visitBefore by setting the "executeBefore" attribute to "true".</li>
  *  <li><b>Comment/CDATA Script Wrapping</b>: If the script contains special XML characters, it can be wrapped in an XML
  *       Comment or CDATA section.  See example below.</li>
  * </ul>
+ *
+ * <h2>Mixing SAX and DOM Models</h2>
+ * When using the SAX filter, Groovy scripts can take advantage of the {@link DomModelCreator}.  <b>This is only
+ * the case when the script is applied on the visitAfter event of the targeted element</b> (i.e. executeBefore="false",
+ * which is the default).  If executeBefore is set to "true", the {@link DomModelCreator} will not be utilized.
+ * <p/>
+ * What this means is that you can use DOM utilities to process the targeted message fragment.  The "element"
+ * received by the Groovy script will be a DOM {@link Element}.  This makes Groovy scripting via the SAX filter
+ * a lot easier, while at the same time maintaining the ability to process huge messages in a streamed fashion.
+ * <p/>
+ * <b>Notes</b>:
+ * <ol>
+ *  <li>Only available in default mode i.e. when executeBefore equals "false".  If executeBefore is configured
+ *      "true", this facility is not available and the Groovy script will only have access to the element
+ *      as a {@link SAXElement}.</li>
+ *  <li>The DOM fragment must be explicitly writen to the result using "<b>writeFragment</b>".  See example below.</li>
+ *  <li>There is an obvious performance overhead incurred using this facility (DOM construction).  That said, it can still
+ *      be used to process huge messages because of how the {@link DomModelCreator} works for SAX.</li>
+ * </ol>
  *
  * <h2>Example Configuration</h2>
  * Take an XML message such as:
@@ -92,6 +114,14 @@ import java.util.Map;
  * &lt;?xml version="1.0"?&gt;
  * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:g="<a href="http://www.milyn.org/xsd/smooks/groovy-1.1.xsd">http://www.milyn.org/xsd/smooks/groovy-1.1.xsd</a>"&gt;
  *
+ *     &lt;!--
+ *     Use the SAX filter.  Note how we can still process the fragment as a DOM, and write it out
+ *     to the result stream after processing.
+ *     --&gt;
+ *     &lt;params&gt;
+ *         &lt;param name="stream.filter.type"&gt;SAX&lt;/param&gt;
+ *     &lt;/params&gt;
+ *
  *     &lt;g:groovy executeOnElement="category"&gt;
  *         &lt;g:script&gt;
  *             &lt;!--
@@ -106,6 +136,10 @@ import java.util.Map;
  *                     }
  *                 }
  *             }
+ *
+ *             // Must explicitly write the fragment to the result stream when
+ *             // using the SAX filter. 
+ *             writeFragment(category); 
  *             --&gt;
  *         &lt;/g:script&gt;
  *     &lt;/g:groovy&gt;
@@ -178,6 +212,10 @@ public class GroovyContentHandlerFactory implements ContentHandlerFactory {
         templateVars.put("visitorScript", groovyScript);
 
         String templatedClass = classTemplate.apply(templateVars);
+
+        if(groovyScript.indexOf("writeFragment") != -1) {
+            configuration.setParameter("writeFragment", "true");
+        }
 
         try {
             Class groovyClass = groovyClassLoader.parseClass(templatedClass);
