@@ -13,9 +13,10 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.hibernate;
+package org.milyn.persistence.dao.adapter.jpa;
 
-import org.hibernate.Session;
+import javax.persistence.EntityManager;
+
 import org.milyn.assertion.AssertArgument;
 import org.milyn.persistence.dao.DaoRegister;
 
@@ -24,31 +25,31 @@ import org.milyn.persistence.dao.DaoRegister;
  * @author maurice_zeijen
  *
  */
-public class SessionRegister implements DaoRegister<SessionDaoAdapter> {
+public class EntityManagerRegister implements DaoRegister<EntityManagerDaoAdapter> {
 
-	private final Session session;
+	private final EntityManager entityManager;
 
 	/**
 	 *
 	 */
-	public SessionRegister(final Session session) {
-		AssertArgument.isNotNull(session, "session");
+	public EntityManagerRegister(final EntityManager entityManager) {
+		AssertArgument.isNotNull(entityManager, "entityManager");
 
-		this.session = session;
+		this.entityManager = entityManager;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#getDAO(java.lang.String)
 	 */
-	public SessionDaoAdapter getDAO(final String name) {
+	public EntityManagerDaoAdapter getDAO(final String name) {
 
-		return new SessionDaoAdapter(session);
+		return new EntityManagerDaoAdapter(entityManager);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final SessionDaoAdapter dao) {
+	public void returnDAO(final EntityManagerDaoAdapter dao) {
 	}
 
 }

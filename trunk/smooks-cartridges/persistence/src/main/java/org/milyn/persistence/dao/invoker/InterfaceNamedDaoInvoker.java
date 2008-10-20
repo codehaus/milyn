@@ -56,6 +56,9 @@ public class InterfaceNamedDaoInvoker implements NamedDaoInvoker  {
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#flush()
 	 */
 	public void flush(String name) {
+		if(flushableDAO == null) {
+			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + NamedFlushable.class.getName() + "] interface and there for can't flush the DAO.");
+		}
 		flushableDAO.flush(name);
 	}
 
