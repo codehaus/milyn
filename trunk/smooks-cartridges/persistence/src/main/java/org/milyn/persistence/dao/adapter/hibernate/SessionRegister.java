@@ -40,7 +40,7 @@ public class SessionRegister implements DaoRegister<SessionDaoAdapter> {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#getDAO(java.lang.String)
 	 */
-	public SessionDaoAdapter getDAO(final String name) {
+	public SessionDaoAdapter getDao(final String name) {
 
 		return new SessionDaoAdapter(session);
 	}
@@ -48,7 +48,7 @@ public class SessionRegister implements DaoRegister<SessionDaoAdapter> {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final SessionDaoAdapter dao) {
+	public void returnDao(final SessionDaoAdapter dao) {
 	}
 
 }

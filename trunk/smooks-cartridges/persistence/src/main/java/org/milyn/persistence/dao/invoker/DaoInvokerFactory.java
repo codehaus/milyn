@@ -21,7 +21,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.BoundAttributeStore;
 import org.milyn.persistence.dao.Dao;
-import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfoRepository;
+import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfoFactory;
 
 /**
  * @author maurice_zeijen
@@ -53,9 +53,9 @@ public class DaoInvokerFactory {
 
 			if(annotatedClass.getAnnotation(org.milyn.persistence.dao.annotation.Dao.class) != null) {
 
-				final AnnotatedDaoRuntimeInfoRepository repository = getAnnotatedDAORuntimeInfoRepository(applicationContext);
+				final AnnotatedDaoRuntimeInfoFactory repository = getAnnotatedDAORuntimeInfoRepository(applicationContext);
 
-				return new AnnotatedDaoInvoker(dao, repository.get(dao.getClass()));
+				return new AnnotatedDaoInvoker(dao, repository.create(dao.getClass()));
 
 			} else {
 				throw new IllegalArgumentException("The DAO argument doesn't implement the [" + Dao.class.getName() + "] interface " +
@@ -68,11 +68,11 @@ public class DaoInvokerFactory {
 	 * @param attributestore
 	 * @return
 	 */
-	private AnnotatedDaoRuntimeInfoRepository getAnnotatedDAORuntimeInfoRepository(final BoundAttributeStore attributestore) {
-		AnnotatedDaoRuntimeInfoRepository repository = (AnnotatedDaoRuntimeInfoRepository) attributestore.getAttribute(REPOSITORY_KEY);
+	private AnnotatedDaoRuntimeInfoFactory getAnnotatedDAORuntimeInfoRepository(final BoundAttributeStore attributestore) {
+		AnnotatedDaoRuntimeInfoFactory repository = (AnnotatedDaoRuntimeInfoFactory) attributestore.getAttribute(REPOSITORY_KEY);
 
 		if(repository == null) {
-			repository = new AnnotatedDaoRuntimeInfoRepository();
+			repository = new AnnotatedDaoRuntimeInfoFactory();
 
 			attributestore.setAttribute(REPOSITORY_KEY, repository);
 		}

@@ -47,8 +47,8 @@ public class MapRegisterTest {
 		MapRegister<Object> mapRegister = new MapRegister<Object>(hashMap);
 
 		assertEquals(2, mapRegister.size());
-		assertSame(hashMap.get("1"), mapRegister.getDAO("1"));
-		assertSame(hashMap.get("2"), mapRegister.getDAO("2"));
+		assertSame(hashMap.get("1"), mapRegister.getDao("1"));
+		assertSame(hashMap.get("2"), mapRegister.getDao("2"));
 
 		Map<String, Object> linkedHashMap = new LinkedHashMap<String, Object>();
 		linkedHashMap.put("1", new Object());
@@ -57,8 +57,8 @@ public class MapRegisterTest {
 		mapRegister = new MapRegister<Object>(linkedHashMap);
 
 		assertEquals(2, mapRegister.size());
-		assertSame(linkedHashMap.get("1"), mapRegister.getDAO("1"));
-		assertSame(linkedHashMap.get("2"), mapRegister.getDAO("2"));
+		assertSame(linkedHashMap.get("1"), mapRegister.getDao("1"));
+		assertSame(linkedHashMap.get("2"), mapRegister.getDao("2"));
 	}
 
 	@Test(groups = TestGroup.UNIT)
@@ -69,7 +69,7 @@ public class MapRegisterTest {
 		mapRegister.put("1", bean);
 
 		assertEquals(1, mapRegister.size());
-		assertSame(bean, mapRegister.getDAO("1"));
+		assertSame(bean, mapRegister.getDao("1"));
 	}
 
 	@Test(groups = TestGroup.UNIT)
@@ -171,8 +171,8 @@ public class MapRegisterTest {
 		mapRegister.putAll(hashMap);
 
 		assertEquals(2, mapRegister.size());
-		assertSame(hashMap.get("1"), mapRegister.getDAO("1"));
-		assertSame(hashMap.get("2"), mapRegister.getDAO("2"));
+		assertSame(hashMap.get("1"), mapRegister.getDao("1"));
+		assertSame(hashMap.get("2"), mapRegister.getDao("2"));
 
 	}
 

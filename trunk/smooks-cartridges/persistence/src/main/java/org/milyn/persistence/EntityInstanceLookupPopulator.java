@@ -251,7 +251,7 @@ public class EntityInstanceLookupPopulator implements DOMElementVisitor, SAXElem
 
     	Object daoObj = null;
     	try {
-    		daoObj = emr.getDAO(daoName);
+    		daoObj = emr.getDao(daoName);
 
     		final DaoInvoker daoInvocation = DaoInvokerFactory.getInstance().create(daoObj, appContext);
 
@@ -259,7 +259,7 @@ public class EntityInstanceLookupPopulator implements DOMElementVisitor, SAXElem
 
 	    } finally {
 			if(daoObj != null) {
-				emr.returnDAO(daoObj);
+				emr.returnDao(daoObj);
 			}
 		}
     }
