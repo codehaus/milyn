@@ -58,7 +58,7 @@ public class AnnotatedDaoRuntimeInfo {
 	 *
 	 * @param daoClass
 	 */
-	public AnnotatedDaoRuntimeInfo(final Class<?> daoClass) {
+	AnnotatedDaoRuntimeInfo(final Class<?> daoClass) {
 		AssertArgument.isNotNull(daoClass, "daoClass");
 
 		this.daoClass = daoClass;

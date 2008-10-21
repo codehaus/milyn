@@ -17,6 +17,7 @@ package org.milyn.persistence.dao.adapter.hibernate;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -39,6 +40,8 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 	 *
 	 */
 	public SessionDaoAdapter(final Session session) {
+		AssertArgument.isNotNull(session, "session");
+
 		this.session = session;
 	}
 
@@ -101,9 +104,9 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 
 		final Query query = session.getNamedQuery(name);
 
-		for(final String key : parameters.keySet()) {
+		for(Entry<String, ?> entry : parameters.entrySet()) {
 
-			query.setParameter(key, parameters.get(key));
+			query.setParameter(entry.getKey(), entry.getValue());
 
 		}
 		return query.list();
@@ -150,12 +153,19 @@ public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFind
 
 		final Query sesQuery = session.createQuery(query);
 
-		for(final String key : parameters.keySet()) {
+		for(Entry<String, ?> entry : parameters.entrySet()) {
 
-			sesQuery.setParameter(key, parameters.get(key));
+			sesQuery.setParameter(entry.getKey(), entry.getValue());
 
 		}
 		return sesQuery.list();
+	}
+
+	/**
+	 * @return the session
+	 */
+	public Session getSession() {
+		return session;
 	}
 
 }

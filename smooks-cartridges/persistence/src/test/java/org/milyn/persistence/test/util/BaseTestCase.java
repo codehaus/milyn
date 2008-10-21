@@ -24,7 +24,7 @@ import org.testng.annotations.BeforeMethod;
  */
 public abstract class BaseTestCase {
 
-	@BeforeMethod
+	@BeforeMethod(alwaysRun=true)
 	public void beforeMethod() {
 		MockitoAnnotations.initMocks(this);
 	}

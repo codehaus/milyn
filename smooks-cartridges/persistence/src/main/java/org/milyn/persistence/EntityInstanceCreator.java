@@ -167,7 +167,7 @@ public class EntityInstanceCreator implements DOMElementVisitor, SAXElementVisit
 
 		Object daoObj = null;
 		try {
-			daoObj = emr.getDAO(daoName);
+			daoObj = emr.getDao(daoName);
 
 			if(daoObj == null) {
 				throw new IllegalStateException("The DAO registery returned null while getting the DAO [" + daoName + "]");
@@ -201,7 +201,7 @@ public class EntityInstanceCreator implements DOMElementVisitor, SAXElementVisit
 
 		} finally {
 			if(daoObj != null) {
-				emr.returnDAO(daoObj);
+				emr.returnDao(daoObj);
 			}
 		}
 		return beanResult;

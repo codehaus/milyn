@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.milyn.persistence.NoMethodWithAnnotationFound;
 import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfo;
+import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfoFactory;
 import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.dao.FullAnnotatedDao;
 import org.milyn.persistence.test.dao.MinimumAnnotatedDao;
@@ -43,9 +44,11 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	@Mock
 	MinimumAnnotatedDao minimumDao;
 
-	AnnotatedDaoRuntimeInfo fullDaoRuntimeInfo = new AnnotatedDaoRuntimeInfo(FullAnnotatedDao.class);
+	AnnotatedDaoRuntimeInfoFactory runtimeInfoFactory = new AnnotatedDaoRuntimeInfoFactory();
 
-	AnnotatedDaoRuntimeInfo minimumDaoRuntimeInfo = new AnnotatedDaoRuntimeInfo(MinimumAnnotatedDao.class);
+	AnnotatedDaoRuntimeInfo fullDaoRuntimeInfo = runtimeInfoFactory.create(FullAnnotatedDao.class);
+
+	AnnotatedDaoRuntimeInfo minimumDaoRuntimeInfo = runtimeInfoFactory.create(MinimumAnnotatedDao.class);
 
 	@Test(groups = TestGroup.UNIT)
 	public void test_persist() {

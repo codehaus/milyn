@@ -119,7 +119,7 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Finder<Object>, Que
 	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection findByQuery(final String query, final Object[] parameters) {
+	public Collection<Object> findByQuery(final String query, final Object[] parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -143,7 +143,7 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Finder<Object>, Que
 	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection findByQuery(final String query, final Map<String, ?> parameters) {
+	public Collection<Object> findByQuery(final String query, final Map<String, ?> parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -160,6 +160,13 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Finder<Object>, Que
 
 		}
 		return emQuery.getResultList();
+	}
+
+	/**
+	 * @return the entityManager
+	 */
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 
 

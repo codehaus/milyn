@@ -81,14 +81,14 @@ public class MapRegister<T> implements DaoRegister<T> {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#getDAO(java.lang.String)
 	 */
-	public T getDAO(final String key) {
+	public T getDao(final String key) {
 		return map.get(key);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final T dao) {
+	public void returnDao(final T dao) {
 	}
 
 	/* (non-Javadoc)

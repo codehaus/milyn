@@ -30,7 +30,7 @@ public interface DaoRegister<T> {
 	 * @param key The key of the DAO
 	 * @return The DAO
 	 */
-	T getDAO(String key);
+	T getDao(String key);
 
 	/**
 	 * Returns the DAO to the registery. This is
@@ -41,6 +41,6 @@ public interface DaoRegister<T> {
 	 *
 	 * @param dao
 	 */
-	void returnDAO(T dao);
+	void returnDao(T dao);
 
 }

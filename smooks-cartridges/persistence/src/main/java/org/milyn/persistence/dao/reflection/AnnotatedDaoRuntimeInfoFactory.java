@@ -16,17 +16,16 @@
 package org.milyn.persistence.dao.reflection;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author maurice_zeijen
  *
  */
-public class AnnotatedDaoRuntimeInfoRepository {
+public class AnnotatedDaoRuntimeInfoFactory {
 
 	private final HashMap<String, AnnotatedDaoRuntimeInfo> repository = new HashMap<String, AnnotatedDaoRuntimeInfo>();
 
-	public AnnotatedDaoRuntimeInfo get(final Class<?> daoClass) {
+	public AnnotatedDaoRuntimeInfo create(final Class<?> daoClass) {
 
 		final String daoClassName = daoClass.getName();
 
@@ -43,28 +42,5 @@ public class AnnotatedDaoRuntimeInfoRepository {
 		return runtimeInfo;
 	}
 
-	public boolean contains(final Class<?> daoClass) {
-
-		final String daoClassName = daoClass.getName();
-
-		return repository.containsKey(daoClassName);
-	}
-
-	public boolean contains(final AnnotatedDaoRuntimeInfo runtimeInfo) {
-		return repository.containsValue(runtimeInfo);
-	}
-
-
-	/**
-	 * Returns a shallow clone of the repository
-	 *
-	 * @return a shallow clone of the repository
-	 */
-	@SuppressWarnings("unchecked")
-	public Map<String, AnnotatedDaoRuntimeInfo> getRepository() {
-
-		return (Map<String, AnnotatedDaoRuntimeInfo>) repository.clone();
-
-	}
 
 }

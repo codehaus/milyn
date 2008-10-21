@@ -41,7 +41,7 @@ public class EntityManagerRegister implements DaoRegister<EntityManagerDaoAdapte
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#getDAO(java.lang.String)
 	 */
-	public EntityManagerDaoAdapter getDAO(final String name) {
+	public EntityManagerDaoAdapter getDao(final String name) {
 
 		return new EntityManagerDaoAdapter(entityManager);
 	}
@@ -49,7 +49,7 @@ public class EntityManagerRegister implements DaoRegister<EntityManagerDaoAdapte
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAORegistery#returnDAO(java.lang.Object)
 	 */
-	public void returnDAO(final EntityManagerDaoAdapter dao) {
+	public void returnDao(final EntityManagerDaoAdapter dao) {
 	}
 
 }
