@@ -1,50 +1,37 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list
+	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+	xmlns:jms="http://www.milyn.org/xsd/smooks/jms-routing-1.1.xsd">
 
     <!--
     Filter the message using the SAX Filter (i.e. not DOM, so no
     intermediate DOM, so we can process huge messages...
     -->
-    <resource-config selector="global-parameters">
+    <params>
         <param name="stream.filter.type">SAX</param>
+    </params>
+
+    <resource-config selector="order,order-item">
+        <resource>org.milyn.delivery.DomModelCreator</resource>
     </resource-config>
 
-    <resource-config selector="order">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">order</param>
-        <param name="beanClass">java.util.Hashtable</param>
-        <param name="bindings">
-            <binding property="orderId" type="Integer" selector="order/@id"/>
-            <binding property="customerNumber" type="Long" selector="header/customer/@number"/>
-            <binding property="customerName" selector="header/customer"/>
-            <binding property="orderItem" selector="${orderItem}"/>
-        </param>
-    </resource-config>
-
-    <resource-config selector="order-item">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">orderItem</param>
-        <param name="beanClass">java.util.Hashtable</param>
-        <param name="bindings">
-            <binding property="itemId" type="Integer" selector="order-item/@id"/>
-            <binding property="productId" type="Long" selector="order-item/product"/>
-            <binding property="quantity" type="Integer" selector="order-item/quantity"/>
-            <binding property="price" type="Double" selector="order-item/price"/>
-        </param>
-    </resource-config>
+	<jms:router	routeOnElement="order-item"	beanId="orderItem_xml" destination="smooks.exampleQueue">
+		<jms:message>
+			<!-- Need to use special FreeMarker variable ".vars" -->
+			<jms:correlationIdPattern>${order.@id}-${.vars["order-item"].@id}</jms:correlationIdPattern>
+		</jms:message>
+		<jms:highWaterMark mark="3"/>
+	</jms:router>
 
     <resource-config selector="order-item">
-        <resource>org.milyn.routing.jms.JMSRouter</resource>
-        <param name="executeBefore">false</param>
-        <param name="beanId">orderItem_xml</param>
-        <param name="destinationName">smooks.exampleQueue</param>
-        <param name="highWaterMark">3</param>
-        <param name="correlationIdPattern">${order.orderId}-${order.orderItem.itemId}</param>        
-    </resource-config>
-
-    <resource-config selector="order-item">
-        <resource>target/classes/orderitem-split.ftl</resource>
+        <!--
+            Note in the template that we need to use the special FreeMarker variable ".vars"
+            because of the hyphenated variable names ("order-item"). See http://freemarker.org/docs/ref_specvar.html.
+        -->
+        <resource>/orderitem-split.ftl</resource>
         <param name="action">bindto</param>
+        <!-- The following config binds the templating result into the bean context, from where
+             it can be accessed by the JMSRouter (configured above). -->
         <param name="bindId">orderItem_xml</param>
     </resource-config>
 

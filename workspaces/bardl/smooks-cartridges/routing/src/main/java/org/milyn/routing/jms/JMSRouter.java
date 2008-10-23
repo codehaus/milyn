@@ -48,11 +48,11 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
 import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
 import org.milyn.routing.jms.message.creationstrategies.TextMessageCreationStrategy;
+import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.util.FreeMarkerTemplate;
 import org.w3c.dom.Element;
 
@@ -68,11 +68,11 @@ import org.w3c.dom.Element;
  * &lt;resource-config selector="orderItems"&gt;
  *    &lt;resource&gt;org.milyn.routing.jms.JMSRouter&lt;/resource&gt;
  *    &lt;param name="beanId">beanId&lt;/param&gt;
- *    &lt;param name="destination"&gt;/queue/smooksRouterQueue&lt;/param&gt;
+ *    &lt;param name="destinationName"&gt;/queue/smooksRouterQueue&lt;/param&gt;
  * &lt;/resource-config&gt;
  *	....
  * Optional parameters:
- *    &lt;param name="executeBefore"&gt;true&lt;/param&gt;  
+ *    &lt;param name="executeBefore"&gt;true&lt;/param&gt;
  *    &lt;param name="jndiContextFactory"&gt;ConnectionFactory&lt;/param&gt;
  *    &lt;param name="jndiProviderUrl"&gt;jnp://localhost:1099&lt;/param&gt;
  *    &lt;param name="jndiNamingFactory"&gt;org.jboss.naming:java.naming.factory.url.pkgs=org.jnp.interfaces&lt;/param&gt;
@@ -86,9 +86,9 @@ import org.w3c.dom.Element;
  *    &lt;param name="transacted"&gt;false&lt;/param&gt;
  *    &lt;param name="correlationIdPattern"&gt;orderitem-${order.orderId}-${order.orderItem.itemId}&lt;/param&gt;
  *    &lt;param name="messageType"&gt;ObjectMessage&lt;/param&gt;
- *    &lt;param name="highWaterMark"&gt;50&lt;/param&gt; 
- *    &lt;param name="highWaterMarkTimeout"&gt;5000&lt;/param&gt; 
- *    &lt;param name="highWaterMarkPollFrequency"&gt;500&lt;/param&gt; 
+ *    &lt;param name="highWaterMark"&gt;50&lt;/param&gt;
+ *    &lt;param name="highWaterMarkTimeout"&gt;5000&lt;/param&gt;
+ *    &lt;param name="highWaterMarkPollFrequency"&gt;500&lt;/param&gt;
  * </pre>
  * Description of configuration properties:
  * <ul>
@@ -100,18 +100,18 @@ import org.w3c.dom.Element;
  * <li><i>priority</i>: the JMS Priority to be used.
  * <li><i>timeToLive</i>: the JMS Time-To-Live to be used.
  * <li><i>securityPrincipal</i>: security principal use when creating the JMS connection.
- * <li><i>securityCredential</i>: the security credentials to use when creating the JMS connection. 
+ * <li><i>securityCredential</i>: the security credentials to use when creating the JMS connection.
  * <li><i>acknowledgeMode</i>: the acknowledge mode to use. One of 'AUTO_ACKNOWLEDGE'(default), 'CLIENT_ACKNOWLEDGE', 'DUPS_OK_ACKNOWLEDGE'.
  * <li><i>transacted</i>: determines if the session should be transacted. Defaults to 'false'.
  * <li><i>correlationIdPattern</i>: JMS Correlation pattern that will be used for the outgoing message. Supports templating.
- * <li><i>messageType</i>: type of JMS Message that should be sent. 'TextMessage'(default) or 'ObjectMessage'.
+ * <li><i>messageType</i>: type of JMS Message that should be sent. 'TextMessage'(default), 'ObjectMessage' or 'MapMessage'.
  * <li><i>highWaterMark</i>: max number of messages that can be sitting in the JMS Destination at any any time. Default is 200.
  * <li><i>highWaterMarkTimeout</i>: number of ms to wait for the system to process JMS Messages from the JMS destination
  * 		so that the number of JMS Messages drops below the highWaterMark. Default is 60000 ms.
  * <li><i>highWaterMarkPollFrequency</i>: number of ms to wait between checks on the High Water Mark, while
  *      waiting for it to drop. Default is 1000 ms.
  * </ul>
- * 
+ *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  * @since 1.0
  *
@@ -225,30 +225,35 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
     @Initialize
     public void initialize() throws SmooksConfigurationException, JMSException {
     	Context context = null;
-    	try
+        boolean initialized = false;
+
+        try
 		{
+            if(correlationIdPattern != null) {
+                correlationIdTemplate = new FreeMarkerTemplate(correlationIdPattern);
+            }
+
 	    	context = new InitialContext();
 			destination = (Destination) context.lookup( jmsProperties.getDestinationName() );
 			msgProducer = createMessageProducer( destination, context );
 			setMessageProducerProperties( );
-		}
+
+            initialized = true;
+        }
     	catch (NamingException e)
 		{
     		final String errorMsg = "NamingException while trying to lookup [" + jmsProperties.getDestinationName() + "]";
-            releaseJMSResources();
     		logger.error( errorMsg, e );
     		throw new SmooksConfigurationException( errorMsg, e );
-		} catch (JMSException e) {
-            releaseJMSResources();
         } finally {
     		if ( context != null )
     		{
 				try { context.close(); } catch (NamingException e) { logger.warn( "NamingException while trying to close initial Context"); }
     		}
-    	}
 
-        if(correlationIdPattern != null) {
-            correlationIdTemplate = new FreeMarkerTemplate(correlationIdPattern);
+            if(!initialized) {
+                releaseJMSResources();
+            }
         }
     }
 
@@ -474,7 +479,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 	}
 
     private void setCorrelationID(ExecutionContext execContext, Message message) {
-        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(execContext).getBeanMap();
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(execContext);
         String correlationId = correlationIdTemplate.apply(beanMap);
 
         try {

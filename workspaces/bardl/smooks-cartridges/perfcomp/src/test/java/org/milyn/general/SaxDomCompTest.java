@@ -15,17 +15,19 @@
 */
 package org.milyn.general;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import junit.framework.TestCase;
+
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.NullWriter;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -38,7 +40,7 @@ public class SaxDomCompTest extends TestCase {
 
     public void test_sax_01() throws IOException, SAXException, InterruptedException {
         runTransform("smooks-sax.xml");
-    }    
+    }
 
     public void test_sax_02() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-sax.xml"));
@@ -46,7 +48,7 @@ public class SaxDomCompTest extends TestCase {
 
         runTransform(smooks, writer);
 
-        System.out.println(writer.toString());
+        //System.out.println(writer.toString());
     }
 
     private void runTransform(String config) throws IOException, SAXException, InterruptedException {
@@ -61,7 +63,7 @@ public class SaxDomCompTest extends TestCase {
         for(int i = 0; i < 1; i++) {
             runTransform(smooks, writer);
         }
-        System.out.println("Took: " + (System.currentTimeMillis() - start) + "ms");
+        System.out.println(config + " took: " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void runTransform(Smooks smooks, Writer writer) throws InterruptedException {

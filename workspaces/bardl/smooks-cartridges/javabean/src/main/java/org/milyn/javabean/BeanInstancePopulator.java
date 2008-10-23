@@ -24,10 +24,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
@@ -42,12 +42,14 @@ import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.decoders.BooleanDecoder;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.xml.DomUtils;
@@ -71,6 +73,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);
 
+    private static String EC_DEFAULT_EXTEND_LIFECYCLE = BeanInstancePopulator.class + "#" + BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE;
+
     private String id;
 
     @ConfigParam(name="beanId")
@@ -80,7 +84,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String wireBeanIdName;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private MVELExpressionEvaluator expression;    
+    private MVELExpressionEvaluator expression;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -96,6 +100,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     @ConfigParam(name="default", defaultVal = AnnotationConstants.NULL_STRING)
     private String defaultVal;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private Boolean extendLifecycle;
 
     @AppContext
     private ApplicationContext appContext;
@@ -131,9 +138,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
         beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
-        BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
+        BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
 
-        beanId = beanIdList.getBeanId(beanIdName);
+        beanId = beanIdRegister.getBeanId(beanIdName);
 
         if (setterMethod == null && property == null ) {
         	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
@@ -181,7 +188,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        if(beanWiring) {
+    	checkBeanExists(executionContext);
+
+    	if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
@@ -190,12 +199,19 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+    	checkBeanExists(executionContext);
+
     	if(!beanWiring && !isAttribute) {
             bindDomDataValue(element, executionContext);
+    	}
+    	if(beanWiring) {
+    		extendLifecycle(executionContext);
     	}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+    	checkBeanExists(executionContext);
+
         if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(!beanWiring && !isAttribute) {
@@ -216,8 +232,21 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+    	checkBeanExists(executionContext);
+
     	if(!beanWiring && !isAttribute) {
             bindSaxDataValue(element, executionContext);
+    	}
+    	if(beanWiring) {
+    		extendLifecycle(executionContext);
+    	}
+    }
+
+    private void checkBeanExists(ExecutionContext executionContext) {
+
+    	final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+    	if(beanRepository.getBean(beanId) == null) {
+    		throw new SmooksConfigurationException("Can't populate object '"  + beanRuntimeInfo.getPopulateType().getName() + "' with bean id '" + beanId + "' because there is no object in the bean context under that bean id.");
     	}
     }
 
@@ -225,7 +254,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         String dataString;
 
         if (isAttribute) {
-            dataString = element.getAttribute(valueAttributeName);
+            dataString = DomUtils.getAttributeValue(element, valueAttributeName);
         } else {
             dataString = DomUtils.getAllText(element, false);
         }
@@ -277,12 +306,16 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         }
     }
 
-
     private BeanId getWireBeanId() {
     	if(wireBeanId == null) {
-    		wireBeanId = beanRepositoryManager.getBeanIdList().getBeanId(wireBeanIdName);
+    		wireBeanId = beanRepositoryManager.getBeanIdRegister().getBeanId(wireBeanIdName);
     	}
-    	return wireBeanId;
+
+		if(wireBeanId == null) {
+            wireBeanId = beanRepositoryManager.getBeanIdRegister().register(wireBeanIdName);
+        }
+
+        return wireBeanId;
     }
 
     private void bindBeanValue(final ExecutionContext executionContext) {
@@ -300,11 +333,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
                 public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
 
-                    Classification wiredBeanType = getWiredBeanRuntimeInfo().getClassification();
+                    BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
 
                     beanRepository.associateLifecycles(beanId , targetBeanId);
 
-                    if(wiredBeanType == Classification.ARRAY_COLLECTION ) {
+                    if(wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION ) {
 
                         // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
                         // can then set this array
@@ -327,8 +360,51 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         }
 	}
 
+    /**
+     * Checks if we need to stop listening for the bean begin lifecycle.
+     * If we need to stop listening then it will remove the lifecycle observer.
+     *
+     * @param executionContext
+     */
+    private void extendLifecycle(ExecutionContext executionContext) {
+
+    	Boolean doExtendLifecycle = extendLifecycle;
+    	if(doExtendLifecycle == null) {
+    		doExtendLifecycle = isDefaultExtendLifecycle(executionContext);
+        }
+    	if(!doExtendLifecycle) {
+    		final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+    		beanRepository.removeBeanLifecycleObserver(getWireBeanId(), BeanLifecycle.BEGIN, getId());
+    	}
+    }
+
+    /**
+     * This method efficiently returns the global configuration {@link BeanPopulator.GLOBAL_WIRE_AFTER_ELEMENT}.
+     *
+     * @param executionContext
+     * @return the global parameter for wire after element
+     */
+    private boolean isDefaultExtendLifecycle(ExecutionContext executionContext) {
+
+    	//Look in the execution context to see if we can find the property there
+    	Boolean defaultExtendLifecycle = (Boolean) executionContext.getAttribute(EC_DEFAULT_EXTEND_LIFECYCLE);
+
+    	//if we can't find it there then we need to search the global-parameters and add the result
+    	//to the execution context
+    	if(defaultExtendLifecycle == null) {
+
+    		String wireAfterElementStr = executionContext.getConfigParameter(BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE, "false");
+
+    		defaultExtendLifecycle = Boolean.parseBoolean(wireAfterElementStr.trim());
+
+    		executionContext.setAttribute(EC_DEFAULT_EXTEND_LIFECYCLE, defaultExtendLifecycle);
+    	}
+    	return defaultExtendLifecycle;
+    }
+
     private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
-        Map beanMap = BeanAccessor.getBeanMap(executionContext);
+        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
         Object dataObject = expression.getValue(beanMap);
 
         if(dataObject instanceof String) {

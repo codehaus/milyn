@@ -1,12 +1,13 @@
 About This Example:
 ===================
-    This example illustrates how to perform a model based transform using the
+    This example illustrates how to perform a model driven transform using the
     Smooks Javabean and Templating Cartridges.  FreeMarker is used to perform
     the templating.
 
     The example takes a Shipping History message, generates a "model" of that message
-    using the Javabean BeanPopulator class and then generates the required output
-    from the model, using the FreeMarker templating engine.
+    using the <jb:bindings> configs of the Javabean Cartridge.  The populated bean
+    context is then used to generate the required output using the FreeMarker templating
+    engine.
 
     One of the more interesting parts of the transformation is where the <trackingNumbers>
     need to be broken out into seperate <trackingNumber> records.  These records are all supplied in

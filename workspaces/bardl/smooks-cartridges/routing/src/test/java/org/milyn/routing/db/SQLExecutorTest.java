@@ -27,7 +27,7 @@ import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.payload.StringSource;
@@ -41,26 +41,35 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Test ( groups = "unit" )
-public class SQLExecutorTest 
+public class SQLExecutorTest
 {
     private HsqlServer hsqlServer;
 
-    @BeforeClass 
+    @BeforeClass
 	public void setUp() throws Exception {
         hsqlServer = new HsqlServer(9992);
         hsqlServer.execScript(getClass().getResourceAsStream("test.script"));
     }
-    
+
 
     @AfterClass
 	public void tearDown() throws Exception {
         hsqlServer.stop();
     }
 
-    @Test 
+    @Test
+    public void test_appContextTime() throws Exception {
+    	test_appContextTimeout("smooks-config.xml");
+    }
+
+    @Test
+    public void test_appContextTimeExtendedConfig() throws Exception {
+    	test_appContextTimeout("smooks-extended-config.xml");
+    }
+
     @SuppressWarnings("unchecked")
-	public void test_appContextTimeout() throws IOException, SAXException, InterruptedException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
+	private void test_appContextTimeout(String config) throws IOException, SAXException, InterruptedException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
         ExecutionContext execContext = smooks.createExecutionContext();
         BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
@@ -93,7 +102,7 @@ public class SQLExecutorTest
         assertTrue(orders32 == orders42); // order42 should come from the app context cache
     }
 
-    @Test 
+    @Test
     @SuppressWarnings("unchecked")
 	public void test_ResultsetRowSelector_01() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
@@ -107,7 +116,7 @@ public class SQLExecutorTest
     }
 
 
-    @Test 
+    @Test
     @SuppressWarnings("unchecked")
 	public void test_ResultsetRowSelector_02() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-failed-select-01.xml"));
@@ -120,14 +129,14 @@ public class SQLExecutorTest
         assertEquals(null, myOrder);
     }
 
-    @Test 
+    @Test
     public void test_ResultsetRowSelector_03() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-failed-select-02.xml"));
         ExecutionContext execContext = smooks.createExecutionContext();
         BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
-        BeanIdList beanIdList =  BeanRepositoryManager.getInstance(execContext.getContext()).getBeanIdList();
+        BeanIdRegister beanIdRegister =  BeanRepositoryManager.getInstance(execContext.getContext()).getBeanIdRegister();
 
-        BeanId requiredOrderNumId = beanIdList.register("requiredOrderNum");
+        BeanId requiredOrderNumId = beanIdRegister.register("requiredOrderNum");
 
         beanRepository.addBean(requiredOrderNumId, 9999);
         try {

@@ -44,11 +44,14 @@ public class Main
         pause("Press 'enter' to split the Order message and route the Order Items (plus header info) to the JMS Queue...");
 
         Smooks smooks = new Smooks("smooks-config.xml");
-        ExecutionContext execContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext execContext = smooks.createExecutionContext();
 
-        execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-        smooks.filter(new ByteSource(messageIn), null, execContext);
-        smooks.close();
+            execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+            smooks.filter(new ByteSource(messageIn), null, execContext);
+        } finally {
+            smooks.close();
+        }
 
         System.out.println("\n\n");
     }

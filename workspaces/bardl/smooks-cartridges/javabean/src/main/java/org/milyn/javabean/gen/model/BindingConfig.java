@@ -46,7 +46,7 @@ public class BindingConfig {
 
     public String getSelector() {
         if(wireBeanId != null) {
-            return "${" + wireBeanId + "}";
+            return wireBeanId;
         }
 
         return "$TODO$";

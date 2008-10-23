@@ -34,7 +34,7 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
@@ -70,12 +70,12 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
     	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
-        BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
+        BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
 
-        beanId = beanIdList.getBeanId(STATVAR);
+        beanId = beanIdRegister.getBeanId(STATVAR);
 
         if(beanId == null) {
-        	beanId = beanRepositoryManager.getBeanIdList().register(STATVAR);
+        	beanId = beanRepositoryManager.getBeanIdRegister().register(STATVAR);
         }
 
 

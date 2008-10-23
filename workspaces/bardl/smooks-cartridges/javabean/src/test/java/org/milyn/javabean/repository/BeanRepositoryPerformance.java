@@ -81,12 +81,12 @@ public class BeanRepositoryPerformance {
 
 		executionContext = new MockExecutionContext();
 
-		BeanIdList beanIdList = getBeanIdList();
+		BeanIdRegister beanIdRegister = getBeanIdRegister();
 
 		ArrayList<BeanId> beanIds = new ArrayList<BeanId>();
 
 		for(int i = 0; i < beans; i++) {
-			beanIds.add(beanIdList.register(getBeanId(i)));
+			beanIds.add(beanIdRegister.register(getBeanId(i)));
 		}
 
 		Object bean = new Object();
@@ -118,10 +118,10 @@ public class BeanRepositoryPerformance {
 	/**
 	 *
 	 */
-	private BeanIdList getBeanIdList() {
+	private BeanIdRegister getBeanIdRegister() {
 		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
 
-        return beanRepositoryManager.getBeanIdList();
+        return beanRepositoryManager.getBeanIdRegister();
 	}
 
 	/**

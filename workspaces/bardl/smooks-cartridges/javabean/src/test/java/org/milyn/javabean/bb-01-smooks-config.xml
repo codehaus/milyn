@@ -23,8 +23,9 @@
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">bList</param>
         <param name="beanClass">java.util.ArrayList</param>
+        <param name="extendLifecycle">true</param>
         <param name="bindings">
-            <binding selector="${b}" />
+            <binding selector="${b}"/>
         </param>
     </resource-config>
 

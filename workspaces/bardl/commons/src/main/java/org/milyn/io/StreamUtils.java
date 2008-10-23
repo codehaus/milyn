@@ -50,6 +50,21 @@ public abstract class StreamUtils {
 		return bytesOut.toByteArray();
 	}
 
+    /**
+     * Read the supplied InputStream and return as a byte array.
+     *
+     * @param stream
+     *            The stream to read.
+     * @return A String containing the Stream data.
+     * @throws IOException
+     *             Exception reading from the stream.
+     */
+    public static String readStreamAsString(InputStream stream) throws IOException {
+        AssertArgument.isNotNull(stream, "stream");
+
+        return new String(readStream(stream));
+    }
+
     public static byte[] readFile(File file) throws IOException {
         AssertArgument.isNotNull(file, "file");
 
@@ -113,6 +128,44 @@ public abstract class StreamUtils {
         }
 
         return false;
+    }
+
+    /**
+     * Compares the 2 streams.
+     * <p/>
+     * Calls {@link #trimLines(java.io.Reader)} on each stream before comparing.
+     * @param s1 Stream 1.
+     * @param s2 Stream 2.
+     * @return True if the streams are equal not including leading and trailing
+     * whitespace on each line and blank lines, otherwise returns false.
+     */
+    public static boolean compareCharStreams(Reader s1, Reader s2) {
+        StringBuffer s1Buf, s2Buf;
+
+        try {
+            s1Buf = trimLines(s1);
+            s2Buf = trimLines(s2);
+
+            return s1Buf.toString().equals(s2Buf.toString());
+        } catch (IOException e) {
+            // fail the comparison
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Compares the 2 streams.
+     * <p/>
+     * Calls {@link #trimLines(java.io.Reader)} on each stream before comparing.
+     * @param s1 Stream 1.
+     * @param s2 Stream 2.
+     * @return True if the streams are equal not including leading and trailing
+     * whitespace on each line and blank lines, otherwise returns false.
+     */
+    public static boolean compareCharStreams(String s1, String s2) {
+        return compareCharStreams(new StringReader(s1), new StringReader(s2));
     }
 
     /**

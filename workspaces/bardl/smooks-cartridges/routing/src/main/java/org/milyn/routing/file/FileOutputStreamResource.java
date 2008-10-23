@@ -1,14 +1,14 @@
 /*
  * Milyn - Copyright (C) 2006
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License (version 2.1) as published
  * by the Free Software Foundation.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.
- * 
+ *
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
@@ -29,19 +29,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.io.AbstractOutputStreamResource;
+import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
+import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.routing.SmooksRoutingException;
+import org.milyn.templating.freemarker.FreeMarkerUtils;
 import org.milyn.util.DollarBraceDecoder;
 import org.milyn.util.FreeMarkerTemplate;
 
 /**
  * FileOutputStreamResouce is a {@link AbstractOutputStreamResource} implementation
- * that handles file output streams. 
+ * that handles file output streams.
  * <p/>
- * 
+ *
  * Example configuration:
  * <pre>
  * &lt;resource-config selector="order-item"&gt;
@@ -51,12 +56,12 @@ import org.milyn.util.FreeMarkerTemplate;
  *    &lt;param name="destinationDirectoryPattern"&gt;order-${order.orderId}&lt;/param&gt;
  *    &lt;param name="listFileNamePattern"&gt;orderitems-${order.orderId}.lst&lt;/param&gt;
  * &lt;/resource-config&gt;
- * 
+ *
  * Optional properties (default values shown):
  *    &lt;param name="highWaterMark"&gt;200&lt;/param&gt;
  *    &lt;param name="highWaterMarkTimeout"&gt;60000&lt;/param&gt;
  * </pre>
- * 
+ *
  * Description of configuration properties:
  * <ul>
  * <li><i>resourceName</i>: the name of this resouce. Will be used to identify this resource.
@@ -70,18 +75,27 @@ import org.milyn.util.FreeMarkerTemplate;
  * 		directory so that the number of files drops below the highWaterMark.
  * <li><i>highWaterMarkPollFrequency</i>: number of ms to wait between checks on the High Water Mark, while
  *      waiting for it to drop.
+ * <li><i>closeOnCondition</i>: An MVEL expression. If it returns true then the output stream is closed on the visitAfter event
+ * 		else it is kept open. If the expression is not set then output stream is closed by default.
  * </ul>
- * 
+ * <p>
+ * <b>When does a new file get created?</b><br>
+ * As soon as an object tries to retrieve the Writer or the OutputStream from this OutputStreamResource and
+ * the Stream isn't open then a new file is created. Using the 'closeOnCondition' property you can control
+ * whenn a stream get closed. As long as the stream isn't closed, the same file is used to write too. At then
+ * end of the filter process the stream always gets closed. Nothing stays open.
+ *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class FileOutputStreamResource extends AbstractOutputStreamResource
 {
     private static final String TMP_FILE_CONTEXT_KEY_PREFIX = FileOutputStreamResource.class.getName() + "#tmpFile:";
-    
+
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
-	
+
 	private static Log logger = LogFactory.getLog( FileOutputStreamResource.class );
-    
+
     @ConfigParam
     private String fileNamePattern;
     private FreeMarkerTemplate fileNameTemplate;
@@ -104,24 +118,27 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     @ConfigParam(defaultVal = "1000")
     private long highWaterMarkPollFrequency;
 
+    @ConfigParam(use=Use.OPTIONAL, decoder = MVELExpressionEvaluatorDecoder.class)
+    private MVELExpressionEvaluator closeOnCondition;
+
     //	public
-    
+
     @Initialize
     public void intialize() {
         fileNameTemplate = new FreeMarkerTemplate(fileNamePattern);
-        listFileNameTemplate = new FreeMarkerTemplate(listFileNamePattern);
         destinationDirectoryTemplate = new FreeMarkerTemplate(destinationDirectoryPattern);
 
         fileFilter = new SplitFilenameFilter(fileNamePattern);
-        
+
         if(listFileNamePattern != null) {
+        	listFileNameTemplate = new FreeMarkerTemplate(listFileNamePattern);
             listFileNamePatternCtxKey = FileOutputStreamResource.class.getName() + "#" + listFileNamePattern;
         }
     }
 
     @Override
 	public FileOutputStream getOutputStream( final ExecutionContext executionContext ) throws SmooksRoutingException, IOException {
-        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
         String destinationDirName = destinationDirectoryTemplate.apply(beanMap);
         File destinationDirectory = new File(destinationDirName);
 
@@ -175,6 +192,21 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.milyn.io.AbstractOutputStreamResource#closeCondition(org.milyn.container.ExecutionContext)
+     */
+    @Override
+    protected boolean closeCondition(ExecutionContext executionContext) {
+
+    	if( closeOnCondition == null ) {
+    		return true;
+    	}
+
+    	BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+    	return closeOnCondition.eval(beanRepository.getBeanMap());
+    }
+
     @Override
 	protected void closeResource( ExecutionContext executionContext )
 	{
@@ -187,7 +219,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
             }
         }
 	}
-    
+
     //	private
 
     private File renameWorkingFile(ExecutionContext executionContext) {
@@ -199,7 +231,7 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
         }
 
         String newFileName;
-        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
 
         //	BeanAccessor guarantees to return a beanMap... run the filename pattern
         // through FreeMarker to generate the file name...
@@ -272,7 +304,8 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     }
 
     private String getListFileName(ExecutionContext executionContext) {
-        return listFileNameTemplate.apply(BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap());
+        Map<String, Object> beanMap = FreeMarkerUtils.getMergedModel(executionContext);
+        return listFileNameTemplate.apply(beanMap);
     }
 
     public static class SplitFilenameFilter implements FileFilter {

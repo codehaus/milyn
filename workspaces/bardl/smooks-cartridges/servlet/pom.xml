@@ -2,18 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>milyn</groupId>
+		<groupId>org.milyn</groupId>
 		<artifactId>smooks-cartridge-base-pom</artifactId>
 		<version>1.1.1</version>
 	</parent>
     <name>Milyn Smooks Cartridge - Servlet</name>
-	<groupId>milyn</groupId>
+	<groupId>org.milyn</groupId>
 	<artifactId>milyn-smooks-servlet</artifactId>
 	<version>${milyn.smooks.servlet.version}</version>
 
     <dependencies>
 		<dependency>
-			<groupId>milyn</groupId>
+			<groupId>org.milyn</groupId>
 			<artifactId>milyn-tinak</artifactId>
 			<version>${milyn.tinak.version}</version>
 		</dependency>
@@ -51,8 +51,11 @@
     
     <repositories>
         <repository>
-            <id>milyn</id>
-            <url>http://dist.codehaus.org</url>
+            <id>codehaus.m2.snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 </project>

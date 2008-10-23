@@ -7,30 +7,25 @@
 
     <xs:import namespace="http://www.milyn.org/xsd/smooks-1.1.xsd" />
 
-    <xs:element name="test01" substitutionGroup="smooks:abstract-resource-config">
+    <xs:element name="renameElement" substitutionGroup="smooks:abstract-resource-config">
         <xs:complexType>
             <xs:complexContent>
                 <xs:extension base="smooks:element-visitor">
-                    <xs:annotation>
-                        <xs:documentation xml:lang="en">Javabean Bindings Configuration</xs:documentation>
-                    </xs:annotation>
                     <xs:sequence>
-                        <xs:choice minOccurs="1" maxOccurs="unbounded" >
-                            <xs:element ref="smooks-test01:value"/>
-                        </xs:choice>
+                        <xs:element minOccurs="0" maxOccurs="1" ref="smooks-test01:conditionRef"/>
                     </xs:sequence>
-                    <xs:attribute name="aaaa" type="xs:string" />
+                    <xs:attribute name="name" type="xs:string" use="required" />
+                    <xs:attribute name="newName" type="xs:string" use="required" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="value">
+    <xs:element name="conditionRef">
         <xs:complexType>
-            <xs:annotation>
-                <xs:documentation xml:lang="en">Basic "value" based Binding Configuration</xs:documentation>
-            </xs:annotation>
-            <xs:attribute name="xxxx" type="xs:string"/>
+            <xs:simpleContent>
+                <xs:extension base="xs:string" />
+            </xs:simpleContent>
         </xs:complexType>
     </xs:element>
 

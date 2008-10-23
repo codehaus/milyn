@@ -16,13 +16,13 @@
 package org.milyn.cdr.xsd11.importtests;
 
 import junit.framework.TestCase;
-
-import java.io.IOException;
-
-import org.xml.sax.SAXException;
 import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.delivery.dom.serialize.SimpleDOMVisitor;
 import org.milyn.payload.StringSource;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -40,6 +40,12 @@ public class ImportTest extends TestCase {
         } catch(SmooksConfigurationException e) {
             assertEquals("Unsupported import of a v1.1 configuration from inside a v1.0 configuration.  Path to configuration: '/[root-config]/[11Config.xml]'.", e.getMessage());
         }
+    }
+
+    public void test_paramaterized_import() throws IOException, SAXException {
+        SimpleDOMVisitor.visited = false;
+        testConfig("paramaterized_import_main.xml");
+        assertTrue("Parameters not properly injected into import.", SimpleDOMVisitor.visited);
     }
 
     private void testConfig(String config) throws IOException, SAXException {

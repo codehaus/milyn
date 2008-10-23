@@ -16,24 +16,20 @@
 
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.*;
+import org.milyn.cdr.*;
+import org.milyn.cdr.annotation.*;
+import org.milyn.container.ApplicationContext;
+import org.milyn.delivery.*;
+import org.milyn.delivery.annotation.*;
+import org.milyn.delivery.dom.*;
+import org.milyn.javabean.ext.*;
+import org.milyn.xml.*;
+import org.w3c.dom.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.Parameter;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.AnnotationConstants;
-import org.milyn.cdr.annotation.Config;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.delivery.ConfigurationExpander;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.delivery.dom.VisitPhase;
-import org.milyn.xml.DomUtils;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.io.*;
+import java.util.*;
 
 /**
  * Javabean Populator.
@@ -156,15 +152,25 @@ public class BeanPopulator implements ConfigurationExpander {
 
     private static Log logger = LogFactory.getLog(BeanPopulator.class);
 
+    public static String GLOBAL_DEFAULT_EXTEND_LIFECYCLE = "binding.extend.lifecycle";
+
     @ConfigParam(name="beanId", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanIdName;
 
     @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
 
+    @ConfigParam(defaultVal = "true")
+    private boolean create;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String extendLifecycle;
+
     @Config
     private SmooksResourceConfiguration config;
 
+    @AppContext
+    private ApplicationContext appContext;
 
     /*******************************************************************************************************
      *  Common Methods.
@@ -177,9 +183,10 @@ public class BeanPopulator implements ConfigurationExpander {
     @Initialize
     public void initialize() throws SmooksConfigurationException {
         // One of "beanId" or "beanClass" must be specified...
-        if (beanClassName == null || beanClassName.trim().equals("")) {
+        if (beanClassName == null || StringUtils.isBlank(beanClassName)) {
             throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
         }
+        beanClassName = beanClassName.trim();
 
         // May need to default the "beanId"...
         if (beanIdName == null || beanIdName.trim().length() == 0) {
@@ -218,6 +225,10 @@ public class BeanPopulator implements ConfigurationExpander {
 
         // Remove the bindings param...
         resource.removeParameter("bindings");
+
+        if(!create) {
+        	resource.setSelector(SmooksResourceConfiguration.DOCUMENT_VOID_SELECTOR);
+        }
 
         // Reset the resource...
         resource.setResource(BeanInstanceCreator.class.getName());
@@ -273,13 +284,13 @@ public class BeanPopulator implements ConfigurationExpander {
         	selector = config.getSelector();
         }
 
-
         setterMethod = DomUtils.getAttributeValue(bindingConfig, "setterMethod");
         property = DomUtils.getAttributeValue(bindingConfig, "property");
 
         // Extract the binding config properties from the selector and property values...
-        String attributeNameProperty = getAttributeNameProperty(selector);
-        String selectorProperty = getSelectorProperty(selector);
+        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
+        String attributeNameProperty = SelectorPropertyResolver.getAttributeNameProperty(selectorTokens);
+        String selectorProperty = SelectorPropertyResolver.getSelectorProperty(selectorTokens);
 
         // Construct the configuraton...
         resourceConfig = new SmooksResourceConfiguration(selectorProperty, BeanInstancePopulator.class.getName());
@@ -341,33 +352,11 @@ public class BeanPopulator implements ConfigurationExpander {
         }
         resourceConfig.setSelectorNamespaceURI(selectorNamespace);
 
+        if (extendLifecycle != null) {
+        	resourceConfig.setParameter("extendLifecycle", extendLifecycle);
+        }
+
         return resourceConfig;
-    }
-
-    private String getSelectorProperty(String selector) {
-        StringBuffer selectorProp = new StringBuffer();
-        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
-
-        for (String selectorToken : selectorTokens) {
-            if (!selectorToken.trim().startsWith("@")) {
-                selectorProp.append(selectorToken).append(" ");
-            }
-        }
-
-        return selectorProp.toString().trim();
-    }
-
-    private String getAttributeNameProperty(String selector) {
-        StringBuffer selectorProp = new StringBuffer();
-        String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
-
-        for (String selectorToken : selectorTokens) {
-            if (selectorToken.trim().startsWith("@")) {
-                selectorProp.append(selectorToken.substring(1));
-            }
-        }
-
-        return selectorProp.toString();
     }
 
     private String toBeanId(String beanClassName) {

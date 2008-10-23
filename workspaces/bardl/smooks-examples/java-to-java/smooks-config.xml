@@ -1,39 +1,25 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
 
-    <resource-config selector="global-parameters">
+    <params>
         <param name="stream.filter.type">SAX</param>
-    </resource-config>
+    </params>
 
-    <resource-config selector="example.srcmodel.Order">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">lineOrder</param>
-        <param name="beanClass">example.trgmodel.LineOrder</param>
-        <param name="bindings">
-        	<binding property="lineItems" selector="${lineItems}" />
-            <binding property="customerId" selector="header customerNumber" />
-            <binding property="customerName" selector="header customerName" />
-        </param>
-    </resource-config>
+    <jb:bindings beanId="lineOrder" class="example.trgmodel.LineOrder" createOnElement="example.srcmodel.Order">
+        <jb:wiring property="lineItems" beanIdRef="lineItems" />
+        <jb:value property="customerId" data="header/customerNumber" />
+        <jb:value property="customerName" data="header/customerName" />
+    </jb:bindings>
 
-    <resource-config selector="orderItems">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">lineItems</param>
-        <param name="beanClass">example.trgmodel.LineItem[]</param>
-        <param name="bindings">
-            <binding selector="${lineItem}" />
-        </param>
-    </resource-config>
+    <jb:bindings beanId="lineItems" class="example.trgmodel.LineItem[]" createOnElement="orderItems">
+        <jb:wiring beanIdRef="lineItem" />
+    </jb:bindings>
 
-    <resource-config selector="example.srcmodel.OrderItem">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">lineItem</param>
-        <param name="beanClass">example.trgmodel.LineItem</param>
-        <param name="bindings">
-            <binding property="productCode" selector="example.srcmodel.OrderItem productId" />
-            <binding property="unitQuantity" type="Integer" selector="example.srcmodel.OrderItem quantity" />
-            <binding property="unitPrice" type="BigDecimal" selector="example.srcmodel.OrderItem price" />
-        </param>
-    </resource-config>
+
+    <jb:bindings beanId="lineItem" class="example.trgmodel.LineItem" createOnElement="example.srcmodel.OrderItem">
+        <jb:value property="productCode" data="example.srcmodel.OrderItem/productId" />
+        <jb:value property="unitQuantity" decoder="Integer" data="example.srcmodel.OrderItem/quantity" />
+        <jb:value property="unitPrice" decoder="BigDecimal" data="example.srcmodel.OrderItem/price" />
+    </jb:bindings>
 
 </smooks-resource-list>

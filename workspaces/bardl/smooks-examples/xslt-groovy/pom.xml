@@ -3,23 +3,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>milyn</groupId>
+        <groupId>org.milyn</groupId>
         <artifactId>smooks-examples</artifactId>
         <version>1.1.1</version>
     </parent>
     <name>Milyn Smooks Example - XSLT-Groovy</name>
-    <groupId>milyn</groupId>
+    <groupId>org.milyn</groupId>
     <artifactId>milyn-smooks-example-xslt-groovy</artifactId>
     <version>1.0</version>
 
     <dependencies>
         <dependency>
-            <groupId>milyn</groupId>
+            <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-scripting</artifactId>
             <version>${milyn.smooks.scripting.version}</version>
         </dependency>
         <dependency>
-            <groupId>milyn</groupId>
+            <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-templating</artifactId>
             <version>${milyn.smooks.templating.version}</version>
             <exclusions>
@@ -57,8 +57,11 @@
 
     <repositories>
         <repository>
-            <id>milyn</id>
-            <url>http://dist.codehaus.org</url>
+            <id>codehaus.m2.snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 

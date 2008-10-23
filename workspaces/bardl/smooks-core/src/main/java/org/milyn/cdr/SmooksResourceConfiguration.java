@@ -3,43 +3,36 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.cdr;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.classpath.ClasspathUtils;
-import org.milyn.container.ExecutionContext;
+import org.apache.commons.logging.*;
+import org.milyn.classpath.*;
+import org.milyn.container.*;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.Filter;
-import org.milyn.expression.ExpressionEvaluator;
-import org.milyn.expression.ExecutionContextExpressionEvaluator;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.io.StreamUtils;
-import org.milyn.resource.URIResourceLocator;
-import org.milyn.util.ClassUtil;
-import org.milyn.xml.DomUtils;
-import org.milyn.xml.XmlUtil;
-import org.milyn.profile.Profile;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.milyn.delivery.sax.*;
+import org.milyn.expression.*;
+import org.milyn.io.*;
+import org.milyn.profile.*;
+import org.milyn.resource.*;
+import org.milyn.util.*;
+import org.milyn.xml.*;
+import org.w3c.dom.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.*;
 import java.util.*;
-import java.net.URI;
 
 /**
  * Smooks Resource Targeting Configuration.
@@ -115,14 +108,14 @@ import java.net.URI;
  * transformation/analysis resources targeted at a message fragment - this is why we didn't call this attribute
  * "target-fragment". This attribute supports a list of comma separated selectors, allowing you to target a
  * single resource at multiple selector (e.g. fragments).
- *
+ * <p/>
  * <br/>
  * Example selectors:
  * <ol>
  * <li><u>The target fragment name (e.g. for HTML - table, tr, pre etc)</u>.  This type of selector can
  * be contextual e.g. "x/y/z" will target the
  * resource at all "z" fragments nested inside a "y" fragment, which is in turn nested inside
- * an "x" fragment.  Also supports CSS style selectors e.g. "td ol li".  See sample configurations above. 
+ * an "x" fragment.  Also supports CSS style selectors e.g. "td ol li".  See sample configurations above.
  * Also supports wildcard based fragment selection ("*").
  * </li>
  * <li>"$document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
@@ -139,7 +132,6 @@ import java.net.URI;
  * </ul>
  * <p/>
  * <h2 id="conditions">Resource Targeting Configurations</h2>
- * 
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @see SmooksResourceConfigurationSortComparator
@@ -178,6 +170,10 @@ public class SmooksResourceConfiguration {
      * A special selector for resource targeted at the document as a whole (the roor element).
      */
     public static final String DOCUMENT_FRAGMENT_SELECTOR = "$document";
+    /**
+     * A special selector for resource targeted at the document as a whole (the roor element).
+     */
+    public static final String DOCUMENT_VOID_SELECTOR = "$void";
 
     /**
      * Document target on which the resource is to be applied.
@@ -189,6 +185,7 @@ public class SmooksResourceConfiguration {
      * array contains a parsed contextual selector.
      */
     private String[] contextualSelector;
+    private boolean isContextualSelector;
     /**
      * Target profile.
      */
@@ -259,7 +256,6 @@ public class SmooksResourceConfiguration {
      * Public constructor.
      *
      * @param selector The selector definition.
-     *
      * @see #setSelectorNamespaceURI(String)
      * @see #setTargetProfile(String)
      * @see #setResource(String)
@@ -276,7 +272,6 @@ public class SmooksResourceConfiguration {
      *
      * @param selector The selector definition.
      * @param resource The resource.
-     *
      * @see #setSelectorNamespaceURI(String)
      * @see #setTargetProfile(String)
      * @see #setResourceType(String)
@@ -293,7 +288,6 @@ public class SmooksResourceConfiguration {
      * @param targetProfile Target Profile(s).  Comma separated list of
      *                      {@link ProfileTargetingExpression ProfileTargetingExpressions}.
      * @param resource      The resource.
-     *
      * @see #setSelectorNamespaceURI(String)
      * @see #setResourceType(String)
      * @see #setParameter(String, String)
@@ -307,6 +301,7 @@ public class SmooksResourceConfiguration {
 
     /**
      * Perform a shallow clone of this configuration.
+     *
      * @return Configuration clone.
      */
     public Object clone() {
@@ -314,6 +309,7 @@ public class SmooksResourceConfiguration {
 
         clone.selector = selector;
         clone.contextualSelector = contextualSelector;
+        clone.isContextualSelector = isContextualSelector;
         clone.targetProfile = targetProfile;
         clone.defaultResource = defaultResource;
         clone.profileTargetingExpressionStrings = profileTargetingExpressionStrings;
@@ -322,7 +318,7 @@ public class SmooksResourceConfiguration {
         clone.isInline = isInline;
         clone.resourceType = resourceType;
         clone.isXmlDef = isXmlDef;
-        if(parameters != null) {
+        if (parameters != null) {
             clone.parameters = (LinkedHashMap<String, Object>) parameters.clone();
         }
         clone.parameterCount = parameterCount;
@@ -335,12 +331,11 @@ public class SmooksResourceConfiguration {
     /**
      * Public constructor.
      *
-     * @param selector      The selector definition.
-     * @param selectorNamespaceURI  The selector namespace URI.
-     * @param targetProfile Target Profile(s).  Comma separated list of
-     *                      {@link ProfileTargetingExpression ProfileTargetingExpressions}.
-     * @param resource      The resource.
-     *
+     * @param selector             The selector definition.
+     * @param selectorNamespaceURI The selector namespace URI.
+     * @param targetProfile        Target Profile(s).  Comma separated list of
+     *                             {@link ProfileTargetingExpression ProfileTargetingExpressions}.
+     * @param resource             The resource.
      * @see #setResourceType(String)
      * @see #setParameter(String, String)
      */
@@ -359,24 +354,52 @@ public class SmooksResourceConfiguration {
             throw new IllegalArgumentException("null or empty 'selector' arg in constructor call.");
         }
         this.selector = selector.toLowerCase().intern();
+
+        // If there's a "$document" token in the selector, but it's not at the very start,
+        // then we have an invalid selector...
+        int docSelectorIndex = selector.trim().indexOf(DOCUMENT_FRAGMENT_SELECTOR);
+        if(docSelectorIndex != -1 && docSelectorIndex > 0) {
+            throw new SmooksConfigurationException("Invalid selector '" + selector + "'.  '" + DOCUMENT_FRAGMENT_SELECTOR + "' token can only exist at the start of the selector.");
+        }
+
+        if(selector.startsWith("/")) {
+            selector = DOCUMENT_FRAGMENT_SELECTOR + selector;
+        }
         isXmlDef = selector.startsWith(XML_DEF_PREFIX);
-        contextualSelector = parseSelector(this.selector);
+        contextualSelector = parseSelector(selector);
+        isContextualSelector = (contextualSelector.length > 1);
     }
 
     public static String[] parseSelector(String selector) {
+        String[] splitTokens;
+
+        if(selector.startsWith("/")) {
+            selector = selector.substring(1);
+        }
+
         // Parse the selector in case it's a contextual selector...
-        if(selector.indexOf('/') != -1) {
+        if (selector.indexOf('/') != -1) {
             // Parse it as e.g. "a/b/c" ...
-            return selector.split("/");
+            splitTokens = selector.split("/");
         } else {
             // Parse it as a CSS form selector e.g. "TD UL LI" ...
-            return selector.split(" +");
+            splitTokens = selector.split(" +");
         }
+
+        for (int i = 0; i < splitTokens.length; i++) {
+            String splitToken = splitTokens[i];
+
+            if (!splitToken.startsWith("@")) {
+                splitTokens[i] = splitToken.toLowerCase();
+            }
+        }
+
+        return splitTokens;
     }
 
     /**
      * Set the namespace URI to which the selector is associated.
-     * 
+     *
      * @param namespaceURI Selector namespace.
      */
     public void setSelectorNamespaceURI(String namespaceURI) {
@@ -397,7 +420,7 @@ public class SmooksResourceConfiguration {
     public void setResource(String resource) {
         this.resource = resource;
 
-        if(resource != null) {
+        if (resource != null) {
             try {
                 // If the resource resolves as a valid URI, then it's not an inline resource.
                 new URI(resource);
@@ -422,6 +445,7 @@ public class SmooksResourceConfiguration {
 
     /**
      * Get the target profile string as set in the configuration.
+     *
      * @return The target profile.
      */
     public String getTargetProfile() {
@@ -525,14 +549,19 @@ public class SmooksResourceConfiguration {
 
     /**
      * Set the condition evaluator to be used in targeting of this resource.
+     *
      * @param expressionEvaluator The {@link org.milyn.expression.ExpressionEvaluator}, or null if no condition is to be used.
      */
     public void setConditionEvaluator(ExpressionEvaluator expressionEvaluator) {
+        if (expressionEvaluator != null && !(expressionEvaluator instanceof ExecutionContextExpressionEvaluator)) {
+            throw new UnsupportedOperationException("Unsupported ExpressionEvaluator type '" + expressionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextExpressionEvaluator.class.getName() + "' implementations.");
+        }
         this.expressionEvaluator = expressionEvaluator;
     }
 
     /**
      * Get the condition evaluator used in targeting of this resource.
+     *
      * @return The {@link org.milyn.expression.ExpressionEvaluator}, or null if no condition is specified.
      */
     public ExpressionEvaluator getConditionEvaluator() {
@@ -545,7 +574,7 @@ public class SmooksResourceConfiguration {
      * Some resources (e.g. {@link org.milyn.delivery.dom.serialize.DefaultSerializationUnit} or
      * {@link org.milyn.delivery.sax.DefaultSAXElementSerializer}) are applied by default when no other
      * resources are targeted at an element.
-     * 
+     *
      * @return True if this is a default applied resource, otherwise false.
      */
     public boolean isDefaultResource() {
@@ -721,8 +750,9 @@ public class SmooksResourceConfiguration {
 
     /**
      * Get the param map associated with this configuration.
+     *
      * @return The configuration parameters.  The Map value is either a
-     * {@link Parameter} or parameter list (List&lt;{@link Parameter}&gt;).
+     *         {@link Parameter} or parameter list (List&lt;{@link Parameter}&gt;).
      */
     public Map<String, Object> getParameters() {
         return parameters;
@@ -889,7 +919,7 @@ public class SmooksResourceConfiguration {
             InputStream resStream = null;
             try {
                 resStream = uriResourceLocator.getResource(resource);
-            } catch(Exception e) {
+            } catch (Exception e) {
                 return getInlineResourceBytes();
             }
 
@@ -981,8 +1011,8 @@ public class SmooksResourceConfiguration {
      *         otherwise false.
      */
     public boolean isTargetedAtNamespace(String namespace) {
-        if (namespaceURI != null && !namespaceURI.equals(namespace)) {
-            return false;
+        if (namespaceURI != null) {
+            return namespaceURI.equals(namespace);
         }
 
         return true;
@@ -997,7 +1027,7 @@ public class SmooksResourceConfiguration {
      * @return True if the selector is contextual, otherwise false.
      */
     public boolean isSelectorContextual() {
-        return (contextualSelector.length > 1);
+        return isContextualSelector;
     }
 
     /**
@@ -1015,26 +1045,35 @@ public class SmooksResourceConfiguration {
      */
     public boolean isTargetedAtElementContext(Element element) {
         Node currentNode = element;
+        Index index = new Index();
+
+        if (currentNode == null || currentNode.getNodeType() != Node.ELEMENT_NODE) {
+            return false;
+        }
+
+        index.i = contextualSelector.length - 1;
 
         // Check the element name(s).
-        for (int i = contextualSelector.length - 1; i >= 0; i--) {
-            if (currentNode == null || currentNode.getNodeType() != Node.ELEMENT_NODE) {
-                return false;
-            }
-
+        while (index.i >= 0) {
             Element currentElement = (Element) currentNode;
             String elementName = DomUtils.getName(currentElement);
+            Node parentNode;
+            String parentElementName = null;
 
-            if (contextualSelector[i].equals("*")) {
-                // match
-            } else if (!contextualSelector[i].equalsIgnoreCase(elementName)) {
+            parentNode = currentElement.getParentNode();
+            if(parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
+                parentElementName = DomUtils.getName((Element)parentNode);
+            }
+
+            if(!isTargetedAtElementContext(elementName, parentElementName, index)) {
                 return false;
             }
 
-            // Go the next parent node...
-            if (i > 0) {
-                currentNode = currentNode.getParentNode();
+            if (parentElementName == null) {
+                return true;
             }
+
+            currentNode = parentNode;
         }
 
         return true;
@@ -1055,24 +1094,80 @@ public class SmooksResourceConfiguration {
      */
     public boolean isTargetedAtElementContext(SAXElement element) {
         SAXElement currentElement = element;
+        Index index = new Index();
+
+        if (currentElement == null) {
+            return false;
+        }
+
+        index.i = contextualSelector.length - 1;
 
         // Check the element name(s).
-        for (int i = contextualSelector.length - 1; i >= 0; i--) {
-            if (currentElement == null) {
-                return false;
-            }
-
+        while (index.i >= 0) {
             String elementName = currentElement.getName().getLocalPart();
+            SAXElement parentElement = currentElement.getParent();
+            String parentElementName = null;
 
-            if (contextualSelector[i].equals("*")) {
-                // match
-            } else if (!contextualSelector[i].equalsIgnoreCase(elementName)) {
+            if(parentElement != null) {
+                parentElementName = parentElement.getName().getLocalPart();
+            }
+
+            if(!isTargetedAtElementContext(elementName, parentElementName, index)) {
                 return false;
             }
 
-            // Go the next parent node...
-            if (i > 0) {
-                currentElement = currentElement.getParent();
+            if (parentElement == null) {
+                return true;
+            }
+
+            currentElement = parentElement;
+        }
+
+        return true;
+    }
+
+    private boolean isTargetedAtElementContext(String elementName, String parentElementName, Index index) {
+        if (contextualSelector[index.i].equals("*")) {
+            index.i--;
+        } else if (contextualSelector[index.i].equals("**")) {
+            if(index.i == 0) {
+                // No more tokens to match and ** matches everything
+                return true;
+            } else if(index.i == 1) {
+                if(parentElementName == null && contextualSelector[index.i - 1].equals(DOCUMENT_FRAGMENT_SELECTOR)) {
+                    // we're at the root of the document and the only selector left is
+                    // the document selector.  Pass..
+                    return true;
+                } else if(parentElementName == null) {
+                    // we're at the root of the document, yet there are still
+                    // unmatched tokens in the selector.  Fail...
+                    return false;
+                }
+            } else if(parentElementName == null) {
+                // we're at the root of the document, yet there are still
+                // unmatched tokens in the selector.  Fail...
+                return false;
+            }
+
+            String parentContextToken = contextualSelector[index.i - 1];
+
+            // decrement if the parent context token is * or **,
+            // or if the parent node is an element whose name matches
+            // that of the parent context token, or if the parent context token is * or **...
+            if(parentContextToken.equals("*") || parentContextToken.equals("**")) {
+                index.i--;
+            } else if(parentContextToken.equalsIgnoreCase(parentElementName)) {
+                index.i--;
+            }
+        } else if (!contextualSelector[index.i].equalsIgnoreCase(elementName)) {
+            return false;
+        } else {
+            index.i--;
+        }
+
+        if (parentElementName == null) {
+            if(index.i >= 0 && !contextualSelector[index.i].equals("**")) {
+                return contextualSelector[index.i].equals(DOCUMENT_FRAGMENT_SELECTOR);
             }
         }
 
@@ -1089,7 +1184,7 @@ public class SmooksResourceConfiguration {
      * @return True if this configuration is targeted at the supplied element, otherwise false.
      */
     public boolean isTargetedAtElement(Element element) {
-        if(!assertConditionTrue()) {
+        if (!assertConditionTrue()) {
             return false;
         }
 
@@ -1121,16 +1216,16 @@ public class SmooksResourceConfiguration {
      * @return True if this configuration is targeted at the supplied element, otherwise false.
      */
     public boolean isTargetedAtElement(SAXElement element) {
-        if(!assertConditionTrue()) {
+        if (expressionEvaluator != null && !assertConditionTrue()) {
             return false;
         }
 
-        if (!isTargetedAtNamespace(element.getName().getNamespaceURI())) {
+        if (namespaceURI != null && !isTargetedAtNamespace(element.getName().getNamespaceURI())) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
             }
             return false;
-        } else if (isSelectorContextual() && !isTargetedAtElementContext(element)) {
+        } else if (isContextualSelector && !isTargetedAtElementContext(element)) {
             // Note: If the selector is not contextual, there's no need to perform the
             // isTargetedAtElementContext check because we already know the unit is targeted at the
             // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
@@ -1144,63 +1239,60 @@ public class SmooksResourceConfiguration {
     }
 
     private boolean assertConditionTrue() {
-        if(expressionEvaluator == null) {
+        if (expressionEvaluator == null) {
             return true;
         }
-        
-        if(expressionEvaluator instanceof ExecutionContextExpressionEvaluator) {
-            ExecutionContextExpressionEvaluator evaluator = (ExecutionContextExpressionEvaluator) expressionEvaluator;
-            ExecutionContext execContext = Filter.getCurrentExecutionContext();
 
-            return evaluator.eval(execContext);
-        }
+        ExecutionContextExpressionEvaluator evaluator = (ExecutionContextExpressionEvaluator) expressionEvaluator;
+        ExecutionContext execContext = Filter.getCurrentExecutionContext();
 
-        throw new UnsupportedOperationException("Unsupported ExpressionEvaluator type '" + expressionEvaluator.getClass().getName() + "'.  Currently only support '" + ExecutionContextExpressionEvaluator.class.getName() + "' implementations.");
+        return evaluator.eval(execContext);
     }
 
     /**
      * Generate an XML'ified description of this resource.
+     *
      * @return XML'ified description of the resource.
      */
     public String toXML() {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<resource-config selector=\"" + selector + "\"");
-        if(namespaceURI != null) {
+        if (namespaceURI != null) {
             builder.append(" selector-namespace=\"" + namespaceURI + "\"");
         }
-        if(targetProfile != null && !targetProfile.equals(Profile.DEFAULT_PROFILE)) {
+        if (targetProfile != null && !targetProfile.equals(Profile.DEFAULT_PROFILE)) {
             builder.append(" target-profile=\"" + targetProfile + "\"");
         }
         builder.append("\">\n");
 
-        if(resource != null) {
+        if (resource != null) {
             String resourceStartEl;
-            if(resourceType != null) {
+            if (resourceType != null) {
                 resourceStartEl = "<resource type=\"" + resourceType + "\">";
             } else {
                 resourceStartEl = "<resource>";
             }
-            if(resource.length() < 300) {
+            if (resource.length() < 300) {
                 builder.append("\t" + resourceStartEl + resource + "</resource>\n");
             } else {
                 builder.append("\t" + resourceStartEl + resource.substring(0, 300) + " ... more</resource>\n");
             }
         }
 
-        if(expressionEvaluator != null) {
-            builder.append("\t<condition evaluator=\"" + expressionEvaluator.getClass().getName() + "\">" + expressionEvaluator.getExpression() + "</condition>\n");            
+        if (expressionEvaluator != null) {
+            builder.append("\t<condition evaluator=\"" + expressionEvaluator.getClass().getName() + "\">" + expressionEvaluator.getExpression() + "</condition>\n");
         }
 
-        if(parameters != null) {
+        if (parameters != null) {
             Set<String> paramNames = parameters.keySet();
             for (String paramName : paramNames) {
                 List params = getParameters(paramName);
                 for (Object param : params) {
                     Element element = ((Parameter) param).getXml();
                     String value;
-                    
-                    if(element != null) {
+
+                    if (element != null) {
                         value = XmlUtil.serialize(element.getChildNodes());
                     } else {
                         value = ((Parameter) param).getValue();
@@ -1213,5 +1305,9 @@ public class SmooksResourceConfiguration {
         builder.append("</resource-config>");
 
         return builder.toString();
+    }
+
+    private class Index {
+        private int i;
     }
 }

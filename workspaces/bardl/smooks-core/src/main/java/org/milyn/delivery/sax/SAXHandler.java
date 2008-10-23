@@ -19,25 +19,30 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.ParameterAccessor;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.*;
+import org.milyn.delivery.ContentHandlerConfigMap;
+import org.milyn.delivery.ExecutionLifecycleCleanable;
+import org.milyn.delivery.ExecutionLifecycleCleanableList;
+import org.milyn.delivery.Filter;
+import org.milyn.delivery.VisitSequence;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
+import org.milyn.io.NullWriter;
 import org.milyn.xml.DocType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * SAX Handler.
@@ -49,19 +54,21 @@ public class SAXHandler extends DefaultHandler2 {
     private static Log logger = LogFactory.getLog(SAXHandler.class);
     private ExecutionContext execContext;
     private Writer writer;
-    private Stack<ElementProcessor> elementProcessorStack = new Stack<ElementProcessor>();
     private ElementProcessor currentProcessor = null;
     private TextType currentTextType = TextType.TEXT;
     private SAXContentDeliveryConfig deliveryConfig;
     private Map<String, SAXElementVisitorMap> visitorConfigMap;
     private SAXElementVisitorMap globalVisitorConfig;
     private boolean defaultSerializationOn;
+    private boolean maintainElementStack;
     private SAXElementVisitor defaultSerializer = new DefaultSAXElementSerializer();
     private ContentHandlerConfigMap defaultSerializerMapping;
     private ExecutionEventListener eventListener;
     private boolean reverseVisitOrderOnVisitAfter;
     private boolean terminateOnVisitorException;
     private ExecutionLifecycleCleanableList cleanupList;
+    private DynamicSAXElementVisitorList dynamicVisitorList;
+    private StringBuilder cdataNodeBuilder = new StringBuilder();
 
     public SAXHandler(ExecutionContext executionContext, Writer writer) {
         this.execContext = executionContext;
@@ -76,7 +83,12 @@ public class SAXHandler extends DefaultHandler2 {
         SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementSerializer.class.getName());
         resource.setDefaultResource(true);
 
-        defaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, executionContext.getDeliveryConfig());
+        defaultSerializationOn = executionContext.isDefaultSerializationOn();
+        if(defaultSerializationOn) {
+            // If it's not explicitly configured off, we auto turn it off if the NullWriter is configured...
+            defaultSerializationOn = !(writer instanceof NullWriter);
+        }
+        maintainElementStack = ParameterAccessor.getBoolParameter(Filter.MAINTAIN_ELEMENT_STACK, true, executionContext.getDeliveryConfig());
         defaultSerializerMapping = new ContentHandlerConfigMap(new DefaultSAXElementSerializer(), resource);
 
         reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, executionContext.getDeliveryConfig());
@@ -87,6 +99,8 @@ public class SAXHandler extends DefaultHandler2 {
         }
 
         cleanupList = new ExecutionLifecycleCleanableList(executionContext);
+
+        dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext, cleanupList);
     }
 
     public void cleanup() {
@@ -96,26 +110,13 @@ public class SAXHandler extends DefaultHandler2 {
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         WriterManagedSAXElement element;
         boolean isRoot = (currentProcessor == null);
-
-        if(!isRoot) {
-            // Push the existing "current" processor onto the stack and create a new current
-            // based on this start event...
-            element = new WriterManagedSAXElement(namespaceURI, localName, qName, atts, currentProcessor.element);
-            element.setWriter(currentProcessor.element.getWriter());
-            onChildElement(element);
-            elementProcessorStack.push(currentProcessor);
-        } else {
-            element = new WriterManagedSAXElement(namespaceURI, localName, qName, atts, null);
-            element.setWriter(writer);
-        }
-
-        // Register the "presence" of the element...
-        if(eventListener != null) {
-            eventListener.onEvent(new ElementPresentEvent(element));
-        }
-
-        String elementName = element.getName().getLocalPart();
         SAXElementVisitorMap elementVisitorConfig;
+        QName elementQName;
+        String elementName;
+
+        elementQName = SAXElement.toQName(namespaceURI, localName, qName);
+        elementName = elementQName.getLocalPart();
+
         if(isRoot) {
             elementVisitorConfig = deliveryConfig.getCombinedOptimizedConfig(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
         } else {
@@ -126,10 +127,53 @@ public class SAXHandler extends DefaultHandler2 {
             elementVisitorConfig = globalVisitorConfig;
         }
 
-        visitBefore(element, elementVisitorConfig);
+        if(!maintainElementStack && elementVisitorConfig == null) {
+            ElementProcessor processor = new ElementProcessor();
+
+            processor.isNullProcessor = true;
+            processor.parentProcessor = currentProcessor;
+            currentProcessor = processor;
+            // Register the "presence" of the element...
+            if(eventListener != null) {
+                eventListener.onEvent(new ElementPresentEvent(new WriterManagedSAXElement(elementQName, atts, currentProcessor.element)));
+            }
+        } else {
+            if(!isRoot) {
+                // Push the existing "current" processor onto the stack and create a new current
+                // based on this start event...
+                element = new WriterManagedSAXElement(elementQName, atts, currentProcessor.element);
+                element.setWriter(getWriter());
+                onChildElement(element);
+            } else {
+                element = new WriterManagedSAXElement(elementQName, atts, null);
+                element.setWriter(writer);
+            }
+
+            // Register the "presence" of the element...
+            if(eventListener != null) {
+                eventListener.onEvent(new ElementPresentEvent(element));
+            }
+
+            visitBefore(element, elementVisitorConfig);
+        }
     }
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+        boolean flush = false;
+
+        // Apply the dynamic visitors...
+        List<SAXVisitAfter> dynamicVisitAfters = dynamicVisitorList.getVisitAfters();
+        if(!dynamicVisitAfters.isEmpty()) {
+            for (SAXVisitAfter dynamicVisitAfter : dynamicVisitAfters) {
+                try {
+                    dynamicVisitAfter.visitAfter(currentProcessor.element, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicVisitAfter.getClass().getName() + "' while processing the visitAfter event.";
+                    processVisitorException(t, errorMsg);
+                }
+            }
+        }
+
         if(currentProcessor.elementVisitorConfig != null) {
             List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfterMappings = currentProcessor.elementVisitorConfig.getVisitAfters();
 
@@ -144,43 +188,76 @@ public class SAXHandler extends DefaultHandler2 {
                         visitAfter(mapping);
                     }
                 } else {
-                    for(ContentHandlerConfigMap<SAXVisitAfter> mapping : visitAfterMappings) {
+                    int mappingCount = visitAfterMappings.size();
+                    ContentHandlerConfigMap<SAXVisitAfter> mapping;
+
+                    for(int i = 0; i < mappingCount; i++) {
+                        mapping = visitAfterMappings.get(i);
                         visitAfter(mapping);
                     }
                 }
             }
+            flush = true;
         }
 
-        if(applyDefaultSerialization()) {
+        if(defaultSerializationOn && applyDefaultSerialization()) {
             try {
                 defaultSerializer.visitAfter(currentProcessor.element, execContext);
-                flushCurrentWriter();
                 if(eventListener != null) {
                     eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, defaultSerializerMapping, VisitSequence.AFTER));
                 }
             } catch (IOException e) {
                 throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
             }
+            flush = true;
         }
 
-        if(!elementProcessorStack.isEmpty()) {
-            currentProcessor = elementProcessorStack.pop();
+        if(flush) {
+            flushCurrentWriter();
         }
+
+        ElementProcessor parentProcessor = currentProcessor.parentProcessor;
+        currentProcessor.element = null;
+        currentProcessor.elementVisitorConfig = null;
+        currentProcessor.parentProcessor = null;
+        currentProcessor = parentProcessor;
+    }
+
+    private Writer getWriter() {
+        if(!currentProcessor.isNullProcessor) {
+            return currentProcessor.element.getWriter();
+        } else {
+            ElementProcessor processor = currentProcessor;
+            while(processor.parentProcessor != null) {
+                processor = processor.parentProcessor;
+                if(!processor.isNullProcessor) {
+                    return processor.element.getWriter();
+                }
+            }
+        }
+
+        return null;
     }
 
     private void visitBefore(WriterManagedSAXElement element, SAXElementVisitorMap elementVisitorConfig) {
         
         // Now create the new "current" processor...
-        currentProcessor = new ElementProcessor();
-        currentProcessor.element = element;
-        currentProcessor.elementVisitorConfig = elementVisitorConfig;
+        ElementProcessor processor = new ElementProcessor();
 
+        processor.parentProcessor = currentProcessor;
+        processor.element = element;
+        processor.elementVisitorConfig = elementVisitorConfig;
+
+        currentProcessor = processor;
         if(currentProcessor.elementVisitorConfig != null) {
             // And visit it with the targeted visitor...
             List<ContentHandlerConfigMap<SAXVisitBefore>> visitBeforeMappings = currentProcessor.elementVisitorConfig.getVisitBefores();
 
             if(visitBeforeMappings != null) {
-                for(ContentHandlerConfigMap<SAXVisitBefore> mapping : visitBeforeMappings) {
+                int mappingCount = visitBeforeMappings.size();
+
+                for(int i = 0; i < mappingCount; i++) {
+                    ContentHandlerConfigMap<SAXVisitBefore> mapping = visitBeforeMappings.get(i);
                     try {
                         if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                             if(mapping.isLifecycleCleanable()) {
@@ -197,20 +274,31 @@ public class SAXHandler extends DefaultHandler2 {
                         String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the visitBefore event.";
                         processVisitorException(currentProcessor.element, t, mapping, VisitSequence.BEFORE, errorMsg);
                     }
-                    flushCurrentWriter();
                 }
             }
         }
 
-        if(applyDefaultSerialization()) {
+        if(defaultSerializationOn && applyDefaultSerialization()) {
             try {
                 defaultSerializer.visitBefore(currentProcessor.element, execContext);
-                flushCurrentWriter();
                 if(eventListener != null) {
                     eventListener.onEvent(new ElementVisitEvent(element, defaultSerializerMapping, VisitSequence.BEFORE));
                 }
             } catch (IOException e) {
                 throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
+            }
+        }
+
+        // Apply the dynamic visitors...
+        List<SAXVisitBefore> dynamicVisitBefores = dynamicVisitorList.getVisitBefores();
+        if(!dynamicVisitBefores.isEmpty()) {
+            for (SAXVisitBefore dynamicVisitBefore : dynamicVisitBefores) {
+                try {
+                    dynamicVisitBefore.visitBefore(currentProcessor.element, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicVisitBefore.getClass().getName() + "' while processing the visitBefore event.";
+                    processVisitorException(t, errorMsg);
+                }
             }
         }
     }
@@ -220,7 +308,10 @@ public class SAXHandler extends DefaultHandler2 {
             List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
 
             if(visitChildMappings != null) {
-                for(ContentHandlerConfigMap<SAXVisitChildren> mapping : visitChildMappings) {
+                int mappingCount = visitChildMappings.size();
+
+                for(int i = 0; i < mappingCount; i++) {
+                    ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
                     if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                         try {
                             mapping.getContentHandler().onChildElement(currentProcessor.element, childElement, execContext);
@@ -228,23 +319,35 @@ public class SAXHandler extends DefaultHandler2 {
                             String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildElement event.";
                             processVisitorException(currentProcessor.element, t, mapping, VisitSequence.AFTER, errorMsg);
                         }
-                        flushCurrentWriter();
                     }
                 }
             }
         }
 
-        if(applyDefaultSerialization()) {
+        if(defaultSerializationOn && applyDefaultSerialization()) {
             try {
                 defaultSerializer.onChildElement(currentProcessor.element, childElement, execContext);
-                flushCurrentWriter();
             } catch (IOException e) {
                 throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
+            }
+        }
+
+        // Apply the dynamic visitors...
+        List<SAXVisitChildren> dynamicChildVisitors = dynamicVisitorList.getChildVisitors();
+        if(!dynamicChildVisitors.isEmpty()) {
+            for (SAXVisitChildren dynamicChildVisitor : dynamicChildVisitors) {
+                try {
+                    dynamicChildVisitor.onChildElement(currentProcessor.element, childElement, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicChildVisitor.getClass().getName() + "' while processing the onChildElement event.";
+                    processVisitorException(t, errorMsg);
+                }
             }
         }
     }
 
     private void visitAfter(ContentHandlerConfigMap<SAXVisitAfter> afterMapping) {
+
         try {
             if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                 if(afterMapping.isLifecycleCleanable()) {
@@ -259,17 +362,27 @@ public class SAXHandler extends DefaultHandler2 {
             String errorMsg = "Error in '" + afterMapping.getContentHandler().getClass().getName() + "' while processing the visitAfter event.";
             processVisitorException(currentProcessor.element, t, afterMapping, VisitSequence.AFTER, errorMsg);
         }
-        flushCurrentWriter();
     }
 
     private SAXText textWrapper = new SAXText();
     public void characters(char[] ch, int start, int length) throws SAXException {
-        if(currentProcessor != null) {
+        if(currentTextType != TextType.CDATA) {
+            _characters(ch, start, length);
+        } else {
+            cdataNodeBuilder.append(ch, start, length);
+        }
+    }
+
+    private void _characters(char[] ch, int start, int length) {
+        if(currentProcessor != null && !currentProcessor.isNullProcessor) {
             if(currentProcessor.elementVisitorConfig != null) {
                 List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
 
                 if(visitChildMappings != null) {
-                    for(ContentHandlerConfigMap<SAXVisitChildren> mapping : visitChildMappings) {
+                    int mappingCount = visitChildMappings.size();
+
+                    for(int i = 0; i < mappingCount; i++) {
+                        ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
                         try {
                             if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                                 textWrapper.setText(ch, start, length, currentTextType);
@@ -279,25 +392,37 @@ public class SAXHandler extends DefaultHandler2 {
                             String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildText event.";
                             processVisitorException(currentProcessor.element, t, mapping, VisitSequence.AFTER, errorMsg);
                         }
-                        flushCurrentWriter();
                     }
                 }
             }
 
-            if(applyDefaultSerialization()) {
+            if(defaultSerializationOn && applyDefaultSerialization()) {
                 try {
                     textWrapper.setText(ch, start, length, currentTextType);
                     defaultSerializer.onChildText(currentProcessor.element, textWrapper, execContext);
-                    flushCurrentWriter();
                 } catch (IOException e) {
                     throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
+                }
+            }
+        }
+
+        // Apply the dynamic visitors...
+        List<SAXVisitChildren> dynamicChildVisitors = dynamicVisitorList.getChildVisitors();
+        if(!dynamicChildVisitors.isEmpty()) {
+            for (SAXVisitChildren dynamicChildVisitor : dynamicChildVisitors) {
+                try {
+                    textWrapper.setText(ch, start, length, currentTextType);
+                    dynamicChildVisitor.onChildText(currentProcessor.element, textWrapper, execContext);
+                } catch(Throwable t) {
+                    String errorMsg = "Error in '" + dynamicChildVisitor.getClass().getName() + "' while processing the onChildText event.";
+                    processVisitorException(t, errorMsg);
                 }
             }
         }
     }
 
     private boolean applyDefaultSerialization() {
-        if(!defaultSerializationOn) {
+        if(currentProcessor.element == null || !defaultSerializationOn) {
             return false;
         }
 
@@ -305,7 +430,7 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     private void flushCurrentWriter() {
-        Writer writer = currentProcessor.element.getWriter();
+        Writer writer = getWriter();
         if(writer != null) {
             try {
                 writer.flush();
@@ -327,10 +452,19 @@ public class SAXHandler extends DefaultHandler2 {
 
     public void startCDATA() throws SAXException {
         currentTextType = TextType.CDATA;
+        cdataNodeBuilder.setLength(0);
     }
 
     public void endCDATA() throws SAXException {
-        currentTextType = TextType.TEXT;
+        try {
+            char[] chars = new char[cdataNodeBuilder.length()];
+
+            cdataNodeBuilder.getChars(0, chars.length, chars, 0);
+            _characters(chars, 0, chars.length);
+            currentTextType = TextType.TEXT;
+        } finally {
+            cdataNodeBuilder.setLength(0);
+        }
     }
 
     public void startEntity(String name) throws SAXException {
@@ -356,7 +490,9 @@ public class SAXHandler extends DefaultHandler2 {
         }
     }
 
-    private class ElementProcessor {
+    private static class ElementProcessor {
+        private ElementProcessor parentProcessor;
+        private boolean isNullProcessor = false;
         private WriterManagedSAXElement element;
         public SAXElementVisitorMap elementVisitorConfig;
     }
@@ -366,6 +502,10 @@ public class SAXHandler extends DefaultHandler2 {
             eventListener.onEvent(new ElementVisitEvent(element, configMapping, visitSequence, error));
         }
 
+        processVisitorException(error, errorMsg);
+    }
+
+    private void processVisitorException(Throwable error, String errorMsg) {
         if(terminateOnVisitorException) {
             if(error instanceof SmooksException) {
                 throw (SmooksException) error;
@@ -381,8 +521,8 @@ public class SAXHandler extends DefaultHandler2 {
 
         private SAXVisitor writerOwner;
 
-        public WriterManagedSAXElement(String namespaceURI, String localName, String qName, Attributes attributes, SAXElement parent) {
-            super(namespaceURI, localName, qName, attributes, parent);
+        public WriterManagedSAXElement(QName qName, Attributes attributes, SAXElement parent) {
+            super(qName, attributes, parent);
         }
 
         public Writer getWriter(SAXVisitor visitor) throws SAXWriterAccessException {
@@ -402,12 +542,18 @@ public class SAXHandler extends DefaultHandler2 {
             if(writerOwner == null) {
                 writerOwner = visitor;
                 super.setWriter(writer, visitor);
-            }
-            if(visitor == writerOwner) {
+            } else if(visitor == writerOwner) {
                 super.setWriter(writer, visitor);
+            } else {
+                throwSAXWriterAccessException(visitor);
             }
+        }
 
-            throwSAXWriterAccessException(visitor);
+        public SAXElement getParent() {
+            if(!maintainElementStack) {
+                throw new SmooksConfigurationException("Invalid Smooks configuration.  Call to 'SAXElement.getParent()' when the '" + Filter.MAINTAIN_ELEMENT_STACK + "' is set to 'false'.  You need to change this configuration, or modify the calling code.");
+            }
+            return super.getParent();
         }
 
         private Writer getWriter() {

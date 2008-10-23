@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>milyn</groupId>
+    <groupId>org.milyn</groupId>
     <artifactId>milyn-smooks-perfcomp</artifactId>
     <version>1.0</version>
 
@@ -16,15 +16,55 @@
         </dependency>
 
         <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-core</artifactId>
+            <version>0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-jaxb</artifactId>
+            <version>0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-xpath</artifactId>
+            <version>0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.envoisolutions.sxc</groupId>
+            <artifactId>sxc-drools</artifactId>
+            <version>0.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>wstx-asl</artifactId>
+            <version>3.2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-javabean</artifactId>
-            <version>1.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>milyn</groupId>
             <artifactId>milyn-smooks-templating</artifactId>
-            <version>1.0</version>
+            <version>1.0.1</version>
+        </dependency -->
+
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-javabean</artifactId>
+            <version>1.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-templating</artifactId>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -73,7 +113,14 @@
 
     <repositories>
         <repository>
-            <id>milyn</id>
+            <id>codehaus.m2.snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>codehaus.m1</id>
             <url>http://dist.codehaus.org</url>
         </repository>
     </repositories>

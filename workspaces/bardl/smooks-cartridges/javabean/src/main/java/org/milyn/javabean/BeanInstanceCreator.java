@@ -27,6 +27,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
@@ -38,7 +39,7 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdList;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
@@ -67,7 +68,6 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     @ConfigParam(name="beanClass")
     private String beanClassName;
 
-
     @AppContext
     private ApplicationContext appContext;
 
@@ -85,17 +85,15 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     @Initialize
     public void initialize() throws SmooksConfigurationException {
     	buildId();
-		
-		beanClassName = beanClassName.trim();
-    	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
-    	BeanIdList beanIdList = beanRepositoryManager.getBeanIdList();
-        beanId = beanIdList.register(beanIdName);
 
-    	beanRuntimeInfo = resolveBeanRuntime(beanClassName);
-        BeanRuntimeInfo.recordBeanRuntimeInfo(beanIdName, beanRuntimeInfo, appContext);
+    	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
+    	BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
+        beanId = beanIdRegister.register(beanIdName);
+
+    	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, beanClassName, appContext);
 
         if(logger.isDebugEnabled()) {
-        	logger.debug("BeanInstanceCreator created for [" + beanIdName + ":" + beanClassName + "].");
+        	logger.debug("BeanInstanceCreator created for [" + beanIdName + "].");
         }
     }
 
@@ -189,62 +187,6 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         }
 
         return bean;
-    }
-
-    /**
-     * Resolve the Javabean runtime class.
-     * <p/>
-     * Also performs some checks on the bean.
-     *
-     * @param beanClass The beanClass name.
-     * @return The bean runtime class instance.
-     */
-    private BeanRuntimeInfo resolveBeanRuntime(String beanClass) {
-        BeanRuntimeInfo beanInfo = new BeanRuntimeInfo();
-        Class<?> clazz;
-
-        // If it's an array, we use a List and extract an array from it on the
-        // visitAfter event....
-        if(beanClass.endsWith("[]")) {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.ARRAY_COLLECTION);
-            String arrayTypeName = beanClass.substring(0, beanClass.length() - 2);
-            try {
-                beanInfo.setArrayType(ClassUtil.forName(arrayTypeName, getClass()));
-            } catch (ClassNotFoundException e) {
-                throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + arrayTypeName + " not on classpath.");
-            }
-            beanInfo.setPopulateType(ArrayList.class);
-
-            return beanInfo;
-        }
-
-        try {
-            clazz = ClassUtil.forName(beanClass, getClass());
-        } catch (ClassNotFoundException e) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " not on classpath.");
-        }
-
-        beanInfo.setPopulateType(clazz);
-
-        // We maintain a targetType enum because it helps us avoid performing
-        // instanceof checks, which are cheap when the instance being checked is
-        // an instanceof, but is expensive if it's not....
-        if(Map.class.isAssignableFrom(clazz)) {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.MAP_COLLECTION);
-        } else if(Collection.class.isAssignableFrom(clazz)) {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.COLLECTION_COLLECTION);
-        } else {
-            beanInfo.setClassification(BeanRuntimeInfo.Classification.NON_COLLECTION);
-        }
-
-        // check for a default constructor.
-        try {
-            clazz.getConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
-        }
-
-        return beanInfo;
     }
 
     private String getId() {

@@ -15,11 +15,11 @@
 */
 package org.milyn.javabean;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.milyn.cdr.*;
+import org.milyn.container.*;
+import org.milyn.util.ClassUtil;
 
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.container.ApplicationContext;
+import java.util.*;
 
 /**
  * Java bean runtime info.
@@ -62,7 +62,13 @@ public class BeanRuntimeInfo {
         ARRAY_COLLECTION,
         COLLECTION_COLLECTION,
         MAP_COLLECTION,
+    }
 
+    public BeanRuntimeInfo() {
+    }
+
+    public BeanRuntimeInfo(String classname) {
+    	resolveBeanRuntimeInfo(classname);
     }
 
     public static void recordBeanRuntimeInfo(String beanId, BeanRuntimeInfo beanRuntimeInfo, ApplicationContext appContext) {
@@ -80,6 +86,72 @@ public class BeanRuntimeInfo {
         Map<String, BeanRuntimeInfo> runtimeInfoMap = getRuntimeInfoMap(appContext);
 
         return runtimeInfoMap.get(beanId);
+    }
+
+    public static BeanRuntimeInfo getBeanRuntimeInfo(String beanId, String beanClassName, ApplicationContext appContext) {
+        Map<String, BeanRuntimeInfo> runtimeInfoMap = getRuntimeInfoMap(appContext);
+
+        BeanRuntimeInfo beanRuntimeInfo = runtimeInfoMap.get(beanId);
+
+        if(beanRuntimeInfo == null) {
+        	beanRuntimeInfo = new BeanRuntimeInfo(beanClassName);
+        	recordBeanRuntimeInfo(beanId, beanRuntimeInfo, appContext);
+        }
+        return beanRuntimeInfo;
+    }
+
+    /**
+     * Resolve the Javabean runtime class.
+     * <p/>
+     * Also performs some checks on the bean.
+     *
+     * @param beanClass The beanClass name.
+     * @return The bean runtime class instance.
+     */
+    private void resolveBeanRuntimeInfo(String beanClass) {
+        Class<?> clazz;
+
+        // If it's an array, we use a List and extract an array from it on the
+        // visitAfter event....
+        if(beanClass.endsWith("[]")) {
+            this.setClassification(BeanRuntimeInfo.Classification.ARRAY_COLLECTION);
+            String arrayTypeName = beanClass.substring(0, beanClass.length() - 2);
+            try {
+            	this.setArrayType(ClassUtil.forName(arrayTypeName, getClass()));
+            } catch (ClassNotFoundException e) {
+                throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + arrayTypeName + " not on classpath.");
+            }
+            this.setPopulateType(ArrayList.class);
+
+        } else {
+
+	        try {
+	            clazz = ClassUtil.forName(beanClass, getClass());
+	        } catch (ClassNotFoundException e) {
+	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " not on classpath.");
+	        }
+
+	        this.setPopulateType(clazz);
+
+	        // We maintain a targetType enum because it helps us avoid performing
+	        // instanceof checks, which are cheap when the instance being checked is
+	        // an instanceof, but is expensive if it's not....
+	        if(Map.class.isAssignableFrom(clazz)) {
+	        	this.setClassification(BeanRuntimeInfo.Classification.MAP_COLLECTION);
+	        } else if(Collection.class.isAssignableFrom(clazz)) {
+	        	this.setClassification(BeanRuntimeInfo.Classification.COLLECTION_COLLECTION);
+	        } else {
+	        	this.setClassification(BeanRuntimeInfo.Classification.NON_COLLECTION);
+	        }
+
+	        // check for a default constructor.
+	        try {
+	            clazz.getConstructor();
+	        } catch (NoSuchMethodException e) {
+	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
+	        }
+
+        }
     }
 
     @SuppressWarnings("unchecked")

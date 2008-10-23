@@ -16,26 +16,6 @@
 
 package org.milyn.xml;
 
-import java.io.*;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.XMLConstants;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -43,9 +23,35 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.milyn.io.StreamUtils;
+
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 
 /**
  * XMl utility methods.
@@ -286,13 +292,31 @@ public class XmlUtil {
     public static Document parseStream(InputStream stream,
                                        EntityResolver entityResolver, VALIDATION_TYPE validation,
                                        boolean expandEntityRefs) throws SAXException, IOException {
+
+        return parseStream(new InputStreamReader(stream), entityResolver, validation, expandEntityRefs);
+    }
+
+    /**
+     * Parse the XML stream and return the associated W3C Document object.
+     *
+     * @param stream           The stream to be parsed.
+     * @param entityResolver   Entity resolver to be used during the parse.
+     * @param validation       Validation type to be carried out on the document.
+     * @param expandEntityRefs Expand entity References as per
+     *                         {@link javax.xml.parsers.DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
+     * @return The W3C Document object associated with the input stream.
+     */
+    public static Document parseStream(Reader stream,
+                                       EntityResolver entityResolver, VALIDATION_TYPE validation,
+                                       boolean expandEntityRefs) throws SAXException, IOException {
         if (stream == null) {
-            throw new IllegalArgumentException(
-                    "null 'stream' arg in method call.");
+            throw new IllegalArgumentException("null 'stream' arg in method call.");
         }
+        
         try {
+            String streamData = StreamUtils.readStream(stream);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = null;
+            DocumentBuilder docBuilder;
 
             // Setup validation...
             if (validation == VALIDATION_TYPE.DTD) {
@@ -301,9 +325,7 @@ public class XmlUtil {
                 try {
                     Schema schema = getSchema(entityResolver);
 
-                    stream = new ByteArrayInputStream(StreamUtils.readStream(stream));
-                    schema.newValidator().validate(new StreamSource(stream));
-                    stream.reset();
+                    schema.newValidator().validate(new StreamSource(new StringReader(streamData)));
                 } catch (IllegalArgumentException e) {
                     throw new SAXException("Unable to validate document.  Installed parser '" + factory.getClass().getName() + "' doesn't support JAXP 1.2", e);
                 }
@@ -316,7 +338,7 @@ public class XmlUtil {
             }
             docBuilder.setErrorHandler(XMLParseErrorHandler.getInstance());
 
-            return docBuilder.parse(stream);
+            return docBuilder.parse(new InputSource(new StringReader(streamData)));
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException("Unable to parse XML stream - XML Parser not configured correctly.", e);
         } catch (FactoryConfigurationError e) {
@@ -330,13 +352,22 @@ public class XmlUtil {
      * @return Document instance.
      */
     public static Document parseStream(InputStream stream) throws ParserConfigurationException, IOException, SAXException {
+        return parseStream(new InputStreamReader(stream));
+    }
+
+    /**
+     * Basic DOM namespace aware parse.
+     * @param stream Document stream.
+     * @return Document instance.
+     */
+    public static Document parseStream(Reader stream) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
 
         factory.setNamespaceAware(true);
         docBuilder = factory.newDocumentBuilder();
 
-        return docBuilder.parse(stream);
+        return docBuilder.parse(new InputSource(stream));
     }
 
     private static Schema getSchema(EntityResolver entityResolver) throws SAXException, IOException {
@@ -447,12 +478,65 @@ public class XmlUtil {
     /**
      * Serialise the supplied W3C DOM subtree.
      *
+     * @param node The DOM node to be serialized.
+     * @param format Format the output.
+     * @return The subtree in serailised form.
+     * @throws DOMException Unable to serialise the DOM.
+     */
+    public static String serialize(final Node node, boolean format) throws DOMException {
+        StringWriter writer = new StringWriter();
+        serialize(node, format, writer);
+        return writer.toString();
+    }
+
+    /**
+     * Serialise the supplied W3C DOM subtree.
+     *
+     * @param node The DOM node to be serialized.
+     * @param format Format the output.
+     * @param writer The target writer for serialization.
+     * @throws DOMException Unable to serialise the DOM.
+     */
+    public static void serialize(final Node node, boolean format, Writer writer) throws DOMException {
+        if(node.getNodeType() == Node.DOCUMENT_NODE) {
+            serialize(node.getChildNodes(), format, writer);
+        } else {
+            serialize(new NodeList() {
+                public Node item(int index) {
+                    return node;
+                }
+
+                public int getLength() {
+                    return 1;
+                }
+            }, format, writer);
+        }
+    }
+
+    /**
+     * Serialise the supplied W3C DOM subtree.
+     *
      * @param nodeList The DOM subtree as a NodeList.
      * @param format Format the output.
      * @return The subtree in serailised form.
      * @throws DOMException Unable to serialise the DOM.
      */
     public static String serialize(NodeList nodeList, boolean format) throws DOMException {
+        StringWriter writer = new StringWriter();
+        serialize(nodeList, format, writer);
+        return writer.toString();
+    }
+
+    /**
+     * Serialise the supplied W3C DOM subtree.
+     *
+     * @param nodeList The DOM subtree as a NodeList.
+     * @param format Format the output.
+     * @param writer The target writer for serialization.
+     * @throws DOMException Unable to serialise the DOM.
+     */
+    public static void serialize(NodeList nodeList, boolean format, Writer writer) throws DOMException {
+
         if (nodeList == null) {
             throw new IllegalArgumentException(
                     "null 'subtree' NodeIterator arg in method call.");
@@ -477,7 +561,6 @@ public class XmlUtil {
                 transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "4");
             }
 
-            StringWriter writer = new StringWriter();
             int listLength = nodeList.getLength();
 
             // Iterate through the Node List.
@@ -492,8 +575,6 @@ public class XmlUtil {
                     transformer.transform(new DOMSource(node), new StreamResult(writer));
                 }
             }
-
-            return writer.toString();
         } catch (Exception e) {
             DOMException domExcep = new DOMException(
                     DOMException.INVALID_ACCESS_ERR,

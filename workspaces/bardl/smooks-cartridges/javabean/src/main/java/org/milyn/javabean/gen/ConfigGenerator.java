@@ -128,8 +128,8 @@ public class ConfigGenerator {
                 } else {
                     if(type.isArray()) {
                         addArrayConfig(classConfigs, bindings, rootPackage, field);
-                    } else if(List.class.isAssignableFrom(type)) {
-                        addListConfig(classConfigs, bindings, rootPackage, field);
+                    } else if(Collection.class.isAssignableFrom(type)) {
+                        addCollectionConfig(classConfigs, bindings, rootPackage, field);
                     } else {
                         String typePackage = type.getPackage().getName();
 
@@ -169,7 +169,7 @@ public class ConfigGenerator {
         }
     }
 
-    private void addListConfig(List<ClassConfig> classConfigs, List<BindingConfig> bindings, String rootPackage, Field field) {
+    private void addCollectionConfig(List<ClassConfig> classConfigs, List<BindingConfig> bindings, String rootPackage, Field field) {
         ParameterizedType paramType = (ParameterizedType) field.getGenericType();
         Type[] types = paramType.getActualTypeArguments();
 

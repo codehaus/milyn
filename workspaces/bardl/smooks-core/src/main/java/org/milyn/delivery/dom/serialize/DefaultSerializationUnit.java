@@ -16,9 +16,6 @@
 
 package org.milyn.delivery.dom.serialize;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Attr;
@@ -30,6 +27,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.io.Writer;
+
 /**
  * Default SerializationUnit implementation.
  * <p/>
@@ -40,6 +40,10 @@ public class DefaultSerializationUnit implements SerializationUnit {
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
     private boolean closeEmptyElements = false;
+
+    public void setCloseEmptyElements(boolean closeEmptyElements) {
+        this.closeEmptyElements = closeEmptyElements;
+    }
 
     /* (non-Javadoc)
      * @see org.milyn.serialize.SerializationUnit#writeElementStart(org.w3c.dom.Element, java.io.Writer)

@@ -14,7 +14,9 @@
  */
 package org.milyn.routing.jms.message.creationstrategies;
 
-import static org.testng.AssertJUnit.*;
+import static org.testng.AssertJUnit.assertSame;
+import static org.testng.AssertJUnit.assertTrue;
+
 import java.io.IOException;
 
 import javax.jms.JMSException;
@@ -41,7 +43,7 @@ import com.mockrunner.mock.jms.MockConnectionFactory;
 @Test ( groups = "unit")
 public class ObjectMessageCreationStrategyTest
 {
-	private ObjectMessageCreationStrategy strategy = new ObjectMessageCreationStrategy();
+	private final ObjectMessageCreationStrategy strategy = new ObjectMessageCreationStrategy();
 
 	private static Session jmsSession;
 
@@ -55,6 +57,10 @@ public class ObjectMessageCreationStrategyTest
         Message message = strategy.createJMSMessage( beanId, executionContext, jmsSession ) ;
 
         assertTrue ( message instanceof ObjectMessage );
+
+        ObjectMessage objectMessage = (ObjectMessage) message;
+
+        assertSame(bean, objectMessage.getObject());
 	}
 
 	@BeforeClass

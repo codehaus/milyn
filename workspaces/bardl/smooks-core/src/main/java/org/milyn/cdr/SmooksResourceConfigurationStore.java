@@ -265,6 +265,15 @@ public class SmooksResourceConfigurationStore {
     }
 
     /**
+     * Add a {@link SmooksResourceConfigurationList} to this store.
+     *
+     * @return All the SmooksResourceConfigurationList instances added on this store.
+     */
+    public void addSmooksResourceConfigurationList(SmooksResourceConfigurationList resourceList) {
+        configLists.add(resourceList);
+    }
+
+    /**
      * Get all the added SmooksResourceConfigurationList instances added on this store.
      *
      * @return All the SmooksResourceConfigurationList instances added on this store.

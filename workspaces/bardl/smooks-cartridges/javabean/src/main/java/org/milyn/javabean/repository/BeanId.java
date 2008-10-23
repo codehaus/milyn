@@ -24,10 +24,10 @@ package org.milyn.javabean.repository;
  * The BeanId represents the id of a bean. It is used to set  and
  * retrieve instance of the bean from the BeanRepository.
  * <p />
- * The String representation of the BeanId is registered with a {@link BeanIdList}
- * and there by coupled to that {@link BeanIdList}. The BeanId holds the original
+ * The String representation of the BeanId is registered with a {@link BeanIdRegister}
+ * and there by coupled to that {@link BeanIdRegister}. The BeanId holds the original
  * {@link String} beanId,also called beanIdName. It also holds the index of
- * the place it has within the {@link BeanIdList}. 
+ * the place it has within the {@link BeanIdRegister}. 
  * 
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
@@ -38,21 +38,21 @@ public class BeanId {
 
 	private final String name;
 
-	private final BeanIdList beanIdList;
+	private final BeanIdRegister beanIdList;
 
 	/**
 	 * @param index
 	 * @param name
 	 */
-	public BeanId(BeanIdList beanIdList, int index, String beanId) {
-		this.beanIdList = beanIdList;
+	public BeanId(BeanIdRegister beanIdRegister, int index, String beanId) {
+		this.beanIdList = beanIdRegister;
 		this.index = index;
 		this.name = beanId;
 	}
 
 	/**
 	 * Returns the index of the place
-	 * it holds in the {@link BeanIdList}.
+	 * it holds in the {@link BeanIdRegister}.
 	 * 
 	 * @return the index
 	 */
@@ -75,7 +75,7 @@ public class BeanId {
 	 * 
 	 * @return the beanIdList
 	 */
-	public BeanIdList getBeanIdList() {
+	public BeanIdRegister getBeanIdList() {
 		return beanIdList;
 	}
 

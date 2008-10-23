@@ -16,6 +16,9 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.assertion.AssertArgument;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -89,29 +92,62 @@ public class SAXElement {
      * @param parent       Parent element, or null if the element is the document root element.
      */
     public SAXElement(String namespaceURI, String localName, String qName, Attributes attributes, SAXElement parent) {
-        if (namespaceURI != null) {
-            int colonIndex = -1;
+        this.name = toQName(namespaceURI, localName, qName);
+        this.attributes = copyAttributes(attributes);
+        this.parent = parent;
+    }
 
-            if (qName != null && (colonIndex = qName.indexOf(':')) != -1) {
+    /**
+     * Public constructor.
+     *
+     * @param name       The element {@link QName}.
+     * @param attributes The attributes attached to the element.  If
+     *                   there are no attributes, it shall be an empty
+     *                   Attributes object.
+     * @param parent     Parent element, or null if the element is the document root element.
+     */
+    public SAXElement(QName name, Attributes attributes, SAXElement parent) {
+        this.name = name;
+        this.attributes = copyAttributes(attributes);
+        this.parent = parent;
+    }
+
+    /**
+     * Create a {@link QName} instance from the supplied element naming parameters.
+     *
+     * @param namespaceURI The Namespace URI, or the empty string if the
+     *                     element has no Namespace URI or if Namespace
+     *                     processing is not being performed.
+     * @param localName    The local name (without prefix), or the
+     *                     empty string if Namespace processing is not being
+     *                     performed.
+     * @param qName        The qualified name (with prefix), or the
+     *                     empty string if qualified names are not available.
+     * @return A {@link QName} instance representing the element named by the supplied parameters.
+     */
+    public static QName toQName(String namespaceURI, String localName, String qName) {
+        if (namespaceURI != null) {
+            int colonIndex;
+
+            if (namespaceURI.length() != 0 && qName != null && (colonIndex = qName.indexOf(':')) != -1) {
                 String prefix = qName.substring(0, colonIndex);
                 String qNameLocalName = qName.substring(colonIndex + 1);
 
-                name = new QName(namespaceURI.intern(), qNameLocalName, prefix);
-            } else if (localName != null && !localName.equals("")) {
-                name = new QName(namespaceURI.intern(), localName);
-            } else if (qName != null && !qName.equals("")) {
-                name = new QName(namespaceURI.intern(), qName);
+                return new QName(namespaceURI.intern(), qNameLocalName, prefix);
+            } else if (localName != null && localName.length() != 0) {
+                return new QName(namespaceURI, localName);
+            } else if (qName != null && qName.length() != 0) {
+                return new QName(namespaceURI, qName);
             } else {
                 thowInvalidNameException(namespaceURI, localName, qName);
             }
-        } else if (localName != null && !localName.equals("")) {
-            name = new QName(localName);
+        } else if (localName != null && localName.length() != 0) {
+            return new QName(localName);
         } else {
             thowInvalidNameException(namespaceURI, localName, qName);
         }
 
-        this.attributes = copyAttributes(attributes);
-        this.parent = parent;
+        return null;
     }
 
     /**
@@ -129,7 +165,7 @@ public class SAXElement {
         return attributesCopy;
     }
 
-    private void thowInvalidNameException(String namespaceURI, String localName, String qName) {
+    private static void thowInvalidNameException(String namespaceURI, String localName, String qName) {
         throw new IllegalArgumentException("Invalid SAXELement name paramaters: namespaceURI='" + namespaceURI + "', localName='" + localName + "', qName='" + qName + "'.");
     }
 
@@ -153,7 +189,7 @@ public class SAXElement {
      * <p/>
      * See <a href="#element-writing">element writing</a>.
      *
-     * @param writer The element writer.
+     * @param writer  The element writer.
      * @param visitor The visitor requesting to set the element writer.
      * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
      */
@@ -228,7 +264,66 @@ public class SAXElement {
         return parent;
     }
 
+    /**
+     * Set parent element.
+     *
+     * @param parent Parent element, or null if it's the documnent root.
+     */
+    public void setParent(SAXElement parent) {
+        this.parent = parent;
+    }
+
     public String toString() {
         return getName().toString();
+    }
+
+    public final boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    public final int hashCode() {
+        return super.hashCode();
+    }
+
+    /**
+     * Create a DOM {@link Element} instance from this {@link SAXElement}
+     * instance.
+     * @param document The document to use to create the DOM Element.
+     * @return The DOM Element.
+     */
+    public Element toDOMElement(Document document) {
+        Element element;
+
+        if(name.getNamespaceURI() != null) {
+            if(name.getPrefix().length() != 0) {
+                element = document.createElementNS(name.getNamespaceURI(), name.getPrefix() + ":" + name.getLocalPart());
+            } else {
+                element = document.createElementNS(name.getNamespaceURI(), name.getLocalPart());
+            }
+        } else {
+            element = document.createElement(name.getLocalPart());
+        }
+
+        int attributeCount = attributes.getLength();
+        for(int i = 0; i < attributeCount; i++) {
+            String namespace = attributes.getURI(i);
+            String value = attributes.getValue(i);
+
+            if(namespace != null) {
+                String qName = attributes.getQName(i);
+                Attr attribute = document.createAttributeNS(namespace, qName);
+
+                attribute.setValue(value);
+                element.setAttributeNode(attribute);
+            } else {
+                String localName = attributes.getLocalName(i);
+                Attr attribute = document.createAttribute(localName);
+
+                attribute.setValue(value);
+                element.setAttributeNode(attribute);
+            }
+        }
+        
+        return element;
     }
 }

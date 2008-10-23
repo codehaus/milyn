@@ -15,17 +15,18 @@
 */
 package org.milyn.javabean.expression;
 
-import junit.framework.TestCase;
-import org.milyn.Smooks;
-import org.milyn.expression.ExpressionEvaluationException;
-import org.milyn.javabean.expression.BeanMapExpressionEvaluator;
-import org.milyn.container.ExecutionContext;
-import org.xml.sax.SAXException;
-
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+
+import javax.xml.transform.stream.StreamSource;
+
+import junit.framework.TestCase;
+
+import org.milyn.Smooks;
+import org.milyn.container.ExecutionContext;
+import org.milyn.expression.ExpressionEvaluationException;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -56,7 +57,7 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
             fail("Expected ExpressionEvaluationException");
         } catch(ExpressionEvaluationException e) {
             assertEquals("Error evaluating MVEL expression 'x.y' against object type 'java.util.HashMap'. Common issues include:\n" +
-                    "\t\t1. Referencing variables not bound to the context. In this case add an assertion in the expression.\n" +
+                    "\t\t1. Referencing a variable that is not bound into the context. In this case use VARS.isdef(\"someVar\") to check if the variable is bound in the context.\n" +
                     "\t\t2. Invalid expression reference to a List/Array based variable token.  Example List/Array referencing expression token: 'order.orderItems[0].productId'.",
                     e.getMessage());
         }

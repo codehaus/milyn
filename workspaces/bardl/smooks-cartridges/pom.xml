@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>milyn</groupId>
+        <groupId>org.milyn</groupId>
         <artifactId>milyn</artifactId>
         <version>1.1.1</version>
     </parent>
     <name>Milyn Smooks Cartridges (Base POM)</name>
-    <groupId>milyn</groupId>
+    <groupId>org.milyn</groupId>
     <artifactId>smooks-cartridge-base-pom</artifactId>
     <packaging>pom</packaging>
     <version>1.1.1</version>
@@ -22,12 +22,18 @@
 
         <milyn.smooks.dtd.version.base>${milyn.smooks.core.version}</milyn.smooks.dtd.version.base>
         <milyn.smooks.dtd.version>${milyn.smooks.dtd.version.base}</milyn.smooks.dtd.version>
-
+		
+        <milyn.smooks.calc.version.base>${milyn.smooks.core.version}</milyn.smooks.calc.version.base>
+        <milyn.smooks.calc.version>${milyn.smooks.calc.version.base}</milyn.smooks.calc.version>
+		
         <milyn.smooks.css.version.base>${milyn.smooks.core.version}</milyn.smooks.css.version.base>
         <milyn.smooks.css.version>${milyn.smooks.css.version.base}</milyn.smooks.css.version>
 
         <milyn.smooks.javabean.version.base>${milyn.smooks.core.version}</milyn.smooks.javabean.version.base>
         <milyn.smooks.javabean.version>${milyn.smooks.javabean.version.base}</milyn.smooks.javabean.version>
+
+        <milyn.smooks.json.version.base>${milyn.smooks.core.version}</milyn.smooks.json.version.base>
+        <milyn.smooks.json.version>${milyn.smooks.json.version.base}</milyn.smooks.json.version>
 
         <milyn.smooks.templating.version.base>${milyn.smooks.core.version}</milyn.smooks.templating.version.base>
         <milyn.smooks.templating.version>${milyn.smooks.templating.version.base}</milyn.smooks.templating.version>
@@ -51,17 +57,19 @@
         <module>dtd</module>
         <module>edi</module>
         <module>javabean</module>
+        <module>json</module>
         <module>misc</module>
         <module>scripting</module>
         <module>servlet</module>
         <module>templating</module>
         <module>routing</module>
+		<module>calc</module>
         <!-- module>perfcomp</module -->
     </modules>
 
     <dependencies>
         <dependency>
-            <groupId>milyn</groupId>
+            <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-core</artifactId>
             <version>${milyn.smooks.core.version}</version>
             <exclusions>
@@ -75,8 +83,11 @@
 
     <repositories>
         <repository>
-            <id>milyn</id>
-            <url>http://dist.codehaus.org</url>
+            <id>codehaus.m2.snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 

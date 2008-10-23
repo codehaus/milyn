@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -151,42 +152,77 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_populate_Order() throws SAXException, IOException, InterruptedException {
-        test_populate_Order("order-01-smooks-config.xml", true, false);
-        test_populate_Order("order-01-smooks-config-sax.xml", true, false);
-        test_populate_Order("order-01-smooks-config-arrays.xml", true, false);
+        test_populate_Order("order-01-smooks-config.xml");
+        test_populate_Order("order-01-smooks-config-sax.xml");
+        test_populate_Order("order-01-smooks-config-arrays.xml");
     }
 
-    public void test_populate_Order(String configName, boolean parentBinding, boolean orderdResult) throws SAXException, IOException, InterruptedException {
+    private void test_populate_Order(String configName) throws SAXException, IOException, InterruptedException {
 
         String packagePath = ClassUtil.toFilePath(getClass().getPackage());
         Smooks smooks = new Smooks(packagePath + "/" + configName);
         ExecutionContext executionContext = smooks.createExecutionContext();
 
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
-        JavaResult result = new JavaResult(orderdResult);
+        JavaResult result = new JavaResult();
 
         smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
         Order order = (Order) result.getBean("order");
 
-        assertNotNull(order);
+
+        assertOrder(order);
+    }
+
+    public void test_update_Order() throws SAXException, IOException, InterruptedException {
+    	test_update_Order("order-01-smooks-config-update.xml");
+    }
+
+    private void test_update_Order(String configName) throws SAXException, IOException, InterruptedException {
+
+        String packagePath = ClassUtil.toFilePath(getClass().getPackage());
+
+        Order inOrder = new Order();
+        Header inHeader = new Header();
+        List<OrderItem> inOrderItems = new ArrayList<OrderItem>();
+
+        JavaResult result = new JavaResult();
+        result.getResultMap().put("order", inOrder);
+   	 	result.getResultMap().put("orderItemList", inOrderItems);
+   	 	result.getResultMap().put("header", inHeader);
+
+
+        Smooks smooks = new Smooks(packagePath + "/" + configName);
+
+        ExecutionContext executionContext = smooks.createExecutionContext();
+
+        String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
+
+        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+
+        Order order = (Order) result.getBean("order");
+
+        assertSame(inOrder, order);
+        assertSame(inOrderItems, order.getOrderItems());
+        assertSame(inHeader, order.getHeader());
+
+        assertOrder(order);
+
+    }
+
+    private void assertOrder(Order order) {
+
+    	assertNotNull(order);
         assertNotNull(order.getHeader());
 
         assertEquals(1163616328000L, order.getHeader().getDate().getTime());
         assertEquals("Joe", order.getHeader().getCustomerName());
         assertEquals(new Long(123123), order.getHeader().getCustomerNumber());
 
-        if(parentBinding) {
-        	assertNotNull(order.getHeader().getOrder());
-        }
+        assertNotNull(order.getHeader().getOrder());
 
         assertTrue("PrivatePerson was not set to true", order.getHeader().getPrivatePerson());
 
-        testOrderItems(order, parentBinding);
-
-    }
-
-    private void testOrderItems(Order order, boolean parentBinding) {
         List<OrderItem> orderItems = order.getOrderItems();
         OrderItem[] orderItemsArray = order.getOrderItemsArray();
 
@@ -203,7 +239,7 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals(111, orderItem.getProductId());
         assertEquals(new Integer(2), orderItem.getQuantity());
 
-        if(parentBinding && orderItemsArray == null) {
+        if(orderItemsArray == null) {
         	assertNotNull(orderItem.getOrder());
         }
 
@@ -212,42 +248,43 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals(222, orderItem.getProductId());
         assertEquals(new Integer(7), orderItem.getQuantity());
 
-        if(parentBinding && orderItemsArray == null) {
+        if(orderItemsArray == null) {
         	assertNotNull(orderItem.getOrder());
         }
+
     }
-    
+
     public void test_populate_Employee() throws SAXException, IOException, InterruptedException {
         test_populate_Employee("employee-01-smooks-config.xml");
     }
 
 	/**
 	 * Test with inherited model
-	 * 
+	 *
 	 * @param string
-	 * @throws IOException 
-	 * @throws SAXException 
+	 * @throws IOException
+	 * @throws SAXException
 	 */
 	private void test_populate_Employee(String configName) throws IOException, SAXException {
-		
+
 		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
-		
+
         Smooks smooks = new Smooks(packagePath + "/" + configName);
         ExecutionContext executionContext = smooks.createExecutionContext();
-        
+
         JavaResult result = new JavaResult();
-        
+
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("employee-01.xml")));
         smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
 
         Employee employee = (Employee) result.getBean("employee");
-        
+
         assertNotNull(employee);
-        
+
         assertEquals("111", employee.getFirstName());
         assertEquals("222", employee.getLastName());
         assertEquals("333", employee.getEmployeeId());
-        
+
 	}
 
 }

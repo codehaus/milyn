@@ -227,10 +227,13 @@ public class SmooksDOMFilter extends Filter {
             // Filter the Source....
             if (source instanceof DOMSource) {
                 Node node = ((DOMSource) source).getNode();
-                if (!(node instanceof Document)) {
-                    throw new IllegalArgumentException("DOMSource Source types must contain a Document node.");
+                if ((node instanceof Document)) {
+                    resultNode = filter((Document) node);
+                } else if ((node instanceof Element)) {
+                    resultNode = filter((Element) node);
+                } else {
+                    throw new IllegalArgumentException("DOMSource Source types must contain a Document or Element node.");
                 }
-                resultNode = filter((Document) node);
             } else {
                 resultNode = filter(getReader(source, executionContext));
             }
@@ -291,7 +294,7 @@ public class SmooksDOMFilter extends Filter {
     }
 
     /**
-     * Phase the supplied W3C Document.
+     * Filter the supplied W3C Document.
      * <p/>
      * Executes the <a href="#phases">Assembly &amp Processing phases</a>.
      *
@@ -299,15 +302,7 @@ public class SmooksDOMFilter extends Filter {
      * @return Node representing filtered document.
      */
     public Node filter(Document doc) {
-        Vector transList = new Vector();
-        int transListLength;
-        ProcessingSet globalProcessingSet;
         Node deliveryNode;
-
-        // Register the DOM phase events...
-        if (eventListener != null) {
-            eventListener.onEvent(new DOMFilterLifecycleEvent(DOMFilterLifecycleEvent.DOMEventType.ASSEMBLY_STARTED));
-        }
 
         // Apply assembly phase...
         if (doc.getDocumentElement() == null) {
@@ -315,17 +310,40 @@ public class SmooksDOMFilter extends Filter {
             return doc;
         }
 
-        // Apply assembly phase, skipping it if there are no configured assembly units...
+        deliveryNode = filter(doc.getDocumentElement());
+        if (deliveryNode == null) {
+            deliveryNode = doc;
+        }
+
+        return deliveryNode;
+    }
+
+    /**
+     * Filter the supplied W3C Element.
+     * <p/>
+     * Executes the <a href="#phases">Assembly &amp Processing phases</a>.
+     *
+     * @param element The W3C Element to be filtered.
+     * @return Node representing filtered Element.
+     */
+    public Node filter(Element element) {
         ContentHandlerConfigMapTable<DOMVisitBefore> visitBefores = deliveryConfig.getAssemblyVisitBefores();
         ContentHandlerConfigMapTable<DOMVisitAfter> visitAfters = deliveryConfig.getAssemblyVisitAfters();
         globalAssemblyBefores = deliveryConfig.getAssemblyVisitBefores().getMappings("*");
         globalAssemblyAfters = deliveryConfig.getAssemblyVisitAfters().getMappings("*");
+
+        // Register the DOM phase events...
+        if (eventListener != null) {
+            eventListener.onEvent(new DOMFilterLifecycleEvent(DOMFilterLifecycleEvent.DOMEventType.ASSEMBLY_STARTED));
+        }
+
+        // Apply assembly phase, skipping it if there are no configured assembly units...
         if (applyAssembly(visitBefores, visitAfters)) {
             // Assemble
             if (logger.isDebugEnabled()) {
                 logger.debug("Starting assembly phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
             }
-            assemble(doc.getDocumentElement(), true);
+            assemble(element, true);
         } else {
             if (logger.isDebugEnabled()) {
                 logger.debug("No assembly units configured for device [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
@@ -345,19 +363,17 @@ public class SmooksDOMFilter extends Filter {
         globalProcessingBefores = deliveryConfig.getProcessingVisitBefores().getMappings("*");
         globalProcessingAfters = deliveryConfig.getProcessingVisitAfters().getMappings("*");
 
-        buildProcessingList(transList, doc.getDocumentElement(), true);
+        int transListLength;
+        Vector transList = new Vector();
+
+        buildProcessingList(transList, element, true);
         transListLength = transList.size();
         for (int i = 0; i < transListLength; i++) {
             ElementProcessor elementTrans = (ElementProcessor) transList.get(i);
             elementTrans.process(executionContext);
         }
 
-        deliveryNode = (Node) executionContext.getAttribute(DELIVERY_NODE_REQUEST_KEY);
-        if (deliveryNode == null) {
-            deliveryNode = doc;
-        }
-
-        return deliveryNode;
+        return (Node) executionContext.getAttribute(DELIVERY_NODE_REQUEST_KEY);
     }
 
     private boolean applyAssembly(ContentHandlerConfigMapTable<DOMVisitBefore> visitBefores, ContentHandlerConfigMapTable<DOMVisitAfter> visitAfters) {

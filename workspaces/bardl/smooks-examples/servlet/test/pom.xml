@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>milyn</groupId>
+		<groupId>org.milyn</groupId>
 		<artifactId>smooks-examples-servlet-base</artifactId>
 		<version>1.1</version>
 	</parent>
 	<name>Milyn Smooks Example - Servlet (Test)</name>
-	<groupId>milyn</groupId>
+	<groupId>org.milyn</groupId>
 	<artifactId>milyn-smooks-example-servlet-test</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0</version>
@@ -20,7 +20,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>milyn</groupId>
+			<groupId>org.milyn</groupId>
 			<artifactId>milyn-smooks-example-servlet</artifactId>
 			<version>1.0</version>
 			<type>war</type>
@@ -74,7 +74,7 @@
 								<home>${project.build.directory}/jetty6x/container</home>
 								<deployables>
 									<deployable>
-										<groupId>milyn</groupId>
+										<groupId>org.milyn</groupId>
 										<artifactId>milyn-smooks-example-servlet</artifactId>
 										<type>war</type>
 										<properties>
@@ -82,6 +82,9 @@
 										</properties>
 									</deployable>
 								</deployables>
+                                <properties>
+                                    <cargo.servlet.port>19191</cargo.servlet.port>
+                                </properties>
 							</configuration>
 						</configuration>
 						<executions>
@@ -158,7 +161,7 @@
 								<deployables>
 									<deployable>
 										
-										<groupId>milyn</groupId>
+										<groupId>org.milyn</groupId>
 										<artifactId>milyn-smooks-example-servlet</artifactId>
 										<type>war</type>
 										<properties>

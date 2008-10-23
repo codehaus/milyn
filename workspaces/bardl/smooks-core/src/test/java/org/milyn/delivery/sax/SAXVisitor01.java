@@ -38,6 +38,7 @@ public class SAXVisitor01 implements SAXElementVisitor {
 
     public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
         TestCase.assertEquals(SAXVisitor01.element, element);
+        element.getCache();
         childText.add(text.getText());
     }
 

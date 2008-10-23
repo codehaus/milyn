@@ -149,7 +149,7 @@ public class ClassUtil {
         try {
             long startTime = System.currentTimeMillis();
             scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
-            logger.info("Scanned classpath for instances of '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches. Scan took " + (System.currentTimeMillis() - startTime) + "ms.");
+            logger.debug("Scanned classpath for instances of '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches. Scan took " + (System.currentTimeMillis() - startTime) + "ms.");
         } catch (IOException e) {
             throw new RuntimeException("Failed to search classspath for instances of '" + type.getName() + "'.", e);
         }
@@ -173,7 +173,7 @@ public class ClassUtil {
         try {
             long startTime = System.currentTimeMillis();
             scanner.scanClasspath(Thread.currentThread().getContextClassLoader());
-            logger.info("Scanned classpath for class annotated with annotation '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches. Scan took " + (System.currentTimeMillis() - startTime) + "ms.");
+            logger.debug("Scanned classpath for class annotated with annotation '" + type.getName() + "'.  Found " + filter.getClasses().size() + " matches. Scan took " + (System.currentTimeMillis() - startTime) + "ms.");
         } catch (IOException e) {
             throw new RuntimeException("Failed to search classspath for class annotated with annotation '" + type.getName() + "'.", e);
         }
@@ -222,7 +222,7 @@ public class ClassUtil {
             resCount++;
         }
 
-        logger.info("Loaded " + classes.size() + " classes from " + resCount + " URLs through class list file "
+        logger.debug("Loaded " + classes.size() + " classes from " + resCount + " URLs through class list file "
                 + fileName + ".  Process took " + (System.currentTimeMillis() - start) + "ms.  Turn on debug logging for more info.");
 
         return classes;
@@ -268,7 +268,7 @@ public class ClassUtil {
                     logger.debug( "Adding " + className + " to list of classes");
                     count++;
                 } else {
-                    logger.info("Not adding class '" + clazz.getName() + "' to list.  Class does not implement/extend '" + instanceOf.getName() + "'.");
+                    logger.debug("Not adding class '" + clazz.getName() + "' to list.  Class does not implement/extend '" + instanceOf.getName() + "'.");
                 }
             }
             logger.debug("Loaded '" + count + "' classes listed in '" + url + "'.");

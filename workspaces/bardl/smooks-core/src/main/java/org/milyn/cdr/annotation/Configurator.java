@@ -15,24 +15,17 @@
 */
 package org.milyn.cdr.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.util.Arrays;
+import org.apache.commons.logging.*;
+import org.milyn.assertion.*;
+import org.milyn.cdr.*;
+import org.milyn.container.*;
+import org.milyn.delivery.*;
+import org.milyn.delivery.annotation.*;
+import org.milyn.javabean.*;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.assertion.AssertArgument;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.container.ApplicationContext;
-import org.milyn.delivery.ContentHandler;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.delivery.annotation.Uninitialize;
-import org.milyn.javabean.DataDecodeException;
-import org.milyn.javabean.DataDecoder;
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Utility class for processing configuration annotations on a
@@ -129,7 +122,7 @@ public class Configurator {
 
         // Work back up the Inheritance tree first...
         Class superClass = contentHandlerClass.getSuperclass();
-        if(superClass != null && ContentHandler.class.isAssignableFrom(superClass)) {
+        if(superClass != null) {
             processFieldConfigAnnotations(superClass, instance, config);
         }
 
@@ -307,8 +300,12 @@ public class Configurator {
         if(!isAccessible) {
             field.setAccessible(true);
         }
-        field.set(instance, value);
-        field.setAccessible(isAccessible);
+
+        try {
+            field.set(instance, value);
+        } finally {
+            field.setAccessible(isAccessible);
+        }
     }
 
     private static void setMethod(Method method, ContentHandler instance, Object value) throws IllegalAccessException, InvocationTargetException {

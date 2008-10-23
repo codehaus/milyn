@@ -123,7 +123,11 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
             combinedConfig.setVisitAfters(null);
         }
 
-        return combinedConfig;
+        if(combinedConfig.getVisitBefores() == null && combinedConfig.getChildVisitors() == null && combinedConfig.getVisitAfters() == null ) {
+            return null;
+        } else {
+            return combinedConfig;
+        }
     }
 
     private void extractChildVisitors() {

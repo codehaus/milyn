@@ -132,4 +132,40 @@ public interface ExecutionContext extends BoundAttributeStore {
      * terminate (if it did terminate), otherwise null.
      */
     public abstract Throwable getTerminationError();
+
+    /**
+     * Get a global configuration parameter associated with this execution context.
+     * <p/>
+     * For more fine grained control, see the {@link org.milyn.cdr.ParameterAccessor} class.
+     * @param name The name of the parameter.
+     * @return The parameter value, or null if the parameter is not configured.
+     */
+    public abstract String getConfigParameter(String name);
+
+    /**
+     * Get a global configuration parameter associated with this execution context.
+     * <p/>
+     * For more fine grained control, see the {@link org.milyn.cdr.ParameterAccessor} class.
+     * @param name The name of the parameter.
+     * @param defaultVal The default value to be returned if the configuration parameter is not set.
+     * @return The parameter value, or "defaultVal" if the parameter is not configured.
+     */
+    public abstract String getConfigParameter(String name, String defaultVal);
+
+    /**
+     * Is default serialization on for this execution context.
+     * <p/>
+     * This is controlled by the {@link org.milyn.delivery.Filter#DEFAULT_SERIALIZATION_ON}
+     * global param.  Default Serialization is on by default.
+     * <p/>
+     * <b>Example Configuration:</b>
+     * <pre>
+     * &lt;params&gt;
+     *     &lt;param name="default.serialization.on"&gt;false&lt;/param&gt;
+     * &lt;/params&gt;
+     * </pre>
+     *
+     * @return True if default serialization is on, otherwise false.
+     */
+    public boolean isDefaultSerializationOn();
 }

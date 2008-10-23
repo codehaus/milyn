@@ -6,16 +6,16 @@
         <param name="sax-handler">org.milyn.delivery.sax.MockEntityResolver</param>
     </resource-config>
 
-    <resource-config selector="xx h" selector-namespace="http://y">
+    <resource-config selector="xx/h" selector-namespace="http://y">
         <resource>org.milyn.delivery.sax.SAXVisitor01</resource>
     </resource-config>
 
     <!-- This one should'n t get applied -->
-    <resource-config selector="v i">
+    <resource-config selector="v/i">
         <resource>org.milyn.delivery.sax.SAXVisitor02</resource>
     </resource-config>
 
-    <resource-config selector="h i">
+    <resource-config selector="h/i">
         <resource>org.milyn.delivery.sax.SAXVisitor03</resource>
     </resource-config>
 

@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>milyn</groupId>
+        <groupId>org.milyn</groupId>
         <artifactId>smooks-examples</artifactId>
         <version>1.1.1</version>
     </parent>
-    <groupId>milyn</groupId>
+    <groupId>org.milyn</groupId>
     <artifactId>smooks-examples-servlet-base</artifactId>
     <name>Milyn Smooks Examples (Servlet - Base)</name>
     <packaging>pom</packaging>
@@ -20,8 +20,11 @@
 
     <repositories>
         <repository>
-            <id>milyn</id>
-            <url>http://dist.codehaus.org</url>
+            <id>codehaus.m2.snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 

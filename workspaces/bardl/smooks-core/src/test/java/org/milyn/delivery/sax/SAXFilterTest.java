@@ -18,13 +18,16 @@ package org.milyn.delivery.sax;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
-import org.milyn.event.report.FlatReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -113,8 +116,20 @@ public class SAXFilterTest extends TestCase {
         assertEquals(7, SAXVisitor03.childText.size());
     }
 
-    public void test_contextual() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-03.xml"));
+    public void test_contextual_1() throws IOException, SAXException {
+        test_contextual("smooks-config-03.xml");
+    }
+
+    public void test_contextual_2() throws IOException, SAXException {
+        test_contextual("smooks-config-03.01.xml");
+    }
+
+    public void test_contextual_3() throws IOException, SAXException {
+        test_contextual("smooks-config-03.02.xml");
+    }
+
+    public void test_contextual(String config) throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
         ExecutionContext execContext = smooks.createExecutionContext();
         String input = new String(StreamUtils.readStream(getClass().getResourceAsStream("test-01.xml")));
 
