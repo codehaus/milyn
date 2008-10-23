@@ -31,15 +31,26 @@ public class EDIUtils {
      * The split method follows the same behavior as the method splitPreserveAllTokens(String, String)
      * in {@link org.apache.commons.lang.StringUtils}.
      *
-     * @param value the string to split.
-     * @param delimiter the delimiter sequence
-     * @param escape the escape sequence
-     * @return an array of split edi-sequences.  
+     * @param value the string to split, may be null.
+     * @param delimiter the delimiter sequence. A null delimiter splits on whitespace.
+     * @param escape the escape sequence. A null escape is allowed,  and result will be consistent with the splitPreserveAllTokens method.   
+     * @return an array of split edi-sequences, null if null string input.
      */
     public static String[] split(String value, String delimiter, String escape) {
 
-        if (value == null || value.length() == 0) {
+        // A null input string returns null
+        if (value == null) {
+            return null;
+        }
+
+        // Empty input string returns empty array
+        if (value.length() == 0) {
             return new String[0];
+        }
+
+        // Empty delimiter splits on whitespace.
+        if (delimiter == null) {
+            delimiter = " ";
         }
 
         List<String> tokens = new ArrayList<String>();
@@ -174,6 +185,54 @@ public class EDIUtils {
         expected = new String[]{"ATS+", "hep:iee", "hai+#kai=haikai", "slut"};
         if (!equal(test,expected)) {
             System.out.println("Fel7");
+        }
+
+
+        /**************************************************************************
+         * Testcases defined by split
+         * ************************************************************************/
+        if (EDIUtils.split(null, "*", null) != null) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("", null, null), new String[0])) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("abc def", null, null), new String[]{"abc", "def"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("abc def", " ", null), new String[]{"abc", "def"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("abc  def", " ", null), new String[]{"abc", "", "def"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("ab:cd:ef", ":", null), new String[]{"ab", "cd", "ef"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("ab:cd:ef:", ":", null), new String[]{"ab", "cd", "ef", ""})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("ab:cd:ef::", ":", null), new String[]{"ab", "cd", "ef", "", ""})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split(":cd:ef", ":", null), new String[]{"", "cd", "ef"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("::cd:ef", ":", null), new String[]{"", "", "cd", "ef"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split(":cd:ef:", ":", null), new String[]{"", "cd", "ef", ""})) {
+            System.out.println("Fel8");
         }
 
         System.out.println("");
