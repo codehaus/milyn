@@ -52,10 +52,7 @@ public class EntityInstanceCreator implements DOMElementVisitor, SAXElementVisit
     @ConfigParam
     private String beanId;
 
-    @ConfigParam(defaultVal = "false")
-    private boolean addToList;
-
-    @ConfigParam(defaultVal = "false")
+    @ConfigParam(defaultVal = "true")
     private boolean persist;
 
     @ConfigParam(defaultVal = "false")
