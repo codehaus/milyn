@@ -27,10 +27,10 @@ public interface DaoRegister<T> {
 	 * for instance a facade for the
 	 * Session or an EntityManager object
 	 *
-	 * @param key The key of the DAO
+	 * @param name The name of the DAO
 	 * @return The DAO
 	 */
-	T getDao(String key);
+	T getDao(String name);
 
 	/**
 	 * Returns the DAO to the registery. This is
