@@ -10,43 +10,7 @@
     <name>Milyn EdiSax Configuration Model</name>
     <groupId>milyn</groupId>
     <artifactId>milyn-edisax-model</artifactId>
-    <version>${milyn.edisax.model.version}</version>
-
-    <dependencies>
-
-		 <dependency>
-            <groupId>javax.xml</groupId>
-            <artifactId>jaxb-xjc</artifactId>
-            <version>2.0EA3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.1.3</version>
-        </dependency>
-
-    </dependencies>
-
-    <build>
-        <plugins>
-			<plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <verbose>true</verbose>
-                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <version>${milyn.edisax.model.version}</version>    
 
 	<pluginRepositories>
         <pluginRepository>
