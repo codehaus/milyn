@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<xs:schema xmlns:mapping="http://www.milyn.org/schema/edi-message-mapping-1.1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.milyn.org/schema/edi-message-mapping-1.1.xsd" elementFormDefault="qualified">
+<!-- edited with XMLSpy v2008 rel. 2 sp1 (http://www.altova.com) by Bård Langöy (Diamo AB) -->
+<xs:schema xmlns:mapping="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd" elementFormDefault="qualified">
 	<xs:element name="edimap">
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="mapping:import" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>
-							The definition element specifies the name (and sometimes the location) of the file containing the definition of segments in the edi-message-mapping.
+							The definition element specifies the name (and sometimes the location) of the file contining the definition of segments in the edi-message-mapping.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
@@ -23,7 +23,7 @@
 	</xs:element>
 	<xs:element name="import">
 		<xs:complexType>
-			<xs:attribute name="resource" type="xs:string" use="required">
+			<xs:attribute name="name" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>
 A URI reference that specifies the name and location of external schema for use in this schema. 
@@ -66,9 +66,8 @@ truncatable attribute for all Components in edi-definition.
 			<xs:attribute name="segment" type="xs:string" use="required"/>
 			<xs:attribute name="field" type="xs:string" use="required"/>
 			<xs:attribute name="component" type="xs:string" use="required"/>
-			<xs:attribute name="sub-component" type="xs:string" use="required"/>
-            <xs:attribute name="escape" type="xs:string" use="optional">
-                <xs:annotation>
+			<xs:attribute name="sub-component" type="xs:string" use="required">
+				<xs:annotation>
 					<xs:documentation>
 						The delimiter attributes mark the boundary
 						tokens between the EDI message parts - segment,
@@ -78,11 +77,7 @@ truncatable attribute for all Components in edi-definition.
 						characters (non-printable). These are defined
 						using XML character references e.g. LF =
 						&quot;&amp;#10;&quot;
-
-                        The escape attribute specifies a character that
-                        can be used before a delimiter to prevent the delimiter
-                        from separating the EDI message into the specified part.
-                    </xs:documentation>
+					</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>

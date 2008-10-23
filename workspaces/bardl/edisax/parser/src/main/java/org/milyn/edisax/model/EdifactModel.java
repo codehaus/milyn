@@ -1,3 +1,19 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+
 package org.milyn.edisax.model;
 
 import org.milyn.edisax.EDIConfigurationException;
@@ -77,13 +93,12 @@ public class EdifactModel {
         Edimap importedEdimap;
         Node<String> child, conflictNode;
         for (Import imp : edimap.getImport()) {
-            child = new Node<String>(imp.getName());
+            child = new Node<String>(imp.getResource());
             conflictNode = tree.add(parent, child);
             if ( conflictNode != null ) {
-                throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + imp.getName() + "] and [" + conflictNode.getValue() + "]");
-            }
-            //importedEdimap = unmarshallEdimap(findUrl(imp.getName()));
-            importedEdimap = EDIConfigDigester.digestConfig(findUrl(imp.getName()));
+                throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + imp.getResource() + "] and [" + conflictNode.getValue() + "]");
+            }            
+            importedEdimap = EDIConfigDigester.digestConfig(findUrl(imp.getResource()));
             importFiles(child, importedEdimap, tree);
             Map<String, Segment> importedSegments = createImportMap(importedEdimap);
 
@@ -108,7 +123,7 @@ public class EdifactModel {
             Segment importedSegment = importedSegments.get(key);
 
             if (importedSegment == null) {
-                throw new EDIParseException(edimap, "Referenced segment [" + key + "] does not exist in imported edi-message-mapping [" + imp.getName() + "]");
+                throw new EDIParseException(edimap, "Referenced segment [" + key + "] does not exist in imported edi-message-mapping [" + imp.getResource() + "]");
             }
             insertImportedSegmentInfo(segment, importedSegment, imp.isTruncatableFields(), imp.isTruncatableComponents());
         }

@@ -1,18 +1,34 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+
 package org.milyn.edisax.model.internal;
 
 public class Import {
 
-    private String name;
+    private String resource;
     private String namespace;
     private Boolean truncatableFields;
     private Boolean truncatableComponents;
 
-    public String getName() {
-        return name;
+    public String getResource() {
+        return resource;
     }
 
-    public void setName(String value) {
-        this.name = value;
+    public void setResource(String value) {
+        this.resource = value;
     }
 
     public String getNamespace() {

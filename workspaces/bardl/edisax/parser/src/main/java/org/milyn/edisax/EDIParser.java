@@ -351,7 +351,8 @@ public class EDIParser implements XMLReader {
 
 		// If there are components defined on this field...
 		if(expectedComponents.size() != 0) {
-			String[] currentFieldComponents = StringUtils.splitPreserveAllTokens(fieldMessageVal, edifactModel.getDelimiters().getComponent());
+//			String[] currentFieldComponents = StringUtils.splitPreserveAllTokens(fieldMessageVal, edifactModel.getDelimiters().getComponent());
+            String[] currentFieldComponents = EDIUtils.split(fieldMessageVal, edifactModel.getDelimiters().getComponent(), edifactModel.getDelimiters().getEscape());
 
             assertComponentsOK(expectedField, fieldIndex, segmentCode, expectedComponents, currentFieldComponents);
 
@@ -389,7 +390,8 @@ public class EDIParser implements XMLReader {
 		startElement(expectedComponent.getXmltag(), true);
 
 		if(expectedSubComponents.size() != 0) {
-			String[] currentComponentSubComponents = StringUtils.splitPreserveAllTokens(componentMessageVal, edifactModel.getDelimiters().getSubComponent());
+//			String[] currentComponentSubComponents = StringUtils.splitPreserveAllTokens(componentMessageVal, edifactModel.getDelimiters().getSubComponent());
+            String[] currentComponentSubComponents = EDIUtils.split(componentMessageVal, edifactModel.getDelimiters().getSubComponent(), edifactModel.getDelimiters().getEscape());
 
             assertSubComponentsOK(expectedComponent, fieldIndex, componentIndex, segmentCode, field, expectedSubComponents, currentComponentSubComponents);
 

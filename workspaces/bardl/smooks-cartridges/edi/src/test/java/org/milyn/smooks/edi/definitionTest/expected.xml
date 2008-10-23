@@ -2,7 +2,7 @@
 	<UNH>
 		<MessageReferenceNr>H6LOZ</MessageReferenceNr>
 		<MESSAGE_IDENTIFIER>
-			<messageType>INVOIC</messageType>
+			<messageType>INV+OIC</messageType>
 			<messageVersionNr>D</messageVersionNr>
 			<messageReleaseNr>93A</messageReleaseNr>
 			<controllingAgencyCode>UN</controllingAgencyCode>
@@ -13,12 +13,12 @@
 		<DOCUMENT>
 			<documentNameCode>381</documentNameCode>
 		</DOCUMENT>
-		<DocumentNumber>769327685</DocumentNumber>
+		<DocumentNumber>769327685'</DocumentNumber>
 	</BGM>
 	<DTM>
 		<DATE_TIME_PERIOD>
 			<dateTimePeriodQualifier>137</dateTimePeriodQualifier>
-			<dateTimePeriod>20080512</dateTimePeriod>
+			<dateTimePeriod>2008:05:12</dateTimePeriod>
 			<dateTimePeriodFormatQualifier>102</dateTimePeriodFormatQualifier>
 		</DATE_TIME_PERIOD>
 	</DTM>

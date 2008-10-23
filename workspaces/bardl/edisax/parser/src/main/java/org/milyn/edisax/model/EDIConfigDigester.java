@@ -1,3 +1,19 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+
 package org.milyn.edisax.model;
 
 import org.milyn.xml.XmlUtil;
@@ -53,6 +69,7 @@ public class EDIConfigDigester {
         }
 
         String ediNS = validator.getNamespaces().get(0).toString();
+
         validator.validate();
 
         Edimap edimap = new Edimap();
@@ -65,6 +82,12 @@ public class EDIConfigDigester {
         return edimap;
     }
 
+    /**
+     * Assert that schema used for validation are valid, i.e. the schema is
+     * either edi-message-mapping-1.0 or edi-message-mapping-1.1.
+     * @param ediNS the schema used for validation.
+     * @return true if ediNS is valid, false otherwise.
+     */
     private static boolean assertValidXSD(String ediNS) {
         return XSD_V10.equals(ediNS) || XSD_V11.equals(ediNS);
     }
@@ -108,6 +131,7 @@ public class EDIConfigDigester {
         delimiters.setField(getNodeValue(node, "field"));
         delimiters.setComponent(getNodeValue(node, "component"));
         delimiters.setSubComponent(getNodeValue(node, "sub-component"));
+        delimiters.setEscape(getNodeValue(node, "escape"));
     }
 
     /**
@@ -130,7 +154,7 @@ public class EDIConfigDigester {
     private static void digestImport(Node node, Edimap edimap) {
         Import edimapImport = new Import();
         edimap.getImport().add(edimapImport);
-        edimapImport.setName(getNodeValue(node, "name"));
+        edimapImport.setResource(getNodeValue(node, "resource"));
         edimapImport.setNamespace(getNodeValue(node, "namespace"));
         edimapImport.setTruncatableFields(getNodeValueAsBoolean(node, "truncatableFields"));
         edimapImport.setTruncatableComponents(getNodeValueAsBoolean(node, "truncatableComponents"));
