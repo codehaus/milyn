@@ -16,14 +16,7 @@
 
 package org.milyn.templating.xslt;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-
-import javax.xml.transform.stream.StreamSource;
-
 import junit.framework.TestCase;
-
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
@@ -31,8 +24,15 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.payload.StringResult;
+import org.milyn.payload.StringSource;
 import org.milyn.templating.util.CharUtils;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
 
 /**
  * 
@@ -90,7 +90,12 @@ public class XslContentHandlerFactoryTest extends TestCase {
 	}	
 
     public void test_xsl_bind() throws SAXException, IOException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-bind.cdrl"));
+        test_xsl_bind("test-configs-bind.cdrl");
+        test_xsl_bind("test-configs-bind-ext.cdrl");
+    }
+
+    public void test_xsl_bind(String config) throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
         StringReader input;
         ExecutionContext context;
 
@@ -104,6 +109,30 @@ public class XslContentHandlerFactoryTest extends TestCase {
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
         assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
+    }
+
+    public void test_inline_01() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-01.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a/>"), result);
+        assertEquals("<xxxxxx></xxxxxx>", result.getResult());
+    }
+
+    public void test_inline_02() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-02.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a/>"), result);
+        assertEquals("Hi there!", result.getResult());
+    }
+
+    public void test_inline_03() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-03.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a/>"), result);
+        assertEquals("<xxxxxx></xxxxxx>", result.getResult());
     }
 
     public void test_badxsl() throws IOException, SAXException {
