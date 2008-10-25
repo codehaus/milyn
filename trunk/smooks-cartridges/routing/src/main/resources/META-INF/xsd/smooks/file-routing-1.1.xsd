@@ -66,26 +66,27 @@
     				<xs:element name="closeOnCondition" type="xs:string" minOccurs="0" maxOccurs="1" >
     					<xs:annotation>
 			    			<xs:documentation xml:lang="en">
-				    			A MVEL expression. If it returns true then the output stream is closed on the visitAfter event
+				    			An MVEL expression. If it returns true then the output stream is closed on the visitAfter event
 				    			else it is kept open. If the expression is not set then output stream is closed by default.
 			    			</xs:documentation>
 			    		</xs:annotation>
     				</xs:element>
 
     			</xs:sequence>
-    			<xs:attribute name="bindOnElement" type="xs:string" use="required" >
+    			<xs:attribute name="openOnElement" type="xs:string" use="required" >
 					<xs:annotation>
 			    		<xs:documentation xml:lang="en">
-			    			The element on which the output stream resource should be bound. After the element
-			    			the resource is closed, if opened at all, except when the closeOnCondition element is set.
-			    			In that case the resource is only closed when the MVEL condition is met.
+			    			The element on which the output stream resource should be opened. If opened, the stream will be
+                            closed at the end of the same element (on the visitAfter).  This behaviour can be overridden
+                            through the &lt;closeOnCondition&gt; element.  In that case, the resource is only closed
+                            when the MVEL condition is met.
 			    		</xs:documentation>
 			    	</xs:annotation>
     			</xs:attribute>
-    			<xs:attribute name="bindOnElementNS" type="xs:string" use="optional" >
+    			<xs:attribute name="openOnElementNS" type="xs:string" use="optional" >
     				<xs:annotation>
 			    		<xs:documentation xml:lang="en">
-			    			The namespace of the bindOnElement element.
+			    			The namespace of the openOnElement element.
 			    		</xs:documentation>
 			    	</xs:annotation>
     			</xs:attribute>

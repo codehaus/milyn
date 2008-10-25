@@ -12,13 +12,13 @@
 
     <resource-config selector="outputStream">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">bindOnElement</param>
+        <param name="attribute">openOnElement</param>
         <param name="mapTo">selector</param>
     </resource-config>
 
    <resource-config selector="outputStream">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">bindOnElementNS</param>
+        <param name="attribute">openOnElementNS</param>
         <param name="mapTo">selector-namespace</param>
     </resource-config>
 

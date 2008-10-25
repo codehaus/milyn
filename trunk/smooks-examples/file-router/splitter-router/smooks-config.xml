@@ -27,8 +27,8 @@
         <jb:value property="price" decoder="Double" data="order-item/price"/>
     </jb:bindings>
 
-    <!-- Create a file output stream.  This is writen to by the freemarker template (below)... -->
-    <file:outputStream bindOnElement="order-item" resourceName="orderItemSplitStream">
+    <!-- Create/open a file output stream.  This is writen to by the freemarker template (below).. -->
+    <file:outputStream openOnElement="order-item" resourceName="orderItemSplitStream">
 		<file:fileNamePattern>order-${order.orderId}-${order.orderItem.itemId}.xml</file:fileNamePattern>
 		<file:destinationDirectoryPattern>target/orders</file:destinationDirectoryPattern>
 		<file:listFileNamePattern>order-${order.orderId}.lst</file:listFileNamePattern>
@@ -36,6 +36,11 @@
     	<file:highWaterMark mark="3"/>
     </file:outputStream>
 
+    <!--
+    Every time we hit the end of an <order-item> element, apply this freemarker template,
+    outputting the result to the "orderItemSplitStream" OutputStream, which is the file
+    output stream configured above.
+    -->
     <ftl:freemarker applyOnElement="order-item">
         <ftl:template>target/classes/orderitem-split.ftl</ftl:template>
         <ftl:use>
