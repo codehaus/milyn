@@ -16,20 +16,6 @@
 
 package org.milyn.templating.xslt;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +42,22 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 
 
 /**
@@ -226,8 +228,8 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
             StreamSource xslStreamSource;
             boolean isInlineXSL = resourceConfig.isInline();
 
-            // If it's not a full XSL template, we need to make it so by wrapping it.
-            isTemplatelet = isTemplatelet(isInlineXSL, resourceConfig, new String(xslBytes));
+            // If it's not a full XSL template, we need to make it so by wrapping it...
+            isTemplatelet = isTemplatelet(isInlineXSL, new String(xslBytes));
             if (isTemplatelet) {
                 String templateletWrapper = new String(StreamUtils.readStream(ClassUtil.getResourceAsStream("doc-files/templatelet.xsl", getClass())));
                 String templatelet = new String(xslBytes);
@@ -243,21 +245,20 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
             xslTemplate = transformerFactory.newTemplates(xslStreamSource);
         }
 
-        private boolean isTemplatelet(boolean inlineXSL, SmooksResourceConfiguration resourceConfig, String templateCode) {
-            boolean isTemplatelet = (inlineXSL && resourceConfig.getBoolParameter(IS_XSLT_TEMPLATELET, false));
+        private boolean isTemplatelet(boolean inlineXSL, String templateCode) {
+            try {
+                Document xslDoc = XmlUtil.parseStream(new StringReader(templateCode));
+                Element rootElement = xslDoc.getDocumentElement();
+                String rootElementNS = rootElement.getNamespaceURI();
 
-            // If it's configured as a templatelet, but the code looks like it's a
-            // full template, log a warning...
-            if (isTemplatelet && templateCode.indexOf(":stylesheet>") != -1) {
-                logger.warn("The following XSL resource is configured as a templatelet, but looks as though it may be a complete stylesheet i.e. not a templatelet. You may want to remove the 'is-xslt-templatelet' parameter. Resource:\n" + resourceConfig);
+                return (inlineXSL && !(rootElementNS != null && rootElementNS.equals("http://www.w3.org/1999/XSL/Transform") && DomUtils.getName(rootElement).equals("stylesheet")));
+            } catch (ParserConfigurationException e) {
+                throw new SmooksConfigurationException("Unable to parse XSL Document (Stylesheet/Templatelet).", e);
+            } catch (IOException e) {
+                throw new SmooksConfigurationException("Unable to parse XSL Document (Stylesheet/Templatelet).", e);
+            } catch (SAXException e) {
+                return inlineXSL;
             }
-            // If it's not configured as a templatelet, but the code looks like it's a not
-            // full template, log a warning...
-            if (!isTemplatelet && templateCode.indexOf(":stylesheet>") == -1) {
-                logger.warn("The following XSL resource is NOT configured as a templatelet, but looks as though it may be an incomplete stylesheet i.e. it may be templatelet.  If so, it must be explicitly configured as a templatelet. Resource:\n" + resourceConfig);
-            }
-
-            return isTemplatelet;
         }
 
         @Override

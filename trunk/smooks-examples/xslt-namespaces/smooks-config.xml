@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+                      xmlns:xsl="http://www.milyn.org/xsd/smooks/xsl-1.1.xsd">
 
-    <resource-config selector="$document">
-        <resource type="xsl">
+    <xsl:xsl applyOnElement="$document">
+        <xsl:template>
             <![CDATA[
             <xsl:stylesheet
                     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
@@ -11,7 +12,6 @@
                     xmlns:smk="http://milyn.codehaus.org/Smooks">
 
                 <xsl:output method="xml" encoding="UTF-8"/>
-
 
                 <xsl:template match="/">
                     <CanonicalOrderFormat xmlns="http://canonical.codehaus.org/Order">
@@ -33,7 +33,7 @@
                 </xsl:template>
             </xsl:stylesheet>
             ]]>
-        </resource>
-    </resource-config>
+        </xsl:template>
+    </xsl:xsl>
 
 </smooks-resource-list>

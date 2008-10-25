@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MILYN_140 extends TestCase {
+public class MILYN_140_Test extends TestCase {
 
     public void test_external() throws IOException, SAXException {
         test("MILYN-140-01.xml");
