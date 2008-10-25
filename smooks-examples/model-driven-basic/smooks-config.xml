@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+                      xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
+                      xmlns:ftl="http://www.milyn.org/xsd/smooks/freemarker-1.1.xsd">
 
     <!--
     Use a FreeMarker template to perform the model driven transformation.  You can also inline the template here.
     -->
-    <resource-config selector="$document">
-        <resource>/example/templates/HistoryTrans.ftl</resource>
-    </resource-config>
+    <ftl:freemarker applyOnElement="$document">
+        <ftl:template>/example/templates/HistoryTrans.ftl</ftl:template>
+    </ftl:freemarker>
 
     <!--
     Configure the History bean creation and population. Wires in the "warehouse" bean.

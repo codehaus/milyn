@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<smooks-resource-list
-	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-	xmlns:jms="http://www.milyn.org/xsd/smooks/jms-routing-1.1.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+                      xmlns:jms="http://www.milyn.org/xsd/smooks/jms-routing-1.1.xsd"
+                      xmlns:ftl="http://www.milyn.org/xsd/smooks/freemarker-1.1.xsd">
 
     <!--
     Filter the message using the SAX Filter (i.e. not DOM, so no
@@ -23,16 +23,17 @@
 		<jms:highWaterMark mark="3"/>
 	</jms:router>
 
-    <resource-config selector="order-item">
+    <ftl:freemarker applyOnElement="order-item">
         <!--
             Note in the template that we need to use the special FreeMarker variable ".vars"
             because of the hyphenated variable names ("order-item"). See http://freemarker.org/docs/ref_specvar.html.
         -->
-        <resource>/orderitem-split.ftl</resource>
-        <param name="action">bindto</param>
-        <!-- The following config binds the templating result into the bean context, from where
-             it can be accessed by the JMSRouter (configured above). -->
-        <param name="bindId">orderItem_xml</param>
-    </resource-config>
+        <ftl:template>/orderitem-split.ftl</ftl:template>
+        <ftl:use>
+            <!-- Bind the templating result into the bean context, from where
+                 it can be accessed by the JMSRouter (configured above). -->
+            <ftl:bindTo id="orderItem_xml" />
+        </ftl:use>
+    </ftl:freemarker>
 
 </smooks-resource-list>

@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+                      xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
+                      xmlns:ftl="http://www.milyn.org/xsd/smooks/freemarker-1.1.xsd">
 
     <!--
     Filter the message using the SAX Filter (i.e. not DOM, so no
@@ -35,8 +37,8 @@
     template.  This tells Smooks where to split the template,
     resulting in the order-items being inserted at this point.
     -->
-    <resource-config selector="order-items">
-        <resource type="ftl"><!--<salesorder>
+    <ftl:freemarker applyOnElement="order-items">
+        <ftl:template><!--<salesorder>
     <details>
         <orderid>${order.@id}</orderid>
         <customer>
@@ -47,21 +49,21 @@
     <itemList>
         <?TEMPLATE-SPLIT-PI?>
     </itemList>
-</salesorder>--></resource>
-    </resource-config>
+</salesorder>--></ftl:template>
+    </ftl:freemarker>
 
     <!--
     Output the <order-items> elements.  This will appear in the
     output message where the <?TEMPLATE-SPLIT-PI?> token appears in the
     order-items template.
     -->
-    <resource-config selector="order-item">
-        <resource type="ftl"><!--        <item>
+    <ftl:freemarker applyOnElement="order-item">
+        <ftl:template><!--        <item>
             <id>${.vars["order-item"].@id}</id>
             <productId>${.vars["order-item"].product}</productId>
             <quantity>${.vars["order-item"].quantity}</quantity>
             <price>${.vars["order-item"].price}</price>
-        <item>--></resource>
-    </resource-config>
+        <item>--></ftl:template>
+    </ftl:freemarker>
 
 </smooks-resource-list>
