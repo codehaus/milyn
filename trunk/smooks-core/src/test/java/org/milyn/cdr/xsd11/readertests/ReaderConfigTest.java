@@ -17,7 +17,6 @@ package org.milyn.cdr.xsd11.readertests;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.AbstractParser;
 import org.xml.sax.SAXException;
@@ -31,12 +30,8 @@ import java.util.List;
 public class ReaderConfigTest extends TestCase {
 
     public void test_01() throws IOException, SAXException {
-        try {
-            new Smooks(getClass().getResourceAsStream("config_01.xml"));
-            fail("Expected SmooksConfigurationException");
-        } catch(SmooksConfigurationException e) {
-            assertEquals("Reader 'class' attribute not defined.", e.getMessage());
-        }
+        // Should allow reader config without a defined reader class i.e. config the default... 
+        new Smooks(getClass().getResourceAsStream("config_01.xml"));
     }
 
     public void test_02() throws IOException, SAXException {

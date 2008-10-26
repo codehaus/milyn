@@ -343,15 +343,10 @@ public final class XMLConfigDigester {
 
     	String readerClass = DomUtils.getAttributeValue(configElement, "class");
 
-        if(readerClass == null || readerClass.trim().equals("")) {
-            throw new SmooksConfigurationException("Reader 'class' attribute not defined.");
-        }
-
         SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(
         		"org.xml.sax.driver",
         		(profiles != null ? profiles : defaultProfile),
         		readerClass);
-
 
         // Add the reader resource...
         configureHandlers(configElement, resourceConfig);
