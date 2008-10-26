@@ -108,7 +108,7 @@
 						<xs:element minOccurs="0" maxOccurs="1" ref="smooks:features" />
 						<xs:element minOccurs="0" maxOccurs="1" ref="smooks:params" />
 					</xs:sequence>
-					<xs:attribute name="class" use="required" type="xs:string" />
+					<xs:attribute name="class" use="optional" type="xs:string" />
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>

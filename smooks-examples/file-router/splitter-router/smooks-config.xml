@@ -18,7 +18,7 @@
         <jb:value property="orderId" decoder="Integer" data="order/@id"/>
         <jb:value property="customerNumber" decoder="Long" data="header/customer/@number"/>
         <jb:value property="customerName" data="header/customer"/>
-        <jb:wiring property="orderItem" beanIdRef="orderItem" />
+        <jb:wiring property="orderItem" beanIdRef="orderItem"/>
     </jb:bindings>
     <jb:bindings beanId="orderItem" class="java.util.Hashtable" createOnElement="order-item">
         <jb:value property="itemId" decoder="Integer" data="order-item/@id"/>
@@ -29,11 +29,11 @@
 
     <!-- Create/open a file output stream.  This is writen to by the freemarker template (below).. -->
     <file:outputStream openOnElement="order-item" resourceName="orderItemSplitStream">
-		<file:fileNamePattern>order-${order.orderId}-${order.orderItem.itemId}.xml</file:fileNamePattern>
-		<file:destinationDirectoryPattern>target/orders</file:destinationDirectoryPattern>
-		<file:listFileNamePattern>order-${order.orderId}.lst</file:listFileNamePattern>
+        <file:fileNamePattern>order-${order.orderId}-${order.orderItem.itemId}.xml</file:fileNamePattern>
+        <file:destinationDirectoryPattern>target/orders</file:destinationDirectoryPattern>
+        <file:listFileNamePattern>order-${order.orderId}.lst</file:listFileNamePattern>
 
-    	<file:highWaterMark mark="3"/>
+        <file:highWaterMark mark="3"/>
     </file:outputStream>
 
     <!--
@@ -45,7 +45,7 @@
         <ftl:template>target/classes/orderitem-split.ftl</ftl:template>
         <ftl:use>
             <!-- Output the templating result to the "orderItemSplitStream" file output stream... -->
-            <ftl:outputTo outputStreamResource="orderItemSplitStream" />
+            <ftl:outputTo outputStreamResource="orderItemSplitStream"/>
         </ftl:use>
     </ftl:freemarker>
 

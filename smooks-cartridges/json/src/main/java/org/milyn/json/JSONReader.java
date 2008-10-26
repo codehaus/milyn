@@ -16,15 +16,6 @@
 
 package org.milyn.json;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Stack;
-
-import javax.xml.XMLConstants;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -50,11 +41,20 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.AttributesImpl;
 
+import javax.xml.XMLConstants;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Stack;
+
 /**
  * JSON to SAX event reader.
  * <p/>
- * This JSON Reader can be plugged into the Smooks {@link org.milyn.delivery.dom.DOMParser} (for example) in order to convert a
- * JSON based message stream into a stream of SAX events to be consumed by the DOMBuilder.
+ * This JSON Reader can be plugged into Smooks in order to convert a
+ * JSON based message stream into a stream of SAX events to be consumed by the other
+ * Smooks resources.
  *
  * <h3>Configuration</h3>
  * <pre>

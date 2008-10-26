@@ -15,13 +15,13 @@
         <resource>org.milyn.delivery.DomModelCreator</resource>
     </resource-config>
 
-	<jms:router	routeOnElement="order-item"	beanId="orderItem_xml" destination="smooks.exampleQueue">
-		<jms:message>
-			<!-- Need to use special FreeMarker variable ".vars" -->
-			<jms:correlationIdPattern>${order.@id}-${.vars["order-item"].@id}</jms:correlationIdPattern>
-		</jms:message>
-		<jms:highWaterMark mark="3"/>
-	</jms:router>
+    <jms:router routeOnElement="order-item" beanId="orderItem_xml" destination="smooks.exampleQueue">
+        <jms:message>
+            <!-- Need to use special FreeMarker variable ".vars" -->
+            <jms:correlationIdPattern>${order.@id}-${.vars["order-item"].@id}</jms:correlationIdPattern>
+        </jms:message>
+        <jms:highWaterMark mark="3"/>
+    </jms:router>
 
     <ftl:freemarker applyOnElement="order-item">
         <!--
@@ -32,7 +32,7 @@
         <ftl:use>
             <!-- Bind the templating result into the bean context, from where
                  it can be accessed by the JMSRouter (configured above). -->
-            <ftl:bindTo id="orderItem_xml" />
+            <ftl:bindTo id="orderItem_xml"/>
         </ftl:use>
     </ftl:freemarker>
 
