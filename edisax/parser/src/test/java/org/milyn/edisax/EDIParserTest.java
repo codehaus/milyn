@@ -3,35 +3,31 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.edisax;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.util.List;
-
 import junit.framework.TestCase;
-
 import org.milyn.io.StreamUtils;
-import org.milyn.schema.edi_message_mapping_1_0.EdiMap;
-import org.milyn.schema.edi_message_mapping_1_0.Segment;
+import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.EDIConfigDigester;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.io.*;
+import java.util.List;
 
 /**
  * @author tfennelly
@@ -40,39 +36,45 @@ public class EDIParserTest extends TestCase {
 
 	public void test_validation() throws IOException, SAXException {
 		// Valid doc...
-		EDIParser.assertMappingConfigValid(new InputStreamReader(getClass().getResourceAsStream("edi-mapping_01.xml")));
+        try {
+            EDIConfigDigester.digestConfig(getClass().getResourceAsStream("edi-mapping_01.xml"));
+        } catch (EDIConfigurationException e) {
+            fail("Digesting edi-mapping_01.xml should not fail.");
+        }
 
-		// Invalid doc...
+        // Invalid doc...
 		try {
-			EDIParser.assertMappingConfigValid(new InputStreamReader(getClass().getResourceAsStream("edi-mapping_02.xml")));
+			EDIConfigDigester.digestConfig(getClass().getResourceAsStream("edi-mapping_02.xml"));
 			fail("Expected SAXException");
 		} catch (SAXException e) {
 			// OK
-		}
-	}
-
-	public void test_parseMappingModel() throws IOException, SAXException {
-		EdiMap map = EDIParser.parseMappingModel(getClass().getResourceAsStream("edi-mapping_01.xml"));
-
+        } catch (EDIConfigurationException e) { 
+            fail("Expected SAXException");
+        }
+    }
+	
+	public void test_parseMappingModel() throws IOException, SAXException, EDIConfigurationException {
+		EdifactModel map = EDIParser.parseMappingModel(getClass().getResourceAsStream("edi-mapping_01.xml"));
+		
 		// Some basic checks on the model produced by xmlbeans...
-
+		
 		// Make sure xml character refs are rewritten on the delimiters
 		assertEquals("\n", map.getDelimiters().getSegment());
 		assertEquals("*", map.getDelimiters().getField());
 		assertEquals("^", map.getDelimiters().getComponent());
 		assertEquals("~", map.getDelimiters().getSubComponent());
-
-		assertEquals("message-x", map.getSegments().getXmltag());
-		List<Segment> segments = map.getSegments().getSegment();
+		
+		assertEquals("message-x", map.getEdimap().getSegments().getXmltag());
+		List<Segment> segments = map.getEdimap().getSegments().getSegment();
 		assertEquals(2, segments.size());
-
+		
 		assertEquals(1, segments.get(0).getSegment().size());
 		assertEquals(1, segments.get(0).getField().size());
 
 		assertEquals(0, segments.get(1).getSegment().size());
 		assertEquals(1, segments.get(1).getField().size());
 	}
-
+	
 	public void test_mappings() throws IOException {
 		test("test01");
 		test("test02");
@@ -116,16 +118,16 @@ public class EDIParserTest extends TestCase {
 		InputStream mapping = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-to-xml-mapping.xml")));
 		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/expected.xml"))).trim();
 		MockContentHandler contentHandler = new MockContentHandler();
-
+		
 		expected = removeCRLF(expected);
 		try {
 			EDIParser parser = new EDIParser();
-			String mappingResult = null;
-
+			String mappingResult = null; 
+			
 			parser.setContentHandler(contentHandler);
 			parser.setMappingModel(EDIParser.parseMappingModel(mapping));
 			parser.parse(new InputSource(input));
-
+			
 			mappingResult = contentHandler.xmlMapping.toString().trim();
 			mappingResult = removeCRLF(mappingResult);
 			if(!mappingResult.equals(expected)) {
@@ -135,26 +137,28 @@ public class EDIParserTest extends TestCase {
 			}
 		} catch (SAXException e) {
 			String exceptionMessage = e.getClass().getName() + ":" + e.getMessage();
-
+			
 			exceptionMessage = removeCRLF(exceptionMessage);
 			if(!exceptionMessage.equals(expected)) {
 				assertEquals("Unexpected exception on testpack [" + testpack + "].  ", expected, exceptionMessage);
 			}
-		}
-	}
+		} catch (EDIConfigurationException e) {
+            assert false : e;
+        }
+    }
 
-	public void test_x() throws IOException, SAXException {
+	public void test_x() throws IOException, SAXException, EDIConfigurationException {
 		InputStream ediInputStream = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-input.txt")));
 		InputStream edi2SaxMappingConfig = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-to-xml-mapping.xml")));
 		ContentHandler contentHandler = new DefaultHandler();
-
+		
 		EDIParser parser = new EDIParser();
-
+		
 		parser.setContentHandler(contentHandler);
 		parser.setMappingModel(EDIParser.parseMappingModel(edi2SaxMappingConfig));
 		parser.parse(new InputSource(ediInputStream));
 	}
-
+	
 	private String removeCRLF(String string) throws IOException {
         return StreamUtils.trimLines(new StringReader(string)).toString();
 	}

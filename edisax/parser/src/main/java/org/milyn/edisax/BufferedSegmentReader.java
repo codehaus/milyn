@@ -19,12 +19,14 @@ package org.milyn.edisax;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.schema.edi_message_mapping_1_0.Delimiters;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Buffered EDI Stream Segment reader.
@@ -32,7 +34,7 @@ import java.io.Reader;
  */
 class BufferedSegmentReader {
 
-    private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);
+    private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);   
 
     private Reader reader;
     private StringBuffer segmentBuffer = new StringBuffer(512);
@@ -40,11 +42,12 @@ class BufferedSegmentReader {
 	private int currentSegmentNumber = 0;
     private Delimiters delimiters;
 	private char[] segmentDelimiter;
+    private String escape;
 
     /**
      * Construct the stream reader.
      * @param ediInputSource EDI Stream input source.
-     * @param segmentDelimiter Segment delimiter String.
+     * @param delimiters Segment delimiter String.
      */
     protected BufferedSegmentReader(InputSource ediInputSource, Delimiters delimiters) {
         reader = ediInputSource.getCharacterStream();
@@ -53,6 +56,7 @@ class BufferedSegmentReader {
         }
         this.delimiters = delimiters;
         this.segmentDelimiter = delimiters.getSegment().toCharArray();
+        this.escape = delimiters.getEscape();
     }
     
     /**
@@ -65,6 +69,7 @@ class BufferedSegmentReader {
     protected boolean moveToNextSegment() throws IOException {
         int c = reader.read();
         int delimiterLen = segmentDelimiter.length;
+        int escapeLen = escape != null ? escape.length() : 0;
 
         segmentBuffer.setLength(0);
         currentSegmentFields = null;
@@ -92,13 +97,24 @@ class BufferedSegmentReader {
 	            		reachedSegEnd = false;
 	            		break;
 	            	}
-	            }
+
+                    // Do not separate segment if escape character occurs.
+                    if (segLen - 1 - i - escapeLen > -1 && escape != null) {
+                        String escapeString = segmentBuffer.substring(segLen - 1 - i - escapeLen, segLen - 1 - i);
+                        if (escape.equals(escapeString)) {
+                            segmentBuffer = segmentBuffer.delete(segLen - 1 - i - escapeLen, segLen - 1 - i);
+                            reachedSegEnd = false;
+                            break;
+                        }
+                    }
+
+                }
 	            
 	            // We've reached the end of a segment...
 	            if(reachedSegEnd) {
 	            	// Trim off the delimiter and break out...
 	            	segmentBuffer.setLength(segLen - delimiterLen);
-	            	break;
+                    break;
 	            }
             }
             
@@ -139,10 +155,11 @@ class BufferedSegmentReader {
      */
     protected String[] getCurrentSegmentFields() throws IllegalStateException {
     	assertCurrentSegmentExists();
-    	
-    	if(currentSegmentFields == null) {
-    		currentSegmentFields = StringUtils.splitPreserveAllTokens(segmentBuffer.toString(), delimiters.getField());
-    	}
+
+        if(currentSegmentFields == null) {
+//            currentSegmentFields = StringUtils.splitPreserveAllTokens(segmentBuffer.toString(), delimiters.getField());
+              currentSegmentFields = EDIUtils.split(segmentBuffer.toString(), delimiters.getField(), delimiters.getEscape());
+        }
     	
     	// If the segment delimiter is a LF, strip off any preceeding CR characters...
     	if(delimiters.getSegment().equals("\n")) {
