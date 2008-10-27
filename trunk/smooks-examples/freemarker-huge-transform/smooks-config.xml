@@ -45,7 +45,7 @@
             <id>${order.header.customer.@number}</id>
             <name>${order.header.customer}</name>
         </customer>
-    <details>
+    </details>
     <itemList>
         <?TEMPLATE-SPLIT-PI?>
     </itemList>
@@ -63,7 +63,8 @@
             <productId>${.vars["order-item"].product}</productId>
             <quantity>${.vars["order-item"].quantity}</quantity>
             <price>${.vars["order-item"].price}</price>
-        <item>--></ftl:template>
+        </item>
+        --></ftl:template>
     </ftl:freemarker>
 
 </smooks-resource-list>
