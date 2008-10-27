@@ -3,18 +3,35 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.smooks.edi;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.ProfileTargetingExpression;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Config;
+import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.EDIParser;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.resource.URIResourceLocator;
+import org.milyn.xml.SmooksXMLReader;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -26,22 +43,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.assertion.AssertArgument;
-import org.milyn.cdr.ProfileTargetingExpression;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.Config;
-import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.edisax.EDIParser;
-import org.milyn.resource.URIResourceLocator;
-import org.milyn.schema.edi_message_mapping_1_0.EdiMap;
-import org.milyn.xml.SmooksXMLReader;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Smooks EDI Reader.
@@ -61,7 +62,7 @@ import org.xml.sax.SAXException;
  *
  * &lt;/smooks-resource&gt;
  * </pre>
- *
+ * 
  * @author tfennelly
  */
 public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
@@ -108,10 +109,9 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
 	 * <p/>
 	 * Overridden so as to set the EDI to XML mapping model on the parser.
 	 */
-	@Override
 	public void parse(InputSource ediSource) throws IOException, SAXException {
-		EdiMap edi2xmlMappingModel = getMappingModel();
-
+		EdifactModel edi2xmlMappingModel = getMappingModel();
+		
 		setMappingModel(edi2xmlMappingModel);
 		super.parse(ediSource);
 	}
@@ -125,32 +125,34 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
 	 * @throws IOException Error reading resource configuration data (the mapping model).
 	 * @throws SAXException Error parsing mapping model.
 	 */
-	private EdiMap getMappingModel() throws IOException, SAXException {
-		EdiMap edi2xmlMappingModel;
-		Hashtable mappings = getMappingTable(executionContext.getContext());
+	private EdifactModel getMappingModel() throws IOException, SAXException {
+        EdifactModel edifactModel;
+        Hashtable mappings = getMappingTable(executionContext.getContext());
 
 		synchronized (configuration) {
-			edi2xmlMappingModel = (EdiMap) mappings.get(configuration);
-			if(edi2xmlMappingModel == null) {
-				InputStream mappingConfigData = getMappingConfigData();
-
+            edifactModel = (EdifactModel) mappings.get(configuration);
+            if(edifactModel == null) {
+                InputStream mappingConfigData = getMappingConfigData();
+				
 				try {
-					edi2xmlMappingModel = EDIParser.parseMappingModel(new InputStreamReader(mappingConfigData, encoding));
+					edifactModel = EDIParser.parseMappingModel(new InputStreamReader(mappingConfigData, encoding));
 				} catch (IOException e) {
                     IOException newE = new IOException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".");
 					newE.initCause(e);
 					throw newE;
 				} catch (SAXException e) {
 					throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
-				}
-				mappings.put(configuration, edi2xmlMappingModel);
-				logger.info("Parsed, validated and cached EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
+				} catch (EDIConfigurationException e) {
+                    throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
+                }
+                mappings.put(configuration, edifactModel);
+				logger.info("Parsed, validated and cached EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
 			} else if(logger.isInfoEnabled()) {
-				logger.info("Found EDI mapping model [" + edi2xmlMappingModel.getDescription().getName() + ", Version " + edi2xmlMappingModel.getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
+				logger.info("Found EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
 			}
 		}
-
-		return edi2xmlMappingModel;
+		
+		return edifactModel;
 	}
 
 	/**
@@ -160,12 +162,12 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
 	 */
 	protected static Hashtable getMappingTable(ApplicationContext context) {
 		Hashtable mappingModelTable = (Hashtable) context.getAttribute(MAPPING_TABLE_CTX_KEY);
-
+		
 		if(mappingModelTable == null) {
 			mappingModelTable = new Hashtable();
 			context.setAttribute(MAPPING_TABLE_CTX_KEY, mappingModelTable);
 		}
-
+		
 		return mappingModelTable;
 	}
 
@@ -173,9 +175,9 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
 	 * Get the actual mapping configuration data (the XML).
 	 * <p/>
 	 * Attempts to interpret the {@link #MODEL_CONFIG_KEY} config parameter as a URI to access the config.
-	 * If this parameter does not specify a URI, it's value will be interpreted as being an inlined
+	 * If this parameter does not specify a URI, it's value will be interpreted as being an inlined 
 	 * Mapping Model configuration.
-	 *
+	 * 
 	 * @return The mapping configuration data stream.
 	 */
 	private InputStream getMappingConfigData() {
@@ -188,7 +190,7 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
 				logger.error("Invalid " + MODEL_CONFIG_KEY + " config value '" + modelConfigData + "'. Failed to locate resource!");
 			}
 		} catch (URISyntaxException e) {
-			// It's not a URI based specification.  Return the contents under the assumption
+			// It's not a URI based specification.  Return the contents under the assumption 
 			// that it's an inlined config...
 			configStream = new ByteArrayInputStream(modelConfigData.getBytes());
 		} catch (IOException e) {
@@ -196,7 +198,7 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
 			state.initCause(e);
 			throw state;
 		}
-
+		
 		return configStream;
 	}
 

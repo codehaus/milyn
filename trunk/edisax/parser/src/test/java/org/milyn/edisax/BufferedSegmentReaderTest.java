@@ -16,6 +16,16 @@
 
 package org.milyn.edisax;
 
+import junit.framework.TestCase;
+import org.apache.commons.lang.StringUtils;
+import org.milyn.edisax.model.internal.Delimiters;
+import org.w3c.dom.Node;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+
+import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -24,18 +34,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
-
-import javax.xml.stream.XMLStreamReader;
-
-import org.apache.commons.lang.StringUtils;
-import org.milyn.schema.edi_message_mapping_1_0.Delimiters;
-import org.w3c.dom.Node;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
-
-import junit.framework.TestCase;
 
 /**
  * @author tfennelly
