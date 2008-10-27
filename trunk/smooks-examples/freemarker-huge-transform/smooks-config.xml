@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-                      xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
                       xmlns:ftl="http://www.milyn.org/xsd/smooks/freemarker-1.1.xsd">
 
     <!--
     Filter the message using the SAX Filter (i.e. not DOM, so no
-    intermediate DOM, so we can process huge messages...
+    intermediate DOM for the "complete" message - there are "mini" DOMs
+    for the NodeModels below)....
     -->
     <params>
         <param name="stream.filter.type">SAX</param>
