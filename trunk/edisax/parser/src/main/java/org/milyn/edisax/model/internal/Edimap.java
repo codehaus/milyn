@@ -24,7 +24,7 @@ public class Edimap {
     private List<Import> imports;
     private Description description;
     private Delimiters delimiters;
-    private Segments segments;
+    private SegmentGroup segments;
 
     public List<Import> getImport() {
         if (imports == null) {
@@ -49,11 +49,11 @@ public class Edimap {
         this.delimiters = value;
     }
 
-    public Segments getSegments() {
+    public SegmentGroup getSegments() {
         return segments;
     }
 
-    public void setSegments(Segments value) {
+    public void setSegments(SegmentGroup value) {
         this.segments = value;
     }
 

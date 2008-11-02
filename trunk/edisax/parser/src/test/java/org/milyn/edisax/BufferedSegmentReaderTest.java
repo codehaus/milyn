@@ -19,20 +19,10 @@ package org.milyn.edisax;
 import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
 import org.milyn.edisax.model.internal.Delimiters;
-import org.w3c.dom.Node;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
 
-import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.Arrays;
 
 /**
@@ -88,24 +78,5 @@ public class BufferedSegmentReaderTest extends TestCase {
 		public void setComponent(String arg0) { }
 		public String getSubComponent() { return null; }
 		public void setSubComponent(String arg0) { }
-		public boolean validate() { return false; }
-		public boolean isNil() { return false; }
-		public void setNil() { }
-		public boolean isImmutable() { return false; }
-		public int valueHashCode() { return 0; }
-		public int compareTo(Object arg0) { return 0; }
-		public Object monitor() { return null; }
-		public String xmlText() { return null; }
-		public InputStream newInputStream() { return null; }
-		public Reader newReader() { return null; }
-		public Node newDomNode() { return null; }
-		public void save(ContentHandler arg0, LexicalHandler arg1) throws SAXException { 		}
-		public void save(File arg0) throws IOException { }
-		public void save(OutputStream arg0) throws IOException { 		}
-		public void save(Writer arg0) throws IOException { 		}
-		public void dump() { }
-		public Node getDomNode() { return null; }
-		public XMLStreamReader newXMLStreamReader() { return null; }
-
 	}
 }

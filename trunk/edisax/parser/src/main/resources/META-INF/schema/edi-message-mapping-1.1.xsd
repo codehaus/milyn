@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.milyn.org/schema/edi-message-mapping-1.1.xsd"
+           xmlns="http://www.milyn.org/schema/edi-message-mapping-1.1.xsd"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
 
-<xs:schema xmlns:mapping="http://www.milyn.org/schema/edi-message-mapping-1.1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.milyn.org/schema/edi-message-mapping-1.1.xsd" elementFormDefault="qualified">
 	<xs:element name="edimap">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="mapping:import" minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="import" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>
 							The definition element specifies the name (and sometimes the location) of the file containing the definition of segments in the edi-message-mapping.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="mapping:description"/>
-				<xs:element ref="mapping:delimiters"/>
-				<xs:element ref="mapping:segments"/>
+				<xs:element ref="description"/>
+				<xs:element ref="delimiters"/>
+				<xs:element ref="segments"/>
 			</xs:sequence>
 		</xs:complexType>
 		<xs:unique name="uniqueNamespaces">
@@ -90,10 +93,11 @@ truncatable attribute for all Components in edi-definition.
 	<xs:element name="segments">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
-					<xs:sequence>
-						<xs:element ref="mapping:segment" maxOccurs="unbounded"/>
-					</xs:sequence>
+				<xs:extension base="mapping-node">
+                    <xs:choice minOccurs="0" maxOccurs="unbounded">
+                        <xs:element ref="segmentGroup"/>
+                        <xs:element ref="segment"/>
+                    </xs:choice>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
@@ -101,32 +105,32 @@ truncatable attribute for all Components in edi-definition.
 	<xs:complexType name="mapping-node">
 		<xs:attribute name="xmltag" type="xs:string" use="required"/>
 	</xs:complexType>
+    <xs:element name="segmentGroup">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="segment" minOccurs="1" />
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="segmentGroup"/>
+                    <xs:element ref="segment"/>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="xmltag" type="xs:string" use="optional"/>
+            <xs:attributeGroup ref="bounds"/>
+        </xs:complexType>
+    </xs:element>
 	<xs:element name="segment">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
-					<xs:sequence>
-						<xs:element ref="mapping:field" minOccurs="0" maxOccurs="unbounded"/>
-						<xs:element ref="mapping:segment" minOccurs="0" maxOccurs="unbounded"/>
-					</xs:sequence>
-					<xs:attribute name="minOccurs" type="xs:int" use="optional" default="1">
-						<xs:annotation>
-							<xs:documentation>
-								The minimum number of times the segment must appear in this
-								position within the EDI message.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="maxOccurs" type="xs:int" use="optional" default="1">
-						<xs:annotation>
-							<xs:documentation>
-								The maximum number of times the segment must appear in this
-								position within the EDI message.  For an unbounded max, set
-								the maxOccurs value to -1.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="segcode" type="xs:string" use="required"/>
+				<xs:extension base="mapping-node">
+                    <xs:sequence>
+                        <xs:element ref="field" minOccurs="0" maxOccurs="unbounded" />
+                        <xs:choice minOccurs="0" maxOccurs="unbounded">
+                            <xs:element ref="segment"/>
+                            <xs:element ref="segmentGroup"/>
+                        </xs:choice>
+                    </xs:sequence>
+                    <xs:attributeGroup ref="bounds"/>
+                    <xs:attribute name="segcode" type="xs:string" use="required"/>
 					<xs:attribute name="segref" type="xs:string" use="optional"/>
 					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
 				</xs:extension>
@@ -136,9 +140,9 @@ truncatable attribute for all Components in edi-definition.
 	<xs:element name="field">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
+				<xs:extension base="mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:component" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="component" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:attribute name="required" type="xs:boolean" use="optional" default="false"/>
 					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
@@ -149,9 +153,9 @@ truncatable attribute for all Components in edi-definition.
 	<xs:element name="component">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
+				<xs:extension base="mapping-node">
 					<xs:sequence>
-						<xs:element ref="mapping:sub-component" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="sub-component" minOccurs="0" maxOccurs="unbounded"/>
 					</xs:sequence>
 					<xs:attribute name="required" type="xs:boolean" use="optional" default="false"/>
 					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
@@ -162,10 +166,29 @@ truncatable attribute for all Components in edi-definition.
 	<xs:element name="sub-component">
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="mapping:mapping-node">
+				<xs:extension base="mapping-node">
 					<xs:attribute name="required" type="xs:boolean" use="optional" default="false"/>
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
 	</xs:element>
+    <xs:attributeGroup name="bounds">
+        <xs:attribute name="minOccurs" type="xs:nonNegativeInteger" use="optional" default="1">
+            <xs:annotation>
+                <xs:documentation>
+                    The minimum number of times the segment/segmentGroup must appear in this
+                    position within the EDI message.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="maxOccurs" type="xs:int" use="optional" default="1">
+            <xs:annotation>
+                <xs:documentation>
+                    The maximum number of times the segment/segmentGroup must appear in this
+                    position within the EDI message.  For an unbounded max, set
+                    the maxOccurs value to -1.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
 </xs:schema>

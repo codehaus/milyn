@@ -16,13 +16,12 @@
 
 package org.milyn.edisax;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.model.internal.SegmentGroup;
 import org.milyn.edisax.model.internal.SubComponent;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.Attributes;
@@ -113,9 +112,6 @@ import java.util.List;
  */
 public class EDIParser implements XMLReader {
 
-    private static Log LOG = LogFactory.getLog(EDIParser.class);
-    private static final String DEFINITION_RESOURCE = "edi-definition-Segment-";
-
     private ContentHandler contentHandler;
     private int depth = 0;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
@@ -168,12 +164,8 @@ public class EDIParser implements XMLReader {
     		mappingConfigStream.close();
     	}
 
-    	//assertMappingConfigValid(new StringReader(mappingConfig));
-
         edifactModel = new EdifactModel();
         edifactModel.parseSequence(new ByteArrayInputStream(mappingConfig.getBytes()));
-
-        //getEdifactDefinition(edifactModel);
 
 		return edifactModel;
     }
@@ -211,7 +203,7 @@ public class EDIParser implements XMLReader {
 
         // Work through all the segments in the model.  Move to the first segment before starting...
         if(segmentReader.moveToNextSegment()) {
-        	mapSegments(edifactModel.getEdimap().getSegments().getSegment());
+        	mapSegments(edifactModel.getEdimap().getSegments().getSegments());
 
     		// If we reach the end of the mapping model and we still have more EDI segments in the message.... 
     		if(segmentReader.hasCurrentSegment()) {
@@ -232,60 +224,92 @@ public class EDIParser implements XMLReader {
      * @throws IOException Error reading an EDI segment from the input stream.
      * @throws SAXException EDI processing exception.
 	 */
-	private void mapSegments(List<Segment> expectedSegments) throws IOException, SAXException {
+	private void mapSegments(List<SegmentGroup> expectedSegments) throws IOException, SAXException {
+        mapSegments(expectedSegments, null);
+    }
+
+    /**
+     * Map a list of EDI Segments to SAX events.
+     * <p/>
+     * Reads the segments from the input stream and maps them based on the supplied list of expected segments.
+	 * @param expectedSegments The list of expected segments.
+     * @param preLoadedSegmentFields Preloaded segment.  This can happen in the case of a segmentGroup.
+     * @throws IOException Error reading an EDI segment from the input stream.
+     * @throws SAXException EDI processing exception.
+	 */
+	private void mapSegments(List<SegmentGroup> expectedSegments, String[] preLoadedSegmentFields) throws IOException, SAXException {
 		int segmentMappingIndex = 0; // The current index within the supplied segment list.
 		int segmentProcessingCount = 0; // The number of times the current segment definition from the supplied segment list has been applied to message segments on the incomming EDI message.
-		
-		if(expectedSegments.size() == 0) {
+        String[] currentSegmentFields = preLoadedSegmentFields;
+
+        if(expectedSegments.size() == 0) {
 			return;
 		}
-		
+
 		while(segmentMappingIndex < expectedSegments.size() && segmentReader.hasCurrentSegment()) {
-			Segment expectedSegment = expectedSegments.get(segmentMappingIndex);
-			int minOccurs = expectedSegment.getMinOccurs();
-			int maxOccurs = expectedSegment.getMaxOccurs();
-	
-			// A negative max value indicates an unbound max....
-			if(maxOccurs < 0) {
-				maxOccurs = Integer.MAX_VALUE;
-			}
-			// Make sure min is not greater than max...
-			if(minOccurs > maxOccurs) {
-				maxOccurs = minOccurs;
-			}
-			
-			String[] currentSegmentFields = segmentReader.getCurrentSegmentFields();
-			
-			// If the current segment being read from the incomming message doesn't match the expected
-			// segment code....
-			if(!currentSegmentFields[0].equals(expectedSegment.getSegcode())) {
-				// If we haven't read the minimum number of instances of the current "expected" segment, raise an error...
-				if(segmentProcessingCount < minOccurs) {
-					throw new EDIParseException(edifactModel.getEdimap(), "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
-				} else {
-					// Otherwise, move to the next "expected" segment and start the loop again...
-					segmentMappingIndex++;
-					segmentProcessingCount = 0;
-					continue;
-				}
-			}
+			SegmentGroup expectedSegmentGroup = expectedSegments.get(segmentMappingIndex);
+            int minOccurs = expectedSegmentGroup.getMinOccurs();
+            int maxOccurs = expectedSegmentGroup.getMaxOccurs();
 
-			// Make sure we haven't encountered a message with too many instances of the current expected segment...
-			if(segmentProcessingCount >= maxOccurs) {
-				throw new EDIParseException(edifactModel.getEdimap(), "Maximum of " + maxOccurs + " instances of segment [" + expectedSegment.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
-			}
-			
-			// The current read message segment appears to match that expected according to the mapping model.
-			// Proceed to process the segment fields and the segments sub-segments...
-			mapSegment(currentSegmentFields, expectedSegment);
-			
-			// Increment the count on the number of times the current "expected" mapping config has been applied...
-			segmentProcessingCount++;
+            // A negative max value indicates an unbound max....
+            if(maxOccurs < 0) {
+                maxOccurs = Integer.MAX_VALUE;
+            }
+            // Make sure min is not greater than max...
+            if(minOccurs > maxOccurs) {
+                maxOccurs = minOccurs;
+            }
 
-			while(segmentProcessingCount < minOccurs && !segmentReader.hasCurrentSegment()) {
-				throw new EDIParseException(edifactModel.getEdimap(), "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegment.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
-			}
-		}
+            // Only load the next segment if currentSegmentFields == null i.e. we don't have a set of
+            // preLoadedSegmentFields (see method args) that need to be processed first...
+            if(currentSegmentFields == null) {
+                currentSegmentFields = segmentReader.getCurrentSegmentFields();
+            }
+            
+            // If the current segment being read from the incoming message doesn't match the expected
+            // segment code....
+            if(!currentSegmentFields[0].equals(expectedSegmentGroup.getSegcode())) {
+                // If we haven't read the minimum number of instances of the current "expected" segment, raise an error...
+                if(segmentProcessingCount < minOccurs) {
+                    throw new EDIParseException(edifactModel.getEdimap(), "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                } else {
+                    // Otherwise, move to the next "expected" segment and start the loop again...
+                    segmentMappingIndex++;
+                    segmentProcessingCount = 0;
+                    continue;
+                }
+            }
+
+            // Make sure we haven't encountered a message with too many instances of the current expected segment...
+            if(segmentProcessingCount >= maxOccurs) {
+                throw new EDIParseException(edifactModel.getEdimap(), "Maximum of " + maxOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+            }
+
+            // The current read message segment appears to match that expected according to the mapping model.
+            // Proceed to process the segment fields and the segments sub-segments...
+
+            if(expectedSegmentGroup instanceof Segment) {
+                mapSegment(currentSegmentFields, (Segment) expectedSegmentGroup);
+            } else {
+                String xmlTag = expectedSegmentGroup.getXmltag();
+
+                if(xmlTag != null) {
+                    startElement(xmlTag, true);
+                }
+                mapSegments(expectedSegmentGroup.getSegments(), currentSegmentFields);
+                if(xmlTag != null) {
+                    endElement(xmlTag, true);
+                }
+            }
+
+            // Increment the count on the number of times the current "expected" mapping config has been applied...
+            segmentProcessingCount++;
+            currentSegmentFields = null;
+
+            while(segmentProcessingCount < minOccurs && !segmentReader.hasCurrentSegment()) {
+                throw new EDIParseException(edifactModel.getEdimap(), "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+            }
+        }
 	}
 
 	/**
@@ -302,9 +326,9 @@ public class EDIParser implements XMLReader {
 
         mapFields(currentSegmentFields, expectedSegment);
 		if(segmentReader.moveToNextSegment()) {
-			mapSegments(expectedSegment.getSegment());
+			mapSegments(expectedSegment.getSegments());
 		}
-		
+
         endElement(expectedSegment.getXmltag(), true);
 	}
 
@@ -318,7 +342,7 @@ public class EDIParser implements XMLReader {
 	private void mapFields(String[] currentSegmentFields, Segment segment) throws SAXException {
         String segmentCode = segment.getSegcode();
 
-        List<Field> expectedFields = segment.getField();
+        List<Field> expectedFields = segment.getFields();
 
         // Make sure all required fields are present in the incoming message...
         assertFieldsOK(currentSegmentFields, segment);
@@ -348,7 +372,6 @@ public class EDIParser implements XMLReader {
 
 		// If there are components defined on this field...
 		if(expectedComponents.size() != 0) {
-//			String[] currentFieldComponents = StringUtils.splitPreserveAllTokens(fieldMessageVal, edifactModel.getDelimiters().getComponent());
             String[] currentFieldComponents = EDIUtils.split(fieldMessageVal, edifactModel.getDelimiters().getComponent(), edifactModel.getDelimiters().getEscape());
 
             assertComponentsOK(expectedField, fieldIndex, segmentCode, expectedComponents, currentFieldComponents);
@@ -387,7 +410,6 @@ public class EDIParser implements XMLReader {
 		startElement(expectedComponent.getXmltag(), true);
 
 		if(expectedSubComponents.size() != 0) {
-//			String[] currentComponentSubComponents = StringUtils.splitPreserveAllTokens(componentMessageVal, edifactModel.getDelimiters().getSubComponent());
             String[] currentComponentSubComponents = EDIUtils.split(componentMessageVal, edifactModel.getDelimiters().getSubComponent(), edifactModel.getDelimiters().getEscape());
 
             assertSubComponentsOK(expectedComponent, fieldIndex, componentIndex, segmentCode, field, expectedSubComponents, currentComponentSubComponents);
@@ -414,7 +436,7 @@ public class EDIParser implements XMLReader {
 
     private void assertFieldsOK(String[] currentSegmentFields, Segment segment) throws EDIParseException {
         
-        List<Field> expectedFields = segment.getField();
+        List<Field> expectedFields = segment.getFields();
 
         int numFieldsExpected = expectedFields.size() + 1; // It's "expectedFields.length + 1" because the segment code is included.
 

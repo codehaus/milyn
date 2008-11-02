@@ -28,6 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -167,7 +168,7 @@ public class EDIConfigDigester {
      * @param namespacePrefix the prefix used to name elements in xml. 
      */
     private static void digestSegments(Node node, Edimap edimap, String namespacePrefix) {
-        Segments segments = new Segments();
+        SegmentGroup segments = new SegmentGroup();
         setValuesForMappingNode(node, segments);
         edimap.setSegments(segments);
 
@@ -175,37 +176,65 @@ public class EDIConfigDigester {
         for (int i = 0; i < nodes.getLength(); i++) {
             Node currentNode = nodes.item(i);
 
-            if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "segment")) {
-                Segment segment = new Segment();
-                edimap.getSegments().getSegment().add(segment);
-                digestSegment(currentNode, segment, namespacePrefix);
-            }
+            digestSegmentGroup(currentNode, edimap.getSegments().getSegments(), namespacePrefix);
         }
     }
 
     /**
      * Digests attributes and child elements of Segment element.
      * @param node the Segment element.
-     * @param segment the {@link org.milyn.edisax.model.internal.Segment} to populate.
+     * @param segmentGroup the {@link org.milyn.edisax.model.internal.SegmentGroup} to populate.
      * @param namespacePrefix the prefix used to name elements in xml.
      */
-    private static void digestSegment(Node node, Segment segment, String namespacePrefix) {
-        setValuesForSegment(segment, node);
+    private static void digestSegment(Node node, SegmentGroup segmentGroup, String namespacePrefix) {
 
-        NodeList nodes = node.getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node currentNode = nodes.item(i);
+        if(segmentGroup instanceof Segment) {
+            Segment segment = (Segment) segmentGroup;
+            setValuesForSegment(segment, node);
 
-            if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "field")) {
-                Field field = new Field();
-                segment.getField().add(field);
-                digestField(currentNode, field, namespacePrefix);
-            } else if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "segment")) {
-                Segment newSegment = new Segment();
-                segment.getSegment().add(newSegment);
-                digestSegment(currentNode, newSegment, namespacePrefix);
+            NodeList nodes = node.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node currentNode = nodes.item(i);
+
+                if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "field")) {
+                    Field field = new Field();
+                    segment.getFields().add(field);
+                    digestField(currentNode, field, namespacePrefix);
+                } else {
+                    digestSegmentGroup(currentNode, segment.getSegments(), namespacePrefix);
+                }
+            }
+        } else {
+            segmentGroup.setMaxOccurs(getNodeValueAsInteger(node, "maxOccurs"));
+            segmentGroup.setMinOccurs(getNodeValueAsInteger(node, "minOccurs"));
+            setValuesForMappingNode(node, segmentGroup);
+
+            NodeList nodes = node.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node currentNode = nodes.item(i);
+
+                digestSegmentGroup(currentNode, segmentGroup.getSegments(), namespacePrefix);
             }
         }
+    }
+
+    private static boolean digestSegmentGroup(Node currentNode, List<SegmentGroup> segmentGroupList, String namespacePrefix) {
+        
+        if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "segmentGroup")) {
+            SegmentGroup segment = new SegmentGroup();
+            segmentGroupList.add(segment);
+            digestSegment(currentNode, segment, namespacePrefix);
+
+            return true;
+        } else if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "segment")) {
+            Segment segment = new Segment();
+            segmentGroupList.add(segment);
+            digestSegment(currentNode, segment, namespacePrefix);
+
+            return true;
+        }
+
+        return false;
     }
 
     /**

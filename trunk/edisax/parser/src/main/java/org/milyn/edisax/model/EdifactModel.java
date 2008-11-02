@@ -102,8 +102,10 @@ public class EdifactModel {
             importFiles(child, importedEdimap, tree);
             Map<String, Segment> importedSegments = createImportMap(importedEdimap);
 
-            for (Segment segment : edimap.getSegments().getSegment()) {
-                applyImportOnSegment(segment, imp, importedSegments);
+            for (SegmentGroup segmentGroup : edimap.getSegments().getSegments()) {
+                if(segmentGroup instanceof Segment) {
+                    applyImportOnSegment((Segment) segmentGroup, imp, importedSegments);
+                }
             }
         }
     }
@@ -128,8 +130,10 @@ public class EdifactModel {
             insertImportedSegmentInfo(segment, importedSegment, imp.isTruncatableFields(), imp.isTruncatableComponents());
         }
 
-        for (Segment seg : segment.getSegment()) {
-            applyImportOnSegment(seg, imp, importedSegments);
+        for (SegmentGroup segmentGroup : segment.getSegments()) {
+            if(segmentGroup instanceof Segment) {
+                applyImportOnSegment((Segment) segmentGroup, imp, importedSegments);
+            }
         }
     }
 
@@ -144,14 +148,14 @@ public class EdifactModel {
      */
     private void insertImportedSegmentInfo(Segment segment, Segment importedSegment, Boolean truncatableFields, Boolean truncatableComponents) {
         //Overwrite all existing fields in segment, but add additional segments to existing segments.
-        segment.getField().clear();
-        segment.getField().addAll(importedSegment.getField());                
-        segment.getSegment().addAll(0, segment.getSegment());
+        segment.getFields().clear();
+        segment.getFields().addAll(importedSegment.getFields());
+        segment.getSegments().addAll(0, segment.getSegments());
 
         //If global truncatable attributes are set in importing mapping, then
         //override the attributes in the imported files.
         if (truncatableFields != null || truncatableComponents != null) {
-            for ( Field field : segment.getField()) {
+            for ( Field field : segment.getFields()) {
                 field.setTruncatable(isTruncatable(truncatableFields, field.isTruncatable()));
                 if ( truncatableComponents != null ) {
                     for (Component component : field.getComponent()) {
@@ -170,8 +174,10 @@ public class EdifactModel {
      */
     private Map<String, Segment> createImportMap(Edimap edimap) {
         HashMap<String, Segment> result = new HashMap<String, Segment>();
-        for (Segment segment : edimap.getSegments().getSegment()) {
-            result.put(segment.getSegcode(), segment);
+        for (SegmentGroup segmentGroup : edimap.getSegments().getSegments()) {
+            if(segmentGroup instanceof Segment) {
+                result.put(((Segment)segmentGroup).getSegcode(), (Segment) segmentGroup);
+            }
         }
         return result;
     }
@@ -193,7 +199,7 @@ public class EdifactModel {
         try {
             inputStream = new URIResourceLocator().getResource(url);
         } catch (IOException e) {
-            throw new EDIParseException(edimap, "Unable to locate resource [" + url + "]");
+            throw new EDIParseException(edimap, "Unable to locate resource [" + url + "]", e);
         }
 
         return inputStream;
