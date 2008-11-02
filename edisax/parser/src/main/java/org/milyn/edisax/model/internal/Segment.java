@@ -19,52 +19,18 @@ package org.milyn.edisax.model.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Segment extends MappingNode {
+public class Segment extends SegmentGroup {
 
-    private List<Field> field;
-    private List<Segment> segment;
-    private Integer minOccurs;
-    private Integer maxOccurs;
+    private List<Field> fields;
     private String segcode;
     private String segref;
     private Boolean truncatable;
 
-    public List<Field> getField() {
-        if (field == null) {
-            field = new ArrayList<Field>();
+    public List<Field> getFields() {
+        if (fields == null) {
+            fields = new ArrayList<Field>();
         }
-        return this.field;
-    }
-
-    public List<Segment> getSegment() {
-        if (segment == null) {
-            segment = new ArrayList<Segment>();
-        }
-        return this.segment;
-    }
-
-    public int getMinOccurs() {
-        if (minOccurs == null) {
-            return  1;
-        } else {
-            return minOccurs;
-        }
-    }
-
-    public void setMinOccurs(Integer value) {
-        this.minOccurs = value;
-    }
-
-    public int getMaxOccurs() {
-        if (maxOccurs == null) {
-            return  1;
-        } else {
-            return maxOccurs;
-        }
-    }
-
-    public void setMaxOccurs(Integer value) {
-        this.maxOccurs = value;
+        return this.fields;
     }
 
     public String getSegcode() {

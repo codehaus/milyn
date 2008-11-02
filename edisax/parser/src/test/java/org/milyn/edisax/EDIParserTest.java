@@ -16,23 +16,19 @@
 
 package org.milyn.edisax;
 
-import junit.framework.TestCase;
-import org.milyn.io.StreamUtils;
-import org.milyn.edisax.model.internal.Segment;
-import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.EDIConfigDigester;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.model.internal.SegmentGroup;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * @author tfennelly
  */
-public class EDIParserTest extends TestCase {
+public class EDIParserTest extends AbstractEDIParserTestCase {
 
 	public void test_validation() throws IOException, SAXException {
 		// Valid doc...
@@ -65,14 +61,16 @@ public class EDIParserTest extends TestCase {
 		assertEquals("~", map.getDelimiters().getSubComponent());
 		
 		assertEquals("message-x", map.getEdimap().getSegments().getXmltag());
-		List<Segment> segments = map.getEdimap().getSegments().getSegment();
+		List<SegmentGroup> segments = map.getEdimap().getSegments().getSegments();
 		assertEquals(2, segments.size());
-		
-		assertEquals(1, segments.get(0).getSegment().size());
-		assertEquals(1, segments.get(0).getField().size());
 
-		assertEquals(0, segments.get(1).getSegment().size());
-		assertEquals(1, segments.get(1).getField().size());
+        Segment segment = (Segment) segments.get(0);
+        assertEquals(1, segment.getSegments().size());
+		assertEquals(1, segment.getFields().size());
+
+        segment = (Segment) segments.get(1);
+        assertEquals(0, segment.getSegments().size());
+		assertEquals(1, segment.getFields().size());
 	}
 	
 	public void test_mappings() throws IOException {
@@ -113,53 +111,4 @@ public class EDIParserTest extends TestCase {
         test("test-MILYN-108-11"); // Tests Field and Component Truncation
     }
 
-    private void test(String testpack) throws IOException {
-		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-input.txt")));
-		InputStream mapping = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-to-xml-mapping.xml")));
-		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/expected.xml"))).trim();
-		MockContentHandler contentHandler = new MockContentHandler();
-		
-		expected = removeCRLF(expected);
-		try {
-			EDIParser parser = new EDIParser();
-			String mappingResult = null; 
-			
-			parser.setContentHandler(contentHandler);
-			parser.setMappingModel(EDIParser.parseMappingModel(mapping));
-			parser.parse(new InputSource(input));
-			
-			mappingResult = contentHandler.xmlMapping.toString().trim();
-			mappingResult = removeCRLF(mappingResult);
-			if(!mappingResult.equals(expected)) {
-				System.out.println("Expected: \n[" + expected + "]");
-				System.out.println("Actual: \n[" + mappingResult + "]");
-				assertEquals("Testpack [" + testpack + "] failed.", expected, mappingResult);
-			}
-		} catch (SAXException e) {
-			String exceptionMessage = e.getClass().getName() + ":" + e.getMessage();
-			
-			exceptionMessage = removeCRLF(exceptionMessage);
-			if(!exceptionMessage.equals(expected)) {
-				assertEquals("Unexpected exception on testpack [" + testpack + "].  ", expected, exceptionMessage);
-			}
-		} catch (EDIConfigurationException e) {
-            assert false : e;
-        }
-    }
-
-	public void test_x() throws IOException, SAXException, EDIConfigurationException {
-		InputStream ediInputStream = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-input.txt")));
-		InputStream edi2SaxMappingConfig = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("test01/edi-to-xml-mapping.xml")));
-		ContentHandler contentHandler = new DefaultHandler();
-		
-		EDIParser parser = new EDIParser();
-		
-		parser.setContentHandler(contentHandler);
-		parser.setMappingModel(EDIParser.parseMappingModel(edi2SaxMappingConfig));
-		parser.parse(new InputSource(ediInputStream));
-	}
-	
-	private String removeCRLF(String string) throws IOException {
-        return StreamUtils.trimLines(new StringReader(string)).toString();
-	}
 }

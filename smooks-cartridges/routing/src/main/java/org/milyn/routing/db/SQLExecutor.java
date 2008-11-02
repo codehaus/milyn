@@ -15,14 +15,6 @@
 */
 package org.milyn.routing.db;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
@@ -46,6 +38,14 @@ import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SQLExecutor Visitor.
@@ -177,7 +177,7 @@ public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVis
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SmooksException("Error executing SQL Statement '" + statement + "'.", e);
         }
     }
 
