@@ -17,6 +17,7 @@ package org.milyn.edisax.model.internal;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * Segment Group.
@@ -38,6 +39,10 @@ public class SegmentGroup extends MappingNode {
 
     public String getSegcode() {
         return segments.get(0).getSegcode();
+    }
+
+    public Pattern getSegcodePattern() {
+        return segments.get(0).getSegcodePattern();
     }
 
     public int getMinOccurs() {
