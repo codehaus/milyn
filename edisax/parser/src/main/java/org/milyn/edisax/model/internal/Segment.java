@@ -18,11 +18,13 @@ package org.milyn.edisax.model.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Segment extends SegmentGroup {
 
     private List<Field> fields;
     private String segcode;
+    private Pattern segcodePattern;
     private String segref;
     private Boolean truncatable;
 
@@ -39,6 +41,11 @@ public class Segment extends SegmentGroup {
 
     public void setSegcode(String value) {
         this.segcode = value;
+        segcodePattern = Pattern.compile(segcode, Pattern.DOTALL);
+    }
+
+    public Pattern getSegcodePattern() {
+        return segcodePattern;
     }
 
     public String getSegref() {

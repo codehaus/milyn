@@ -49,7 +49,7 @@ public class BufferedSegmentReaderTest extends TestCase {
 		int segIndex = 0;
 		
 		while(segIndex < segments.length && reader.moveToNextSegment()) {
-			String segment = reader.getCurrentSegment();
+			String segment = reader.getCurrentSegment().toString();
 			assertEquals("Segment comparison failure.", segments[segIndex], segment);
 			segIndex++;
 		}

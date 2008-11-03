@@ -16,7 +16,6 @@
 
 package org.milyn.edisax;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -25,8 +24,6 @@ import org.xml.sax.InputSource;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Buffered EDI Stream Segment reader.
@@ -143,9 +140,9 @@ class BufferedSegmentReader {
      * @return The current EDI segment.
      * @throws IllegalStateException No current Segment.
      */
-    protected String getCurrentSegment() throws IllegalStateException {
+    protected StringBuffer getCurrentSegment() throws IllegalStateException {
     	assertCurrentSegmentExists();
-        return segmentBuffer.toString();
+        return segmentBuffer;
     }
 
     /**
