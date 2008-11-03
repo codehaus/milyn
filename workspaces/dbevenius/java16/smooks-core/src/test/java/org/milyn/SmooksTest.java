@@ -97,7 +97,17 @@ public class SmooksTest extends TestCase {
         classLoader.requests.clear();
         smooks.filter(new StringSource("<a/>"), result, execCtx);
         assertEquals("<b></b>", result.getResult());
-        assertTrue(classLoader.requests.contains(XIncludeParserConfiguration.class.getName()));
+        
+        /*
+         * With Java 1.6 the default parser configuration is:
+         * com.sun.org.apache.xerces.internal.parsers.XIncludeAwareParserConfiguration 
+         * but for Java 1.5 it's:
+         * com.sun.org.apache.xerces.internal.parsers.XIncludeParserConfiguration 
+         */
+        final String xecrces6Parser = "com.sun.org.apache.xerces.internal.parsers.XIncludeAwareParserConfiguration";
+        final boolean containsDefaultXercesParser = classLoader.requests.contains(xecrces6Parser) || classLoader.requests.contains(XIncludeParserConfiguration.class.getName());
+        
+        assertTrue(containsDefaultXercesParser);
         assertTrue(contextClassLoader == Thread.currentThread().getContextClassLoader());
     }
 

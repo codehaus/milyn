@@ -3,6 +3,7 @@
 
     <resource-config selector="org.xml.sax.driver">
         <param name="feature-off">http://xml.org/sax/features/validation</param>
+        <param name="feature-off">http://xml.org/sax/features/lexical-handler/parameter-entities</param>
         <param name="sax-handler">org.milyn.delivery.sax.MockEntityResolver</param>
     </resource-config>
 

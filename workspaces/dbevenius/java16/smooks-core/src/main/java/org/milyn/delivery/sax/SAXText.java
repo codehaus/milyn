@@ -107,6 +107,7 @@ public class SAXText {
     public void toWriter(Writer writer) throws IOException {
         if(writer != null) {
             if(type == TextType.TEXT) {
+            	System.out.println("text: " + new String(characters, offset, length));
                 writer.write(characters, offset, length);
             } else if(type == TextType.COMMENT) {
                 writer.write("<!--");

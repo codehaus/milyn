@@ -26,6 +26,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import junit.framework.TestCase;
 
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.milyn.Smooks;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -129,7 +131,10 @@ public class SmooksEDIParserTest extends TestCase {
 		Document doc = parser.parse(new InputStreamReader(input));
 
 		//System.out.println(XmlUtil.serialize(doc.getChildNodes()));
-		assertEquals(removeCRLF(expected), removeCRLF(XmlUtil.serialize(doc.getChildNodes())));
+		Diff diff = new Diff(expected, XmlUtil.serialize(doc.getChildNodes()));
+		System.out.println(diff.identical());
+		assertTrue(diff.identical());
+		//assertEquals(removeCRLF(expected), removeCRLF(XmlUtil.serialize(doc.getChildNodes())));
 	}
 
     public void test_v11config() throws IOException, SAXException {

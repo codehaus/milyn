@@ -365,16 +365,70 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     private SAXText textWrapper = new SAXText();
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    
+    @Override
+	public void characters(char[] ch, int start, int length) throws SAXException {
         if(currentTextType != TextType.CDATA) {
-            _characters(ch, start, length);
+        	/*
+        	 * Different parser implementations handle events differently. One notable difference is that a string 
+        	 * of characters ending in a newline('\n') might be passed as a single event or as two separate events.
+        	 * For example, the following text "line of text\n" could be handled in two ways:
+        	 * One parser could invoke a two callback: 
+        	 * 1. "line of text"
+        	 * 2. "\n"
+        	 * 
+        	 * Whereas the next one could invoke one callback: 
+        	 * 1. "line of text\n".
+        	 * 
+        	 * Our tests assume the first case where two separate events are generated and this
+        	 * method behaves. The following url is where I found this information:
+        	 * http://www.deltaxml.com/library/guide-to-writing-java-filters.html#dsy99_5-4-1
+        	 * 
+        	 */
+        	
+			final String characters = new String(ch, start, length);
+			final int indexOf = characters.indexOf( '\n' );
+			if ( indexOf != -1 && indexOf != 0 )
+			{
+				// call _characters with the data, excluding the newline.
+				_characters(ch, start, indexOf);
+				// call _characters with the newline.
+				_characters(ch, indexOf, length);
+			}
+			else
+			{
+                _characters(ch, start, length);
+			}
+            
+			/*
+			 * Different parsers will generate events in a different order. 
+			 * Java1.5 :
+			 * startEntity()
+			 * characters()
+			 * endEntity()
+			 * 
+			 * Java1.6
+			 * startEntity()
+			 * endEntity()
+			 * characters()
+			 * 
+			 * References:
+			 * https://jira.jboss.org/jira/browse/DNA-231
+			 * 
+			 * Note that startEntity has also been updated.
+			 *
+			 */
+        	if (entityEncountered) {
+        		entityEncountered = false;
+        		currentTextType = TextType.TEXT;
+        	}
         } else {
             cdataNodeBuilder.append(ch, start, length);
         }
     }
 
     private void _characters(char[] ch, int start, int length) {
-        if(currentProcessor != null && !currentProcessor.isNullProcessor) {
+    	if(currentProcessor != null && !currentProcessor.isNullProcessor) {
             if(currentProcessor.elementVisitorConfig != null) {
                 List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
 
@@ -441,6 +495,7 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+    	System.out.println("Ignoreable ....");
         characters(ch, start, length);
     }
 
@@ -466,14 +521,22 @@ public class SAXHandler extends DefaultHandler2 {
             cdataNodeBuilder.setLength(0);
         }
     }
+    
+    /**
+     * Indicates that a entity was encountered.
+     */
+    private volatile boolean entityEncountered;
 
+    /**
+     * SAX entity startEntity.
+     * Note that  
+     */
     public void startEntity(String name) throws SAXException {
         currentTextType = TextType.ENTITY;
+        entityEncountered = true;
     }
 
-    public void endEntity(String name) throws SAXException {
-        currentTextType = TextType.TEXT;
-    }
+    public void endEntity(String name) throws SAXException { }
 
     public void startDTD(String name, String publicId, String systemId) throws SAXException {
         DocType.setDocType(name, publicId, systemId, null, execContext);
