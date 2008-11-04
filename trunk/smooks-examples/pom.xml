@@ -6,7 +6,7 @@
     <artifactId>smooks-examples</artifactId>
     <name>Milyn Smooks Examples (Base POM)</name>
     <packaging>pom</packaging>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
 
     <modules>
         <module>css</module>
