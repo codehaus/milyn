@@ -14,63 +14,83 @@
  */
 package org.milyn.delivery.sax;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * Simple test to verify differences between Java versions with regard
- * to xml parsing.
+ * Simple test to verify differences between Java versions with regard to xml parsing.
  * <p/> 
- * Really only indended for manual testing and visual insecting the SAX events
- * generated.
  * 
- * @author <a href="mailto:dbevenius@redhat.com">Daniel Bevenius</a>
+ * @author <a href="mailto:dbevenius@jboss.com">Daniel Bevenius</a>
  *
  */
 public class XmlParserTest
 {
 	@Test
-	public void test() throws SAXException
+	public void entityCallbackOrderJava() throws SAXException, IOException
 	{
-		XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-        String input = "<element> &amp; some more text &amp;</element>";
+        final String input = "<element> &amp; some more text</element>";
+        
+		final MockContentHandler handler = new MockContentHandler();
+		final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 		
-		MockContentHandler handler = new MockContentHandler();
 		xmlReader.setContentHandler(handler);
-		
-		// Validate the xml document. Only if a grammer is specified.
-        xmlReader.setFeature("http://xml.org/sax/features/validation", false);
-        
-        // Include external paramter entities.
-        xmlReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        
-        // Tells the parser to ignore the external dtd. Don't want to have this for this test.
-        xmlReader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        
-        xmlReader.setFeature("http://xml.org/sax/features/lexical-handler/parameter-entities", true);
-        xmlReader.setFeature("http://apache.org/xml/features/scanner/notify-char-refs", true);
         xmlReader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
-        
-        try
-        {
-    		xmlReader.parse(new InputSource(new StringReader(input)));
-        }
-        catch(Exception e)
-        {
-        	e.printStackTrace();
-        }
+		
+		xmlReader.parse(new InputSource(new StringReader(input)));
+		
+		final List<String> events = handler.getEvents();
+		//assertJava5CallbackOrder(events);
+		assertJava6CallbackOrder(events);
+	}
+	
+	private void assertJava6CallbackOrder(final List<String> events)
+	{
+		assertEquals("startDocument", events.get(0));
+		assertEquals("startElement 'element'", events.get(1));
+		assertEquals("characters ' '", events.get(2));
+		assertEquals("startEntity 'amp'", events.get(3));
+		assertEquals("endEntity 'amp'", events.get(4));
+		assertEquals("characters '&'", events.get(5));
+		assertEquals("characters ' some more text'", events.get(6));
+		assertEquals("endElement 'element'", events.get(7));
+		assertEquals("endDocument", events.get(8));
+	}
+	
+	private void assertJava5CallbackOrder(final List<String> events)
+	{
+		assertEquals("startDocument", events.get(0));
+		assertEquals("startElement 'element'", events.get(1));
+		assertEquals("characters ' '", events.get(2));
+		assertEquals("startEntity 'amp'", events.get(3));
+		assertEquals("characters '&'", events.get(4));
+		assertEquals("endEntity 'amp'", events.get(5));
+		assertEquals("characters ' some more text'", events.get(6));
+		assertEquals("endElement 'element'", events.get(7));
+		assertEquals("endDocument", events.get(8));
 	}
 	
 	private class MockContentHandler extends DefaultHandler2
 	{
+		private List<String> events;
+		
+		public List<String> getEvents()
+		{
+			return events;
+		}
+
 		/**
 		 * Overrides DefaultHandlers impl of the ContentHandler
 		 * interfaces startDocument method
@@ -78,143 +98,44 @@ public class XmlParserTest
 		@Override
 		public void startDocument() throws SAXException
 		{
-			System.out.println("startDocument");
+			events = new ArrayList<String>();
+			events.add("startDocument");
 		}
 		
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler interfaces characters method
-		 * 
-		 * Different parser implementation handle events differently. For example, a string of characters ending in a newline 
-		 * character (e.g abcdefg\n) 
-		 * will cause different numbers of character events depending on the parser. 
-		 * If Crimson (the default for JDK 1.4.x) is used, only one character event will occur. However, Xerces-J creates 
-		 * two consecutive events, one for the letters (abcdefg in the example above) and one for the newline character at the end. 
-		 * It is important to be aware of this when writing XMLFilters to be used with Xerces-J.
-		 * Individual parser documentation should give you information on these specifications.
-		 */
 		@Override
 		public void characters( char[] ch, int start, int length ) throws SAXException
 		{
-			System.out.println("characters '" + new String(ch, start, length) + "'");
-			
-			/*
-			String characters = new String(ch, start, length);
-			int indexOf = characters.indexOf( '\n' );
-			if ( indexOf != -1 && indexOf != 0 )
-			{
-				String withoutNewlineChar = characters.substring(0, indexOf);
-				System.out.println("newline '" + withoutNewlineChar + "'");
-				System.out.println("newline '" + "\n" + "'");
-				//System.out.println("newline->" + characters + "<-");
-			}
-			else
-			{
-    			System.out.println("characters '" + characters + "'");
-			}
-			*/
+			events.add("characters '" + new String(ch, start, length) + "'");
 		}
 		
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler
-		 * interfaces characters method
-		 */
-		@Override
-		public void ignorableWhitespace( char[] ch, int start, int length ) throws SAXException
-		{
-			System.out.println("ignoreableWhitespace");
-		}
-		
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler
-		 * interfaces startPrefixMapping method
-		 */
-		@Override
-		public void startPrefixMapping( String prefix, String uri ) throws SAXException
-		{
-			System.out.println("startPrefixMapping");
-		}
-		
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler
-		 * interfaces endDocument method
-		 */
 		@Override
 		public void startElement( String uri, String localName, String name, Attributes atts ) throws SAXException
 		{
-			System.out.println("startElement: " + name);
+			events.add("startElement '" + name + "'");
 		}
 		
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler
-		 * interfaces skippedEntity method
-		 */
-		@Override
-		public void skippedEntity( String name ) throws SAXException
-		{
-			System.out.println("skippedEntity : " + name);
-		}
-		
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler
-		 * interfaces endPrefixMapping method
-		 */
-		@Override
-		public void endPrefixMapping( String prefix ) throws SAXException
-		{
-			System.out.println("endPrefixMapping : " + prefix);
-		}
-		
-		@Override
-		public void processingInstruction( String target, String data ) throws SAXException
-		{
-			System.out.println("processingInstruction : " + target + ", data : " + data);
-		}
-		
-		@Override
-		public void setDocumentLocator( Locator locator )
-		{
-		}
-		
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler
-		 * interfaces endElement method
-		 */
 		@Override
 		public void endElement( String uri, String localName, String name ) throws SAXException
 		{
-			System.out.println("endElement: " + name);
+			events.add("endElement '" + name +"'");
 		}
 
-		/**
-		 * Overrides DefaultHandlers impl of the ContentHandler
-		 * interfaces endDocument method
-		 */
 		@Override
 		public void endDocument() throws SAXException
 		{
-			System.out.println("endDocument: ");
+			events.add("endDocument");
 		}
 		
-		/**
-		 * Overrides DefaultHandlers impl of LexicalHandler
-		 * interface startEntity
-		 */
 		@Override
 		public void startEntity( String name ) throws SAXException
 		{
-			System.out.println("startEntity : " + name);
+			events.add("startEntity '" + name + "'");
 		}
 		
-		/**
-		 * Overrides DefaultHandlers impl of LexicalHandler
-		 * interface startEntity
-		 */
 		@Override
 		public void endEntity( String name ) throws SAXException
 		{
-			System.out.println("endEntity : " + name);
+			events.add("endEntity '" + name + "'");
 		}
-
 	}
-
 }
