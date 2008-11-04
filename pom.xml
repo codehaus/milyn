@@ -5,7 +5,7 @@
     <groupId>org.milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.1</version> <!-- Will make this version line up in a future release. -->
+    <version>1.1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
