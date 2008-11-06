@@ -41,7 +41,7 @@ public class Segment extends SegmentGroup {
 
     public void setSegcode(String value) {
         this.segcode = value;
-        segcodePattern = Pattern.compile(segcode, Pattern.DOTALL);
+        segcodePattern = Pattern.compile("^" + segcode, Pattern.DOTALL);
     }
 
     public Pattern getSegcodePattern() {
