@@ -1175,7 +1175,7 @@ table.blogcalendar {
 /* information macros */
 .noteMacro { text-align:left; margin-top: 5px; margin-bottom: 5px}
 .warningMacro { text-align:left; margin-top: 5px; margin-bottom: 5px}
-.infoMacro { text-align:left; margin-top: 5px; margin-bottom: 5px}
+.infoMacro { text-align:left; margin-top: 5px; margin-bottom: 5px; background-color: #D8E4F1}
 .tipMacro { text-align:left; margin-top: 5px; margin-bottom: 5px}
 .informationMacroPadding { padding: 5px 0 0 5px; }
 

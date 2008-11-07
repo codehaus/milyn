@@ -1,10 +1,10 @@
 RewriteEngine on
 RewriteBase /javadoc/
 
-RewriteRule ^commons/(.+)$              v0.9/commons/$1 [r]
-RewriteRule ^edisax/(.+)$               v0.9/edisax/$1 [r]
-RewriteRule ^magger/(.+)$               v0.9/magger/$1 [r]
-RewriteRule ^smooks/(.+)$               v0.9/smooks/$1 [r]
-RewriteRule ^smooks-cartridges/(.+)$    v0.9/smooks-cartridges/$1 [r]
-RewriteRule ^tinak/(.+)$                v0.9/tinak/$1 [r]
+RewriteRule ^commons/(.+)$              v1.0/commons/$1 [r]
+RewriteRule ^edisax/(.+)$               v1.0/edisax/$1 [r]
+RewriteRule ^magger/(.+)$               v1.0/magger/$1 [r]
+RewriteRule ^smooks/(.+)$               v1.0/smooks/$1 [r]
+RewriteRule ^smooks-cartridges/(.+)$    v1.0/smooks-cartridges/$1 [r]
+RewriteRule ^tinak/(.+)$                v1.0/tinak/$1 [r]
 

@@ -1,0 +1,21 @@
+#This file is generated automatically by Xircles. Changes WILL be overwritten.
+
+RewriteEngine on
+RewriteBase /
+
+#.uhtml files must be passed to unity, even though they exist as files in the public_html directory
+RewriteRule ^(.*\.uhtml)$      http://j2ee.unity.codehaus.org:8080/milyn.codehaus.org/$1         [qsa,p]
+
+RewriteCond     /home/projects/milyn/public_html/%{REQUEST_URI} -f
+RewriteRule     ^(.*)$                  $1                         [l]
+
+RewriteCond     /home/projects/milyn/public_html/%{REQUEST_URI} -d
+RewriteRule     ^(.*)/$                 $1/index.html              [l]
+
+RewriteCond     /home/projects/milyn/public_html/%{REQUEST_URI} -d
+RewriteRule     ^(.*[^/])$              $1index.html               [r]
+
+
+RewriteRule ((images|download|plugins)/(.*))$   http://docs.codehaus.org/$1             [p]
+RewriteRule ^$                   http://j2ee.unity.codehaus.org:8080/milyn.codehaus.org/Home         [qsa,p]
+RewriteRule ^(.*)$                   http://j2ee.unity.codehaus.org:8080/milyn.codehaus.org/$1         [qsa,p]
