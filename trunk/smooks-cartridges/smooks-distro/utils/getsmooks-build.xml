@@ -1,8 +1,9 @@
-<project name="Smooks-SNAPSHOTS-Build" default="main" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+<project name="Get-Smooks" default="main" basedir="." xmlns:artifact="urn:maven-artifact-ant">
 
-    <property name="smooks.version" value="1.1-SNAPSHOT"/>
+    <property name="smooks.version" value="1.1"/>
+
     <description>
-        Script for pulling the current Smooks ${1.1-SNAPSHOT} jars from the maven repo. 
+        Script for pulling the current Smooks v${smooks.version} jars from the maven repo. 
     </description>
 
     <property environment="env"/>
@@ -35,6 +36,7 @@
 
         <artifact:remoteRepository id="codehaus.m2.snapshots" url="http://snapshots.repository.codehaus.org" />
         <artifact:dependencies filesetId="dependencies">
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-calc" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-css" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-csv" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-edi" />
