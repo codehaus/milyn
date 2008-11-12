@@ -49,7 +49,6 @@ import java.io.IOException;
 public class JMSRouterTest
 {
 	private String selector = "x";
-	private SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
 	private String queueName = "queue/testQueue";
 
 	private static MockQueue queue;
@@ -58,6 +57,7 @@ public class JMSRouterTest
 	@Test( groups = "integration", expectedExceptions = SmooksConfigurationException.class)
 	public void configureWithMissingDestinationType()
 	{
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
         Configurator.configure( new JMSRouter(), config, new MockApplicationContext() );
 	}
 
@@ -70,6 +70,7 @@ public class JMSRouterTest
 
         final MockExecutionContext executionContext = RouterTestHelper.createExecutionContext( beanId, bean );
 
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
         config.setParameter( "destinationName", queueName );
         config.setParameter( "beanId", beanId );
         final JMSRouter router = new JMSRouter();
@@ -94,6 +95,7 @@ public class JMSRouterTest
 
         final MockExecutionContext executionContext = RouterTestHelper.createExecutionContext( beanId, bean );
 
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
         config.setParameter( "destinationName", queueName );
         config.setParameter( "beanId", beanId );
         config.setParameter( "highWaterMark", "3" );
@@ -131,6 +133,7 @@ public class JMSRouterTest
 
         final MockExecutionContext executionContext = RouterTestHelper.createExecutionContext( beanId, bean );
 
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
         config.setParameter( "destinationName", queueName );
         config.setParameter( "beanId", beanId );
         config.setParameter( "highWaterMark", "3" );
@@ -155,6 +158,7 @@ public class JMSRouterTest
 	public void setJndiContextFactory()
 	{
 		final String contextFactory = "org.jnp.interfaces.NamingContextFactory";
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
 		setManadatoryProperties( config );
         config.setParameter( "jndiContextFactory", contextFactory );
         final JMSRouter router = new JMSRouter();
@@ -168,6 +172,7 @@ public class JMSRouterTest
 	public void setJndiProviderUrl()
 	{
 		final String providerUrl = "jnp://localhost:1099";
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
 		setManadatoryProperties( config );
         config.setParameter( "jndiProviderUrl", providerUrl );
         final JMSRouter router = new JMSRouter();
@@ -182,6 +187,7 @@ public class JMSRouterTest
 	{
 		final String namingFactoryUrlPkgs = "org.jboss.naming:org.jnp.interfaces";
 
+    	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
 		setManadatoryProperties( config );
         config.setParameter( "jndiNamingFactoryUrl", namingFactoryUrlPkgs );
         final JMSRouter router = new JMSRouter();

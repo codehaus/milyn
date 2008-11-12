@@ -22,9 +22,12 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:dbevenius@redhat.com">Daniel Bevenius</a>
  */
 public class ListOfListsTest extends TestCase {
 
@@ -33,6 +36,45 @@ public class ListOfListsTest extends TestCase {
         JavaResult javaResult = new JavaResult();
 
         smooks.filter(new StreamSource(getClass().getResourceAsStream("list-of-lists-message.xml")), javaResult, smooks.createExecutionContext());
-        assertEquals("[{blockNum=1, orderItems=[{price=8.9, productId=111, quantity=2}, {price=5.2, productId=222, quantity=7}]}, {blockNum=2, orderItems=[{price=8.9, productId=333, quantity=2}, {price=5.2, productId=444, quantity=7}]}]", javaResult.getBean("order").toString());
+        assertEquals(getExpectedOrderArray(), javaResult.getBean("order"));
     }
+    
+    private ArrayList<HashMap<String, Object>> getExpectedOrderArray()
+    {
+    	final ArrayList<HashMap<String,Object>> order = new ArrayList<HashMap<String, Object>>();
+    	ArrayList<HashMap<String,Object>> orderItems = new ArrayList<HashMap<String,Object>>();
+    	
+    	// Create blockNum 1
+    	HashMap<String, Object> orderItemBlock = new HashMap<String, Object>();
+    	orderItemBlock.put("blockNum", 1);
+    	createOrderItem(111, 2, 8.9, orderItems);
+    	createOrderItem(222, 7, 5.2, orderItems);
+    	orderItemBlock.put("orderItems", orderItems);
+    	order.add(orderItemBlock);
+    	
+    	// Create blockNum 2
+    	orderItemBlock = new HashMap<String, Object>();
+    	orderItems = new ArrayList<HashMap<String,Object>>();
+    	orderItemBlock.put("blockNum", 2);
+    	createOrderItem(333, 2, 8.9, orderItems);
+    	createOrderItem(444, 7, 5.2, orderItems);
+    	orderItemBlock.put("orderItems", orderItems);
+    	order.add(orderItemBlock);
+    	
+    	return order;
+    }
+
+	private HashMap<String, Object> createOrderItem(
+			final long productId, 
+			final int quantity, 
+			final double price,
+			ArrayList<HashMap<String,Object>> orderItems)
+	{
+		HashMap<String, Object> orderItem = new HashMap<String, Object>();
+    	orderItem.put("productId", productId);
+    	orderItem.put("quantity", quantity);
+    	orderItem.put("price", price);
+    	orderItems.add(orderItem);
+		return orderItem;
+	}
 }
