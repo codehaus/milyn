@@ -32,8 +32,6 @@ public class BasicXslTransformTest extends TestCase {
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("expected.xml"));
         String result = Main.runSmooksTransform();
 
-        System.out.println(result );
-        System.out.println(new String(expected) );
         assertTrue(StreamUtils.compareCharStreams(new ByteArrayInputStream(expected), new ByteArrayInputStream(result.getBytes())));
     }
 }

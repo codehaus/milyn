@@ -33,7 +33,11 @@
    <!-- Limit categories -->
 
    <category name="org.milyn">
-      <priority value="info"/>
+      <priority value="error"/>
+   </category>
+
+   <category name="freemarker">
+      <priority value="error"/>
    </category>
 
    <!-- ======================= -->

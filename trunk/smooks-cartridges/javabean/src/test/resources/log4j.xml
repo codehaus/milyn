@@ -37,7 +37,11 @@
    </category>
 
    <category name="org.milyn.javabean">
-      <priority value="INFO"/>
+      <priority value="ERROR"/>
+   </category>
+
+   <category name="freemarker">
+      <priority value="ERROR"/>
    </category>
 
    <!-- ======================= -->

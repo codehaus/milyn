@@ -20,6 +20,11 @@
 		<level value="FATAL" />
 		<appender-ref ref="console"/>
 	</logger>
+
+	<logger name="freemarker">
+		<level value="FATAL" />
+		<appender-ref ref="console"/>
+	</logger>
 	
   <root>
    </root>

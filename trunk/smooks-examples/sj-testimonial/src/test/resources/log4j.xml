@@ -17,7 +17,12 @@
 	</logger>
 
 	<logger name="org.milyn">
-		<level value="INFO" />
+		<level value="ERROR" />
+		<appender-ref ref="console"/>
+	</logger>
+
+	<logger name="freemarker">
+		<level value="ERROR" />
 		<appender-ref ref="console"/>
 	</logger>
 

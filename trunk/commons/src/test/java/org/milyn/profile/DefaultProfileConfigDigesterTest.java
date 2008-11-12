@@ -264,7 +264,5 @@ public class DefaultProfileConfigDigesterTest extends TestCase {
 			e.printStackTrace();
 			fail("Unexpected Exception: " + e.getMessage());
 		}
-
-		System.out.println(store);
 	}
 }
