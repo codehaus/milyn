@@ -58,7 +58,7 @@ public class BufferedSegmentReaderTest extends TestCase {
 	}
 	
 	public void test_split() {
-		System.out.println(Arrays.asList(StringUtils.splitPreserveAllTokens("a*b***C*d", "*")));
+		Arrays.asList(StringUtils.splitPreserveAllTokens("a*b***C*d", "*"));
 	}
 	
 	private class MockDelimiters extends Delimiters {

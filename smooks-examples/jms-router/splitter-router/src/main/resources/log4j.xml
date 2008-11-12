@@ -21,7 +21,7 @@
 	</logger>
 
     <logger name="org.milyn.routing.jms.JMSRouter">
-        <level value="DEBUG" />
+        <level value="ERROR" />
         <appender-ref ref="console"/>
     </logger>
 

@@ -35,7 +35,6 @@ public class JavaToJavaTransformTest extends TestCase {
         LineOrder lineOrder;
 
         lineOrder = smooksMain.runSmooksTransform(new Order());
-        System.out.println(lineOrder);
         assertTrue("Expected:\n" + new String(expected_res) + ". \nGot:\n" + lineOrder, StreamUtils.compareCharStreams(new ByteArrayInputStream(expected_res), new ByteArrayInputStream(lineOrder.toString().getBytes())));
     }
 }

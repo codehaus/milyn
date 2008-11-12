@@ -21,7 +21,7 @@
     </logger>
 
     <logger name="org.milyn.routing.file.FileOutputStreamResource">
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
         <appender-ref ref="console"/>
     </logger>
 

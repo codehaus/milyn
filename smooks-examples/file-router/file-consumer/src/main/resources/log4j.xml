@@ -12,12 +12,12 @@
 	</appender>
 
 	<logger name="example">
-		<level value="debug"/>
+		<level value="error"/>
 		<appender-ref ref="console"/>
 	</logger>
 
 	<logger name="org.milyn.router">
-		<level value="debug" />
+		<level value="error" />
 		<appender-ref ref="console"/>
 	</logger>
 
