@@ -44,6 +44,19 @@
 			<artifactId>freemarker</artifactId>
 			<version>${freemarker.version}</version>
         </dependency>
+
+		<!--
+			###################################################################################################################
+				Note that xercesImpl is included only until the SAX bug (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6770436) 
+				with Java6 has been fixed. This can then be removed. Daniel Bevenius 2008-11-12.
+			###################################################################################################################
+		-->
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.9.1</version>
+		</dependency> 
+
 	</dependencies>
 
     <repositories>
