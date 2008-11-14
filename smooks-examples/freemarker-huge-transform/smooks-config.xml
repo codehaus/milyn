@@ -57,14 +57,14 @@
     output message where the <?TEMPLATE-SPLIT-PI?> token appears in the
     order-items template.
     -->
-    <ftl:freemarker applyOnElement="order-item">
-        <ftl:template><!--        <item>
-            <id>${.vars["order-item"].@id}</id>
-            <productId>${.vars["order-item"].product}</productId>
-            <quantity>${.vars["order-item"].quantity}</quantity>
-            <price>${.vars["order-item"].price}</price>
-        </item>
-        --></ftl:template>
-    </ftl:freemarker>
+<ftl:freemarker applyOnElement="order-item">
+    <ftl:template><!--        <item>
+        <id>${.vars["order-item"].@id}</id>
+        <productId>${.vars["order-item"].product}</productId>
+        <quantity>${.vars["order-item"].quantity}</quantity>
+        <price>${.vars["order-item"].price}</price>
+    </item>
+    --></ftl:template>
+</ftl:freemarker>
 
 </smooks-resource-list>
