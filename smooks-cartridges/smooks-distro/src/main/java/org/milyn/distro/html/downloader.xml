@@ -10,6 +10,6 @@
     <!-- The transformations... -->
     <import file="visitors/url-rewriting.xml" />
     <import file="visitors/page-objects.xml" />
-    <import file="visitors/page-operations.xml" />
+    <!-- import file="visitors/page-operations.xml" / -->
 
 </smooks-resource-list>
