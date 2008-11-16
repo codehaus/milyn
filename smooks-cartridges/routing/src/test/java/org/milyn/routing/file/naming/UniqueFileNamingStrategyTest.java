@@ -36,8 +36,6 @@ public class UniqueFileNamingStrategyTest
 	public void generateFileName()
 	{
 		String generateFileName = strategy.generateFileName( pattern, null );
-		System.out.println(generateFileName);
-
 		assertTrue( generateFileName.startsWith( pattern ) );
 	}
 

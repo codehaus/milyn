@@ -9,6 +9,7 @@ import org.milyn.io.StreamUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -37,6 +38,8 @@ public class HsqlServer {
         new Thread() {
             public void run() {
                 Server server = new Server();
+                Log targetLogger = LogFactory.getLog("org.hsqldb");
+                server.setLogWriter(new PrintWriter(new StdoutToLog4jFilter(server.getLogWriter(), targetLogger)));
                 server.setDatabasePath(0, "target/hsql/" + databaseName);
                 server.setDatabaseName(0, databaseName);
                 server.setNoSystemExit( true );
