@@ -139,7 +139,7 @@
 
         <!-- Download the distro docs... -->
         <java classname="org.milyn.distro.html.Downloader" fork="true" failonerror="true" maxmemory="128m">
-            <arg value="http://docs.codehaus.org/display/MILYN/Smooks+User+Guide?decorator=printable"/>
+            <arg value="http://docs.google.com/View?docID=dfp8fxm6_1fv2nj3hn&amp;revision=_latest&amp;hgd=1"/>
             <arg value="${docsdir}/SmooksUserGuide_v${version}.html"/>
             <classpath>
                 <pathelement location="target/classes" />
