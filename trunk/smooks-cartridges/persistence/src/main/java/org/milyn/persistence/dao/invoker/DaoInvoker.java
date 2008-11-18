@@ -30,11 +30,11 @@ public interface DaoInvoker {
 
 	void flush();
 
-	Collection<?> findByQuery(String query, Object[] parameters);
+	Collection<?> lookupByQuery(String query, Object[] parameters);
 
-	Collection<?> findByQuery(String query, Map<String, ?> parameters);
+	Collection<?> lookupByQuery(String query, Map<String, ?> parameters);
 
 //	Collection<?> findBy(String name, Object[] parameters);
 
-	Object findBy(String name, Map<String, ?> parameters);
+	Object lookup(String name, Map<String, ?> parameters);
 }

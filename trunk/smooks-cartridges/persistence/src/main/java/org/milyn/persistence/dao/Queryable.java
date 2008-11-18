@@ -22,10 +22,10 @@ import java.util.Map;
  * @author maurice_zeijen
  *
  */
-public interface QueryFinder<E> extends Dao<E> {
+public interface Queryable<E> extends Dao<E> {
 
-	Collection<E> findByQuery(String query, Object[] parameters);
+	Collection<E> lookupByQuery(String query, Object[] parameters);
 
-	Collection<E> findByQuery(String query, Map<String, ?> parameters);
+	Collection<E> lookupByQuery(String query, Map<String, ?> parameters);
 
 }

@@ -255,7 +255,7 @@ public class EntityInstanceLookupPopulator implements DOMElementVisitor, SAXElem
 
     		final DaoInvoker daoInvocation = DaoInvokerFactory.getInstance().create(daoObj, appContext);
 
-	    	return daoInvocation.findByQuery(query, new Object[] { dataObject });
+	    	return daoInvocation.lookupByQuery(query, new Object[] { dataObject });
 
 	    } finally {
 			if(daoObj != null) {

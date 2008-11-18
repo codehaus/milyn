@@ -13,21 +13,19 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.annotation;
+package org.milyn.persistence.dao;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author maurice_zeijen
  *
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface FindByQuery {
+public interface Lookupable<E> {
+
+//	Collection<E> findBy(String name, Object[] parameters);
+
+	Collection<E> lookup(String name, Map<String, ?> parameters);
 
 }

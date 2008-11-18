@@ -13,21 +13,21 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.invoker;
+package org.milyn.persistence.dao.annotation;
 
-import java.util.Map;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @author maurice_zeijen
  *
  */
-public interface NamedDaoInvoker {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface LookupByQuery {
 
-	void persist(String name, Object obj);
-
-	Object merge(String name, Object obj);
-
-	void flush(String name);
-
-	Object lookup(String name, Map<String, ?> parameters);
 }

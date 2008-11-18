@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.milyn.persistence.dao.Finder;
+import org.milyn.persistence.dao.Lookupable;
 import org.milyn.persistence.dao.NamedDao;
 import org.milyn.persistence.dao.NamedFlushable;
 
@@ -32,7 +32,7 @@ public class InterfaceNamedDaoInvoker implements NamedDaoInvoker  {
 
 	private final NamedDao<? super Object> dao;
 
-	private Finder<? super Object>  finderDAO;
+	private Lookupable<? super Object>  finderDAO;
 
 	private NamedFlushable flushableDAO;
 
@@ -43,8 +43,8 @@ public class InterfaceNamedDaoInvoker implements NamedDaoInvoker  {
 	public InterfaceNamedDaoInvoker(final NamedDao<? super Object> dao) {
 		this.dao = dao;
 
-		if(dao instanceof Finder) {
-			this.finderDAO = (Finder) dao;
+		if(dao instanceof Lookupable) {
+			this.finderDAO = (Lookupable) dao;
 		}
 
 		if(dao instanceof NamedFlushable) {
@@ -92,10 +92,10 @@ public class InterfaceNamedDaoInvoker implements NamedDaoInvoker  {
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<?> findBy(final String name, final Map<String, ?> parameters) {
+	public Collection<?> lookup(final String name, final Map<String, ?> parameters) {
 		if(finderDAO == null) {
-			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Finder.class.getName() + "] interface and there for can't find by query.");
+			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Lookupable.class.getName() + "] interface and there for can't find by query.");
 		}
-		return finderDAO.findBy(name, parameters);
+		return finderDAO.lookup(name, parameters);
 	}
 }

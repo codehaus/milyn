@@ -31,7 +31,7 @@ import org.milyn.persistence.dao.annotation.Param;
  *
  * TODO: implement type checking for primative types...
  */
-public class FindByMethod {
+public class LookupMethod {
 
 	final Method method;
 
@@ -40,7 +40,7 @@ public class FindByMethod {
 	/**
 	 *
 	 */
-	public FindByMethod(final Method method) {
+	public LookupMethod(final Method method) {
 		AssertArgument.isNotNull(method, "method");
 
 		this.method = method;

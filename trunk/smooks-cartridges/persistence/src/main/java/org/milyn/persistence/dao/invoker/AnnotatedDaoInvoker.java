@@ -20,14 +20,14 @@ import java.util.Map;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.persistence.NoMethodWithAnnotationFound;
-import org.milyn.persistence.dao.annotation.FindByQuery;
+import org.milyn.persistence.dao.annotation.LookupByQuery;
 import org.milyn.persistence.dao.annotation.Flush;
 import org.milyn.persistence.dao.annotation.Merge;
 import org.milyn.persistence.dao.annotation.Persist;
 import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfo;
-import org.milyn.persistence.dao.reflection.FindByMethod;
-import org.milyn.persistence.dao.reflection.FindByNamedQueryMethod;
-import org.milyn.persistence.dao.reflection.FindByPositionalQueryMethod;
+import org.milyn.persistence.dao.reflection.LookupMethod;
+import org.milyn.persistence.dao.reflection.LookupByNamedQueryMethod;
+import org.milyn.persistence.dao.reflection.LookupByPositionalQueryMethod;
 import org.milyn.persistence.dao.reflection.FlushMethod;
 import org.milyn.persistence.dao.reflection.MergeMethod;
 import org.milyn.persistence.dao.reflection.PersistMethod;
@@ -90,13 +90,13 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.lang.Object[])
 	 */
-	public Collection<?> findByQuery(final String query, final Object[] parameters) {
+	public Collection<?> lookupByQuery(final String query, final Object[] parameters) {
 
-		final FindByPositionalQueryMethod method = daoRuntimeInfo.getFindByPositionalQueryMethod();
+		final LookupByPositionalQueryMethod method = daoRuntimeInfo.getFindByPositionalQueryMethod();
 
 		if(method == null) {
 			throw new NoMethodWithAnnotationFound("No method found in DAO class [" + dao.getClass().getName() + "] that is annotated " +
-					"with [" + FindByQuery.class.getName() + "] annotation and has an Array argument for the positional parameters.");
+					"with [" + LookupByQuery.class.getName() + "] annotation and has an Array argument for the positional parameters.");
 		}
 
 		return method.invoke(dao, query, parameters);
@@ -106,13 +106,13 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.util.Map)
 	 */
-	public Collection<?> findByQuery(final String query, final Map<String, ?> parameters) {
+	public Collection<?> lookupByQuery(final String query, final Map<String, ?> parameters) {
 
-		final FindByNamedQueryMethod method = daoRuntimeInfo.getFindByNamedQueryMethod();
+		final LookupByNamedQueryMethod method = daoRuntimeInfo.getFindByNamedQueryMethod();
 
 		if(method == null) {
 			throw new NoMethodWithAnnotationFound("No method found in DAO class [" + dao.getClass().getName() + "] that is annotated " +
-					"with [" + FindByQuery.class.getName() + "] annotation and has a Map argument for the named parameters.");
+					"with [" + LookupByQuery.class.getName() + "] annotation and has a Map argument for the named parameters.");
 		}
 
 		return method.invoke(dao, query, parameters);
@@ -121,13 +121,13 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findBy(java.lang.String, java.util.Map)
 	 */
-	public Object findBy(final String name, final Map<String, ?> parameters) {
+	public Object lookup(final String name, final Map<String, ?> parameters) {
 
-		final FindByMethod method = daoRuntimeInfo.getFindByMethod(name);
+		final LookupMethod method = daoRuntimeInfo.getFindByMethod(name);
 
 		if(method == null) {
 			throw new NoMethodWithAnnotationFound("No method found in DAO class [" + dao.getClass().getName() + "] that is annotated " +
-					"with [" + FindByQuery.class.getName() + "] and has the name [" + name + "]");
+					"with [" + LookupByQuery.class.getName() + "] and has the name [" + name + "]");
 		}
 
 		return method.invoke(dao, parameters);
