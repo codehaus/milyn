@@ -13,21 +13,31 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.annotation;
+package org.milyn.persistence.dao.register;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.milyn.persistence.dao.AbstractDaoRegister;
 
 /**
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface FindBy {
-	String value();
+public class SingleDaoRegister<T> extends AbstractDaoRegister<T> {
+
+	private final T dao;
+
+	/**
+	 * @param dao
+	 */
+	public SingleDaoRegister(T dao) {
+		this.dao = dao;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.persistence.dao.AbstractDaoRegister#getDao()
+	 */
+	@Override
+	public T getDao() {
+		return dao;
+	}
+
 }
