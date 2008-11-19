@@ -89,27 +89,27 @@ public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
 	}
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_findBy() {
+	public void test_lookup() {
 
 		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(fullDao);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findBy("id", params);
+		invoker.lookup("id", params);
 
-		verify(fullDao).findBy(eq("id"), same(params));
+		verify(fullDao).lookup(eq("id"), same(params));
 
 	}
 
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
-	public void test_findBy_non_finder_dao() {
+	public void test_lookup_non_finder_dao() {
 
 		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(minimumDao);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findBy("id", params);
+		invoker.lookup("id", params);
 
 	}
 

@@ -107,7 +107,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 	@Test( groups = TestGroup.UNIT )
 	public void test_getFindByNamedQueryMethod() {
 
-		FindByNamedQueryMethod method = fullAnnotatedDaoRuntimeInfo.getFindByNamedQueryMethod();
+		LookupByNamedQueryMethod method = fullAnnotatedDaoRuntimeInfo.getFindByNamedQueryMethod();
 
 		assertNotNull(method);
 
@@ -124,7 +124,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 	@Test( groups = TestGroup.UNIT )
 	public void test_getFindByPositionalQueryMethod() {
 
-		FindByPositionalQueryMethod method = fullAnnotatedDaoRuntimeInfo.getFindByPositionalQueryMethod();
+		LookupByPositionalQueryMethod method = fullAnnotatedDaoRuntimeInfo.getFindByPositionalQueryMethod();
 
 		assertNotNull(method);
 
@@ -141,7 +141,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 	@Test( groups = TestGroup.UNIT )
 	public void test_getFindByMethod() {
 
-		FindByMethod method = fullAnnotatedDaoRuntimeInfo.getFindByMethod("id");
+		LookupMethod method = fullAnnotatedDaoRuntimeInfo.getFindByMethod("id");
 
 		assertNotNull(method);
 

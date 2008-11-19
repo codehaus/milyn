@@ -15,10 +15,7 @@
 */
 package org.milyn.persistence.test.dao;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.milyn.persistence.dao.Finder;
+import org.milyn.persistence.dao.Lookupable;
 import org.milyn.persistence.dao.NamedDao;
 import org.milyn.persistence.dao.NamedFlushable;
 
@@ -26,26 +23,7 @@ import org.milyn.persistence.dao.NamedFlushable;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceNamedDao<T> extends NamedDao<T>, NamedFlushable, Finder<T> {
+public interface FullInterfaceNamedDao<T> extends NamedDao<T>, NamedFlushable, Lookupable<T> {
 
-	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.NamedDao#merge(java.lang.String, java.lang.Object)
-	 */
-	public T merge(String name, T entity);
-
-	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.NamedDao#persist(java.lang.String, java.lang.Object)
-	 */
-	public void persist(String name, T entity);
-
-	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.NamedFlushable#flush(java.lang.String)
-	 */
-	public void flush(String name);
-
-	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
-	 */
-	public Collection<T> findBy(String name, Map<String, ?> parameters);
 
 }

@@ -121,14 +121,14 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	}
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_findBy() {
+	public void test_lookup() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", 1L);
 
-		invoker.findBy("id", params);
+		invoker.lookup("id", params);
 
 		verify(fullDao).findById(1L);
 
@@ -136,37 +136,37 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
-	public void test_findBy_no_annotation() {
+	public void test_lookup_no_annotation() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findBy("id", params);
+		invoker.lookup("id", params);
 
 	}
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_findBy_query_map_params() {
+	public void test_lookupByQuery_map_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findByQuery("query", params);
+		invoker.lookupByQuery("query", params);
 
 		verify(fullDao).findByQuery(eq("query"), same(params));
 
 	}
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_findBy_query_array_params() {
+	public void test_lookupByQuery_array_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
 
 		Object[] params = new Object[0];
 
-		invoker.findByQuery("query", params);
+		invoker.lookupByQuery("query", params);
 
 		verify(fullDao).findByQuery(eq("query"), same(params));
 
@@ -174,24 +174,24 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
-	public void test_findBy_non_query_finder_dao_map_params() {
+	public void test_lookupByQuery_non_query_finder_dao_map_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findByQuery("id", params);
+		invoker.lookupByQuery("id", params);
 
 	}
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
-	public void test_findBy_non_query_finder_dao_array_params() {
+	public void test_lookupByQuery_non_query_finder_dao_array_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);
 
 		Object[] params = new Object[0];
 
-		invoker.findByQuery("id", params);
+		invoker.lookupByQuery("id", params);
 
 	}
 
