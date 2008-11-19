@@ -16,14 +16,14 @@
 package org.milyn.persistence.test.dao;
 
 import org.milyn.persistence.dao.Dao;
-import org.milyn.persistence.dao.Finder;
 import org.milyn.persistence.dao.Flushable;
-import org.milyn.persistence.dao.QueryFinder;
+import org.milyn.persistence.dao.Lookupable;
+import org.milyn.persistence.dao.Queryable;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceDao<T> extends Dao<T>, Flushable, Finder<T>, QueryFinder<T> {
+public interface FullInterfaceDao<T> extends Dao<T>, Flushable, Lookupable<T>, Queryable<T> {
 
 }

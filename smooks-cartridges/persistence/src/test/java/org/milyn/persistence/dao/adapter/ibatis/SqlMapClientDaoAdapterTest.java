@@ -79,7 +79,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 
 
 	@Test( groups = TestGroup.UNIT )
-	public void test_findBy_map_parameters() throws SQLException {
+	public void test_lookup_map_parameters() throws SQLException {
 
 		// STUB
 
@@ -93,7 +93,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 		params.put("key1", "value1");
 		params.put("key2", "value2");
 
-		Collection<Object> result = adapter.findBy("name", params);
+		Collection<Object> result = adapter.lookup("name", params);
 
 		// VERIFY
 
@@ -105,7 +105,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 	}
 
 	@Test( groups = TestGroup.UNIT )
-	public void test_findBy_array_parameters() throws SQLException {
+	public void test_lookup_array_parameters() throws SQLException {
 
 		// STUB
 
@@ -119,7 +119,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 		params[0] = "value1";
 		params[1] = "value2";
 
-		Collection<Object> result = adapter.findBy("name", params);
+		Collection<Object> result = adapter.lookup("name", params);
 
 		// VERIFY
 

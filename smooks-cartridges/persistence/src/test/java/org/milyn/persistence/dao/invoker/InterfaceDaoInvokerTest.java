@@ -89,15 +89,15 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	}
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_findBy() {
+	public void test_lookup() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findBy("id", params);
+		invoker.lookup("id", params);
 
-		verify(fullDao).findBy(eq("id"), same(params));
+		verify(fullDao).lookup(eq("id"), same(params));
 
 	}
 
@@ -109,56 +109,56 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findBy("id", params);
+		invoker.lookup("id", params);
 
 	}
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_findBy_query_map_params() {
+	public void test_lookupByQuery_map_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findByQuery("query", params);
+		invoker.lookupByQuery("query", params);
 
-		verify(fullDao).findByQuery(eq("query"), same(params));
+		verify(fullDao).lookupByQuery(eq("query"), same(params));
 
 	}
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_findBy_query_array_params() {
+	public void test_lookupByQuery_array_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
 
 		Object[] params = new Object[0];
 
-		invoker.findByQuery("query", params);
+		invoker.lookupByQuery("query", params);
 
-		verify(fullDao).findByQuery(eq("query"), same(params));
+		verify(fullDao).lookupByQuery(eq("query"), same(params));
 
 	}
 
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
-	public void test_findBy_non_query_finder_dao_map_params() {
+	public void test_lookupByQuery_non_query_finder_dao_map_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
-		invoker.findByQuery("id", params);
+		invoker.lookupByQuery("id", params);
 
 	}
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
-	public void test_findBy_non_query_finder_dao_array_params() {
+	public void test_lookupByQuery_non_query_finder_dao_array_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
 
 		Object[] params = new Object[0];
 
-		invoker.findByQuery("id", params);
+		invoker.lookupByQuery("id", params);
 
 	}
 

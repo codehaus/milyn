@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.milyn.persistence.dao.annotation.Dao;
-import org.milyn.persistence.dao.annotation.FindBy;
-import org.milyn.persistence.dao.annotation.FindByQuery;
 import org.milyn.persistence.dao.annotation.Flush;
+import org.milyn.persistence.dao.annotation.Lookup;
+import org.milyn.persistence.dao.annotation.LookupByQuery;
 import org.milyn.persistence.dao.annotation.Merge;
 import org.milyn.persistence.dao.annotation.Param;
 import org.milyn.persistence.dao.annotation.Persist;
@@ -43,15 +43,15 @@ public interface FullAnnotatedDao {
 	@Flush
 	void flushIt();
 
-	@FindByQuery
+	@LookupByQuery
 	Collection<?> findByQuery(String query, Object[] parameters);
 
-	@FindByQuery
+	@LookupByQuery
 	Collection<?> findByQuery(String query, Map<String, Object> parameters);
 
-	@FindBy("id")
+	@Lookup("id")
 	Collection<?> findById(@Param("id") Long id);
 
-	@FindBy("name")
+	@Lookup("name")
 	Collection<?> findById(@Param("surname") String surname, @Param("firstname") String firstname);
 }
