@@ -41,10 +41,10 @@ public class PersistMethod {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.method.DAOMethod#invoke()
 	 */
-	public void invoke(final Object obj, final Object entity){
+	public Object invoke(final Object obj, final Object entity){
 		try {
 
-			method.invoke(obj, entity);
+			return method.invoke(obj, entity);
 
 		} catch (final IllegalArgumentException e) {
 			throw new RuntimeException("The method [" + method + "] of the class [" + method.getDeclaringClass().getName() + "] threw an exception, while invoking it with the object [" + obj + "].", e);

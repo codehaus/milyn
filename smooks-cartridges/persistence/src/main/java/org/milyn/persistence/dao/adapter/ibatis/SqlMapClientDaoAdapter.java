@@ -49,18 +49,20 @@ public class SqlMapClientDaoAdapter implements NamedDao<Object>, Lookupable<Obje
 		} catch (SQLException e) {
 			throw new DaoException("Exception throw while executing update with statement id '" + name + "' and entity '" + entity + "'", e);
 		}
-		return entity;
+		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.NamedDAO#persist(java.lang.String, java.lang.Object)
 	 */
-	public void persist(String name, Object entity) {
+	public Object persist(String name, Object entity) {
 		try {
 			sqlMapClient.insert(name, entity);
 		} catch (SQLException e) {
 			throw new DaoException("Exception throw while executing insert with statement id '" + name + "' and entity '" + entity + "'", e);
 		}
+
+		return null;
 	}
 
 	/* (non-Javadoc)

@@ -21,7 +21,7 @@ package org.milyn.persistence.dao;
  */
 public interface NamedDao<E> {
 
-	void persist(String name, E entity);
+	E persist(String name, E entity);
 
 	E merge(String name, E entity);
 

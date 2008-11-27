@@ -177,6 +177,7 @@ public class AnnotatedDaoRuntimeInfo {
 			throw new RuntimeException("The Merge annotated method ["+ method +"] of the DAO class [" + daoClass.getName() + "] has more then 1 parameter, which isn't allowed.");
 		}
 
+
 		mergeMethod = new MergeMethod(method);
 	}
 

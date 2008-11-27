@@ -98,7 +98,7 @@ public class EntityPopulator implements ConfigurationExpander {
         resource.removeParameter("beanClass");
 
         // Reset the resource...
-        resource.setResource(EntityInstanceCreator.class.getName());
+        resource.setResource(EntityPersister.class.getName());
 
         resources.add(resource);
     }

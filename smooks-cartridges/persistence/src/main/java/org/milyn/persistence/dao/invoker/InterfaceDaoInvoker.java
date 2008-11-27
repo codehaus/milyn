@@ -81,8 +81,8 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#persist(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
-	public void persist(final Object obj) {
-		dao.persist(obj);
+	public Object persist(final Object obj) {
+		return dao.persist(obj);
 	}
 
 	/* (non-Javadoc)

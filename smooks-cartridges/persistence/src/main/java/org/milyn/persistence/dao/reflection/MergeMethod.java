@@ -28,6 +28,8 @@ public class MergeMethod {
 
 	final Method method;
 
+	boolean returnsEntity;
+
 	/**
 	 *
 	 */
