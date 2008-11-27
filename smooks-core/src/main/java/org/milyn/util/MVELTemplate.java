@@ -15,7 +15,9 @@
 */
 package org.milyn.util;
 
-import org.mvel.TemplateInterpreter;
+import org.mvel2.templates.CompiledTemplate;
+import org.mvel2.templates.TemplateCompiler;
+import org.mvel2.templates.TemplateRuntime;
 import org.milyn.assertion.AssertArgument;
 
 import java.util.Map;
@@ -24,15 +26,17 @@ import java.util.Map;
  *  <a href="http://mvel.codehaus.org/">MVEL</a> template.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
 */
 public class MVELTemplate {
 
     private String template;
-    private TemplateInterpreter interpreter;
+    private CompiledTemplate compiledTemplate;
 
     public MVELTemplate(String template) {
         AssertArgument.isNotNullAndNotEmpty(template, "template");
         this.template = template.replace("${", "@{");
+        compiledTemplate = TemplateCompiler.compileTemplate(this.template);
     }
 
     public String getTemplate() {
@@ -40,6 +44,6 @@ public class MVELTemplate {
     }
 
     public String apply(Object contextObject) {
-        return (String) TemplateInterpreter.eval(template, contextObject);
+        return (String) TemplateRuntime.execute(compiledTemplate, contextObject);
     }
 }
