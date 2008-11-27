@@ -22,7 +22,7 @@ package org.milyn.persistence.dao;
  */
 public interface Dao<E> {
 
-	void persist(E entity);
+	E persist(E entity);
 
 	E merge(E entity);
 

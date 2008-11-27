@@ -58,7 +58,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	public Object merge(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.saveOrUpdate(entity);
+		session.merge(entity);
 
 		return entity;
 	}
@@ -66,11 +66,12 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAO#persist(java.lang.Object)
 	 */
-	public void persist(final Object entity) {
+	public Object persist(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.save(entity);
+		session.persist(entity);
 
+		return null;
 	}
 
 	/* (non-Javadoc)

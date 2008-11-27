@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public interface DaoInvoker {
 
-	void persist(Object obj);
+	Object persist(Object obj);
 
 	Object merge(Object obj);
 

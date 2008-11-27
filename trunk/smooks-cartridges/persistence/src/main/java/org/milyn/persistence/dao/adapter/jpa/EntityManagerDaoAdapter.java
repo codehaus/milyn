@@ -69,10 +69,12 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Lookupable<Object>,
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAO#persist(java.lang.Object)
 	 */
-	public void persist(final Object entity) {
+	public Object persist(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
 		entityManager.persist(entity);
+
+		return null;
 	}
 
 

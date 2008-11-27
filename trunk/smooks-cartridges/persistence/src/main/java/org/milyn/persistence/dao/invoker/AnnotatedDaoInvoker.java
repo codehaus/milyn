@@ -79,12 +79,12 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#persist(java.lang.Object)
 	 */
-	public void persist(final Object entity) {
+	public Object persist(final Object entity) {
 		final PersistMethod method = daoRuntimeInfo.getPersistMethod();
 
 		assertMethod(method, Persist.class);
 
-		method.invoke(dao, entity);
+		return method.invoke(dao, entity);
 	}
 
 	/* (non-Javadoc)
