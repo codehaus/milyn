@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.persistence.dao.MappedDao;
 import org.milyn.persistence.test.TestGroup;
-import org.milyn.persistence.test.dao.FullInterfaceNamedDao;
+import org.milyn.persistence.test.dao.FullInterfaceMappedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.mockito.MockitoAnnotations.Mock;
 import org.testng.annotations.Test;
@@ -33,10 +33,10 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
+public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 
 	@Mock
-	private FullInterfaceNamedDao<Object> fullDao;
+	private FullInterfaceMappedDao<Object> fullDao;
 
 	@Mock
 	private MappedDao<Object> minimumDao;
