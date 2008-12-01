@@ -60,7 +60,7 @@ public class EntityPersisterTest extends BaseTestCase {
 		String toPersist2 = new String("toPersist2");
 		String toMerge = new String("toMerge");
 
-		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-01.xml"));
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persister-01.xml"));
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
@@ -81,12 +81,12 @@ public class EntityPersisterTest extends BaseTestCase {
 	}
 
 	@Test
-	public void test_entity_persist_and_merge_with_dao() throws Exception {
+	public void test_entity_persist_and_merge_with_named_dao() throws Exception {
 		String toPersist1 = new String("toPersist1");
 		String toPersist2 = new String("toPersist2");
 		String toMerge = new String("toMerge");
 
-		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-02.xml"));
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persister-02.xml"));
 		Map<String, Object> daoMap = new HashMap<String, Object>();
 		daoMap.put("dao1", dao);
 
@@ -94,7 +94,7 @@ public class EntityPersisterTest extends BaseTestCase {
 
 		PersistenceUtil.setDAORegister(executionContext, new MapRegister<Object>(daoMap));
 
-		enableReporting(executionContext, "report_test_entity_persist_and_merge_with_dao.html");
+		enableReporting(executionContext, "report_test_entity_persist_and_merge_with_named_dao.html");
 
 		JavaResult result = new JavaResult();
 		result.getResultMap().put("toPersist1", toPersist1);
@@ -118,7 +118,7 @@ public class EntityPersisterTest extends BaseTestCase {
 		String persisted2 = new String("persisted2");
 		String merged = new String("merged");
 
-		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-03.xml"));
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persister-03.xml"));
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
@@ -149,7 +149,7 @@ public class EntityPersisterTest extends BaseTestCase {
 		String toPersist2 = new String("toPersist2");
 		String toMerge = new String("toMerge");
 
-		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-04.xml"));
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persister-04.xml"));
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
@@ -167,6 +167,30 @@ public class EntityPersisterTest extends BaseTestCase {
 		verify(mappedDao).merge(eq("merge"), same(toMerge));
 		verify(mappedDao).persist(eq("persist2"), same(toPersist2));
 		verify(mappedDao).persist(eq("persist1"), same(toPersist1));
+	}
+
+	@Test
+	public void test_entity_persist_with_executeBefore() throws Exception {
+		String toPersist1 = new String("toPersist1");
+		String toPersist2 = new String("toPersist2");
+
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persister-05.xml"));
+
+		ExecutionContext executionContext = smooks.createExecutionContext();
+
+		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+
+		enableReporting(executionContext, "report_test_entity_persist_with_executeBefore.html");
+
+		JavaResult result = new JavaResult();
+		result.getResultMap().put("toPersist1", toPersist1);
+		result.getResultMap().put("toPersist2", toPersist2);
+
+		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+
+		verify(dao).persist(same(toPersist1));
+		verify(dao).persist(same(toPersist2));
+
 	}
 
 	/**

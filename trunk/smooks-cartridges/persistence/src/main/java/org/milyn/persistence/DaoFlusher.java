@@ -33,8 +33,6 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.event.report.annotation.VisitAfterReport;
-import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -47,66 +45,41 @@ import org.milyn.persistence.dao.invoker.MappedDaoInvokerFactory;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.w3c.dom.Element;
 
-
 /**
- * @author maurice
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
 //@VisitBeforeReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_Before.html")
 //@VisitAfterReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_After.html")
-public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
-    private static Log logger = LogFactory.getLog(EntityPersister.class);
-
-    @ConfigParam(name = "beanId")
-    private String beanIdName;
-
-    @ConfigParam(name = "persistedBeanId", use = Use.OPTIONAL)
-    private String persistedBeanIdName;
+    private static Log logger = LogFactory.getLog(DaoFlusher.class);
 
     @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
 
-    @ConfigParam(use = Use.OPTIONAL)
+    @ConfigParam(name = "statementId", use = Use.OPTIONAL)
     private String statementId;
-
-    @ConfigParam(defaultVal = PersistMode.PERSIST_STR, choice = {PersistMode.PERSIST_STR, PersistMode.MERGE_STR}, decoder = PersistMode.DataDecoder.class)
-    private PersistMode persistMode;
 
     @AppContext
     private ApplicationContext appContext;
 
-    private BeanId beanId;
-
-    private BeanId persistedBeanId;
-
-    @Initialize
-    public void initialize() throws SmooksConfigurationException {
-    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
-
-    	beanId = beanIdRegister.register(beanIdName);
-
-    	if(persistedBeanIdName != null) {
-    		persistedBeanId = beanIdRegister.register(persistedBeanIdName);
-    	}
-    }
-
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	persist(executionContext);
+    	flush(executionContext);
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	persist(executionContext);
+    	flush(executionContext);
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	persist(executionContext);
+    	flush(executionContext);
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	persist(executionContext);
+    	flush(executionContext);
     }
 
 	/**
@@ -115,15 +88,16 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void persist(final ExecutionContext executionContext) {
+	private void flush(final ExecutionContext executionContext) {
 
 		if(logger.isDebugEnabled()) {
-			logger.debug("Persisting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "' using persist mode '" + persistMode + "'");
+			String msg = "Flushing dao";
+			if(daoName != null) {
+				msg += " with name '" + daoName + "'";
+			}
+			msg += ".";
+			logger.debug(msg);
 		}
-
-		BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
-
-		Object bean = beanRepository.getBean(beanId);
 
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
@@ -139,24 +113,11 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
 			}
 
-			Object result;
-
-			if(statementId != null) {
-				result = persistMapped(bean, dao);
+			if(statementId == null) {
+				flush(dao);
 			} else {
-				result = persist(bean, dao);
+				mappedFlush(dao);
 			}
-
-			if(persistedBeanId != null) {
-				if(result == null) {
-					result = bean;
-				}
-				beanRepository.addBean(persistedBeanId, result);
-			} else if(result != null && bean != result) {
-				beanRepository.changeBean(beanId, bean);
-			}
-
-
 		} finally {
 			if(dao != null) {
 				emr.returnDao(dao);
@@ -165,52 +126,22 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	}
 
 	/**
-	 * @param beanResult
-	 * @param daoObj
-	 * @param result
-	 * @return
+	 * @param dao
 	 */
-	private Object persist(Object beanResult, Object dao) {
+	private void flush(Object dao) {
 		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, appContext);
 
-
-		switch (persistMode) {
-
-		case PERSIST:
-			return daoInvoker.persist(beanResult);
-
-		case MERGE:
-			return daoInvoker.merge(beanResult);
-
-		default:
-			throw new IllegalStateException("The persistMode '"	+ persistMode + "' is not supported");
-		}
-
+		daoInvoker.flush();
 	}
 
 
 	/**
-	 * @param beanResult
-	 * @param daoObj
-	 * @param result
-	 * @return
+	 * @param dao
 	 */
-	private Object persistMapped(Object beanResult, Object dao) {
+	private void mappedFlush(Object dao) {
 		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, appContext);
 
-
-		switch (persistMode) {
-
-		case PERSIST:
-			return daoInvoker.persist(statementId, beanResult);
-
-
-		case MERGE:
-			return daoInvoker.merge(statementId, beanResult);
-
-		default:
-			throw new IllegalStateException("The persistMode '"	+ persistMode + "' is not supported");
-		}
-
+		daoInvoker.flush(statementId);
 	}
+
 }
