@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.MockApplicationContext;
-import org.milyn.persistence.dao.NamedDao;
+import org.milyn.persistence.dao.MappedDao;
 import org.milyn.persistence.test.TestGroup;
 import org.testng.annotations.Test;
 
@@ -34,11 +34,11 @@ public class NamedDaoInvokerFactoryTest {
 	@Test(groups = TestGroup.UNIT)
 	public void test_getInstance() {
 
-		NamedDaoInvokerFactory factory  = NamedDaoInvokerFactory.getInstance();
+		MappedDaoInvokerFactory factory  = MappedDaoInvokerFactory.getInstance();
 
 		assertNotNull(factory);
 
-		NamedDaoInvokerFactory factory2  = NamedDaoInvokerFactory.getInstance();
+		MappedDaoInvokerFactory factory2  = MappedDaoInvokerFactory.getInstance();
 
 		assertSame(factory, factory2);
 
@@ -47,13 +47,13 @@ public class NamedDaoInvokerFactoryTest {
 	@Test(groups = TestGroup.UNIT)
 	public void test_create() {
 
-		NamedDaoInvokerFactory factory  = NamedDaoInvokerFactory.getInstance();
+		MappedDaoInvokerFactory factory  = MappedDaoInvokerFactory.getInstance();
 		ApplicationContext mockApplicationContext = new MockApplicationContext();
 
 		@SuppressWarnings("unchecked")
-		NamedDao<Object> namedDaoMock = mock(NamedDao.class);
+		MappedDao<Object> namedDaoMock = mock(MappedDao.class);
 
-		NamedDaoInvoker namedDaoInvoker = factory.create(namedDaoMock, mockApplicationContext);
+		MappedDaoInvoker namedDaoInvoker = factory.create(namedDaoMock, mockApplicationContext);
 
 		assertNotNull(namedDaoInvoker);
 

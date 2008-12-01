@@ -37,7 +37,7 @@ public class SessionRegisterTest extends BaseTestCase {
 
 		SessionRegister register = new SessionRegister(session);
 
-		SessionDaoAdapter sessionDaoAdapter = register.getDao(null);
+		SessionDaoAdapter sessionDaoAdapter = register.getDao();
 
 		assertNotNull(sessionDaoAdapter);
 

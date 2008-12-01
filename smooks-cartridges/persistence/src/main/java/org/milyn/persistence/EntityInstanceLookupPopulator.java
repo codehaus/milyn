@@ -47,6 +47,7 @@ import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.persistence.dao.DaoRegister;
 import org.milyn.persistence.dao.invoker.DaoInvoker;
 import org.milyn.persistence.dao.invoker.DaoInvokerFactory;
+import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 

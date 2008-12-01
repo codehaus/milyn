@@ -15,16 +15,10 @@
 */
 package org.milyn.persistence.test.dao;
 
-import java.util.Collection;
-import java.util.Map;
-
 import org.milyn.persistence.dao.annotation.Dao;
-import org.milyn.persistence.dao.annotation.Flush;
-import org.milyn.persistence.dao.annotation.Lookup;
-import org.milyn.persistence.dao.annotation.LookupByQuery;
 import org.milyn.persistence.dao.annotation.Merge;
-import org.milyn.persistence.dao.annotation.Param;
 import org.milyn.persistence.dao.annotation.Persist;
+import org.milyn.persistence.dao.annotation.ReturnsNoEntity;
 
 
 /**
@@ -32,26 +26,14 @@ import org.milyn.persistence.dao.annotation.Persist;
  *
  */
 @Dao
-public interface FullAnnotatedDao {
+public interface AnnotatedDaoNoEntityReturned {
 
 	@Persist
+	@ReturnsNoEntity
 	Object persistIt(final Object entity);
 
 	@Merge
+	@ReturnsNoEntity
 	Object mergeIt(final Object merge);
 
-	@Flush
-	void flushIt();
-
-	@LookupByQuery
-	Collection<?> findByQuery(String query, Object[] parameters);
-
-	@LookupByQuery
-	Collection<?> findByQuery(String query, Map<String, Object> parameters);
-
-	@Lookup("id")
-	Collection<?> findById(@Param("id") Long id);
-
-	@Lookup("name")
-	Collection<?> findById(@Param("surname") String surname, @Param("firstname") String firstname);
 }

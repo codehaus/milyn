@@ -19,10 +19,8 @@ package org.milyn.persistence.dao;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface NamedDao<E> {
+public interface MappedFlushable {
 
-	E persist(String name, E entity);
-
-	E merge(String name, E entity);
+	public void flush(String id);
 
 }

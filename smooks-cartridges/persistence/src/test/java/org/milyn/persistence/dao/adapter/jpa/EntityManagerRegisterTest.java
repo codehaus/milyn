@@ -38,7 +38,7 @@ public class EntityManagerRegisterTest extends BaseTestCase {
 
 		EntityManagerRegister register = new EntityManagerRegister(entityManager);
 
-		EntityManagerDaoAdapter entityManagerDaoAdapter = register.getDao(null);
+		EntityManagerDaoAdapter entityManagerDaoAdapter = register.getDao();
 
 		assertNotNull(entityManagerDaoAdapter);
 

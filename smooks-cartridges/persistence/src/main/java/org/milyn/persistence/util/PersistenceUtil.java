@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence;
+package org.milyn.persistence.util;
 
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;

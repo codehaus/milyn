@@ -58,7 +58,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		adapter.persist(toPersist);
 
-		verify(session).save(same(toPersist));
+		verify(session).persist(same(toPersist));
 
 	}
 
@@ -73,7 +73,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		// VERIFY
 
-		verify(session).saveOrUpdate(same(toMerge));
+		verify(session).merge(same(toMerge));
 
 		assertSame(toMerge, merged);
 

@@ -28,11 +28,12 @@ import org.milyn.annotation.AnnotatedMethod;
 import org.milyn.annotation.AnnotationManager;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.persistence.dao.annotation.Dao;
+import org.milyn.persistence.dao.annotation.Flush;
 import org.milyn.persistence.dao.annotation.Lookup;
 import org.milyn.persistence.dao.annotation.LookupByQuery;
-import org.milyn.persistence.dao.annotation.Flush;
 import org.milyn.persistence.dao.annotation.Merge;
 import org.milyn.persistence.dao.annotation.Persist;
+import org.milyn.persistence.dao.annotation.ReturnsNoEntity;
 
 /**
  * @author maurice_zeijen
@@ -177,8 +178,9 @@ public class AnnotatedDaoRuntimeInfo {
 			throw new RuntimeException("The Merge annotated method ["+ method +"] of the DAO class [" + daoClass.getName() + "] has more then 1 parameter, which isn't allowed.");
 		}
 
+		boolean returnsEntity  = !method.isAnnotationPresent(ReturnsNoEntity.class);
 
-		mergeMethod = new MergeMethod(method);
+		mergeMethod = new MergeMethod(method, returnsEntity);
 	}
 
 	/**
@@ -197,7 +199,9 @@ public class AnnotatedDaoRuntimeInfo {
 			throw new RuntimeException("The Persist annotated method ["+ method +"]  the DAO class [" + daoClass.getName() + "] has more then 1 parameter, which isn't allowed.");
 		}
 
-		persistMethod = new PersistMethod(method);
+		boolean returnsEntity  = !method.isAnnotationPresent(ReturnsNoEntity.class);
+
+		persistMethod = new PersistMethod(method, returnsEntity);
 	}
 
 
