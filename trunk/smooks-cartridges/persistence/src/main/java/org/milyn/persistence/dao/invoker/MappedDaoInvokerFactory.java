@@ -18,33 +18,33 @@ package org.milyn.persistence.dao.invoker;
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ApplicationContext;
-import org.milyn.persistence.dao.NamedDao;
+import org.milyn.persistence.dao.MappedDao;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class NamedDaoInvokerFactory {
+public class MappedDaoInvokerFactory {
 
-	private static final NamedDaoInvokerFactory instance = new NamedDaoInvokerFactory();
+	private static final MappedDaoInvokerFactory instance = new MappedDaoInvokerFactory();
 
 	//public static final String REPOSITORY_KEY = DaoInvokerFactory.class.getName() + "#REPOSITORY_KEY";
 
-	public static final NamedDaoInvokerFactory getInstance() {
+	public static final MappedDaoInvokerFactory getInstance() {
 		return instance;
 	}
 
-	private NamedDaoInvokerFactory() {
+	private MappedDaoInvokerFactory() {
 	}
 
 
 	@SuppressWarnings("unchecked")
-	public NamedDaoInvoker create(final Object dao, final ApplicationContext applicationContext) {
+	public MappedDaoInvoker create(final Object dao, final ApplicationContext applicationContext) {
 		AssertArgument.isNotNull(dao, "dao");
 		AssertArgument.isNotNull(applicationContext, "applicationContext");
 
-		if(dao instanceof NamedDao) {
-			return new InterfaceNamedDaoInvoker((NamedDao<? super Object>) dao);
+		if(dao instanceof MappedDao) {
+			return new InterfaceMappedDaoInvoker((MappedDao<? super Object>) dao);
 		} else {
 
 			throw new NotImplementedException("Only the NamedDAO Interface method is supported now");

@@ -15,6 +15,7 @@
 */
 package org.milyn.persistence.dao.invoker;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +26,7 @@ import org.milyn.persistence.NoMethodWithAnnotationFound;
 import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfo;
 import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfoFactory;
 import org.milyn.persistence.test.TestGroup;
+import org.milyn.persistence.test.dao.AnnotatedDaoNoEntityReturned;
 import org.milyn.persistence.test.dao.FullAnnotatedDao;
 import org.milyn.persistence.test.dao.MinimumAnnotatedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
@@ -42,24 +44,67 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	FullAnnotatedDao fullDao;
 
 	@Mock
+	AnnotatedDaoNoEntityReturned daoNoEntityReturned;
+
+	@Mock
 	MinimumAnnotatedDao minimumDao;
 
 	AnnotatedDaoRuntimeInfoFactory runtimeInfoFactory = new AnnotatedDaoRuntimeInfoFactory();
 
 	AnnotatedDaoRuntimeInfo fullDaoRuntimeInfo = runtimeInfoFactory.create(FullAnnotatedDao.class);
 
+	AnnotatedDaoRuntimeInfo daoNoEntityReturnedRuntimeInfo = runtimeInfoFactory.create(AnnotatedDaoNoEntityReturned.class);
+
 	AnnotatedDaoRuntimeInfo minimumDaoRuntimeInfo = runtimeInfoFactory.create(MinimumAnnotatedDao.class);
 
 	@Test(groups = TestGroup.UNIT)
-	public void test_persist() {
+	public void test_persist_with_entity_return() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
 
 		Object toPersist = new Object();
 
-		invoker.persist(toPersist);
+		Object expectedResult = new Object();
+
+		stub(fullDao.persistIt(toPersist)).toReturn(expectedResult);
+
+		Object result = invoker.persist(toPersist);
 
 		verify(fullDao).persistIt(same(toPersist));
+
+		assertSame(expectedResult, result);
+	}
+
+	@Test(groups = TestGroup.UNIT)
+	public void test_persist_with_null_return() {
+
+		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
+
+		Object toPersist = new Object();
+
+		stub(fullDao.persistIt(toPersist)).toReturn(null);
+
+		Object result = invoker.persist(toPersist);
+
+		verify(fullDao).persistIt(same(toPersist));
+
+		assertNull(result);
+	}
+
+	@Test(groups = TestGroup.UNIT)
+	public void test_persist_noEntityReturned() {
+
+		DaoInvoker invoker = new AnnotatedDaoInvoker(daoNoEntityReturned, daoNoEntityReturnedRuntimeInfo);
+
+		Object toPersist = new Object();
+
+		stub(daoNoEntityReturned.persistIt(toPersist)).toReturn(toPersist);
+
+		Object result = invoker.persist(toPersist);
+
+		verify(daoNoEntityReturned).persistIt(same(toPersist));
+
+		assertNull(result);
 	}
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
@@ -74,18 +119,41 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	}
 
+
 	@Test(groups = TestGroup.UNIT)
-	public void test_merge() {
+	public void test_merge_with_entity_return() {
 
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
 
 		Object toMerge = new Object();
 
-		invoker.merge(toMerge);
+		Object expectedResult = new Object();
+
+		stub(fullDao.mergeIt(toMerge)).toReturn(expectedResult);
+
+		Object result = invoker.merge(toMerge);
 
 		verify(fullDao).mergeIt(same(toMerge));
 
+		assertSame(expectedResult, result);
+
+	}
+
+	@Test(groups = TestGroup.UNIT)
+	public void test_merge_with_null_return() {
+
+		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
+
+		Object toMerge = new Object();
+
+		stub(fullDao.mergeIt(toMerge)).toReturn(null);
+
+		Object result = invoker.merge(toMerge);
+
+		verify(fullDao).mergeIt(same(toMerge));
+
+		assertNull(result);
 	}
 
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
@@ -99,6 +167,24 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 		invoker.merge(toMerge);
 
 	}
+
+
+	@Test(groups = TestGroup.UNIT)
+	public void test_merge_noEntityReturned() {
+
+		DaoInvoker invoker = new AnnotatedDaoInvoker(daoNoEntityReturned, daoNoEntityReturnedRuntimeInfo);
+
+		Object toMerge = new Object();
+
+		stub(daoNoEntityReturned.mergeIt(toMerge)).toReturn(toMerge);
+
+		Object result = invoker.merge(toMerge);
+
+		verify(daoNoEntityReturned).mergeIt(same(toMerge));
+
+		assertNull(result);
+	}
+
 
 	@Test(groups = TestGroup.UNIT)
 	public void test_flush() {

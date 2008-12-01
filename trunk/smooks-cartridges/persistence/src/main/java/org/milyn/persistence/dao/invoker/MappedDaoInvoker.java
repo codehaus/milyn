@@ -21,13 +21,13 @@ import java.util.Map;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface NamedDaoInvoker {
+public interface MappedDaoInvoker {
 
-	void persist(String name, Object obj);
+	Object persist(String id, Object obj);
 
-	Object merge(String name, Object obj);
+	Object merge(String id, Object obj);
 
-	void flush(String name);
+	void flush(String id);
 
-	Object lookup(String name, Map<String, ?> parameters);
+	Object lookup(String id, Map<String, ?> parameters);
 }

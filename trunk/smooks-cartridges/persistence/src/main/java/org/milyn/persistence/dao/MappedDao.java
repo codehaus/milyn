@@ -13,17 +13,16 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.test.dao;
-
-import org.milyn.persistence.dao.Lookupable;
-import org.milyn.persistence.dao.MappedDao;
-import org.milyn.persistence.dao.MappedFlushable;
+package org.milyn.persistence.dao;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceNamedDao<T> extends MappedDao<T>, MappedFlushable, Lookupable<T> {
+public interface MappedDao<E> {
 
+	E persist(String id, E entity);
+
+	E merge(String id, E entity);
 
 }

@@ -73,7 +73,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 
 		verify(sqlMapClient).update(eq("id"), same(toMerge));
 
-		assertSame(toMerge, merged);
+		assertNull(merged);
 
 	}
 

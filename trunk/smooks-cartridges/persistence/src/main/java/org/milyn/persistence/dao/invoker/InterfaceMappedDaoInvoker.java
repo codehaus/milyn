@@ -20,62 +20,61 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.persistence.dao.Lookupable;
-import org.milyn.persistence.dao.NamedDao;
-import org.milyn.persistence.dao.NamedFlushable;
-
+import org.milyn.persistence.dao.MappedDao;
+import org.milyn.persistence.dao.MappedFlushable;
 
 /**
  * @author maurice_zeijen
  *
  */
-public class InterfaceNamedDaoInvoker implements NamedDaoInvoker  {
+public class InterfaceMappedDaoInvoker implements MappedDaoInvoker  {
 
-	private final NamedDao<? super Object> dao;
+	private final MappedDao<? super Object> dao;
 
 	private Lookupable<? super Object>  finderDAO;
 
-	private NamedFlushable flushableDAO;
+	private MappedFlushable flushableDAO;
 
 	/**
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public InterfaceNamedDaoInvoker(final NamedDao<? super Object> dao) {
+	public InterfaceMappedDaoInvoker(final MappedDao<? super Object> dao) {
 		this.dao = dao;
 
 		if(dao instanceof Lookupable) {
 			this.finderDAO = (Lookupable) dao;
 		}
 
-		if(dao instanceof NamedFlushable) {
-			this.flushableDAO = (NamedFlushable) dao;
+		if(dao instanceof MappedFlushable) {
+			this.flushableDAO = (MappedFlushable) dao;
 		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#flush()
 	 */
-	public void flush(String name) {
+	public void flush(String id) {
 		if(flushableDAO == null) {
-			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + NamedFlushable.class.getName() + "] interface and there for can't flush the DAO.");
+			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + MappedFlushable.class.getName() + "] interface and there for can't flush the DAO.");
 		}
-		flushableDAO.flush(name);
+		flushableDAO.flush(id);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#merge(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
-	public Object merge(String name, final Object obj) {
-		return dao.merge(name, obj);
+	public Object merge(String id, final Object obj) {
+		return dao.merge(id, obj);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#persist(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
-	public void persist(String name, final Object obj) {
-		dao.persist(name, obj);
+	public Object persist(String id, final Object obj) {
+		return dao.persist(id, obj);
 	}
 
 //	/* (non-Javadoc)
@@ -92,10 +91,10 @@ public class InterfaceNamedDaoInvoker implements NamedDaoInvoker  {
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<?> lookup(final String name, final Map<String, ?> parameters) {
+	public Collection<?> lookup(final String id, final Map<String, ?> parameters) {
 		if(finderDAO == null) {
 			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Lookupable.class.getName() + "] interface and there for can't find by query.");
 		}
-		return finderDAO.lookup(name, parameters);
+		return finderDAO.lookup(id, parameters);
 	}
 }

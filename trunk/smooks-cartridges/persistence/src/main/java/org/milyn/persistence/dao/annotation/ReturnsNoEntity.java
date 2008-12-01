@@ -13,14 +13,25 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao;
+package org.milyn.persistence.dao.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * DAO Persist and Merge anotated methods with this Annotation indicate that
+ * the method does not return an entity and that the returned value shouldn't
+ * be used by the DAO framework as an entity result.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface NamedFlushable {
-
-	public void flush(String name);
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface ReturnsNoEntity {
 
 }

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.milyn.persistence.dao.NamedDao;
+import org.milyn.persistence.dao.MappedDao;
 import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.dao.FullInterfaceNamedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
@@ -39,12 +39,12 @@ public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
 	private FullInterfaceNamedDao<Object> fullDao;
 
 	@Mock
-	private NamedDao<Object> minimumDao;
+	private MappedDao<Object> minimumDao;
 
 	@Test(groups = TestGroup.UNIT)
 	public void test_persist() {
 
-		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(fullDao);
+		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(fullDao);
 
 		Object toPersist = new Object();
 
@@ -58,7 +58,7 @@ public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
 	public void test_merge() {
 
 
-		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(fullDao);
+		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(fullDao);
 
 		Object toMerge = new Object();
 
@@ -71,7 +71,7 @@ public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
 	@Test(groups = TestGroup.UNIT)
 	public void test_flush() {
 
-		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(fullDao);
+		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(fullDao);
 
 		invoker.flush("id");
 
@@ -82,7 +82,7 @@ public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
 	public void test_flush_non_flushable_dao() {
 
-		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(minimumDao);
+		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(minimumDao);
 
 		invoker.flush("id");
 
@@ -91,7 +91,7 @@ public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
 	@Test(groups = TestGroup.UNIT)
 	public void test_lookup() {
 
-		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(fullDao);
+		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(fullDao);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
@@ -105,7 +105,7 @@ public class InterfaceNamedDaoInvokerTest extends BaseTestCase {
 	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
 	public void test_lookup_non_finder_dao() {
 
-		NamedDaoInvoker invoker = new InterfaceNamedDaoInvoker(minimumDao);
+		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(minimumDao);
 
 		Map<String, Object> params = new HashMap<String, Object>();
 
