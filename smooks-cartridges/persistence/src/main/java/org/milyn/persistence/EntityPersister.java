@@ -148,7 +148,10 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 			}
 
 			if(persistedBeanId != null) {
-				beanRepository.addBean(persistedBeanId, bean);
+				if(result == null) {
+					result = bean;
+				}
+				beanRepository.addBean(persistedBeanId, result);
 			} else if(result != null && bean != result) {
 				beanRepository.changeBean(beanId, bean);
 			}

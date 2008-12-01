@@ -26,8 +26,8 @@ public enum PersistMode {
 	PERSIST,
 	MERGE;
 
-	public static final String PERSIST_STR = "persist";
-	public static final String MERGE_STR = "merge";
+	public static final String PERSIST_STR = "PERSIST";
+	public static final String MERGE_STR = "MERGE";
 
 	/**
 	 * A Data decoder for this Enum

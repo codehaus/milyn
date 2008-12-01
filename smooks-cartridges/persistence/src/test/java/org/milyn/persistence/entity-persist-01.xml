@@ -2,6 +2,10 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
 	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.1.xsd">
 
-	<dao:persister beanId="toPersist" persistOnElement="root" />
+	<dao:persister beanId="toPersist1" persistOnElement="root" />
+
+	<dao:persister beanId="toPersist2" persistMode="PERSIST" persistOnElement="root" />
+
+	<dao:persister beanId="toMerge"  persistMode="MERGE" persistOnElement="root"/>
 
 </smooks-resource-list>

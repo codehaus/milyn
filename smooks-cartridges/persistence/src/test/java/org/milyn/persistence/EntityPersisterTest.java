@@ -17,20 +17,22 @@ package org.milyn.persistence;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import javax.xml.transform.Source;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
-import org.milyn.persistence.dao.DaoRegister;
+import org.milyn.persistence.dao.Dao;
+import org.milyn.persistence.dao.MappedDao;
+import org.milyn.persistence.dao.register.MapRegister;
 import org.milyn.persistence.dao.register.SingleDaoRegister;
-import org.milyn.persistence.test.dao.FullAnnotatedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.mockito.MockitoAnnotations.Mock;
@@ -42,31 +44,129 @@ import org.testng.annotations.Test;
  */
 public class EntityPersisterTest extends BaseTestCase {
 
-	private static final boolean ENABLE_REPORTING = true;
+	private static final boolean ENABLE_REPORTING = false;
+
+	private static final String SIMPLE_XML =  "<root />";
 
 	@Mock
-	private FullAnnotatedDao fullDao;
+	private Dao<String> dao;
 
-	private final Source singleElemXml =  new StringSource("<root />");
+	@Mock
+	private MappedDao<String> mappedDao;
 
 	@Test
-	public void test_entity_persist() throws Exception {
-		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-01.xml"));
-		DaoRegister<Object> daoRegister = new SingleDaoRegister<Object>(fullDao);
+	public void test_entity_persist_and_merge() throws Exception {
+		String toPersist1 = new String("toPersist1");
+		String toPersist2 = new String("toPersist2");
+		String toMerge = new String("toMerge");
 
-		Object toPersist = new Object();
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-01.xml"));
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, daoRegister);
+		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_persist.html");
+		enableReporting(executionContext, "report_test_entity_persist_and_merge.html");
 
-		BeanRepository.getInstance(executionContext).addBean("toPersist", toPersist);
+		JavaResult result = new JavaResult();
+		result.getResultMap().put("toPersist1", toPersist1);
+		result.getResultMap().put("toPersist2", toPersist2);
+		result.getResultMap().put("toMerge", toMerge);
 
-		smooks.filter(singleElemXml, null, executionContext);
+		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(fullDao).persistIt(same(toPersist));
+		verify(dao).merge(same(toMerge));
+		verify(dao).persist(same(toPersist2));
+		verify(dao).persist(same(toPersist1));
+	}
+
+	@Test
+	public void test_entity_persist_and_merge_with_dao() throws Exception {
+		String toPersist1 = new String("toPersist1");
+		String toPersist2 = new String("toPersist2");
+		String toMerge = new String("toMerge");
+
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-02.xml"));
+		Map<String, Object> daoMap = new HashMap<String, Object>();
+		daoMap.put("dao1", dao);
+
+		ExecutionContext executionContext = smooks.createExecutionContext();
+
+		PersistenceUtil.setDAORegister(executionContext, new MapRegister<Object>(daoMap));
+
+		enableReporting(executionContext, "report_test_entity_persist_and_merge_with_dao.html");
+
+		JavaResult result = new JavaResult();
+		result.getResultMap().put("toPersist1", toPersist1);
+		result.getResultMap().put("toPersist2", toPersist2);
+		result.getResultMap().put("toMerge", toMerge);
+
+		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+
+		verify(dao).merge(same(toMerge));
+		verify(dao).persist(same(toPersist2));
+		verify(dao).persist(same(toPersist1));
+	}
+
+	@Test
+	public void test_entity_persist_and_merge_to_other_beanId() throws Exception {
+		String toPersist1 = new String("toPersist1");
+		String toPersist2 = new String("toPersist2");
+		String toMerge = new String("toMerge");
+
+		String persisted1 = new String("persisted1");
+		String persisted2 = new String("persisted2");
+		String merged = new String("merged");
+
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-03.xml"));
+
+		ExecutionContext executionContext = smooks.createExecutionContext();
+
+		PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(dao));
+
+		enableReporting(executionContext, "report_test_entity_persist_and_merge_to_other_beanId.html");
+
+		stub(dao.merge(toMerge)).toReturn(merged);
+		stub(dao.persist(toPersist2)).toReturn(persisted2);
+		stub(dao.persist(toPersist1)).toReturn(persisted1);
+
+		JavaResult result = new JavaResult();
+		result.getResultMap().put("toPersist1", toPersist1);
+		result.getResultMap().put("toPersist2", toPersist2);
+		result.getResultMap().put("toMerge", toMerge);
+
+		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+
+		assertSame(persisted1, result.getBean("persisted1"));
+		assertSame(persisted2, result.getBean("persisted2"));
+		assertSame(merged, result.getBean("merged"));
+
+	}
+
+	@Test
+	public void test_entity_persist_and_merge_with_mapped_dao() throws Exception {
+		String toPersist1 = new String("toPersist1");
+		String toPersist2 = new String("toPersist2");
+		String toMerge = new String("toMerge");
+
+		Smooks smooks = new Smooks(getResourceAsStream("entity-persist-04.xml"));
+
+		ExecutionContext executionContext = smooks.createExecutionContext();
+
+		PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(mappedDao));
+
+		enableReporting(executionContext, "report_test_entity_persist_and_merge_with_mapped_dao.html");
+
+		JavaResult result = new JavaResult();
+		result.getResultMap().put("toPersist1", toPersist1);
+		result.getResultMap().put("toPersist2", toPersist2);
+		result.getResultMap().put("toMerge", toMerge);
+
+		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+
+		verify(mappedDao).merge(eq("merge"), same(toMerge));
+		verify(mappedDao).persist(eq("persist2"), same(toPersist2));
+		verify(mappedDao).persist(eq("persist1"), same(toPersist1));
 	}
 
 	/**
