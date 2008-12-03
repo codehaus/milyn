@@ -19,7 +19,7 @@ import static junit.framework.Assert.*;
 
 import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.util.BaseTestCase;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 import org.testng.annotations.Test;
 
 import com.ibatis.sqlmap.client.SqlMapClient;

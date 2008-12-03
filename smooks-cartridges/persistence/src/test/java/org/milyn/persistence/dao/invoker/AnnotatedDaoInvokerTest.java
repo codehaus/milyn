@@ -30,7 +30,7 @@ import org.milyn.persistence.test.dao.AnnotatedDaoNoEntityReturned;
 import org.milyn.persistence.test.dao.FullAnnotatedDao;
 import org.milyn.persistence.test.dao.MinimumAnnotatedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 import org.testng.annotations.Test;
 
 /**

@@ -15,9 +15,9 @@
 */
 package org.milyn.persistence;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,7 @@ import org.milyn.persistence.dao.register.MapRegister;
 import org.milyn.persistence.dao.register.SingleDaoRegister;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 import org.testng.annotations.Test;
 
 /**
@@ -126,9 +126,9 @@ public class EntityPersisterTest extends BaseTestCase {
 
 		enableReporting(executionContext, "report_test_entity_persist_and_merge_to_other_beanId.html");
 
-		stub(dao.merge(toMerge)).toReturn(merged);
-		stub(dao.persist(toPersist2)).toReturn(persisted2);
-		stub(dao.persist(toPersist1)).toReturn(persisted1);
+		when(dao.merge(toMerge)).thenReturn(merged);
+		when(dao.persist(toPersist2)).thenReturn(persisted2);
+		when(dao.persist(toPersist1)).thenReturn(persisted1);
 
 		JavaResult result = new JavaResult();
 		result.getResultMap().put("toPersist1", toPersist1);

@@ -26,7 +26,7 @@ import org.milyn.persistence.dao.Dao;
 import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.dao.FullInterfaceDao;
 import org.milyn.persistence.test.util.BaseTestCase;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 import org.testng.annotations.Test;
 
 /**

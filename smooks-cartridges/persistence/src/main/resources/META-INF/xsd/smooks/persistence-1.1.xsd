@@ -155,7 +155,7 @@
     				<xs:element name="params" type="smooks-persistence:parameters" maxOccurs="1" minOccurs="0">
     				</xs:element>
     			</xs:sequence>
-    			<xs:attribute name="beanId" type="xs:string"use="required">
+    			<xs:attribute name="beanId" type="xs:string" use="required">
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
     					</xs:documentation>
@@ -185,14 +185,7 @@
     					<xs:documentation xml:lang="en">
     					</xs:documentation>
     				</xs:annotation>
-    			</xs:attribute>
-    			<xs:attribute name="uniqueResult" type="xs:boolean"
-    				use="optional" default="false">
-    				<xs:annotation>
-    					<xs:documentation xml:lang="en">
-    					</xs:documentation>
-    				</xs:annotation>
-    			</xs:attribute>
+				</xs:attribute>
     			<xs:attribute name="lookupOnElement" type="xs:string"
     				use="required">
     				<xs:annotation>
@@ -243,23 +236,26 @@
 				maxOccurs="1"
 				minOccurs="0" />
 		</xs:sequence>
-		<xs:attributeGroup ref="smooks-persistence:parameter"></xs:attributeGroup>
-
-		<xs:attributeGroup ref="smooks-persistence:valueBinding"></xs:attributeGroup>
+		<xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+		<xs:attribute name="data" type="xs:string" use="optional"></xs:attribute>
+		<xs:attribute name="decoder" type="xs:string" use="optional"></xs:attribute>
+		<xs:attribute name="default" type="xs:string" use="optional"></xs:attribute>
+		<xs:attribute name="dataNS" type="xs:string" use="optional"></xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="wiringParameter">
-        <xs:attributeGroup ref="smooks-persistence:parameter"></xs:attributeGroup>
-
-        <xs:attributeGroup ref="smooks-persistence:wiringBinding"></xs:attributeGroup>
+        <xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+        <xs:attribute name="beanIdRef" type="xs:string"></xs:attribute>
+ 		<xs:attribute name="wireOnElement" type="xs:string"></xs:attribute>
+ 		<xs:attribute name="wireOnElementNS" type="xs:string"></xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="expressionParameter">
     	<xs:simpleContent>
     		<xs:extension base="xs:string">
-		        <xs:attributeGroup ref="smooks-persistence:parameter"></xs:attributeGroup>
-
-		        <xs:attributeGroup ref="smooks-persistence:expressionBinding"></xs:attributeGroup>
+		        <xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+		        <xs:attribute name="execOnElement" type="xs:string"></xs:attribute>
+        		<xs:attribute name="execOnElementNS" type="xs:string"></xs:attribute>
             </xs:extension>
     	</xs:simpleContent>
     </xs:complexType>
@@ -272,28 +268,5 @@
     		</xs:extension>
     	</xs:simpleContent>
     </xs:complexType>
-
-    <xs:attributeGroup name="parameter">
-    	<xs:attribute name="name" type="xs:string"></xs:attribute>
-    </xs:attributeGroup>
-
-    <xs:attributeGroup name="valueBinding">
-    	<xs:attribute name="data" type="xs:string" use="optional"></xs:attribute>
-		<xs:attribute name="decoder" type="xs:string" use="optional"></xs:attribute>
-		<xs:attribute name="default" type="xs:string" use="optional"></xs:attribute>
-		<xs:attribute name="dataNS" type="xs:string" use="optional"></xs:attribute>
-    </xs:attributeGroup>
-
-    <xs:attributeGroup name="wiringBinding">
- 		<xs:attribute name="beanIdRef" type="xs:string"></xs:attribute>
- 		<xs:attribute name="wireOnElement" type="xs:string"></xs:attribute>
- 		<xs:attribute name="wireOnElementNS" type="xs:string"></xs:attribute>
-    </xs:attributeGroup>
-
-    <xs:attributeGroup name="expressionBinding">
-    	<xs:attribute name="execOnElement" type="xs:string"></xs:attribute>
-        <xs:attribute name="execOnElementNS" type="xs:string"></xs:attribute>
-    </xs:attributeGroup>
-
 
 </xs:schema>
