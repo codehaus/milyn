@@ -36,7 +36,7 @@ import org.milyn.persistence.test.dao.FullInterfaceDao;
 import org.milyn.persistence.test.dao.FullInterfaceMappedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 import org.testng.annotations.Test;
 
 /**

@@ -16,7 +16,8 @@
 package org.milyn.persistence;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.milyn.SmooksException;
@@ -31,8 +32,8 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.javabean.BeanRuntimeInfo;
-import org.milyn.javabean.DataDecoder;
+import org.milyn.persistence.dao.DaoRegister;
+import org.milyn.persistence.util.PersistenceUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -41,16 +42,25 @@ import org.w3c.dom.Element;
  */
 public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
+	public static final String PARAMETER_CONTEXT = EntityLookupper.class + "#PARAMETERS";
+
+	public static String getParameterRepositoryId(int id) {
+		return PARAMETER_CONTEXT + "#" + id;
+	}
+
+	@ConfigParam()
+	private int id;
+
 	@ConfigParam
     private String beanId;
 
     @ConfigParam(use = Use.OPTIONAL)
     private String daoName;
 
-    @ConfigParam(use = Use.OPTIONAL)
+    @ConfigParam(name="lookup", use = Use.OPTIONAL)
     private String lookupName;
 
-    @ConfigParam
+    @ConfigParam(use = Use.OPTIONAL)
     private String query;
 
     @ConfigParam(defaultVal = OnNoResult.NULLIFY_STR, decoder = OnNoResult.DataDecoder.class)
@@ -74,38 +84,67 @@ public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitBefore#visitBefore(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
-	public void visitBefore(Element element, ExecutionContext executionContext)
-			throws SmooksException {
-		// TODO Auto-generated method stub
+	public void visitBefore(Element element, ExecutionContext executionContext)	throws SmooksException {
 
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
-	 */
-	public void visitAfter(Element element, ExecutionContext executionContext)
-			throws SmooksException {
-		// TODO Auto-generated method stub
-
+		initParameterRepository(executionContext);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.sax.SAXVisitBefore#visitBefore(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
 	 */
-	public void visitBefore(SAXElement element,
-			ExecutionContext executionContext) throws SmooksException,
-			IOException {
-		// TODO Auto-generated method stub
+	public void visitBefore(SAXElement element,	ExecutionContext executionContext) throws SmooksException, IOException {
 
+		initParameterRepository(executionContext);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
+	 */
+	public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+		lookup(executionContext);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
 	 */
-	public void visitAfter(SAXElement element, ExecutionContext executionContext)
-			throws SmooksException, IOException {
-		// TODO Auto-generated method stub
+	public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+		lookup(executionContext);
+	}
 
+	public void initParameterRepository(ExecutionContext executionContext) {
+		executionContext.setAttribute(getParameterRepositoryId(id), new HashMap<String, Object>());
+	}
+
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> getParameterRepository(ExecutionContext executionContext) {
+		return (HashMap<String, Object>) executionContext.getAttribute(getParameterRepositoryId(id));
+	}
+
+	public void lookup(ExecutionContext executionContext) {
+
+		Map<String, Object> parameterRepository = getParameterRepository(executionContext);
+
+		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
+
+		Object dao = null;
+		try {
+			if(daoName == null) {
+				dao = emr.getDao();
+			} else {
+				dao = emr.getDao(daoName);
+			}
+
+			if(dao == null) {
+				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
+			}
+
+
+
+		} finally {
+			if(dao != null) {
+				emr.returnDao(dao);
+			}
+		}
 	}
 
 }
