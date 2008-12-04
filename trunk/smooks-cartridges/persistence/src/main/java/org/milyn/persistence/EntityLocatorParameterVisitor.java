@@ -18,7 +18,6 @@ package org.milyn.persistence;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +47,9 @@ import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.persistence.container.Parameter;
+import org.milyn.persistence.container.ParameterContainer;
+import org.milyn.persistence.container.ParameterManager;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -55,9 +57,9 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class LookupParameterRetriever implements DOMElementVisitor, SAXElementVisitor   {
+public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElementVisitor   {
 
-	private static Log logger = LogFactory.getLog(LookupParameterRetriever.class);
+	private static Log logger = LogFactory.getLog(EntityLocatorParameterVisitor.class);
 
 	@ConfigParam(name="entityLookupperId")
     private int entityLookupperId;
@@ -83,11 +85,11 @@ public class LookupParameterRetriever implements DOMElementVisitor, SAXElementVi
     @AppContext
     private ApplicationContext appContext;
 
+    private Parameter parameter;
+
     private BeanRepositoryManager beanRepositoryManager;
 
     private BeanRuntimeInfo wiredBeanRuntimeInfo;
-
-    private BeanId beanId;
 
     private BeanId wireBeanId;
 
@@ -107,6 +109,8 @@ public class LookupParameterRetriever implements DOMElementVisitor, SAXElementVi
 
         beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
+
+        parameter = ParameterManager.getParameterIndex(entityLookupperId, appContext).register(name);
     }
 
 
@@ -217,8 +221,6 @@ public class LookupParameterRetriever implements DOMElementVisitor, SAXElementVi
 
                     BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
 
-                    beanRepository.associateLifecycles(beanId , targetBeanId);
-
                     if(wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION ) {
 
                         // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
@@ -284,8 +286,8 @@ public class LookupParameterRetriever implements DOMElementVisitor, SAXElementVi
     		return;
     	}
 
-        HashMap<String, Object> parameterRepository = (HashMap<String, Object>) executionContext.getAttribute(EntityLookupper.getParameterRepositoryId(entityLookupperId));
-        parameterRepository.put(name, dataObject);
+    	ParameterContainer container = ParameterManager.getParameterContainer(entityLookupperId, executionContext);
+    	container.put(parameter, dataObject);
     }
 
     private Object decodeDataString(String dataString, ExecutionContext executionContext) throws DataDecodeException {
@@ -329,7 +331,7 @@ public class LookupParameterRetriever implements DOMElementVisitor, SAXElementVi
 	}
 
 	public String getId() {
-		return LookupParameterRetriever.class.getName() + "#" + entityLookupperId + "#" + name;
+		return EntityLocatorParameterVisitor.class.getName() + "#" + entityLookupperId + "#" + name;
 	}
 
 }

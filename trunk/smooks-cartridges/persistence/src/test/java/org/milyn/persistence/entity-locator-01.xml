@@ -4,13 +4,13 @@
 	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.1.xsd">
 
 
-	<dao:lookupper beanId="entity" lookup="something" lookupOnElement="b">
+	<dao:locator beanId="entity" lookup="something" lookupOnElement="b">
 		<dao:params>
 			<dao:value name="test" decoder="Integer" data="c" />
 			<dao:expression name="test3" execOnElement="e" >dAnde.d + dAnde.e</dao:expression>
 			<dao:wiring name="test2" beanIdRef="dAnde" wireOnElement="e" />
 		</dao:params>
-	</dao:lookupper>
+	</dao:locator>
 
 	<jb:bindings beanId="dAnde" class="java.util.HashMap" createOnElement="a">
 		<jb:value property="d" decoder="Integer" data="d" />
