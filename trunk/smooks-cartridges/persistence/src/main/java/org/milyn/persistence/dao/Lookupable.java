@@ -18,14 +18,32 @@ package org.milyn.persistence.dao;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.naming.OperationNotSupportedException;
+
+
+
 /**
  * @author maurice_zeijen
  *
  */
 public interface Lookupable<E> {
 
-//	Collection<E> findBy(String name, Object[] parameters);
+	/**
+	 *
+	 * @param name
+	 * @param parameters
+	 * @return
+	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 */
+	Collection<E> lookup(String name, Object[] parameters);
 
+	/**
+	 *
+	 * @param name
+	 * @param parameters
+	 * @return
+	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 */
 	Collection<E> lookup(String name, Map<String, ?> parameters);
 
 }

@@ -51,7 +51,7 @@ public class DaoInvokerFactory {
 
 			final AnnotatedClass annotatedClass =  AnnotationManager.getAnnotatedClass(dao.getClass());
 
-			if(annotatedClass.getAnnotation(org.milyn.persistence.dao.annotation.Dao.class) != null) {
+			if(annotatedClass.isAnnotationPresent(org.milyn.persistence.dao.annotation.Dao.class)) {
 
 				final AnnotatedDaoRuntimeInfoFactory repository = getAnnotatedDAORuntimeInfoRepository(applicationContext);
 
