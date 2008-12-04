@@ -35,6 +35,7 @@ import org.milyn.persistence.container.ParameterContainer;
 import org.milyn.persistence.container.ParameterIndex;
 import org.milyn.persistence.container.ParameterManager;
 import org.milyn.persistence.dao.DaoRegister;
+import org.milyn.persistence.dao.DaoUtil;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.w3c.dom.Element;
 
@@ -126,31 +127,45 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 		return (HashMap<String, Object>) executionContext.getAttribute(getParameterRepositoryId(id));
 	}
 
+	@SuppressWarnings("unchecked")
 	public void lookup(ExecutionContext executionContext) {
 
 		ParameterContainer container = ParameterManager.getParameterContainer(id, executionContext);
 
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
-//		Object dao = null;
-//		try {
-//			if(daoName == null) {
-//				dao = emr.getDao();
-//			} else {
-//				dao = emr.getDao(daoName);
-//			}
-//
-//			if(dao == null) {
-//				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
-//			}
-//
-//
-//
-//		} finally {
-//			if(dao != null) {
-//				emr.returnDao(dao);
-//			}
-//		}
+		Object dao = null;
+		try {
+			if(daoName == null) {
+				dao = emr.getDao();
+			} else {
+				dao = emr.getDao(daoName);
+			}
+
+			if(dao == null) {
+				throw new IllegalStateException("The DAO register returned null while getting the DAO '" + daoName + "'");
+			}
+
+			if(DaoUtil.isDao(dao)) {
+				lookup(dao, container);
+			} else if(DaoUtil.isMappedDao(dao)) {
+				lookupMapped(dao, container);
+			} else {
+				throw new IllegalStateException("The DAO '" + daoName + "' of type '" + dao.getClass().getName() + "' isn't recognized as a Dao or a MappedDao.");
+			}
+
+		} finally {
+			if(dao != null) {
+				emr.returnDao(dao);
+			}
+		}
 	}
 
+	public void lookup(Object dao, ParameterContainer container) {
+
+	}
+
+	public void lookupMapped(Object dao, ParameterContainer container) {
+
+	}
 }

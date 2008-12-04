@@ -15,6 +15,8 @@
 */
 package org.milyn.persistence.dao;
 
+import javax.naming.OperationNotSupportedException;
+
 
 /**
  * @author maurice_zeijen
@@ -22,8 +24,22 @@ package org.milyn.persistence.dao;
  */
 public interface Dao<E> {
 
+	/**
+	 *
+	 * @param name
+	 * @param parameters
+	 * @return
+	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 */
 	E persist(E entity);
 
+	/**
+	 *
+	 * @param name
+	 * @param parameters
+	 * @return
+	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 */
 	E merge(E entity);
 
 }
