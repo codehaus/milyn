@@ -34,21 +34,21 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class EntityLookupperTest {
+public class EntityLocatorTest {
 	private static final boolean ENABLE_REPORTING = false;
 
 	@Mock
 	private FullInterfaceDao<Object> dao;
 
 	@Test
-	public void test_entity_lookup() throws Exception {
-		Smooks smooks = new Smooks(getResourceAsStream("entity-lookupper-01.xml"));
+	public void test_entity_locate() throws Exception {
+		Smooks smooks = new Smooks(getResourceAsStream("entity-locator-01.xml"));
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
 		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_lookup.html");
+		enableReporting(executionContext, "test_entity_locate.html");
 
 		Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
 		smooks.filter(source, null, executionContext);
@@ -61,7 +61,7 @@ public class EntityLookupperTest {
 	 * @return
 	 */
 	private InputStream getResourceAsStream(String resource) {
-		return EntityLookupperTest.class.getResourceAsStream(resource);
+		return EntityLocatorTest.class.getResourceAsStream(resource);
 	}
 
 	private void enableReporting(ExecutionContext executionContext, String reportFilePath) throws IOException {

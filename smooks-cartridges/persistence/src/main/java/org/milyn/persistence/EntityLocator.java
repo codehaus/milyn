@@ -17,7 +17,6 @@ package org.milyn.persistence;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.milyn.SmooksException;
@@ -32,6 +31,9 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.persistence.container.ParameterContainer;
+import org.milyn.persistence.container.ParameterIndex;
+import org.milyn.persistence.container.ParameterManager;
 import org.milyn.persistence.dao.DaoRegister;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.w3c.dom.Element;
@@ -40,9 +42,9 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
-	public static final String PARAMETER_CONTEXT = EntityLookupper.class + "#PARAMETERS";
+	public static final String PARAMETER_CONTEXT = EntityLocator.class + "#PARAMETERS";
 
 	public static String getParameterRepositoryId(int id) {
 		return PARAMETER_CONTEXT + "#" + id;
@@ -72,6 +74,8 @@ public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVi
     @AppContext
     private ApplicationContext appContext;
 
+    private ParameterIndex parameterIndex;
+
     @Initialize
     public void initialize() throws SmooksConfigurationException {
 
@@ -79,6 +83,7 @@ public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVi
     		throw new SmooksConfigurationException("A lookup or query value needs to be set to be able to lookup anything");
     	}
 
+    	parameterIndex = ParameterManager.getParameterIndex(id, appContext);
     }
 
 	/* (non-Javadoc)
@@ -86,7 +91,7 @@ public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	 */
 	public void visitBefore(Element element, ExecutionContext executionContext)	throws SmooksException {
 
-		initParameterRepository(executionContext);
+		initParameterContainer(executionContext);
 	}
 
 	/* (non-Javadoc)
@@ -94,7 +99,7 @@ public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	 */
 	public void visitBefore(SAXElement element,	ExecutionContext executionContext) throws SmooksException, IOException {
 
-		initParameterRepository(executionContext);
+		initParameterContainer(executionContext);
 	}
 
 	/* (non-Javadoc)
@@ -111,8 +116,9 @@ public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVi
 		lookup(executionContext);
 	}
 
-	public void initParameterRepository(ExecutionContext executionContext) {
-		executionContext.setAttribute(getParameterRepositoryId(id), new HashMap<String, Object>());
+	public void initParameterContainer(ExecutionContext executionContext) {
+		ParameterContainer container = ParameterManager.getParameterContainer(id, executionContext);
+    	container.clear();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -122,29 +128,29 @@ public class EntityLookupper implements DOMElementVisitor, SAXVisitBefore, SAXVi
 
 	public void lookup(ExecutionContext executionContext) {
 
-		Map<String, Object> parameterRepository = getParameterRepository(executionContext);
+		ParameterContainer container = ParameterManager.getParameterContainer(id, executionContext);
 
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
-		Object dao = null;
-		try {
-			if(daoName == null) {
-				dao = emr.getDao();
-			} else {
-				dao = emr.getDao(daoName);
-			}
-
-			if(dao == null) {
-				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
-			}
-
-
-
-		} finally {
-			if(dao != null) {
-				emr.returnDao(dao);
-			}
-		}
+//		Object dao = null;
+//		try {
+//			if(daoName == null) {
+//				dao = emr.getDao();
+//			} else {
+//				dao = emr.getDao(daoName);
+//			}
+//
+//			if(dao == null) {
+//				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
+//			}
+//
+//
+//
+//		} finally {
+//			if(dao != null) {
+//				emr.returnDao(dao);
+//			}
+//		}
 	}
 
 }

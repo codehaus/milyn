@@ -30,7 +30,7 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class LookupperIdResolver implements DOMVisitBefore {
+public class EntityLocatorIdResolver implements DOMVisitBefore {
 
 	@AppContext
 	private ApplicationContext applicationContext;

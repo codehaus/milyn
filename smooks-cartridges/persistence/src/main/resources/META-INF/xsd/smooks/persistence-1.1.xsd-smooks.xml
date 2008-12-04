@@ -86,53 +86,53 @@
 
     <!-- LOOKUPPER -->
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.persistence.EntityLookupper</param>
+        <param name="resource">org.milyn.persistence.EntityLocator</param>
     </resource-config>
 
-    <resource-config selector="lookupper">
-        <resource>org.milyn.persistence.config.ext.LookupperIdResolver</resource>
+    <resource-config selector="locator">
+        <resource>org.milyn.persistence.config.ext.EntityLocatorIdResolver</resource>
     </resource-config>
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">lookupOnElement</param>
         <param name="mapTo">selector</param>
     </resource-config>
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">lookupOnElementNS</param>
         <param name="mapTo">selector-namespace</param>
     </resource-config>
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanId</param>
 	</resource-config>
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">dao</param>
     </resource-config>
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">lookup</param>
     </resource-config>
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">onNoResult</param>
     </resource-config>
 
-    <resource-config selector="lookupper">
+    <resource-config selector="locator">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">uniqueResult</param>
     </resource-config>
 
-	<resource-config selector="lookupper/query">
+	<resource-config selector="locator/query">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromText</resource>
         <param name="mapTo">query</param>
     </resource-config>
@@ -141,47 +141,47 @@
         LOOKUPPER - Value Parameter
     -->
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.persistence.LookupParameterRetriever</param>
+        <param name="resource">org.milyn.persistence.EntityLocatorParameterVisitor</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromParentConfig</resource>
         <param name="mapFrom">id</param>
         <param name="mapTo">entityLookupperId</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">data</param>
         <param name="mapTo">selector</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">dataNS</param>
         <param name="mapTo">selector-namespace</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">name</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">decoder</param>
         <param name="mapTo">type</param>
         <param name="defaultValue">String</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">default</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/value">
+    <resource-config selector="locator/params/value">
         <resource>org.milyn.persistence.config.extDecodeParamResolver</resource>
     </resource-config>
 
@@ -189,35 +189,35 @@
         LOOKUPPER - Wiring Parameter
     -->
 
-    <resource-config selector="lookupper/params/wiring">
+    <resource-config selector="locator/params/wiring">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.persistence.LookupParameterRetriever</param>
+        <param name="resource">org.milyn.persistence.EntityLocatorParameterVisitor</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/wiring">
+    <resource-config selector="locator/params/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromParentConfig</resource>
         <param name="mapFrom">id</param>
         <param name="mapTo">entityLookupperId</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/wiring">
+    <resource-config selector="locator/params/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">wireOnElement</param>
         <param name="mapTo">selector</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/wiring">
+    <resource-config selector="locator/params/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">wireOnElementNS</param>
         <param name="mapTo">selector-namespace</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/wiring">
+    <resource-config selector="locator/params/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">name</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/wiring">
+    <resource-config selector="locator/params/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanIdRef</param>
         <param name="mapTo">wireBeanId</param>
@@ -227,36 +227,36 @@
         LOOKUPPER - Expression Parameter
     -->
 
-    <resource-config selector="lookupper/params/expression">
+    <resource-config selector="locator/params/expression">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.persistence.LookupParameterRetriever</param>
+        <param name="resource">org.milyn.persistence.EntityLocatorParameterVisitor</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/expression">
+    <resource-config selector="locator/params/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromParentConfig</resource>
         <param name="mapFrom">id</param>
         <param name="mapTo">entityLookupperId</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/expression">
+    <resource-config selector="locator/params/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">execOnElement</param>
         <param name="mapTo">selector</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/expression">
+    <resource-config selector="locator/params/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">execOnElementNS</param>
         <param name="mapTo">selector-namespace</param>
     </resource-config>
 
-    <resource-config selector="lookupper/params/expression">
+    <resource-config selector="locator/params/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">name</param>
     </resource-config>
 
 
-    <resource-config selector="lookupper/params/expression">
+    <resource-config selector="locator/params/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromText</resource>
         <param name="mapTo">expression</param>
     </resource-config>
