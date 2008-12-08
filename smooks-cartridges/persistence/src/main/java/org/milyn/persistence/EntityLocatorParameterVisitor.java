@@ -28,6 +28,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
@@ -47,9 +48,14 @@ import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.persistence.container.Parameter;
-import org.milyn.persistence.container.ParameterContainer;
-import org.milyn.persistence.container.ParameterManager;
+import org.milyn.persistence.parameter.NamedParameter;
+import org.milyn.persistence.parameter.NamedParameterContainer;
+import org.milyn.persistence.parameter.NamedParameterIndex;
+import org.milyn.persistence.parameter.Parameter;
+import org.milyn.persistence.parameter.ParameterContainer;
+import org.milyn.persistence.parameter.ParameterIndex;
+import org.milyn.persistence.parameter.ParameterManager;
+import org.milyn.persistence.parameter.PositionalParameterIndex;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -64,10 +70,16 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
 	@ConfigParam(name="entityLookupperId")
     private int entityLookupperId;
 
-	@ConfigParam
+	@ConfigParam(use = Use.OPTIONAL)
 	private String name;
 
-    @ConfigParam(name="wireBeanId", defaultVal = AnnotationConstants.NULL_STRING)
+	@ConfigParam
+	private Integer index;
+
+    @ConfigParam(defaultVal = ParameterListType.NAMED_STR, decoder = ParameterListType.DataDecoder.class)
+    private ParameterListType parameterListType;
+
+    @ConfigParam(name="wireBeanId", use = Use.OPTIONAL)
     private String wireBeanIdName;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
@@ -76,16 +88,16 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String valueAttributeName;
 
-    @ConfigParam(name="type", defaultVal = AnnotationConstants.NULL_STRING)
+    @ConfigParam(name="type", use = Use.OPTIONAL)
     private String typeAlias;
 
-    @ConfigParam(name="default", defaultVal = AnnotationConstants.NULL_STRING)
+    @ConfigParam(name="default", use = Use.OPTIONAL)
     private String defaultVal;
 
     @AppContext
     private ApplicationContext appContext;
 
-    private Parameter parameter;
+    private Parameter<?> parameter;
 
     private BeanRepositoryManager beanRepositoryManager;
 
@@ -104,13 +116,23 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
      */
     @Initialize
     public void initialize() throws SmooksConfigurationException {
+
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Initializing EntityLocatorParameterVisitor with name '"+ name +"'");
+    	}
+
         beanWiring = wireBeanIdName != null;
         isAttribute = (valueAttributeName != null);
 
         beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
-
-        parameter = ParameterManager.getParameterIndex(entityLookupperId, appContext).register(name);
+        if(parameterListType == ParameterListType.NAMED) {
+        	NamedParameterIndex parameterIndex = (NamedParameterIndex) ParameterManager.getParameterIndex(entityLookupperId, appContext);
+        	parameter = parameterIndex.register(name);
+        } else {
+        	PositionalParameterIndex parameterIndex = (PositionalParameterIndex) ParameterManager.getParameterIndex(entityLookupperId, appContext);
+        	parameter = parameterIndex.register(index);
+        }
     }
 
 
@@ -118,7 +140,6 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
     	if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(isAttribute) {
-            // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindDomDataValue(element, executionContext);
         }
     }
@@ -213,8 +234,8 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
         if(bean == null) {
 
             // Register the observer which looks for the creation of the selected bean via its beanIdName. When this observer is triggered then
-            // we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
-            // and not the list representation. So we register and observer wo looks for the change from the list to the array
+            // we look if we got something we can set immediately or that we got an array collection. For an array collection we need the array representation
+            // and not the list representation. So we register and observer who looks for the change from the list to the array
         	beanRepository.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanRepositoryLifecycleObserver(){
 
                 public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
@@ -244,18 +265,10 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
         }
 	}
 
-    /**
-     * Checks if we need to stop listening for the bean begin lifecycle.
-     * If we need to stop listening then it will remove the lifecycle observer.
-     *
-     * @param executionContext
-     */
+
     private void removeBeanLifecycleObserver(ExecutionContext executionContext) {
-
-    	final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
-
-    	beanRepository.removeBeanLifecycleObserver(getWireBeanId(), BeanLifecycle.BEGIN, getId());
-
+    	BeanRepositoryManager.getBeanRepository(executionContext)
+    		.removeBeanLifecycleObserver(getWireBeanId(), BeanLifecycle.BEGIN, getId());
     }
 
 
@@ -276,17 +289,15 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
         Object dataObject = decodeDataString(dataString, executionContext);
 
         populateAndSetPropertyValue(dataObject, executionContext);
-
     }
 
-    @SuppressWarnings("unchecked")
 	private void populateAndSetPropertyValue(Object dataObject, ExecutionContext executionContext) {
     	if ( dataObject == null )
     	{
     		return;
     	}
 
-    	ParameterContainer container = ParameterManager.getParameterContainer(entityLookupperId, executionContext);
+    	ParameterContainer<Parameter<?>> container = ParameterManager.getParameterContainer(entityLookupperId, executionContext);
     	container.put(parameter, dataObject);
     }
 
@@ -323,8 +334,8 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
 
 	private BeanRuntimeInfo getWiredBeanRuntimeInfo() {
 		if(wiredBeanRuntimeInfo == null) {
-            // Don't need to synchronize this.  Worse thing that can happen is we initialise it
-            // more than once... no biggie...
+            // Don't need to synchronize this.  Worse thing that can happen is we initialize it
+            // more than once...
             wiredBeanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(wireBeanIdName, appContext);
 		}
 		return wiredBeanRuntimeInfo;

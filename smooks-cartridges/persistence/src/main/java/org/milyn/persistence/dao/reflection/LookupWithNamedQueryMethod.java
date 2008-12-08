@@ -26,7 +26,7 @@ import org.milyn.assertion.AssertArgument;
  * @author maurice
  *
  */
-public class LookupByNamedQueryMethod {
+public class LookupWithNamedQueryMethod {
 
 	final Method method;
 
@@ -36,7 +36,7 @@ public class LookupByNamedQueryMethod {
 	/**
 	 *
 	 */
-	public LookupByNamedQueryMethod(final Method method, final int queryIndex, final int parameterIndex) {
+	public LookupWithNamedQueryMethod(final Method method, final int queryIndex, final int parameterIndex) {
 		AssertArgument.isNotNull(method, "method");
 
 		if(queryIndex < 0 ) {

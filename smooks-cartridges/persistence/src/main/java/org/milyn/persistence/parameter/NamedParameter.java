@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.container;
+package org.milyn.persistence.parameter;
 
 
 
@@ -21,16 +21,16 @@ package org.milyn.persistence.container;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class Parameter {
+public class NamedParameter implements Parameter<NamedParameterIndex> {
 
 	private final int index;
 
 	private final String name;
 
-	private final ParameterIndex repositoryIndex;
+	private final NamedParameterIndex containerIndex;
 
-	protected Parameter(ParameterIndex repositoryIndex, int index, String name) {
-		this.repositoryIndex = repositoryIndex;
+	protected NamedParameter(NamedParameterIndex repositoryIndex, int index, String name) {
+		this.containerIndex = repositoryIndex;
 		this.index = index;
 		this.name = name;
 	}
@@ -44,8 +44,8 @@ public class Parameter {
 	}
 
 
-	public ParameterIndex getRepositoryIndex() {
-		return repositoryIndex;
+	public NamedParameterIndex getContainerIndex() {
+		return containerIndex;
 	}
 
 	/* (non-Javadoc)
@@ -65,10 +65,10 @@ public class Parameter {
 			return true;
 		}
 
-		if(obj instanceof Parameter == false) {
+		if(obj instanceof NamedParameter == false) {
 			return false;
 		}
-		Parameter rhs = (Parameter) obj;
+		NamedParameter rhs = (NamedParameter) obj;
 		if(this.name != rhs.name) {
 			return false;
 		}

@@ -13,28 +13,28 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.invoker;
+package org.milyn.persistence.parameter;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+
 /**
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface DaoInvoker {
+public class PositionalParameterIndex extends ParameterIndex<Integer, PositionalParameter>{
 
-	Object persist(Object obj);
+	/* (non-Javadoc)
+	 * @see org.milyn.persistence.parameter.Index#createParameter(java.lang.Object)
+	 */
+	@Override
+	protected PositionalParameter createParameter(Integer value) {
+		return new PositionalParameter(this, value);
+	}
 
-	Object merge(Object obj);
 
-	void flush();
-
-	Object lookupByQuery(String query, Object[] parameters);
-
-	Object lookupByQuery(String query, Map<String, ?> parameters);
-
-	Object lookup(String name, Map<String, ?> parameters);
-
-	Object lookup(String name, Object[] parameters);
 }

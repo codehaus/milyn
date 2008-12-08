@@ -222,12 +222,25 @@
     	</xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="parameterType">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="POSITIONAL"></xs:enumeration>
+    		<xs:enumeration value="NAMED"></xs:enumeration>
+    	</xs:restriction>
+    </xs:simpleType>
+
     <xs:complexType name="parameters">
     	<xs:choice maxOccurs="unbounded" minOccurs="1">
     		<xs:element name="value" type="smooks-persistence:valueParameter" />
     		<xs:element name="wiring" type="smooks-persistence:wiringParameter" />
     		<xs:element name="expression"  type="smooks-persistence:expressionParameter" />
     	</xs:choice>
+    	<xs:attribute name="type" type="smooks-persistence:parameterType" default="NAMED">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+				</xs:documentation>
+			</xs:annotation>
+    	</xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="valueParameter">
@@ -236,7 +249,8 @@
 				maxOccurs="1"
 				minOccurs="0" />
 		</xs:sequence>
-		<xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+		<xs:attribute name="name" type="xs:string" use="optional"></xs:attribute>
+		<xs:attribute name="index" type="xs:integer" use="optional"></xs:attribute>
 		<xs:attribute name="data" type="xs:string" use="optional"></xs:attribute>
 		<xs:attribute name="decoder" type="xs:string" use="optional"></xs:attribute>
 		<xs:attribute name="default" type="xs:string" use="optional"></xs:attribute>
