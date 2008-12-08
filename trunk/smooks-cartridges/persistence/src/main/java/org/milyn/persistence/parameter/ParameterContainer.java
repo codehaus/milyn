@@ -13,28 +13,22 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.dao.invoker;
-
-import java.util.Collection;
-import java.util.Map;
+package org.milyn.persistence.parameter;
 
 /**
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface DaoInvoker {
+public interface ParameterContainer<P extends Parameter<?>> {
 
-	Object persist(Object obj);
+	public void put(P parameter, Object bean);
 
-	Object merge(Object obj);
+	public Object get(P parameter);
 
-	void flush();
+	public boolean containsParameter(P parameter);
 
-	Object lookupByQuery(String query, Object[] parameters);
+	public Object remove(P parameter);
 
-	Object lookupByQuery(String query, Map<String, ?> parameters);
+	public void clear();
 
-	Object lookup(String name, Map<String, ?> parameters);
-
-	Object lookup(String name, Object[] parameters);
 }

@@ -137,19 +137,44 @@
         <param name="mapTo">query</param>
     </resource-config>
 
+    <resource-config selector="locator/params">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">type</param>
+        <param name="mapTo">parameterListType</param>
+    </resource-config>
+
+    <resource-config selector="locator/params">
+        <resource>org.milyn.persistence.config.ext.ParameterIndexInitializer</resource>
+    </resource-config>
+
 	<!--
         LOOKUPPER - Value Parameter
     -->
 
     <resource-config selector="locator/params/value">
-        <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
+        <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
         <param name="resource">org.milyn.persistence.EntityLocatorParameterVisitor</param>
+        <param name="unset">beanId</param>
+        <param name="unset">dao</param>
+        <param name="unset">lookup</param>
+        <param name="unset">onNoResult</param>
+        <param name="unset">uniqueResult</param>
+        <param name="unset">query</param>
+    </resource-config>
+
+    <resource-config selector="locator/params/value">
+        <resource>org.milyn.persistence.config.ext.ParameterIndexResolver</resource>
     </resource-config>
 
     <resource-config selector="locator/params/value">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromParentConfig</resource>
         <param name="mapFrom">id</param>
         <param name="mapTo">entityLookupperId</param>
+    </resource-config>
+
+    <resource-config selector="locator/params/value">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromParentConfig</resource>
+        <param name="mapFrom">parameterListType</param>
     </resource-config>
 
     <resource-config selector="locator/params/value">
@@ -189,9 +214,15 @@
         LOOKUPPER - Wiring Parameter
     -->
 
-    <resource-config selector="locator/params/wiring">
-        <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
+    <resource-config selector="locator/params/value">
+        <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
         <param name="resource">org.milyn.persistence.EntityLocatorParameterVisitor</param>
+        <param name="unset">beanId</param>
+        <param name="unset">dao</param>
+        <param name="unset">lookup</param>
+        <param name="unset">onNoResult</param>
+        <param name="unset">uniqueResult</param>
+        <param name="unset">query</param>
     </resource-config>
 
     <resource-config selector="locator/params/wiring">
@@ -199,6 +230,7 @@
         <param name="mapFrom">id</param>
         <param name="mapTo">entityLookupperId</param>
     </resource-config>
+c
 
     <resource-config selector="locator/params/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
@@ -227,15 +259,26 @@
         LOOKUPPER - Expression Parameter
     -->
 
-    <resource-config selector="locator/params/expression">
-        <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
+    <resource-config selector="locator/params/value">
+        <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
         <param name="resource">org.milyn.persistence.EntityLocatorParameterVisitor</param>
+        <param name="unset">beanId</param>
+        <param name="unset">dao</param>
+        <param name="unset">lookup</param>
+        <param name="unset">onNoResult</param>
+        <param name="unset">uniqueResult</param>
+        <param name="unset">query</param>
     </resource-config>
 
     <resource-config selector="locator/params/expression">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromParentConfig</resource>
         <param name="mapFrom">id</param>
         <param name="mapTo">entityLookupperId</param>
+    </resource-config>
+
+    <resource-config selector="locator/params/expression">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromParentConfig</resource>
+        <param name="mapFrom">parameterListType</param>
     </resource-config>
 
     <resource-config selector="locator/params/expression">

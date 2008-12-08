@@ -16,7 +16,10 @@
 package org.milyn.persistence;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
+
+import javax.persistence.NonUniqueResultException;
 
 import org.apache.commons.lang.StringUtils;
 import org.milyn.SmooksException;
@@ -31,11 +34,22 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.persistence.container.ParameterContainer;
-import org.milyn.persistence.container.ParameterIndex;
-import org.milyn.persistence.container.ParameterManager;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdRegister;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.dao.DaoRegister;
 import org.milyn.persistence.dao.DaoUtil;
+import org.milyn.persistence.dao.invoker.DaoInvoker;
+import org.milyn.persistence.dao.invoker.DaoInvokerFactory;
+import org.milyn.persistence.dao.invoker.MappedDaoInvoker;
+import org.milyn.persistence.dao.invoker.MappedDaoInvokerFactory;
+import org.milyn.persistence.parameter.NamedParameterContainer;
+import org.milyn.persistence.parameter.NamedParameterIndex;
+import org.milyn.persistence.parameter.ParameterContainer;
+import org.milyn.persistence.parameter.ParameterIndex;
+import org.milyn.persistence.parameter.ParameterManager;
+import org.milyn.persistence.parameter.PositionalParameterContainer;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.w3c.dom.Element;
 
@@ -45,17 +59,11 @@ import org.w3c.dom.Element;
  */
 public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
-	public static final String PARAMETER_CONTEXT = EntityLocator.class + "#PARAMETERS";
-
-	public static String getParameterRepositoryId(int id) {
-		return PARAMETER_CONTEXT + "#" + id;
-	}
-
 	@ConfigParam()
 	private int id;
 
-	@ConfigParam
-    private String beanId;
+	@ConfigParam(name="beanId")
+    private String beanIdName;
 
     @ConfigParam(use = Use.OPTIONAL)
     private String daoName;
@@ -72,19 +80,29 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
     @ConfigParam(defaultVal = "false")
     private boolean uniqueResult;
 
+    @ConfigParam(defaultVal = ParameterListType.NAMED_STR, decoder = ParameterListType.DataDecoder.class)
+    private ParameterListType parameterListType;
+
     @AppContext
     private ApplicationContext appContext;
 
-    private ParameterIndex parameterIndex;
+    private BeanId beanId;
 
     @Initialize
     public void initialize() throws SmooksConfigurationException {
 
     	if(StringUtils.isEmpty(lookupName) && StringUtils.isEmpty(query)) {
-    		throw new SmooksConfigurationException("A lookup or query value needs to be set to be able to lookup anything");
+    		throw new SmooksConfigurationException("A lookup name or  a query  needs to be set to be able to lookup anything");
     	}
 
-    	parameterIndex = ParameterManager.getParameterIndex(id, appContext);
+    	if(StringUtils.isNotEmpty(lookupName) && StringUtils.isNotEmpty(query)) {
+    		throw new SmooksConfigurationException("Both the lookup name and the query can't be set at the same time");
+    	}
+
+    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
+    	beanId = beanIdRegister.register(beanIdName);
+
+    	ParameterManager.initializeParameterIndex(id, parameterListType, appContext);
     }
 
 	/* (non-Javadoc)
@@ -118,20 +136,11 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	}
 
 	public void initParameterContainer(ExecutionContext executionContext) {
-		ParameterContainer container = ParameterManager.getParameterContainer(id, executionContext);
-    	container.clear();
-	}
-
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> getParameterRepository(ExecutionContext executionContext) {
-		return (HashMap<String, Object>) executionContext.getAttribute(getParameterRepositoryId(id));
+		ParameterManager.initializeParameterContainer(id, parameterListType, executionContext);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void lookup(ExecutionContext executionContext) {
-
-		ParameterContainer container = ParameterManager.getParameterContainer(id, executionContext);
-
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
 		Object dao = null;
@@ -146,13 +155,47 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 				throw new IllegalStateException("The DAO register returned null while getting the DAO '" + daoName + "'");
 			}
 
+			Object result;
 			if(DaoUtil.isDao(dao)) {
-				lookup(dao, container);
+				result = lookup(dao, executionContext);
 			} else if(DaoUtil.isMappedDao(dao)) {
-				lookupMapped(dao, container);
+				result = lookupMapped(dao, executionContext);
 			} else {
 				throw new IllegalStateException("The DAO '" + daoName + "' of type '" + dao.getClass().getName() + "' isn't recognized as a Dao or a MappedDao.");
 			}
+
+
+
+			if(uniqueResult == true) {
+				if(result instanceof Collection){
+					Collection<Object> resultCollection = (Collection<Object>) result;
+
+					if(resultCollection.size() == 1) {
+						for(Object value : resultCollection) {
+							result = value;
+						}
+					} else if(resultCollection.size() == 1) {
+						result = null;
+					} else {
+						throw new NonUniqueResultException("The DAO '" + daoName + "' returned multiple results for the lookup '" + lookupName + "'");
+					}
+
+				} else {
+					throw new SmooksConfigurationException("The returned result doesn't implement the '" + Collection.class.getName() + "' interface " +
+							"and there for the unique result check can't be done.");
+				}
+			}
+
+			if(result == null && onNoResult == OnNoResult.EXCEPTION) {
+				if(lookupName != null) {
+					throw new NoLookupResultException("The DAO '" + daoName + "' returned no results for lookup '" + lookupName + "'");
+				} else {
+					throw new NoLookupResultException("The DAO '" + daoName + "' returned no results found for query '" + query + "'");
+				}
+			}
+
+			BeanRepository beanRepository = BeanRepository.getInstance(executionContext);
+			beanRepository.addBean(beanId, result);
 
 		} finally {
 			if(dao != null) {
@@ -161,11 +204,37 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 		}
 	}
 
-	public void lookup(Object dao, ParameterContainer container) {
+	public Object lookup(Object dao, ExecutionContext executionContext) {
+		ParameterContainer<?> container = ParameterManager.getParameterContainer(id, executionContext);
+		DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, appContext);
 
+		if(query == null) {
+			if(parameterListType == ParameterListType.NAMED) {
+				return daoInvoker.lookup(lookupName, ((NamedParameterContainer) container).getParameterMap());
+			} else {
+				return daoInvoker.lookup(lookupName, ((PositionalParameterContainer) container).getValues());
+			}
+		} else {
+			if(parameterListType == ParameterListType.NAMED) {
+				return daoInvoker.lookupByQuery(query, ((NamedParameterContainer) container).getParameterMap());
+			} else {
+				return daoInvoker.lookupByQuery(query, ((PositionalParameterContainer) container).getValues());
+			}
+		}
 	}
 
-	public void lookupMapped(Object dao, ParameterContainer container) {
+	public Object lookupMapped(Object dao, ExecutionContext executionContext) {
+		ParameterContainer<?> container = ParameterManager.getParameterContainer(id, executionContext);
+		MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, appContext);
 
+		if(query == null) {
+			if(parameterListType == ParameterListType.NAMED) {
+				return daoInvoker.lookup(lookupName, ((NamedParameterContainer) container).getParameterMap());
+			} else {
+				throw new SmooksConfigurationException("Positional parameters aren't supported for mapped DAO's.");
+			}
+		} else {
+			throw new SmooksConfigurationException("You can't set the query value for a mapped DAO because the lookup by query isn't supported for mapped DAO's.");
+		}
 	}
 }

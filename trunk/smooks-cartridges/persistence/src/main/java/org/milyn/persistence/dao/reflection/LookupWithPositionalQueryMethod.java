@@ -27,7 +27,7 @@ import org.milyn.assertion.AssertArgument;
  * @author maurice
  *
  */
-public class LookupByPositionalQueryMethod {
+public class LookupWithPositionalQueryMethod {
 
 	enum ParameterType {
 		ARRAY,
@@ -44,7 +44,7 @@ public class LookupByPositionalQueryMethod {
 	/**
 	 *
 	 */
-	public LookupByPositionalQueryMethod(final Method method, final int queryIndex, final int parameterIndex) {
+	public LookupWithPositionalQueryMethod(final Method method, final int queryIndex, final int parameterIndex) {
 
 		AssertArgument.isNotNull(method, "method");
 

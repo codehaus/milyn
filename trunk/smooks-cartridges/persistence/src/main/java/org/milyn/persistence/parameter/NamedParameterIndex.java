@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.container;
+package org.milyn.persistence.parameter;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,39 +24,16 @@ import java.util.Map;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class ParameterIndex {
+public class NamedParameterIndex extends ParameterIndex<String, NamedParameter> {
 
 	private int index = 0;
 
-	private final Map<String, Parameter> indexMap = new HashMap<String, Parameter>();
 
-
-	public synchronized Parameter register(String name) {
-
-		Parameter key = indexMap.get(name);
-		if(key == null) {
-			int id = index++;
-
-			key = new Parameter(this, id, name);
-
-			indexMap.put(name, key);
-		}
-		return key;
-	}
-
-	public Parameter getParameter(String name) {
-		return indexMap.get(name);
-	}
-
-	public boolean containsBeanId(String beanId) {
-		return indexMap.containsKey(beanId);
-	}
-
-	public Map<String, Parameter> getKeyMap() {
-		return Collections.unmodifiableMap(indexMap) ;
-	}
-
-	public int size() {
-		return index;
+	/* (non-Javadoc)
+	 * @see org.milyn.persistence.parameter.Index#createParameter(int, java.lang.Object)
+	 */
+	@Override
+	protected NamedParameter createParameter(String value) {
+		return new NamedParameter(this, index++, value);
 	}
 }
