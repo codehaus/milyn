@@ -26,7 +26,7 @@ import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.dao.FullAnnotatedDao;
 import org.milyn.persistence.test.dao.MinimumAnnotatedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
-import org.mockito.Mock;
+import org.mockito.MockitoAnnotations.Mock;
 import org.testng.annotations.Test;
 
 /**
@@ -107,7 +107,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 	@Test( groups = TestGroup.UNIT )
 	public void test_getFindByNamedQueryMethod() {
 
-		LookupWithNamedQueryMethod method = fullAnnotatedDaoRuntimeInfo.getLookupByNamedQueryMethod();
+		FindByNamedQueryMethod method = fullAnnotatedDaoRuntimeInfo.getFindByNamedQueryMethod();
 
 		assertNotNull(method);
 
@@ -117,14 +117,14 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 		verify(fullAnnotatedDao).findByQuery(eq("query"), same(params));
 
-		assertNull(minimumAnnotatedDaoRuntimeInfo.getLookupByNamedQueryMethod());
+		assertNull(minimumAnnotatedDaoRuntimeInfo.getFindByNamedQueryMethod());
 
 	}
 
 	@Test( groups = TestGroup.UNIT )
 	public void test_getFindByPositionalQueryMethod() {
 
-		LookupWithPositionalQueryMethod method = fullAnnotatedDaoRuntimeInfo.getLookupByPositionalQueryMethod();
+		FindByPositionalQueryMethod method = fullAnnotatedDaoRuntimeInfo.getFindByPositionalQueryMethod();
 
 		assertNotNull(method);
 
@@ -134,14 +134,14 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 		verify(fullAnnotatedDao).findByQuery(eq("query"), same(params));
 
-		assertNull(minimumAnnotatedDaoRuntimeInfo.getLookupByPositionalQueryMethod());
+		assertNull(minimumAnnotatedDaoRuntimeInfo.getFindByPositionalQueryMethod());
 
 	}
 
 	@Test( groups = TestGroup.UNIT )
 	public void test_getFindByMethod() {
 
-		LookupMethod method = fullAnnotatedDaoRuntimeInfo.getLookupWithNamedParametersMethod("id");
+		FindByMethod method = fullAnnotatedDaoRuntimeInfo.getFindByMethod("id");
 
 		assertNotNull(method);
 
@@ -152,6 +152,6 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 		verify(fullAnnotatedDao).findById(eq(1L));
 
-		assertNull(minimumAnnotatedDaoRuntimeInfo.getLookupWithNamedParametersMethod("id"));
+		assertNull(minimumAnnotatedDaoRuntimeInfo.getFindByMethod("id"));
 	}
 }

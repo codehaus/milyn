@@ -24,17 +24,17 @@ import java.util.Map;
  */
 public interface DaoInvoker {
 
-	Object persist(Object obj);
+	void persist(Object obj);
 
 	Object merge(Object obj);
 
 	void flush();
 
-	Object lookupByQuery(String query, Object[] parameters);
+	Collection<?> findByQuery(String query, Object[] parameters);
 
-	Object lookupByQuery(String query, Map<String, ?> parameters);
+	Collection<?> findByQuery(String query, Map<String, ?> parameters);
 
-	Object lookup(String name, Map<String, ?> parameters);
+//	Collection<?> findBy(String name, Object[] parameters);
 
-	Object lookup(String name, Object[] parameters);
+	Object findBy(String name, Map<String, ?> parameters);
 }

@@ -20,7 +20,7 @@ import static junit.framework.Assert.*;
 import org.hibernate.Session;
 import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.util.BaseTestCase;
-import org.mockito.Mock;
+import org.mockito.MockitoAnnotations.Mock;
 import org.testng.annotations.Test;
 
 /**
@@ -37,7 +37,7 @@ public class SessionRegisterTest extends BaseTestCase {
 
 		SessionRegister register = new SessionRegister(session);
 
-		SessionDaoAdapter sessionDaoAdapter = register.getDao();
+		SessionDaoAdapter sessionDaoAdapter = register.getDao(null);
 
 		assertNotNull(sessionDaoAdapter);
 

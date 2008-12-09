@@ -26,19 +26,15 @@ import org.milyn.assertion.AssertArgument;
  */
 public class MergeMethod {
 
-	private final Method method;
-
-
-	private final boolean returnsEntity;
+	final Method method;
 
 	/**
 	 *
 	 */
-	public MergeMethod(final Method method, final boolean returnsEntity) {
+	public MergeMethod(final Method method) {
 		AssertArgument.isNotNull(method, "method");
 
 		this.method = method;
-		this.returnsEntity = returnsEntity;
 	}
 
 
@@ -47,13 +43,7 @@ public class MergeMethod {
 	 */
 	public Object invoke(final Object obj, final Object entity){
 		try {
-			Object result = method.invoke(obj, entity);
-
-			if(returnsEntity) {
-				return result;
-			} else {
-				return null;
-			}
+			return method.invoke(obj, entity);
 		} catch (final IllegalArgumentException e) {
 			throw new RuntimeException("The method [" + method + "] of the class [" + method.getDeclaringClass().getName() + "] threw an exception, while invoking it with the object [" + obj + "].", e);
 		} catch (final IllegalAccessException e) {

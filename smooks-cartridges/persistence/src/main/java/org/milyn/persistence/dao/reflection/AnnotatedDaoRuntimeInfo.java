@@ -28,12 +28,11 @@ import org.milyn.annotation.AnnotatedMethod;
 import org.milyn.annotation.AnnotationManager;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.persistence.dao.annotation.Dao;
+import org.milyn.persistence.dao.annotation.FindBy;
+import org.milyn.persistence.dao.annotation.FindByQuery;
 import org.milyn.persistence.dao.annotation.Flush;
-import org.milyn.persistence.dao.annotation.Lookup;
-import org.milyn.persistence.dao.annotation.LookupByQuery;
 import org.milyn.persistence.dao.annotation.Merge;
 import org.milyn.persistence.dao.annotation.Persist;
-import org.milyn.persistence.dao.annotation.ReturnsNoEntity;
 
 /**
  * @author maurice_zeijen
@@ -49,11 +48,11 @@ public class AnnotatedDaoRuntimeInfo {
 
 	private FlushMethod flushMethod;
 
-	private LookupWithNamedQueryMethod lookupWithNamedQueryMethod;
+	private FindByNamedQueryMethod findByNamedQueryMethod;
 
-	private LookupWithPositionalQueryMethod lookupWithPositionalQueryMethod;
+	private FindByPositionalQueryMethod findByPositionalQueryMethod;
 
-	private final Map<String, LookupMethod> lookupWithNamedParameters = new HashMap<String, LookupMethod>();
+	private final Map<String, FindByMethod> findBy = new HashMap<String, FindByMethod>();
 
 	/**
 	 *
@@ -95,16 +94,16 @@ public class AnnotatedDaoRuntimeInfo {
 		return flushMethod;
 	}
 
-	public LookupWithNamedQueryMethod getLookupByNamedQueryMethod() {
-		return lookupWithNamedQueryMethod;
+	public FindByNamedQueryMethod getFindByNamedQueryMethod() {
+		return findByNamedQueryMethod;
 	}
 
-	public LookupWithPositionalQueryMethod getLookupByPositionalQueryMethod() {
-		return lookupWithPositionalQueryMethod;
+	public FindByPositionalQueryMethod getFindByPositionalQueryMethod() {
+		return findByPositionalQueryMethod;
 	}
 
-	public LookupMethod getLookupWithNamedParametersMethod(final String name) {
-		return lookupWithNamedParameters.get(name);
+	public FindByMethod getFindByMethod(final String name) {
+		return findBy.get(name);
 	}
 
 	/**
@@ -133,11 +132,11 @@ public class AnnotatedDaoRuntimeInfo {
 
 				analyzeFlushMethod(method);
 
-			} else if(method.getAnnotation(LookupByQuery.class) != null) {
+			} else if(method.getAnnotation(FindByQuery.class) != null) {
 
 				analyzeFindByQueryMethod(method);
 
-			} else if(method.getAnnotation(Lookup.class) != null) {
+			} else if(method.getAnnotation(FindBy.class) != null) {
 
 				analyzeFindByMethod(method);
 
@@ -178,9 +177,7 @@ public class AnnotatedDaoRuntimeInfo {
 			throw new RuntimeException("The Merge annotated method ["+ method +"] of the DAO class [" + daoClass.getName() + "] has more then 1 parameter, which isn't allowed.");
 		}
 
-		boolean returnsEntity  = !method.isAnnotationPresent(ReturnsNoEntity.class);
-
-		mergeMethod = new MergeMethod(method, returnsEntity);
+		mergeMethod = new MergeMethod(method);
 	}
 
 	/**
@@ -199,9 +196,7 @@ public class AnnotatedDaoRuntimeInfo {
 			throw new RuntimeException("The Persist annotated method ["+ method +"]  the DAO class [" + daoClass.getName() + "] has more then 1 parameter, which isn't allowed.");
 		}
 
-		boolean returnsEntity  = !method.isAnnotationPresent(ReturnsNoEntity.class);
-
-		persistMethod = new PersistMethod(method, returnsEntity);
+		persistMethod = new PersistMethod(method);
 	}
 
 
@@ -234,21 +229,21 @@ public class AnnotatedDaoRuntimeInfo {
 
 		if(containsAssignableClass(List.class, parameters) || containsAssignableClass(Object[].class, parameters)) {
 
-			if(lookupWithPositionalQueryMethod != null) {
-				throw new RuntimeException("A second method annotated with the ["+ LookupByQuery.class.getName() +"] annotation is found for a Positional query. " +
+			if(findByPositionalQueryMethod != null) {
+				throw new RuntimeException("A second method annotated with the ["+ FindByQuery.class.getName() +"] annotation is found for a Positional query. " +
 						"Only one method, with a List or Object array parameter, per class is allowed to be annotated with this annotation.");
 			}
 
-			lookupWithPositionalQueryMethod = new LookupWithPositionalQueryMethod(method, queryIndex, parameterIndex);
+			findByPositionalQueryMethod = new FindByPositionalQueryMethod(method, queryIndex, parameterIndex);
 
 		} else if(containsAssignableClass(Map.class, parameters)){
 
-			if(lookupWithNamedQueryMethod != null) {
-				throw new RuntimeException("A second method annotated with the ["+ LookupByQuery.class.getName() +"] annotation is found for a Positional query. " +
+			if(findByNamedQueryMethod != null) {
+				throw new RuntimeException("A second method annotated with the ["+ FindByQuery.class.getName() +"] annotation is found for a Positional query. " +
 						"Only one method, with a Map parameter, per class is allowed to be annotated with this annotation.");
 			}
 
-			lookupWithNamedQueryMethod = new LookupWithNamedQueryMethod(method, queryIndex, parameterIndex);
+			findByNamedQueryMethod = new FindByNamedQueryMethod(method, queryIndex, parameterIndex);
 
 		} else {
 			throw new RuntimeException("The FindByQuery annotated method ["+ method +"] of the DAO class [" + daoClass.getName() + "] " +
@@ -264,15 +259,15 @@ public class AnnotatedDaoRuntimeInfo {
 	private void analyzeFindByMethod(final AnnotatedMethod aMethod) {
 		final Method method = aMethod.getMethod();
 
-		final Lookup findByAnnotation = aMethod.getAnnotation(Lookup.class);
+		final FindBy findByAnnotation = aMethod.getAnnotation(FindBy.class);
 		final String name = findByAnnotation.value();
 
 		if(name.trim().length() == 0) {
-			throw new RuntimeException("The method [" + method + "] has the ["+ Lookup.class.getName() +"] annotation with an empty name. An empty name is not allowed.");
+			throw new RuntimeException("The method [" + method + "] has the ["+ FindBy.class.getName() +"] annotation with an empty name. An empty name is not allowed.");
 		}
 
-		if(lookupWithNamedParameters.containsKey(name)) {
-			throw new RuntimeException("A second method annotated with the ["+ Lookup.class.getName() +"] annotation and the name ["+ name +"] is found." +
+		if(findBy.containsKey(name)) {
+			throw new RuntimeException("A second method annotated with the ["+ FindBy.class.getName() +"] annotation and the name ["+ name +"] is found." +
 					"The name of the FindBy annotation must be uniqeue per DAO Class.");
 		}
 
@@ -281,7 +276,7 @@ public class AnnotatedDaoRuntimeInfo {
 					"returns void, which isn't allowed. The method must returns something.");
 		}
 
-		lookupWithNamedParameters.put(name, new LookupMethod(method));
+		findBy.put(name, new FindByMethod(method));
 	}
 
 

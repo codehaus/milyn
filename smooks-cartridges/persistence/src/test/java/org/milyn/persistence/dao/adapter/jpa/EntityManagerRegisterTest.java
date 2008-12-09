@@ -21,8 +21,9 @@ import javax.persistence.EntityManager;
 
 import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.util.BaseTestCase;
-import org.mockito.Mock;
+import org.mockito.MockitoAnnotations.Mock;
 import org.testng.annotations.Test;
+
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
@@ -37,7 +38,7 @@ public class EntityManagerRegisterTest extends BaseTestCase {
 
 		EntityManagerRegister register = new EntityManagerRegister(entityManager);
 
-		EntityManagerDaoAdapter entityManagerDaoAdapter = register.getDao();
+		EntityManagerDaoAdapter entityManagerDaoAdapter = register.getDao(null);
 
 		assertNotNull(entityManagerDaoAdapter);
 

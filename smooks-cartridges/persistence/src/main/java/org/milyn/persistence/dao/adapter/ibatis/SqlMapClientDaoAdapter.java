@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.milyn.persistence.DaoException;
-import org.milyn.persistence.dao.Lookupable;
-import org.milyn.persistence.dao.MappedDao;
+import org.milyn.persistence.dao.Finder;
+import org.milyn.persistence.dao.NamedDao;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -29,7 +29,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable<Object>  {
+public class SqlMapClientDaoAdapter implements NamedDao<Object>, Finder<Object>  {
 
 	private final SqlMapClient sqlMapClient;
 
@@ -43,37 +43,23 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable<Obj
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.NamedDAO#merge(java.lang.String, java.lang.Object)
 	 */
-	public Object merge(String id, Object entity) {
+	public Object merge(String name, Object entity) {
 		try {
-			sqlMapClient.update(id, entity);
+			sqlMapClient.update(name, entity);
 		} catch (SQLException e) {
-			throw new DaoException("Exception throw while executing update with statement id '" + id + "' and entity '" + entity + "'", e);
+			throw new DaoException("Exception throw while executing update with statement id '" + name + "' and entity '" + entity + "'", e);
 		}
-		return null;
+		return entity;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.NamedDAO#persist(java.lang.String, java.lang.Object)
 	 */
-	public Object persist(String id, Object entity) {
+	public void persist(String name, Object entity) {
 		try {
-			sqlMapClient.insert(id, entity);
+			sqlMapClient.insert(name, entity);
 		} catch (SQLException e) {
-			throw new DaoException("Exception throw while executing insert with statement id '" + id + "' and entity '" + entity + "'", e);
-		}
-
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	public Collection<Object> lookup(String id, Map<String, ?> parameters) {
-		try {
-			return sqlMapClient.queryForList(id, parameters);
-		} catch (SQLException e) {
-			throw new DaoException("Exception throw while executing query with statement id '" + id + "' and parameters '" + parameters + "'", e);
+			throw new DaoException("Exception throw while executing insert with statement id '" + name + "' and entity '" + entity + "'", e);
 		}
 	}
 
@@ -81,11 +67,23 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable<Obj
 	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookup(String id, Object[] parameters) {
+	public Collection<Object> findBy(String name, Map<String, ?> parameters) {
 		try {
-			return sqlMapClient.queryForList(id, parameters);
+			return sqlMapClient.queryForList(name, parameters);
 		} catch (SQLException e) {
-			throw new DaoException("Exception throw while executing query with statement id '" + id + "' and parameters '" + parameters + "'", e);
+			throw new DaoException("Exception throw while executing query with statement id '" + name + "' and parameters '" + parameters + "'", e);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection<Object> findBy(String name, Object[] parameters) {
+		try {
+			return sqlMapClient.queryForList(name, parameters);
+		} catch (SQLException e) {
+			throw new DaoException("Exception throw while executing query with statement id '" + name + "' and parameters '" + parameters + "'", e);
 		}
 	}
 

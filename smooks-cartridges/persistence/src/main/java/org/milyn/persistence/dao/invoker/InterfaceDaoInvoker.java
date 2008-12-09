@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.persistence.dao.Dao;
+import org.milyn.persistence.dao.Finder;
 import org.milyn.persistence.dao.Flushable;
-import org.milyn.persistence.dao.Lookupable;
-import org.milyn.persistence.dao.Queryable;
+import org.milyn.persistence.dao.QueryFinder;
 
 
 /**
@@ -33,9 +33,9 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 
 	private final Dao<Object> dao;
 
-	private Queryable<Object>  queryFinderDAO;
+	private QueryFinder<Object>  queryFinderDAO;
 
-	private Lookupable<Object>  finderDAO;
+	private Finder<Object>  finderDAO;
 
 	private Flushable flushableDAO;
 
@@ -46,12 +46,12 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	public InterfaceDaoInvoker(final Dao dao) {
 		this.dao = dao;
 
-		if(dao instanceof Queryable) {
-			this.queryFinderDAO = (Queryable) dao;
+		if(dao instanceof QueryFinder) {
+			this.queryFinderDAO = (QueryFinder) dao;
 		}
 
-		if(dao instanceof Lookupable) {
-			this.finderDAO = (Lookupable) dao;
+		if(dao instanceof Finder) {
+			this.finderDAO = (Finder) dao;
 		}
 
 		if(dao instanceof Flushable) {
@@ -72,6 +72,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#merge(java.lang.Object)
 	 */
+	@SuppressWarnings("unchecked")
 	public Object merge(final Object obj) {
 		return dao.merge(obj);
 	}
@@ -79,47 +80,50 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#persist(java.lang.Object)
 	 */
-	public Object persist(final Object obj) {
-		return dao.persist(obj);
+	@SuppressWarnings("unchecked")
+	public void persist(final Object obj) {
+		dao.persist(obj);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.lang.Object[])
 	 */
-	public Object lookupByQuery(final String query, final Object[] parameters) {
+	public Collection<?> findByQuery(final String query, final Object[] parameters) {
 		if(queryFinderDAO == null) {
-			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Queryable.class.getName() + "] interface and there for can't find by query.");
+			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + QueryFinder.class.getName() + "] interface and there for can't find by query.");
 		}
-		return queryFinderDAO.lookupByQuery(query, parameters);
+		return queryFinderDAO.findByQuery(query, parameters);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.util.Map)
 	 */
-	public Object lookupByQuery(final String query, final Map<String, ?> parameters) {
+	@SuppressWarnings("unchecked")
+	public Collection<?> findByQuery(final String query, final Map<String, ?> parameters) {
 		if(queryFinderDAO == null) {
-			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Queryable.class.getName() + "] interface and there for can't find by query.");
+			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + QueryFinder.class.getName() + "] interface and there for can't find by query.");
 		}
-		return queryFinderDAO.lookupByQuery(query, parameters);
+		return queryFinderDAO.findByQuery(query, parameters);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.lang.Object[])
-	 */
-	public Object lookup(final String name, final Object[] parameters) {
-		if(finderDAO == null) {
-			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Lookupable.class.getName() + "] interface and there for can't find by query.");
-		}
-		return finderDAO.lookup(name, parameters);
-	}
+//	/* (non-Javadoc)
+//	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.lang.Object[])
+//	 */
+//	public Collection<?> findBy(final String name, final Object[] parameters) {
+//		if(finderDAO == null) {
+//			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Finder.class.getName() + "] interface and there for can't find by query.");
+//		}
+//		return finderDAO.findBy(name, parameters);
+//	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.util.Map)
 	 */
-	public Object lookup(final String name, final Map<String, ?> parameters) {
+	@SuppressWarnings("unchecked")
+	public Collection<?> findBy(final String name, final Map<String, ?> parameters) {
 		if(finderDAO == null) {
-			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Lookupable.class.getName() + "] interface and there for can't find by query.");
+			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Finder.class.getName() + "] interface and there for can't find by query.");
 		}
-		return finderDAO.lookup(name, parameters);
+		return finderDAO.findBy(name, parameters);
 	}
 }

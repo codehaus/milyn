@@ -22,19 +22,6 @@ package org.milyn.persistence.dao;
 public interface DaoRegister<T> {
 
 	/**
-	 * Returns the default DAO .
-	 * If the repository only has one DAO, like
-	 * for instance a facade for the
-	 * Session or an EntityManager object
-	 *
-	 * @param name The name of the DAO
-	 * @return The DAO
-	 * @throws UnsupportedOperationException if the <tt>getDao()</tt> operation is
-     *	          not supported by this DaoRegister.
-	 */
-	T getDao();
-
-	/**
 	 * Returns the DAO using its name to locate it.
 	 * If the repository only has one DAO, like
 	 * for instance a facade for the
@@ -42,11 +29,8 @@ public interface DaoRegister<T> {
 	 *
 	 * @param name The name of the DAO
 	 * @return The DAO
-	 * @throws UnsupportedOperationException if the <tt>getDao(String)</tt> operation is
-     *	          not supported by this DaoRegister.
 	 */
 	T getDao(String name);
-
 
 	/**
 	 * Returns the DAO to the registery. This is

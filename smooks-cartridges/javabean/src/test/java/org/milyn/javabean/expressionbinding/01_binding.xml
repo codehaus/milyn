@@ -73,9 +73,9 @@
         <param name="beanClass">java.util.HashMap</param>
         <param name="bindings">
             <binding property="time" selector="message/time" />
-            <binding property="day" type="Integer" selector="message/day" />
-            <binding property="month" type="Integer" selector="message/month" />
-            <binding property="year" type="Integer" selector="message/year" />
+            <binding property="day" selector="message/day" />
+            <binding property="month" selector="message/month" />
+            <binding property="year" selector="message/year" />
         </param>
     </resource-config>
 

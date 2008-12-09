@@ -26,35 +26,25 @@ import org.milyn.assertion.AssertArgument;
  */
 public class PersistMethod {
 
-	private final Method method;
-
-	private final boolean returnsEntity;
-
+	final Method method;
 
 	/**
 	 *
 	 */
-	public PersistMethod(final Method method, final boolean returnsEntity) {
+	public PersistMethod(final Method method) {
 		AssertArgument.isNotNull(method, "method");
 
 		this.method = method;
-		this.returnsEntity = returnsEntity;
 	}
 
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.method.DAOMethod#invoke()
 	 */
-	public Object invoke(final Object obj, final Object entity){
+	public void invoke(final Object obj, final Object entity){
 		try {
 
-			Object result = method.invoke(obj, entity);
-
-			if(returnsEntity) {
-				return result;
-			} else {
-				return null;
-			}
+			method.invoke(obj, entity);
 
 		} catch (final IllegalArgumentException e) {
 			throw new RuntimeException("The method [" + method + "] of the class [" + method.getDeclaringClass().getName() + "] threw an exception, while invoking it with the object [" + obj + "].", e);

@@ -23,16 +23,16 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.persistence.dao.Dao;
+import org.milyn.persistence.dao.Finder;
 import org.milyn.persistence.dao.Flushable;
-import org.milyn.persistence.dao.Lookupable;
-import org.milyn.persistence.dao.Queryable;
+import org.milyn.persistence.dao.QueryFinder;
 
 
 /**
  * @author maurice_zeijen
  *
  */
-public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Queryable<Object>, Flushable {
+public class SessionDaoAdapter implements Dao<Object>, Finder<Object>, QueryFinder<Object>, Flushable {
 
 	private final Session session;
 
@@ -58,7 +58,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	public Object merge(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.merge(entity);
+		session.saveOrUpdate(entity);
 
 		return entity;
 	}
@@ -66,19 +66,18 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.DAO#persist(java.lang.Object)
 	 */
-	public Object persist(final Object entity) {
+	public void persist(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.persist(entity);
+		session.save(entity);
 
-		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookup(final String name, final Object[] parameters) {
+	public Collection<Object> findBy(final String name, final Object[] parameters) {
 
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
@@ -99,7 +98,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookup(final String name, final Map<String, ?> parameters) {
+	public Collection<Object> findBy(final String name, final Map<String, ?> parameters) {
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -117,13 +116,13 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookupByQuery(final String query, final Object[] parameters) {
+	public Collection<Object> findByQuery(final String query, final Object[] parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
 
 		// Is this useful?
 		if(query.startsWith("@")) {
-			return lookup(query.substring(1), parameters);
+			return findBy(query.substring(1), parameters);
 		}
 
 		final Query sesQuery = session.createQuery(query);
@@ -141,7 +140,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookupByQuery(final String query,
+	public Collection<Object> findByQuery(final String query,
 			final Map<String, ?> parameters) {
 
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
@@ -149,7 +148,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 
 		// Is this useful?
 		if(query.startsWith("@")) {
-			return lookup(query.substring(1), parameters);
+			return findBy(query.substring(1), parameters);
 		}
 
 		final Query sesQuery = session.createQuery(query);
