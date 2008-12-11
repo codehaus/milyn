@@ -15,6 +15,7 @@
 */
 package org.milyn.persistence.dao.register;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.persistence.dao.AbstractDaoRegister;
 
 /**
@@ -38,6 +39,16 @@ public class SingleDaoRegister<T> extends AbstractDaoRegister<T> {
 	@Override
 	public T getDao() {
 		return dao;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+				.append("dao", dao)
+				.toString();
 	}
 
 }

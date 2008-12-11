@@ -15,7 +15,6 @@
 */
 package org.milyn.persistence.dao.invoker;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -31,7 +30,7 @@ public class InterfaceMappedDaoInvoker implements MappedDaoInvoker  {
 
 	private final MappedDao<? super Object> dao;
 
-	private Lookupable<? super Object>  finderDAO;
+	private Lookupable  finderDAO;
 
 	private MappedFlushable flushableDAO;
 
@@ -90,8 +89,7 @@ public class InterfaceMappedDaoInvoker implements MappedDaoInvoker  {
 	/* (non-Javadoc)
 	 * @see org.milyn.persistence.dao.invoker.DAOInvoker#findByQuery(java.lang.String, java.util.Map)
 	 */
-	@SuppressWarnings("unchecked")
-	public Collection<?> lookup(final String id, final Map<String, ?> parameters) {
+	public Object lookup(final String id, final Map<String, ?> parameters) {
 		if(finderDAO == null) {
 			throw new NotImplementedException("The DAO [" + dao.getClass().getName() + "] doesn't implement the [" + Lookupable.class.getName() + "] interface and there for can't find by query.");
 		}

@@ -15,7 +15,6 @@
 */
 package org.milyn.persistence.dao;
 
-import java.util.Collection;
 import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
@@ -24,7 +23,7 @@ import javax.naming.OperationNotSupportedException;
  * @author maurice_zeijen
  *
  */
-public interface Queryable<E> extends Dao<E> {
+public interface Queryable {
 
 	/**
 	 *
@@ -33,7 +32,7 @@ public interface Queryable<E> extends Dao<E> {
 	 * @return
 	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
 	 */
-	Collection<E> lookupByQuery(String query, Object[] parameters);
+	Object lookupByQuery(String query, Object[] parameters);
 
 	/**
 	 *
@@ -42,6 +41,6 @@ public interface Queryable<E> extends Dao<E> {
 	 * @return
 	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
 	 */
-	Collection<E> lookupByQuery(String query, Map<String, ?> parameters);
+	Object lookupByQuery(String query, Map<String, ?> parameters);
 
 }

@@ -18,6 +18,7 @@ package org.milyn.persistence.dao.register;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.persistence.dao.AbstractDaoRegister;
 
 
@@ -96,11 +97,10 @@ public class MapRegister<T> extends AbstractDaoRegister<T> {
 	}
 
 	@Override
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	public String toString() {
-		return map.toString();
+		return new ToStringBuilder(this)
+				.append("daoMap", map, true)
+				.toString();
 	}
 
 	/* (non-Javadoc)

@@ -24,6 +24,6 @@ import org.milyn.persistence.dao.Queryable;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceDao<T> extends Dao<T>, Flushable, Lookupable<T>, Queryable<T> {
+public interface FullInterfaceDao<T> extends Dao<T>, Flushable, Lookupable, Queryable {
 
 }

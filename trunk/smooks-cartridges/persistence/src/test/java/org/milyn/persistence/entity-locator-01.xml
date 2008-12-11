@@ -6,9 +6,9 @@
 
 	<dao:locator beanId="entity" lookup="something" lookupOnElement="b">
 		<dao:params>
-			<dao:value name="test" decoder="Integer" data="c" />
-			<dao:expression name="test3" execOnElement="e" >dAnde.d + dAnde.e</dao:expression>
-			<dao:wiring name="test2" beanIdRef="dAnde" wireOnElement="e" />
+			<dao:value name="arg1" decoder="Integer" data="c" />
+			<dao:expression name="arg2" execOnElement="e" >dAnde.d + dAnde.e</dao:expression>
+			<dao:wiring name="arg3" beanIdRef="dAnde" wireOnElement="e" />
 		</dao:params>
 	</dao:locator>
 
