@@ -17,7 +17,6 @@ package org.milyn.persistence;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 
 import javax.persistence.NonUniqueResultException;
 
@@ -45,9 +44,7 @@ import org.milyn.persistence.dao.invoker.DaoInvokerFactory;
 import org.milyn.persistence.dao.invoker.MappedDaoInvoker;
 import org.milyn.persistence.dao.invoker.MappedDaoInvokerFactory;
 import org.milyn.persistence.parameter.NamedParameterContainer;
-import org.milyn.persistence.parameter.NamedParameterIndex;
 import org.milyn.persistence.parameter.ParameterContainer;
-import org.milyn.persistence.parameter.ParameterIndex;
 import org.milyn.persistence.parameter.ParameterManager;
 import org.milyn.persistence.parameter.PositionalParameterContainer;
 import org.milyn.persistence.util.PersistenceUtil;
@@ -65,7 +62,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	@ConfigParam(name="beanId")
     private String beanIdName;
 
-    @ConfigParam(use = Use.OPTIONAL)
+    @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
 
     @ConfigParam(name="lookup", use = Use.OPTIONAL)
