@@ -39,7 +39,7 @@ import org.milyn.persistence.dao.Queryable;
  * @author maurice_zeijen
  *
  */
-public class EntityManagerDaoAdapter implements Dao<Object>, Lookupable<Object>, Queryable<Object>, Flushable {
+public class EntityManagerDaoAdapter implements Dao<Object>, Lookupable, Queryable, Flushable {
 
 	private final EntityManager entityManager;
 

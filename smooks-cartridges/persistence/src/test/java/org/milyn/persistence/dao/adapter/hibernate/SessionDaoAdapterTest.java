@@ -19,7 +19,6 @@ import static junit.framework.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +107,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 		params.put("key1", "value1");
 		params.put("key2", "value2");
 
-		Collection<Object> result = adapter.lookupByQuery("query", params);
+		Object result = adapter.lookupByQuery("query", params);
 
 		// VERIFY
 
@@ -138,7 +137,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 		params[0] = "value1";
 		params[1] = "value2";
 
-		Collection<Object> result = adapter.lookupByQuery("query", params);
+		Object result = adapter.lookupByQuery("query", params);
 
 		// VERIFY
 
@@ -168,7 +167,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 		params.put("key1", "value1");
 		params.put("key2", "value2");
 
-		Collection<Object> result = adapter.lookup("name", params);
+		Object result = adapter.lookup("name", params);
 
 		// VERIFY
 
@@ -198,7 +197,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 		params[0] = "value1";
 		params[1] = "value2";
 
-		Collection<Object> result = adapter.lookup("name", params);
+		Object result = adapter.lookup("name", params);
 
 		// VERIFY
 

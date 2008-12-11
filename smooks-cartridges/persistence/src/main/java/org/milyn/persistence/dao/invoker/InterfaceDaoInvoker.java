@@ -15,7 +15,6 @@
 */
 package org.milyn.persistence.dao.invoker;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -33,9 +32,9 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 
 	private final Dao<Object> dao;
 
-	private Queryable<Object>  queryFinderDAO;
+	private Queryable  queryFinderDAO;
 
-	private Lookupable<Object>  finderDAO;
+	private Lookupable  finderDAO;
 
 	private Flushable flushableDAO;
 

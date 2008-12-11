@@ -15,8 +15,13 @@
 */
 package org.milyn.persistence;
 
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -24,8 +29,10 @@ import javax.xml.transform.stream.StreamSource;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
+import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.persistence.dao.register.SingleDaoRegister;
 import org.milyn.persistence.test.dao.FullInterfaceDao;
+import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
@@ -34,14 +41,28 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class EntityLocatorTest {
-	private static final boolean ENABLE_REPORTING = false;
+public class EntityLocatorTest extends BaseTestCase {
+	private static final boolean ENABLE_REPORTING = true;
 
 	@Mock
 	private FullInterfaceDao<Object> dao;
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void test_entity_locate() throws Exception {
+		Object result = new Object();
+
+		HashMap<String, Object> expectedArg3 = new HashMap<String, Object>();
+		expectedArg3.put("d", new Integer(2));
+		expectedArg3.put("e", new Integer(3));
+
+		HashMap<String, Object> expectedMap = new HashMap<String, Object>();
+		expectedMap.put("arg1", new Integer(1));
+		expectedMap.put("arg2", new Integer(5));
+		expectedMap.put("arg3", expectedArg3);
+
+		when(dao.lookup(eq("something"), eq(expectedMap))).thenReturn(result);
+
 		Smooks smooks = new Smooks(getResourceAsStream("entity-locator-01.xml"));
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
@@ -53,8 +74,9 @@ public class EntityLocatorTest {
 		Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
 		smooks.filter(source, null, executionContext);
 
-	}
+		assertSame(result, BeanRepository.getInstance(executionContext).getBean("entity"));
 
+	}
 
 	/**
 	 * @param resource

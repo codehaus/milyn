@@ -15,7 +15,6 @@
 */
 package org.milyn.persistence.dao;
 
-import java.util.Collection;
 import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
@@ -26,7 +25,7 @@ import javax.naming.OperationNotSupportedException;
  * @author maurice_zeijen
  *
  */
-public interface Lookupable<E> {
+public interface Lookupable {
 
 	/**
 	 *
@@ -35,7 +34,7 @@ public interface Lookupable<E> {
 	 * @return
 	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
 	 */
-	Collection<E> lookup(String name, Object[] parameters);
+	Object lookup(String name, Object[] parameters);
 
 	/**
 	 *
@@ -44,6 +43,6 @@ public interface Lookupable<E> {
 	 * @return
 	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
 	 */
-	Collection<E> lookup(String name, Map<String, ?> parameters);
+	Object lookup(String name, Map<String, ?> parameters);
 
 }

@@ -15,7 +15,6 @@
 */
 package org.milyn.persistence.dao.adapter.hibernate;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,7 +31,7 @@ import org.milyn.persistence.dao.Queryable;
  * @author maurice_zeijen
  *
  */
-public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Queryable<Object>, Flushable {
+public class SessionDaoAdapter implements Dao<Object>, Lookupable, Queryable, Flushable {
 
 	private final Session session;
 
@@ -78,7 +77,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookup(final String name, final Object[] parameters) {
+	public Object lookup(final String name, final Object[] parameters) {
 
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
@@ -99,7 +98,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	 * @see org.milyn.persistence.dao.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookup(final String name, final Map<String, ?> parameters) {
+	public Object lookup(final String name, final Map<String, ?> parameters) {
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -117,7 +116,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookupByQuery(final String query, final Object[] parameters) {
+	public Object lookupByQuery(final String query, final Object[] parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -141,7 +140,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable<Object>, Query
 	 * @see org.milyn.persistence.dao.QueryFinder#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookupByQuery(final String query,
+	public Object lookupByQuery(final String query,
 			final Map<String, ?> parameters) {
 
 		AssertArgument.isNotNullAndNotEmpty(query, "query");

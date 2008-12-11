@@ -39,6 +39,8 @@ public class ParameterIndexResolver implements DOMVisitBefore {
 		Integer index = (Integer) executionContext.getAttribute(ParameterIndexInitializer.PARAMETER_INDEX);
 
 		ResourceConfigUtil.setProperty(config, "index", Integer.toString(index), executionContext);
+
+		executionContext.setAttribute(ParameterIndexInitializer.PARAMETER_INDEX, index + 1);
 	}
 
 }
