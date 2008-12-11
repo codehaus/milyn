@@ -8,9 +8,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.milyn.persistence.test.TestGroup;
-import org.testng.annotations.Test;
-
 public class TestAnnotation  {
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
@@ -42,8 +39,7 @@ public class TestAnnotation  {
 	 * @throws NoSuchMethodException
 	 * @throws SecurityException
 	 */
-	@Test(groups = TestGroup.UNIT)
-	public void testMethodAnnotationInheritance() throws SecurityException, NoSuchMethodException{
+	public void test_MethodAnnotationInheritance() throws SecurityException, NoSuchMethodException{
 		final AnnotatedClass annotatedClass =
 			AnnotationManager.getAnnotatedClass(Derived.class);
 		assertNotNull(annotatedClass.getAnnotation(A.class));

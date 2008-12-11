@@ -32,6 +32,7 @@
         <module>jms-router</module>
         <module>json-to-java</module>
         <module>sj-testimonial</module>
+		<module>dao-router</module>
     </modules>
 
     <properties>
@@ -47,6 +48,7 @@
         <milyn.smooks.scripting.version>${milyn.smooks.core.version}</milyn.smooks.scripting.version>
         <milyn.smooks.routing.version>${milyn.smooks.core.version}</milyn.smooks.routing.version>
         <milyn.smooks.json.version>${milyn.smooks.core.version}</milyn.smooks.json.version>
+		<milyn.smooks.persistence.version>${milyn.smooks.core.version}</milyn.smooks.persistence.version>
     </properties>
 
     <dependencies>

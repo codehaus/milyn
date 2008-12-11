@@ -22,10 +22,10 @@
 
         <milyn.smooks.dtd.version.base>${milyn.smooks.core.version}</milyn.smooks.dtd.version.base>
         <milyn.smooks.dtd.version>${milyn.smooks.dtd.version.base}</milyn.smooks.dtd.version>
-		
+
         <milyn.smooks.calc.version.base>${milyn.smooks.core.version}</milyn.smooks.calc.version.base>
         <milyn.smooks.calc.version>${milyn.smooks.calc.version.base}</milyn.smooks.calc.version>
-		
+
         <milyn.smooks.css.version.base>${milyn.smooks.core.version}</milyn.smooks.css.version.base>
         <milyn.smooks.css.version>${milyn.smooks.css.version.base}</milyn.smooks.css.version>
 
@@ -49,6 +49,9 @@
 
         <milyn.smooks.routing.version.base>${milyn.smooks.core.version}</milyn.smooks.routing.version.base>
         <milyn.smooks.routing.version>${milyn.smooks.routing.version.base}</milyn.smooks.routing.version>
+
+        <milyn.smooks.persistence.version.base>${milyn.smooks.core.version}</milyn.smooks.persistence.version.base>
+        <milyn.smooks.persistence.version>${milyn.smooks.persistence.version.base}</milyn.smooks.persistence.version>
     </properties>
 
     <modules>
@@ -64,6 +67,7 @@
         <module>templating</module>
         <module>routing</module>
 		<module>calc</module>
+		<module>persistence</module>
         <!-- module>perfcomp</module -->
     </modules>
 

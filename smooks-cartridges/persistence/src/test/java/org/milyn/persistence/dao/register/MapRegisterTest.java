@@ -176,16 +176,4 @@ public class MapRegisterTest {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
-	public void test_toString() {
-
-		Map<String, Object> hashMap = new HashMap<String, Object>();
-		hashMap.put("1", new Object());
-		hashMap.put("2", new Object());
-
-		MapRegister<Object> mapRegister = new MapRegister<Object>(hashMap);
-
-		assertEquals(hashMap.toString(), mapRegister.toString());
-
-	}
 }

@@ -15,7 +15,7 @@
 */
 package org.milyn.persistence.dao.reflection;
 
-import static org.milyn.persistence.util.ClassUtils.*;
+import static org.milyn.util.ClassUtil.*;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
