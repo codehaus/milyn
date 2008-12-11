@@ -25,6 +25,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMVisitBefore;
@@ -49,7 +50,7 @@ public class MapToResourceConfigFromParentConfig implements DOMVisitBefore {
     @ConfigParam
     private String mapFrom;
 
-    @ConfigParam
+    @ConfigParam(use = Use.OPTIONAL)
     private String mapTo;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)

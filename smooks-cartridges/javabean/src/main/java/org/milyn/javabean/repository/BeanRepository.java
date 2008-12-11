@@ -16,12 +16,20 @@
 
 package org.milyn.javabean.repository;
 
-import org.milyn.assertion.*;
-import org.milyn.container.*;
-import org.milyn.javabean.lifecycle.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
-import java.util.*;
-import java.util.Map.*;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.milyn.assertion.AssertArgument;
+import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 
 /**
  * Bean Repository
@@ -434,6 +442,16 @@ public class BeanRepository {
     	}
 
     	return subjectGroup;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	return new ToStringBuilder(this)
+    			.append("beanMap", beanMap, true)
+    			.toString();
     }
 
     /**
