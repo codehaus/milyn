@@ -84,8 +84,8 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  * @since 1.1
  */
-@VisitBeforeIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
-@VisitAfterIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
+@VisitBeforeIf(	condition = "!parameters.containsKey('executeAfter') || parameters.executeAfter.value != 'true'")
+@VisitAfterIf(	condition = "parameters.containsKey('executeAfter') && parameters.executeAfter.value == 'true'")
 public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, DOMVisitAfter {
 
 	public static final Long DEFAULT_START_INDEX = new Long(0);
