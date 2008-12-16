@@ -18,6 +18,7 @@ package org.milyn.persistence;
 import java.util.Map;
 
 import org.milyn.container.ApplicationContext;
+import org.milyn.scribe.ObjectStore;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
@@ -32,28 +33,28 @@ public class ApplicationContextObjectStore implements ObjectStore {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.ObjectStore#get(java.lang.Object)
+	 * @see org.milyn.scribe.ObjectStore#get(java.lang.Object)
 	 */
 	public Object get(Object key) {
 		return applicationContext.getAttribute(key);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.ObjectStore#getAll()
+	 * @see org.milyn.scribe.ObjectStore#getAll()
 	 */
 	public Map<Object, Object> getAll() {
 		return applicationContext.getAttributes();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.ObjectStore#remove(java.lang.Object)
+	 * @see org.milyn.scribe.ObjectStore#remove(java.lang.Object)
 	 */
 	public void remove(Object key) {
 		applicationContext.removeAttribute(key);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.ObjectStore#set(java.lang.Object, java.lang.Object)
+	 * @see org.milyn.scribe.ObjectStore#set(java.lang.Object, java.lang.Object)
 	 */
 	public void set(Object key, Object value) {
 		applicationContext.setAttribute(key, value);

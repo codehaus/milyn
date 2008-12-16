@@ -29,7 +29,7 @@ import java.util.Map;
 public class PositionalParameterIndex extends ParameterIndex<Integer, PositionalParameter>{
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.parameter.Index#createParameter(java.lang.Object)
+	 * @see org.milyn.scribe.parameter.Index#createParameter(java.lang.Object)
 	 */
 	@Override
 	protected PositionalParameter createParameter(Integer value) {

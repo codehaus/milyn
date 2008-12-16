@@ -31,14 +31,14 @@ public class PositionalParameterContainer implements ParameterContainer<Position
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.parameter.ParameterContainer#clear()
+	 * @see org.milyn.scribe.parameter.ParameterContainer#clear()
 	 */
 	public void clear() {
 		values = new Object[values.length];
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.parameter.ParameterContainer#containsParameter(org.milyn.persistence.parameter.Parameter)
+	 * @see org.milyn.scribe.parameter.ParameterContainer#containsParameter(org.milyn.scribe.parameter.Parameter)
 	 */
 	public boolean containsParameter(PositionalParameter parameter) {
 		int index = parameter.getIndex();
@@ -47,7 +47,7 @@ public class PositionalParameterContainer implements ParameterContainer<Position
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.parameter.ParameterContainer#get(org.milyn.persistence.parameter.Parameter)
+	 * @see org.milyn.scribe.parameter.ParameterContainer#get(org.milyn.scribe.parameter.Parameter)
 	 */
 	public Object get(PositionalParameter parameter) {
 		int index = parameter.getIndex();
@@ -56,7 +56,7 @@ public class PositionalParameterContainer implements ParameterContainer<Position
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.parameter.ParameterContainer#put(org.milyn.persistence.parameter.Parameter, java.lang.Object)
+	 * @see org.milyn.scribe.parameter.ParameterContainer#put(org.milyn.scribe.parameter.Parameter, java.lang.Object)
 	 */
 	public void put(PositionalParameter parameter, Object bean) {
 		values[parameter.getIndex()] = bean;
@@ -67,7 +67,7 @@ public class PositionalParameterContainer implements ParameterContainer<Position
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.parameter.ParameterContainer#remove(org.milyn.persistence.parameter.Parameter)
+	 * @see org.milyn.scribe.parameter.ParameterContainer#remove(org.milyn.scribe.parameter.Parameter)
 	 */
 	public Object remove(PositionalParameter parameter) {
 		Object old = get(parameter);

@@ -29,12 +29,12 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
-import org.milyn.persistence.dao.Dao;
-import org.milyn.persistence.dao.MappedDao;
-import org.milyn.persistence.dao.register.MapRegister;
-import org.milyn.persistence.dao.register.SingleDaoRegister;
-import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
+import org.milyn.scribe.Dao;
+import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.register.MapRegister;
+import org.milyn.scribe.register.SingleDaoRegister;
+import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 
