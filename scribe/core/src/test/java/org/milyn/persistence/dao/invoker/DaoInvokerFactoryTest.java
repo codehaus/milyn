@@ -19,12 +19,13 @@ import static junit.framework.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.MockApplicationContext;
+import org.milyn.persistence.MapObjectStore;
+import org.milyn.persistence.ObjectStore;
 import org.milyn.persistence.dao.Dao;
 import org.milyn.persistence.test.TestGroup;
 import org.milyn.persistence.test.dao.FullAnnotatedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -33,7 +34,7 @@ import org.testng.annotations.Test;
  */
 public class DaoInvokerFactoryTest extends BaseTestCase {
 
-	ApplicationContext appContext = new MockApplicationContext();
+	ObjectStore objectStore;
 
 	@Test(groups = TestGroup.UNIT)
 	public void test_getInstance() {
@@ -56,7 +57,7 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 		@SuppressWarnings("unchecked")
 		Dao<Object> daoMock = mock(Dao.class);
 
-		DaoInvoker daoInvoker = factory.create(daoMock, appContext);
+		DaoInvoker daoInvoker = factory.create(daoMock, objectStore);
 
 		assertNotNull(daoInvoker);
 
@@ -75,7 +76,7 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 		FullAnnotatedDao daoMock = mock(FullAnnotatedDao.class);
 
-		DaoInvoker daoInvoker = factory.create(daoMock, appContext);
+		DaoInvoker daoInvoker = factory.create(daoMock, objectStore);
 
 		assertNotNull(daoInvoker);
 
@@ -85,9 +86,12 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 		verify(daoMock).persistIt(same(entity));
 
-		assertNotNull(appContext.getAttribute(DaoInvokerFactory.REPOSITORY_KEY));
+		assertNotNull(objectStore.get(DaoInvokerFactory.REPOSITORY_KEY));
 
 	}
 
-
+	@BeforeMethod
+	public void setup() {
+		objectStore = new MapObjectStore();
+	}
 }

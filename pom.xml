@@ -25,6 +25,9 @@
 		<milyn.edisax.parser.version.base>${milyn.smooks.core.version.base}</milyn.edisax.parser.version.base>
         <milyn.edisax.parser.version>${milyn.smooks.core.version}</milyn.edisax.parser.version>
 
+		<milyn.scribe.core.version.base>${milyn.smooks.core.version.base}</milyn.scribe.core.version.base>
+        <milyn.scribe.core.version>${milyn.scribe.core.version.base}-SNAPSHOT</milyn.scribe.core.version>
+
         <xerces.version>2.7.1</xerces.version>
         <xalan.version>2.7.0</xalan.version>
         <xml_apis.version>1.3.02</xml_apis.version>
@@ -44,6 +47,7 @@
                 <module>magger</module>
                 <module>tinak</module>
                 <module>edisax</module>
+                <module>scribe</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>

@@ -83,6 +83,8 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
     @AppContext
     private ApplicationContext appContext;
 
+    private ApplicationContextObjectStore objectStore;
+
     private BeanId beanId;
 
     @Initialize
@@ -100,6 +102,8 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
     	beanId = beanIdRegister.register(beanIdName);
 
     	ParameterManager.initializeParameterIndex(id, parameterListType, appContext);
+
+    	objectStore = new ApplicationContextObjectStore(appContext);
     }
 
 	/* (non-Javadoc)
@@ -203,7 +207,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
 	public Object lookup(Object dao, ExecutionContext executionContext) {
 		ParameterContainer<?> container = ParameterManager.getParameterContainer(id, executionContext);
-		DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, appContext);
+		DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
 		if(query == null) {
 			if(parameterListType == ParameterListType.NAMED) {
@@ -222,7 +226,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
 	public Object lookupMapped(Object dao, ExecutionContext executionContext) {
 		ParameterContainer<?> container = ParameterManager.getParameterContainer(id, executionContext);
-		MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, appContext);
+		MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
 
 		if(query == null) {
 			if(parameterListType == ParameterListType.NAMED) {

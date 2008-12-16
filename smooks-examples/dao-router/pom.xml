@@ -13,6 +13,12 @@
 
     <dependencies>
 
+    	<dependency>
+    		<groupId>org.milyn</groupId>
+    		<artifactId>milyn-scribe-jpa</artifactId>
+    		<version>${milyn.scribe.jpa.version}</version>
+    	</dependency>
+
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-persistence</artifactId>
