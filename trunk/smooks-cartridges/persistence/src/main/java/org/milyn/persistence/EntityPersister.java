@@ -78,6 +78,8 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
     @AppContext
     private ApplicationContext appContext;
 
+    private ApplicationContextObjectStore objectStore;
+
     private BeanId beanId;
 
     private BeanId persistedBeanId;
@@ -91,6 +93,8 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
     	if(persistedBeanIdName != null) {
     		persistedBeanId = beanIdRegister.register(persistedBeanIdName);
     	}
+
+    	objectStore = new ApplicationContextObjectStore(appContext);
     }
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
@@ -171,7 +175,7 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	 * @return
 	 */
 	private Object persist(Object beanResult, Object dao) {
-		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, appContext);
+		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
 
 		switch (persistMode) {
@@ -196,7 +200,7 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	 * @return
 	 */
 	private Object persistMapped(Object beanResult, Object dao) {
-		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, appContext);
+		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
 
 
 		switch (persistMode) {

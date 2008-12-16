@@ -49,6 +49,7 @@
         <milyn.smooks.routing.version>${milyn.smooks.core.version}</milyn.smooks.routing.version>
         <milyn.smooks.json.version>${milyn.smooks.core.version}</milyn.smooks.json.version>
 		<milyn.smooks.persistence.version>${milyn.smooks.core.version}</milyn.smooks.persistence.version>
+		<milyn.scribe.jpa.version>${milyn.smooks.core.version}</milyn.scribe.jpa.version>
     </properties>
 
     <dependencies>

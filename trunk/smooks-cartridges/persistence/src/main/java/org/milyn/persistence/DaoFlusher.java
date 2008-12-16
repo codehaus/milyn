@@ -66,6 +66,13 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
     @AppContext
     private ApplicationContext appContext;
 
+    private ApplicationContextObjectStore objectStore;
+
+    @Initialize
+    public void initialize() {
+    	objectStore = new ApplicationContextObjectStore(appContext);
+    }
+
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
     	flush(executionContext);
     }
@@ -129,7 +136,7 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	 * @param dao
 	 */
 	private void flush(Object dao) {
-		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, appContext);
+		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
 		daoInvoker.flush();
 	}
@@ -139,7 +146,7 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	 * @param dao
 	 */
 	private void mappedFlush(Object dao) {
-		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, appContext);
+		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
 
 		daoInvoker.flush(statementId);
 	}

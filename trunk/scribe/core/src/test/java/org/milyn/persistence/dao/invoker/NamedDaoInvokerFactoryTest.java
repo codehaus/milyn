@@ -19,8 +19,8 @@ import static junit.framework.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.MockApplicationContext;
+import org.milyn.persistence.MapObjectStore;
+import org.milyn.persistence.ObjectStore;
 import org.milyn.persistence.dao.MappedDao;
 import org.milyn.persistence.test.TestGroup;
 import org.testng.annotations.Test;
@@ -48,12 +48,12 @@ public class NamedDaoInvokerFactoryTest {
 	public void test_create() {
 
 		MappedDaoInvokerFactory factory  = MappedDaoInvokerFactory.getInstance();
-		ApplicationContext mockApplicationContext = new MockApplicationContext();
+		ObjectStore objectStore =  new MapObjectStore();
 
 		@SuppressWarnings("unchecked")
 		MappedDao<Object> namedDaoMock = mock(MappedDao.class);
 
-		MappedDaoInvoker namedDaoInvoker = factory.create(namedDaoMock, mockApplicationContext);
+		MappedDaoInvoker namedDaoInvoker = factory.create(namedDaoMock, objectStore);
 
 		assertNotNull(namedDaoInvoker);
 

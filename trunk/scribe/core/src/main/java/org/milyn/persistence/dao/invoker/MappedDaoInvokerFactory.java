@@ -17,7 +17,7 @@ package org.milyn.persistence.dao.invoker;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.container.ApplicationContext;
+import org.milyn.persistence.ObjectStore;
 import org.milyn.persistence.dao.MappedDao;
 
 /**
@@ -39,9 +39,9 @@ public class MappedDaoInvokerFactory {
 
 
 	@SuppressWarnings("unchecked")
-	public MappedDaoInvoker create(final Object dao, final ApplicationContext applicationContext) {
+	public MappedDaoInvoker create(final Object dao, final ObjectStore objectStore) {
 		AssertArgument.isNotNull(dao, "dao");
-		AssertArgument.isNotNull(applicationContext, "applicationContext");
+		AssertArgument.isNotNull(objectStore, "objectStore");
 
 		if(dao instanceof MappedDao) {
 			return new InterfaceMappedDaoInvoker((MappedDao<? super Object>) dao);

@@ -18,8 +18,7 @@ package org.milyn.persistence.dao.invoker;
 import org.milyn.annotation.AnnotatedClass;
 import org.milyn.annotation.AnnotationManager;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.BoundAttributeStore;
+import org.milyn.persistence.ObjectStore;
 import org.milyn.persistence.dao.Dao;
 import org.milyn.persistence.dao.reflection.AnnotatedDaoRuntimeInfoFactory;
 
@@ -41,9 +40,9 @@ public class DaoInvokerFactory {
 	}
 
 
-	public DaoInvoker create(final Object dao, final ApplicationContext applicationContext) {
+	public DaoInvoker create(final Object dao, final ObjectStore objectStore) {
 		AssertArgument.isNotNull(dao, "dao");
-		AssertArgument.isNotNull(applicationContext, "applicationContext");
+		AssertArgument.isNotNull(objectStore, "objectStore");
 
 		if(dao instanceof Dao) {
 			return new InterfaceDaoInvoker((Dao<?>) dao);
@@ -53,7 +52,7 @@ public class DaoInvokerFactory {
 
 			if(annotatedClass.isAnnotationPresent(org.milyn.persistence.dao.annotation.Dao.class)) {
 
-				final AnnotatedDaoRuntimeInfoFactory repository = getAnnotatedDAORuntimeInfoRepository(applicationContext);
+				final AnnotatedDaoRuntimeInfoFactory repository = getAnnotatedDAORuntimeInfoRepository(objectStore);
 
 				return new AnnotatedDaoInvoker(dao, repository.create(dao.getClass()));
 
@@ -68,13 +67,13 @@ public class DaoInvokerFactory {
 	 * @param attributestore
 	 * @return
 	 */
-	private AnnotatedDaoRuntimeInfoFactory getAnnotatedDAORuntimeInfoRepository(final BoundAttributeStore attributestore) {
-		AnnotatedDaoRuntimeInfoFactory repository = (AnnotatedDaoRuntimeInfoFactory) attributestore.getAttribute(REPOSITORY_KEY);
+	private AnnotatedDaoRuntimeInfoFactory getAnnotatedDAORuntimeInfoRepository(final ObjectStore objectStore) {
+		AnnotatedDaoRuntimeInfoFactory repository = (AnnotatedDaoRuntimeInfoFactory) objectStore.get(REPOSITORY_KEY);
 
 		if(repository == null) {
 			repository = new AnnotatedDaoRuntimeInfoFactory();
 
-			attributestore.setAttribute(REPOSITORY_KEY, repository);
+			objectStore.set(REPOSITORY_KEY, repository);
 		}
 		return repository;
 	}
