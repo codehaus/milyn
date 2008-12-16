@@ -30,7 +30,7 @@ public class NamedParameterIndex extends ParameterIndex<String, NamedParameter> 
 
 
 	/* (non-Javadoc)
-	 * @see org.milyn.persistence.parameter.Index#createParameter(int, java.lang.Object)
+	 * @see org.milyn.scribe.parameter.Index#createParameter(int, java.lang.Object)
 	 */
 	@Override
 	protected NamedParameter createParameter(String value) {

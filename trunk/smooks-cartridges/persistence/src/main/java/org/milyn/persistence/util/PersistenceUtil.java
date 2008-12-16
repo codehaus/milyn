@@ -18,7 +18,7 @@ package org.milyn.persistence.util;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.persistence.dao.DaoRegister;
+import org.milyn.scribe.DaoRegister;
 
 
 /**

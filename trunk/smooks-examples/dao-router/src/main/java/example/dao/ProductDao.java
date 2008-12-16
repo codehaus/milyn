@@ -17,9 +17,9 @@ package example.dao;
 
 import javax.persistence.EntityManager;
 
-import org.milyn.persistence.dao.annotation.Dao;
-import org.milyn.persistence.dao.annotation.Lookup;
-import org.milyn.persistence.dao.annotation.Param;
+import org.milyn.scribe.annotation.Dao;
+import org.milyn.scribe.annotation.Lookup;
+import org.milyn.scribe.annotation.Param;
 
 import example.entity.Product;
 

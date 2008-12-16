@@ -30,10 +30,10 @@ import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.persistence.dao.register.SingleDaoRegister;
-import org.milyn.persistence.test.dao.FullInterfaceDao;
-import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
+import org.milyn.scribe.register.SingleDaoRegister;
+import org.milyn.scribe.test.dao.FullInterfaceDao;
+import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 

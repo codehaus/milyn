@@ -39,12 +39,12 @@ import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.persistence.dao.DaoRegister;
-import org.milyn.persistence.dao.invoker.DaoInvoker;
-import org.milyn.persistence.dao.invoker.DaoInvokerFactory;
-import org.milyn.persistence.dao.invoker.MappedDaoInvoker;
-import org.milyn.persistence.dao.invoker.MappedDaoInvokerFactory;
 import org.milyn.persistence.util.PersistenceUtil;
+import org.milyn.scribe.DaoRegister;
+import org.milyn.scribe.invoker.DaoInvoker;
+import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.scribe.invoker.MappedDaoInvoker;
+import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
 
