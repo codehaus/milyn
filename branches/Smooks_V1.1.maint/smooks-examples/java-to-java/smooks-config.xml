@@ -9,6 +9,12 @@
         <jb:wiring property="lineItems" beanIdRef="lineItems" />
         <jb:value property="customerId" data="header/customerNumber" />
         <jb:value property="customerName" data="header/customerName" />
+        <jb:value property="priority" data="header/priority" decoder="Enum">
+        	<jb:decodeParam name="enumType">example.trgmodel.LineOrderPriority</jb:decodeParam>
+        	<jb:decodeParam name="LOW">NOT_IMPORTANT</jb:decodeParam>
+        	<jb:decodeParam name="MEDIUM">IMPORTANT</jb:decodeParam>
+        	<jb:decodeParam name="HIGH">VERY_IMPORTANT</jb:decodeParam>
+        </jb:value>
     </jb:bindings>
 
     <jb:bindings beanId="lineItems" class="example.trgmodel.LineItem[]" createOnElement="orderItems">
