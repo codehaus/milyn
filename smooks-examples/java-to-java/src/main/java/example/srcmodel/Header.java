@@ -15,14 +15,17 @@
 */
 package example.srcmodel;
 
-import java.util.Date;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class Header {
+
     private Long customerNumber = 1234L;
+
     private String customerName = "Buzz Lightyear";
+
+    private Priority priority = Priority.HIGH;
 
     public Long getCustomerNumber() {
         return customerNumber;
@@ -40,12 +43,30 @@ public class Header {
         this.customerName = customerName;
     }
 
-    public String toString() {
+	/**
+	 * @return the priority
+	 */
+	public Priority getPriority() {
+		return priority;
+	}
+
+	/**
+	 * @param priority the priority to set
+	 */
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
+
+    @Override
+	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("customerNumber: " + customerNumber + ", ");
-        stringBuilder.append("customerName: " + customerName);
+        stringBuilder.append("customerName: " + customerName + ", ");
+        stringBuilder.append("priority: " + priority);
+
 
         return stringBuilder.toString();
     }
+
 }
