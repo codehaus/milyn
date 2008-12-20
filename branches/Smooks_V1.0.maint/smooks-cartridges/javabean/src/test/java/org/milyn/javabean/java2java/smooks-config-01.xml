@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
-	<resource-config selector="$document">
+    <resource-config selector="$document">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">b</param>
         <param name="beanClass">org.milyn.javabean.java2java.B</param>
         <param name="bindings">
-        	<binding property="bStrings" selector="${bStringsList}" />
-		</param>
+            <binding property="bStrings" selector="${bStringsList}"/>
+        </param>
     </resource-config>
 
     <resource-config selector="$document">
@@ -15,7 +15,7 @@
         <param name="beanId">bStringsList</param>
         <param name="beanClass">java.util.ArrayList</param>
         <param name="bindings">
-            <binding selector="aStrings/string" />
+            <binding selector="aStrings/string"/>
         </param>
     </resource-config>
 
