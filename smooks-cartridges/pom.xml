@@ -67,7 +67,7 @@
         <module>templating</module>
         <module>routing</module>
 		<module>calc</module>
-		<module>persistence</module>
+		<!-- module>persistence</module -->
         <!-- module>perfcomp</module -->
     </modules>
 
