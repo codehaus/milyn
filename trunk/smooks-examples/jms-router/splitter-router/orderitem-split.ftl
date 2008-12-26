@@ -1,11 +1,12 @@
-<orderitem id="${.vars["order-item"].@id}" order="${order.@id}">
+<#assign orderItem = .vars["order-item"]> <#-- special assignment because order-item has a hyphen -->
+<orderitem id="${orderItem.@id}" order="${order.@id}">
     <customer>
         <name>${order.header.customer}</name>
         <number>${order.header.customer.@number}</number>
     </customer>
     <details>
-        <productId>${.vars["order-item"].product}</productId>
-        <quantity>${.vars["order-item"].quantity}</quantity>
-        <price>${.vars["order-item"].price}</price>
+        <productId>${orderItem.product}</productId>
+        <quantity>${orderItem.quantity}</quantity>
+        <price>${orderItem.price}</price>
     </details>
 </orderitem>
