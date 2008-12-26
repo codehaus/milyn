@@ -21,6 +21,7 @@
         <module>java-to-xml</module>
         <module>java-to-java</module>
         <module>csv-to-xml</module>
+        <module>csv-to-java</module>
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
