@@ -52,6 +52,10 @@
 
         <milyn.smooks.persistence.version.base>${milyn.smooks.core.version}</milyn.smooks.persistence.version.base>
         <milyn.smooks.persistence.version>${milyn.smooks.persistence.version.base}</milyn.smooks.persistence.version>
+
+        <milyn.smooks.validation.version.base>${milyn.smooks.core.version}</milyn.smooks.validation.version.base>
+        <milyn.smooks.validation.version>${milyn.smooks.validation.version.base}</milyn.smooks.validation.version>
+
     </properties>
 
     <modules>
@@ -68,7 +72,7 @@
         <module>routing</module>
 		<module>calc</module>
 		<!-- module>persistence</module -->
-        <!-- module>perfcomp</module -->
+		<module>validation</module>
     </modules>
 
     <dependencies>
