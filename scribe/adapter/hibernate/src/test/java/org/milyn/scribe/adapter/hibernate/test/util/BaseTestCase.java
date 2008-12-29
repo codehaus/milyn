@@ -13,17 +13,20 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.calc;
+package org.milyn.scribe.adapter.hibernate.test.util;
+
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public final class TestGroup {
+public abstract class BaseTestCase {
 
-	public static final String UNIT = "unit";
-
-	private TestGroup() {
+	@BeforeMethod(alwaysRun=true)
+	public void beforeMethod() {
+		MockitoAnnotations.initMocks(this);
 	}
 
 }

@@ -18,10 +18,9 @@ package org.milyn.scribe.adapter.hibernate;
 import static junit.framework.Assert.*;
 
 import org.hibernate.Session;
+import org.milyn.scribe.adapter.hibernate.test.util.BaseTestCase;
 import org.milyn.scribe.dao.adapter.hibernate.SessionDaoAdapter;
 import org.milyn.scribe.dao.adapter.hibernate.SessionRegister;
-import org.milyn.scribe.test.TestGroup;
-import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 
@@ -34,7 +33,7 @@ public class SessionRegisterTest extends BaseTestCase {
 	@Mock
 	Session session;
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getDao() {
 
 		SessionRegister register = new SessionRegister(session);

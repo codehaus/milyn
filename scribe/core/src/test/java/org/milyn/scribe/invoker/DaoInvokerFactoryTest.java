@@ -22,9 +22,6 @@ import static org.mockito.Mockito.*;
 import org.milyn.scribe.Dao;
 import org.milyn.scribe.MapObjectStore;
 import org.milyn.scribe.ObjectStore;
-import org.milyn.scribe.invoker.DaoInvoker;
-import org.milyn.scribe.invoker.DaoInvokerFactory;
-import org.milyn.scribe.test.TestGroup;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.testng.annotations.BeforeMethod;
@@ -38,7 +35,7 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 	ObjectStore objectStore;
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_getInstance() {
 
 		DaoInvokerFactory factory  = DaoInvokerFactory.getInstance();
@@ -51,7 +48,7 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_create_with_interfaced_dao() {
 
 		DaoInvokerFactory factory  = DaoInvokerFactory.getInstance();
@@ -71,7 +68,7 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_create_with_annotated_dao() {
 
 		DaoInvokerFactory factory  = DaoInvokerFactory.getInstance();

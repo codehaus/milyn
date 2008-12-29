@@ -27,6 +27,12 @@
 
 			<dependency>
 				<groupId>org.milyn</groupId>
+				<artifactId>milyn-scribe-core</artifactId>
+				<version>${version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.milyn</groupId>
 				<artifactId>milyn-commons</artifactId>
 				<version>${milyn.commons.version}</version>
 			</dependency>

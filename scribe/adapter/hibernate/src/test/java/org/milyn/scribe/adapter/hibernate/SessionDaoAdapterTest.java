@@ -26,9 +26,8 @@ import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.milyn.scribe.adapter.hibernate.test.util.BaseTestCase;
 import org.milyn.scribe.dao.adapter.hibernate.SessionDaoAdapter;
-import org.milyn.scribe.test.TestGroup;
-import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -47,7 +46,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 	private SessionDaoAdapter adapter;
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_persist() {
 
 		// EXECUTE
@@ -62,7 +61,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_merge() {
 
 		// EXECUTE
@@ -79,7 +78,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_flush() {
 
 		// EXECUTE
@@ -92,7 +91,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookupByQuery_map_parameters() {
 
 		// STUB
@@ -122,7 +121,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookupByQuery_array_parameters() {
 
 		// STUB
@@ -152,7 +151,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookup_map_parameters() {
 
 		// STUB
@@ -182,7 +181,7 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookup_array_parameters() {
 
 		// STUB

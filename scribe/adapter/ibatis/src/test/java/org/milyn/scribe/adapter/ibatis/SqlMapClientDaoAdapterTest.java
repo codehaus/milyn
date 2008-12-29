@@ -26,9 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.milyn.scribe.adapter.ibatis.SqlMapClientDaoAdapter;
-import org.milyn.scribe.test.TestGroup;
-import org.milyn.scribe.test.util.BaseTestCase;
+import org.milyn.scribe.adapter.ibatis.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -46,7 +44,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 
 	private SqlMapClientDaoAdapter adapter;
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_persist() throws SQLException {
 
 		// EXECUTE
@@ -61,7 +59,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_merge() throws SQLException {
 
 		// EXECUTE
@@ -79,7 +77,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 	}
 
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookup_map_parameters() throws SQLException {
 
 		// STUB
@@ -105,7 +103,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookup_array_parameters() throws SQLException {
 
 		// STUB
