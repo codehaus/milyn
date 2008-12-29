@@ -13,18 +13,17 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.persistence.test;
+package org.milyn.persistence.test.dao;
+
+import org.milyn.scribe.Lookupable;
+import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.MappedFlushable;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public final class TestGroup {
+public interface FullInterfaceMappedDao<T> extends MappedDao<T>, MappedFlushable, Lookupable {
 
-	public static final String UNIT = "unit";
 
-	public static final String INTEGRATION = "integration";
-
-	private TestGroup() {
-	}
 }

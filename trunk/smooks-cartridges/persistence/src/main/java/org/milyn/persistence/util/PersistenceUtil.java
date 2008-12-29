@@ -27,7 +27,7 @@ import org.milyn.scribe.DaoRegister;
  */
 public final class PersistenceUtil {
 
-	public static final String PARAM_NAME_DAO_REGISTERY = "dao.register.name";
+	public static final String PARAM_NAME_DAO_REGISTERY = "org.milyn.persistence.test.dao.register.name";
 
 	public static final String PARAM_VALUE_DAO_REGISTERY = PersistenceUtil.class.getName() + "#DAORegister";
 
