@@ -17,10 +17,7 @@ package org.milyn.scribe.adapter.ibatis;
 
 import static junit.framework.Assert.*;
 
-import org.milyn.scribe.adapter.ibatis.SqlMapClientDaoAdapter;
-import org.milyn.scribe.adapter.ibatis.SqlMapClientRegister;
-import org.milyn.scribe.test.TestGroup;
-import org.milyn.scribe.test.util.BaseTestCase;
+import org.milyn.scribe.adapter.ibatis.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 
@@ -35,7 +32,7 @@ public class SqlMapClientRegisterTest extends BaseTestCase {
 	@Mock
 	SqlMapClient sqlMapClient;
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getDao() {
 
 		SqlMapClientRegister register = new SqlMapClientRegister(sqlMapClient);

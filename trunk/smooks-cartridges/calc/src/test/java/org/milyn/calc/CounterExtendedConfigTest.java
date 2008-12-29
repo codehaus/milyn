@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  */
 public class CounterExtendedConfigTest {
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test_before_full_extended_config() throws ParserConfigurationException, SAXException, IOException   {
 		Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-beforeVisit-full-extended-config.xml"));
 

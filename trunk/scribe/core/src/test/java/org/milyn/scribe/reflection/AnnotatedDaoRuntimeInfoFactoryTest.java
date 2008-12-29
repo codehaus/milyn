@@ -17,9 +17,6 @@ package org.milyn.scribe.reflection;
 
 import static junit.framework.Assert.*;
 
-import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfo;
-import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfoFactory;
-import org.milyn.scribe.test.TestGroup;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.dao.MinimumAnnotatedDao;
 import org.testng.annotations.Test;
@@ -30,7 +27,7 @@ import org.testng.annotations.Test;
  */
 public class AnnotatedDaoRuntimeInfoFactoryTest {
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_create() {
 
 		AnnotatedDaoRuntimeInfoFactory factory = new AnnotatedDaoRuntimeInfoFactory();

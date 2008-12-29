@@ -22,14 +22,6 @@ import static org.mockito.Mockito.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfo;
-import org.milyn.scribe.reflection.FlushMethod;
-import org.milyn.scribe.reflection.LookupMethod;
-import org.milyn.scribe.reflection.LookupWithNamedQueryMethod;
-import org.milyn.scribe.reflection.LookupWithPositionalQueryMethod;
-import org.milyn.scribe.reflection.MergeMethod;
-import org.milyn.scribe.reflection.PersistMethod;
-import org.milyn.scribe.test.TestGroup;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.dao.MinimumAnnotatedDao;
 import org.milyn.scribe.test.util.BaseTestCase;
@@ -52,7 +44,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 	@Mock
 	private FullAnnotatedDao fullAnnotatedDao;
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getDaoClass() {
 
 		Class<?> daoClass = fullAnnotatedDaoRuntimeInfo.getDaoClass();
@@ -62,7 +54,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getPersistMethod() {
 
 		PersistMethod method = fullAnnotatedDaoRuntimeInfo.getPersistMethod();
@@ -79,7 +71,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getMergeMethod() {
 
 		MergeMethod method = fullAnnotatedDaoRuntimeInfo.getMergeMethod();
@@ -96,7 +88,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getFlushMethod() {
 
 		FlushMethod method = fullAnnotatedDaoRuntimeInfo.getFlushMethod();
@@ -111,7 +103,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getFindByNamedQueryMethod() {
 
 		LookupWithNamedQueryMethod method = fullAnnotatedDaoRuntimeInfo.getLookupByNamedQueryMethod();
@@ -128,7 +120,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getFindByPositionalQueryMethod() {
 
 		LookupWithPositionalQueryMethod method = fullAnnotatedDaoRuntimeInfo.getLookupByPositionalQueryMethod();
@@ -145,7 +137,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getFindByMethod() {
 
 		LookupMethod method = fullAnnotatedDaoRuntimeInfo.getLookupWithNamedParametersMethod("id");

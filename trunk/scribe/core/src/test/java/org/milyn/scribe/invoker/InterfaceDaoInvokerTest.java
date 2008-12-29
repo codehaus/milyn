@@ -23,9 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.scribe.Dao;
-import org.milyn.scribe.invoker.DaoInvoker;
-import org.milyn.scribe.invoker.InterfaceDaoInvoker;
-import org.milyn.scribe.test.TestGroup;
 import org.milyn.scribe.test.dao.FullInterfaceDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
@@ -43,7 +40,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	@Mock
 	private Dao<Object> minimumDao;
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_persist() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -56,7 +53,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_merge() {
 
 
@@ -70,7 +67,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_flush() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -81,7 +78,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
+	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
 	public void test_flush_non_flushable_dao() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -90,7 +87,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_lookup() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -104,7 +101,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
+	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
 	public void test_findBy_non_finder_dao() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -115,7 +112,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_lookupByQuery_map_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -128,7 +125,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_lookupByQuery_array_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -142,7 +139,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
+	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
 	public void test_lookupByQuery_non_query_finder_dao_map_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -153,7 +150,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
+	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
 	public void test_lookupByQuery_non_query_finder_dao_array_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);

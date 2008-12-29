@@ -47,7 +47,7 @@
                 <module>magger</module>
                 <module>tinak</module>
                 <module>edisax</module>
-                <!-- module>scribe</module -->
+                <module>scribe</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>

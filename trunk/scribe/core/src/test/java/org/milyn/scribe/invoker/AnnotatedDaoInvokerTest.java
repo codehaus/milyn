@@ -23,11 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.milyn.scribe.NoMethodWithAnnotationFound;
-import org.milyn.scribe.invoker.AnnotatedDaoInvoker;
-import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfo;
 import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfoFactory;
-import org.milyn.scribe.test.TestGroup;
 import org.milyn.scribe.test.dao.AnnotatedDaoNoEntityReturned;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.dao.MinimumAnnotatedDao;
@@ -59,7 +56,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	AnnotatedDaoRuntimeInfo minimumDaoRuntimeInfo = runtimeInfoFactory.create(MinimumAnnotatedDao.class);
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_persist_with_entity_return() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
@@ -68,7 +65,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object expectedResult = new Object();
 
-		stub(fullDao.persistIt(toPersist)).toReturn(expectedResult);
+		when(fullDao.persistIt(toPersist)).thenReturn(expectedResult);
 
 		Object result = invoker.persist(toPersist);
 
@@ -77,14 +74,14 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 		assertSame(expectedResult, result);
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_persist_with_null_return() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
 
 		Object toPersist = new Object();
 
-		stub(fullDao.persistIt(toPersist)).toReturn(null);
+		when(fullDao.persistIt(toPersist)).thenReturn(null);
 
 		Object result = invoker.persist(toPersist);
 
@@ -93,14 +90,14 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 		assertNull(result);
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_persist_noEntityReturned() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(daoNoEntityReturned, daoNoEntityReturnedRuntimeInfo);
 
 		Object toPersist = new Object();
 
-		stub(daoNoEntityReturned.persistIt(toPersist)).toReturn(toPersist);
+		when(daoNoEntityReturned.persistIt(toPersist)).thenReturn(toPersist);
 
 		Object result = invoker.persist(toPersist);
 
@@ -109,7 +106,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 		assertNull(result);
 	}
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
+	@Test(groups = "unit", expectedExceptions = NoMethodWithAnnotationFound.class)
 	public void test_persist_no_annotation() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);
@@ -122,7 +119,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_merge_with_entity_return() {
 
 
@@ -132,7 +129,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object expectedResult = new Object();
 
-		stub(fullDao.mergeIt(toMerge)).toReturn(expectedResult);
+		when(fullDao.mergeIt(toMerge)).thenReturn(expectedResult);
 
 		Object result = invoker.merge(toMerge);
 
@@ -142,14 +139,14 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_merge_with_null_return() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
 
 		Object toMerge = new Object();
 
-		stub(fullDao.mergeIt(toMerge)).toReturn(null);
+		when(fullDao.mergeIt(toMerge)).thenReturn(null);
 
 		Object result = invoker.merge(toMerge);
 
@@ -158,7 +155,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 		assertNull(result);
 	}
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
+	@Test(groups = "unit", expectedExceptions = NoMethodWithAnnotationFound.class)
 	public void test_merge_no_annotation() {
 
 
@@ -171,14 +168,14 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_merge_noEntityReturned() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(daoNoEntityReturned, daoNoEntityReturnedRuntimeInfo);
 
 		Object toMerge = new Object();
 
-		stub(daoNoEntityReturned.mergeIt(toMerge)).toReturn(toMerge);
+		when(daoNoEntityReturned.mergeIt(toMerge)).thenReturn(toMerge);
 
 		Object result = invoker.merge(toMerge);
 
@@ -188,7 +185,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_flush() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
@@ -199,7 +196,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
+	@Test(groups = "unit", expectedExceptions = NoMethodWithAnnotationFound.class)
 	public void test_flush_no_annotation() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);
@@ -208,7 +205,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_lookup() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
@@ -223,7 +220,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
+	@Test(groups = "unit", expectedExceptions = NoMethodWithAnnotationFound.class)
 	public void test_lookup_no_annotation() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);
@@ -234,7 +231,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_lookupByQuery_map_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
@@ -247,7 +244,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_lookupByQuery_array_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(fullDao, fullDaoRuntimeInfo);
@@ -261,7 +258,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
+	@Test(groups = "unit", expectedExceptions = NoMethodWithAnnotationFound.class)
 	public void test_lookupByQuery_non_query_finder_dao_map_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);
@@ -272,7 +269,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NoMethodWithAnnotationFound.class)
+	@Test(groups = "unit", expectedExceptions = NoMethodWithAnnotationFound.class)
 	public void test_lookupByQuery_non_query_finder_dao_array_params() {
 
 		DaoInvoker invoker = new AnnotatedDaoInvoker(minimumDao, minimumDaoRuntimeInfo);

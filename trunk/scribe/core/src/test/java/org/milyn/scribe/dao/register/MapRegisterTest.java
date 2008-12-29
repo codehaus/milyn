@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.milyn.scribe.register.MapRegister;
-import org.milyn.scribe.test.TestGroup;
 import org.testng.annotations.Test;
 
 /**
@@ -32,14 +31,14 @@ import org.testng.annotations.Test;
 
 public class MapRegisterTest {
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_construt_empty() {
 		MapRegister<Object> mapRegister = new MapRegister<Object>();
 
 		assertEquals(0, mapRegister.size());
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_construt_map_and_getDAO() {
 		Map<String, Object> hashMap = new HashMap<String, Object>();
 		hashMap.put("1", new Object());
@@ -62,7 +61,7 @@ public class MapRegisterTest {
 		assertSame(linkedHashMap.get("2"), mapRegister.getDao("2"));
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_put_and_getDAO() {
 		Object bean = new Object();
 
@@ -73,7 +72,7 @@ public class MapRegisterTest {
 		assertSame(bean, mapRegister.getDao("1"));
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_containsKey() {
 		MapRegister<Object> mapRegister = new MapRegister<Object>();
 		mapRegister.put("1", new Object());
@@ -82,7 +81,7 @@ public class MapRegisterTest {
 		assertFalse(mapRegister.containsKey("2"));
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_containsDAO() {
 		Object bean1 = new Object();
 		Object bean2 = new Object();
@@ -94,7 +93,7 @@ public class MapRegisterTest {
 		assertFalse(mapRegister.containsDAO(bean2));
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_getAll() {
 		Object bean1 = new Object();
 		Object bean2 = new Object();
@@ -110,7 +109,7 @@ public class MapRegisterTest {
 		assertSame(bean2, all.get("2"));
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_equals() {
 		Object bean1 = new Object();
 		Object bean2 = new Object();
@@ -129,7 +128,7 @@ public class MapRegisterTest {
 		assertFalse(mapRegister1.equals(mapRegister3));
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_clear_and_isEmpty() {
 
 		MapRegister<Object> mapRegister = new MapRegister<Object>();
@@ -144,7 +143,7 @@ public class MapRegisterTest {
 		assertTrue(mapRegister.isEmpty());
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_remove() {
 		Object bean1 = new Object();
 		Object bean2 = new Object();
@@ -162,7 +161,7 @@ public class MapRegisterTest {
 		assertNull(mapRegister.remove("3"));
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_putAll() {
 		Map<String, Object> hashMap = new HashMap<String, Object>();
 		hashMap.put("1", new Object());

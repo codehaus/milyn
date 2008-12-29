@@ -28,9 +28,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.milyn.scribe.adapter.jpa.EntityManagerDaoAdapter;
-import org.milyn.scribe.test.TestGroup;
-import org.milyn.scribe.test.util.BaseTestCase;
+import org.milyn.scribe.adapter.jpa.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -48,7 +46,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 	private EntityManagerDaoAdapter adapter;
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_persist() {
 
 		// EXECUTE
@@ -63,7 +61,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_merge() {
 
 		// EXECUTE
@@ -78,7 +76,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_flush() {
 
 		// EXECUTE
@@ -91,7 +89,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookupByQuery_map_parameters() {
 
 		// STUB
@@ -121,7 +119,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookupByQuery_array_parameters() {
 
 		// STUB
@@ -151,7 +149,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookup_map_parameters() {
 
 		// STUB
@@ -181,7 +179,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 	}
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_lookup_array_parameters() {
 
 		// STUB

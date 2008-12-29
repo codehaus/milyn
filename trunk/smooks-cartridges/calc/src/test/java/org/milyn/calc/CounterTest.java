@@ -49,7 +49,7 @@ public class CounterTest {
 	private BeanRepository beanRepository;
 
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test_default_count() throws ParserConfigurationException, SAXException, IOException
     {
 
@@ -72,7 +72,7 @@ public class CounterTest {
 
     }
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test__static_amount() throws ParserConfigurationException, SAXException, IOException
     {
 
@@ -102,7 +102,7 @@ public class CounterTest {
 
     }
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test_static_start() throws ParserConfigurationException, SAXException, IOException
     {
 
@@ -126,7 +126,7 @@ public class CounterTest {
 
     }
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test_direction() throws ParserConfigurationException, SAXException, IOException
     {
 
@@ -150,7 +150,7 @@ public class CounterTest {
 
     }
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test_amountExpression() throws ParserConfigurationException, SAXException, IOException
     {
 
@@ -175,7 +175,7 @@ public class CounterTest {
     }
 
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test_startExpression() throws ParserConfigurationException, SAXException, IOException
     {
 
@@ -200,7 +200,7 @@ public class CounterTest {
     }
 
 
-	@Test ( groups = TestGroup.UNIT )
+	@Test ( groups = "unit" )
     public void test_resetCondition() throws ParserConfigurationException, SAXException, IOException
     {
 
@@ -244,7 +244,7 @@ public class CounterTest {
 		return (Long) valueObj;
 	}
 
-	@BeforeMethod ( groups = TestGroup.UNIT )
+	@BeforeMethod ( groups = "unit" )
 	public void init() {
 
 		config = new SmooksResourceConfiguration(selector, Counter.class.getName());

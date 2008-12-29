@@ -23,9 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.milyn.scribe.MappedDao;
-import org.milyn.scribe.invoker.InterfaceMappedDaoInvoker;
-import org.milyn.scribe.invoker.MappedDaoInvoker;
-import org.milyn.scribe.test.TestGroup;
 import org.milyn.scribe.test.dao.FullInterfaceMappedDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
@@ -42,7 +39,7 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 	@Mock
 	private MappedDao<Object> minimumDao;
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_persist() {
 
 		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(fullDao);
@@ -55,7 +52,7 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_merge() {
 
 
@@ -69,7 +66,7 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_flush() {
 
 		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(fullDao);
@@ -80,7 +77,7 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
+	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
 	public void test_flush_non_flushable_dao() {
 
 		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(minimumDao);
@@ -89,7 +86,7 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_lookup() {
 
 		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(fullDao);
@@ -103,7 +100,7 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = TestGroup.UNIT, expectedExceptions = NotImplementedException.class)
+	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
 	public void test_lookup_non_finder_dao() {
 
 		MappedDaoInvoker invoker = new InterfaceMappedDaoInvoker(minimumDao);

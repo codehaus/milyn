@@ -19,10 +19,7 @@ import static junit.framework.Assert.*;
 
 import javax.persistence.EntityManager;
 
-import org.milyn.scribe.adapter.jpa.EntityManagerDaoAdapter;
-import org.milyn.scribe.adapter.jpa.EntityManagerRegister;
-import org.milyn.scribe.test.TestGroup;
-import org.milyn.scribe.test.util.BaseTestCase;
+import org.milyn.scribe.adapter.jpa.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 /**
@@ -34,7 +31,7 @@ public class EntityManagerRegisterTest extends BaseTestCase {
 	@Mock
 	EntityManager entityManager;
 
-	@Test( groups = TestGroup.UNIT )
+	@Test( groups = "unit" )
 	public void test_getDao() {
 
 		EntityManagerRegister register = new EntityManagerRegister(entityManager);

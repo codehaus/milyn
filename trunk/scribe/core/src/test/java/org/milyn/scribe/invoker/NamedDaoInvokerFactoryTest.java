@@ -22,9 +22,6 @@ import static org.mockito.Mockito.*;
 import org.milyn.scribe.MapObjectStore;
 import org.milyn.scribe.MappedDao;
 import org.milyn.scribe.ObjectStore;
-import org.milyn.scribe.invoker.MappedDaoInvoker;
-import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
-import org.milyn.scribe.test.TestGroup;
 import org.testng.annotations.Test;
 
 /**
@@ -33,7 +30,7 @@ import org.testng.annotations.Test;
  */
 public class NamedDaoInvokerFactoryTest {
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_getInstance() {
 
 		MappedDaoInvokerFactory factory  = MappedDaoInvokerFactory.getInstance();
@@ -46,7 +43,7 @@ public class NamedDaoInvokerFactoryTest {
 
 	}
 
-	@Test(groups = TestGroup.UNIT)
+	@Test(groups = "unit")
 	public void test_create() {
 
 		MappedDaoInvokerFactory factory  = MappedDaoInvokerFactory.getInstance();
