@@ -151,69 +151,61 @@ public class VisitorConfigMap {
         return domVisitorCount;
     }
 
-    protected boolean addVisitor(String elementName, SmooksResourceConfiguration resourceConfig, ContentHandler contentHandler) {
+    public void addVisitor(String elementName, SmooksResourceConfiguration resourceConfig, Visitor visitor) {
 
-        if(isSAXVisitor(contentHandler) || isDOMVisitor(contentHandler)) {
-            visitorCount++;
+        visitorCount++;
 
-            if(isSAXVisitor(contentHandler)) {
-                saxVisitorCount++;
-                if(contentHandler instanceof SAXVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
-                    saxVisitBefores.addMapping(elementName, resourceConfig, (SAXVisitBefore) contentHandler);
-                }
-                if(contentHandler instanceof SAXVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
-                    saxVisitAfters.addMapping(elementName, resourceConfig, (SAXVisitAfter) contentHandler);
-                }
-                logExecutionEvent(resourceConfig, "Added as a SAX resource.");
+        if(isSAXVisitor(visitor)) {
+            saxVisitorCount++;
+            if(visitor instanceof SAXVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, visitor)) {
+                saxVisitBefores.addMapping(elementName, resourceConfig, (SAXVisitBefore) visitor);
             }
-
-            if(isDOMVisitor(contentHandler)) {
-                domVisitorCount++;
-
-                if(contentHandler instanceof SerializationUnit) {
-                    domSerializationVisitors.addMapping(elementName, resourceConfig, (SerializationUnit) contentHandler);
-                    logExecutionEvent(resourceConfig, "Added as a DOM " + SerializationUnit.class.getSimpleName() + " resource.");
-                } else {
-                    Phase phaseAnnotation = contentHandler.getClass().getAnnotation(Phase.class);
-                    String visitPhase = resourceConfig.getStringParameter("VisitPhase", VisitPhase.PROCESSING.toString());
-
-                    if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
-                        // It's an assembly unit...
-                        if(contentHandler instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
-                            domAssemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
-                        }
-                        if(contentHandler instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
-                            domAssemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
-                        }
-                        logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
-                    } else if (visitPhase.equalsIgnoreCase(VisitPhase.ASSEMBLY.toString())) {
-                        // It's an assembly unit...
-                        if(contentHandler instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
-                            domAssemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
-                        }
-                        if(contentHandler instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
-                            domAssemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
-                        }
-                        logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
-                    } else {
-                        // It's a processing unit...
-                        if(contentHandler instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
-                            domProcessingVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
-                        }
-                        if(contentHandler instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
-                            domProcessingVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
-                        }
-                        logExecutionEvent(resourceConfig, "Added as a DOM Processing Phase resource.");
-                    }
-                }
+            if(visitor instanceof SAXVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, visitor)) {
+                saxVisitAfters.addMapping(elementName, resourceConfig, (SAXVisitAfter) visitor);
             }
-        } else if(!(contentHandler instanceof ConfigurationExpander)) {
-            // It's not a ContentHandler type we care about!  Leave for now - whatever's using it
-            // can instantiate it itself.
-            return false;
+            logExecutionEvent(resourceConfig, "Added as a SAX resource.");
         }
-        
-        return true;
+
+        if(isDOMVisitor(visitor)) {
+            domVisitorCount++;
+
+            if(visitor instanceof SerializationUnit) {
+                domSerializationVisitors.addMapping(elementName, resourceConfig, (SerializationUnit) visitor);
+                logExecutionEvent(resourceConfig, "Added as a DOM " + SerializationUnit.class.getSimpleName() + " resource.");
+            } else {
+                Phase phaseAnnotation = visitor.getClass().getAnnotation(Phase.class);
+                String visitPhase = resourceConfig.getStringParameter("VisitPhase", VisitPhase.PROCESSING.toString());
+
+                if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
+                    // It's an assembly unit...
+                    if(visitor instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, visitor)) {
+                        domAssemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) visitor);
+                    }
+                    if(visitor instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, visitor)) {
+                        domAssemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) visitor);
+                    }
+                    logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
+                } else if (visitPhase.equalsIgnoreCase(VisitPhase.ASSEMBLY.toString())) {
+                    // It's an assembly unit...
+                    if(visitor instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, visitor)) {
+                        domAssemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) visitor);
+                    }
+                    if(visitor instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, visitor)) {
+                        domAssemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) visitor);
+                    }
+                    logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
+                } else {
+                    // It's a processing unit...
+                    if(visitor instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, visitor)) {
+                        domProcessingVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) visitor);
+                    }
+                    if(visitor instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, visitor)) {
+                        domProcessingVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) visitor);
+                    }
+                    logExecutionEvent(resourceConfig, "Added as a DOM Processing Phase resource.");
+                }
+            }
+        }
     }
 
     private void logExecutionEvent(SmooksResourceConfiguration resourceConfig, String message) {

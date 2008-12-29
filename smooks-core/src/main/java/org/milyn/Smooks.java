@@ -25,6 +25,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
@@ -83,6 +84,11 @@ public class Smooks {
     private static Log logger = LogFactory.getLog(Smooks.class);
     private StandaloneApplicationContext context;
     private ClassLoader classLoader;
+    /**
+     * Manually added visitors.  In contract to those that are constructed and configured dynamically from
+     * an XML configuration stream.
+     */
+    private VisitorConfigMap visitors = new VisitorConfigMap();
 
     /**
      * Public Default Constructor.

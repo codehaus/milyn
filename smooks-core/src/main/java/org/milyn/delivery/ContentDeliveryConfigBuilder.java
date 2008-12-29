@@ -601,8 +601,8 @@ public class ContentDeliveryConfigBuilder {
                 return false;
 			}
 
-            if (!visitorConfig.addVisitor(elementName, resourceConfig, contentHandler)) {
-                return false;
+            if(contentHandler instanceof Visitor) {
+                visitorConfig.addVisitor(elementName, resourceConfig, (Visitor) contentHandler);
             }
 
             // Content delivery units are allowed to dynamically add new configurations...
