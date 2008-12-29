@@ -62,7 +62,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	@ConfigParam(name="beanId")
     private String beanIdName;
 
-    @ConfigParam(name = "dao", use = Use.OPTIONAL)
+    @ConfigParam(name = "org.milyn.persistence.test.dao", use = Use.OPTIONAL)
     private String daoName;
 
     @ConfigParam(name="lookup", use = Use.OPTIONAL)

@@ -66,7 +66,7 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
     @ConfigParam(name = "persistedBeanId", use = Use.OPTIONAL)
     private String persistedBeanIdName;
 
-    @ConfigParam(name = "dao", use = Use.OPTIONAL)
+    @ConfigParam(name = "org.milyn.persistence.test.dao", use = Use.OPTIONAL)
     private String daoName;
 
     @ConfigParam(use = Use.OPTIONAL)

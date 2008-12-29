@@ -57,7 +57,7 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 
     private static Log logger = LogFactory.getLog(DaoFlusher.class);
 
-    @ConfigParam(name = "dao", use = Use.OPTIONAL)
+    @ConfigParam(name = "org.milyn.persistence.test.dao", use = Use.OPTIONAL)
     private String daoName;
 
     @ConfigParam(name = "statementId", use = Use.OPTIONAL)
@@ -98,7 +98,7 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	private void flush(final ExecutionContext executionContext) {
 
 		if(logger.isDebugEnabled()) {
-			String msg = "Flushing dao";
+			String msg = "Flushing org.milyn.persistence.test.dao";
 			if(daoName != null) {
 				msg += " with name '" + daoName + "'";
 			}
@@ -133,7 +133,7 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	}
 
 	/**
-	 * @param dao
+	 * @param org.milyn.persistence.test.dao
 	 */
 	private void flush(Object dao) {
 		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
@@ -143,7 +143,7 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 
 
 	/**
-	 * @param dao
+	 * @param org.milyn.persistence.test.dao
 	 */
 	private void mappedFlush(Object dao) {
 		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);

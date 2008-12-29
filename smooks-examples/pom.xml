@@ -33,7 +33,7 @@
         <module>jms-router</module>
         <module>json-to-java</module>
         <module>sj-testimonial</module>
-		<!--module>dao-router</module-->
+		<module>dao-router</module>
         <module>validation-basic</module>
     </modules>
 

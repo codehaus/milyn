@@ -15,8 +15,7 @@
 */
 package org.milyn.persistence;
 
-import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,16 +25,13 @@ import java.util.Map;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
-import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
+import org.milyn.persistence.test.dao.FullInterfaceDao;
+import org.milyn.persistence.test.dao.FullInterfaceMappedDao;
+import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.Dao;
-import org.milyn.scribe.MappedDao;
 import org.milyn.scribe.register.MapRegister;
 import org.milyn.scribe.register.SingleDaoRegister;
-import org.milyn.scribe.test.dao.FullInterfaceDao;
-import org.milyn.scribe.test.dao.FullInterfaceMappedDao;
-import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 
@@ -108,7 +104,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-04.xml"));
 		Map<String, Object> daoMap = new HashMap<String, Object>();
 		daoMap.put("mappedDao", mappedDao);
-		daoMap.put("dao", dao);
+		daoMap.put("org.milyn.persistence.test.dao", dao);
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
