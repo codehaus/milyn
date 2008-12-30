@@ -86,7 +86,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		this.servletRequest = servletRequest;
 		this.applicationContext = containerContext;
 		uaContext = ServletUAContext.getInstance(servletRequest, servletConfig);
-		deliveryConfig = ContentDeliveryConfigBuilder.getConfig(uaContext.getProfileSet(), containerContext);
+		deliveryConfig = ContentDeliveryConfigBuilder.getConfig(uaContext.getProfileSet(), containerContext, null);
 	}
 
     public void setDocumentSource(URI docSource) {

@@ -108,9 +108,10 @@ public class ContentDeliveryConfigBuilder {
 	 * Get the ContentDeliveryConfig instance for the specified profile set.
 	 * @param profileSet The profile set with which this delivery config is associated.
 	 * @param applicationContext Application context.
-	 * @return The ContentDeliveryConfig instance for the named table.
+     * @param extendedVisitorConfigMap Preconfigured/extended Visitor Configuration Map.
+     * @return The ContentDeliveryConfig instance for the named table.
 	 */
-	public static ContentDeliveryConfig getConfig(ProfileSet profileSet, ApplicationContext applicationContext) {
+	public static ContentDeliveryConfig getConfig(ProfileSet profileSet, ApplicationContext applicationContext, VisitorConfigMap extendedVisitorConfigMap) {
 		ContentDeliveryConfig config;
 		LinkedHashMap<String, ContentDeliveryConfig> configTable;
 		
@@ -141,7 +142,7 @@ public class ContentDeliveryConfigBuilder {
                 if(config == null) {
                     ContentDeliveryConfigBuilder configBuilder = new ContentDeliveryConfigBuilder(profileSet, applicationContext);
                     configBuilder.load();
-                    config = configBuilder.createConfig();
+                    config = configBuilder.createConfig(extendedVisitorConfigMap);
                     configTable.put(profileSet.getBaseProfile(), config);
                 }
             }
@@ -150,9 +151,12 @@ public class ContentDeliveryConfigBuilder {
 		return config;
 	}
 
-    private ContentDeliveryConfig createConfig() {
-        Filter.StreamFilterType filterType = getStreamFilterType();
+    private ContentDeliveryConfig createConfig(VisitorConfigMap extendedVisitorConfigMap) {
+        Filter.StreamFilterType filterType;
 
+        visitorConfig.addAll(extendedVisitorConfigMap);
+
+        filterType = getStreamFilterType();
         configBuilderEvents.add(new ConfigBuilderEvent("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics()));
         configBuilderEvents.add(new ConfigBuilderEvent("Using Stream Filter Type: " + filterType));
 

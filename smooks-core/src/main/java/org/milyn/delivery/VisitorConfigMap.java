@@ -250,4 +250,20 @@ public class VisitorConfigMap {
 
         return true;
     }
+
+    public void addAll(VisitorConfigMap visitorConfigMap) {
+        if(visitorConfigMap != null) {
+            domAssemblyVisitBefores.addAll(visitorConfigMap.getDomAssemblyVisitBefores());
+            domAssemblyVisitAfters.addAll(visitorConfigMap.getDomAssemblyVisitAfters());
+            domProcessingVisitBefores.addAll(visitorConfigMap.getDomProcessingVisitBefores());
+            domProcessingVisitAfters.addAll(visitorConfigMap.getDomProcessingVisitAfters());
+            domSerializationVisitors.addAll(visitorConfigMap.getDomSerializationVisitors());
+            saxVisitBefores.addAll(visitorConfigMap.getSaxVisitBefores());
+            saxVisitAfters.addAll(visitorConfigMap.getSaxVisitAfters());
+
+            visitorCount += visitorConfigMap.getVisitorCount();
+            saxVisitorCount += visitorConfigMap.getSaxVisitorCount();
+            domVisitorCount += visitorConfigMap.getDomVisitorCount();
+        }
+    }
 }

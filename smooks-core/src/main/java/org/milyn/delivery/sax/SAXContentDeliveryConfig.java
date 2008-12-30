@@ -140,13 +140,13 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         for (Map.Entry<String, List<ContentHandlerConfigMap<SAXVisitBefore>>> beforeMapping : beforeMappings) {
             List<ContentHandlerConfigMap<SAXVisitBefore>> elementMappings = beforeMapping.getValue();
             for (ContentHandlerConfigMap<SAXVisitBefore> elementMapping : elementMappings) {
-                String selector = beforeMapping.getKey();
+                String elementName = beforeMapping.getKey();
                 SAXVisitBefore handler = elementMapping.getContentHandler();
 
                 // Wanna make sure we don't add the same handler twice, so if it also impls SAXVisitAfter, leave
                 // that until we process the SAXVisitAfter handlers...
                 if(handler instanceof SAXVisitChildren && !(handler instanceof SAXVisitAfter)) {
-                    childVisitors.addMapping(selector, elementMapping.getResourceConfig(), (SAXVisitChildren) handler);
+                    childVisitors.addMapping(elementName, elementMapping.getResourceConfig(), (SAXVisitChildren) handler);
                 }
             }
         }
@@ -155,11 +155,11 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         for (Map.Entry<String,List<ContentHandlerConfigMap<SAXVisitAfter>>> afterMapping : afterMappings) {
             List<ContentHandlerConfigMap<SAXVisitAfter>> elementMappings = afterMapping.getValue();
             for (ContentHandlerConfigMap<SAXVisitAfter> elementMapping : elementMappings) {
-                String selector = afterMapping.getKey();
+                String elementName = afterMapping.getKey();
                 SAXVisitAfter handler = elementMapping.getContentHandler();
 
                 if(handler instanceof SAXVisitChildren) {
-                    childVisitors.addMapping(selector, elementMapping.getResourceConfig(), (SAXVisitChildren) handler);
+                    childVisitors.addMapping(elementName, elementMapping.getResourceConfig(), (SAXVisitChildren) handler);
                 }
             }
         }
