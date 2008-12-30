@@ -90,6 +90,11 @@ public class Smooks {
      * an XML configuration stream.
      */
     private VisitorConfigMap visitors = new VisitorConfigMap();
+    /**
+     * Flag indicating whether or not the Smooks instance is configurable.  It becomes unconfigurable
+     * after the first execution context has been created.
+     */
+    private volatile boolean isConfigurable = true;
 
     /**
      * Public Default Constructor.
@@ -159,6 +164,7 @@ public class Smooks {
      * @param filterType The filter type.
      */
     public void setFilterType(Filter.StreamFilterType filterType) {
+        assertIsConfigurable();
         Filter.setFilterType(this, filterType);
     }
 
@@ -180,10 +186,28 @@ public class Smooks {
      * @param targetSelectorNS The message fragment target selector namespace.
      */
     public void addVisitor(Visitor visitor, String targetSelector, String targetSelectorNS) {
+        assertIsConfigurable();
+        AssertArgument.isNotNull(visitor, "visitor");
+        AssertArgument.isNotNull(targetSelector, "targetSelector");
+
         SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
 
         resourceConfig.setSelectorNamespaceURI(targetSelectorNS);
         visitors.addVisitor(resourceConfig.getTargetElement(), resourceConfig, visitor);
+    }
+
+    /**
+     * Add a resource configuration to this Smooks instance.
+     * <p/>
+     * These configurations do not overwrite previously added configurations.
+     * They are added to the list of configurations on this Smooks instance.
+     *
+     * @param resourceConfig The resource configuration to be added.
+     */
+    public void addConfiguration(SmooksResourceConfiguration resourceConfig) {
+        AssertArgument.isNotNull(resourceConfig, "resourceConfig");
+        assertIsConfigurable();
+        context.getStore().registerResource(resourceConfig);
     }
 
     /**
@@ -232,6 +256,7 @@ public class Smooks {
      * @throws SAXException Error parsing the resource stream.
      */
     public void addConfigurations(String baseURI, InputStream resourceConfigStream) throws SAXException, IOException {
+        assertIsConfigurable();
         AssertArgument.isNotNullAndNotEmpty(baseURI, "baseURI");
         AssertArgument.isNotNull(resourceConfigStream, "resourceConfigStream");
         try {
@@ -293,6 +318,7 @@ public class Smooks {
      * @throws UnknownProfileMemberException Unknown target profile.
      */
     public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
+        isConfigurable = false;
         if(classLoader != null) {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
@@ -416,5 +442,14 @@ public class Smooks {
      */
     public void close() {
         context.getStore().close();
+    }
+
+    /**
+     * Assert that the instance is configurable, throwing an exception if it is not.
+     */
+    private void assertIsConfigurable() {
+        if(!isConfigurable) {
+            throw new UnsupportedOperationException("Unsupported call to Smooks instance configuration method after Smooks instance has created an ExecutionContext.");
+        }
     }
 }
