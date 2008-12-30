@@ -32,20 +32,45 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
     /**
      * Add a delivery unit mapping for the specified selector.
      *
-     * @param selector The resource/delivery-unit selector.
+     * @param elementName The target element for the content handler.
      * @param resourceConfig Resource configuration.
-     * @param deliveryUnit The delivery unit.
+     * @param contentHandler The delivery unit.
      */
-    public void addMapping(String selector, SmooksResourceConfiguration resourceConfig, T deliveryUnit) {
-        List<ContentHandlerConfigMap<T>> selectorMappings = table.get(selector.toLowerCase());
+    public void addMapping(String elementName, SmooksResourceConfiguration resourceConfig, T contentHandler) {
+        addMapping(elementName, new ContentHandlerConfigMap<T>(contentHandler, resourceConfig));
+    }
 
-        if(selectorMappings == null) {
-            selectorMappings = new Vector<ContentHandlerConfigMap<T>>();
-            table.put(selector.toLowerCase(), selectorMappings);
+    /**
+     * Add a mapping for the specified element.
+     * @param elementName The element name.
+     * @param mapInst The mapping instance to be added.
+     */
+    private void addMapping(String elementName, ContentHandlerConfigMap<T> mapInst) {
+        List<ContentHandlerConfigMap<T>> elementMappings = table.get(elementName.toLowerCase());
+
+        if(elementMappings == null) {
+            elementMappings = new Vector<ContentHandlerConfigMap<T>>();
+            table.put(elementName.toLowerCase(), elementMappings);
         }
-        ContentHandlerConfigMap<T> mapInst = new ContentHandlerConfigMap<T>(deliveryUnit, resourceConfig);
-        selectorMappings.add(mapInst);
+        elementMappings.add(mapInst);
         count++;
+    }
+
+    /**
+     * Add all the content handlers defined in the supplied configMap.
+     * @param configMap The config map.
+     */
+    public void addAll(ContentHandlerConfigMapTable<T> configMap) {
+        Set<Map.Entry<String, List<ContentHandlerConfigMap<T>>>> mappingsES = configMap.table.entrySet();
+
+        for (Map.Entry<String, List<ContentHandlerConfigMap<T>>> elementMappings : mappingsES) {
+            String elementName = elementMappings.getKey();
+            List<ContentHandlerConfigMap<T>> mappingList = elementMappings.getValue();
+
+            for (ContentHandlerConfigMap<T> mapping : mappingList) {
+                addMapping(elementName, mapping);
+            }
+        }
     }
 
     public Map<String, List<ContentHandlerConfigMap<T>>> getTable() {

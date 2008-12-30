@@ -25,6 +25,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.types.FilterLifecycleEvent;
@@ -154,6 +155,38 @@ public class Smooks {
     }
 
     /**
+     * Set the default stream filter type on this Smooks instance.
+     * @param filterType The filter type.
+     */
+    public void setFilterType(Filter.StreamFilterType filterType) {
+        Filter.setFilterType(this, filterType);
+    }
+
+    /**
+     * Add a visitor instance to <code>this</code> Smooks instance.
+     *
+     * @param targetSelector The message fragment target selector.
+     * @param visitor The visitor implementation.
+     */
+    public void addVisitor(String targetSelector, Visitor visitor) {
+        addVisitor(visitor, targetSelector, null);
+    }
+
+    /**
+     * Add a visitor instance to <code>this</code> Smooks instance.
+     *
+     * @param visitor The visitor implementation.
+     * @param targetSelector The message fragment target selector.
+     * @param targetSelectorNS The message fragment target selector namespace.
+     */
+    public void addVisitor(Visitor visitor, String targetSelector, String targetSelectorNS) {
+        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
+
+        resourceConfig.setSelectorNamespaceURI(targetSelectorNS);
+        visitors.addVisitor(resourceConfig.getTargetElement(), resourceConfig, visitor);
+    }
+
+    /**
      * Add a set of resource configurations to this Smooks instance.
      * <p/>
      * Uses the {@link org.milyn.resource.URIResourceLocator} class to load the resource.
@@ -264,12 +297,12 @@ public class Smooks {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             try {
-                return new StandaloneExecutionContext(targetProfile, context);
+                return new StandaloneExecutionContext(targetProfile, context, visitors);
             } finally {
                 Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
-            return new StandaloneExecutionContext(targetProfile, context);
+            return new StandaloneExecutionContext(targetProfile, context, visitors);
         }
     }
 

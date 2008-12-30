@@ -22,6 +22,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
@@ -54,10 +55,11 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	 * @param targetProfile The target base profile for the execution context.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
      * @param context The application context.
+     * @param extendedVisitorConfigMap Preconfigured/extended Visitor Configuration Map.
      * @throws UnknownProfileMemberException Unknown target profile.
 	 */
-	public StandaloneExecutionContext(String targetProfile, ApplicationContext context) throws UnknownProfileMemberException {
-		this(targetProfile, context, "UTF-8");
+	public StandaloneExecutionContext(String targetProfile, ApplicationContext context, VisitorConfigMap extendedVisitorConfigMap) throws UnknownProfileMemberException {
+		this(targetProfile, context, "UTF-8", extendedVisitorConfigMap);
 	}
     
 	/**
@@ -68,11 +70,12 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	 * @param targetProfile The target profile (base profile) for this context.
 	 * These parameters are not appended to the supplied requestURI.  This arg must be supplied, even if it's empty.
      * @param context The application context.
-	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
+	 * @param contentEncoding Character encoding to be used when parsing content.  Null
 	 * defaults to "UTF-8".
+     * @param extendedVisitorConfigMap Preconfigured/extended Visitor Configuration Map.
      * @throws UnknownProfileMemberException Unknown target profile.
 	 */
-	public StandaloneExecutionContext(String targetProfile, ApplicationContext context, String contentEncoding) throws UnknownProfileMemberException {
+	public StandaloneExecutionContext(String targetProfile, ApplicationContext context, String contentEncoding, VisitorConfigMap extendedVisitorConfigMap) throws UnknownProfileMemberException {
         if(targetProfile == null) {
             throw new IllegalArgumentException("null 'targetProfile' arg in constructor call.");
         }
@@ -82,7 +85,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		this.context = context;
 		setContentEncoding(contentEncoding);
         targetProfileSet = context.getProfileStore().getProfileSet(targetProfile);        
-        deliveryConfig = ContentDeliveryConfigBuilder.getConfig(targetProfileSet, context);
+        deliveryConfig = ContentDeliveryConfigBuilder.getConfig(targetProfileSet, context, extendedVisitorConfigMap);
         isDefaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, deliveryConfig);
     }
 
