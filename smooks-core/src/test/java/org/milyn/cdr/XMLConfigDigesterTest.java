@@ -16,17 +16,16 @@
 
 package org.milyn.cdr;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Iterator;
-import java.net.URISyntaxException;
-
-import org.xml.sax.SAXException;
-import org.milyn.profile.ProfileSet;
+import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
+import org.milyn.profile.ProfileSet;
+import org.xml.sax.SAXException;
 
-import junit.framework.TestCase;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Unit tests forthe ArciveDef class.
@@ -64,9 +63,6 @@ public class XMLConfigDigesterTest extends TestCase {
     public void test_profile_expansion() throws IOException, SAXException {
         Smooks smooks = new Smooks();
 
-        smooks.addConfigurations("testconfig2.cdrl", getClass().getResourceAsStream("testconfig2.cdrl"));
-        assertProfilesOK(smooks);
-        // register the same resources again - including the same profiles...
         smooks.addConfigurations("testconfig2.cdrl", getClass().getResourceAsStream("testconfig2.cdrl"));
         assertProfilesOK(smooks);
     }
