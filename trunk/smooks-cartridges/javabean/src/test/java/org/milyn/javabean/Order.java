@@ -33,4 +33,8 @@ public class Order {
     public OrderItem[] getOrderItemsArray() {
         return orderItemsArray;
     }
+
+    public String toString() {
+        return "Order:" + System.identityHashCode(this) + "[header[" + header + "]\norderItems[" + orderItems + "]\nnorderItemsArray[" + orderItemsArray + "]]";
+    }
 }

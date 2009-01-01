@@ -123,6 +123,47 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String mapKeyAttribute;
 
     private boolean beanWiring;
+    public static final String VALUE_ATTRIBUTE_NAME = "valueAttributeName";
+
+    public void setBeanId(String beanId) {
+        this.beanIdName = beanId;
+    }
+
+    public void setWireBeanId(String wireBeanId) {
+        this.wireBeanIdName = wireBeanId;
+    }
+
+    public void setExpression(MVELExpressionEvaluator expression) {
+        this.expression = expression;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
+
+    public void setSetterMethod(String setterMethod) {
+        this.setterMethod = setterMethod;
+    }
+
+    public void setValueAttributeName(String valueAttributeName) {
+        this.valueAttributeName = valueAttributeName;
+    }
+
+    public void setTypeAlias(String typeAlias) {
+        this.typeAlias = typeAlias;
+    }
+
+    public void setDecoder(DataDecoder decoder) {
+        this.decoder = decoder;
+    }
+
+    public void setDefaultVal(String defaultVal) {
+        this.defaultVal = defaultVal;
+    }
+
+    public void setExtendLifecycle(Boolean extendLifecycle) {
+        this.extendLifecycle = extendLifecycle;
+    }
 
     /**
      * Set the resource configuration on the bean populator.
@@ -143,8 +184,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         beanId = beanIdRegister.getBeanId(beanIdName);
 
         if (setterMethod == null && property == null ) {
-        	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
-        		property = wireBeanIdName;
+            if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+                // Default the property name if it's a wiring...
+                property = wireBeanIdName;
         	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
         		throw new SmooksConfigurationException("Binding configuration for beanIdName='" + beanIdName + "' must contain " +
                     "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +

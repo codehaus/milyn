@@ -85,7 +85,7 @@ public class Configurator {
         return instance;
     }
 
-    private static <U extends ContentHandler> void processFieldContextAnnotation(U instance, ApplicationContext appContext) {
+    public static <U extends ContentHandler> void processFieldContextAnnotation(U instance, ApplicationContext appContext) {
     	
         processFieldContextAnnotation(instance.getClass(), instance, appContext);
         
@@ -312,7 +312,7 @@ public class Configurator {
         method.invoke(instance, value);
     }
 
-    private static <U extends ContentHandler> void initialise(U instance) {
+    public static <U extends ContentHandler> void initialise(U instance) {
         invoke(instance, Initialize.class);
     }
 

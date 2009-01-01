@@ -15,19 +15,13 @@
 */
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
@@ -41,8 +35,10 @@ import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Bean instance creator visitor class.
@@ -77,6 +73,31 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
 
     private BeanId beanId;
 
+    /**
+     * Public default constructor.
+     */
+    public BeanInstanceCreator() {
+    }
+
+    /**
+     * Public default constructor.
+     * @param beanId The beanId under which the bean instance is registered in the bean context.
+     * @param beanClass The bean runtime class.
+     */
+    public BeanInstanceCreator(String beanId, Class beanClass) {
+        AssertArgument.isNotNull(beanId, "beanId");
+        AssertArgument.isNotNull(beanClass, "beanClass");
+        this.beanIdName = beanId;
+        this.beanClassName = beanClass.getName();
+    }
+
+    public String getBeanId() {
+        return beanIdName;
+    }
+
+    public String getBeanClass() {
+        return beanClassName;
+    }
 
     /**
      * Set the resource configuration on the bean populator.
