@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
@@ -193,6 +194,11 @@ public class Smooks {
         SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
 
         resourceConfig.setSelectorNamespaceURI(targetSelectorNS);
+
+        // And configure/initialize the instance...
+        Configurator.processFieldContextAnnotation(visitor, context);
+        Configurator.initialise(visitor);
+
         visitors.addVisitor(resourceConfig.getTargetElement(), resourceConfig, visitor);
     }
 
