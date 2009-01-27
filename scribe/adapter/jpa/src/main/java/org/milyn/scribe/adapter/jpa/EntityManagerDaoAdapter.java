@@ -22,10 +22,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.dao.Dao;
-import org.milyn.scribe.dao.Flushable;
-import org.milyn.scribe.dao.Locator;
-import org.milyn.scribe.dao.Queryable;
+import org.milyn.scribe.Dao;
+import org.milyn.scribe.Flushable;
+import org.milyn.scribe.Locator;
+import org.milyn.scribe.Queryable;
 
 
 /**
@@ -51,14 +51,14 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable,
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAO#flush()
+	 * @see org.milyn.scribe.DAO#flush()
 	 */
 	public void flush() {
 		entityManager.flush();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAO#merge(java.lang.Object)
+	 * @see org.milyn.scribe.DAO#merge(java.lang.Object)
 	 */
 	public Object update(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
@@ -67,7 +67,7 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable,
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAO#persist(java.lang.Object)
+	 * @see org.milyn.scribe.DAO#persist(java.lang.Object)
 	 */
 	public Object insert(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
@@ -90,7 +90,7 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable,
 
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.util.Map)
+	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> lookup(final String name, final Object ... parameters) {
@@ -110,7 +110,7 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable,
 
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.util.Map)
+	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> lookup(final String name, final Map<String, ?> parameters) {
@@ -129,7 +129,7 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable,
 
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.QueryFinder#findByQuery(java.lang.String, java.util.List)
+	 * @see org.milyn.scribe.QueryFinder#findByQuery(java.lang.String, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> lookupByQuery(final String query, final Object ... parameters) {
@@ -153,7 +153,7 @@ public class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable,
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.QueryFinder#findByQuery(java.lang.String, java.util.Map)
+	 * @see org.milyn.scribe.QueryFinder#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> lookupByQuery(final String query, final Map<String, ?> parameters) {

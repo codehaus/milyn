@@ -22,11 +22,11 @@ import static org.mockito.Mockito.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.milyn.scribe.dao.NoMethodWithAnnotationFound;
-import org.milyn.scribe.dao.invoker.AnnotatedDaoInvoker;
-import org.milyn.scribe.dao.invoker.DaoInvoker;
-import org.milyn.scribe.dao.reflection.AnnotatedDaoRuntimeInfo;
-import org.milyn.scribe.dao.reflection.AnnotatedDaoRuntimeInfoFactory;
+import org.milyn.scribe.NoMethodWithAnnotationFound;
+import org.milyn.scribe.invoker.AnnotatedDaoInvoker;
+import org.milyn.scribe.invoker.DaoInvoker;
+import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfo;
+import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfoFactory;
 import org.milyn.scribe.test.dao.AnnotatedDaoNoEntityReturned;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.dao.MinimumAnnotatedDao;

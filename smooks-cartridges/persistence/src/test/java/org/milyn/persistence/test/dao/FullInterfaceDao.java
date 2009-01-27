@@ -15,10 +15,10 @@
 */
 package org.milyn.persistence.test.dao;
 
-import org.milyn.scribe.dao.Dao;
-import org.milyn.scribe.dao.Flushable;
-import org.milyn.scribe.dao.Locator;
-import org.milyn.scribe.dao.Queryable;
+import org.milyn.scribe.Dao;
+import org.milyn.scribe.Flushable;
+import org.milyn.scribe.Locator;
+import org.milyn.scribe.Queryable;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

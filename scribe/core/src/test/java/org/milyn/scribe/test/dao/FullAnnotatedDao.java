@@ -18,14 +18,14 @@ package org.milyn.scribe.test.dao;
 import java.util.Collection;
 import java.util.Map;
 
-import org.milyn.scribe.dao.annotation.Dao;
-import org.milyn.scribe.dao.annotation.Flush;
-import org.milyn.scribe.dao.annotation.Insert;
-import org.milyn.scribe.dao.annotation.Lookup;
-import org.milyn.scribe.dao.annotation.LookupByQuery;
-import org.milyn.scribe.dao.annotation.Param;
-import org.milyn.scribe.dao.annotation.Update;
-import org.milyn.scribe.dao.annotation.Delete;
+import org.milyn.scribe.annotation.Dao;
+import org.milyn.scribe.annotation.Delete;
+import org.milyn.scribe.annotation.Flush;
+import org.milyn.scribe.annotation.Insert;
+import org.milyn.scribe.annotation.Lookup;
+import org.milyn.scribe.annotation.LookupByQuery;
+import org.milyn.scribe.annotation.Param;
+import org.milyn.scribe.annotation.Update;
 
 
 /**

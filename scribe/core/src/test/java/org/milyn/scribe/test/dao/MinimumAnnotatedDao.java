@@ -15,7 +15,7 @@
 */
 package org.milyn.scribe.test.dao;
 
-import org.milyn.scribe.dao.annotation.Dao;
+import org.milyn.scribe.annotation.Dao;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

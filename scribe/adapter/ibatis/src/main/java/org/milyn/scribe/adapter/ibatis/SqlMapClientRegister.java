@@ -16,7 +16,7 @@
 package org.milyn.scribe.adapter.ibatis;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.dao.AbstractDaoRegister;
+import org.milyn.scribe.AbstractDaoRegister;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -39,7 +39,7 @@ public class SqlMapClientRegister extends AbstractDaoRegister<SqlMapClientDaoAda
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAORegister#getDAO()
+	 * @see org.milyn.scribe.DAORegister#getDAO()
 	 */
 	@Override
 	public SqlMapClientDaoAdapter getDao() {
