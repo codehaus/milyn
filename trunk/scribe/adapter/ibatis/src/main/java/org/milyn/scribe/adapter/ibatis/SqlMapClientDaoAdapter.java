@@ -19,9 +19,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.milyn.scribe.DaoException;
-import org.milyn.scribe.Lookupable;
-import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.dao.DaoException;
+import org.milyn.scribe.dao.Locator;
+import org.milyn.scribe.dao.MappedDao;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -29,7 +29,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable  {
+public class SqlMapClientDaoAdapter implements MappedDao<Object>, Locator  {
 
 	private final SqlMapClient sqlMapClient;
 
@@ -43,7 +43,7 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable  {
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.dao.NamedDAO#merge(java.lang.String, java.lang.Object)
 	 */
-	public Object merge(String id, Object entity) {
+	public Object update(String id, Object entity) {
 		try {
 			sqlMapClient.update(id, entity);
 		} catch (SQLException e) {
@@ -55,11 +55,25 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable  {
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.dao.NamedDAO#persist(java.lang.String, java.lang.Object)
 	 */
-	public Object persist(String id, Object entity) {
+	public Object insert(String id, Object entity) {
 		try {
 			sqlMapClient.insert(id, entity);
 		} catch (SQLException e) {
 			throw new DaoException("Exception throw while executing insert with statement id '" + id + "' and entity '" + entity + "'", e);
+		}
+
+		return null;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.MappedDao#delete(java.lang.String, java.lang.Object)
+	 */
+	public Object delete(String id, Object entity) {
+		try {
+			sqlMapClient.delete(id, entity);
+		} catch (SQLException e) {
+			throw new DaoException("Exception throw while executing delete with statement id '" + id + "' and entity '" + entity + "'", e);
 		}
 
 		return null;
@@ -81,7 +95,7 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable  {
 	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> lookup(String id, Object[] parameters) {
+	public Collection<Object> lookup(String id, Object ... parameters) {
 		try {
 			return sqlMapClient.queryForList(id, parameters);
 		} catch (SQLException e) {
@@ -95,5 +109,6 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Lookupable  {
 	public SqlMapClient getSqlMapClient() {
 		return sqlMapClient;
 	}
+
 
 }

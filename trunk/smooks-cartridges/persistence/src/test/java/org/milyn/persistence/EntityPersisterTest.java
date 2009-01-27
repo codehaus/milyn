@@ -31,10 +31,10 @@ import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.Dao;
-import org.milyn.scribe.MappedDao;
-import org.milyn.scribe.register.MapRegister;
-import org.milyn.scribe.register.SingleDaoRegister;
+import org.milyn.scribe.dao.Dao;
+import org.milyn.scribe.dao.MappedDao;
+import org.milyn.scribe.dao.register.MapRegister;
+import org.milyn.scribe.dao.register.SingleDaoRegister;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 
@@ -75,9 +75,9 @@ public class EntityPersisterTest extends BaseTestCase {
 
 		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).merge(same(toMerge));
-		verify(dao).persist(same(toPersist2));
-		verify(dao).persist(same(toPersist1));
+		verify(dao).update(same(toMerge));
+		verify(dao).insert(same(toPersist2));
+		verify(dao).insert(same(toPersist1));
 	}
 
 	@Test
@@ -103,9 +103,9 @@ public class EntityPersisterTest extends BaseTestCase {
 
 		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).merge(same(toMerge));
-		verify(dao).persist(same(toPersist2));
-		verify(dao).persist(same(toPersist1));
+		verify(dao).update(same(toMerge));
+		verify(dao).insert(same(toPersist2));
+		verify(dao).insert(same(toPersist1));
 	}
 
 	@Test
@@ -126,9 +126,9 @@ public class EntityPersisterTest extends BaseTestCase {
 
 		enableReporting(executionContext, "report_test_entity_persist_and_merge_to_other_beanId.html");
 
-		when(dao.merge(toMerge)).thenReturn(merged);
-		when(dao.persist(toPersist2)).thenReturn(persisted2);
-		when(dao.persist(toPersist1)).thenReturn(persisted1);
+		when(dao.update(toMerge)).thenReturn(merged);
+		when(dao.insert(toPersist2)).thenReturn(persisted2);
+		when(dao.insert(toPersist1)).thenReturn(persisted1);
 
 		JavaResult result = new JavaResult();
 		result.getResultMap().put("toPersist1", toPersist1);
@@ -164,9 +164,9 @@ public class EntityPersisterTest extends BaseTestCase {
 
 		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(mappedDao).merge(eq("merge"), same(toMerge));
-		verify(mappedDao).persist(eq("persist2"), same(toPersist2));
-		verify(mappedDao).persist(eq("persist1"), same(toPersist1));
+		verify(mappedDao).update(eq("merge"), same(toMerge));
+		verify(mappedDao).insert(eq("persist2"), same(toPersist2));
+		verify(mappedDao).insert(eq("persist1"), same(toPersist1));
 	}
 
 	@Test
@@ -188,8 +188,8 @@ public class EntityPersisterTest extends BaseTestCase {
 
 		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).persist(same(toPersist1));
-		verify(dao).persist(same(toPersist2));
+		verify(dao).insert(same(toPersist1));
+		verify(dao).insert(same(toPersist2));
 
 	}
 

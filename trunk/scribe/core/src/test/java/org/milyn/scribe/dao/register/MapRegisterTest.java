@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.milyn.scribe.register.MapRegister;
+import org.milyn.scribe.dao.register.MapRegister;
 import org.testng.annotations.Test;
 
 /**

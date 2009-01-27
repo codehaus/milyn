@@ -17,8 +17,8 @@ package example.dao;
 
 import javax.persistence.EntityManager;
 
-import org.milyn.scribe.annotation.Dao;
-import org.milyn.scribe.annotation.Persist;
+import org.milyn.scribe.dao.annotation.Dao;
+import org.milyn.scribe.dao.annotation.Insert;
 
 import example.entity.Order;
 
@@ -38,7 +38,7 @@ public class OrderDao {
 		this.em = em;
 	}
 
-	@Persist
+	@Insert
 	public void insertOrder(Order order) {
 		em.persist(order);
 	}

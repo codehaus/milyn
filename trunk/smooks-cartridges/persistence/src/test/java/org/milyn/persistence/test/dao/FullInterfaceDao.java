@@ -15,15 +15,15 @@
 */
 package org.milyn.persistence.test.dao;
 
-import org.milyn.scribe.Dao;
-import org.milyn.scribe.Flushable;
-import org.milyn.scribe.Lookupable;
-import org.milyn.scribe.Queryable;
+import org.milyn.scribe.dao.Dao;
+import org.milyn.scribe.dao.Flushable;
+import org.milyn.scribe.dao.Locator;
+import org.milyn.scribe.dao.Queryable;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceDao<T> extends Dao<T>, Flushable, Lookupable, Queryable {
+public interface FullInterfaceDao<T> extends Dao<T>, Flushable, Locator, Queryable {
 
 }

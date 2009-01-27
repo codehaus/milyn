@@ -40,11 +40,11 @@ import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.DaoRegister;
-import org.milyn.scribe.invoker.DaoInvoker;
-import org.milyn.scribe.invoker.DaoInvokerFactory;
-import org.milyn.scribe.invoker.MappedDaoInvoker;
-import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
+import org.milyn.scribe.dao.DaoRegister;
+import org.milyn.scribe.dao.invoker.DaoInvoker;
+import org.milyn.scribe.dao.invoker.DaoInvokerFactory;
+import org.milyn.scribe.dao.invoker.MappedDaoInvoker;
+import org.milyn.scribe.dao.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
 
@@ -66,7 +66,7 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
     @ConfigParam(name = "persistedBeanId", use = Use.OPTIONAL)
     private String persistedBeanIdName;
 
-    @ConfigParam(name = "org.milyn.persistence.test.dao", use = Use.OPTIONAL)
+    @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
 
     @ConfigParam(use = Use.OPTIONAL)
@@ -181,10 +181,10 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 		switch (persistMode) {
 
 		case PERSIST:
-			return daoInvoker.persist(beanResult);
+			return daoInvoker.insert(beanResult);
 
 		case MERGE:
-			return daoInvoker.merge(beanResult);
+			return daoInvoker.update(beanResult);
 
 		default:
 			throw new IllegalStateException("The persistMode '"	+ persistMode + "' is not supported");
@@ -206,11 +206,11 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 		switch (persistMode) {
 
 		case PERSIST:
-			return daoInvoker.persist(statementId, beanResult);
+			return daoInvoker.insert(statementId, beanResult);
 
 
 		case MERGE:
-			return daoInvoker.merge(statementId, beanResult);
+			return daoInvoker.update(statementId, beanResult);
 
 		default:
 			throw new IllegalStateException("The persistMode '"	+ persistMode + "' is not supported");

@@ -19,9 +19,11 @@ import static junit.framework.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.milyn.scribe.MapObjectStore;
-import org.milyn.scribe.MappedDao;
-import org.milyn.scribe.ObjectStore;
+import org.milyn.scribe.dao.MapObjectStore;
+import org.milyn.scribe.dao.MappedDao;
+import org.milyn.scribe.dao.ObjectStore;
+import org.milyn.scribe.dao.invoker.MappedDaoInvoker;
+import org.milyn.scribe.dao.invoker.MappedDaoInvokerFactory;
 import org.testng.annotations.Test;
 
 /**
@@ -58,9 +60,9 @@ public class NamedDaoInvokerFactoryTest {
 
 		Object entity = new Object();
 
-		namedDaoInvoker.persist("id", entity);
+		namedDaoInvoker.insert("id", entity);
 
-		verify(namedDaoMock).persist(eq("id"), same(entity));
+		verify(namedDaoMock).insert(eq("id"), same(entity));
 
 	}
 

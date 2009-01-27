@@ -21,17 +21,17 @@ import java.util.Map.Entry;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.Dao;
-import org.milyn.scribe.Flushable;
-import org.milyn.scribe.Lookupable;
-import org.milyn.scribe.Queryable;
+import org.milyn.scribe.dao.Dao;
+import org.milyn.scribe.dao.Flushable;
+import org.milyn.scribe.dao.Locator;
+import org.milyn.scribe.dao.Queryable;
 
 
 /**
  * @author maurice_zeijen
  *
  */
-public class SessionDaoAdapter implements Dao<Object>, Lookupable, Queryable, Flushable {
+public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
 
 	private final Session session;
 
@@ -54,10 +54,10 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable, Queryable, Fl
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.dao.DAO#merge(java.lang.Object)
 	 */
-	public Object merge(final Object entity) {
+	public Object update(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.merge(entity);
+		session.update(entity);
 
 		return entity;
 	}
@@ -65,10 +65,21 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable, Queryable, Fl
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.dao.DAO#persist(java.lang.Object)
 	 */
-	public Object persist(final Object entity) {
+	public Object insert(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
 
-		session.persist(entity);
+		session.save(entity);
+
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.Dao#delete(java.lang.Object)
+	 */
+	public Object delete(Object entity) {
+		AssertArgument.isNotNull(entity, "entity");
+
+		session.delete(entity);
 
 		return null;
 	}
@@ -77,7 +88,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable, Queryable, Fl
 	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
-	public Object lookup(final String name, final Object[] parameters) {
+	public Object lookup(final String name, final Object ... parameters) {
 
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
@@ -116,7 +127,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable, Queryable, Fl
 	 * @see org.milyn.scribe.dao.QueryFinder#findByQuery(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
-	public Object lookupByQuery(final String query, final Object[] parameters) {
+	public Object lookupByQuery(final String query, final Object ... parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
 
@@ -167,5 +178,7 @@ public class SessionDaoAdapter implements Dao<Object>, Lookupable, Queryable, Fl
 	public Session getSession() {
 		return session;
 	}
+
+
 
 }
