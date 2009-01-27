@@ -22,9 +22,11 @@ import static org.mockito.Mockito.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.milyn.scribe.NoMethodWithAnnotationFound;
-import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfo;
-import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfoFactory;
+import org.milyn.scribe.dao.NoMethodWithAnnotationFound;
+import org.milyn.scribe.dao.invoker.AnnotatedDaoInvoker;
+import org.milyn.scribe.dao.invoker.DaoInvoker;
+import org.milyn.scribe.dao.reflection.AnnotatedDaoRuntimeInfo;
+import org.milyn.scribe.dao.reflection.AnnotatedDaoRuntimeInfoFactory;
 import org.milyn.scribe.test.dao.AnnotatedDaoNoEntityReturned;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.dao.MinimumAnnotatedDao;
@@ -65,11 +67,11 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object expectedResult = new Object();
 
-		when(fullDao.persistIt(toPersist)).thenReturn(expectedResult);
+		when(fullDao.insertIt(toPersist)).thenReturn(expectedResult);
 
-		Object result = invoker.persist(toPersist);
+		Object result = invoker.insert(toPersist);
 
-		verify(fullDao).persistIt(same(toPersist));
+		verify(fullDao).insertIt(same(toPersist));
 
 		assertSame(expectedResult, result);
 	}
@@ -81,11 +83,11 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object toPersist = new Object();
 
-		when(fullDao.persistIt(toPersist)).thenReturn(null);
+		when(fullDao.insertIt(toPersist)).thenReturn(null);
 
-		Object result = invoker.persist(toPersist);
+		Object result = invoker.insert(toPersist);
 
-		verify(fullDao).persistIt(same(toPersist));
+		verify(fullDao).insertIt(same(toPersist));
 
 		assertNull(result);
 	}
@@ -99,7 +101,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		when(daoNoEntityReturned.persistIt(toPersist)).thenReturn(toPersist);
 
-		Object result = invoker.persist(toPersist);
+		Object result = invoker.insert(toPersist);
 
 		verify(daoNoEntityReturned).persistIt(same(toPersist));
 
@@ -113,7 +115,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object toPersist = new Object();
 
-		invoker.persist(toPersist);
+		invoker.insert(toPersist);
 
 
 	}
@@ -129,11 +131,11 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object expectedResult = new Object();
 
-		when(fullDao.mergeIt(toMerge)).thenReturn(expectedResult);
+		when(fullDao.updateIt(toMerge)).thenReturn(expectedResult);
 
-		Object result = invoker.merge(toMerge);
+		Object result = invoker.update(toMerge);
 
-		verify(fullDao).mergeIt(same(toMerge));
+		verify(fullDao).updateIt(same(toMerge));
 
 		assertSame(expectedResult, result);
 
@@ -146,11 +148,11 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object toMerge = new Object();
 
-		when(fullDao.mergeIt(toMerge)).thenReturn(null);
+		when(fullDao.updateIt(toMerge)).thenReturn(null);
 
-		Object result = invoker.merge(toMerge);
+		Object result = invoker.update(toMerge);
 
-		verify(fullDao).mergeIt(same(toMerge));
+		verify(fullDao).updateIt(same(toMerge));
 
 		assertNull(result);
 	}
@@ -163,7 +165,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		Object toMerge = new Object();
 
-		invoker.merge(toMerge);
+		invoker.update(toMerge);
 
 	}
 
@@ -177,7 +179,7 @@ public class AnnotatedDaoInvokerTest extends BaseTestCase {
 
 		when(daoNoEntityReturned.mergeIt(toMerge)).thenReturn(toMerge);
 
-		Object result = invoker.merge(toMerge);
+		Object result = invoker.update(toMerge);
 
 		verify(daoNoEntityReturned).mergeIt(same(toMerge));
 

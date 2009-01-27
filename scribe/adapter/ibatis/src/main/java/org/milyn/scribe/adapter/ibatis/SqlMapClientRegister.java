@@ -16,7 +16,7 @@
 package org.milyn.scribe.adapter.ibatis;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.AbstractDaoRegister;
+import org.milyn.scribe.dao.AbstractDaoRegister;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 

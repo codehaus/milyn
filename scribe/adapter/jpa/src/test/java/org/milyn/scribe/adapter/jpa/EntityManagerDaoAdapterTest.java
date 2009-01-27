@@ -55,7 +55,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 		// VERIFY
 
-		adapter.persist(toPersist);
+		adapter.insert(toPersist);
 
 		verify(entityManager).persist(same(toPersist));
 
@@ -68,7 +68,7 @@ public class EntityManagerDaoAdapterTest extends BaseTestCase {
 
 		Object toPersist = new Object();
 
-		Object merged = adapter.merge(toPersist);
+		Object merged = adapter.update(toPersist);
 
 		// VERIFY
 

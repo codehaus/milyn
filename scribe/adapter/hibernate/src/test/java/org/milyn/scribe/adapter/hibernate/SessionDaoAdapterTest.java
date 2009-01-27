@@ -55,9 +55,9 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		// VERIFY
 
-		adapter.persist(toPersist);
+		adapter.insert(toPersist);
 
-		verify(session).persist(same(toPersist));
+		verify(session).save(same(toPersist));
 
 	}
 
@@ -68,11 +68,11 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		Object toMerge = new Object();
 
-		Object merged = adapter.merge(toMerge);
+		Object merged = adapter.update(toMerge);
 
 		// VERIFY
 
-		verify(session).merge(same(toMerge));
+		verify(session).update(same(toMerge));
 
 		assertSame(toMerge, merged);
 
@@ -98,8 +98,8 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		List<?> listResult = Collections.emptyList();
 
-		stub(session.createQuery(anyString())).toReturn(query);
-		stub(query.list()).toReturn(listResult);
+		when(session.createQuery(anyString())).thenReturn(query);
+		when(query.list()).thenReturn(listResult);
 
 		// EXECUTE
 
@@ -128,8 +128,8 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		List<?> listResult = Collections.emptyList();
 
-		stub(session.createQuery(anyString())).toReturn(query);
-		stub(query.list()).toReturn(listResult);
+		when(session.createQuery(anyString())).thenReturn(query);
+		when(query.list()).thenReturn(listResult);
 
 		// EXECUTE
 
@@ -158,8 +158,8 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		List<?> listResult = Collections.emptyList();
 
-		stub(session.getNamedQuery(anyString())).toReturn(query);
-		stub(query.list()).toReturn(listResult);
+		when(session.getNamedQuery(anyString())).thenReturn(query);
+		when(query.list()).thenReturn(listResult);
 
 		// EXECUTE
 
@@ -188,8 +188,8 @@ public class SessionDaoAdapterTest extends BaseTestCase {
 
 		List<?> listResult = Collections.emptyList();
 
-		stub(session.getNamedQuery(anyString())).toReturn(query);
-		stub(query.list()).toReturn(listResult);
+		when(session.getNamedQuery(anyString())).thenReturn(query);
+		when(query.list()).thenReturn(listResult);
 
 		// EXECUTE
 

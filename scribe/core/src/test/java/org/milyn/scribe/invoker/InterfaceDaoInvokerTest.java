@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.milyn.scribe.Dao;
+import org.milyn.scribe.dao.Dao;
+import org.milyn.scribe.dao.invoker.DaoInvoker;
+import org.milyn.scribe.dao.invoker.InterfaceDaoInvoker;
 import org.milyn.scribe.test.dao.FullInterfaceDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
@@ -41,29 +43,43 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	private Dao<Object> minimumDao;
 
 	@Test(groups = "unit")
-	public void test_persist() {
+	public void test_insert() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
 
 		Object toPersist = new Object();
 
-		invoker.persist(toPersist);
+		invoker.insert(toPersist);
 
-		verify(fullDao).persist(same(toPersist));
+		verify(fullDao).insert(same(toPersist));
 
 	}
 
 	@Test(groups = "unit")
-	public void test_merge() {
+	public void test_update() {
 
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
 
 		Object toMerge = new Object();
 
-		invoker.merge(toMerge);
+		invoker.update(toMerge);
 
-		verify(fullDao).merge(same(toMerge));
+		verify(fullDao).update(same(toMerge));
+
+	}
+
+	@Test(groups = "unit")
+	public void test_delete() {
+
+
+		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
+
+		Object toDelete = new Object();
+
+		invoker.delete(toDelete);
+
+		verify(fullDao).delete(same(toDelete));
 
 	}
 
@@ -130,11 +146,9 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
 
-		Object[] params = new Object[0];
+		invoker.lookupByQuery("query", "test", "test2");
 
-		invoker.lookupByQuery("query", params);
-
-		verify(fullDao).lookupByQuery(eq("query"), same(params));
+		verify(fullDao).lookupByQuery(eq("query"), eq("test"), eq("test2"));
 
 	}
 
@@ -155,9 +169,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
 
-		Object[] params = new Object[0];
-
-		invoker.lookupByQuery("id", params);
+		invoker.lookupByQuery("id", "test", "test2");
 
 	}
 

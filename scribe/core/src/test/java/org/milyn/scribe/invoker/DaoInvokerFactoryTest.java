@@ -19,9 +19,11 @@ import static junit.framework.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.milyn.scribe.Dao;
-import org.milyn.scribe.MapObjectStore;
-import org.milyn.scribe.ObjectStore;
+import org.milyn.scribe.dao.Dao;
+import org.milyn.scribe.dao.MapObjectStore;
+import org.milyn.scribe.dao.ObjectStore;
+import org.milyn.scribe.dao.invoker.DaoInvoker;
+import org.milyn.scribe.dao.invoker.DaoInvokerFactory;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.testng.annotations.BeforeMethod;
@@ -62,9 +64,9 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 		Object entity = new Object();
 
-		daoInvoker.persist(entity);
+		daoInvoker.insert(entity);
 
-		verify(daoMock).persist(same(entity));
+		verify(daoMock).insert(same(entity));
 
 	}
 
@@ -81,9 +83,9 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 		Object entity = new Object();
 
-		daoInvoker.persist(entity);
+		daoInvoker.insert(entity);
 
-		verify(daoMock).persistIt(same(entity));
+		verify(daoMock).insertIt(same(entity));
 
 		assertNotNull(objectStore.get(DaoInvokerFactory.REPOSITORY_KEY));
 

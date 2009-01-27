@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.dao.MappedDao;
+import org.milyn.scribe.dao.invoker.InterfaceMappedDaoInvoker;
+import org.milyn.scribe.dao.invoker.MappedDaoInvoker;
 import org.milyn.scribe.test.dao.FullInterfaceMappedDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
@@ -46,9 +48,9 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 
 		Object toPersist = new Object();
 
-		invoker.persist("id", toPersist);
+		invoker.insert("id", toPersist);
 
-		verify(fullDao).persist(eq("id"), same(toPersist));
+		verify(fullDao).insert(eq("id"), same(toPersist));
 
 	}
 
@@ -60,9 +62,9 @@ public class InterfaceMappedDaoInvokerTest extends BaseTestCase {
 
 		Object toMerge = new Object();
 
-		invoker.merge("id", toMerge);
+		invoker.update("id", toMerge);
 
-		verify(fullDao).merge(eq("id"), same(toMerge));
+		verify(fullDao).update(eq("id"), same(toMerge));
 
 	}
 

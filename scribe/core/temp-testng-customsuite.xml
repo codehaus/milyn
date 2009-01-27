@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="milyn-scribe-core by groups">
+  <test verbose="2" name="G:unit" annotations="JDK">
+    <groups>
+      <run>
+        <include name="unit"/>
+      </run>
+    </groups>
+    <classes>
+      <class name="org.milyn.scribe.invoker.InterfaceDaoInvokerTest"/>
+      <class name="org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfoFactoryTest"/>
+      <class name="org.milyn.scribe.invoker.InterfaceMappedDaoInvokerTest"/>
+      <class name="org.milyn.scribe.invoker.NamedDaoInvokerFactoryTest"/>
+      <class name="org.milyn.scribe.invoker.AnnotatedDaoInvokerTest"/>
+      <class name="org.milyn.scribe.dao.register.MapRegisterTest"/>
+      <class name="org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfoTest"/>
+      <class name="org.milyn.scribe.invoker.DaoInvokerFactoryTest"/>
+    </classes>
+  </test>
+</suite>

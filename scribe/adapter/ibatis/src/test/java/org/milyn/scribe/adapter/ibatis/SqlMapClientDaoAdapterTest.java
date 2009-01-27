@@ -53,7 +53,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 
 		// VERIFY
 
-		adapter.persist("id", toPersist);
+		adapter.insert("id", toPersist);
 
 		verify(sqlMapClient).insert(eq("id"), same(toPersist));
 
@@ -66,7 +66,7 @@ public class SqlMapClientDaoAdapterTest extends BaseTestCase {
 
 		Object toMerge = new Object();
 
-		Object merged = adapter.merge("id", toMerge);
+		Object merged = adapter.update("id", toMerge);
 
 		// VERIFY
 
