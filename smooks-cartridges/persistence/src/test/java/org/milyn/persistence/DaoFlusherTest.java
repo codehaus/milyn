@@ -100,17 +100,17 @@ public class DaoFlusherTest  extends BaseTestCase   {
 	}
 
 	@Test
-	public void test_dao_flush_with_executeBefore() throws Exception {
+	public void test_dao_flush_with_flushBefore() throws Exception {
 		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-04.xml"));
 		Map<String, Object> daoMap = new HashMap<String, Object>();
 		daoMap.put("mappedDao", mappedDao);
-		daoMap.put("org.milyn.persistence.test.dao", dao);
+		daoMap.put("dao", dao);
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
 		PersistenceUtil.setDAORegister(executionContext, new MapRegister<Object>(daoMap));
 
-		enableReporting(executionContext, "report_test_dao_flush_with_executeBefore.html");
+		enableReporting(executionContext, "report_test_dao_flush_with_flushBefore.html");
 
 		smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
 

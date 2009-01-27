@@ -22,12 +22,12 @@ import org.milyn.javabean.DataDecodeException;
  * @author maurice_zeijen
  *
  */
-public enum PersistMode {
-	PERSIST,
-	MERGE;
+public enum Action {
+	INSERT,
+	UPDATE;
 
-	public static final String PERSIST_STR = "PERSIST";
-	public static final String MERGE_STR = "MERGE";
+	public static final String INSERT_STR = "INSERT";
+	public static final String UPDATE_STR = "UPDATE";
 
 	/**
 	 * A Data decoder for this Enum
