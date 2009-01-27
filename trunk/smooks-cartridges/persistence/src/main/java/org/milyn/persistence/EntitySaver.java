@@ -33,6 +33,8 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -45,48 +47,70 @@ import org.milyn.scribe.invoker.MappedDaoInvoker;
 import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
+
 /**
- * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @author maurice
  *
  */
-@VisitBeforeIf(	condition = "parameters.containsKey('flushBefore') && parameters.flushBefore.value == 'true'")
-@VisitAfterIf( condition = "!parameters.containsKey('flushBefore') || parameters.flushBefore.value != 'true'")
+@VisitBeforeIf(	condition = "parameters.containsKey('saveBefore') && parameters.saveBefore.value == 'true'")
+@VisitAfterIf( condition = "!parameters.containsKey('saveBefore') || parameters.saveBefore.value != 'true'")
 //@VisitBeforeReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_Before.html")
 //@VisitAfterReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_After.html")
-public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+public class EntitySaver implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
-    private static Log logger = LogFactory.getLog(DaoFlusher.class);
+    private static Log logger = LogFactory.getLog(EntitySaver.class);
+
+    @ConfigParam(name = "beanId")
+    private String beanIdName;
+
+    @ConfigParam(name = "savedBeanId", use = Use.OPTIONAL)
+    private String savedBeanIdName;
 
     @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
 
-    @ConfigParam(name = "statementId", use = Use.OPTIONAL)
+    @ConfigParam(use = Use.OPTIONAL)
     private String statementId;
+
+    @ConfigParam(defaultVal = Action.INSERT_STR, choice = {Action.INSERT_STR, Action.UPDATE_STR}, decoder = Action.DataDecoder.class)
+    private Action action;
 
     @AppContext
     private ApplicationContext appContext;
 
     private ApplicationContextObjectStore objectStore;
 
+    private BeanId beanId;
+
+    private BeanId savedBeanId;
+
     @Initialize
-    public void initialize() {
+    public void initialize() throws SmooksConfigurationException {
+    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
+
+    	beanId = beanIdRegister.register(beanIdName);
+
+    	if(savedBeanIdName != null) {
+    		savedBeanId = beanIdRegister.register(savedBeanIdName);
+    	}
+
     	objectStore = new ApplicationContextObjectStore(appContext);
     }
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	flush(executionContext);
+    	save(executionContext);
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	flush(executionContext);
+    	save(executionContext);
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	flush(executionContext);
+    	save(executionContext);
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	flush(executionContext);
+    	save(executionContext);
     }
 
 	/**
@@ -95,16 +119,15 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void flush(final ExecutionContext executionContext) {
+	private void save(final ExecutionContext executionContext) {
 
 		if(logger.isDebugEnabled()) {
-			String msg = "Flushing org.milyn.persistence.test.dao";
-			if(daoName != null) {
-				msg += " with name '" + daoName + "'";
-			}
-			msg += ".";
-			logger.debug(msg);
+			logger.debug("Saving bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "' as an '" + action + "' action");
 		}
+
+		BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+		Object bean = beanRepository.getBean(beanId);
 
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
@@ -120,11 +143,24 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
 			}
 
-			if(statementId == null) {
-				flush(dao);
+			Object result;
+
+			if(statementId != null) {
+				result = saveMapped(bean, dao);
 			} else {
-				mappedFlush(dao);
+				result = save(bean, dao);
 			}
+
+			if(savedBeanId != null) {
+				if(result == null) {
+					result = bean;
+				}
+				beanRepository.addBean(savedBeanId, result);
+			} else if(result != null && bean != result) {
+				beanRepository.changeBean(beanId, bean);
+			}
+
+
 		} finally {
 			if(dao != null) {
 				emr.returnDao(dao);
@@ -133,22 +169,52 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	}
 
 	/**
-	 * @param org.milyn.persistence.test.dao
+	 * @param bean
+	 * @param daoObj
+	 * @param result
+	 * @return
 	 */
-	private void flush(Object dao) {
+	private Object save(Object bean, Object dao) {
 		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
-		daoInvoker.flush();
+
+		switch (action) {
+
+		case INSERT:
+			return daoInvoker.insert(bean);
+
+		case UPDATE:
+			return daoInvoker.update(bean);
+
+		default:
+			throw new IllegalStateException("The action '"	+ action + "' is not supported");
+		}
+
 	}
 
 
 	/**
-	 * @param org.milyn.persistence.test.dao
+	 * @param bean
+	 * @param daoObj
+	 * @param result
+	 * @return
 	 */
-	private void mappedFlush(Object dao) {
+	private Object saveMapped(Object bean, Object dao) {
 		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
 
-		daoInvoker.flush(statementId);
-	}
 
+		switch (action) {
+
+		case INSERT:
+			return daoInvoker.insert(statementId, bean);
+
+
+		case UPDATE:
+			return daoInvoker.update(statementId, bean);
+
+		default:
+			throw new IllegalStateException("The action '"	+ action + "' is not supported");
+		}
+
+	}
 }

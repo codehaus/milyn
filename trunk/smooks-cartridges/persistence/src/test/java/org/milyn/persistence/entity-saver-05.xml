@@ -2,8 +2,8 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
 	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
 
-	<dao:persister beanId="toPersist1"  persistOnElement="root" executeBefore="true" />
+	<dao:saver beanId="toInsert1"  saveOnElement="root" saveBefore="true" />
 
-	<dao:persister beanId="toPersist2"  persistOnElement="root" executeBefore="false" />
+	<dao:saver beanId="toInsert2"  saveOnElement="root" saveBefore="false" />
 
 </smooks-resource-list>

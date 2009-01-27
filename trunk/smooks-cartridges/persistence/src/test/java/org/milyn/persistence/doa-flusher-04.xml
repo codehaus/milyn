@@ -2,8 +2,8 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
 	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
 
-	<dao:flusher dao="mappedDao" statementId="flushIt" flushOnElement="root" executeBefore="true" />
+	<dao:flusher dao="mappedDao" statementId="flushIt" flushOnElement="root" flushBefore="true" />
 
-	<dao:flusher dao="dao" flushOnElement="root" executeBefore="false" />
+	<dao:flusher dao="dao" flushOnElement="root" flushBefore="false" />
 
 </smooks-resource-list>

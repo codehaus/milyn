@@ -1,53 +1,97 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" default-selector-namespace="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
 
-	<!-- PERSISTER -->
+	<!-- SAVER -->
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.persistence.EntityPersister</param>
+        <param name="resource">org.milyn.persistence.EntitySaver</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">persistOnElement</param>
+        <param name="attribute">saveOnElement</param>
         <param name="mapTo">selector</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">persistOnElementNS</param>
+        <param name="attribute">saveOnElementNS</param>
         <param name="mapTo">selector-namespace</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanId</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">persistedBeanId</param>
+        <param name="attribute">savedBeanId</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">dao</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">statementId</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">persistMode</param>
+        <param name="attribute">action</param>
     </resource-config>
 
-    <resource-config selector="persister">
+    <resource-config selector="saver">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">executeBefore</param>
+        <param name="attribute">saveBefore</param>
+    </resource-config>
+
+	<!-- DELETER -->
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
+        <param name="resource">org.milyn.persistence.EntityDeleter</param>
+    </resource-config>
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">deleteOnElement</param>
+        <param name="mapTo">selector</param>
+    </resource-config>
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">deleteOnElementNS</param>
+        <param name="mapTo">selector-namespace</param>
+    </resource-config>
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">beanId</param>
+    </resource-config>
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">deletedBeanId</param>
+    </resource-config>
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">dao</param>
+    </resource-config>
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">statementId</param>
+    </resource-config>
+
+    <resource-config selector="deleter">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">deleteBefore</param>
     </resource-config>
 
     <!-- FLUSHER -->
@@ -81,7 +125,7 @@
 
     <resource-config selector="flusher">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">executeBefore</param>
+        <param name="attribute">flushBefore</param>
     </resource-config>
 
     <!-- LOOKUPPER -->

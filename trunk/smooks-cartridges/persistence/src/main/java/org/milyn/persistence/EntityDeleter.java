@@ -52,28 +52,25 @@ import org.w3c.dom.Element;
  * @author maurice
  *
  */
-@VisitBeforeIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
-@VisitAfterIf( condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
+@VisitBeforeIf(	condition = "parameters.containsKey('deleteBefore') && parameters.deleteBefore.value == 'true'")
+@VisitAfterIf( condition = "!parameters.containsKey('deleteBefore') || parameters.deleteBefore.value != 'true'")
 //@VisitBeforeReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_Before.html")
 //@VisitAfterReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_After.html")
-public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
-    private static Log logger = LogFactory.getLog(EntityPersister.class);
+    private static Log logger = LogFactory.getLog(EntityDeleter.class);
 
     @ConfigParam(name = "beanId")
     private String beanIdName;
 
-    @ConfigParam(name = "persistedBeanId", use = Use.OPTIONAL)
-    private String persistedBeanIdName;
+    @ConfigParam(name = "deletedBeanId", use = Use.OPTIONAL)
+    private String deletedBeanIdName;
 
     @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
 
     @ConfigParam(use = Use.OPTIONAL)
     private String statementId;
-
-    @ConfigParam(defaultVal = PersistMode.PERSIST_STR, choice = {PersistMode.PERSIST_STR, PersistMode.MERGE_STR}, decoder = PersistMode.DataDecoder.class)
-    private PersistMode persistMode;
 
     @AppContext
     private ApplicationContext appContext;
@@ -82,7 +79,7 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 
     private BeanId beanId;
 
-    private BeanId persistedBeanId;
+    private BeanId deletedBeanId;
 
     @Initialize
     public void initialize() throws SmooksConfigurationException {
@@ -90,27 +87,27 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 
     	beanId = beanIdRegister.register(beanIdName);
 
-    	if(persistedBeanIdName != null) {
-    		persistedBeanId = beanIdRegister.register(persistedBeanIdName);
+    	if(deletedBeanIdName != null) {
+    		deletedBeanId = beanIdRegister.register(deletedBeanIdName);
     	}
 
     	objectStore = new ApplicationContextObjectStore(appContext);
     }
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	persist(executionContext);
+    	delete(executionContext);
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	persist(executionContext);
+    	delete(executionContext);
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	persist(executionContext);
+    	delete(executionContext);
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	persist(executionContext);
+    	delete(executionContext);
     }
 
 	/**
@@ -119,10 +116,10 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void persist(final ExecutionContext executionContext) {
+	private void delete(final ExecutionContext executionContext) {
 
 		if(logger.isDebugEnabled()) {
-			logger.debug("Persisting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "' using persist mode '" + persistMode + "'");
+			logger.debug("Deleting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'");
 		}
 
 		BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
@@ -146,16 +143,16 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 			Object result;
 
 			if(statementId != null) {
-				result = persistMapped(bean, dao);
+				result = deleteMapped(bean, dao);
 			} else {
-				result = persist(bean, dao);
+				result = delete(bean, dao);
 			}
 
-			if(persistedBeanId != null) {
+			if(deletedBeanId != null) {
 				if(result == null) {
 					result = bean;
 				}
-				beanRepository.addBean(persistedBeanId, result);
+				beanRepository.addBean(deletedBeanId, result);
 			} else if(result != null && bean != result) {
 				beanRepository.changeBean(beanId, bean);
 			}
@@ -169,27 +166,15 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	}
 
 	/**
-	 * @param beanResult
+	 * @param bean
 	 * @param daoObj
 	 * @param result
 	 * @return
 	 */
-	private Object persist(Object beanResult, Object dao) {
+	private Object delete(Object bean, Object dao) {
 		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
-
-		switch (persistMode) {
-
-		case PERSIST:
-			return daoInvoker.insert(beanResult);
-
-		case MERGE:
-			return daoInvoker.update(beanResult);
-
-		default:
-			throw new IllegalStateException("The persistMode '"	+ persistMode + "' is not supported");
-		}
-
+		return daoInvoker.delete(bean);
 	}
 
 
@@ -199,22 +184,9 @@ public class EntityPersister implements DOMElementVisitor, SAXVisitBefore, SAXVi
 	 * @param result
 	 * @return
 	 */
-	private Object persistMapped(Object beanResult, Object dao) {
+	private Object deleteMapped(Object bean, Object dao) {
 		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
 
-
-		switch (persistMode) {
-
-		case PERSIST:
-			return daoInvoker.insert(statementId, beanResult);
-
-
-		case MERGE:
-			return daoInvoker.update(statementId, beanResult);
-
-		default:
-			throw new IllegalStateException("The persistMode '"	+ persistMode + "' is not supported");
-		}
-
+		return daoInvoker.delete(statementId, bean);
 	}
 }
