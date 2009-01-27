@@ -19,9 +19,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.milyn.scribe.dao.DaoException;
-import org.milyn.scribe.dao.Locator;
-import org.milyn.scribe.dao.MappedDao;
+import org.milyn.scribe.DaoException;
+import org.milyn.scribe.Locator;
+import org.milyn.scribe.MappedDao;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -41,7 +41,7 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Locator  {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.NamedDAO#merge(java.lang.String, java.lang.Object)
+	 * @see org.milyn.scribe.NamedDAO#merge(java.lang.String, java.lang.Object)
 	 */
 	public Object update(String id, Object entity) {
 		try {
@@ -53,7 +53,7 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Locator  {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.NamedDAO#persist(java.lang.String, java.lang.Object)
+	 * @see org.milyn.scribe.NamedDAO#persist(java.lang.String, java.lang.Object)
 	 */
 	public Object insert(String id, Object entity) {
 		try {
@@ -80,7 +80,7 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Locator  {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.util.Map)
+	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> lookup(String id, Map<String, ?> parameters) {
@@ -92,7 +92,7 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Locator  {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.util.Map)
+	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> lookup(String id, Object ... parameters) {

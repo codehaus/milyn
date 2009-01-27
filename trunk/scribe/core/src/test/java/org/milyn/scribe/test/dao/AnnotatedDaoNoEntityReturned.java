@@ -15,10 +15,10 @@
 */
 package org.milyn.scribe.test.dao;
 
-import org.milyn.scribe.dao.annotation.Dao;
-import org.milyn.scribe.dao.annotation.Insert;
-import org.milyn.scribe.dao.annotation.ReturnsNoEntity;
-import org.milyn.scribe.dao.annotation.Update;
+import org.milyn.scribe.annotation.Dao;
+import org.milyn.scribe.annotation.Insert;
+import org.milyn.scribe.annotation.ReturnsNoEntity;
+import org.milyn.scribe.annotation.Update;
 
 
 /**

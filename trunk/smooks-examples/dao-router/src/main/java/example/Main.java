@@ -40,7 +40,7 @@ import org.milyn.io.StreamUtils;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.routing.db.StatementExec;
 import org.milyn.scribe.adapter.jpa.EntityManagerRegister;
-import org.milyn.scribe.dao.register.MapRegister;
+import org.milyn.scribe.register.MapRegister;
 import org.milyn.util.HsqlServer;
 import org.xml.sax.SAXException;
 

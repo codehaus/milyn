@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.milyn.scribe.dao.Dao;
-import org.milyn.scribe.dao.invoker.DaoInvoker;
-import org.milyn.scribe.dao.invoker.InterfaceDaoInvoker;
+import org.milyn.scribe.Dao;
+import org.milyn.scribe.invoker.DaoInvoker;
+import org.milyn.scribe.invoker.InterfaceDaoInvoker;
 import org.milyn.scribe.test.dao.FullInterfaceDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;

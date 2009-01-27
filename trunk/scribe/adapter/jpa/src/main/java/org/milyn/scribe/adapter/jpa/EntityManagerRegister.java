@@ -18,7 +18,7 @@ package org.milyn.scribe.adapter.jpa;
 import javax.persistence.EntityManager;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.dao.AbstractDaoRegister;
+import org.milyn.scribe.AbstractDaoRegister;
 
 
 /**
@@ -39,7 +39,7 @@ public class EntityManagerRegister extends AbstractDaoRegister<EntityManagerDaoA
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAORegistery#getDAO()
+	 * @see org.milyn.scribe.DAORegistery#getDAO()
 	 */
 	@Override
 	public EntityManagerDaoAdapter getDao() {

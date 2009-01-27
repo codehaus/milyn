@@ -42,12 +42,12 @@ import org.milyn.persistence.parameter.ParameterContainer;
 import org.milyn.persistence.parameter.ParameterManager;
 import org.milyn.persistence.parameter.PositionalParameterContainer;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.dao.DaoRegister;
-import org.milyn.scribe.dao.DaoUtil;
-import org.milyn.scribe.dao.invoker.DaoInvoker;
-import org.milyn.scribe.dao.invoker.DaoInvokerFactory;
-import org.milyn.scribe.dao.invoker.MappedDaoInvoker;
-import org.milyn.scribe.dao.invoker.MappedDaoInvokerFactory;
+import org.milyn.scribe.DaoRegister;
+import org.milyn.scribe.DaoUtil;
+import org.milyn.scribe.invoker.DaoInvoker;
+import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.scribe.invoker.MappedDaoInvoker;
+import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
 /**

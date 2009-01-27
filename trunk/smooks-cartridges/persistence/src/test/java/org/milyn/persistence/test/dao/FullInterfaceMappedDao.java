@@ -15,9 +15,9 @@
 */
 package org.milyn.persistence.test.dao;
 
-import org.milyn.scribe.dao.Locator;
-import org.milyn.scribe.dao.MappedDao;
-import org.milyn.scribe.dao.MappedFlushable;
+import org.milyn.scribe.Locator;
+import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.MappedFlushable;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

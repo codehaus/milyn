@@ -30,8 +30,8 @@ import org.milyn.persistence.test.dao.FullInterfaceDao;
 import org.milyn.persistence.test.dao.FullInterfaceMappedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.dao.register.MapRegister;
-import org.milyn.scribe.dao.register.SingleDaoRegister;
+import org.milyn.scribe.register.MapRegister;
+import org.milyn.scribe.register.SingleDaoRegister;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 

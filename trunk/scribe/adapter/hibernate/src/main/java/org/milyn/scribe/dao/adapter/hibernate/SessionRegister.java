@@ -17,7 +17,7 @@ package org.milyn.scribe.dao.adapter.hibernate;
 
 import org.hibernate.Session;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.dao.AbstractDaoRegister;
+import org.milyn.scribe.AbstractDaoRegister;
 
 
 /**
@@ -38,7 +38,7 @@ public class SessionRegister extends AbstractDaoRegister<SessionDaoAdapter> {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.AbstractDaoRegister#getDao()
+	 * @see org.milyn.scribe.AbstractDaoRegister#getDao()
 	 */
 	@Override
 	public SessionDaoAdapter getDao() {

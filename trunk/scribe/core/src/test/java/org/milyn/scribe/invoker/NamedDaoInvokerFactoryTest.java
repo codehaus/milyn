@@ -19,11 +19,11 @@ import static junit.framework.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import org.milyn.scribe.dao.MapObjectStore;
-import org.milyn.scribe.dao.MappedDao;
-import org.milyn.scribe.dao.ObjectStore;
-import org.milyn.scribe.dao.invoker.MappedDaoInvoker;
-import org.milyn.scribe.dao.invoker.MappedDaoInvokerFactory;
+import org.milyn.scribe.MapObjectStore;
+import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.ObjectStore;
+import org.milyn.scribe.invoker.MappedDaoInvoker;
+import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.testng.annotations.Test;
 
 /**

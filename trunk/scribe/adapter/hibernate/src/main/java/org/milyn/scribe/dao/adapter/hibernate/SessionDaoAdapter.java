@@ -21,10 +21,10 @@ import java.util.Map.Entry;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.dao.Dao;
-import org.milyn.scribe.dao.Flushable;
-import org.milyn.scribe.dao.Locator;
-import org.milyn.scribe.dao.Queryable;
+import org.milyn.scribe.Dao;
+import org.milyn.scribe.Flushable;
+import org.milyn.scribe.Locator;
+import org.milyn.scribe.Queryable;
 
 
 /**
@@ -45,14 +45,14 @@ public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flush
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAO#flush()
+	 * @see org.milyn.scribe.DAO#flush()
 	 */
 	public void flush() {
 		session.flush();
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAO#merge(java.lang.Object)
+	 * @see org.milyn.scribe.DAO#merge(java.lang.Object)
 	 */
 	public Object update(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
@@ -63,7 +63,7 @@ public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flush
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.DAO#persist(java.lang.Object)
+	 * @see org.milyn.scribe.DAO#persist(java.lang.Object)
 	 */
 	public Object insert(final Object entity) {
 		AssertArgument.isNotNull(entity, "entity");
@@ -85,7 +85,7 @@ public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flush
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.lang.Object[])
+	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
 	public Object lookup(final String name, final Object ... parameters) {
@@ -106,7 +106,7 @@ public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flush
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.Finder#findBy(java.lang.String, java.util.Map)
+	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Object lookup(final String name, final Map<String, ?> parameters) {
@@ -124,7 +124,7 @@ public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flush
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.QueryFinder#findByQuery(java.lang.String, java.lang.Object[])
+	 * @see org.milyn.scribe.QueryFinder#findByQuery(java.lang.String, java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
 	public Object lookupByQuery(final String query, final Object ... parameters) {
@@ -148,7 +148,7 @@ public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flush
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.dao.QueryFinder#findByQuery(java.lang.String, java.util.Map)
+	 * @see org.milyn.scribe.QueryFinder#findByQuery(java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
 	public Object lookupByQuery(final String query,
