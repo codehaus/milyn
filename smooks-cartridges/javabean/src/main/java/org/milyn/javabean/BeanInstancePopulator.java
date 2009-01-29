@@ -15,16 +15,6 @@
 */
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -44,7 +34,6 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
-import org.milyn.javabean.decoders.BooleanDecoder;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
@@ -54,6 +43,15 @@ import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Bean instance populator visitor class.
@@ -368,39 +366,51 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	Object bean = beanRepository.getBean(targetBeanId);
         if(bean == null) {
 
-            // Register the observer which looks for the creation of the selected bean via its beanIdName. When this observer is triggered then
-            // we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
-            // and not the list representation. So we register and observer wo looks for the change from the list to the array
+            if(logger.isDebugEnabled()) {
+                logger.debug("Registering bean BEGIN wiring observer for wiring bean '" + targetBeanId + "' onto target bean '" + beanId.getName() + "'.");
+            }
+
+            // Register the observer which looks for the creation of the selected bean via its beanIdName...
         	beanRepository.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanRepositoryLifecycleObserver(){
 
                 public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
-
-                    BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
-
+                    Object eventBean = event.getBean();
                     beanRepository.associateLifecycles(beanId , targetBeanId);
-
-                    if(wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION ) {
-
-                        // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
-                        // can then set this array
-                    	beanRepository.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
-                            public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
-
-                                populateAndSetPropertyValue(property, event.getBean(), executionContext);
-
-                            }
-                        });
-
-                    } else {
-                        populateAndSetPropertyValue(property, event.getBean(), executionContext);
-                    }
+                    populateAndSetPropertyValue(eventBean, beanRepository, targetBeanId, executionContext);
                 }
 
             });
         } else {
-            populateAndSetPropertyValue(property, bean, executionContext);
+            populateAndSetPropertyValue(bean, beanRepository, targetBeanId, executionContext);
         }
 	}
+
+    private void populateAndSetPropertyValue(Object bean, BeanRepository beanRepository, BeanId targetBeanId, final ExecutionContext executionContext) {
+        BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
+
+       // When this observer is triggered then we look if we got something we can set immediately or that we got an array collection.
+        // For an array collection, we need the array representation and not the list representation, so we register and observer that
+        // listens for the change from the list to the array...
+        if(wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION ) {
+
+            if(logger.isDebugEnabled()) {
+                logger.debug("Registering bean CHANGE wiring observer for wiring bean '" + targetBeanId + "' onto target bean '" + beanId.getName() + "' after it has been converted from a List to an array.");
+            }
+            // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
+            // can then set this array
+
+            beanRepository.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
+                public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+
+                    populateAndSetPropertyValue(property, event.getBean(), executionContext);
+
+                }
+            });
+
+        } else {
+            populateAndSetPropertyValue(property, bean, executionContext);
+        }
+    }
 
     /**
      * Checks if we need to stop listening for the bean begin lifecycle.
@@ -422,7 +432,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     /**
-     * This method efficiently returns the global configuration {@link BeanPopulator.GLOBAL_WIRE_AFTER_ELEMENT}.
+     * This method efficiently returns the global configuration {@link BeanPopulator#GLOBAL_DEFAULT_EXTEND_LIFECYCLE}.
      *
      * @param executionContext
      * @return the global parameter for wire after element
@@ -477,6 +487,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         Classification beanType = beanRuntimeInfo.getClassification();
 
         createPropertySetterMethod(bean, dataObject.getClass());
+
+        if(logger.isDebugEnabled()) {
+            logger.debug("Setting data object '" + wireBeanIdName + "' (" + dataObject.getClass().getName() + ") on target bean '" + beanId + "'.");
+        }
 
         // Set the data on the bean...
         try {

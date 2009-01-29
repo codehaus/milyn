@@ -22,6 +22,15 @@
         <module>parser</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>testres</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <repositories>
         <repository>
             <id>codehaus.m2.snapshots</id>

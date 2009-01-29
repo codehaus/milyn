@@ -42,6 +42,7 @@
         <profile>
             <id>withexamples</id>
             <modules>
+                <module>testres</module>
                 <module>commons</module>
                 <module>smooks-core</module>
                 <module>magger</module>
@@ -58,6 +59,7 @@
         <profile>
             <id>noexamples</id>
             <modules>
+                <module>testres</module>
                 <module>commons</module>
                 <module>smooks-core</module>
                 <module>magger</module>

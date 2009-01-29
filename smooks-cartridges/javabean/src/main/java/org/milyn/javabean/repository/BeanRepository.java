@@ -16,20 +16,20 @@
 
 package org.milyn.javabean.repository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Bean Repository
@@ -111,11 +111,10 @@ public class BeanRepository {
 		checkUpdatedBeanIdList();
 
 		int index = beanId.getIndex();
+        RepositoryEntry repoEntry = repositoryEntries.get(index);
 
-		cleanAssociatedLifecycleBeans(index);
-
-		repositoryEntries.get(index).setValue(bean);
-
+        clean(index);
+		repoEntry.setValue(bean);
 		notifyObservers(beanId, BeanLifecycle.BEGIN, bean);
 	}
 
@@ -215,9 +214,11 @@ public class BeanRepository {
 	public Object removeBean(BeanId beanId) {
 		AssertArgument.isNotNull(beanId, "beanId");
 
-		Object old = getBean(beanId);
+        RepositoryEntry repositoryEntry = repositoryEntries.get(beanId.getIndex());
+		Object old = repositoryEntry.getValue();
 
-		removeBean(beanId.getIndex());
+        repositoryEntry.clean();
+        repositoryEntry.setValue(null);
 
 		return old;
 	}
@@ -300,7 +301,7 @@ public class BeanRepository {
      *   <li> The write performance of the map isn't as good as the write performance of the
      *     	  BeanRepository because it needs to find or register the BeanId every time.
      *        The read performance are as good as any normal Map.</li>
-     *   <li> The {@link #entrySet()} method returns an UnmodifiableSet </li>
+     *   <li> The entrySet() method returns an UnmodifiableSet </li>
      *   <li> When a bean gets removed from the BeanRepository then only the value of the
      *        map entry is set to null. This means that null values should be regarded as
      *        deleted beans. That is also why the size() of the bean map isn't accurate. It
@@ -369,39 +370,32 @@ public class BeanRepository {
 	}
 
 	/**
-	 * Removes the bean instance from a BeanId.
-	 * The integer index is directly used for performance reasons.
-	 * All associating child instances are also removed.
-	 *
-	 * @param index The index of the BeanId.
-	 */
-	private void removeBean(int index) {
-    	cleanAssociatedLifecycleBeans(index);
-
-    	repositoryEntries.get(index).setValue(null);
-    }
-
-	/**
 	 * Remove all bean instances of the associating BeanId's of the parent bean id.
 	 * The integer index is directly used for performance reasons.
 	 *
-	 * @param parentId The index of the parent BeanId.
+	 * @param beanId The index of the parent BeanId.
 	 */
-	private void cleanAssociatedLifecycleBeans(int parentId) {
-
-		RepositoryEntry repositoryEntry = repositoryEntries.get(parentId);
-    	List<Integer> associations = repositoryEntry.getLifecycleAssociation();
-
-        if(associations.size() > 0) {
-            for (Integer associationId : associations) {
-            	removeBean(associationId);
-            }
-            repositoryEntry.getLifecycleAssociation().clear();
-        }
-
+	private void clean(int beanId) {
+        repositoryEntries.get(beanId).clean();
     }
 
-	/**
+    /**
+     * Mark the bean as being in context.
+     * <p/>
+     * This is "set" when we enter the fragment around which the bean is created and unset
+     * when we exit.
+     *
+     * @param beanId The bean ID.
+     * @param inContext True if the bean is in context, otherwise false.
+     */
+    public void setBeanInContext(BeanId beanId, boolean inContext) {
+        RepositoryEntry repositoryEntry = repositoryEntries.get(beanId.getIndex());
+        if(repositoryEntry != null) {
+            repositoryEntry.setBeanInContext(inContext);
+        }
+    }
+
+    /**
 	 * Notify all the observers from the given {@link BeanId} that the given
 	 * {@link BeanLifecycle} event happend.
 	 *
@@ -473,7 +467,11 @@ public class BeanRepository {
 
     	private BeanLifecycleSubjectGroup beanLifecycleSubjectGroup;
 
-		/**
+        private boolean cleaning = false;
+
+        private boolean beanInContext = true;
+
+        /**
 		 * @param entry
 		 */
 		public RepositoryEntry(BeanId beanId, Entry<String, Object> entry) {
@@ -500,7 +498,10 @@ public class BeanRepository {
 		}
 
 		public void setValue(Object value) {
-			entry.setValue(value);
+            if(value == null) {
+                value = null;
+            }
+            entry.setValue(value);
 		}
 
 		/**
@@ -524,6 +525,62 @@ public class BeanRepository {
 			this.beanLifecycleSubjectGroup = beanLifecycleSubjectGroup;
 		}
 
+        public void clean() {
+            clean(false);
+        }
+
+        private void clean(boolean nullifyValue) {
+            // Clean the repo entry if it's not already cleaning and the bean is not
+            // in context...
+            if(cleaning || beanInContext) {
+                return;
+            }
+
+            setCleaning(true);
+            try {
+                if(lifecycleAssociation.size() > 0) {
+                    for (Integer associationId : lifecycleAssociation) {
+                        RepositoryEntry association = repositoryEntries.get(associationId);
+
+                        association.clean(true);
+                    }
+                    lifecycleAssociation.clear();
+                }
+            } finally {
+                if(nullifyValue) {
+                    setValue(null);
+                }
+                setCleaning(false);
+            }
+        }
+
+        /**
+         * Is this repo entry being cleaned.
+         * @return True if the entry is being cleaned, otherwise false.
+         */
+        public boolean isCleaning() {
+            return cleaning;
+        }
+
+        /**
+         * Mark this repo entry as being cleaned.
+         * @param cleaning True if the entry is being cleaned, otherwise false.
+         */
+        public void setCleaning(boolean cleaning) {
+            this.cleaning = cleaning;
+        }
+
+        public boolean isBeanInContext() {
+            return beanInContext;
+        }
+
+        public void setBeanInContext(boolean beanInContext) {
+            this.beanInContext = beanInContext;
+        }
+
+        public String toString() {
+            return RepositoryEntry.class.getSimpleName() + ": Idx (" + beanId.getIndex() + "), Name (" + beanId.getName() + "), Num Associations (" + lifecycleAssociation.size() + ").";
+        }
     }
 
     /**
