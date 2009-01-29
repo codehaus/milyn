@@ -175,8 +175,8 @@ public class Smooks {
      * @param targetSelector The message fragment target selector.
      * @param visitor The visitor implementation.
      */
-    public void addVisitor(String targetSelector, Visitor visitor) {
-        addVisitor(visitor, targetSelector, null);
+    public SmooksResourceConfiguration addVisitor(String targetSelector, Visitor visitor) {
+        return addVisitor(visitor, targetSelector, null);
     }
 
     /**
@@ -186,7 +186,7 @@ public class Smooks {
      * @param targetSelector The message fragment target selector.
      * @param targetSelectorNS The message fragment target selector namespace.
      */
-    public void addVisitor(Visitor visitor, String targetSelector, String targetSelectorNS) {
+    public SmooksResourceConfiguration addVisitor(Visitor visitor, String targetSelector, String targetSelectorNS) {
         assertIsConfigurable();
         AssertArgument.isNotNull(visitor, "visitor");
         AssertArgument.isNotNull(targetSelector, "targetSelector");
@@ -200,6 +200,8 @@ public class Smooks {
         Configurator.initialise(visitor);
 
         visitors.addVisitor(resourceConfig.getTargetElement(), resourceConfig, visitor);
+
+        return resourceConfig;
     }
 
     /**

@@ -58,6 +58,12 @@
     <dependencies>
         <dependency>
             <groupId>org.milyn</groupId>
+            <artifactId>testres</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-core</artifactId>
             <version>${milyn.smooks.core.version}</version>
             <exclusions>

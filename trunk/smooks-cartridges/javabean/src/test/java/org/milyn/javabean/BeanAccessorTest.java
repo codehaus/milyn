@@ -24,6 +24,8 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanId;
 
 /**
  *
@@ -116,10 +118,10 @@ public class BeanAccessorTest extends TestCase {
         Object child2 = new MyGoodBean();
         Object childChild = new MyGoodBean();
 
-        getBeanIdRegister().register("parent");
-        getBeanIdRegister().register("child");
-        getBeanIdRegister().register("child2");
-        getBeanIdRegister().register("childChild");
+        BeanId parentId = getBeanIdRegister().register("parent");
+        BeanId child1Id = getBeanIdRegister().register("child");
+        BeanId child2Id = getBeanIdRegister().register("child2");
+        BeanId child3Id = getBeanIdRegister().register("childChild");
 
         // check single level association
         BeanAccessor.addBean(executionContext, "parent", parent);
@@ -128,6 +130,9 @@ public class BeanAccessorTest extends TestCase {
 
         assertEquals(parent, BeanAccessor.getBean(executionContext, "parent"));
         assertEquals(child, BeanAccessor.getBean(executionContext, "child"));
+
+        // Mark all beans as being "out of context"...
+        markBeanContextEnd(parentId, child1Id, child2Id, child3Id);
 
         BeanAccessor.addBean(executionContext, "parent", parent);
 
@@ -139,6 +144,9 @@ public class BeanAccessorTest extends TestCase {
 
         BeanAccessor.addBean(executionContext, "child2", child2);
         BeanAccessor.associateLifecycles(executionContext, "parent", "child2");
+
+        // Mark all beans as being "out of context"...
+        markBeanContextEnd(parentId, child1Id, child2Id, child3Id);
 
         BeanAccessor.addBean(executionContext, "parent", parent);
 
@@ -175,7 +183,7 @@ public class BeanAccessorTest extends TestCase {
         assertNull(BeanAccessor.getBean(executionContext, "childChild"));
 	}
 
-	/**
+    /**
 	 * replace with easy mock framework for more control
 	 *
 	 * Test adding and replacing a bean
@@ -265,8 +273,7 @@ public class BeanAccessorTest extends TestCase {
 
 	}
 
-
-	/**
+    /**
 	 * replace with easy mock framework for more control
 	 *
 	 * Test adding and replacing a bean
@@ -295,14 +302,14 @@ public class BeanAccessorTest extends TestCase {
 
 	}
 
-	@Override
+
+    @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		executionContext = new MockExecutionContext();
 	}
 
-
-	/**
+    /**
 	 *
 	 */
 	private BeanIdRegister getBeanIdRegister() {
@@ -311,7 +318,8 @@ public class BeanAccessorTest extends TestCase {
         return beanRepositoryManager.getBeanIdRegister();
 	}
 
-	/**
+
+    /**
 	 * @return
 	 */
 	private BeanRepositoryManager getRepositoryManager() {
@@ -320,19 +328,28 @@ public class BeanAccessorTest extends TestCase {
 
     public class MockBeanLifecycleObserver implements BeanLifecycleObserver {
 
-    	private boolean fired = false;
+        private boolean fired = false;
 
-    	public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
+        public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
     		fired = true;
     	}
 
-    	public boolean isFired() {
+        public boolean isFired() {
     		return fired;
     	}
 
-    	public void reset() {
+        public void reset() {
     		fired = false;
     	}
+
+    }
+
+    private void markBeanContextEnd(BeanId parentId, BeanId child1Id, BeanId child2Id, BeanId child3Id) {
+        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+        beanRepository.setBeanInContext(parentId, false);
+        beanRepository.setBeanInContext(child1Id, false);
+        beanRepository.setBeanInContext(child2Id, false);
+        beanRepository.setBeanInContext(child3Id, false);
     }
 
 }

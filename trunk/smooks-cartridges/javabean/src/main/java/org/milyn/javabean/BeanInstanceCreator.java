@@ -35,6 +35,7 @@ import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.repository.BeanRepository;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -88,15 +89,16 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         AssertArgument.isNotNull(beanId, "beanId");
         AssertArgument.isNotNull(beanClass, "beanClass");
         this.beanIdName = beanId;
-        this.beanClassName = beanClass.getName();
+
+        if(!beanClass.isArray()){
+            this.beanClassName = beanClass.getName();
+        } else {
+            this.beanClassName = beanClass.getComponentType().getName() + "[]";
+        }
     }
 
     public String getBeanId() {
         return beanIdName;
-    }
-
-    public String getBeanClass() {
-        return beanClassName;
     }
 
     /**
@@ -114,7 +116,7 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, beanClassName, appContext);
 
         if(logger.isDebugEnabled()) {
-        	logger.debug("BeanInstanceCreator created for [" + beanIdName + "].");
+        	logger.debug("BeanInstanceCreator created for [" + beanIdName + "]. BeanRuntimeInfo: " + beanRuntimeInfo);
         }
     }
 
@@ -140,34 +142,32 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
-	public void visitAfter(Element element, ExecutionContext executionContext)
-			throws SmooksException {
-
+	public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
 		visitAfter(executionContext);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
 	 */
-	public void visitAfter(SAXElement element, ExecutionContext executionContext)
-			throws SmooksException, IOException {
-
+	public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
 		visitAfter(executionContext);
 	}
 
 	public void visitAfter(ExecutionContext executionContext) {
+        BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
+        Classification thisBeanType = beanRuntimeInfo.getClassification();
+        boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 
-		Classification thisBeanType = beanRuntimeInfo.getClassification();
+        beanRepo.setBeanInContext(beanId, false);
 
-		boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
+        if(isBeanTypeArray) {
+            Object bean  = beanRepo.getBean(beanId);
 
-		if(isBeanTypeArray) {
-			Object bean  = BeanRepositoryManager.getBeanRepository(executionContext).getBean(beanId);
-
-			bean = convert(executionContext, bean);
-
-		}
-
+            if(logger.isDebugEnabled()) {
+                logger.debug("Converting bean [" + beanIdName + "] to an array and rebinding to context.");
+            }
+            bean = convert(executionContext, bean);
+        }
 	}
 
 
@@ -182,9 +182,13 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
 
 	private void createAndSetBean(ExecutionContext executionContext) {
         Object bean;
+        BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
+
         bean = createBeanInstance();
 
-        BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanId, bean);
+        beanRepo.setBeanInContext(beanId, false);
+        beanRepo.addBean(beanId, bean);
+        beanRepo.setBeanInContext(beanId, true);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Bean [" + beanIdName + "] instance created.");

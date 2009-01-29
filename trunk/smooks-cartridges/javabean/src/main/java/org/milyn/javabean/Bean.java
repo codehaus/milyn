@@ -44,7 +44,11 @@ public class Bean {
         this.smooks = smooks;
 
         beanInstanceCreator = new BeanInstanceCreator(beanId, beanClass);
-        smooks.addVisitor(createOnElement, new BeanInstanceCreator(beanId, beanClass));
+
+        // Add the visitor
+        SmooksResourceConfiguration resourceConfig = smooks.addVisitor(createOnElement, beanInstanceCreator);
+        resourceConfig.setParameter("beanId", beanId);
+        resourceConfig.setParameter("beanClass", beanClass.getName());
     }
 
     public String getBeanId() {
@@ -113,7 +117,7 @@ public class Bean {
         return this;
     }
 
-    public Bean bind(Bean bean) {
+    public Bean bindTo(Bean bean) {
         BeanInstancePopulator beanInstancePopulator = new BeanInstancePopulator();
 
         // Configure the populator visitor...
@@ -125,11 +129,11 @@ public class Bean {
         return this;
     }
 
-    public Bean bind(String dataSelector) {
-        return bind(dataSelector, null);
+    public Bean bindTo(String dataSelector) {
+        return bindTo(dataSelector, (DataDecoder) null);
     }
 
-    public Bean bind(String dataSelector, DataDecoder dataDecoder) {
+    public Bean bindTo(String dataSelector, DataDecoder dataDecoder) {
         BeanInstancePopulator beanInstancePopulator = new BeanInstancePopulator();
         SmooksResourceConfiguration populatorConfig = new SmooksResourceConfiguration(dataSelector);
 

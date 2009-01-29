@@ -67,6 +67,10 @@ public class BeanRuntimeInfo {
     public BeanRuntimeInfo() {
     }
 
+    public BeanRuntimeInfo(Class clazz) {
+    	resolveBeanRuntimeInfo(clazz);
+    }
+
     public BeanRuntimeInfo(String classname) {
     	resolveBeanRuntimeInfo(classname);
     }
@@ -86,6 +90,19 @@ public class BeanRuntimeInfo {
         Map<String, BeanRuntimeInfo> runtimeInfoMap = getRuntimeInfoMap(appContext);
 
         return runtimeInfoMap.get(beanId);
+    }
+
+    public void setClassification(Class<?> clazz) {
+        // We maintain a targetType enum because it helps us avoid performing
+        // instanceof checks, which are cheap when the instance being checked is
+        // an instanceof, but is expensive if it's not....
+        if(Map.class.isAssignableFrom(clazz)) {
+            this.setClassification(Classification.MAP_COLLECTION);
+        } else if(Collection.class.isAssignableFrom(clazz)) {
+            this.setClassification(Classification.COLLECTION_COLLECTION);
+        } else {
+            this.setClassification(Classification.NON_COLLECTION);
+        }
     }
 
     public static BeanRuntimeInfo getBeanRuntimeInfo(String beanId, String beanClassName, ApplicationContext appContext) {
@@ -132,23 +149,35 @@ public class BeanRuntimeInfo {
 	        }
 
 	        this.setPopulateType(clazz);
+            this.setClassification(clazz);
 
-	        // We maintain a targetType enum because it helps us avoid performing
-	        // instanceof checks, which are cheap when the instance being checked is
-	        // an instanceof, but is expensive if it's not....
-	        if(Map.class.isAssignableFrom(clazz)) {
-	        	this.setClassification(BeanRuntimeInfo.Classification.MAP_COLLECTION);
-	        } else if(Collection.class.isAssignableFrom(clazz)) {
-	        	this.setClassification(BeanRuntimeInfo.Classification.COLLECTION_COLLECTION);
-	        } else {
-	        	this.setClassification(BeanRuntimeInfo.Classification.NON_COLLECTION);
-	        }
-
-	        // check for a default constructor.
+            // check for a default constructor.
 	        try {
 	            clazz.getConstructor();
 	        } catch (NoSuchMethodException e) {
 	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
+	        }
+
+        }
+    }
+
+    private void resolveBeanRuntimeInfo(Class clazz) {
+        // If it's an array, we use a List and extract an array from it on the
+        // visitAfter event....
+        if(clazz.isArray()) {
+            this.setClassification(BeanRuntimeInfo.Classification.ARRAY_COLLECTION);
+            this.setArrayType(clazz.getComponentType());
+            this.setPopulateType(ArrayList.class);
+        } else {
+
+	        this.setPopulateType(clazz);
+            this.setClassification(clazz);
+
+            // check for a default constructor.
+	        try {
+	            clazz.getConstructor();
+	        } catch (NoSuchMethodException e) {
+	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + clazz.getName() + " doesn't have a public default constructor.");
 	        }
 
         }
@@ -214,5 +243,17 @@ public class BeanRuntimeInfo {
         }
 
         return true;
+    }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Classification: " + classification);
+        stringBuilder.append(", Populate Type: : " + populateType.getName());
+        if(arrayType != null) {
+            stringBuilder.append(", Array Type: " + arrayType.getName());
+        }
+
+        return stringBuilder.toString();
     }
 }

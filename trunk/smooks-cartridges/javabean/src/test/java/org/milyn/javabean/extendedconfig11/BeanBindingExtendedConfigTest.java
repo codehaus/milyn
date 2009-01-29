@@ -15,15 +15,7 @@
 */
 package org.milyn.javabean.extendedconfig11;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.transform.stream.StreamSource;
-
 import junit.framework.TestCase;
-
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
@@ -32,6 +24,12 @@ import org.milyn.javabean.Header;
 import org.milyn.javabean.OrderItem;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.stream.StreamSource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
