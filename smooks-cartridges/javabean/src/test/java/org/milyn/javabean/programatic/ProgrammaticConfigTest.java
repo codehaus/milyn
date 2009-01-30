@@ -26,22 +26,51 @@ import org.milyn.javabean.Bean;
 import org.milyn.javabean.Header;
 import org.milyn.javabean.Order;
 import org.milyn.javabean.OrderItem;
+import org.milyn.javabean.decoders.DoubleDecoder;
+import org.milyn.javabean.decoders.IntegerDecoder;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Programmatic
+ * Programmatic Binding config test.
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
 public class ProgrammaticConfigTest extends TestCase {
 
-    public void test_01() {
+    public void test_01_fluid() {
         Smooks smooks = new Smooks();
+        Bean orderBean = new Bean(Order.class, "order", "/order", smooks);
 
+        orderBean.bindTo("header",
+            orderBean.newBean(Header.class, "/order")
+                .bindTo("order", orderBean)
+                .bindTo("customerNumber", "header/customer/@number")
+                .bindTo("customerName", "header/customer")
+                .bindTo("privatePerson", "header/privatePerson")
+            ).bindTo("orderItems",
+                orderBean.newBean(ArrayList.class, "/order")
+                    .bindTo(orderBean.newBean(OrderItem.class, "order-item")
+                        .bindTo("productId", "order-item/product")
+                        .bindTo("quantity", "order-item/quantity")
+                        .bindTo("price", "order-item/price"))
+            ).bindTo("orderItems",
+                orderBean.newBean(OrderItem[].class, "/order")
+                    .bindTo(orderBean.newBean(OrderItem.class, "order-item")
+                        .bindTo("productId", "order-item/product")
+                        .bindTo("quantity", "order-item/quantity")
+                        .bindTo("price", "order-item/price")));
+
+        execute_01_test(smooks);
+    }
+
+    public void test_01_flat() {
+        Smooks smooks = new Smooks();
         Bean orderBean = new Bean(Order.class, "order", "/order", smooks);
 
         Bean headerBean = new Bean(Header.class, "header", "/order", smooks)
@@ -62,6 +91,10 @@ public class ProgrammaticConfigTest extends TestCase {
                                         .bindTo("quantity", "order-item/quantity")
                                         .bindTo("price", "order-item/price")));
 
+        execute_01_test(smooks);
+    }
+
+    private void execute_01_test(Smooks smooks) {
         JavaResult result = new JavaResult();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
 
@@ -69,8 +102,33 @@ public class ProgrammaticConfigTest extends TestCase {
         int identity = System.identityHashCode(order);
 
         assertEquals("Order:" + identity + "[header[null, 123123, Joe, false, Order:" + identity + "]\n" +
-                     "orderItems[[{productId: 111, quantity: 2, price: 8.9}, {productId: 222, quantity: 7, price: 5.2}]]\n" +
-                     "norderItemsArray[[{productId: 111, quantity: 2, price: 8.9}, {productId: 222, quantity: 7, price: 5.2}]]]", order.toString());
+                "orderItems[[{productId: 111, quantity: 2, price: 8.9}, {productId: 222, quantity: 7, price: 5.2}]]\n" +
+                "norderItemsArray[[{productId: 111, quantity: 2, price: 8.9}, {productId: 222, quantity: 7, price: 5.2}]]]", order.toString());
+    }
+
+    public void test_02_Map_fluid() {
+        Smooks smooks = new Smooks();
+
+        Bean orderBean = new Bean(HashMap.class, "order", "/order", smooks);
+
+        orderBean.bindTo("header",
+                orderBean.newBean(HashMap.class, "/order")
+                    .bindTo("customerNumber", "header/customer/@number", new IntegerDecoder())
+                    .bindTo("customerName", "header/customer")
+                    .bindTo("privatePerson", "header/privatePerson")
+                ).bindTo("orderItems",
+                orderBean.newBean(ArrayList.class, "/order")
+                        .bindTo(orderBean.newBean(HashMap.class, "order-item")
+                            .bindTo("productId", "order-item/product")
+                            .bindTo("quantity", "order-item/quantity")
+                            .bindTo("price", "order-item/price", new DoubleDecoder()))
+                );
+
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
+
+        Map order = (Map) result.getBean("order");
+        assertEquals("{orderItems=[{price=8.9, productId=111, quantity=2}, {price=5.2, productId=222, quantity=7}], header={privatePerson=, customerName=Joe, customerNumber=123123}}", order.toString());
     }
 
     public void test_02_arrays_programmatic() {
