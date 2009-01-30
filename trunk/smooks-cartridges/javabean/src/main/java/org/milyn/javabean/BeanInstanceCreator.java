@@ -97,6 +97,11 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         }
     }
 
+    /**
+     * Get the beanId of this Bean configuration.
+     *
+     * @return The beanId of this Bean configuration.
+     */
     public String getBeanId() {
         return beanIdName;
     }
@@ -118,6 +123,14 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         if(logger.isDebugEnabled()) {
         	logger.debug("BeanInstanceCreator created for [" + beanIdName + "]. BeanRuntimeInfo: " + beanRuntimeInfo);
         }
+    }
+
+    /**
+     * Get the bean runtime information.
+     * @return The bean runtime information.
+     */
+    public BeanRuntimeInfo getBeanRuntimeInfo() {
+        return beanRuntimeInfo;
     }
 
     private void buildId() {
