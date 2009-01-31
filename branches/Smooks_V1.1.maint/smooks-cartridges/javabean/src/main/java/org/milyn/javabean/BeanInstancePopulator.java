@@ -15,16 +15,6 @@
 */
 package org.milyn.javabean;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -44,7 +34,6 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
-import org.milyn.javabean.decoders.BooleanDecoder;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
@@ -54,6 +43,16 @@ import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Bean instance populator visitor class.
@@ -215,7 +214,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(!beanWiring && !isAttribute) {
-            element.setCache(new StringWriter());
+            element.setCache(new TrackedStringWriter());
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
@@ -536,4 +535,68 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 		return id;
 	}
 
+    /**
+     * This is a specialized StringWriter that tracks the writes to make sure we don't
+     * write the same buffer segment multiple times.
+     *
+     * See JIRA: http://jira.codehaus.org/browse/MILYN-238 
+     */
+    public static class TrackedStringWriter extends StringWriter {
+        private char[] lastWriteBuf;
+        private int lastWriteOff;
+        private int lastWriteLen;
+        private List<WriteRecord> writeTrackingList;
+
+        public void write(char cbuf[], int off, int len) {
+            if(cbuf == lastWriteBuf && off == lastWriteOff && len == lastWriteLen) {
+                // we've already written this character buffer segment...
+                return;
+            }
+            if(lastWriteBuf != null) {
+                // We've written to this writer already and the new incoming buffer
+                // is not the same as the last buffer...
+
+                if(writeTrackingList == null) {
+                    writeTrackingList = new ArrayList<WriteRecord>();
+                } else {
+                    if(isAlreadyWritten(cbuf, off, len)) {
+                        // we've already written this character buffer segment...
+                        return;
+                    }
+                }
+                writeTrackingList.add(new WriteRecord(lastWriteBuf, lastWriteOff, lastWriteLen));
+            }
+
+            super.write(cbuf, off, len);
+            lastWriteBuf = cbuf;
+            lastWriteOff = off;
+            lastWriteLen = len;
+        }
+
+        private boolean isAlreadyWritten(char cbuf[], int off, int len) {
+            int trackListLen = writeTrackingList.size();
+            
+            for(int i = 0; i < trackListLen; i++) {
+                WriteRecord listEntry = writeTrackingList.get(i);
+                if(cbuf == listEntry.lastWriteBuf && off == listEntry.lastWriteOff && len == listEntry.lastWriteLen) {
+                    // we've already written this character buffer segment...
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private class WriteRecord {
+            private char[] lastWriteBuf;
+            private int lastWriteOff;
+            private int lastWriteLen;
+
+            private WriteRecord(char[] lastWriteBuf, int lastWriteOff, int lastWriteLen) {
+                this.lastWriteBuf = lastWriteBuf;
+                this.lastWriteOff = lastWriteOff;
+                this.lastWriteLen = lastWriteLen;
+            }
+        }
+    }
 }
