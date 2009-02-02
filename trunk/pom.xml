@@ -16,6 +16,9 @@
         <milyn.commons.version.base>${milyn.smooks.core.version.base}</milyn.commons.version.base>
         <milyn.commons.version>${milyn.smooks.core.version}</milyn.commons.version>
 
+
+
+
         <milyn.magger.version.base>${milyn.smooks.core.version.base}</milyn.magger.version.base>
         <milyn.magger.version>${milyn.smooks.core.version}</milyn.magger.version>
 
