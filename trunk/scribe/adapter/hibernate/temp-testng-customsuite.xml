@@ -1,8 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="milyn-scribe-hibernate">
-  <test verbose="2" name="org.milyn.scribe.adapter.hibernate.SessionDaoAdapterTest" annotations="JDK">
-    <classes>
-      <class name="org.milyn.scribe.adapter.hibernate.SessionDaoAdapterTest"/>
-    </classes>
-  </test>
-</suite>
