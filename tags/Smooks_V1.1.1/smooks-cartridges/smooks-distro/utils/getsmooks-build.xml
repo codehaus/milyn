@@ -1,0 +1,74 @@
+<project name="Get-Smooks" default="main" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+
+    <property name="smooks.version" value="1.1"/>
+
+    <description>
+        Script for pulling the current Smooks v${smooks.version} jars from the maven repo. 
+    </description>
+
+    <property environment="env"/>
+    <property name="maven.ant.version" value="2.0.9"/>
+    <property name="maven.dir" value="org/apache/maven/maven-ant-tasks/${maven.ant.version}"/>
+    <property name="maven.jar" value="maven-ant-tasks-${maven.ant.version}.jar"/>
+    <pathconvert targetos="unix" property="maven.repo.dir">
+        <path>
+            <pathelement location="${user.home}/.m2/repository"/>
+        </path>
+    </pathconvert>
+    <pathconvert targetos="unix" property="maven.ant.repo.dir">
+        <path>
+            <pathelement location="${maven.repo.dir}/${maven.dir}"/>
+        </path>
+    </pathconvert>
+    <condition property="maven.exists.locally">
+        <available file="${maven.ant.repo.dir}/${maven.jar}"/>
+    </condition>
+
+    <target name="main">
+        <mkdir dir="${maven.ant.repo.dir}"/>
+
+        <antcall target="maven.get"/>
+        <antcall target="smooks.dependencies.get"/>
+    </target>
+
+    <target name="smooks.dependencies.get">
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpath="${maven.ant.repo.dir}/${maven.jar}"/>
+
+        <artifact:remoteRepository id="codehaus.m2.snapshots" url="http://snapshots.repository.codehaus.org" />
+        <artifact:dependencies filesetId="dependencies">
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-calc" />
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-css" />
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-csv" />
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-edi" />
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-javabean"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-json"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-misc"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-scripting"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-servlet"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-templating"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-routing"/>
+
+            <remoteRepository refid="codehaus.m2.snapshots" />            
+        </artifact:dependencies>
+
+        <tstamp>
+            <format property="get.time" pattern="MM-dd-yyyy-hh-mm-ss"/>
+        </tstamp>
+
+        <property name="todir" value="smooks-${get.time}" />
+        <mkdir dir="./${todir}" />
+        <copy todir="./${todir}">
+            <fileset refid="dependencies"/>
+            <mapper type="flatten"/>
+        </copy>
+        <delete>
+            <fileset dir="./${todir}" includes="junit*,log4j*,hsqldb*,servlet-api*,xalan*,jbossall-client*,jboss-j2ee*,jdom*,cglib-full*,cglib-nodep*,struts*,mockejb*,mockrunner*,commons-beanutils*,commons-digester*,commons-fileupload*,commons-validator*,oro*,xmlunit*" />
+        </delete>
+    </target>
+
+    <target name="maven.get" unless="maven.exists.locally">
+        <get src="http://repo1.maven.org/maven2/${maven.dir}/${maven.jar}" dest="${maven.ant.repo.dir}/${maven.jar}"
+             usetimestamp="true"/>
+    </target>
+
+</project>
