@@ -15,8 +15,7 @@
 */
 package org.milyn.expression;
 
-import org.mvel2.integration.VariableResolverFactory;
-
+import org.mvel.integration.VariableResolver;
 
 /**
  * The MVELVariables is utility class for MVEL. It can be used to
@@ -27,9 +26,10 @@ import org.mvel2.integration.VariableResolverFactory;
  */
 public class MVELVariables {
 
-	private VariableResolverFactory variableResolverFactory;
+	private org.mvel.integration.VariableResolverFactory variableResolverFactory;
 
-	public MVELVariables(VariableResolverFactory variableResolverFactory) {
+	public MVELVariables(
+			org.mvel.integration.VariableResolverFactory variableResolverFactory) {
 
 		this.variableResolverFactory = variableResolverFactory;
 	}

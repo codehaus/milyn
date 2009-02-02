@@ -152,8 +152,8 @@ public class BeanPopulatorTest extends TestCase {
     }
 
     public void test_populate_Order() throws SAXException, IOException, InterruptedException {
-        //test_populate_Order("order-01-smooks-config.xml");
-        //test_populate_Order("order-01-smooks-config-sax.xml");
+        test_populate_Order("order-01-smooks-config.xml");
+        test_populate_Order("order-01-smooks-config-sax.xml");
         test_populate_Order("order-01-smooks-config-arrays.xml");
     }
 

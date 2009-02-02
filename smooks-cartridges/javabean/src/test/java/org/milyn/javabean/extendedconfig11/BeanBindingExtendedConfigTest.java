@@ -19,15 +19,19 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.javabean.B;
 import org.milyn.javabean.Header;
 import org.milyn.javabean.OrderItem;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -220,21 +224,6 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
 		order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(4d, order.getTotal());
-
-	}
-
-	public void test_condition() throws IOException, SAXException {
-		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_11.xml"));
-
-		JavaResult result = new JavaResult();
-
-		ExecutionContext execContext = smooks.createExecutionContext();
-
-		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
-
-		ExtendedOrder order =  (ExtendedOrder) result.getBean("order");
-		assertEquals(2d, order.getTotal());
 
 	}
 }

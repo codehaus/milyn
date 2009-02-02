@@ -6,7 +6,7 @@
     <artifactId>smooks-examples</artifactId>
     <name>Milyn Smooks Examples (Base POM)</name>
     <packaging>pom</packaging>
-    <version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.1.3</version> <!-- base pom version - do not remove this comment -->
 
     <modules>
         <module>css</module>
@@ -21,7 +21,6 @@
         <module>java-to-xml</module>
         <module>java-to-java</module>
         <module>csv-to-xml</module>
-        <module>csv-to-java</module>
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
@@ -33,12 +32,10 @@
         <module>jms-router</module>
         <module>json-to-java</module>
         <module>sj-testimonial</module>
-		<module>dao-router</module>
-        <module>validation-basic</module>
     </modules>
 
     <properties>
-        <milyn.smooks.core.version>1.2-SNAPSHOT</milyn.smooks.core.version>
+        <milyn.smooks.core.version>1.1.1</milyn.smooks.core.version>
         <milyn.smooks.servlet.version>${milyn.smooks.core.version}</milyn.smooks.servlet.version>
         <milyn.smooks.misc.version>${milyn.smooks.core.version}</milyn.smooks.misc.version>
         <milyn.smooks.dtd.version>${milyn.smooks.core.version}</milyn.smooks.dtd.version>
@@ -50,18 +47,9 @@
         <milyn.smooks.scripting.version>${milyn.smooks.core.version}</milyn.smooks.scripting.version>
         <milyn.smooks.routing.version>${milyn.smooks.core.version}</milyn.smooks.routing.version>
         <milyn.smooks.json.version>${milyn.smooks.core.version}</milyn.smooks.json.version>
-		<milyn.smooks.persistence.version>${milyn.smooks.core.version}</milyn.smooks.persistence.version>
-		<milyn.scribe.jpa.version>${milyn.smooks.core.version}</milyn.scribe.jpa.version>
-        <milyn.smooks.validation.version>${milyn.smooks.core.version}</milyn.smooks.validation.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>testres</artifactId>
-            <version>${milyn.smooks.core.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-core</artifactId>

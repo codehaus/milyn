@@ -26,8 +26,8 @@ public enum OnNoResult {
 	NULLIFY,
 	EXCEPTION;
 
-	public static final String NULLIFY_STR = "NULLIFY";
-	public static final String EXCEPTION_STR = "EXCEPTION";
+	public static final String NULLIFY_STR = "nullify";
+	public static final String EXCEPTION_STR = "exception";
 
 	/**
 	 * A Data decoder for this Enum

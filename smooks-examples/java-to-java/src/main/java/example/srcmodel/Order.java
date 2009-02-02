@@ -17,7 +17,6 @@ package example.srcmodel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -29,7 +28,7 @@ public class Order {
     public Order() {
         header = new Header();
         orderItems =  new ArrayList<OrderItem>();
-        orderItems.add(new OrderItem());        
+        orderItems.add(new OrderItem());
         orderItems.add(new OrderItem());
 
         orderItems.get(0).setProductId(111);
@@ -57,7 +56,8 @@ public class Order {
         this.orderItems = orderItems;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("Class: " + getClass().getName() + "\n");

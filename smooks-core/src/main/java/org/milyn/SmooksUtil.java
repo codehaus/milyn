@@ -67,7 +67,7 @@ public abstract class SmooksUtil {
     /**
      * Register a {@link org.milyn.cdr.SmooksResourceConfiguration} on the supplied {@link Smooks} instance.
      *
-     * @param resourceConfig The Resource Configuration to be  registered.
+     * @param resourceConfig The Content Delivery Resource definition to be  registered.
      * @param smooks         The {@link org.milyn.Smooks} instance on which to perform the configuration operation.
      */
     public static void registerResource(SmooksResourceConfiguration resourceConfig, Smooks smooks) {

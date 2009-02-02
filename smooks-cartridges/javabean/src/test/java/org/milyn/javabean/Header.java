@@ -51,8 +51,4 @@ public class Header {
 	public void setOrder(Order order) {
 		this.order = order;
 	}
-
-    public String toString() {
-        return date + ", " + customerNumber + ", " + customerName + ", " + privatePerson + ", Order:" + System.identityHashCode(order);
-    }
 }

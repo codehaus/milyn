@@ -20,14 +20,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
-import org.milyn.delivery.Visitor;
-import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
@@ -86,16 +83,6 @@ public class Smooks {
     private static Log logger = LogFactory.getLog(Smooks.class);
     private StandaloneApplicationContext context;
     private ClassLoader classLoader;
-    /**
-     * Manually added visitors.  In contract to those that are constructed and configured dynamically from
-     * an XML configuration stream.
-     */
-    private VisitorConfigMap visitors = new VisitorConfigMap();
-    /**
-     * Flag indicating whether or not the Smooks instance is configurable.  It becomes unconfigurable
-     * after the first execution context has been created.
-     */
-    private volatile boolean isConfigurable = true;
 
     /**
      * Public Default Constructor.
@@ -161,64 +148,6 @@ public class Smooks {
     }
 
     /**
-     * Set the default stream filter type on this Smooks instance.
-     * @param filterType The filter type.
-     */
-    public void setFilterType(Filter.StreamFilterType filterType) {
-        assertIsConfigurable();
-        Filter.setFilterType(this, filterType);
-    }
-
-    /**
-     * Add a visitor instance to <code>this</code> Smooks instance.
-     *
-     * @param targetSelector The message fragment target selector.
-     * @param visitor The visitor implementation.
-     */
-    public SmooksResourceConfiguration addVisitor(String targetSelector, Visitor visitor) {
-        return addVisitor(visitor, targetSelector, null);
-    }
-
-    /**
-     * Add a visitor instance to <code>this</code> Smooks instance.
-     *
-     * @param visitor The visitor implementation.
-     * @param targetSelector The message fragment target selector.
-     * @param targetSelectorNS The message fragment target selector namespace.
-     */
-    public SmooksResourceConfiguration addVisitor(Visitor visitor, String targetSelector, String targetSelectorNS) {
-        assertIsConfigurable();
-        AssertArgument.isNotNull(visitor, "visitor");
-        AssertArgument.isNotNull(targetSelector, "targetSelector");
-
-        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
-
-        resourceConfig.setSelectorNamespaceURI(targetSelectorNS);
-
-        // And configure/initialize the instance...
-        Configurator.processFieldContextAnnotation(visitor, context);
-        Configurator.initialise(visitor);
-
-        visitors.addVisitor(resourceConfig.getTargetElement(), resourceConfig, visitor);
-
-        return resourceConfig;
-    }
-
-    /**
-     * Add a resource configuration to this Smooks instance.
-     * <p/>
-     * These configurations do not overwrite previously added configurations.
-     * They are added to the list of configurations on this Smooks instance.
-     *
-     * @param resourceConfig The resource configuration to be added.
-     */
-    public void addConfiguration(SmooksResourceConfiguration resourceConfig) {
-        AssertArgument.isNotNull(resourceConfig, "resourceConfig");
-        assertIsConfigurable();
-        context.getStore().registerResource(resourceConfig);
-    }
-
-    /**
      * Add a set of resource configurations to this Smooks instance.
      * <p/>
      * Uses the {@link org.milyn.resource.URIResourceLocator} class to load the resource.
@@ -264,7 +193,6 @@ public class Smooks {
      * @throws SAXException Error parsing the resource stream.
      */
     public void addConfigurations(String baseURI, InputStream resourceConfigStream) throws SAXException, IOException {
-        assertIsConfigurable();
         AssertArgument.isNotNullAndNotEmpty(baseURI, "baseURI");
         AssertArgument.isNotNull(resourceConfigStream, "resourceConfigStream");
         try {
@@ -326,17 +254,16 @@ public class Smooks {
      * @throws UnknownProfileMemberException Unknown target profile.
      */
     public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
-        isConfigurable = false;
         if(classLoader != null) {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             try {
-                return new StandaloneExecutionContext(targetProfile, context, visitors);
+                return new StandaloneExecutionContext(targetProfile, context);
             } finally {
                 Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
-            return new StandaloneExecutionContext(targetProfile, context, visitors);
+            return new StandaloneExecutionContext(targetProfile, context);
         }
     }
 
@@ -450,14 +377,5 @@ public class Smooks {
      */
     public void close() {
         context.getStore().close();
-    }
-
-    /**
-     * Assert that the instance is configurable, throwing an exception if it is not.
-     */
-    private void assertIsConfigurable() {
-        if(!isConfigurable) {
-            throw new UnsupportedOperationException("Unsupported call to Smooks instance configuration method after Smooks instance has created an ExecutionContext.");
-        }
     }
 }

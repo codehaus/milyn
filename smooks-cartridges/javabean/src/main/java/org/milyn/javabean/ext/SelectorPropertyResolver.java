@@ -16,7 +16,6 @@
 package org.milyn.javabean.ext;
 
 import org.milyn.*;
-import org.milyn.javabean.BeanInstancePopulator;
 import org.milyn.cdr.*;
 import org.milyn.cdr.extension.*;
 import org.milyn.container.*;
@@ -39,16 +38,12 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);
         SmooksResourceConfiguration populatorConfig = extensionContext.getResourceStack().peek();
-        resolveSelectorTokens(populatorConfig);
-    }
-
-    public static void resolveSelectorTokens(SmooksResourceConfiguration populatorConfig) {
         String[] selectorTokens = populatorConfig.getContextualSelector();
         String valueAttributeName = getAttributeNameProperty(selectorTokens);
 
         if(valueAttributeName != null && !valueAttributeName.trim().equals("")) {
             populatorConfig.setSelector(getSelectorProperty(selectorTokens));
-            populatorConfig.setParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME, valueAttributeName);
+            populatorConfig.setParameter("valueAttributeName", valueAttributeName);
         }
     }
 

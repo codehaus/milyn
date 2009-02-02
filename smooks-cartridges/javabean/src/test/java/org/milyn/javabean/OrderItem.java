@@ -41,7 +41,5 @@ public class OrderItem {
 		this.order = order;
 	}
 
-    public String toString() {
-        return "{productId: " + productId + ", quantity: " + quantity + ", price: " + price + "}";
-    }
+
 }

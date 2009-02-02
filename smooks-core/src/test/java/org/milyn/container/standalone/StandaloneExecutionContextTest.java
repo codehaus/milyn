@@ -51,7 +51,7 @@ public class StandaloneExecutionContextTest
 	{
         Smooks smooks = new Smooks();
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"profile1"}), smooks);
-        context = new StandaloneExecutionContext("device1", smooks.getApplicationContext(), null);
+        context = new StandaloneExecutionContext("device1", smooks.getApplicationContext());
 	}
 	
 

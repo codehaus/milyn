@@ -49,6 +49,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -121,47 +122,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     private String mapKeyAttribute;
 
     private boolean beanWiring;
-    public static final String VALUE_ATTRIBUTE_NAME = "valueAttributeName";
-
-    public void setBeanId(String beanId) {
-        this.beanIdName = beanId;
-    }
-
-    public void setWireBeanId(String wireBeanId) {
-        this.wireBeanIdName = wireBeanId;
-    }
-
-    public void setExpression(MVELExpressionEvaluator expression) {
-        this.expression = expression;
-    }
-
-    public void setProperty(String property) {
-        this.property = property;
-    }
-
-    public void setSetterMethod(String setterMethod) {
-        this.setterMethod = setterMethod;
-    }
-
-    public void setValueAttributeName(String valueAttributeName) {
-        this.valueAttributeName = valueAttributeName;
-    }
-
-    public void setTypeAlias(String typeAlias) {
-        this.typeAlias = typeAlias;
-    }
-
-    public void setDecoder(DataDecoder decoder) {
-        this.decoder = decoder;
-    }
-
-    public void setDefaultVal(String defaultVal) {
-        this.defaultVal = defaultVal;
-    }
-
-    public void setExtendLifecycle(Boolean extendLifecycle) {
-        this.extendLifecycle = extendLifecycle;
-    }
 
     /**
      * Set the resource configuration on the bean populator.
@@ -182,9 +142,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         beanId = beanIdRegister.getBeanId(beanIdName);
 
         if (setterMethod == null && property == null ) {
-            if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
-                // Default the property name if it's a wiring...
-                property = wireBeanIdName;
+        	if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+        		property = wireBeanIdName;
         	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
         		throw new SmooksConfigurationException("Binding configuration for beanIdName='" + beanIdName + "' must contain " +
                     "either a 'property' or 'setterMethod' attribute definition, unless the target bean is a Collection/Array." +
@@ -255,7 +214,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(!beanWiring && !isAttribute) {
-            element.setCache(new StringWriter());
+            element.setCache(new TrackedStringWriter());
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
@@ -366,51 +325,39 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     	Object bean = beanRepository.getBean(targetBeanId);
         if(bean == null) {
 
-            if(logger.isDebugEnabled()) {
-                logger.debug("Registering bean BEGIN wiring observer for wiring bean '" + targetBeanId + "' onto target bean '" + beanId.getName() + "'.");
-            }
-
-            // Register the observer which looks for the creation of the selected bean via its beanIdName...
+            // Register the observer which looks for the creation of the selected bean via its beanIdName. When this observer is triggered then
+            // we look if we got something we can set immediatly or that we got an array collection. For an array collection we need the array representation
+            // and not the list representation. So we register and observer wo looks for the change from the list to the array
         	beanRepository.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanRepositoryLifecycleObserver(){
 
                 public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
-                    Object eventBean = event.getBean();
+
+                    BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
+
                     beanRepository.associateLifecycles(beanId , targetBeanId);
-                    populateAndSetPropertyValue(eventBean, beanRepository, targetBeanId, executionContext);
+
+                    if(wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION ) {
+
+                        // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
+                        // can then set this array
+                    	beanRepository.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
+                            public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+
+                                populateAndSetPropertyValue(property, event.getBean(), executionContext);
+
+                            }
+                        });
+
+                    } else {
+                        populateAndSetPropertyValue(property, event.getBean(), executionContext);
+                    }
                 }
 
             });
-        } else {
-            populateAndSetPropertyValue(bean, beanRepository, targetBeanId, executionContext);
-        }
-	}
-
-    private void populateAndSetPropertyValue(Object bean, BeanRepository beanRepository, BeanId targetBeanId, final ExecutionContext executionContext) {
-        BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
-
-       // When this observer is triggered then we look if we got something we can set immediately or that we got an array collection.
-        // For an array collection, we need the array representation and not the list representation, so we register and observer that
-        // listens for the change from the list to the array...
-        if(wiredBeanRI != null && wiredBeanRI.getClassification() == Classification.ARRAY_COLLECTION ) {
-
-            if(logger.isDebugEnabled()) {
-                logger.debug("Registering bean CHANGE wiring observer for wiring bean '" + targetBeanId + "' onto target bean '" + beanId.getName() + "' after it has been converted from a List to an array.");
-            }
-            // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
-            // can then set this array
-
-            beanRepository.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
-                public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
-
-                    populateAndSetPropertyValue(property, event.getBean(), executionContext);
-
-                }
-            });
-
         } else {
             populateAndSetPropertyValue(property, bean, executionContext);
         }
-    }
+	}
 
     /**
      * Checks if we need to stop listening for the bean begin lifecycle.
@@ -432,7 +379,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     }
 
     /**
-     * This method efficiently returns the global configuration {@link BeanPopulator#GLOBAL_DEFAULT_EXTEND_LIFECYCLE}.
+     * This method efficiently returns the global configuration {@link BeanPopulator.GLOBAL_WIRE_AFTER_ELEMENT}.
      *
      * @param executionContext
      * @return the global parameter for wire after element
@@ -487,10 +434,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         Classification beanType = beanRuntimeInfo.getClassification();
 
         createPropertySetterMethod(bean, dataObject.getClass());
-
-        if(logger.isDebugEnabled()) {
-            logger.debug("Setting data object '" + wireBeanIdName + "' (" + dataObject.getClass().getName() + ") on target bean '" + beanId + "'.");
-        }
 
         // Set the data on the bean...
         try {
@@ -592,4 +535,68 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 		return id;
 	}
 
+    /**
+     * This is a specialized StringWriter that tracks the writes to make sure we don't
+     * write the same buffer segment multiple times.
+     *
+     * See JIRA: http://jira.codehaus.org/browse/MILYN-238 
+     */
+    public static class TrackedStringWriter extends StringWriter {
+        private char[] lastWriteBuf;
+        private int lastWriteOff;
+        private int lastWriteLen;
+        private List<WriteRecord> writeTrackingList;
+
+        public void write(char cbuf[], int off, int len) {
+            if(cbuf == lastWriteBuf && off == lastWriteOff && len == lastWriteLen) {
+                // we've already written this character buffer segment...
+                return;
+            }
+            if(lastWriteBuf != null) {
+                // We've written to this writer already and the new incoming buffer
+                // is not the same as the last buffer...
+
+                if(writeTrackingList == null) {
+                    writeTrackingList = new ArrayList<WriteRecord>();
+                } else {
+                    if(isAlreadyWritten(cbuf, off, len)) {
+                        // we've already written this character buffer segment...
+                        return;
+                    }
+                }
+                writeTrackingList.add(new WriteRecord(lastWriteBuf, lastWriteOff, lastWriteLen));
+            }
+
+            super.write(cbuf, off, len);
+            lastWriteBuf = cbuf;
+            lastWriteOff = off;
+            lastWriteLen = len;
+        }
+
+        private boolean isAlreadyWritten(char cbuf[], int off, int len) {
+            int trackListLen = writeTrackingList.size();
+            
+            for(int i = 0; i < trackListLen; i++) {
+                WriteRecord listEntry = writeTrackingList.get(i);
+                if(cbuf == listEntry.lastWriteBuf && off == listEntry.lastWriteOff && len == listEntry.lastWriteLen) {
+                    // we've already written this character buffer segment...
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private class WriteRecord {
+            private char[] lastWriteBuf;
+            private int lastWriteOff;
+            private int lastWriteLen;
+
+            private WriteRecord(char[] lastWriteBuf, int lastWriteOff, int lastWriteLen) {
+                this.lastWriteBuf = lastWriteBuf;
+                this.lastWriteOff = lastWriteOff;
+                this.lastWriteLen = lastWriteLen;
+            }
+        }
+    }
 }

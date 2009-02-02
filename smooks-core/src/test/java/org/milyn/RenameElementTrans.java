@@ -28,13 +28,6 @@ public class RenameElementTrans implements DOMElementVisitor {
 	// cache the new element name.
 	private String newElementName;
 
-    public RenameElementTrans() {
-    }
-
-    public RenameElementTrans(String newElementName) {
-        this.newElementName = newElementName;
-    }
-
     public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
 		// Capture the new name for the element from the configuration...
 		newElementName = resourceConfig.getStringParameter("new-name");

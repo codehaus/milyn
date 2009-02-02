@@ -5,28 +5,25 @@
     <groupId>org.milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.1.3</version> <!-- base pom version - do not remove this comment -->
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
     <properties>
-        <milyn.smooks.core.version.base>1.2</milyn.smooks.core.version.base>
-        <milyn.smooks.core.version>${milyn.smooks.core.version.base}-SNAPSHOT</milyn.smooks.core.version>
-
         <milyn.commons.version.base>${milyn.smooks.core.version.base}</milyn.commons.version.base>
-        <milyn.commons.version>${milyn.smooks.core.version}</milyn.commons.version>
+        <milyn.commons.version>${milyn.commons.version.base}</milyn.commons.version>
+
+        <milyn.smooks.core.version.base>1.1.1</milyn.smooks.core.version.base>
+        <milyn.smooks.core.version>${milyn.smooks.core.version.base}</milyn.smooks.core.version>
 
         <milyn.magger.version.base>${milyn.smooks.core.version.base}</milyn.magger.version.base>
-        <milyn.magger.version>${milyn.smooks.core.version}</milyn.magger.version>
+        <milyn.magger.version>${milyn.magger.version.base}</milyn.magger.version>
 
         <milyn.tinak.version.base>${milyn.smooks.core.version.base}</milyn.tinak.version.base>
-        <milyn.tinak.version>${milyn.smooks.core.version}</milyn.tinak.version>
+        <milyn.tinak.version>${milyn.tinak.version.base}</milyn.tinak.version>
 
 		<milyn.edisax.parser.version.base>${milyn.smooks.core.version.base}</milyn.edisax.parser.version.base>
-        <milyn.edisax.parser.version>${milyn.smooks.core.version}</milyn.edisax.parser.version>
-
-		<milyn.scribe.core.version.base>${milyn.smooks.core.version.base}</milyn.scribe.core.version.base>
-        <milyn.scribe.core.version>${milyn.scribe.core.version.base}-SNAPSHOT</milyn.scribe.core.version>
+        <milyn.edisax.parser.version>${milyn.edisax.parser.version.base}</milyn.edisax.parser.version>
 
         <xerces.version>2.7.1</xerces.version>
         <xalan.version>2.7.0</xalan.version>
@@ -42,13 +39,11 @@
         <profile>
             <id>withexamples</id>
             <modules>
-                <module>testres</module>
                 <module>commons</module>
                 <module>smooks-core</module>
                 <module>magger</module>
                 <module>tinak</module>
                 <module>edisax</module>
-                <module>scribe</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
@@ -59,13 +54,11 @@
         <profile>
             <id>noexamples</id>
             <modules>
-                <module>testres</module>
                 <module>commons</module>
                 <module>smooks-core</module>
                 <module>magger</module>
                 <module>tinak</module>
                 <module>edisax</module>
-                <module>scribe</module>
                 <module>smooks-cartridges</module>
             </modules>
         </profile>
