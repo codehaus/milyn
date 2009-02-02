@@ -23,6 +23,9 @@ import java.util.Arrays;
 public class LineOrder {
     private String customerId;
     private String customerName;
+
+    private LineOrderPriority priority;
+
     private LineItem[] lineItems;
 
     public String getCustomerId() {
@@ -49,16 +52,34 @@ public class LineOrder {
         this.lineItems = lineItems;
     }
 
-    public String toString() {
+	/**
+	 * @return the priority
+	 */
+	public LineOrderPriority getPriority() {
+		return priority;
+	}
+
+	/**
+	 * @param priority the priority to set
+	 */
+	public void setPriority(LineOrderPriority priority) {
+		this.priority = priority;
+	}
+
+    @Override
+	public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("Class: " + getClass().getName() + "\n");
         stringBuilder.append("\tcustomerId: " + customerId + "\n");
         stringBuilder.append("\tcustomerName: " + customerName + "\n");
+        stringBuilder.append("\tpriority: " + getPriority() + "\n");
         if(lineItems != null) {
             stringBuilder.append("\tlineItems: " + Arrays.asList(lineItems));
         }
 
         return stringBuilder.toString();
     }
+
+
 }
