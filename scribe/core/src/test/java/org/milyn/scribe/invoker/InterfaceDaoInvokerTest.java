@@ -34,6 +34,7 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Test(groups = "unit")
 public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	@Mock
@@ -55,7 +56,18 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
+	public void test_insert_named() {
+
+		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
+
+		Object toPersist = new Object();
+
+		invoker.insert("myInsert", toPersist);
+
+		verify(fullDao).insert(eq("myInsert"), same(toPersist));
+
+	}
+
 	public void test_update() {
 
 
@@ -69,7 +81,20 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
+
+	public void test_update_named() {
+
+
+		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
+
+		Object toMerge = new Object();
+
+		invoker.update("myMerge", toMerge);
+
+		verify(fullDao).update(eq("myMerge") ,same(toMerge));
+
+	}
+
 	public void test_delete() {
 
 
@@ -83,7 +108,19 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
+	public void test_delete_named() {
+
+
+		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
+
+		Object toDelete = new Object();
+
+		invoker.delete("myDelete", toDelete);
+
+		verify(fullDao).delete(eq("myDelete"), same(toDelete));
+
+	}
+
 	public void test_flush() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -94,7 +131,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = NotImplementedException.class)
 	public void test_flush_non_flushable_dao() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -103,7 +140,6 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
 	public void test_lookup() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -117,7 +153,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = NotImplementedException.class)
 	public void test_findBy_non_finder_dao() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -128,7 +164,6 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
 	public void test_lookupByQuery_map_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -141,7 +176,6 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
 	public void test_lookupByQuery_array_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(fullDao);
@@ -153,7 +187,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = NotImplementedException.class)
 	public void test_lookupByQuery_non_query_finder_dao_map_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -164,7 +198,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit", expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = NotImplementedException.class)
 	public void test_lookupByQuery_non_query_finder_dao_array_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);

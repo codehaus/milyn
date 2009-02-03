@@ -35,17 +35,35 @@ import org.milyn.scribe.annotation.Update;
 @Dao
 public interface FullAnnotatedDao {
 
-	@Insert
+	@Insert(isDefault = true)
 	Object insertIt(final Object entity);
 
-	@Update
+	@Insert
+	Object insertIt2(final Object entity);
+
+	@Insert(name = "insertIt3")
+	Object insertItDiff(final Object entity);
+
+	@Update(isDefault = true)
 	Object updateIt(final Object entity);
+
+	@Update
+	Object updateIt2(final Object entity);
+
+	@Update(name = "updateIt3")
+	Object updateItDiff(final Object entity);
+
+	@Delete(isDefault = true)
+	Object deleteIt(Object entity);
+
+	@Delete
+	Object deleteIt2(Object entity);
+
+	@Delete(name = "deleteIt3")
+	Object deleteItDiff(Object entity);
 
 	@Flush
 	void flushIt();
-
-	@Delete
-	void deleteIt(Object entity);
 
 	@LookupByQuery
 	Collection<?> findByQuery(String query, Object[] parameters);
@@ -53,10 +71,15 @@ public interface FullAnnotatedDao {
 	@LookupByQuery
 	Collection<?> findByQuery(String query, Map<String, Object> parameters);
 
-	@Lookup("id")
+	@Lookup(name="id")
 	Collection<?> findById(@Param("id") Long id);
 
-	@Lookup("name")
-	Collection<?> findById(@Param("surname") String surname, @Param("firstname") String firstname);
+	@Lookup(name="name")
+	Collection<?> findByName(@Param("last") String surname, @Param("first") String firstname);
 
+	@Lookup(name="positional")
+	Collection<?> findBySomething(String param1, int param2, boolean param3);
+
+	@Lookup
+	Collection<?> findBy(String param);
 }

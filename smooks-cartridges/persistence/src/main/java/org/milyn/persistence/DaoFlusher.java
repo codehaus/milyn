@@ -20,7 +20,6 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
@@ -33,16 +32,10 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdRegister;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
-import org.milyn.scribe.invoker.MappedDaoInvoker;
-import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
 /**
@@ -59,9 +52,6 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 
     @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
-
-    @ConfigParam(name = "statementId", use = Use.OPTIONAL)
-    private String statementId;
 
     @AppContext
     private ApplicationContext appContext;
@@ -120,11 +110,8 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
 			}
 
-			if(statementId == null) {
-				flush(dao);
-			} else {
-				mappedFlush(dao);
-			}
+			flush(dao);
+
 		} finally {
 			if(dao != null) {
 				emr.returnDao(dao);
@@ -139,16 +126,6 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
 		daoInvoker.flush();
-	}
-
-
-	/**
-	 * @param org.milyn.persistence.test.dao
-	 */
-	private void mappedFlush(Object dao) {
-		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
-
-		daoInvoker.flush(statementId);
 	}
 
 }

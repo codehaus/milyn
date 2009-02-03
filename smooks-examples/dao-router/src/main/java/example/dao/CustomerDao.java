@@ -39,7 +39,7 @@ public class CustomerDao {
 		this.em = em;
 	}
 
-	@Lookup("id")
+	@Lookup(name="id")
 	public Customer findCustomerById(@Param("id") int id) {
 		return em.find(Customer.class, id);
 	}

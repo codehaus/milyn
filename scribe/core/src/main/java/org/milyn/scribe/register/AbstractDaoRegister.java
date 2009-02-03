@@ -13,7 +13,9 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.scribe;
+package org.milyn.scribe.register;
+
+import org.milyn.scribe.DaoRegister;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>

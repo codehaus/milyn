@@ -18,7 +18,7 @@ package org.milyn.scribe.adapter.jpa;
 import javax.persistence.EntityManager;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.AbstractDaoRegister;
+import org.milyn.scribe.register.AbstractDaoRegister;
 
 
 /**

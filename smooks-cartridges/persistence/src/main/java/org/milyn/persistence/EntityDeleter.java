@@ -43,8 +43,6 @@ import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
-import org.milyn.scribe.invoker.MappedDaoInvoker;
-import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
 
@@ -140,12 +138,13 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
 			}
 
-			Object result;
+			DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
+			Object result;
 			if(statementId != null) {
-				result = deleteMapped(bean, dao);
+				result = daoInvoker.delete(statementId, bean);
 			} else {
-				result = delete(bean, dao);
+				result = daoInvoker.delete(bean);
 			}
 
 			if(deletedBeanId != null) {
@@ -165,28 +164,5 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 		}
 	}
 
-	/**
-	 * @param bean
-	 * @param daoObj
-	 * @param result
-	 * @return
-	 */
-	private Object delete(Object bean, Object dao) {
-		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
-		return daoInvoker.delete(bean);
-	}
-
-
-	/**
-	 * @param beanResult
-	 * @param daoObj
-	 * @param result
-	 * @return
-	 */
-	private Object deleteMapped(Object bean, Object dao) {
-		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
-
-		return daoInvoker.delete(statementId, bean);
-	}
 }

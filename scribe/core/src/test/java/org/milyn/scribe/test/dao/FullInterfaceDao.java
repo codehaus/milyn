@@ -18,12 +18,13 @@ package org.milyn.scribe.test.dao;
 import org.milyn.scribe.Dao;
 import org.milyn.scribe.Flushable;
 import org.milyn.scribe.Locator;
+import org.milyn.scribe.MappingDao;
 import org.milyn.scribe.Queryable;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceDao<T> extends Dao<T>, Flushable, Locator, Queryable {
+public interface FullInterfaceDao<T> extends Dao<T>, MappingDao<T>, Flushable, Locator, Queryable {
 
 }

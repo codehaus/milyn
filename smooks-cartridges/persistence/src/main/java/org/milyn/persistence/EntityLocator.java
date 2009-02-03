@@ -43,11 +43,8 @@ import org.milyn.persistence.parameter.ParameterManager;
 import org.milyn.persistence.parameter.PositionalParameterContainer;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
-import org.milyn.scribe.DaoUtil;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
-import org.milyn.scribe.invoker.MappedDaoInvoker;
-import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
 /**
@@ -156,16 +153,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 				throw new IllegalStateException("The DAO register returned null while getting the DAO '" + daoName + "'");
 			}
 
-			Object result;
-			if(DaoUtil.isDao(dao)) {
-				result = lookup(dao, executionContext);
-			} else if(DaoUtil.isMappedDao(dao)) {
-				result = lookupMapped(dao, executionContext);
-			} else {
-				throw new IllegalStateException("The DAO '" + daoName + "' of type '" + dao.getClass().getName() + "' isn't recognized as a Dao or a MappedDao.");
-			}
-
-
+			Object result = lookup(dao, executionContext);
 
 			if(uniqueResult == true) {
 				if(result instanceof Collection){
@@ -224,18 +212,4 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 		}
 	}
 
-	public Object lookupMapped(Object dao, ExecutionContext executionContext) {
-		ParameterContainer<?> container = ParameterManager.getParameterContainer(id, executionContext);
-		MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
-
-		if(query == null) {
-			if(parameterListType == ParameterListType.NAMED) {
-				return daoInvoker.lookup(lookupName, ((NamedParameterContainer) container).getParameterMap());
-			} else {
-				return daoInvoker.lookup(lookupName, ((PositionalParameterContainer) container).getValues());
-			}
-		} else {
-			throw new SmooksConfigurationException("You can't set the query value for a mapped DAO because the lookup by query isn't supported for mapped DAO's.");
-		}
-	}
 }

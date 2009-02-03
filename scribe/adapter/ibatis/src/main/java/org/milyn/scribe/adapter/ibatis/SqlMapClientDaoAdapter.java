@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.milyn.scribe.DaoException;
 import org.milyn.scribe.Locator;
-import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.MappingDao;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
 
@@ -29,7 +29,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class SqlMapClientDaoAdapter implements MappedDao<Object>, Locator  {
+public class SqlMapClientDaoAdapter implements MappingDao<Object>, Locator  {
 
 	private final SqlMapClient sqlMapClient;
 
@@ -67,7 +67,7 @@ public class SqlMapClientDaoAdapter implements MappedDao<Object>, Locator  {
 
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.MappedDao#delete(java.lang.String, java.lang.Object)
+	 * @see org.milyn.scribe.MappingDao#delete(java.lang.String, java.lang.Object)
 	 */
 	public Object delete(String id, Object entity) {
 		try {

@@ -13,14 +13,27 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.scribe;
+package org.milyn.scribe.test.dao;
+
+import org.milyn.scribe.annotation.Dao;
+import org.milyn.scribe.annotation.Delete;
+import org.milyn.scribe.annotation.Insert;
+import org.milyn.scribe.annotation.Update;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface MappedFlushable {
+@Dao
+public interface OnlyDefaultAnnotatedDao {
 
-	public void flush(String id);
+	@Insert
+	public void insertIt(Object entity);
+
+	@Update
+	public void updateIt(Object entity);
+
+	@Delete
+	public void deleteIt(Object entity);
 
 }

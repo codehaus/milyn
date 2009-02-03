@@ -23,11 +23,17 @@ import java.util.Map;
  */
 public interface DaoInvoker {
 
-	Object insert(Object obj);
+	Object insert(Object entity);
 
-	Object update(Object obj);
+	Object insert(String name, Object entity);
 
-	Object delete(Object parameters);
+	Object update(Object entity);
+
+	Object update(String name, Object entity);
+
+	Object delete(Object entity);
+
+	Object delete(String name, Object entity);
 
 	void flush();
 
