@@ -32,7 +32,7 @@ import org.milyn.payload.StringSource;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.Dao;
-import org.milyn.scribe.MappedDao;
+import org.milyn.scribe.MappingDao;
 import org.milyn.scribe.register.MapRegister;
 import org.milyn.scribe.register.SingleDaoRegister;
 import org.mockito.Mock;
@@ -42,6 +42,7 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Test(groups="unit")
 public class EntitySaverTest extends BaseTestCase {
 
 	private static final boolean ENABLE_REPORTING = false;
@@ -52,9 +53,8 @@ public class EntitySaverTest extends BaseTestCase {
 	private Dao<String> dao;
 
 	@Mock
-	private MappedDao<String> mappedDao;
+	private MappingDao<String> mappedDao;
 
-	@Test
 	public void test_entity_insert_and_update() throws Exception {
 		String toInsert1 = new String("toInsert1");
 		String toInsert2 = new String("toInsert2");
@@ -80,7 +80,6 @@ public class EntitySaverTest extends BaseTestCase {
 		verify(dao).insert(same(toInsert1));
 	}
 
-	@Test
 	public void test_entity_insert_and_update_with_named_dao() throws Exception {
 		String toInsert1 = new String("toInsert1");
 		String toInsert2 = new String("toInsert2");
@@ -108,7 +107,6 @@ public class EntitySaverTest extends BaseTestCase {
 		verify(dao).insert(same(toInsert1));
 	}
 
-	@Test
 	public void test_entity_insert_and_update_to_other_beanId() throws Exception {
 		String toInsert1 = new String("toInsert1");
 		String toInsert2 = new String("toInsert2");
@@ -143,7 +141,6 @@ public class EntitySaverTest extends BaseTestCase {
 
 	}
 
-	@Test
 	public void test_entity_insert_and_update_with_mapped_dao() throws Exception {
 		String toInsert1 = new String("toInsert1");
 		String toInsert2 = new String("toInsert2");
@@ -169,7 +166,6 @@ public class EntitySaverTest extends BaseTestCase {
 		verify(mappedDao).insert(eq("insert1"), same(toInsert1));
 	}
 
-	@Test
 	public void test_entity_insert_with_saveBefore() throws Exception {
 		String toInsert1 = new String("toInsert1");
 		String toInsert2 = new String("toInsert2");

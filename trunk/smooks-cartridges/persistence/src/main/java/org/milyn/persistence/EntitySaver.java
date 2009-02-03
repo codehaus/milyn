@@ -43,8 +43,6 @@ import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
-import org.milyn.scribe.invoker.MappedDaoInvoker;
-import org.milyn.scribe.invoker.MappedDaoInvokerFactory;
 import org.w3c.dom.Element;
 
 
@@ -142,13 +140,22 @@ public class EntitySaver implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 			if(dao == null) {
 				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
 			}
+			final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
 			Object result;
 
-			if(statementId != null) {
-				result = saveMapped(bean, dao);
-			} else {
-				result = save(bean, dao);
+			switch (action) {
+
+			case INSERT:
+				result = statementId == null ? daoInvoker.insert(bean) : daoInvoker.insert(statementId, bean) ;
+				break;
+
+			case UPDATE:
+				result = statementId == null ? daoInvoker.update(bean) : daoInvoker.update(statementId, bean) ;
+				break;
+
+			default:
+				throw new IllegalStateException("The action '"	+ action + "' is not supported");
 			}
 
 			if(savedBeanId != null) {
@@ -168,53 +175,5 @@ public class EntitySaver implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 		}
 	}
 
-	/**
-	 * @param bean
-	 * @param daoObj
-	 * @param result
-	 * @return
-	 */
-	private Object save(Object bean, Object dao) {
-		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
-
-		switch (action) {
-
-		case INSERT:
-			return daoInvoker.insert(bean);
-
-		case UPDATE:
-			return daoInvoker.update(bean);
-
-		default:
-			throw new IllegalStateException("The action '"	+ action + "' is not supported");
-		}
-
-	}
-
-
-	/**
-	 * @param bean
-	 * @param daoObj
-	 * @param result
-	 * @return
-	 */
-	private Object saveMapped(Object bean, Object dao) {
-		final MappedDaoInvoker daoInvoker = MappedDaoInvokerFactory.getInstance().create(dao, objectStore);
-
-
-		switch (action) {
-
-		case INSERT:
-			return daoInvoker.insert(statementId, bean);
-
-
-		case UPDATE:
-			return daoInvoker.update(statementId, bean);
-
-		default:
-			throw new IllegalStateException("The action '"	+ action + "' is not supported");
-		}
-
-	}
 }

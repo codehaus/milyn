@@ -22,6 +22,14 @@ import static org.mockito.Mockito.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.milyn.scribe.IllegalAnnotationUsageException;
+import org.milyn.scribe.annotation.Dao;
+import org.milyn.scribe.annotation.Delete;
+import org.milyn.scribe.annotation.Insert;
+import org.milyn.scribe.annotation.Lookup;
+import org.milyn.scribe.annotation.Update;
+import org.milyn.scribe.invoker.AnnotatedDaoInvoker;
+import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfo;
 import org.milyn.scribe.reflection.EntityMethod;
 import org.milyn.scribe.reflection.FlushMethod;
@@ -30,6 +38,7 @@ import org.milyn.scribe.reflection.LookupWithNamedQueryMethod;
 import org.milyn.scribe.reflection.LookupWithPositionalQueryMethod;
 import org.milyn.scribe.test.dao.FullAnnotatedDao;
 import org.milyn.scribe.test.dao.MinimumAnnotatedDao;
+import org.milyn.scribe.test.dao.OnlyDefaultAnnotatedDao;
 import org.milyn.scribe.test.util.BaseTestCase;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
@@ -40,17 +49,17 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Test( groups = "unit" )
 public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	private final AnnotatedDaoRuntimeInfo fullAnnotatedDaoRuntimeInfo = new AnnotatedDaoRuntimeInfo(FullAnnotatedDao.class);
 
 	private final AnnotatedDaoRuntimeInfo minimumAnnotatedDaoRuntimeInfo = new AnnotatedDaoRuntimeInfo(MinimumAnnotatedDao.class);
 
-
 	@Mock
 	private FullAnnotatedDao fullAnnotatedDao;
 
-	@Test( groups = "unit" )
+
 	public void test_getDaoClass() {
 
 		Class<?> daoClass = fullAnnotatedDaoRuntimeInfo.getDaoClass();
@@ -60,10 +69,12 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = "unit" )
+
+
+
 	public void test_getInsertMethod() {
 
-		EntityMethod method = fullAnnotatedDaoRuntimeInfo.getInsertMethod();
+		EntityMethod method = fullAnnotatedDaoRuntimeInfo.getDefaultInsertMethod();
 
 		assertNotNull(method);
 
@@ -73,14 +84,14 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 		verify(fullAnnotatedDao).insertIt(same(toPersist));
 
-		assertNull(minimumAnnotatedDaoRuntimeInfo.getInsertMethod());
+		assertNull(minimumAnnotatedDaoRuntimeInfo.getDefaultInsertMethod());
 
 	}
 
-	@Test( groups = "unit" )
+
 	public void test_getUpdateMethod() {
 
-		EntityMethod method = fullAnnotatedDaoRuntimeInfo.getUpdateMethod();
+		EntityMethod method = fullAnnotatedDaoRuntimeInfo.getDefaultUpdateMethod();
 
 		assertNotNull(method);
 
@@ -90,14 +101,14 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 		verify(fullAnnotatedDao).updateIt(same(toMerge));
 
-		assertNull(minimumAnnotatedDaoRuntimeInfo.getUpdateMethod());
+		assertNull(minimumAnnotatedDaoRuntimeInfo.getDefaultUpdateMethod());
 
 	}
 
-	@Test( groups = "unit" )
+
 	public void test_getDeleteMethod() {
 
-		EntityMethod method = fullAnnotatedDaoRuntimeInfo.getDeleteMethod();
+		EntityMethod method = fullAnnotatedDaoRuntimeInfo.getDefaultDeleteMethod();
 
 		assertNotNull(method);
 
@@ -107,11 +118,11 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 		verify(fullAnnotatedDao).deleteIt(same(toDelete));
 
-		assertNull(minimumAnnotatedDaoRuntimeInfo.getDeleteMethod());
+		assertNull(minimumAnnotatedDaoRuntimeInfo.getDefaultDeleteMethod());
 
 	}
 
-	@Test( groups = "unit" )
+
 	public void test_getFlushMethod() {
 
 		FlushMethod method = fullAnnotatedDaoRuntimeInfo.getFlushMethod();
@@ -126,7 +137,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = "unit" )
+
 	public void test_getFindByNamedQueryMethod() {
 
 		LookupWithNamedQueryMethod method = fullAnnotatedDaoRuntimeInfo.getLookupByNamedQueryMethod();
@@ -143,7 +154,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = "unit" )
+
 	public void test_getFindByPositionalQueryMethod() {
 
 		LookupWithPositionalQueryMethod method = fullAnnotatedDaoRuntimeInfo.getLookupByPositionalQueryMethod();
@@ -160,7 +171,7 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 
 	}
 
-	@Test( groups = "unit" )
+
 	public void test_getFindByMethod() {
 
 		LookupMethod method = fullAnnotatedDaoRuntimeInfo.getLookupWithNamedParametersMethod("id");
@@ -175,5 +186,82 @@ public class AnnotatedDaoRuntimeInfoTest extends BaseTestCase{
 		verify(fullAnnotatedDao).findById(eq(1L));
 
 		assertNull(minimumAnnotatedDaoRuntimeInfo.getLookupWithNamedParametersMethod("id"));
+	}
+
+	public void test_default_annotated_methods() {
+		AnnotatedDaoRuntimeInfo runtimeInfo = new AnnotatedDaoRuntimeInfo(OnlyDefaultAnnotatedDao.class);
+
+		assertNotNull(runtimeInfo.getDefaultInsertMethod());
+		assertNotNull(runtimeInfo.getDefaultUpdateMethod());
+		assertNotNull(runtimeInfo.getDefaultDeleteMethod());
+	}
+
+	@Test(expectedExceptions = IllegalAnnotationUsageException.class)
+	public void test_exception_on_same_named_insert_method() {
+		new AnnotatedDaoRuntimeInfo(IncorrectInsertDao.class);
+	}
+
+	@Test(expectedExceptions = IllegalAnnotationUsageException.class)
+	public void test_exception_on_same_named_update_method() {
+		new AnnotatedDaoRuntimeInfo(IncorrectUpdateDao.class);
+	}
+
+	@Test(expectedExceptions = IllegalAnnotationUsageException.class)
+	public void test_exception_on_same_named_delete_method() {
+		new AnnotatedDaoRuntimeInfo(IncorrectDeleteDao.class);
+	}
+
+	@Test(expectedExceptions = IllegalAnnotationUsageException.class)
+	public void test_exception_on_same_named_locator_method() {
+		new AnnotatedDaoRuntimeInfo(IncorrectLocatorDao.class);
+	}
+
+
+	@Dao
+	private class IncorrectInsertDao {
+
+		@Insert
+		public void insert(Object entity) {
+		}
+
+		@Insert(name="insert")
+		public void insert2(Object entity)  {
+		}
+	}
+
+	@Dao
+	private class IncorrectUpdateDao {
+
+		@Update
+		public void update(Object entity) {
+		}
+
+		@Update(name="update")
+		public void update2(Object entity)  {
+		}
+	}
+
+	@Dao
+	private class IncorrectDeleteDao {
+
+		@Delete
+		public void delete(Object entity) {
+		}
+
+		@Delete(name="delete")
+		public void delete2(Object entity)  {
+		}
+	}
+
+	@Dao
+	private class IncorrectLocatorDao {
+
+		@Lookup
+		public void findBy(Object entity) {
+		}
+
+		@Lookup(name="findBy")
+		public void findBy2(Object entity)  {
+		}
 	}
 }

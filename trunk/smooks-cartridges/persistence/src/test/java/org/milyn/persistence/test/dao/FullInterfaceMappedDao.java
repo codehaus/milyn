@@ -15,15 +15,15 @@
 */
 package org.milyn.persistence.test.dao;
 
+import org.milyn.scribe.Flushable;
 import org.milyn.scribe.Locator;
-import org.milyn.scribe.MappedDao;
-import org.milyn.scribe.MappedFlushable;
+import org.milyn.scribe.MappingDao;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceMappedDao<T> extends MappedDao<T>, MappedFlushable, Locator {
+public interface FullInterfaceMappedDao<T> extends MappingDao<T>, Flushable, Locator {
 
 
 }

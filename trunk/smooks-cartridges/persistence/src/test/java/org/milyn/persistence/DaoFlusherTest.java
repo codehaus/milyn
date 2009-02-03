@@ -39,6 +39,7 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Test(groups="unit")
 public class DaoFlusherTest  extends BaseTestCase   {
 
 	private static final boolean ENABLE_REPORTING = false;
@@ -51,7 +52,6 @@ public class DaoFlusherTest  extends BaseTestCase   {
 	@Mock
 	private FullInterfaceMappedDao<Object> mappedDao;
 
-	@Test
 	public void test_dao_flush() throws Exception {
 		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-01.xml"));
 
@@ -66,7 +66,6 @@ public class DaoFlusherTest  extends BaseTestCase   {
 		verify(dao).flush();
 	}
 
-	@Test
 	public void test_dao_flush_with_named_dao() throws Exception {
 
 		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-02.xml"));
@@ -84,24 +83,9 @@ public class DaoFlusherTest  extends BaseTestCase   {
 		verify(dao).flush();
 	}
 
-	@Test
-	public void test_mapped_dao_flush() throws Exception {
-		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-03.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
-
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(mappedDao));
-
-		enableReporting(executionContext, "report_test_mapped_dao_flush.html");
-
-		smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
-
-		verify(mappedDao).flush("flush");
-	}
-
-	@Test
 	public void test_dao_flush_with_flushBefore() throws Exception {
-		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-04.xml"));
+		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-03.xml"));
 		Map<String, Object> daoMap = new HashMap<String, Object>();
 		daoMap.put("mappedDao", mappedDao);
 		daoMap.put("dao", dao);
@@ -114,7 +98,6 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
 		smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
 
-		verify(mappedDao).flush("flushIt");
 		verify(dao).flush();
 	}
 

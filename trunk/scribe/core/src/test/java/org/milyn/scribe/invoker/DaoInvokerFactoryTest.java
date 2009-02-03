@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 import org.milyn.scribe.Dao;
 import org.milyn.scribe.MapObjectStore;
+import org.milyn.scribe.MappingDao;
 import org.milyn.scribe.ObjectStore;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
@@ -33,11 +34,11 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Test(groups = "unit")
 public class DaoInvokerFactoryTest extends BaseTestCase {
 
 	ObjectStore objectStore;
 
-	@Test(groups = "unit")
 	public void test_getInstance() {
 
 		DaoInvokerFactory factory  = DaoInvokerFactory.getInstance();
@@ -50,8 +51,7 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
-	public void test_create_with_interfaced_dao() {
+	public void test_create_with_dao_interface() {
 
 		DaoInvokerFactory factory  = DaoInvokerFactory.getInstance();
 
@@ -70,7 +70,25 @@ public class DaoInvokerFactoryTest extends BaseTestCase {
 
 	}
 
-	@Test(groups = "unit")
+	public void test_create_with_mapping_dao_interface() {
+
+		DaoInvokerFactory factory  = DaoInvokerFactory.getInstance();
+
+		@SuppressWarnings("unchecked")
+		MappingDao<Object> daoMock = mock(MappingDao.class);
+
+		DaoInvoker daoInvoker = factory.create(daoMock, objectStore);
+
+		assertNotNull(daoInvoker);
+
+		Object entity = new Object();
+
+		daoInvoker.insert("myInsert", entity);
+
+		verify(daoMock).insert(eq("myInsert"), same(entity));
+
+	}
+
 	public void test_create_with_annotated_dao() {
 
 		DaoInvokerFactory factory  = DaoInvokerFactory.getInstance();

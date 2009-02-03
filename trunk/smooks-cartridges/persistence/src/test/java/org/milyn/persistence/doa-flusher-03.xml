@@ -2,6 +2,6 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
 	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
 
-	<dao:flusher statementId="flush" flushOnElement="root" />
+	<dao:flusher dao="dao" flushOnElement="root" flushBefore="false" />
 
 </smooks-resource-list>

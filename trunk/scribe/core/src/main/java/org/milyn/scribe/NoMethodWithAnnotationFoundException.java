@@ -19,7 +19,7 @@ package org.milyn.scribe;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class NoMethodWithAnnotationFound extends RuntimeException {
+public class NoMethodWithAnnotationFoundException extends RuntimeException {
 
 	/**
 	 *
@@ -29,20 +29,20 @@ public class NoMethodWithAnnotationFound extends RuntimeException {
 	/**
 	 *
 	 */
-	public NoMethodWithAnnotationFound() {
+	public NoMethodWithAnnotationFoundException() {
 	}
 
 	/**
 	 * @param message
 	 */
-	public NoMethodWithAnnotationFound(String message) {
+	public NoMethodWithAnnotationFoundException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public NoMethodWithAnnotationFound(Throwable cause) {
+	public NoMethodWithAnnotationFoundException(Throwable cause) {
 		super(cause);
 	}
 
@@ -50,7 +50,7 @@ public class NoMethodWithAnnotationFound extends RuntimeException {
 	 * @param message
 	 * @param cause
 	 */
-	public NoMethodWithAnnotationFound(String message, Throwable cause) {
+	public NoMethodWithAnnotationFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

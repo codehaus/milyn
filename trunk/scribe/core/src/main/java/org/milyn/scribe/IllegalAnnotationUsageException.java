@@ -15,20 +15,43 @@
 */
 package org.milyn.scribe;
 
-import org.milyn.annotation.AnnotationManager;
-
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public final class DaoUtil {
+public class IllegalAnnotationUsageException extends RuntimeException {
 
-	public static boolean isDao(Object dao) {
-		return dao instanceof Dao || AnnotationManager.getAnnotatedClass(dao.getClass()).isAnnotationPresent(org.milyn.scribe.annotation.Dao.class);
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -8613863508327591649L;
+
+	/**
+	 *
+	 */
+	public IllegalAnnotationUsageException() {
 	}
 
-	public static boolean isMappedDao(Object mappedDao) {
-		return mappedDao instanceof MappedDao || AnnotationManager.getAnnotatedClass(mappedDao.getClass()).isAnnotationPresent(org.milyn.scribe.annotation.MappedDao.class);
+	/**
+	 * @param message
+	 */
+	public IllegalAnnotationUsageException(String message) {
+		super(message);
+	}
+
+	/**
+	 * @param cause
+	 */
+	public IllegalAnnotationUsageException(Throwable cause) {
+		super(cause);
+	}
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public IllegalAnnotationUsageException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

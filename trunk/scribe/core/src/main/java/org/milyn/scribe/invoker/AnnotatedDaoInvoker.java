@@ -18,7 +18,7 @@ package org.milyn.scribe.invoker;
 import java.util.Map;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.NoMethodWithAnnotationFound;
+import org.milyn.scribe.NoMethodWithAnnotationFoundException;
 import org.milyn.scribe.annotation.Delete;
 import org.milyn.scribe.annotation.Flush;
 import org.milyn.scribe.annotation.Insert;
@@ -69,9 +69,20 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	 * @see org.milyn.scribe.invoker.DAOInvoker#merge(java.lang.Object)
 	 */
 	public Object update(final Object entity) {
-		final EntityMethod method = daoRuntimeInfo.getUpdateMethod();
+		final EntityMethod method = daoRuntimeInfo.getDefaultUpdateMethod();
 
 		assertMethod(method, Update.class);
+
+		return method.invoke(dao, entity);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DaoInvoker#update(java.lang.String, java.lang.Object)
+	 */
+	public Object update(String name, Object entity) {
+		final EntityMethod method = daoRuntimeInfo.getUpdateMethod(name);
+
+		assertMethod(method, name, Update.class);
 
 		return method.invoke(dao, entity);
 	}
@@ -80,9 +91,20 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	 * @see org.milyn.scribe.invoker.DAOInvoker#persist(java.lang.Object)
 	 */
 	public Object insert(final Object entity) {
-		final EntityMethod method = daoRuntimeInfo.getInsertMethod();
+		final EntityMethod method = daoRuntimeInfo.getDefaultInsertMethod();
 
 		assertMethod(method, Insert.class);
+
+		return method.invoke(dao, entity);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DaoInvoker#insert(java.lang.String, java.lang.Object)
+	 */
+	public Object insert(String name, Object entity) {
+		final EntityMethod method = daoRuntimeInfo.getInsertMethod(name);
+
+		assertMethod(method, name, Insert.class);
 
 		return method.invoke(dao, entity);
 	}
@@ -91,9 +113,20 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	 * @see org.milyn.scribe.invoker.DaoInvoker#delete(java.lang.Object[])
 	 */
 	public Object delete(final Object entity) {
-		final EntityMethod method = daoRuntimeInfo.getDeleteMethod();
+		final EntityMethod method = daoRuntimeInfo.getDefaultDeleteMethod();
 
 		assertMethod(method, Delete.class);
+
+		return method.invoke(dao, entity);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DaoInvoker#delete(java.lang.String, java.lang.Object)
+	 */
+	public Object delete(String name, Object entity) {
+		final EntityMethod method = daoRuntimeInfo.getDeleteMethod(name);
+
+		assertMethod(method, name, Delete.class);
 
 		return method.invoke(dao, entity);
 	}
@@ -107,8 +140,8 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 		final LookupWithPositionalQueryMethod method = daoRuntimeInfo.getLookupByPositionalQueryMethod();
 
 		if(method == null) {
-			throw new NoMethodWithAnnotationFound("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated " +
-					"with '" + LookupByQuery.class.getName() + "' annotation and has an Array argument for the positional parameters.");
+			throw new NoMethodWithAnnotationFoundException("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated " +
+					"with '" + LookupByQuery.class.getSimpleName() + "' annotation and has an Array argument for the positional parameters.");
 		}
 
 		return method.invoke(dao, query, parameters);
@@ -123,8 +156,8 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 		final LookupWithNamedQueryMethod method = daoRuntimeInfo.getLookupByNamedQueryMethod();
 
 		if(method == null) {
-			throw new NoMethodWithAnnotationFound("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated " +
-					"with '" + LookupByQuery.class.getName() + "' annotation and has a Map argument for the named parameters.");
+			throw new NoMethodWithAnnotationFoundException("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated " +
+					"with '" + LookupByQuery.class.getSimpleName() + "' annotation and has a Map argument for the named parameters.");
 		}
 
 		return method.invoke(dao, query, parameters);
@@ -135,7 +168,9 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	 */
 	public Object lookup(final String name, final Map<String, ?> parameters) {
 
-		final LookupMethod method = getLookupMethod(name);
+		final LookupMethod method = daoRuntimeInfo.getLookupWithNamedParametersMethod(name);
+
+		assertMethod(method, name, Lookup.class);
 
 		return method.invoke(dao, parameters);
 
@@ -146,36 +181,29 @@ public class AnnotatedDaoInvoker implements DaoInvoker {
 	 */
 	public Object lookup(final String name, final Object ... parameters) {
 
-		final LookupMethod method = getLookupMethod(name);
+		final LookupMethod method = daoRuntimeInfo.getLookupWithNamedParametersMethod(name);
+
+		assertMethod(method, name, Lookup.class);
 
 		return method.invoke(dao, parameters);
 
 	}
 
-
-	/**
-	 * @param name
-	 * @return
-	 */
-	private LookupMethod getLookupMethod(final String name) {
-		final LookupMethod method = daoRuntimeInfo.getLookupWithNamedParametersMethod(name);
-
-		if(method == null) {
-			throw new NoMethodWithAnnotationFound("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated " +
-					"with '" + Lookup.class.getName() + "' and has the name '" + name + "'");
-		}
-		return method;
-	}
-
 	private void assertMethod(final Object method, final Class<?> annotation) {
 
 		if(method == null) {
-			throw new NoMethodWithAnnotationFound("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated with '" + annotation.getName() + "' annotation.");
+			throw new NoMethodWithAnnotationFoundException("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated with the '" + annotation.getSimpleName() + "' annotation.");
 		}
 
 	}
 
+	private void assertMethod(final Object method, String name, final Class<?> annotation) {
 
+		if(method == null) {
+			throw new NoMethodWithAnnotationFoundException("No method found in DAO class '" + dao.getClass().getName() + "' that is annotated with the '" + annotation.getSimpleName() + "' annotation and has the name '"+ name +"'.");
+		}
+
+	}
 
 
 }

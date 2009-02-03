@@ -27,9 +27,10 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Test( groups = "unit" )
 public class AnnotatedDaoRuntimeInfoFactoryTest {
 
-	@Test( groups = "unit" )
+
 	public void test_create() {
 
 		AnnotatedDaoRuntimeInfoFactory factory = new AnnotatedDaoRuntimeInfoFactory();

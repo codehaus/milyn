@@ -16,6 +16,7 @@
 package org.milyn.scribe.test.dao;
 
 import org.milyn.scribe.annotation.Dao;
+import org.milyn.scribe.annotation.Delete;
 import org.milyn.scribe.annotation.Insert;
 import org.milyn.scribe.annotation.ReturnsNoEntity;
 import org.milyn.scribe.annotation.Update;
@@ -35,5 +36,9 @@ public interface AnnotatedDaoNoEntityReturned {
 	@Update
 	@ReturnsNoEntity
 	Object mergeIt(final Object merge);
+
+	@Delete
+	@ReturnsNoEntity
+	Object deleteIt(final Object delete);
 
 }

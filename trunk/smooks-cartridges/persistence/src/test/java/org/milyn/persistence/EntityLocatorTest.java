@@ -41,13 +41,13 @@ import org.testng.annotations.Test;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Test(groups="unit")
 public class EntityLocatorTest extends BaseTestCase {
 	private static final boolean ENABLE_REPORTING = true;
 
 	@Mock
 	private FullInterfaceDao<Object> dao;
 
-	@Test(groups = "unit")
 	public void test_entity_locate() throws Exception {
 		Object result = new Object();
 

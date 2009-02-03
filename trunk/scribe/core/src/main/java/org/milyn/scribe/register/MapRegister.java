@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.milyn.scribe.AbstractDaoRegister;
 
 
 
@@ -41,13 +40,8 @@ public class MapRegister<T> extends AbstractDaoRegister<T> {
 	/**
 	 *
 	 */
-	@SuppressWarnings("unchecked")
 	public MapRegister(Map<String, T> map) {
-		if(map instanceof HashMap) {
-			this.map = (HashMap<String, T>) ((HashMap<String, T>) map).clone();
-		} else {
-			this.map = new HashMap<String, T>(map);
-		}
+		this.map = new HashMap<String, T>(map);
 	}
 
 	public T put(final String key, final T dao) {

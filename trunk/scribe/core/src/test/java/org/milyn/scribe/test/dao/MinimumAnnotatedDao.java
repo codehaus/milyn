@@ -22,6 +22,6 @@ import org.milyn.scribe.annotation.Dao;
  *
  */
 @Dao
-public class MinimumAnnotatedDao {
+public interface MinimumAnnotatedDao {
 
 }

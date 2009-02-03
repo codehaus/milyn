@@ -13,17 +13,45 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.scribe.test.dao;
-
-import org.milyn.scribe.Locator;
-import org.milyn.scribe.MappedDao;
-import org.milyn.scribe.MappedFlushable;
+package org.milyn.scribe;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public interface FullInterfaceMappedDao<T> extends MappedDao<T>, MappedFlushable, Locator {
+public class AnnotationNotFoundException extends RuntimeException {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -8613863508327591649L;
+
+	/**
+	 *
+	 */
+	public AnnotationNotFoundException() {
+	}
+
+	/**
+	 * @param message
+	 */
+	public AnnotationNotFoundException(String message) {
+		super(message);
+	}
+
+	/**
+	 * @param cause
+	 */
+	public AnnotationNotFoundException(Throwable cause) {
+		super(cause);
+	}
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public AnnotationNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 }

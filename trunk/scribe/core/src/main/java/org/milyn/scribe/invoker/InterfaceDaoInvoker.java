@@ -21,6 +21,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.milyn.scribe.Dao;
 import org.milyn.scribe.Flushable;
 import org.milyn.scribe.Locator;
+import org.milyn.scribe.MappingDao;
 import org.milyn.scribe.Queryable;
 
 
@@ -32,32 +33,87 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 
 	private final Dao<Object> dao;
 
-	private Queryable  queryFinderDAO;
+	private final MappingDao<Object> mappingDao;
 
-	private Locator  finderDAO;
+	private final Queryable  queryFinderDAO;
 
-	private Flushable flushableDAO;
+	private final Locator  finderDAO;
+
+	private final Flushable flushableDAO;
 
 	/**
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public InterfaceDaoInvoker(final Dao dao) {
-		this.dao = dao;
-
-		if(dao instanceof Queryable) {
-			this.queryFinderDAO = (Queryable) dao;
-		}
-
-		if(dao instanceof Locator) {
-			this.finderDAO = (Locator) dao;
-		}
-
-		if(dao instanceof Flushable) {
-			this.flushableDAO = (Flushable) dao;
-		}
-
+	InterfaceDaoInvoker(final Object dao) {
+		this.dao = dao instanceof Dao ? (Dao<Object>) dao : null;
+		mappingDao = dao instanceof MappingDao ? (MappingDao<Object>) dao : null;
+		queryFinderDAO = dao instanceof Queryable ? (Queryable) dao : null;
+		finderDAO = dao instanceof Locator ? (Locator) dao : null;
+		flushableDAO = dao instanceof Flushable ? (Flushable) dao : null;
 	}
+
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DAOInvoker#persist(java.lang.Object)
+	 */
+	public Object insert(final Object obj) {
+		if(dao == null) {
+			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't insert the entity.");
+		}
+		return dao.insert(obj);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DaoInvoker#insert(java.lang.String, java.lang.Object)
+	 */
+	public Object insert(String name, Object obj) {
+		if(mappingDao == null) {
+			throw new NotImplementedException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't insert the entity under the name '"+ name +"'.");
+		}
+		return mappingDao.insert(name, obj);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DAOInvoker#merge(java.lang.Object)
+	 */
+	public Object update(final Object obj) {
+		if(dao == null) {
+			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't insert the entity.");
+		}
+		return dao.update(obj);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DaoInvoker#update(java.lang.String, java.lang.Object)
+	 */
+	public Object update(String name, Object obj) {
+		if(mappingDao == null) {
+			throw new NotImplementedException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't update the entity under the name '"+ name +"'.");
+		}
+		return mappingDao.update(name, obj);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DaoInvoker#delete(java.lang.String, java.lang.Object[])
+	 */
+	public Object delete(Object entity) {
+		if(dao == null) {
+			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't delete the entity.");
+		}
+		return dao.delete(entity);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.invoker.DaoInvoker#delete(java.lang.String, java.lang.Object)
+	 */
+	public Object delete(String name, Object entity) {
+		if(mappingDao == null) {
+			throw new NotImplementedException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't delete the entity under the name '"+ name +"'.");
+		}
+		return mappingDao.delete(name, entity);
+	}
+
 
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.invoker.DAOInvoker#flush()
@@ -67,20 +123,6 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Flushable.class.getName() + "' interface and there for can't flush the DAO.");
 		}
 		flushableDAO.flush();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.scribe.invoker.DAOInvoker#persist(java.lang.Object)
-	 */
-	public Object insert(final Object obj) {
-		return dao.insert(obj);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.scribe.invoker.DAOInvoker#merge(java.lang.Object)
-	 */
-	public Object update(final Object obj) {
-		return dao.update(obj);
 	}
 
 	/* (non-Javadoc)
@@ -123,10 +165,5 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 		return finderDAO.lookup(name, parameters);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.milyn.scribe.invoker.DaoInvoker#delete(java.lang.String, java.lang.Object[])
-	 */
-	public Object delete(Object entity) {
-		return dao.delete(entity);
-	}
+
 }

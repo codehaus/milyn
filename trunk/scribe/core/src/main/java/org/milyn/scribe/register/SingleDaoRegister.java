@@ -16,7 +16,6 @@
 package org.milyn.scribe.register;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.milyn.scribe.AbstractDaoRegister;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
