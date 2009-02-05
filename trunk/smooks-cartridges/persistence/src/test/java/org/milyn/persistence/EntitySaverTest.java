@@ -91,7 +91,7 @@ public class EntitySaverTest extends BaseTestCase {
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new MapRegister<Object>(daoMap));
+		PersistenceUtil.setDAORegister(executionContext, MapRegister.newInstance(daoMap));
 
 		enableReporting(executionContext, "report_test_entity_insert_and_update_with_named_dao.html");
 

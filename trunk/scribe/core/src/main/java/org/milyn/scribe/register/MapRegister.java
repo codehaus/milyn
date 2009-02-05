@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.milyn.assertion.AssertArgument;
 
 
 
@@ -28,26 +29,27 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class MapRegister<T> extends AbstractDaoRegister<T> {
 
-	private final HashMap<String, T> map;
+	public static <T> MapRegister<T> newInstance(Map<String, ? extends T> map) {
+		AssertArgument.isNotNull(map, "map");
+
+		return new MapRegister<T>(new HashMap<String, T>(map));
+	}
+
+	public static <T> Builder<T> builder() {
+		return new Builder<T>();
+	}
+
+	public static <T> Builder<T> builder(Map<String, ? extends T> map) {
+		return new Builder<T>(map);
+	}
+
+	private final HashMap<String, ? extends T> map;
 
 	/**
 	 *
 	 */
-	public MapRegister() {
-		map = new HashMap<String, T>();
-	}
-
-	/**
-	 *
-	 */
-	public MapRegister(Map<String, T> map) {
-		this.map = new HashMap<String, T>(map);
-	}
-
-	public T put(final String key, final T dao) {
-
-		return map.put(key, dao);
-
+	private MapRegister(HashMap<String, ? extends T> map) {
+		this.map = map;
 	}
 
 	public boolean containsKey(final String key) {
@@ -116,26 +118,51 @@ public class MapRegister<T> extends AbstractDaoRegister<T> {
 		return map.equals(other.map);
 	}
 
-	public void clear() {
-		map.clear();
-	}
-
-	public boolean isEmpty() {
-		return map.isEmpty();
-	}
-
-
-	public void putAll(final Map<? extends String, ? extends T> t) {
-		map.putAll(t);
-
-	}
-
-	public T remove(final String key) {
-		return map.remove(key);
-	}
-
 	public int size() {
 		return map.size();
+	}
+
+	public static class Builder<T> {
+
+		private final HashMap<String, T> map;
+
+		/**
+		 *
+		 */
+		private Builder() {
+			map = new HashMap<String, T>();
+		}
+
+		/**
+		 *
+		 */
+		public Builder(Map<String, ? extends T> map) {
+			AssertArgument.isNotNull(map, "map");
+
+			this.map = new HashMap<String, T>(map);
+		}
+
+		public Builder<T> put(String name, T dao) {
+			AssertArgument.isNotNull(name, "name");
+			AssertArgument.isNotNull(dao, "dao");
+
+			map.put(name, dao);
+
+			return this;
+		}
+
+		public Builder<T> putAll(Map<String, ? extends T> map) {
+			AssertArgument.isNotNull(map, "map");
+
+			this.map.putAll(map);
+
+			return this;
+		}
+
+		public MapRegister<T> build() {
+			return new MapRegister<T>(map);
+		}
+
 	}
 
 }

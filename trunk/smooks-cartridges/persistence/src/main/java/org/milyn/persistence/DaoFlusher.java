@@ -101,7 +101,7 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 		Object dao = null;
 		try {
 			if(daoName == null) {
-				dao = emr.getDao();
+				dao = emr.getDefaultDao();
 			} else {
 				dao = emr.getDao(daoName);
 			}

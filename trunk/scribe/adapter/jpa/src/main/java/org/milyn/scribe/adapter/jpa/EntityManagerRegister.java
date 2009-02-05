@@ -15,36 +15,41 @@
 */
 package org.milyn.scribe.adapter.jpa;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 
-import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.register.AbstractDaoRegister;
+import org.milyn.scribe.register.AbstractDaoAdapterRegister;
 
 
 /**
  * @author maurice_zeijen
  *
  */
-public class EntityManagerRegister extends AbstractDaoRegister<EntityManagerDaoAdapter> {
+public class EntityManagerRegister extends AbstractDaoAdapterRegister<EntityManagerDaoAdapter, EntityManager> {
 
-	private final EntityManagerDaoAdapter entityManager;
+	public EntityManagerRegister(EntityManager defaultAdaptable) {
+		super(defaultAdaptable);
+	}
 
-	/**
-	 *
-	 */
-	public EntityManagerRegister(final EntityManager entityManager) {
-		AssertArgument.isNotNull(entityManager, "entityManager");
+	public EntityManagerRegister(EntityManager defaultAdaptable,
+			Map<String, ? extends EntityManager> adaptableMap) {
+		super(defaultAdaptable, adaptableMap);
+	}
 
-		this.entityManager = new EntityManagerDaoAdapter(entityManager);
+	public EntityManagerRegister(
+			Map<String, ? extends EntityManager> adaptableMap) {
+		super(adaptableMap);
 	}
 
 	/* (non-Javadoc)
-	 * @see org.milyn.scribe.DAORegistery#getDAO()
+	 * @see org.milyn.scribe.register.AbstractDaoAdapterRegister#createAdapter(java.lang.Object)
 	 */
 	@Override
-	public EntityManagerDaoAdapter getDao() {
-
-		return entityManager;
+	protected EntityManagerDaoAdapter createAdapter(EntityManager adaptable) {
+		return new EntityManagerDaoAdapter(adaptable);
 	}
+
+
 
 }

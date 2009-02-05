@@ -275,11 +275,11 @@ public class AnnotatedDaoRuntimeInfo {
 
 		assertUniqueName(insertMethods, Insert.class, name);
 
-		if(annotation.isDefault() && defaultUpdateMethod != null) {
-			throw new IllegalAnnotationUsageException("At least two methods are annotated with the '"+ Insert.class.getName() +"' having the isDefault on true. Only one method per class is allowed to be the default insert method.");
+		if(annotation.isDefault() && defaultInsertMethod != null) {
+			throw new IllegalAnnotationUsageException("At least two methods are annotated with the '"+ Insert.class.getName() +"'annotation having the isDefault on true. Only one method per class is allowed to be the default insert method.");
 		}
 		if(method.getParameterTypes().length == 0) {
-			throw new IllegalAnnotationUsageException("The Insert annotated method '"+ method +"' of the DAO class '"+ daoClass.getName() +"' doesn't have any parameters.");
+			throw new IllegalAnnotationUsageException("The Insert annotated method '"+ method +"' of the DAO class '"+ daoClass.getName() +"'  doesn't have any parameters.");
 		}
 		if(method.getParameterTypes().length > 1) {
 			throw new IllegalAnnotationUsageException("The Insert annotated method '"+ method +"' of the DAO class '"+ daoClass.getName() +"' has more then 1 parameter, which isn't allowed.");
@@ -312,7 +312,7 @@ public class AnnotatedDaoRuntimeInfo {
 		assertUniqueName(deleteMethods, Delete.class, name);
 
 		if(annotation.isDefault() && defaultDeleteMethod != null) {
-			throw new IllegalAnnotationUsageException("At least two methods are annotated with the '"+ Delete.class.getName() +"' having the isDefault on true. Only one method per class is allowed to be the default delete method.");
+			throw new IllegalAnnotationUsageException("At least two methods are annotated with the '"+ Delete.class.getName() +"' annotation having the isDefault on true. Only one method per class is allowed to be the default delete method.");
 		}
 		if(method.getParameterTypes().length == 0) {
 			throw new IllegalAnnotationUsageException("The Delete annotated method '"+ method +"' of the DAO class '"+ daoClass.getName() +"' doesn't have a parameter, which it needs.");

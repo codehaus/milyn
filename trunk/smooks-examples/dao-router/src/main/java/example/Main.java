@@ -134,10 +134,12 @@ public class Main {
         // Configure the execution context to generate a report...
         executionContext.setEventListener(new HtmlReportGenerator("target/report/report-dao.html"));
 
-        MapRegister<Object> mapRegister = new MapRegister<Object>();
-        mapRegister.put("product", new ProductDao(em));
-        mapRegister.put("customer", new CustomerDao(em));
-        mapRegister.put("order", new OrderDao(em));
+        MapRegister<Object> mapRegister =
+        	MapRegister.builder()
+        		.put("product", new ProductDao(em))
+        		.put("customer", new CustomerDao(em))
+        		.put("order", new OrderDao(em))
+        		.build();
 
         PersistenceUtil.setDAORegister(executionContext, mapRegister);
 

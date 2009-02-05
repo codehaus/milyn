@@ -21,22 +21,22 @@ import org.milyn.scribe.DaoRegister;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public abstract class AbstractDaoRegister<T> implements DaoRegister<T> {
+public abstract class AbstractDaoRegister<D> implements DaoRegister<D> {
 
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.DaoRegister#getDao()
 	 */
-	public T getDao() {
-		throw new UnsupportedOperationException("The getDao() method is not supported by this ('" + this.getClass().getName() + "') DaoRegister.");
+	public D getDefaultDao() {
+		throw new UnsupportedOperationException("The getDefaultDao() method is not supported by this '" + this.getClass().getName() + "' DaoRegister.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.DaoRegister#getDao(java.lang.String)
 	 */
-	public T getDao(String name) {
-		throw new UnsupportedOperationException("The getDao(String) method is not supported by this ('" + this.getClass().getName() + "') DaoRegister.");
+	public D getDao(String name) {
+		throw new UnsupportedOperationException("The getDao(String) method is not supported by this '" + this.getClass().getName() + "' DaoRegister.");
 	}
 
-	public void returnDao(T dao) {};
+	public void returnDao(D dao) {};
 
 }
