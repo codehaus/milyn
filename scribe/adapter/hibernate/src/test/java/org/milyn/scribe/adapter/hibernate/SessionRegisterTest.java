@@ -18,9 +18,9 @@ package org.milyn.scribe.adapter.hibernate;
 import static junit.framework.Assert.*;
 
 import org.hibernate.Session;
+import org.milyn.scribe.adapter.hibernate.SessionDaoAdapter;
+import org.milyn.scribe.adapter.hibernate.SessionRegister;
 import org.milyn.scribe.adapter.hibernate.test.util.BaseTestCase;
-import org.milyn.scribe.dao.adapter.hibernate.SessionDaoAdapter;
-import org.milyn.scribe.dao.adapter.hibernate.SessionRegister;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
 
@@ -38,7 +38,7 @@ public class SessionRegisterTest extends BaseTestCase {
 
 		SessionRegister register = new SessionRegister(session);
 
-		SessionDaoAdapter sessionDaoAdapter = register.getDao();
+		SessionDaoAdapter sessionDaoAdapter = register.getDefaultDao();
 
 		assertNotNull(sessionDaoAdapter);
 

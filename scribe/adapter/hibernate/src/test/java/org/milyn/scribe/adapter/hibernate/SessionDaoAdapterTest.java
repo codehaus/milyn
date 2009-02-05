@@ -26,8 +26,8 @@ import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.milyn.scribe.adapter.hibernate.SessionDaoAdapter;
 import org.milyn.scribe.adapter.hibernate.test.util.BaseTestCase;
-import org.milyn.scribe.dao.adapter.hibernate.SessionDaoAdapter;
 import org.mockito.Mock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

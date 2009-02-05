@@ -39,7 +39,7 @@ import org.milyn.scribe.Queryable;
  * @author maurice_zeijen
  *
  */
-public class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
+class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
 
 	private final EntityManager entityManager;
 

@@ -74,7 +74,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new MapRegister<Object>(daoMap));
+		PersistenceUtil.setDAORegister(executionContext, MapRegister.newInstance(daoMap));
 
 		enableReporting(executionContext, "report_test_dao_flush_with_named_dao.html");
 
@@ -92,7 +92,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new MapRegister<Object>(daoMap));
+		PersistenceUtil.setDAORegister(executionContext, MapRegister.newInstance(daoMap));
 
 		enableReporting(executionContext, "report_test_dao_flush_with_flushBefore.html");
 

@@ -37,7 +37,7 @@ public class SqlMapClientRegisterTest extends BaseTestCase {
 
 		SqlMapClientRegister register = new SqlMapClientRegister(sqlMapClient);
 
-		SqlMapClientDaoAdapter entityManagerDaoAdapter = register.getDao();
+		SqlMapClientDaoAdapter entityManagerDaoAdapter = register.getDefaultDao();
 
 		assertNotNull(entityManagerDaoAdapter);
 

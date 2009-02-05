@@ -29,7 +29,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class SqlMapClientDaoAdapter implements MappingDao<Object>, Locator  {
+class SqlMapClientDaoAdapter implements MappingDao<Object>, Locator  {
 
 	private final SqlMapClient sqlMapClient;
 

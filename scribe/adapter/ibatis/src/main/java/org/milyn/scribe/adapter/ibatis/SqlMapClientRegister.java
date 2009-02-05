@@ -15,7 +15,10 @@
 */
 package org.milyn.scribe.adapter.ibatis;
 
+import java.util.Map;
+
 import org.milyn.assertion.AssertArgument;
+import org.milyn.scribe.register.AbstractDaoAdapterRegister;
 import org.milyn.scribe.register.AbstractDaoRegister;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -24,26 +27,33 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class SqlMapClientRegister extends AbstractDaoRegister<SqlMapClientDaoAdapter>{
-
-	private final SqlMapClientDaoAdapter sqlMapClient;
+public class SqlMapClientRegister extends AbstractDaoAdapterRegister<SqlMapClientDaoAdapter, SqlMapClient>{
 
 	/**
 	 *
 	 */
 	public SqlMapClientRegister(final SqlMapClient sqlMapClient) {
-		AssertArgument.isNotNull(sqlMapClient, "sqlMapClient");
-
-		this.sqlMapClient = new SqlMapClientDaoAdapter(sqlMapClient);
+		super(sqlMapClient);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.milyn.scribe.DAORegister#getDAO()
+	/**
+	 *
+	 */
+	public SqlMapClientRegister(final SqlMapClient sqlMapClient, Map<String, ? extends SqlMapClient> sqlMapClientMap) {
+		super(sqlMapClient, sqlMapClientMap);
+	}
+
+
+	public SqlMapClientRegister(Map<String, ? extends SqlMapClient> sqlMapClientMap) {
+		super(sqlMapClientMap);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.scribe.register.AbstractDaoAdapterRegister#createAdapter(java.lang.Object)
 	 */
 	@Override
-	public SqlMapClientDaoAdapter getDao() {
-		return sqlMapClient;
+	protected SqlMapClientDaoAdapter createAdapter(SqlMapClient sqlMapClient) {
+		return new SqlMapClientDaoAdapter(sqlMapClient);
 	}
 
 }

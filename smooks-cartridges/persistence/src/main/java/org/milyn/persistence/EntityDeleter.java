@@ -129,13 +129,21 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 		Object dao = null;
 		try {
 			if(daoName == null) {
-				dao = emr.getDao();
+				dao = emr.getDefaultDao();
 			} else {
 				dao = emr.getDao(daoName);
 			}
 
 			if(dao == null) {
-				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
+				String msg = "The DAO register returned null while getting the ";
+
+				if(daoName == null) {
+					msg += "default DAO";
+				} else {
+					msg += "DAO '" + daoName + "'";
+				}
+
+				throw new NullPointerException(msg);
 			}
 
 			DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);

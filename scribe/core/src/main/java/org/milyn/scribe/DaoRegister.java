@@ -19,7 +19,7 @@ package org.milyn.scribe;
  * @author maurice_zeijen
  *
  */
-public interface DaoRegister<T> {
+public interface DaoRegister<D> {
 
 	/**
 	 * Returns the default DAO .
@@ -32,7 +32,7 @@ public interface DaoRegister<T> {
 	 * @throws UnsupportedOperationException if the <tt>getDao()</tt> operation is
      *	          not supported by this DaoRegister.
 	 */
-	T getDao();
+	D getDefaultDao();
 
 	/**
 	 * Returns the DAO using its name to locate it.
@@ -45,7 +45,7 @@ public interface DaoRegister<T> {
 	 * @throws UnsupportedOperationException if the <tt>getDao(String)</tt> operation is
      *	          not supported by this DaoRegister.
 	 */
-	T getDao(String name);
+	D getDao(String name);
 
 
 	/**
@@ -57,6 +57,6 @@ public interface DaoRegister<T> {
 	 *
 	 * @param dao
 	 */
-	void returnDao(T dao);
+	void returnDao(D dao);
 
 }

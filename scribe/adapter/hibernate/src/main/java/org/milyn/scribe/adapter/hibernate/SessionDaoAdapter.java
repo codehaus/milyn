@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.scribe.dao.adapter.hibernate;
+package org.milyn.scribe.adapter.hibernate;
 
 import java.util.Map;
 import java.util.Map.Entry;

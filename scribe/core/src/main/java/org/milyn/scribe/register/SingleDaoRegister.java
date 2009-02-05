@@ -36,7 +36,7 @@ public class SingleDaoRegister<T> extends AbstractDaoRegister<T> {
 	 * @see org.milyn.scribe.AbstractDaoRegister#getDao()
 	 */
 	@Override
-	public T getDao() {
+	public T getDefaultDao() {
 		return dao;
 	}
 
