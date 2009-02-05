@@ -12,6 +12,11 @@
 	<version>${milyn.smooks.core.version}</version>
 
     <dependencies>
+    	<dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-calc</artifactId>
+            <version>${milyn.smooks.calc.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-css</artifactId>
