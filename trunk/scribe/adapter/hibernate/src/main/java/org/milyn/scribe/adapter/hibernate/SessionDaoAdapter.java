@@ -31,7 +31,7 @@ import org.milyn.scribe.Queryable;
  * @author maurice_zeijen
  *
  */
-public class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
+class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
 
 	private final Session session;
 
