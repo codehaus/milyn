@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
@@ -34,51 +35,78 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdRegister;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
+import org.milyn.scribe.ObjectStore;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
 import org.w3c.dom.Element;
 
+
 /**
- * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @author maurice
  *
  */
-@VisitBeforeIf(	condition = "parameters.containsKey('flushBefore') && parameters.flushBefore.value == 'true'")
-@VisitAfterIf( condition = "!parameters.containsKey('flushBefore') || parameters.flushBefore.value != 'true'")
-@VisitBeforeReport(summary = "Flushing dao '${resource.parameters.dao}'.", detailTemplate="reporting/DaoFlusher_Before.html")
-@VisitAfterReport(summary = "Flushing dao '${resource.parameters.dao}'.", detailTemplate="reporting/DaoFlusher_After.html")
-public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+@VisitBeforeIf(	condition = "parameters.containsKey('insertBefore') && parameters.insertBefore.value == 'true'")
+@VisitAfterIf( condition = "!parameters.containsKey('insertBefore') || parameters.insertBefore.value != 'true'")
+@VisitBeforeReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter_Before.html")
+@VisitAfterReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter_After.html")
+public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
-    private static Log logger = LogFactory.getLog(DaoFlusher.class);
+    private static Log logger = LogFactory.getLog(EntityInserter.class);
+
+    @ConfigParam(name = "beanId")
+    private String beanIdName;
+
+    @ConfigParam(name = "insertedBeanId", use = Use.OPTIONAL)
+    private String insertedBeanIdName;
 
     @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
 
+    @ConfigParam(use = Use.OPTIONAL)
+    private String name;
+
     @AppContext
     private ApplicationContext appContext;
 
-    private ApplicationContextObjectStore objectStore;
+    private ObjectStore objectStore;
+
+    private BeanId beanId;
+
+    private BeanId insertedBeanId;
 
     @Initialize
-    public void initialize() {
+    public void initialize() throws SmooksConfigurationException {
+    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
+
+    	beanId = beanIdRegister.register(beanIdName);
+
+    	if(insertedBeanIdName != null) {
+    		insertedBeanId = beanIdRegister.register(insertedBeanIdName);
+    	}
+
     	objectStore = new ApplicationContextObjectStore(appContext);
     }
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	flush(executionContext);
+    	insert(executionContext);
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	flush(executionContext);
+    	insert(executionContext);
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	flush(executionContext);
+    	insert(executionContext);
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	flush(executionContext);
+    	insert(executionContext);
     }
 
 	/**
@@ -87,16 +115,15 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void flush(final ExecutionContext executionContext) {
+	private void insert(final ExecutionContext executionContext) {
 
 		if(logger.isDebugEnabled()) {
-			String msg = "Flushing org.milyn.persistence.test.dao";
-			if(daoName != null) {
-				msg += " with name '" + daoName + "'";
-			}
-			msg += ".";
-			logger.debug(msg);
+			logger.debug("Inserting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'.");
 		}
+
+		BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+		Object bean = beanRepository.getBean(beanId);
 
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
@@ -109,11 +136,21 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 			}
 
 			if(dao == null) {
-				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
+				throw new IllegalStateException("The DAO register returned null while getting the DAO '" + daoName + "'");
 			}
 
-			flush(dao);
+			final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
+			Object result = name == null ? daoInvoker.insert(bean) : daoInvoker.insert(name, bean) ;
+
+			if(insertedBeanId != null) {
+				if(result == null) {
+					result = bean;
+				}
+				beanRepository.addBean(insertedBeanId, result);
+			} else if(result != null && bean != result) {
+				beanRepository.changeBean(beanId, bean);
+			}
 		} finally {
 			if(dao != null) {
 				emr.returnDao(dao);
@@ -121,13 +158,5 @@ public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAf
 		}
 	}
 
-	/**
-	 * @param org.milyn.persistence.test.dao
-	 */
-	private void flush(Object dao) {
-		final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
-
-		daoInvoker.flush();
-	}
 
 }

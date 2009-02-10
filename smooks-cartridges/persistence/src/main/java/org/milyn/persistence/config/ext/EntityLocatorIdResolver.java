@@ -23,7 +23,7 @@ import org.milyn.cdr.extension.ResourceConfigUtil;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMVisitBefore;
-import org.milyn.persistence.config.LookupperCounter;
+import org.milyn.persistence.config.LocatorCounter;
 import org.w3c.dom.Element;
 
 /**
@@ -42,10 +42,9 @@ public class EntityLocatorIdResolver implements DOMVisitBefore {
 			throws SmooksException {
 		SmooksResourceConfiguration config = ExtensionContext.getExtensionContext(executionContext).getResourceStack().peek();
 
-		LookupperCounter lookupperRegister = LookupperCounter.getLookupperCounter(applicationContext);
+		LocatorCounter locatorRegister = LocatorCounter.getLocatorCounter(applicationContext);
 
-		int index = lookupperRegister.incrementLookupperCount();
-
+		int index = locatorRegister.incrementLocatorCount();
 
 		ResourceConfigUtil.setProperty(config, "id", Integer.toString(index), executionContext);
 	}

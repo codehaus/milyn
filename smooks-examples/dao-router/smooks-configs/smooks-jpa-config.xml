@@ -5,9 +5,9 @@
 	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
 
 	<!--
-		The saver calls the EntityManager#persist() method at the visitAfter of Order.
+		The inserter calls the EntityManager#persist() method at the visitAfter of Order.
 	-->
-	<dao:saver beanId="order" saveOnElement="order" />
+	<dao:inserter beanId="order" insertOnElement="order" />
 
 	<!--
 		This is the normal Javabean binding. Notice that we have a wiring on customer. The

@@ -41,6 +41,7 @@ import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
+import org.milyn.scribe.ObjectStore;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
 import org.w3c.dom.Element;
@@ -50,37 +51,34 @@ import org.w3c.dom.Element;
  * @author maurice
  *
  */
-@VisitBeforeIf(	condition = "parameters.containsKey('saveBefore') && parameters.saveBefore.value == 'true'")
-@VisitAfterIf( condition = "!parameters.containsKey('saveBefore') || parameters.saveBefore.value != 'true'")
-//@VisitBeforeReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_Before.html")
-//@VisitAfterReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_After.html")
-public class EntitySaver implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+@VisitBeforeIf(	condition = "parameters.containsKey('updateBefore') && parameters.updateBefore.value == 'true'")
+@VisitAfterIf( condition = "!parameters.containsKey('updateBefore') || parameters.updateBefore.value != 'true'")
+@VisitBeforeReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater_Before.html")
+@VisitAfterReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater_After.html")
+public class EntityUpdater implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
-    private static Log logger = LogFactory.getLog(EntitySaver.class);
+    private static Log logger = LogFactory.getLog(EntityUpdater.class);
 
     @ConfigParam(name = "beanId")
     private String beanIdName;
 
-    @ConfigParam(name = "savedBeanId", use = Use.OPTIONAL)
-    private String savedBeanIdName;
+    @ConfigParam(name = "updatedBeanId", use = Use.OPTIONAL)
+    private String updatedBeanIdName;
 
     @ConfigParam(name = "dao", use = Use.OPTIONAL)
     private String daoName;
 
     @ConfigParam(use = Use.OPTIONAL)
-    private String statementId;
-
-    @ConfigParam(defaultVal = Action.INSERT_STR, choice = {Action.INSERT_STR, Action.UPDATE_STR}, decoder = Action.DataDecoder.class)
-    private Action action;
+    private String name;
 
     @AppContext
     private ApplicationContext appContext;
 
-    private ApplicationContextObjectStore objectStore;
+    private ObjectStore objectStore;
 
     private BeanId beanId;
 
-    private BeanId savedBeanId;
+    private BeanId updatedBeanId;
 
     @Initialize
     public void initialize() throws SmooksConfigurationException {
@@ -88,27 +86,27 @@ public class EntitySaver implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 
     	beanId = beanIdRegister.register(beanIdName);
 
-    	if(savedBeanIdName != null) {
-    		savedBeanId = beanIdRegister.register(savedBeanIdName);
+    	if(updatedBeanIdName != null) {
+    		updatedBeanId = beanIdRegister.register(updatedBeanIdName);
     	}
 
     	objectStore = new ApplicationContextObjectStore(appContext);
     }
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	save(executionContext);
+    	update(executionContext);
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	save(executionContext);
+    	update(executionContext);
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	save(executionContext);
+    	update(executionContext);
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	save(executionContext);
+    	update(executionContext);
     }
 
 	/**
@@ -117,10 +115,10 @@ public class EntitySaver implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void save(final ExecutionContext executionContext) {
+	private void update(final ExecutionContext executionContext) {
 
 		if(logger.isDebugEnabled()) {
-			logger.debug("Saving bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "' as an '" + action + "' action");
+			logger.debug("Updating bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'.");
 		}
 
 		BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
@@ -138,36 +136,21 @@ public class EntitySaver implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 			}
 
 			if(dao == null) {
-				throw new IllegalStateException("The DAO register returned null while getting the DAO [" + daoName + "]");
+				throw new IllegalStateException("The DAO register returned null while getting the DAO '" + daoName + "'");
 			}
+
 			final DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
-			Object result;
+			Object result = name == null ? daoInvoker.update(bean) : daoInvoker.update(name, bean) ;
 
-			switch (action) {
-
-			case INSERT:
-				result = statementId == null ? daoInvoker.insert(bean) : daoInvoker.insert(statementId, bean) ;
-				break;
-
-			case UPDATE:
-				result = statementId == null ? daoInvoker.update(bean) : daoInvoker.update(statementId, bean) ;
-				break;
-
-			default:
-				throw new IllegalStateException("The action '"	+ action + "' is not supported");
-			}
-
-			if(savedBeanId != null) {
+			if(updatedBeanId != null) {
 				if(result == null) {
 					result = bean;
 				}
-				beanRepository.addBean(savedBeanId, result);
+				beanRepository.addBean(updatedBeanId, result);
 			} else if(result != null && bean != result) {
 				beanRepository.changeBean(beanId, bean);
 			}
-
-
 		} finally {
 			if(dao != null) {
 				emr.returnDao(dao);
