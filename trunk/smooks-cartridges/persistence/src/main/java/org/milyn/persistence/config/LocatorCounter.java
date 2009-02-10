@@ -21,13 +21,13 @@ import org.milyn.container.ApplicationContext;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class LookupperCounter {
+public class LocatorCounter {
 
-	private static final String CONTEXT = LookupperCounter.class.getName() + "#Context";
+	private static final String CONTEXT = LocatorCounter.class.getName() + "#Context";
 
 	private int lookupperCount = 0;
 
-	public int incrementLookupperCount() {
+	public int incrementLocatorCount() {
 		return lookupperCount++;
 	}
 
@@ -35,13 +35,13 @@ public class LookupperCounter {
 		return lookupperCount;
 	}
 
-	public static LookupperCounter getLookupperCounter(ApplicationContext applicationContext) {
+	public static LocatorCounter getLocatorCounter(ApplicationContext applicationContext) {
 
-		LookupperCounter counter = (LookupperCounter) applicationContext.getAttribute(CONTEXT);
+		LocatorCounter counter = (LocatorCounter) applicationContext.getAttribute(CONTEXT);
 
 		if(counter == null) {
 
-			counter = new LookupperCounter();
+			counter = new LocatorCounter();
 
 			applicationContext.setAttribute(CONTEXT, counter);
 

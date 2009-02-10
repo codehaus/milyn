@@ -52,8 +52,8 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('deleteBefore') && parameters.deleteBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('deleteBefore') || parameters.deleteBefore.value != 'true'")
-//@VisitBeforeReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_Before.html")
-//@VisitAfterReport(summary = "Persisted bean under beanId '${resource.parameters.beanId}' using persist mode '${resource.parameters.persistMode}'.", detailTemplate="reporting/EntityPersister_After.html")
+@VisitBeforeReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter_Before.html")
+@VisitAfterReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter_After.html")
 public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
     private static Log logger = LogFactory.getLog(EntityDeleter.class);
@@ -68,7 +68,7 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
     private String daoName;
 
     @ConfigParam(use = Use.OPTIONAL)
-    private String statementId;
+    private String name;
 
     @AppContext
     private ApplicationContext appContext;
@@ -148,12 +148,7 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
 			DaoInvoker daoInvoker = DaoInvokerFactory.getInstance().create(dao, objectStore);
 
-			Object result;
-			if(statementId != null) {
-				result = daoInvoker.delete(statementId, bean);
-			} else {
-				result = daoInvoker.delete(bean);
-			}
+			Object result = (name != null) ? daoInvoker.delete(name, bean) : daoInvoker.delete(bean);
 
 			if(deletedBeanId != null) {
 				if(result == null) {
