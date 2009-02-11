@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -35,7 +35,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 
 /**
- * 
+ *
  * @author tfennelly
  */
 public class XslContentHandlerFactoryTest extends TestCase {
@@ -47,7 +47,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
 
         System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
 		SmooksUtil.registerResource(res, smooks);
-		
+
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
             ExecutionContext context = smooks.createExecutionContext();
@@ -57,7 +57,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
 			fail("unexpected exception: " + e.getMessage());
 		}
 		CharUtils.assertEquals("XSL Comparison Failure - See xsltransunit.expected1.", "/org/milyn/templating/xslt/xsltransunit.expected1", transResult);
-	}	
+	}
 
 	public void testXslUnitTrans_parambased() {
 		testXslUnitTrans_parambased("insertbefore", "xsltransunit.expected2");
@@ -65,19 +65,19 @@ public class XslContentHandlerFactoryTest extends TestCase {
 		testXslUnitTrans_parambased("addto", "xsltransunit.expected4");
 		testXslUnitTrans_parambased("replace", "xsltransunit.expected5");
 	}
-	
+
 	public void testXslUnitTrans_parambased(String action, String expectedFileName) {
 		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration res = new SmooksResourceConfiguration("p", "<z id=\"{@id}\">Content from template!!</z>");
 		String transResult = null;
 
 		System.setProperty("javax.xml.transform.TransformerFactory", org.apache.xalan.processor.TransformerFactoryImpl.class.getName());
-		
+
 		res.setResourceType("xsl");
         res.setParameter(XslContentHandlerFactory.IS_XSLT_TEMPLATELET, "true");
 		res.setParameter("action", action);
 		SmooksUtil.registerResource(res, smooks);
-		
+
 		try {
 			InputStream stream = getClass().getResourceAsStream("htmlpage.html");
             ExecutionContext context = smooks.createExecutionContext();
@@ -87,7 +87,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
 			fail("unexpected exception: " + e.getMessage());
 		}
 		CharUtils.assertEquals("XSL Comparison Failure.  action=" + action + ".  See " + expectedFileName, "/org/milyn/templating/xslt/" + expectedFileName, transResult);
-	}	
+	}
 
     public void test_xsl_bind() throws SAXException, IOException {
         test_xsl_bind("test-configs-bind.cdrl");
@@ -102,7 +102,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         input = new StringReader("<a><b><c/></b></a>");
         context = smooks.createExecutionContext();
         smooks.filter(new StreamSource(input), null, context);
-        
+
         assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         input = new StringReader("<c/>");
@@ -117,6 +117,14 @@ public class XslContentHandlerFactoryTest extends TestCase {
 
         smooks.filter(new StringSource("<a/>"), result);
         assertEquals("<xxxxxx></xxxxxx>", result.getResult());
+    }
+
+    public void test_inline_xsl_function() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-xsl.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new StringSource("<a name='kalle'/>"), result);
+        assertEquals("<x>kalle</x>", result.getResult());
     }
 
     public void test_inline_02() throws SAXException, IOException {

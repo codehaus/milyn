@@ -3,18 +3,34 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.templating.xslt;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -42,22 +58,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.ErrorListener;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
+import org.xml.sax.SAXParseException;
 
 
 /**
@@ -175,7 +178,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
 
     @AppContext
     private ApplicationContext applicationContext;
-    
+
     /**
      * Create an XSL based ContentHandler instance ie from an XSL byte streamResult.
      *
@@ -221,6 +224,9 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
          */
         private final boolean isSynchronized = Boolean.getBoolean(ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED);
 
+        private final DomErrorHandler logErrorHandler = new DomErrorHandler();
+
+
         @Override
 		protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
             byte[] xslBytes = resourceConfig.getBytes();
@@ -247,7 +253,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
 
         private boolean isTemplatelet(boolean inlineXSL, String templateCode) {
             try {
-                Document xslDoc = XmlUtil.parseStream(new StringReader(templateCode));
+                Document xslDoc = XmlUtil.parseStream(new StringReader(templateCode), logErrorHandler);
                 Element rootElement = xslDoc.getDocumentElement();
                 String rootElementNS = rootElement.getNamespaceURI();
 
@@ -330,6 +336,31 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
 
             public void fatalError(TransformerException exception) throws TransformerException {
                 throw exception;
+            }
+        }
+
+        /**
+         * Simple ErrorHandler that only reports errors, fatals, and warnings
+         * at a debug log level.
+         * <p/>
+         * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
+         *
+         */
+        private static class DomErrorHandler implements ErrorHandler
+        {
+            public void error(final SAXParseException exception) throws SAXException
+            {
+                logger.debug("SaxParseException error was reported : ", exception);
+            }
+
+            public void fatalError(final SAXParseException exception) throws SAXException
+            {
+                logger.debug("SaxParseException fatal error was reported : ", exception);
+            }
+
+            public void warning(final SAXParseException exception) throws SAXException
+            {
+                logger.debug("SaxParseException warning error was reported : ", exception);
             }
         }
     }
