@@ -17,16 +17,16 @@ package org.milyn.delivery.java;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.SmooksException;
 import org.milyn.payload.JavaSource;
+import org.milyn.payload.StringResult;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -48,6 +48,65 @@ public class JavaSourceTest extends TestCase {
         test("smooks-config-inc-encl-doc-off.xml", SOURCE_1, EXPECTED_1);
         test("smooks-config-inc-encl-doc-on.xml", SOURCE_2, EXPECTED_2);
         test("smooks-config-inc-encl-doc-off.xml", SOURCE_2, EXPECTED_2);
+    }
+
+    public void test_beanSetting() {
+        MyBean1 pojo = new MyBean1();
+        JavaSource source;
+
+        source = new JavaSource(pojo);
+        assertEquals(pojo, source.getBeans().get("myBean1"));
+
+        source = new JavaSource("blah", pojo);
+        assertEquals(pojo, source.getBeans().get("blah"));
+
+        Map beans = new HashMap();
+        beans.put("abcd", pojo);
+        source = new JavaSource(beans);
+        assertEquals(pojo, source.getBeans().get("abcd"));        
+    }
+
+    public void test_streamingOff_01() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-eventstream-off.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new JavaSource(new MyBean1()), result);
+        assertEquals("<nullsource-document></nullsource-document>", result.getResult());
+    }
+
+    public void test_streamingOff_02() throws IOException, SAXException {
+        Smooks smooks = new Smooks();
+        JavaSource javaSource = new JavaSource(new MyBean1());
+        StringResult result = new StringResult();
+
+        // Turn streaming off via the JavaSource...
+        javaSource.setEventStreamRequired(false);
+
+        smooks.filter(javaSource, result);
+        assertEquals("<nullsource-document></nullsource-document>", result.getResult());
+    }
+
+    public void test_streamingOn_01() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-eventstream-on.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filter(new JavaSource(new MyBean1()));
+        assertNotSame("<nullsource-document></nullsource-document>", result.getResult());
+    }
+
+    public void test_streamingOn_02() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-eventstream-on.xml"));
+        JavaSource javaSource = new JavaSource(new MyBean1());
+
+        // Explicitly configure it on... should cause an erros because it is explicitly
+        // configured 'on' in the config...
+        javaSource.setEventStreamRequired(false);
+
+        try {
+            smooks.filter(javaSource);
+        } catch(SmooksException e) {
+            assertEquals("Invalid Smooks configuration.  Feature '" + JavaSource.FEATURE_GENERATE_EVENT_STREAM + "' is explicitly configured 'on' in the Smooks configuration, while the supplied JavaSource has explicitly configured event streaming to be off (through a call to JavaSource.setEventStreamRequired).", e.getCause().getMessage());
+        }
     }
 
     private void test(String config, List<Object> sourceObjects, String expected) throws IOException, SAXException {

@@ -104,9 +104,8 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         myBean.setX("xxxxxxx");
         myBeans.put("myBeanData", myBean);
 
-        // Create the "null" JavaSource and set the bean Map on it...
-        JavaSource source = new JavaSource();
-        source.setBeans(myBeans);
+        JavaSource source = new JavaSource(myBeans);
+        source.setEventStreamRequired(false);
 
         // Create the output writer for the transform and run it...
         StringWriter myTransformResult = new StringWriter();
