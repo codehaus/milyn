@@ -104,8 +104,6 @@ import org.xml.sax.helpers.AttributesImpl;
 public class CSVReader implements SmooksXMLReader {
 
 	private static Log logger = LogFactory.getLog(CSVReader.class);
-	private static final String CVS_SET_EL = "csv-set";
-	private static final String CVS_RECORD_EL = "csv-record";
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
 
     private ContentHandler contentHandler;
@@ -126,7 +124,13 @@ public class CSVReader implements SmooksXMLReader {
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
-	/* (non-Javadoc)
+    @ConfigParam(name = "csvSetElementName", defaultVal="csv-set")
+    private String csvSetEl;
+
+    @ConfigParam(name = "csvRecordElementName", defaultVal="csv-record")
+    private String csvRecordEl;
+
+    /* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
 	 */
 	public void setExecutionContext(ExecutionContext request) {
@@ -159,7 +163,7 @@ public class CSVReader implements SmooksXMLReader {
 
         // Start the document and add the root "csv-set" element...
         contentHandler.startDocument();
-        contentHandler.startElement(XMLConstants.NULL_NS_URI, CVS_SET_EL, "", EMPTY_ATTRIBS);
+        contentHandler.startElement(XMLConstants.NULL_NS_URI, csvSetEl, "", EMPTY_ATTRIBS);
 
         // Output each of the CVS line entries...
         int lineNumber = 0;
@@ -171,7 +175,7 @@ public class CSVReader implements SmooksXMLReader {
         		continue;
         	}
 
-            contentHandler.startElement(XMLConstants.NULL_NS_URI, CVS_RECORD_EL, "", EMPTY_ATTRIBS);
+            contentHandler.startElement(XMLConstants.NULL_NS_URI, csvRecordEl, "", EMPTY_ATTRIBS);
         	for(int i = 0; i < csvRecord.length; i++) {
                 String fieldName = csvFields[i];
 
@@ -179,11 +183,11 @@ public class CSVReader implements SmooksXMLReader {
                 contentHandler.characters(csvRecord[i].toCharArray(), 0, csvRecord[i].length());
                 contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
         	}
-            contentHandler.endElement(null, CVS_RECORD_EL, "");
+            contentHandler.endElement(null, csvRecordEl, "");
         }
 
         // Close out the "csv-set" root element and end the document..
-        contentHandler.endElement(XMLConstants.NULL_NS_URI, CVS_SET_EL, "");
+        contentHandler.endElement(XMLConstants.NULL_NS_URI, csvSetEl, "");
         contentHandler.endDocument();
 	}
 

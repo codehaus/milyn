@@ -125,4 +125,11 @@ public class CSVReaderTest extends TestCase {
         assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result);
     }
 
+    public void test_06() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks( getClass().getResourceAsStream("smooks-extended-config-06.xml"));
+
+        ExecutionContext context = smooks.createExecutionContext();
+        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-03.csv"), smooks);
+        assertEquals("<customers><customer><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></customer><customer><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></customer></customers>", result);
+    }
 }
