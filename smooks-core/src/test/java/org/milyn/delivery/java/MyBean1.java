@@ -23,4 +23,36 @@ public class MyBean1 {
     private String prop2 = "hello";
     private long prop3 = 1111L;
     private MyBean2 mybean2 = new MyBean2();
+
+    public boolean isProp1() {
+        return prop1;
+    }
+
+    public void setProp1(boolean prop1) {
+        this.prop1 = prop1;
+    }
+
+    public String getProp2() {
+        return prop2;
+    }
+
+    public void setProp2(String prop2) {
+        this.prop2 = prop2;
+    }
+
+    public long getProp3() {
+        return prop3;
+    }
+
+    public void setProp3(long prop3) {
+        this.prop3 = prop3;
+    }
+
+    public MyBean2 getMybean2() {
+        return mybean2;
+    }
+
+    public void setMybean2(MyBean2 mybean2) {
+        this.mybean2 = mybean2;
+    }
 }

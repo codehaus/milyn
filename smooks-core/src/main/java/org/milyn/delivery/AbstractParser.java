@@ -97,29 +97,34 @@ public class AbstractParser {
         ExecutionContext execContext = getExecContext();
         Source source = FilterSource.getSource(execContext);
 
-        if(saxDriverConfig != null) {
+        if(saxDriverConfig != null && saxDriverConfig.getResource() != null) {
             String className = saxDriverConfig.getResource();
 
-            if(className != null) {
-                reader = XMLReaderFactory.createXMLReader(className);
-            } else {
-                reader = XMLReaderFactory.createXMLReader();
+            reader = XMLReaderFactory.createXMLReader(className);
+        } else if(source instanceof JavaSource) {
+            JavaSource javaSource = (JavaSource) source;
+
+            if(isFeatureOn(JavaSource.FEATURE_GENERATE_EVENT_STREAM) && !javaSource.isEventStreamRequired()) {
+                throw new SAXException("Invalid Smooks configuration.  Feature '" + JavaSource.FEATURE_GENERATE_EVENT_STREAM + "' is explicitly configured 'on' in the Smooks configuration, while the supplied JavaSource has explicitly configured event streaming to be off (through a call to JavaSource.setEventStreamRequired).");
             }
-            if(reader instanceof SmooksXMLReader) {
-            	Configurator.configure((SmooksXMLReader)reader, saxDriverConfig, execContext.getContext());
-            	((SmooksXMLReader)reader).setExecutionContext(execContext);
+
+            // Event streaming must be explicitly turned off.  If is on as long as it is (a) not configured "off" in
+            // the smooks config (via the reader features) and (b) not turned off via the supplied JavaSource...
+            boolean eventStreamingOn = (!isFeatureOff(JavaSource.FEATURE_GENERATE_EVENT_STREAM) && javaSource.isEventStreamRequired());
+            if(eventStreamingOn && javaSource.getSourceObjects() != null) {
+                reader = new XStreamXMLReader();
+            } else {
+                reader = new NullSourceXMLReader();
             }
         } else {
-            if(source instanceof JavaSource) {
-                JavaSource javaSource = (JavaSource) source;
-                if(javaSource.getSourceObjects() != null) {
-                    reader = new XStreamXMLReader();
-                } else {
-                    reader = new NullSourceXMLReader();
-                }
-            } else {
-                reader = XMLReaderFactory.createXMLReader();
+            reader = XMLReaderFactory.createXMLReader();
+        }
+
+        if(reader instanceof SmooksXMLReader) {
+            if(saxDriverConfig != null) {
+                Configurator.configure((SmooksXMLReader)reader, saxDriverConfig, execContext.getContext());
             }
+            ((SmooksXMLReader)reader).setExecutionContext(execContext);
         }
 
         if(reader instanceof JavaXMLReader) {
@@ -206,4 +211,52 @@ public class AbstractParser {
             }
         }
     }
+
+    private boolean isFeatureOn(String name) throws SAXException {
+        boolean featureOn = isFeature(name, FeatureValue.ON);
+
+        // Make sure the same feature is not also configured off...
+        if(featureOn && isFeature(name, FeatureValue.OFF)) {
+            throw new SAXException("Invalid Smooks configuration.  Feature '" + name + "' is explicitly configured 'on' and 'off'.  Must be one or the other!");
+        }
+
+        return featureOn;
+    }
+
+    private boolean isFeatureOff(String name) throws SAXException {
+        boolean featureOff = isFeature(name, FeatureValue.OFF);
+
+        // Make sure the same feature is not also configured on...
+        if(featureOff && isFeature(name, FeatureValue.ON)) {
+            throw new SAXException("Invalid Smooks configuration.  Feature '" + name + "' is explicitly configured 'on' and 'off'.  Must be one or the other!");
+        }
+
+        return featureOff;
+    }
+
+    private static enum FeatureValue {
+        ON,
+        OFF;
+    }
+
+    private boolean isFeature(String name, FeatureValue featureValue) {
+        if(saxDriverConfig != null) {
+            List<Parameter> features;
+
+            if(featureValue == FeatureValue.ON) {
+                features = saxDriverConfig.getParameters("feature-on");
+            } else {
+                features = saxDriverConfig.getParameters("feature-off");
+            }
+            if(features != null) {
+                for (Parameter feature : features) {
+                    if(feature.getValue().equals(name)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
+                                                    

@@ -21,4 +21,20 @@ package org.milyn.delivery.java;
 public class MyBean2 {
     private boolean prop5 = true;
     private String prop6 = "hello";
+
+    public boolean isProp5() {
+        return prop5;
+    }
+
+    public void setProp5(boolean prop5) {
+        this.prop5 = prop5;
+    }
+
+    public String getProp6() {
+        return prop6;
+    }
+
+    public void setProp6(String prop6) {
+        this.prop6 = prop6;
+    }
 }

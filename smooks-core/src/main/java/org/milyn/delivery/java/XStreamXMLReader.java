@@ -19,6 +19,7 @@ import com.thoughtworks.xstream.io.xml.SaxWriter;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.payload.JavaSource;
 import org.xml.sax.*;
 
 import java.io.IOException;
@@ -57,6 +58,10 @@ public class XStreamXMLReader implements JavaXMLReader {
     }
 
     public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
+        // Need to ignore some features....
+        if(name.equals(JavaSource.FEATURE_GENERATE_EVENT_STREAM)) {
+            return;
+        }
         xstreamReader.setFeature(name, value);
     }
 
