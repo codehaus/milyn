@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.ReaderConfigurator;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
@@ -28,6 +29,7 @@ import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.Visitor;
 import org.milyn.delivery.VisitorConfigMap;
+import org.milyn.delivery.AbstractParser;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
@@ -167,6 +169,16 @@ public class Smooks {
     public void setFilterType(Filter.StreamFilterType filterType) {
         assertIsConfigurable();
         Filter.setFilterType(this, filterType);
+    }
+
+    /**
+     * Set the configuration for the reader to be used on this Smooks instance.
+     * @param readerConfigurator {@link ReaderConfigurator} instance.
+     */
+    public void setReaderConfig(ReaderConfigurator readerConfigurator) {
+        SmooksResourceConfiguration readerConfig = readerConfigurator.toConfig();
+        readerConfig.setSelector(AbstractParser.ORG_XML_SAX_DRIVER);
+        addConfiguration(readerConfig);
     }
 
     /**

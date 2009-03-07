@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * Visitor Configuration Map.
  * <p/>
  * A Map of configured visitors.  Used by the {@link org.milyn.delivery.ContentDeliveryConfigBuilder} to create the
- * create a {@link org.milyn.delivery.ContentDeliveryConfig} instance.
+ * {@link org.milyn.delivery.ContentDeliveryConfig} instance.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */

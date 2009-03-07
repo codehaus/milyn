@@ -36,6 +36,23 @@ public class Parameter {
 		this.value = value;
 	}
 
+    /**
+	 * Public constructor.
+	 * @param name Parameter name.
+	 * @param value Parameter value.
+	 */
+	public Parameter(String name, Object value) {
+		if(name == null || (name = name.trim()).equals("")) {
+			throw new IllegalArgumentException("null or empty 'name' arg in constructor call.");
+		}
+		if(value == null) {
+			throw new IllegalArgumentException("null 'value' arg in constructor call.");
+		}
+		this.name = name;
+        this.value = value.toString();
+		this.objValue = value;
+	}
+
 	/**
 	 * Public constructor.
 	 * @param name Parameter name.
@@ -110,7 +127,15 @@ public class Parameter {
 		return objValue;
 	}
 
-	/* (non-Javadoc)
+    /**
+     * Get the object value associated with this parameter.
+     * @return The object value, or null if not set.
+     */
+    public Object getObjValue() {
+        return objValue;
+    }
+
+    /* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
