@@ -45,12 +45,12 @@
 
 	<resource-config selector="reader">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">csvSetElementName</param>
+        <param name="attribute">rootElementName</param>
     </resource-config>
 
     <resource-config selector="reader">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">csvRecordElementName</param>
+        <param name="attribute">recordElementName</param>
     </resource-config>
 
 </smooks-resource-list>

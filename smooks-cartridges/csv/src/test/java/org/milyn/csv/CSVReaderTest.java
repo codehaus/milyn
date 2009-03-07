@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
+import org.milyn.payload.StringResult;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
@@ -131,5 +132,34 @@ public class CSVReaderTest extends TestCase {
         ExecutionContext context = smooks.createExecutionContext();
         String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-03.csv"), smooks);
         assertEquals("<customers><customer><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></customer><customer><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></customer></customers>", result);
+    }
+
+    public void test_07() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+
+        smooks.setReaderConfig(new CSVReaderConfigurator("firstname,lastname,gender,age,country"));
+
+        StringResult result = new StringResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-01.csv")), result);
+
+        assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result.getResult());
+    }
+
+    public void test_08() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+
+        CSVReaderConfigurator csvConfig = new CSVReaderConfigurator("firstname,lastname,gender,age,country");
+        csvConfig.setSeparatorChar('|');
+        csvConfig.setQuoteChar('\'');
+        csvConfig.setSkipLineCount(1);
+        csvConfig.setRootElementName("customers");
+        csvConfig.setRecordElementName("customer");
+
+        smooks.setReaderConfig(csvConfig);
+
+        StringResult result = new StringResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-03.csv")), result);
+
+        assertEquals("<customers><customer><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></customer><customer><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></customer></customers>", result.getResult());
     }
 }

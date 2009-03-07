@@ -19,6 +19,7 @@ package org.milyn.smooks.edi;
 import junit.framework.TestCase;
 import org.custommonkey.xmlunit.Diff;
 import org.milyn.Smooks;
+import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.dom.DOMParser;
@@ -28,6 +29,8 @@ import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.dom.DOMResult;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,24 +67,24 @@ public class SmooksEDIParserTest extends TestCase {
 		try {
 			test(null);
 			fail("Expected SmooksConfigurationException.");
-		} catch(SmooksConfigurationException e) {
-			assertTrue(e.getMessage().startsWith("<param> 'mapping-model' not specified on resource configuration"));
+		} catch(IllegalArgumentException e) {
+			assertEquals("null or empty 'mappingModel' arg in method call.", e.getMessage());
 		}
 
 		// Mandatory "mapping-model" config param is a valid URI, but doesn't point at anything that exists...
 		try {
 			test("http://nothing/there.xml");
 			fail("Expected IllegalStateException.");
-		} catch(IllegalStateException e) {
-			assertEquals("Invalid EDI mapping model config specified for org.milyn.smooks.edi.SmooksEDIReader.  Unable to access URI based mapping model [http://nothing/there.xml].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getMessage());
+		} catch(SmooksException e) {
+			assertEquals("Invalid EDI mapping model config specified for org.milyn.smooks.edi.SmooksEDIReader.  Unable to access URI based mapping model [http://nothing/there.xml].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getCause().getMessage());
 		}
 
 		// Mandatory "mapping-model" config param is not a valid URI, nor is it a valid inlined config...
 		try {
 			test("<z/>");
 			fail("Expected SAXException.");
-		} catch(SAXException e) {
-			assertEquals("Error parsing EDI mapping model [<z/>].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getMessage());
+		} catch(SmooksException e) {
+			assertEquals("Error parsing EDI mapping model [<z/>].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getCause().getMessage());
 		}
 	}
 	
@@ -163,36 +166,15 @@ public class SmooksEDIParserTest extends TestCase {
     }
 
     private void test(String mapping) throws IOException, SAXException {
-		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-input.txt")));
 		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("expected.xml")));
-		Smooks smooks = new Smooks();
-		SmooksResourceConfiguration config = null;
+        Smooks smooks = new Smooks();
+        DOMResult domResult = new DOMResult();
 
-		// Create and initialise the Smooks config for the parser...
-        config = new SmooksResourceConfiguration();
-        config.setResource(SmooksEDIReader.class.getName());
-		// Set the mapping config on the resource config... 
-		if(mapping != null) {
-			config.setParameter(SmooksEDIReader.MODEL_CONFIG_KEY, mapping);
-		}
+        // Create and initialise the Smooks config for the parser...
+        smooks.setReaderConfig(new EDIReaderConfigurator(mapping));
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("edi-input.txt")), domResult);
 
-		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
-		Document doc = parser.parse(new InputStreamReader(input));
-		
-		Diff diff = new Diff(expected, XmlUtil.serialize(doc.getChildNodes()));
+		Diff diff = new Diff(expected, XmlUtil.serialize(domResult.getNode().getChildNodes()));
 		assertTrue(diff.identical());
-	}
-	
-	private String removeCRLF(String string) {
-		StringBuffer buffer = new StringBuffer();
-		
-		for(int i = 0; i < string.length(); i++) {
-			char character = string.charAt(i);
-			if(character != '\r' && character != '\n') {
-				buffer.append(character);
-			}
-		}
-		
-		return buffer.toString();
 	}
 }

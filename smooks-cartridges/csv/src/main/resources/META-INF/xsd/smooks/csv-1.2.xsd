@@ -63,14 +63,14 @@
     					</xs:documentation>
     				</xs:annotation>
     			</xs:attribute>
-    			<xs:attribute name="csvSetElementName" type="xs:string" use="optional" default="csv-set">
+    			<xs:attribute name="rootElementName" type="xs:string" use="optional" default="csv-set">
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
-    						Name of main csv set element.
+    						Name of csv root element.
     					</xs:documentation>
     				</xs:annotation>
     			</xs:attribute>
-    			<xs:attribute name="csvRecordElementName" type="xs:string" use="optional" default="csv-record">
+    			<xs:attribute name="recordElementName" type="xs:string" use="optional" default="csv-record">
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
     						Name of csv record element.

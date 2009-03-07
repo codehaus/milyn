@@ -4,6 +4,6 @@
     <!--
     Configure the CSV  to parse the message into a stream of SAX events.
     -->
-    <csv:reader fields="firstname,lastname,gender,age,country" separator="|" quote="'" skipLines="1" csvSetElementName="customers" csvRecordElementName="customer"/>
+    <csv:reader fields="firstname,lastname,gender,age,country" separator="|" quote="'" skipLines="1" rootElementName="customers" recordElementName="customer"/>
 
 </smooks-resource-list>

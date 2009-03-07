@@ -124,11 +124,11 @@ public class CSVReader implements SmooksXMLReader {
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
-    @ConfigParam(name = "csvSetElementName", defaultVal="csv-set")
-    private String csvSetEl;
+    @ConfigParam(defaultVal="csv-set")
+    private String rootElementName;
 
-    @ConfigParam(name = "csvRecordElementName", defaultVal="csv-record")
-    private String csvRecordEl;
+    @ConfigParam(defaultVal="csv-record")
+    private String recordElementName;
 
     /* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
@@ -163,7 +163,7 @@ public class CSVReader implements SmooksXMLReader {
 
         // Start the document and add the root "csv-set" element...
         contentHandler.startDocument();
-        contentHandler.startElement(XMLConstants.NULL_NS_URI, csvSetEl, "", EMPTY_ATTRIBS);
+        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, "", EMPTY_ATTRIBS);
 
         // Output each of the CVS line entries...
         int lineNumber = 0;
@@ -175,7 +175,7 @@ public class CSVReader implements SmooksXMLReader {
         		continue;
         	}
 
-            contentHandler.startElement(XMLConstants.NULL_NS_URI, csvRecordEl, "", EMPTY_ATTRIBS);
+            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", EMPTY_ATTRIBS);
         	for(int i = 0; i < csvRecord.length; i++) {
                 String fieldName = csvFields[i];
 
@@ -183,11 +183,11 @@ public class CSVReader implements SmooksXMLReader {
                 contentHandler.characters(csvRecord[i].toCharArray(), 0, csvRecord[i].length());
                 contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
         	}
-            contentHandler.endElement(null, csvRecordEl, "");
+            contentHandler.endElement(null, recordElementName, "");
         }
 
         // Close out the "csv-set" root element and end the document..
-        contentHandler.endElement(XMLConstants.NULL_NS_URI, csvSetEl, "");
+        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
         contentHandler.endDocument();
 	}
 
