@@ -111,8 +111,8 @@ public class SmooksTest extends TestCase {
         TestDOMVisitorBefore visitor1 = new TestDOMVisitorBefore();
         TestDOMVisitorAfter visitor2 = new TestDOMVisitorAfter();
 
-        smooks.addVisitor("c/xxx", visitor1);
-        smooks.addVisitor("c",     visitor2);
+        smooks.addVisitor(visitor1, "c/xxx");
+        smooks.addVisitor(visitor2, "c");
 
         smooks.filter(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
 
@@ -125,8 +125,8 @@ public class SmooksTest extends TestCase {
         TestSAXVisitorBefore visitor1 = new TestSAXVisitorBefore();
         TestSAXVisitorAfter visitor2 = new TestSAXVisitorAfter();
 
-        smooks.addVisitor("c/xxx", visitor1);
-        smooks.addVisitor("c",     visitor2);
+        smooks.addVisitor(visitor1, "c/xxx");
+        smooks.addVisitor(visitor2, "c");
 
         smooks.filter(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
 

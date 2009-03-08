@@ -39,17 +39,21 @@ public class MappingDecoder implements DataDecoder {
     }
 
     public Object decode(String data) throws DataDecodeException {
-        String mappingValue = resourceConfig.getStringParameter(data);
+        if(resourceConfig != null) {
+            String mappingValue = resourceConfig.getStringParameter(data);
 
-        if(mappingValue == null) {
-            if(strict) {
-                throw new DataDecodeException("Mapping <param> for data '" + data + "' not defined.");
-            } else {
-                return data;
+            if(mappingValue == null) {
+                if(strict) {
+                    throw new DataDecodeException("Mapping <param> for data '" + data + "' not defined.");
+                } else {
+                    return data;
+                }
             }
-        }
 
-        return mappingValue;
+            return mappingValue;
+        } else {
+            return data;
+        }
     }
 
     public void setStrict(boolean strict) {

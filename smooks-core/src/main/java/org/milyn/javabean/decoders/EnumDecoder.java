@@ -59,6 +59,10 @@ public class EnumDecoder implements DataDecoder {
         mappingDecoder.setStrict(false);
     }
 
+    public void setEnumType(Class enumType) {
+        this.enumType = enumType;
+    }
+
     public Object decode(String data) throws DataDecodeException {
         String mappedValue = (String) mappingDecoder.decode(data);
 

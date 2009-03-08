@@ -82,7 +82,7 @@ public class ContentDeliveryConfigBuilder {
     /**
      * Visitor Config.
      */
-    private VisitorConfigMap visitorConfig = new VisitorConfigMap();
+    private VisitorConfigMap visitorConfig;
     /**
      * Config builder events list.
      */
@@ -101,6 +101,7 @@ public class ContentDeliveryConfigBuilder {
 	private ContentDeliveryConfigBuilder(ProfileSet profileSet, ApplicationContext applicationContext) {
 		this.profileSet = profileSet;
 		this.applicationContext = applicationContext;
+        visitorConfig = new VisitorConfigMap(applicationContext);
         visitorConfig.setConfigBuilderEvents(configBuilderEvents);
     }
 	
@@ -606,7 +607,9 @@ public class ContentDeliveryConfigBuilder {
 			}
 
             if(contentHandler instanceof Visitor) {
-                visitorConfig.addVisitor(elementName, resourceConfig, (Visitor) contentHandler);
+                // Add the visitor.  No need to configure it as that should have been done by
+                // creator...
+                visitorConfig.addVisitor((Visitor) contentHandler, resourceConfig, false);
             }
 
             // Content delivery units are allowed to dynamically add new configurations...
@@ -621,6 +624,10 @@ public class ContentDeliveryConfigBuilder {
                     }
                     processExpansionConfigurations(additionalConfigs);
                 }
+            }
+
+            if(contentHandler instanceof VisitorAppender) {
+                ((VisitorAppender)contentHandler).addVisitors(visitorConfig);
             }
 
             return true;

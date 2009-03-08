@@ -16,6 +16,7 @@
 package org.milyn.javabean;
 
 import org.milyn.Smooks;
+import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.ext.SelectorPropertyResolver;
@@ -32,7 +33,7 @@ import java.util.UUID;
  * <p/>
  * This class uses a Fluid API (all methods return the Bean instance), making it easy to
  * string configurations together to build up a graph of Bean configuration.
- *
+ * <p/>
  * <h3>Example</h3>
  * Taking the "classic" Order message as an example and binding it into a corresponding
  * Java Object model.
@@ -58,7 +59,7 @@ import java.util.UUID;
  *     &lt;/order-items&gt;
  * &lt;/order&gt;
  * </pre>
- *
+ * <p/>
  * <h4>The Java Model</h4>
  * (Not including getters and setters):
  * <pre>
@@ -76,7 +77,7 @@ import java.util.UUID;
  *     private double price;
  * }
  * </pre>
- *
+ * <p/>
  * <h4>The Binding Configuration and Execution Code</h4>
  * The configuration code (Note: Smooks instance defined and instantiated globally):
  * <pre>
@@ -93,11 +94,11 @@ import java.util.UUID;
  *             .bindTo("price", "order-item/price"))
  *     );
  * </pre>
- *
+ * <p/>
  * And the execution code:
  * <pre>
  * JavaResult result = new JavaResult();
- *
+ * <p/>
  * smooks.filter(new StreamSource(orderMessageStream), result);
  * Order order = (Order) result.getBean("order");
  * </pre>
@@ -109,7 +110,8 @@ public class Bean {
     private BeanInstanceCreator beanInstanceCreator;
     private Class beanClass;
     private String createOnElement;
-    private Smooks smooks;
+    private VisitorConfigMap visitorConfigMap;
+    private String targetNamespace;
 
     /**
      * Create a Bean binding configuration.
@@ -120,19 +122,58 @@ public class Bean {
      * @param smooks          The {@link Smooks} instance.
      */
     public Bean(Class beanClass, String beanId, String createOnElement, Smooks smooks) {
+        this(beanClass, beanId, createOnElement, null, smooks.getVisitorConfigMap());
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     *
+     * @param beanClass        The bean runtime class.
+     * @param beanId           The bean ID.
+     * @param createOnElement  The element selector used to create the bean instance.
+     * @param visitorConfigMap The {@link VisitorConfigMap} to which this bean is to be added.
+     */
+    public Bean(Class beanClass, String beanId, String createOnElement, VisitorConfigMap visitorConfigMap) {
+        this(beanClass, beanId, createOnElement, null, visitorConfigMap);
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     *
+     * @param beanClass         The bean runtime class.
+     * @param beanId            The bean ID.
+     * @param createOnElement   The element selector used to create the bean instance.
+     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
+     * @param smooks            The {@link Smooks} instance.
+     */
+    public Bean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, Smooks smooks) {
+        this(beanClass, beanId, createOnElement, createOnElementNS, smooks.getVisitorConfigMap());
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     *
+     * @param beanClass         The bean runtime class.
+     * @param beanId            The bean ID.
+     * @param createOnElement   The element selector used to create the bean instance.
+     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
+     * @param visitorConfigMap  The {@link VisitorConfigMap} to which this bean is to be added.
+     */
+    public Bean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, VisitorConfigMap visitorConfigMap) {
         AssertArgument.isNotNull(beanClass, "beanClass");
         AssertArgument.isNotNull(beanId, "beanId");
         AssertArgument.isNotNull(createOnElement, "createOnElement");
-        AssertArgument.isNotNull(smooks, "smooks");
+        AssertArgument.isNotNull(visitorConfigMap, "visitorConfigMap");
 
         this.beanClass = beanClass;
         this.createOnElement = createOnElement;
-        this.smooks = smooks;
+        this.visitorConfigMap = visitorConfigMap;
+        this.targetNamespace = createOnElementNS;
 
         beanInstanceCreator = new BeanInstanceCreator(beanId, beanClass);
 
         // Add the visitor
-        SmooksResourceConfiguration resourceConfig = smooks.addVisitor(createOnElement, beanInstanceCreator);
+        SmooksResourceConfiguration resourceConfig = visitorConfigMap.addVisitor(beanInstanceCreator, createOnElement, createOnElementNS, true);
         resourceConfig.setParameter("beanId", beanId);
         resourceConfig.setParameter("beanClass", beanClass.getName());
     }
@@ -148,6 +189,32 @@ public class Bean {
 
     /**
      * Create a Bean binding configuration.
+     *
+     * @param beanClass         The bean runtime class.
+     * @param beanId            The bean ID.
+     * @param createOnElement   The element selector used to create the bean instance.
+     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
+     * @param smooks            The {@link Smooks} instance.
+     */
+    public static Bean newBean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, Smooks smooks) {
+        return new Bean(beanClass, beanId, createOnElement, createOnElementNS, smooks);
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     *
+     * @param beanClass         The bean runtime class.
+     * @param beanId            The bean ID.
+     * @param createOnElement   The element selector used to create the bean instance.
+     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
+     * @param visitorConfigMap  The {@link VisitorConfigMap} to which this bean is to be added.
+     */
+    public static Bean newBean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, VisitorConfigMap visitorConfigMap) {
+        return new Bean(beanClass, beanId, createOnElement, createOnElementNS, visitorConfigMap);
+    }
+
+    /**
+     * Create a Bean binding configuration.
      * <p/>
      * This method binds the configuration to the same {@link Smooks} instance
      * supplied in the constructor.  The beanId is generated.
@@ -158,7 +225,7 @@ public class Bean {
      */
     public Bean newBean(Class beanClass, String createOnElement) {
         String randomBeanId = UUID.randomUUID().toString();
-        return new Bean(beanClass, randomBeanId, createOnElement, smooks);
+        return new Bean(beanClass, randomBeanId, createOnElement, visitorConfigMap);
     }
 
     /**
@@ -173,7 +240,7 @@ public class Bean {
      * @return <code>this</code> Bean configuration instance.
      */
     public Bean newBean(Class beanClass, String beanId, String createOnElement) {
-        return new Bean(beanClass, beanId, createOnElement, smooks);
+        return new Bean(beanClass, beanId, createOnElement, visitorConfigMap);
     }
 
     /**
@@ -220,7 +287,7 @@ public class Bean {
         Method bindingMethod = getBindingMethod(bindingMember);
         if (bindingMethod != null) {
             if (dataDecoder == null) {
-                Class dataType = bindingMethod.getParameterTypes()[0];
+                Class dataType = bindingMethod.getParameterTypes()[0];                
                 dataDecoder = DataDecoder.Factory.create(dataType);
             }
 
@@ -234,7 +301,7 @@ public class Bean {
         }
         beanInstancePopulator.setDecoder(dataDecoder);
 
-        smooks.addVisitor(populatorConfig.getSelector(), beanInstancePopulator);
+        visitorConfigMap.addVisitor(beanInstancePopulator, populatorConfig.getSelector(), targetNamespace, true);
 
         return this;
     }
@@ -272,7 +339,7 @@ public class Bean {
             beanInstancePopulator.setProperty(bindingMember);
         }
 
-        smooks.addVisitor(createOnElement, beanInstancePopulator);
+        visitorConfigMap.addVisitor(beanInstancePopulator, createOnElement, targetNamespace, true);
 
         return this;
     }
@@ -300,7 +367,7 @@ public class Bean {
         beanInstancePopulator.setBeanId(getBeanId());
         beanInstancePopulator.setWireBeanId(bean.getBeanId());
 
-        smooks.addVisitor(createOnElement, beanInstancePopulator);
+        visitorConfigMap.addVisitor(beanInstancePopulator, createOnElement, targetNamespace, true);
 
         return this;
     }
@@ -341,7 +408,7 @@ public class Bean {
         beanInstancePopulator.setValueAttributeName(populatorConfig.getStringParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME));
         beanInstancePopulator.setDecoder(dataDecoder);
 
-        smooks.addVisitor(populatorConfig.getSelector(), beanInstancePopulator);
+        visitorConfigMap.addVisitor(beanInstancePopulator, populatorConfig.getSelector(), targetNamespace, true);
 
         return this;
     }

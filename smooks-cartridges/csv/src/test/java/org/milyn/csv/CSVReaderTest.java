@@ -19,6 +19,7 @@ package org.milyn.csv;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
@@ -29,6 +30,7 @@ import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
 import org.milyn.payload.StringResult;
+import org.milyn.payload.JavaResult;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
@@ -161,5 +163,45 @@ public class CSVReaderTest extends TestCase {
         smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-03.csv")), result);
 
         assertEquals("<customers><customer><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></customer><customer><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></customer></customers>", result.getResult());
+    }
+
+    public void test_09() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-07.xml"));
+
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        List<Person> people = (List<Person>) result.getBean("people");
+       assertEquals("[(Tom, Fennelly, Ireland, Male, 4), (Mike, Fennelly, Ireland, Male, 2), (Linda, Coughlan, Ireland, Female, 22)]", people.toString());
+    }
+
+    public void test_10() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+        CSVReaderConfigurator csvConfig;
+
+        csvConfig = new CSVReaderConfigurator("firstname,lastname,$ignore$,gender,age,country");
+        csvConfig.setBinding(new CSVBinding("people", Person.class, true));
+        smooks.setReaderConfig(csvConfig);
+
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        List<Person> people = (List<Person>) result.getBean("people");
+        assertEquals("[(Tom, Fennelly, Ireland, Male, 4), (Mike, Fennelly, Ireland, Male, 2), (Linda, Coughlan, Ireland, Female, 22)]", people.toString());
+    }
+
+    public void test_11() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+        CSVReaderConfigurator csvConfig;
+
+        csvConfig = new CSVReaderConfigurator("firstname,lastname,$ignore$,gender,age,country");
+        csvConfig.setBinding(new CSVBinding("person", Person.class, false));
+        smooks.setReaderConfig(csvConfig);
+
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        Person person = (Person) result.getBean("person");
+        assertEquals("(Linda, Coughlan, Ireland, Female, 22)", person.toString());
     }
 }

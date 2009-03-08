@@ -17,6 +17,7 @@ package org.milyn.javabean;
 
 import org.milyn.delivery.ContentHandler;
 import org.milyn.javabean.decoders.StringDecoder;
+import org.milyn.javabean.decoders.EnumDecoder;
 import org.milyn.util.ClassUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,7 +76,13 @@ public interface DataDecoder extends ContentHandler {
             Class<? extends DataDecoder> decoderType = getInstance(targetType);
 
             if(decoderType != null) {
-                return newInstance(decoderType);
+                if(decoderType == EnumDecoder.class) {
+                    EnumDecoder decoder = new EnumDecoder();
+                    decoder.setEnumType(targetType);
+                    return decoder;
+                } else {
+                    return newInstance(decoderType);
+                }
             }
 
             return null;
@@ -86,7 +93,11 @@ public interface DataDecoder extends ContentHandler {
                 loadInstalledDecoders();
             }
 
-            return installedDecoders.get(targetType);
+            if(targetType.isEnum()) {
+                return EnumDecoder.class;
+            } else {
+                return installedDecoders.get(targetType);
+            }
         }
 
         private synchronized static void loadInstalledDecoders() throws DataDecodeException {
