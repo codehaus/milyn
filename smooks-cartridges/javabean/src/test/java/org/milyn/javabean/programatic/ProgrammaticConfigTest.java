@@ -1,6 +1,7 @@
 /*
 	Milyn - Copyright (C) 2006
 
+
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
 	License (version 2.1) as published by the Free Software
@@ -34,7 +35,10 @@ import org.xml.sax.SAXException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -128,7 +132,27 @@ public class ProgrammaticConfigTest extends TestCase {
         smooks.filter(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
 
         Map order = (Map) result.getBean("order");
-        assertEquals("{orderItems=[{price=8.9, productId=111, quantity=2}, {price=5.2, productId=222, quantity=7}], header={privatePerson=, customerName=Joe, customerNumber=123123}}", order.toString());
+
+        HashMap headerMap = (HashMap) order.get("header");
+        assertEquals("Joe", headerMap.get("customerName"));
+        assertEquals(123123, headerMap.get("customerNumber"));
+        assertEquals("", headerMap.get("privatePerson"));
+
+        ArrayList<HashMap> orderItems = (ArrayList<HashMap>) order.get("orderItems");
+        for (HashMap orderItem : orderItems)
+        {
+            String quantity = (String) orderItem.get("quantity");
+            if (quantity.equals("2"))
+            {
+                assertEquals("111", orderItem.get("productId"));
+                assertEquals(8.9, orderItem.get("price"));
+            }
+            else
+            {
+                assertEquals("222", orderItem.get("productId"));
+                assertEquals(5.2, orderItem.get("price"));
+            }
+        }
     }
 
     public void test_02_arrays_programmatic() {
