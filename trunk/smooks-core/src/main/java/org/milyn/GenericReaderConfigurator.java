@@ -13,10 +13,12 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.cdr;
+package org.milyn;
 
 import org.xml.sax.XMLReader;
 import org.milyn.delivery.AbstractParser;
+import org.milyn.ReaderConfigurator;
+import org.milyn.cdr.SmooksResourceConfiguration;
 
 import java.util.*;
 

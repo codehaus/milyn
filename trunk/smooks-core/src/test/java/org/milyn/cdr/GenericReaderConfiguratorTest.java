@@ -18,6 +18,7 @@ package org.milyn.cdr;
 import junit.framework.TestCase;
 import org.milyn.delivery.java.JavaXMLReader;
 import org.milyn.delivery.AbstractParser;
+import org.milyn.GenericReaderConfigurator;
 import org.xml.sax.SAXException;
 
 /**

@@ -19,6 +19,7 @@ package org.milyn.delivery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.StreamFilterType;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -153,7 +154,7 @@ public class ContentDeliveryConfigBuilder {
 	}
 
     private ContentDeliveryConfig createConfig(VisitorConfigMap extendedVisitorConfigMap) {
-        Filter.StreamFilterType filterType;
+        StreamFilterType filterType;
 
         visitorConfig.addAll(extendedVisitorConfigMap);
 
@@ -161,7 +162,7 @@ public class ContentDeliveryConfigBuilder {
         configBuilderEvents.add(new ConfigBuilderEvent("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics()));
         configBuilderEvents.add(new ConfigBuilderEvent("Using Stream Filter Type: " + filterType));
 
-        if(filterType == Filter.StreamFilterType.DOM) {
+        if(filterType == StreamFilterType.DOM) {
             DOMContentDeliveryConfig domConfig = new DOMContentDeliveryConfig();
 
             logger.debug("Using the DOM Stream Filter.");
@@ -193,8 +194,8 @@ public class ContentDeliveryConfigBuilder {
         }
     }
 
-    private Filter.StreamFilterType getStreamFilterType() {
-        Filter.StreamFilterType filterType;
+    private StreamFilterType getStreamFilterType() {
+        StreamFilterType filterType;
 
         if(logger.isDebugEnabled()) {
             logger.debug("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics());
@@ -205,7 +206,7 @@ public class ContentDeliveryConfigBuilder {
             Parameter filterTypeParam = ParameterAccessor.getParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
 
             if(filterTypeParam == null) {
-                filterType = Filter.StreamFilterType.DOM;
+                filterType = StreamFilterType.DOM;
                 logger.debug("All configured XML Element Content Handler resource configurations can be " +
                         "applied using the SAX or DOM Stream Filter.  Defaulting to DOM Filter.  Set '" + ParameterAccessor.GLOBAL_PARAMETERS + ":"
                         + Filter.STREAM_FILTER_TYPE + "'.");
@@ -213,17 +214,17 @@ public class ContentDeliveryConfigBuilder {
                         "\t\t<resource-config selector=\"" + ParameterAccessor.GLOBAL_PARAMETERS + "\">\n" +
                         "\t\t\t<param name=\"" + Filter.STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
                         "\t\t</resource-config>");
-            } else if(filterTypeParam.getValue().equalsIgnoreCase(Filter.StreamFilterType.DOM.name())) {
-                filterType = Filter.StreamFilterType.DOM;
-            } else if(filterTypeParam.getValue().equalsIgnoreCase(Filter.StreamFilterType.SAX.name())) {
-                filterType = Filter.StreamFilterType.SAX;
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.DOM.name())) {
+                filterType = StreamFilterType.DOM;
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.SAX.name())) {
+                filterType = StreamFilterType.SAX;
             } else {
                 throw new SmooksException("Invalid '" + Filter.STREAM_FILTER_TYPE + "' configuration parameter value of '" + filterTypeParam + "'.  Must be 'SAX' or 'DOM'.");
             }
         } else if(visitorConfig.getDomVisitorCount() == visitorConfig.getVisitorCount()) {
-            filterType = Filter.StreamFilterType.DOM;
+            filterType = StreamFilterType.DOM;
         } else if(visitorConfig.getSaxVisitorCount() == visitorConfig.getVisitorCount()) {
-            filterType = Filter.StreamFilterType.SAX;
+            filterType = StreamFilterType.SAX;
         } else {
             throw new SmooksException("Ambiguous Resource Configuration set.  All Element Content Handlers must support processing on the SAX and/or DOM Filter:\n" + getResourceFilterCharacteristics());
         }

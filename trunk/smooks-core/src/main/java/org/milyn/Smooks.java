@@ -20,7 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.ReaderConfigurator;
+import org.milyn.ReaderConfigurator;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
@@ -165,10 +165,24 @@ public class Smooks {
     /**
      * Set the default stream filter type on this Smooks instance.
      * @param filterType The filter type.
+     * @deprecated Use {@link #setFilterSettings(FilterSettings)}.
      */
     public void setFilterType(Filter.StreamFilterType filterType) {
         assertIsConfigurable();
-        Filter.setFilterType(this, filterType);
+        if(filterType == Filter.StreamFilterType.DOM) {
+            setFilterSettings(FilterSettings.DEFAULT_DOM);
+        } else {
+            setFilterSettings(FilterSettings.DEFAULT_SAX);
+        }
+    }
+
+    /**
+     * Set the filter settings for this Smooks instance.
+     * @param filterSettings The filter settings to be used.
+     */
+    public void setFilterSettings(FilterSettings filterSettings) {
+        AssertArgument.isNotNull(filterSettings, "filterSettings");
+        filterSettings.applySettings(this);
     }
 
     /**
