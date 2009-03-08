@@ -38,6 +38,7 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
     private Charset encoding = Charset.forName("UTF-8");
     private String rootElementName = "csv-set";
     private String recordElementName = "csv-record";
+    private CSVBinding binding;
     private String targetProfile;    
 
     public CSVReaderConfigurator(String csvFields) {
@@ -75,6 +76,10 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         this.recordElementName = csvRecordElementName;
     }
 
+    public void setBinding(CSVBinding binding) {
+        this.binding = binding;
+    }
+
     public void setTargetProfile(String targetProfile) {
         AssertArgument.isNotNullAndNotEmpty(targetProfile, "targetProfile");
         this.targetProfile = targetProfile;
@@ -90,6 +95,12 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         configurator.getParameters().setProperty("encoding", encoding.name());
         configurator.getParameters().setProperty("rootElementName", rootElementName);
         configurator.getParameters().setProperty("recordElementName", recordElementName);
+
+        if(binding != null) {
+            configurator.getParameters().setProperty("bindBeanId", binding.getBeanId());
+            configurator.getParameters().setProperty("bindBeanClass", binding.getBeanClass().getName());
+            configurator.getParameters().setProperty("bindBeanAsList", Boolean.toString(binding.isCreateList()));
+        }
 
         configurator.setTargetProfile(targetProfile);
 

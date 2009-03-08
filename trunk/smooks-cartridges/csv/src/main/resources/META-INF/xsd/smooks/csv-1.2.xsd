@@ -11,12 +11,12 @@
         <xs:documentation xml:lang="en">Smooks CSV Reader Configuration</xs:documentation>
     </xs:annotation>
 
-
     <xs:element name="reader" type="smooks-csv:reader" substitutionGroup="smooks:abstract-reader">
     	<xs:annotation>
     		<xs:documentation xml:lang="en">
-    			CSV Reader Configuration
-    		 	The CSV reader reads and validates a CSV stream and converts it to SAX events that Smooks
+    			CSV Reader Configuration.
+                <p/>
+                The CSV reader reads and validates a CSV stream and converts it to SAX events that Smooks
     		 	can process.
     		</xs:documentation>
     	</xs:annotation>
@@ -28,6 +28,9 @@
     	</xs:annotation>
     	<xs:complexContent>
     		<xs:extension base="smooks:abstract-reader">
+                <xs:sequence>
+                    <xs:element name="binding" type="smooks-csv:binding" minOccurs="0" maxOccurs="1" />
+                </xs:sequence>
     			<xs:attribute name="fields" type="xs:string">
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
@@ -77,6 +80,43 @@
     					</xs:documentation>
     				</xs:annotation>
     			</xs:attribute>
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="binding">
+    	<xs:annotation>
+            <xs:documentation xml:lang="en">
+                CSV Binding Configuration.
+                <p/>
+                Supports simple automatic java binding of CSV records onto a bean based on the configured field
+                names matching the target bean's property names.  For more complex binding, use the main Java
+                binding configurations.
+            </xs:documentation>
+    	</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="smooks:abstract-resource-config">
+                <xs:attribute name="beanId" type="xs:string" use="required">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The ID under which the created bean is to be bound in the bean context.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="class" type="xs:string" use="required">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            The fully qualified bean Class name.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="createList" type="xs:boolean" use="required">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Should a list of the bindings be created.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
     		</xs:extension>
     	</xs:complexContent>
     </xs:complexType>

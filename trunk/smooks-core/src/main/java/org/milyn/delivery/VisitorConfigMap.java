@@ -25,8 +25,11 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.event.types.ConfigBuilderEvent;
+import org.milyn.container.ApplicationContext;
+import org.milyn.assertion.AssertArgument;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -40,7 +43,11 @@ import java.util.ArrayList;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class VisitorConfigMap {
-    
+
+    /**
+     * App context.
+     */
+    private ApplicationContext applicationContext;
     /**
 	 * Assembly Visit Befores.
 	 */
@@ -78,6 +85,11 @@ public class VisitorConfigMap {
     private int visitorCount = 0;
     private int saxVisitorCount = 0;
     private int domVisitorCount = 0;
+
+    public VisitorConfigMap(ApplicationContext applicationContext) {
+        AssertArgument.isNotNull(applicationContext, "applicationContext");
+        this.applicationContext = applicationContext;
+    }
 
     public ContentHandlerConfigMapTable<DOMVisitBefore> getDomAssemblyVisitBefores() {
         return domAssemblyVisitBefores;
@@ -151,7 +163,26 @@ public class VisitorConfigMap {
         return domVisitorCount;
     }
 
-    public void addVisitor(String elementName, SmooksResourceConfiguration resourceConfig, Visitor visitor) {
+    public SmooksResourceConfiguration addVisitor(Visitor visitor, String targetSelector, String targetSelectorNS, boolean configure) {
+        AssertArgument.isNotNull(visitor, "visitor");
+        AssertArgument.isNotNull(targetSelector, "targetSelector");
+
+        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
+
+        resourceConfig.setSelectorNamespaceURI(targetSelectorNS);
+        addVisitor(visitor, resourceConfig, configure);
+
+        return resourceConfig;
+    }
+
+    public void addVisitor(Visitor visitor, SmooksResourceConfiguration resourceConfig, boolean configure) {
+        String elementName = resourceConfig.getTargetElement();
+
+        if(configure) {
+            // And configure/initialize the instance...
+            Configurator.processFieldContextAnnotation(visitor, applicationContext);
+            Configurator.initialise(visitor);
+        }
 
         visitorCount++;
 

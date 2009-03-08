@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.ReaderConfigurator;
-import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
@@ -92,7 +91,7 @@ public class Smooks {
      * Manually added visitors.  In contract to those that are constructed and configured dynamically from
      * an XML configuration stream.
      */
-    private VisitorConfigMap visitors = new VisitorConfigMap();
+    private VisitorConfigMap visitorConfigMap;
     /**
      * Flag indicating whether or not the Smooks instance is configurable.  It becomes unconfigurable
      * after the first execution context has been created.
@@ -107,6 +106,7 @@ public class Smooks {
      */
     public Smooks() {
         context = new StandaloneApplicationContext();
+        visitorConfigMap = new VisitorConfigMap(context);
     }
 
     /**
@@ -184,10 +184,10 @@ public class Smooks {
     /**
      * Add a visitor instance to <code>this</code> Smooks instance.
      *
-     * @param targetSelector The message fragment target selector.
      * @param visitor The visitor implementation.
+     * @param targetSelector The message fragment target selector.
      */
-    public SmooksResourceConfiguration addVisitor(String targetSelector, Visitor visitor) {
+    public SmooksResourceConfiguration addVisitor(Visitor visitor, String targetSelector) {
         return addVisitor(visitor, targetSelector, null);
     }
 
@@ -200,20 +200,15 @@ public class Smooks {
      */
     public SmooksResourceConfiguration addVisitor(Visitor visitor, String targetSelector, String targetSelectorNS) {
         assertIsConfigurable();
-        AssertArgument.isNotNull(visitor, "visitor");
-        AssertArgument.isNotNull(targetSelector, "targetSelector");
+        return visitorConfigMap.addVisitor(visitor, targetSelector, targetSelectorNS, true);
+    }
 
-        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
-
-        resourceConfig.setSelectorNamespaceURI(targetSelectorNS);
-
-        // And configure/initialize the instance...
-        Configurator.processFieldContextAnnotation(visitor, context);
-        Configurator.initialise(visitor);
-
-        visitors.addVisitor(resourceConfig.getTargetElement(), resourceConfig, visitor);
-
-        return resourceConfig;
+    /**
+     * Get the visitor configuration map associated with this Smooks instance.
+     * @return The visitor configuration map associated with this Smooks instance.
+     */
+    public VisitorConfigMap getVisitorConfigMap() {
+        return visitorConfigMap;
     }
 
     /**
@@ -343,12 +338,12 @@ public class Smooks {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             try {
-                return new StandaloneExecutionContext(targetProfile, context, visitors);
+                return new StandaloneExecutionContext(targetProfile, context, visitorConfigMap);
             } finally {
                 Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
-            return new StandaloneExecutionContext(targetProfile, context, visitors);
+            return new StandaloneExecutionContext(targetProfile, context, visitorConfigMap);
         }
     }
 
