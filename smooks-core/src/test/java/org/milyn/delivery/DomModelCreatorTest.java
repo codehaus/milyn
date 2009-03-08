@@ -17,6 +17,8 @@ package org.milyn.delivery;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.StreamFilterType;
+import org.milyn.FilterSettings;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
 import org.milyn.xml.XmlUtil;
@@ -37,7 +39,7 @@ public class DomModelCreatorTest extends TestCase {
     public void test_sax_01() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("node-model-01.xml"));
 
-        Filter.setFilterType(smooks, Filter.StreamFilterType.SAX);
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
 
         ExecutionContext executionContext = smooks.createExecutionContext();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), null, executionContext);
@@ -87,7 +89,7 @@ public class DomModelCreatorTest extends TestCase {
     public void test_sax_02() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("node-model-02.xml"));
 
-        Filter.setFilterType(smooks, Filter.StreamFilterType.SAX);
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
 
         ExecutionContext executionContext = smooks.createExecutionContext();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), null, executionContext);

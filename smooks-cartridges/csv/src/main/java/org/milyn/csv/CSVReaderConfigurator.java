@@ -15,9 +15,9 @@
 */
 package org.milyn.csv;
 
-import org.milyn.cdr.ReaderConfigurator;
+import org.milyn.ReaderConfigurator;
+import org.milyn.GenericReaderConfigurator;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.GenericReaderConfigurator;
 import org.milyn.assertion.AssertArgument;
 
 import java.nio.charset.Charset;
@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 /**
  * CSV Reader configurator.
  * <p/>
- * Supports programmatic {@link CSVReader} configuration on a {@link org.milyn.Smooks#setReaderConfig(org.milyn.cdr.ReaderConfigurator) Smooks} instance.
+ * Supports programmatic {@link CSVReader} configuration on a {@link org.milyn.Smooks#setReaderConfig(org.milyn.ReaderConfigurator) Smooks} instance.
  *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
