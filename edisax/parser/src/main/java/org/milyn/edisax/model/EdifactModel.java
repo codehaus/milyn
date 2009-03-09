@@ -76,7 +76,7 @@ public class EdifactModel {
 
         edimap = EDIConfigDigester.digestConfig(inputStream);
         importFiles(tree.getRoot(), edimap, tree);
-        
+        System.out.println("");
     }
 
     /**
@@ -102,10 +102,18 @@ public class EdifactModel {
             importFiles(child, importedEdimap, tree);
             Map<String, Segment> importedSegments = createImportMap(importedEdimap);
 
-            for (SegmentGroup segmentGroup : edimap.getSegments().getSegments()) {
-                if(segmentGroup instanceof Segment) {
-                    applyImportOnSegment((Segment) segmentGroup, imp, importedSegments);
-                }
+            applyImportOnSegments(edimap.getSegments().getSegments(), imp, importedSegments);            
+        }
+    }
+
+    private void applyImportOnSegments(List<SegmentGroup> segmentGroup, Import imp, Map<String, Segment> importedSegments) throws EDIParseException {
+        for (SegmentGroup segment : segmentGroup) {
+            if(segment instanceof Segment) {
+                applyImportOnSegment((Segment)segment, imp, importedSegments);
+            }
+
+            if (segment.getSegments() != null) {
+                applyImportOnSegments(segment.getSegments(), imp, importedSegments);
             }
         }
     }
