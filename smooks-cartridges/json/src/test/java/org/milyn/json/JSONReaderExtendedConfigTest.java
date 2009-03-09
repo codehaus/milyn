@@ -53,14 +53,12 @@ public class JSONReaderExtendedConfigTest extends TestCase {
         // Programmatic config....
         Smooks smooks = new Smooks();
 
-        JSONReaderConfigurator config = new JSONReaderConfigurator();
         Map<String, String> keyMap = new HashMap<String, String>();
 
         keyMap.put("some key", "someKey");
         keyMap.put("some&key", "someAndKey");
-        config.setKeyMap(keyMap);
 
-        smooks.setReaderConfig(config);
+        smooks.setReaderConfig(new JSONReaderConfigurator().setKeyMap(keyMap));
         test_config_file("key_replacement", smooks);
     }
 
@@ -70,14 +68,12 @@ public class JSONReaderExtendedConfigTest extends TestCase {
         // Programmatic config....
         Smooks smooks = new Smooks();
 
-        JSONReaderConfigurator config = new JSONReaderConfigurator();
+        smooks.setReaderConfig(new JSONReaderConfigurator()
+                .setKeyWhitspaceReplacement("_")
+                .setKeyPrefixOnNumeric("n")
+                .setIllegalElementNameCharReplacement(".")
+                .setNullValueReplacement("##NULL##"));
 
-        config.setKeyWhitspaceReplacement("_");
-        config.setKeyPrefixOnNumeric("n");
-        config.setIllegalElementNameCharReplacement(".");
-        config.setNullValueReplacement("##NULL##");
-
-        smooks.setReaderConfig(config);
         test_config_file("several_replacements", smooks);
     }
 
@@ -87,12 +83,9 @@ public class JSONReaderExtendedConfigTest extends TestCase {
         // Programmatic config....
         Smooks smooks = new Smooks();
 
-        JSONReaderConfigurator config = new JSONReaderConfigurator();
-
-        config.setRootName("root");
-        config.setArrayElementName("e");
-
-        smooks.setReaderConfig(config);
+        smooks.setReaderConfig(new JSONReaderConfigurator()
+                .setRootName("root")
+                .setArrayElementName("e"));
         test_config_file("configured_different_node_names", smooks);
     }
 

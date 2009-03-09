@@ -37,9 +37,10 @@ public class EDIReaderConfigurator implements ReaderConfigurator {
         this.mappingModel = mappingModel;
     }
 
-    public void setTargetProfile(String targetProfile) {
+    public EDIReaderConfigurator setTargetProfile(String targetProfile) {
         AssertArgument.isNotNullAndNotEmpty(targetProfile, "targetProfile");
         this.targetProfile = targetProfile;
+        return this;
     }
 
     public SmooksResourceConfiguration toConfig() {
