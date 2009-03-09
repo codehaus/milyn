@@ -46,43 +46,51 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         this.csvFields = csvFields;
     }
 
-    public void setSeparatorChar(char separatorChar) {
+    public CSVReaderConfigurator setSeparatorChar(char separatorChar) {
         AssertArgument.isNotNull(separatorChar, "separatorChar");
         this.separatorChar = separatorChar;
+        return this;
     }
 
-    public void setQuoteChar(char quoteChar) {
+    public CSVReaderConfigurator setQuoteChar(char quoteChar) {
         AssertArgument.isNotNull(quoteChar, "quoteChar");
         this.quoteChar = quoteChar;
+        return this;
     }
 
-    public void setSkipLineCount(int skipLineCount) {
+    public CSVReaderConfigurator setSkipLineCount(int skipLineCount) {
         AssertArgument.isNotNull(skipLineCount, "skipLineCount");
         this.skipLineCount = skipLineCount;
+        return this;
     }
 
-    public void setEncoding(Charset encoding) {
+    public CSVReaderConfigurator setEncoding(Charset encoding) {
         AssertArgument.isNotNull(encoding, "encoding");
         this.encoding = encoding;
+        return this;
     }
 
-    public void setRootElementName(String csvRootElementName) {
+    public CSVReaderConfigurator setRootElementName(String csvRootElementName) {
         AssertArgument.isNotNullAndNotEmpty(csvRootElementName, "rootElementName");
         this.rootElementName = csvRootElementName;
+        return this;
     }
 
-    public void setRecordElementName(String csvRecordElementName) {
+    public CSVReaderConfigurator setRecordElementName(String csvRecordElementName) {
         AssertArgument.isNotNullAndNotEmpty(csvRecordElementName, "recordElementName");
         this.recordElementName = csvRecordElementName;
+        return this;
     }
 
-    public void setBinding(CSVBinding binding) {
+    public CSVReaderConfigurator setBinding(CSVBinding binding) {
         this.binding = binding;
+        return this;
     }
 
-    public void setTargetProfile(String targetProfile) {
+    public CSVReaderConfigurator setTargetProfile(String targetProfile) {
         AssertArgument.isNotNullAndNotEmpty(targetProfile, "targetProfile");
         this.targetProfile = targetProfile;
+        return this;
     }
 
     public SmooksResourceConfiguration toConfig() {

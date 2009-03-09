@@ -43,49 +43,58 @@ public class JSONReaderConfigurator implements ReaderConfigurator {
     private Map<String, String> keyMap;
     private String targetProfile;
 
-    public void setRootName(String rootName) {
+    public JSONReaderConfigurator setRootName(String rootName) {
         AssertArgument.isNotNull(rootName, "rootName");
         this.rootName = rootName;
+        return this;
     }
 
-    public void setArrayElementName(String arrayElementName) {
+    public JSONReaderConfigurator setArrayElementName(String arrayElementName) {
         AssertArgument.isNotNull(arrayElementName, "arrayElementName");
         this.arrayElementName = arrayElementName;
+        return this;
     }
 
-    public void setKeyWhitspaceReplacement(String keyWhitspaceReplacement) {
+    public JSONReaderConfigurator setKeyWhitspaceReplacement(String keyWhitspaceReplacement) {
         AssertArgument.isNotNull(keyWhitspaceReplacement, "keyWhitspaceReplacement");
         this.keyWhitspaceReplacement = keyWhitspaceReplacement;
+        return this;
     }
 
-    public void setKeyPrefixOnNumeric(String keyPrefixOnNumeric) {
+    public JSONReaderConfigurator setKeyPrefixOnNumeric(String keyPrefixOnNumeric) {
         AssertArgument.isNotNull(keyPrefixOnNumeric, "keyPrefixOnNumeric");
         this.keyPrefixOnNumeric = keyPrefixOnNumeric;
+        return this;
     }
 
-    public void setIllegalElementNameCharReplacement(String illegalElementNameCharReplacement) {
+    public JSONReaderConfigurator setIllegalElementNameCharReplacement(String illegalElementNameCharReplacement) {
         AssertArgument.isNotNull(illegalElementNameCharReplacement, "illegalElementNameCharReplacement");
         this.illegalElementNameCharReplacement = illegalElementNameCharReplacement;
+        return this;
     }
 
-    public void setNullValueReplacement(String nullValueReplacement) {
+    public JSONReaderConfigurator setNullValueReplacement(String nullValueReplacement) {
         AssertArgument.isNotNull(nullValueReplacement, "nullValueReplacement");
         this.nullValueReplacement = nullValueReplacement;
+        return this;
     }
 
-    public void setEncoding(Charset encoding) {
+    public JSONReaderConfigurator setEncoding(Charset encoding) {
         AssertArgument.isNotNull(encoding, "encoding");
         this.encoding = encoding;
+        return this;
     }
 
-    public void setKeyMap(Map<String, String> keyMap) {
+    public JSONReaderConfigurator setKeyMap(Map<String, String> keyMap) {
         AssertArgument.isNotNull(keyMap, "keyMap");
         this.keyMap = keyMap;
+        return this;
     }
 
-    public void setTargetProfile(String targetProfile) {
+    public JSONReaderConfigurator setTargetProfile(String targetProfile) {
         AssertArgument.isNotNullAndNotEmpty(targetProfile, "targetProfile");
         this.targetProfile = targetProfile;
+        return this;
     }
 
     public SmooksResourceConfiguration toConfig() {

@@ -48,32 +48,23 @@ public class GenericReaderConfigurator implements ReaderConfigurator {
         return parameters;
     }
 
-    public void setParameters(Properties parameters) {
+    public GenericReaderConfigurator setParameters(Properties parameters) {
         this.parameters = parameters;
+        return this;
     }
 
-    public void setFeature(String feature, boolean on) {
+    public GenericReaderConfigurator setFeature(String feature, boolean on) {
         if(on) {
             featuresOn.add(feature);
         } else {
             featuresOff.add(feature);
         }
+        return this;
     }
 
-    public List<String> getFeaturesOn() {
-        return featuresOn;
-    }
-
-    public List<String> getFeaturesOff() {
-        return featuresOff;
-    }
-
-    public String getTargetProfile() {
-        return targetProfile;
-    }
-
-    public void setTargetProfile(String targetProfile) {
+    public GenericReaderConfigurator setTargetProfile(String targetProfile) {
         this.targetProfile = targetProfile;
+        return this;
     }
 
     public SmooksResourceConfiguration toConfig() {
