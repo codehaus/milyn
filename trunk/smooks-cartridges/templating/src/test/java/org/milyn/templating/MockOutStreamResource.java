@@ -29,6 +29,13 @@ public class MockOutStreamResource extends AbstractOutputStreamResource {
 
     public static ByteArrayOutputStream outputStream;
 
+    public MockOutStreamResource() {
+    }
+
+    public MockOutStreamResource(String resourceName) {
+        setResourceName(resourceName);
+    }
+
     public OutputStream getOutputStream(ExecutionContext executionContext) throws IOException {
         return outputStream;
     }

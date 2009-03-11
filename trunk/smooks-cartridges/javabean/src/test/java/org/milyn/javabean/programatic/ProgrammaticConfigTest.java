@@ -35,10 +35,7 @@ import org.xml.sax.SAXException;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,9 +44,9 @@ import java.util.Map;
  */
 public class ProgrammaticConfigTest extends TestCase {
 
-    public void test_01_fluid() {
+    public void test_01_fluent() {
         Smooks smooks = new Smooks();
-        Bean orderBean = new Bean(Order.class, "order", "/order", smooks);
+        Bean orderBean = new Bean(Order.class, "order", "/order");
 
         orderBean.bindTo("header",
             orderBean.newBean(Header.class, "/order")
@@ -70,14 +67,34 @@ public class ProgrammaticConfigTest extends TestCase {
                         .bindTo("quantity", "order-item/quantity")
                         .bindTo("price", "order-item/price")));
 
+        smooks.addVisitor(orderBean);
+
         execute_01_test(smooks);
+    }
+
+    public void test_invalid_bindTo() {
+        Smooks smooks = new Smooks();
+        Bean orderBean = new Bean(Order.class, "order", "/order");
+
+        smooks.addVisitor(orderBean);
+
+        try {
+            // invalid attempt to bindTo after it has been added to the Smooks instance...
+            orderBean.bindTo("header",
+                orderBean.newBean(Header.class, "/order")
+                    .bindTo("privatePerson", "header/privatePerson"));
+
+            fail("Expected IllegalStateException");
+        } catch(IllegalStateException e) {
+            assertEquals("Unexpected attempt to bindTo Bean instance after the Bean instance has been added to a Smooks instance.", e.getMessage());
+        }
     }
 
     public void test_01_flat() {
         Smooks smooks = new Smooks();
-        Bean orderBean = new Bean(Order.class, "order", "/order", smooks);
+        Bean orderBean = new Bean(Order.class, "order", "/order");
 
-        Bean headerBean = new Bean(Header.class, "header", "/order", smooks)
+        Bean headerBean = new Bean(Header.class, "header", "/order")
                                     .bindTo("order", orderBean)
                                     .bindTo("customerNumber", "header/customer/@number")
                                     .bindTo("customerName", "header/customer")
@@ -94,6 +111,8 @@ public class ProgrammaticConfigTest extends TestCase {
                                         .bindTo("productId", "order-item/product")
                                         .bindTo("quantity", "order-item/quantity")
                                         .bindTo("price", "order-item/price")));
+
+        smooks.addVisitor(orderBean);
 
         execute_01_test(smooks);
     }
@@ -113,7 +132,7 @@ public class ProgrammaticConfigTest extends TestCase {
     public void test_02_Map_fluid() {
         Smooks smooks = new Smooks();
 
-        Bean orderBean = new Bean(HashMap.class, "order", "/order", smooks);
+        Bean orderBean = new Bean(HashMap.class, "order", "/order");
 
         orderBean.bindTo("header",
                 orderBean.newBean(HashMap.class, "/order")
@@ -127,6 +146,8 @@ public class ProgrammaticConfigTest extends TestCase {
                             .bindTo("quantity", "order-item/quantity")
                             .bindTo("price", "order-item/price", new DoubleDecoder()))
                 );
+
+        smooks.addVisitor(orderBean);
 
         JavaResult result = new JavaResult();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
@@ -158,13 +179,15 @@ public class ProgrammaticConfigTest extends TestCase {
     public void test_02_arrays_programmatic() {
         Smooks smooks = new Smooks();
 
-        Bean orderBean = new Bean(Order.class, "order", "order", smooks);
-        Bean orderItemArray = new Bean(OrderItem[].class, "orderItemsArray", "order", smooks);
-        Bean orderItem = new Bean(OrderItem.class, "orderItem", "order-item", smooks);
+        Bean orderBean = new Bean(Order.class, "order", "order");
+        Bean orderItemArray = new Bean(OrderItem[].class, "orderItemsArray", "order");
+        Bean orderItem = new Bean(OrderItem.class, "orderItem", "order-item");
 
         orderItem.bindTo("productId", "order-item/product");
         orderItemArray.bindTo(orderItem);
         orderBean.bindTo("orderItems", orderItemArray);
+
+        smooks.addVisitor(orderBean);
 
         execSmooksArrays(smooks);
     }

@@ -18,6 +18,7 @@ package org.milyn.io;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ExecutionLifecycleCleanable;
@@ -69,7 +70,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
     private String resourceName;
 
     @ConfigParam(defaultVal = "UTF-8")
-    private Charset writerEncoding;
+    private Charset writerEncoding = Charset.forName("UTF-8");
 
     //	public
 
@@ -82,12 +83,23 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
 	public abstract OutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException;
 
     /**
-	 * Return the name of this resource
+	 * Get the name of this resource
 	 *
-	 * @return <code>String</code>	- the name of the resource
+	 * @return The name of the resource
 	 */
 	public String getResourceName() {
         return resourceName;
+    }
+
+    /**
+	 * Set the name of this resource
+	 *
+	 * @param resourceName The name of the resource
+	 */
+    public AbstractOutputStreamResource setResourceName(String resourceName) {
+        AssertArgument.isNotNullAndNotEmpty(resourceName, "resourceName");
+        this.resourceName = resourceName;
+        return this;
     }
 
     public Charset getWriterEncoding() {
