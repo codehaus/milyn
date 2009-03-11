@@ -39,6 +39,7 @@ import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.io.NullWriter;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.templating.AbstractTemplateProcessor;
+import org.milyn.templating.TemplatingConfiguration;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -76,6 +77,21 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
     private Template defaultTemplate;
     private SmooksResourceConfiguration config;
     private DefaultSAXElementSerializer targetWriter;
+
+    /**
+     * Default constructor.
+     */
+    protected FreeMarkerTemplateProcessor() {
+    }
+
+    /**
+     * Programmatically configure the FreeMarker Templating Visitor.
+     * @param templatingConfiguration The templating configuration.
+     * @return This Visitor instance.
+     */
+    public FreeMarkerTemplateProcessor(TemplatingConfiguration templatingConfiguration) {
+        super.setTemplatingConfiguration(templatingConfiguration);
+    }
 
     @Override
 	protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {

@@ -17,12 +17,15 @@ package org.milyn.javabean;
 
 import org.milyn.Smooks;
 import org.milyn.delivery.VisitorConfigMap;
+import org.milyn.delivery.VisitorAppender;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.ext.SelectorPropertyResolver;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Programmatic Bean Configurator.
@@ -81,7 +84,9 @@ import java.util.UUID;
  * <h4>The Binding Configuration and Execution Code</h4>
  * The configuration code (Note: Smooks instance defined and instantiated globally):
  * <pre>
- * Bean orderBean = new Bean(Order.class, "order", "/order", smooks);
+ * Smooks smooks = new Smooks();
+ *
+ * Bean orderBean = new Bean(Order.class, "order", "/order");
  * orderBean.bindTo("header",
  *     orderBean.newBean(Header.class, "/order")
  *         .bindTo("customerNumber", "header/customer/@number")
@@ -93,37 +98,30 @@ import java.util.UUID;
  *             .bindTo("quantity", "order-item/quantity")
  *             .bindTo("price", "order-item/price"))
  *     );
+ *
+ * smooks.addVisitors(orderBean);
  * </pre>
  * <p/>
  * And the execution code:
  * <pre>
  * JavaResult result = new JavaResult();
- * <p/>
+ * 
  * smooks.filter(new StreamSource(orderMessageStream), result);
  * Order order = (Order) result.getBean("order");
  * </pre>
  *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class Bean {
+public class Bean implements VisitorAppender {
 
     private BeanInstanceCreator beanInstanceCreator;
+    private String beanId;
     private Class beanClass;
     private String createOnElement;
-    private VisitorConfigMap visitorConfigMap;
     private String targetNamespace;
-
-    /**
-     * Create a Bean binding configuration.
-     *
-     * @param beanClass       The bean runtime class.
-     * @param beanId          The bean ID.
-     * @param createOnElement The element selector used to create the bean instance.
-     * @param smooks          The {@link Smooks} instance.
-     */
-    public Bean(Class beanClass, String beanId, String createOnElement, Smooks smooks) {
-        this(beanClass, beanId, createOnElement, null, smooks.getVisitorConfigMap());
-    }
+    private List<Binding> bindings = new ArrayList<Binding>();
+    private List<Bean> wirings = new ArrayList<Bean>();
+    private boolean processed = false;
 
     /**
      * Create a Bean binding configuration.
@@ -131,10 +129,9 @@ public class Bean {
      * @param beanClass        The bean runtime class.
      * @param beanId           The bean ID.
      * @param createOnElement  The element selector used to create the bean instance.
-     * @param visitorConfigMap The {@link VisitorConfigMap} to which this bean is to be added.
      */
-    public Bean(Class beanClass, String beanId, String createOnElement, VisitorConfigMap visitorConfigMap) {
-        this(beanClass, beanId, createOnElement, null, visitorConfigMap);
+    public Bean(Class beanClass, String beanId, String createOnElement) {
+        this(beanClass, beanId, createOnElement, null);
     }
 
     /**
@@ -144,38 +141,18 @@ public class Bean {
      * @param beanId            The bean ID.
      * @param createOnElement   The element selector used to create the bean instance.
      * @param createOnElementNS The namespace for the element selector used to create the bean instance.
-     * @param smooks            The {@link Smooks} instance.
      */
-    public Bean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, Smooks smooks) {
-        this(beanClass, beanId, createOnElement, createOnElementNS, smooks.getVisitorConfigMap());
-    }
-
-    /**
-     * Create a Bean binding configuration.
-     *
-     * @param beanClass         The bean runtime class.
-     * @param beanId            The bean ID.
-     * @param createOnElement   The element selector used to create the bean instance.
-     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
-     * @param visitorConfigMap  The {@link VisitorConfigMap} to which this bean is to be added.
-     */
-    public Bean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, VisitorConfigMap visitorConfigMap) {
+    public Bean(Class beanClass, String beanId, String createOnElement, String createOnElementNS) {
         AssertArgument.isNotNull(beanClass, "beanClass");
         AssertArgument.isNotNull(beanId, "beanId");
         AssertArgument.isNotNull(createOnElement, "createOnElement");
-        AssertArgument.isNotNull(visitorConfigMap, "visitorConfigMap");
 
         this.beanClass = beanClass;
+        this.beanId = beanId;
         this.createOnElement = createOnElement;
-        this.visitorConfigMap = visitorConfigMap;
         this.targetNamespace = createOnElementNS;
 
         beanInstanceCreator = new BeanInstanceCreator(beanId, beanClass);
-
-        // Add the visitor
-        SmooksResourceConfiguration resourceConfig = visitorConfigMap.addVisitor(beanInstanceCreator, createOnElement, createOnElementNS, true);
-        resourceConfig.setParameter("beanId", beanId);
-        resourceConfig.setParameter("beanClass", beanClass.getName());
     }
 
     /**
@@ -194,23 +171,9 @@ public class Bean {
      * @param beanId            The bean ID.
      * @param createOnElement   The element selector used to create the bean instance.
      * @param createOnElementNS The namespace for the element selector used to create the bean instance.
-     * @param smooks            The {@link Smooks} instance.
      */
-    public static Bean newBean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, Smooks smooks) {
-        return new Bean(beanClass, beanId, createOnElement, createOnElementNS, smooks);
-    }
-
-    /**
-     * Create a Bean binding configuration.
-     *
-     * @param beanClass         The bean runtime class.
-     * @param beanId            The bean ID.
-     * @param createOnElement   The element selector used to create the bean instance.
-     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
-     * @param visitorConfigMap  The {@link VisitorConfigMap} to which this bean is to be added.
-     */
-    public static Bean newBean(Class beanClass, String beanId, String createOnElement, String createOnElementNS, VisitorConfigMap visitorConfigMap) {
-        return new Bean(beanClass, beanId, createOnElement, createOnElementNS, visitorConfigMap);
+    public static Bean newBean(Class beanClass, String beanId, String createOnElement, String createOnElementNS) {
+        return new Bean(beanClass, beanId, createOnElement, createOnElementNS);
     }
 
     /**
@@ -225,7 +188,7 @@ public class Bean {
      */
     public Bean newBean(Class beanClass, String createOnElement) {
         String randomBeanId = UUID.randomUUID().toString();
-        return new Bean(beanClass, randomBeanId, createOnElement, visitorConfigMap);
+        return new Bean(beanClass, randomBeanId, createOnElement);
     }
 
     /**
@@ -240,7 +203,7 @@ public class Bean {
      * @return <code>this</code> Bean configuration instance.
      */
     public Bean newBean(Class beanClass, String beanId, String createOnElement) {
-        return new Bean(beanClass, beanId, createOnElement, visitorConfigMap);
+        return new Bean(beanClass, beanId, createOnElement);
     }
 
     /**
@@ -271,6 +234,7 @@ public class Bean {
      * @return <code>this</code> Bean configuration instance.
      */
     public Bean bindTo(String bindingMember, String dataSelector, DataDecoder dataDecoder) {
+        assertNotProcessed();
         AssertArgument.isNotNull(bindingMember, "bindingMember");
         AssertArgument.isNotNull(dataSelector, "dataSelector");
         // dataDecoder can be null
@@ -301,7 +265,7 @@ public class Bean {
         }
         beanInstancePopulator.setDecoder(dataDecoder);
 
-        visitorConfigMap.addVisitor(beanInstancePopulator, populatorConfig.getSelector(), targetNamespace, true);
+        bindings.add(new Binding(populatorConfig.getSelector(), beanInstancePopulator, false));
 
         return this;
     }
@@ -319,6 +283,7 @@ public class Bean {
      * @return <code>this</code> Bean configuration instance.
      */
     public Bean bindTo(String bindingMember, Bean bean) {
+        assertNotProcessed();
         AssertArgument.isNotNull(bindingMember, "bindingMember");
         AssertArgument.isNotNull(bean, "bean");
 
@@ -339,7 +304,8 @@ public class Bean {
             beanInstancePopulator.setProperty(bindingMember);
         }
 
-        visitorConfigMap.addVisitor(beanInstancePopulator, createOnElement, targetNamespace, true);
+        bindings.add(new Binding(createOnElement, beanInstancePopulator, false));
+        wirings.add(bean);
 
         return this;
     }
@@ -358,8 +324,8 @@ public class Bean {
      *                                  'bindingMember'.
      */
     public Bean bindTo(Bean bean) throws IllegalArgumentException {
+        assertNotProcessed();
         AssertArgument.isNotNull(bean, "bean");
-        assertBeanClassIsCollection();
 
         BeanInstancePopulator beanInstancePopulator = new BeanInstancePopulator();
 
@@ -367,7 +333,8 @@ public class Bean {
         beanInstancePopulator.setBeanId(getBeanId());
         beanInstancePopulator.setWireBeanId(bean.getBeanId());
 
-        visitorConfigMap.addVisitor(beanInstancePopulator, createOnElement, targetNamespace, true);
+        bindings.add(new Binding(createOnElement, beanInstancePopulator, true));
+        wirings.add(bean);
 
         return this;
     }
@@ -394,9 +361,9 @@ public class Bean {
      * @return <code>this</code> Bean configuration instance.
      */
     public Bean bindTo(String dataSelector, DataDecoder dataDecoder) {
+        assertNotProcessed();
         AssertArgument.isNotNull(dataSelector, "dataSelector");
         // dataDecoder can be null
-        assertBeanClassIsCollection();
 
         BeanInstancePopulator beanInstancePopulator = new BeanInstancePopulator();
         SmooksResourceConfiguration populatorConfig = new SmooksResourceConfiguration(dataSelector);
@@ -408,9 +375,42 @@ public class Bean {
         beanInstancePopulator.setValueAttributeName(populatorConfig.getStringParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME));
         beanInstancePopulator.setDecoder(dataDecoder);
 
-        visitorConfigMap.addVisitor(beanInstancePopulator, populatorConfig.getSelector(), targetNamespace, true);
+        bindings.add(new Binding(populatorConfig.getSelector(), beanInstancePopulator, true));
 
         return this;
+    }
+
+    /**
+     * Add the visitors, associated with this Bean instance, to the visitor map.
+     * @param visitorMap
+     */
+    public void addVisitors(VisitorConfigMap visitorMap) {
+
+        // Need to protect against multiple calls.  This can happen where e.g. beans are
+        // wired together in 2-way relationships, or the creating code doesn't use the
+        // fluent interface and calls Smooks.addVisitor to each bean instance.
+        if(processed) {
+            return;
+        }
+        processed = true;
+
+        // Add the create bean visitor...
+        SmooksResourceConfiguration resourceConfig = visitorMap.addVisitor(beanInstanceCreator, createOnElement, targetNamespace, true);
+        resourceConfig.setParameter("beanId", beanId);
+        resourceConfig.setParameter("beanClass", beanClass.getName());
+
+        // Recurse down the wired beans...
+        for(Bean bean : wirings) {
+            bean.addVisitors(visitorMap);
+        }
+
+        // Add the populate bean visitors...
+        for(Binding binding : bindings) {
+            visitorMap.addVisitor(binding.beanInstancePopulator, binding.selector, targetNamespace, true);
+            if(binding.assertTargetIsCollection) {
+                assertBeanClassIsCollection();
+            }
+        }
     }
 
     /**
@@ -449,7 +449,25 @@ public class Bean {
         BeanRuntimeInfo beanRuntimeInfo = beanInstanceCreator.getBeanRuntimeInfo();
 
         if (beanRuntimeInfo.getClassification() != BeanRuntimeInfo.Classification.COLLECTION_COLLECTION && beanRuntimeInfo.getClassification() != BeanRuntimeInfo.Classification.ARRAY_COLLECTION) {
-            throw new IllegalArgumentException("Invalid call to a Collection/array Bean.bindTo method.  Runtime class of bean being bound to is not a Collection/array.  Use one of the Bean.bindTo methods that specify a 'bindingMember' argument.");
+            throw new IllegalArgumentException("Invalid call to a Collection/array Bean.bindTo method for a non Collection/Array target.  Binding target type '" + beanRuntimeInfo.getPopulateType().getName() + "' (beanId '" + beanId + "').  Use one of the Bean.bindTo methods that specify a 'bindingMember' argument.");
+        }
+    }
+
+    private void assertNotProcessed() {
+        if(processed) {
+            throw new IllegalStateException("Unexpected attempt to bindTo Bean instance after the Bean instance has been added to a Smooks instance.");
+        }
+    }
+
+    private static class Binding {
+        private String selector;
+        private BeanInstancePopulator beanInstancePopulator;
+        private boolean assertTargetIsCollection;
+
+        private Binding(String selector, BeanInstancePopulator beanInstancePopulator, boolean assertTargetIsCollection) {
+            this.selector = selector;
+            this.beanInstancePopulator = beanInstancePopulator;
+            this.assertTargetIsCollection = assertTargetIsCollection;
         }
     }
 }

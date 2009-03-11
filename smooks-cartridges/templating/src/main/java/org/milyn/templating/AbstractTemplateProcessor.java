@@ -18,14 +18,17 @@ package org.milyn.templating;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.Config;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
@@ -69,6 +72,8 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
         BIND_TO,
     }
 
+    private TemplatingConfiguration templatingConfiguration;
+
     @ConfigParam(defaultVal = "false")
     private boolean applyTemplateBefore;
 
@@ -76,50 +81,88 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
     private Action action;
 
     @ConfigParam(defaultVal = "UTF-8")
-    private Charset encoding;
+    private Charset encoding = Charset.forName("UTF-8");
 
-    @ConfigParam(name="bindId",  use = ConfigParam.Use.OPTIONAL)
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String bindId;
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String outputStreamResource;
 
+    @Config
+    private SmooksResourceConfiguration smooksConfig;
+
     @AppContext
     private ApplicationContext applicationContext;
     
     private BeanId bindBeanId;
-    
-    public void setConfiguration(SmooksResourceConfiguration config) throws SmooksConfigurationException {
-        if(config.getResource() == null) {
-            throw new SmooksConfigurationException("Templating resource undefuned in resource configuration: " + config);
-        }
 
-        try {
-            loadTemplate(config);
-        } catch (Exception e) {
-            throw new SmooksConfigurationException("Error loading Templating resource: " + config, e);
-        }
-        String visitBefore = config.getStringParameter("visitBefore");
-        if(visitBefore != null) {
-            if(!legactVisitBeforeParamWarn) {
-                logger.warn("Templating <param> 'visitBefore' deprecated.  Use 'applyTemplateBefore'.");
-                legactVisitBeforeParamWarn = true;
+    @Initialize
+    public void initialize() {
+        if(smooksConfig != null) {
+            if(smooksConfig.getResource() == null) {
+                throw new SmooksConfigurationException("Templating resource undefined in resource configuration: " + smooksConfig);
             }
-            this.applyTemplateBefore = visitBefore.equalsIgnoreCase("true");
-        }
-        
-        if(action == Action.BIND_TO) {
-        	if(bindId == null) {
-                throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
-            } else {
-            	bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
+
+            try {
+                loadTemplate(smooksConfig);
+            } catch (Exception e) {
+                throw new SmooksConfigurationException("Error loading Templating resource: " + smooksConfig, e);
             }
-        	
+            String visitBefore = smooksConfig.getStringParameter("visitBefore");
+            if(visitBefore != null) {
+                if(!legactVisitBeforeParamWarn) {
+                    logger.warn("Templating <param> 'visitBefore' deprecated.  Use 'applyTemplateBefore'.");
+                    legactVisitBeforeParamWarn = true;
+                }
+                this.applyTemplateBefore = visitBefore.equalsIgnoreCase("true");
+            }
+
+            if(action == Action.BIND_TO) {
+                if(bindId == null) {
+                    throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
+                } else {
+                    bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
+                }
+            }
+        } else if(templatingConfiguration != null) {
+            SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+
+            config.setResource(templatingConfiguration.getTemplate());
+            
+            Usage resultUsage = templatingConfiguration.getUsage();
+            if(resultUsage == Inline.ADDTO) {
+                action = Action.ADDTO;
+            } else if(resultUsage == Inline.REPLACE) {
+                action = Action.REPLACE;
+            } else if(resultUsage == Inline.INSERT_BEFORE) {
+                action = Action.INSERT_BEFORE;
+            } else if(resultUsage == Inline.INSERT_AFTER) {
+                action = Action.INSERT_AFTER;
+            } else if(resultUsage instanceof BindTo) {
+                action = Action.BIND_TO;
+                bindId = ((BindTo)resultUsage).getBeanId();
+                bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
+            } else if(resultUsage instanceof OutputTo) {
+                outputStreamResource = ((OutputTo)resultUsage).getOutputStreamResource();
+            }
+
+            try {
+                loadTemplate(config);
+            } catch (Exception e) {
+                throw new SmooksConfigurationException("Error loading Templating resource: " + config, e);
+            }
+        } else {
+            throw new SmooksConfigurationException(getClass().getSimpleName() + " not configured.");            
         }
-        
+    }
+
+    protected void setTemplatingConfiguration(TemplatingConfiguration templatingConfiguration) {
+        AssertArgument.isNotNull(templatingConfiguration, "templatingConfiguration");
+        this.templatingConfiguration = templatingConfiguration;
     }
 	
-	protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
+    protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
 
     public boolean applyTemplateBefore() {
         return applyTemplateBefore;

@@ -150,7 +150,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
             smooks.filter(new StreamSource(new StringReader("<doc/>")), null, smooks.createExecutionContext());
             fail("Expected SmooksConfigurationException.");
         } catch(SmooksConfigurationException e) {
-            assertEquals("Error loading Templating resource: Target Profile: [[org.milyn.profile.profile#default_profile]], Selector: [$document], Selector Namespace URI: [null], Resource: [/org/milyn/templating/xslt/bad-stylesheet.xsl], Num Params: [0]", e.getMessage());
+            assertEquals("Error loading Templating resource: Target Profile: [[org.milyn.profile.profile#default_profile]], Selector: [$document], Selector Namespace URI: [null], Resource: [/org/milyn/templating/xslt/bad-stylesheet.xsl], Num Params: [0]", e.getCause().getMessage());
         }
     }
 }

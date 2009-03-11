@@ -25,10 +25,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
-import org.milyn.delivery.Filter;
-import org.milyn.delivery.Visitor;
-import org.milyn.delivery.VisitorConfigMap;
-import org.milyn.delivery.AbstractParser;
+import org.milyn.delivery.*;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
@@ -218,11 +215,13 @@ public class Smooks {
     }
 
     /**
-     * Get the visitor configuration map associated with this Smooks instance.
-     * @return The visitor configuration map associated with this Smooks instance.
+     * Add a visitor instances to <code>this</code> Smooks instance
+     * via a {@link VisitorAppender}.
+     *
+     * @param appender The visitor appender.
      */
-    public VisitorConfigMap getVisitorConfigMap() {
-        return visitorConfigMap;
+    public void addVisitor(VisitorAppender appender) {
+        appender.addVisitors(visitorConfigMap);
     }
 
     /**

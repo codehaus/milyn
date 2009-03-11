@@ -144,20 +144,28 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
             Bean bean;
 
             if(bindBeanAsList) {
-                Bean listBean = new Bean(ArrayList.class, bindBeanId, "$document", visitorMap);
+                Bean listBean = new Bean(ArrayList.class, bindBeanId, "$document");
 
                 bean = listBean.newBean(bindBeanClass, recordElementName);
                 listBean.bindTo(bean);
+                addFieldBindings(bean);
+
+                listBean.addVisitors(visitorMap);
             } else {
-                bean = new Bean(bindBeanClass, bindBeanId, recordElementName, null, visitorMap);
+                bean = new Bean(bindBeanClass, bindBeanId, recordElementName);
+                addFieldBindings(bean);
+
+                bean.addVisitors(visitorMap);
             }
+        }
+    }
 
-            for(int i = 0; i < csvFields.length; i++) {
-                String field = csvFields[i];
+    private void addFieldBindings(Bean bean) {
+        for(int i = 0; i < csvFields.length; i++) {
+            String field = csvFields[i];
 
-                if(!field.equals(IGNORE_FIELD)) {
-                    bean.bindTo(field, recordElementName + "/" + field);
-                }
+            if(!field.equals(IGNORE_FIELD)) {
+                bean.bindTo(field, recordElementName + "/" + field);
             }
         }
     }
