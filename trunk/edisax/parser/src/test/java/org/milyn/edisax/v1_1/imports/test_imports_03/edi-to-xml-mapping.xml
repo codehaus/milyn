@@ -16,7 +16,9 @@
 		<medi:segment segcode="FTX" segref="un:FTX" xmltag="FTX" minOccurs="0" maxOccurs="10" truncatable="true"/>
 
         <medi:segment segcode="NAD" segref="un:NAD" xmltag="sgroup2" minOccurs="0" maxOccurs="99" truncatable="true">
-            <medi:segment segcode="RFF" segref="un:RFF" xmltag="RFF" minOccurs="0" maxOccurs="9999" truncatable="true"/>
+            <medi:segment segcode="RFF" segref="un:RFF" xmltag="RFF" minOccurs="0" maxOccurs="9999" truncatable="true">
+                <medi:segment segcode="NAD" segref="un:NAD" xmltag="sgroup2" minOccurs="0" maxOccurs="99" truncatable="true"/>
+            </medi:segment>
         </medi:segment>
 
         <!-- make sure we can ref the same segment multiple times... -->
