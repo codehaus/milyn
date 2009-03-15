@@ -76,7 +76,7 @@ public class EdifactModel {
 
         edimap = EDIConfigDigester.digestConfig(inputStream);
         importFiles(tree.getRoot(), edimap, tree);
-        
+        System.out.println("");
     }
 
     /**
@@ -102,10 +102,18 @@ public class EdifactModel {
             importFiles(child, importedEdimap, tree);
             Map<String, Segment> importedSegments = createImportMap(importedEdimap);
 
-            for (SegmentGroup segmentGroup : edimap.getSegments().getSegments()) {
-                if(segmentGroup instanceof Segment) {
-                    applyImportOnSegment((Segment) segmentGroup, imp, importedSegments);
-                }
+            applyImportOnSegments(edimap.getSegments().getSegments(), imp, importedSegments);            
+        }
+    }
+
+    private void applyImportOnSegments(List<SegmentGroup> segmentGroup, Import imp, Map<String, Segment> importedSegments) throws EDIParseException {
+        for (SegmentGroup segment : segmentGroup) {
+            if(segment instanceof Segment) {
+                applyImportOnSegment((Segment)segment, imp, importedSegments);
+            }
+
+            if (segment.getSegments() != null) {
+                applyImportOnSegments(segment.getSegments(), imp, importedSegments);
             }
         }
     }
@@ -130,11 +138,11 @@ public class EdifactModel {
             insertImportedSegmentInfo(segment, importedSegment, imp.isTruncatableFields(), imp.isTruncatableComponents());
         }
 
-        for (SegmentGroup segmentGroup : segment.getSegments()) {
-            if(segmentGroup instanceof Segment) {
-                applyImportOnSegment((Segment) segmentGroup, imp, importedSegments);
-            }
-        }
+//        for (SegmentGroup segmentGroup : segment.getSegments()) {
+//            if(segmentGroup instanceof Segment) {
+//                applyImportOnSegment((Segment) segmentGroup, imp, importedSegments);
+//            }
+//        }
     }
 
     /**
@@ -148,9 +156,12 @@ public class EdifactModel {
      */
     private void insertImportedSegmentInfo(Segment segment, Segment importedSegment, Boolean truncatableFields, Boolean truncatableComponents) {
         //Overwrite all existing fields in segment, but add additional segments to existing segments.
-        segment.getFields().clear();
+        //segment.getFields().clear();
         segment.getFields().addAll(importedSegment.getFields());
-        segment.getSegments().addAll(0, segment.getSegments());
+
+        if (importedSegment.getSegments().size() > 0) {
+            segment.getSegments().addAll(importedSegment.getSegments());
+        }
 
         //If global truncatable attributes are set in importing mapping, then
         //override the attributes in the imported files.

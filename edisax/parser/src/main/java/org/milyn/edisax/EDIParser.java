@@ -43,6 +43,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * EDI Parser.
@@ -131,6 +132,8 @@ public class EDIParser implements XMLReader {
     private ContentHandler contentHandler;
     private int depth = 0;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
+    private static Pattern EMPTY_LINE = Pattern.compile("[\n\r ]*");
+
 
     private EdifactModel edifactModel;
     private BufferedSegmentReader segmentReader;
@@ -221,10 +224,14 @@ public class EDIParser implements XMLReader {
         if(segmentReader.moveToNextSegment()) {
         	mapSegments(edifactModel.getEdimap().getSegments().getSegments());
 
-    		// If we reach the end of the mapping model and we still have more EDI segments in the message.... 
-    		if(segmentReader.hasCurrentSegment()) {
-    			throw new EDIParseException(edifactModel.getEdimap(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s).");
-    		}
+    		// If we reach the end of the mapping model and we still have more EDI segments in the message....     		
+            while (segmentReader.hasCurrentSegment()) {
+                String segment = segmentReader.getCurrentSegment().toString();
+                if (!EMPTY_LINE.matcher(segmentReader.getCurrentSegment().toString()).matches()) {
+                    throw new EDIParseException(edifactModel.getEdimap(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s). Current EDI segment is [" + segmentReader.getCurrentSegment() + "]");
+                }
+                segmentReader.moveToNextSegment();
+            }
         }
 
         // Fire the endDocument event, as well as the endElement event...
