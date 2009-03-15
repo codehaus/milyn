@@ -99,10 +99,10 @@ public class EDIConfigDigester {
      * @param edimap the {@link org.milyn.edisax.model.internal.Edimap} to populate.
      * @param schemaName the schema uri.
      */
-    private static void digestXSDValidatedConfig(Document configDoc, Edimap edimap, String schemaName) {
+    private static void digestXSDValidatedConfig(Document configDoc, Edimap edimap, String schemaName) throws EDIConfigurationException {
 
         //Retrieve the namespace for the schema.
-        String namespacePrefix = retrieveNamespace(configDoc.getDocumentElement(), schemaName) + NAMESPACE_SUFFIX;
+        String namespacePrefix = retrieveNamespace(configDoc.getDocumentElement(), schemaName);
 
         NodeList nodes = configDoc.getDocumentElement().getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -378,13 +378,20 @@ public class EDIConfigDigester {
      * @param schemaName the schema uri.
      * @return the namespaceprefix used in the edi-message-mapping.
      */
-    private static String retrieveNamespace(Element documentElement, String schemaName) {
+    private static String retrieveNamespace(Element documentElement, String schemaName) throws EDIConfigurationException {
         NamedNodeMap attributes = documentElement.getAttributes();
         Node node;
         for (int i = 0; i < attributes.getLength(); i++) {
             node = attributes.item(i);
             if (node.getNodeValue().equals(schemaName)) {
-                return node.getNodeName().replace("xmlns:", "");
+                String prefix = node.getNodeName();
+                if (prefix.startsWith("xmlns:")) {
+                    return node.getNodeName().replace("xmlns:", "") + NAMESPACE_SUFFIX;
+                } else if (prefix.startsWith("xmlns")) {
+                    return node.getNodeName().replace("xmlns", "");
+                } else {
+                    throw new EDIConfigurationException("No namespace exists in edi-message-mapping. A namespace must be declared in order to digest configuration file.");
+                }
             }
         }
         return "";
