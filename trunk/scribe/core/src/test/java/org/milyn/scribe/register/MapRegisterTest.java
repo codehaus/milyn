@@ -20,7 +20,7 @@ import static junit.framework.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.milyn.scribe.register.MapRegister;
+import org.milyn.scribe.register.MapDaoRegister;
 import org.testng.annotations.Test;
 
 /**
@@ -36,7 +36,7 @@ public class MapRegisterTest {
 		hashMap.put("1", new Object());
 		hashMap.put("2", new Object());
 
-		MapRegister<Object> mapRegister = MapRegister.builder(hashMap).build();
+		MapDaoRegister<Object> mapRegister = MapDaoRegister.builder(hashMap).build();
 
 		assertEquals(2, mapRegister.size());
 		assertSame(hashMap.get("1"), mapRegister.getDao("1"));
@@ -46,7 +46,7 @@ public class MapRegisterTest {
 		hashMap2.put("3", new Object());
 		hashMap2.put("4", new Object());
 
-		mapRegister = MapRegister.builder(hashMap).putAll(hashMap2).build();
+		mapRegister = MapDaoRegister.builder(hashMap).putAll(hashMap2).build();
 
 		assertEquals(4, mapRegister.size());
 		assertSame(hashMap.get("1"), mapRegister.getDao("1"));
@@ -60,7 +60,7 @@ public class MapRegisterTest {
 		hashMap.put("1", new Object());
 		hashMap.put("2", new Object());
 
-		MapRegister<Object> mapRegister = MapRegister.newInstance(hashMap);
+		MapDaoRegister<Object> mapRegister = MapDaoRegister.newInstance(hashMap);
 
 		assertEquals(2, mapRegister.size());
 		assertSame(hashMap.get("1"), mapRegister.getDao("1"));
@@ -71,7 +71,7 @@ public class MapRegisterTest {
 	public void test_put_and_getDAO() {
 		Object bean = new Object();
 
-		MapRegister<Object> mapRegister = MapRegister.builder().put("1", bean).build();
+		MapDaoRegister<Object> mapRegister = MapDaoRegister.builder().put("1", bean).build();
 
 		assertEquals(1, mapRegister.size());
 		assertSame(bean, mapRegister.getDao("1"));
@@ -79,7 +79,7 @@ public class MapRegisterTest {
 
 
 	public void test_containsKey() {
-		MapRegister<Object> mapRegister = MapRegister.builder().put("1", new Object()).build();
+		MapDaoRegister<Object> mapRegister = MapDaoRegister.builder().put("1", new Object()).build();
 
 		assertTrue(mapRegister.containsKey("1"));
 		assertFalse(mapRegister.containsKey("2"));
@@ -90,7 +90,7 @@ public class MapRegisterTest {
 		Object bean1 = new Object();
 		Object bean2 = new Object();
 
-		MapRegister<Object> mapRegister = MapRegister.builder().put("1", bean1).build();
+		MapDaoRegister<Object> mapRegister = MapDaoRegister.builder().put("1", bean1).build();
 
 		assertTrue(mapRegister.containsDAO(bean1));
 		assertFalse(mapRegister.containsDAO(bean2));
@@ -101,7 +101,7 @@ public class MapRegisterTest {
 		Object bean1 = new Object();
 		Object bean2 = new Object();
 
-		MapRegister<Object> mapRegister = MapRegister.builder()
+		MapDaoRegister<Object> mapRegister = MapDaoRegister.builder()
 											.put("1", bean1)
 											.put("2", bean2)
 											.build();
@@ -119,17 +119,17 @@ public class MapRegisterTest {
 		Object bean2 = new Object();
 		Object bean3 = new Object();
 
-		MapRegister<Object> mapRegister1 = MapRegister.builder()
+		MapDaoRegister<Object> mapRegister1 = MapDaoRegister.builder()
 												.put("1", bean1)
 												.put("2", bean2)
 												.build();
 
-		MapRegister<Object> mapRegister2 = MapRegister.builder()
+		MapDaoRegister<Object> mapRegister2 = MapDaoRegister.builder()
 												.put("1", bean1)
 												.put("2", bean2)
 												.build();
 
-		MapRegister<Object> mapRegister3 = MapRegister.builder().put("3", bean3).build();
+		MapDaoRegister<Object> mapRegister3 = MapDaoRegister.builder().put("3", bean3).build();
 
 		assertTrue(mapRegister1.equals(mapRegister2));
 		assertFalse(mapRegister1.equals(mapRegister3));
