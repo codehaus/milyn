@@ -24,15 +24,17 @@ import org.milyn.assertion.AssertArgument;
 
 
 /**
+ * A immutable map based DAO register
+ *
  * @author maurice_zeijen
  *
  */
-public class MapRegister<T> extends AbstractDaoRegister<T> {
+public class MapDaoRegister<T> extends AbstractDaoRegister<T> {
 
-	public static <T> MapRegister<T> newInstance(Map<String, ? extends T> map) {
+	public static <T> MapDaoRegister<T> newInstance(Map<String, ? extends T> map) {
 		AssertArgument.isNotNull(map, "map");
 
-		return new MapRegister<T>(new HashMap<String, T>(map));
+		return new MapDaoRegister<T>(new HashMap<String, T>(map));
 	}
 
 	public static <T> Builder<T> builder() {
@@ -48,7 +50,7 @@ public class MapRegister<T> extends AbstractDaoRegister<T> {
 	/**
 	 *
 	 */
-	private MapRegister(HashMap<String, ? extends T> map) {
+	private MapDaoRegister(HashMap<String, ? extends T> map) {
 		this.map = map;
 	}
 
@@ -108,12 +110,12 @@ public class MapRegister<T> extends AbstractDaoRegister<T> {
 		if(obj == null) {
 			return false;
 		}
-		if(obj instanceof MapRegister == false) {
+		if(obj instanceof MapDaoRegister == false) {
 			return false;
 		}
 
 		@SuppressWarnings("unchecked")
-		final MapRegister<T> other = (MapRegister<T>) obj;
+		final MapDaoRegister<T> other = (MapDaoRegister<T>) obj;
 
 		return map.equals(other.map);
 	}
@@ -159,8 +161,8 @@ public class MapRegister<T> extends AbstractDaoRegister<T> {
 			return this;
 		}
 
-		public MapRegister<T> build() {
-			return new MapRegister<T>(map);
+		public MapDaoRegister<T> build() {
+			return new MapDaoRegister<T>(map);
 		}
 
 	}

@@ -41,6 +41,25 @@ public class SingleDaoRegister<T> extends AbstractDaoRegister<T> {
 	}
 
 	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+
+		if(obj == this) {
+			return true;
+		}
+
+		if(obj instanceof SingleDaoRegister == false) {
+			return false;
+		}
+
+		SingleDaoRegister<?> rhs = (SingleDaoRegister<?>) obj;
+
+		return dao.equals(rhs.dao);
+	}
+
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
