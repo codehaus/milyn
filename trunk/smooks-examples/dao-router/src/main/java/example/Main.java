@@ -39,8 +39,9 @@ import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.routing.db.StatementExec;
+import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.adapter.jpa.EntityManagerRegister;
-import org.milyn.scribe.register.MapRegister;
+import org.milyn.scribe.register.MapDaoRegister;
 import org.milyn.util.HsqlServer;
 import org.xml.sax.SAXException;
 
@@ -134,14 +135,14 @@ public class Main {
         // Configure the execution context to generate a report...
         executionContext.setEventListener(new HtmlReportGenerator("target/report/report-dao.html"));
 
-        MapRegister<Object> mapRegister =
-        	MapRegister.builder()
+        DaoRegister<Object> register =
+        	MapDaoRegister.builder()
         		.put("product", new ProductDao(em))
         		.put("customer", new CustomerDao(em))
         		.put("order", new OrderDao(em))
         		.build();
 
-        PersistenceUtil.setDAORegister(executionContext, mapRegister);
+        PersistenceUtil.setDAORegister(executionContext, register);
 
         EntityTransaction tx = em.getTransaction();
         tx.begin();
