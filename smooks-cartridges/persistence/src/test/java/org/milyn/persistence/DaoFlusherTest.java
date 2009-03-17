@@ -30,7 +30,7 @@ import org.milyn.persistence.test.dao.FullInterfaceDao;
 import org.milyn.persistence.test.dao.FullInterfaceMappedDao;
 import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.register.MapRegister;
+import org.milyn.scribe.register.MapDaoRegister;
 import org.milyn.scribe.register.SingleDaoRegister;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
@@ -42,7 +42,7 @@ import org.testng.annotations.Test;
 @Test(groups="unit")
 public class DaoFlusherTest  extends BaseTestCase   {
 
-	private static final boolean ENABLE_REPORTING = false;
+	private static final boolean ENABLE_REPORTING = true;
 
 	private static final String SIMPLE_XML =  "<root />";
 
@@ -74,7 +74,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, MapRegister.newInstance(daoMap));
+		PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
 
 		enableReporting(executionContext, "report_test_dao_flush_with_named_dao.html");
 
@@ -92,7 +92,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, MapRegister.newInstance(daoMap));
+		PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
 
 		enableReporting(executionContext, "report_test_dao_flush_with_flushBefore.html");
 
