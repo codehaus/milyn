@@ -87,7 +87,6 @@ class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.lang.Object[])
 	 */
-	@SuppressWarnings("unchecked")
 	public Object lookup(final String name, final Object ... parameters) {
 
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
@@ -108,7 +107,6 @@ class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.Finder#findBy(java.lang.String, java.util.Map)
 	 */
-	@SuppressWarnings("unchecked")
 	public Object lookup(final String name, final Map<String, ?> parameters) {
 		AssertArgument.isNotNullAndNotEmpty(name, "name");
 		AssertArgument.isNotNull(parameters, "parameters");
@@ -126,7 +124,6 @@ class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.QueryFinder#findByQuery(java.lang.String, java.lang.Object[])
 	 */
-	@SuppressWarnings("unchecked")
 	public Object lookupByQuery(final String query, final Object ... parameters) {
 		AssertArgument.isNotNullAndNotEmpty(query, "query");
 		AssertArgument.isNotNull(parameters, "parameters");
@@ -150,7 +147,6 @@ class SessionDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {
 	/* (non-Javadoc)
 	 * @see org.milyn.scribe.QueryFinder#findByQuery(java.lang.String, java.util.Map)
 	 */
-	@SuppressWarnings("unchecked")
 	public Object lookupByQuery(final String query,
 			final Map<String, ?> parameters) {
 
