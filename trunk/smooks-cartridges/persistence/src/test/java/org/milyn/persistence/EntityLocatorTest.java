@@ -21,6 +21,8 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import javax.xml.transform.Source;
@@ -59,6 +61,8 @@ public class EntityLocatorTest extends BaseTestCase {
 		expectedMap.put("arg1", new Integer(1));
 		expectedMap.put("arg2", new Integer(5));
 		expectedMap.put("arg3", expectedArg3);
+		expectedMap.put("arg4", "value");
+		expectedMap.put("arg5", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2009-02-11 23:15:11"));
 
 		when(dao.lookup(eq("something"), eq(expectedMap))).thenReturn(result);
 

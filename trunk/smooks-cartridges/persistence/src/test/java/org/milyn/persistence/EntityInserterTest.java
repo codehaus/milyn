@@ -33,7 +33,7 @@ import org.milyn.persistence.test.util.BaseTestCase;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.Dao;
 import org.milyn.scribe.MappingDao;
-import org.milyn.scribe.register.MapRegister;
+import org.milyn.scribe.register.MapDaoRegister;
 import org.milyn.scribe.register.SingleDaoRegister;
 import org.mockito.Mock;
 import org.testng.annotations.Test;
@@ -45,7 +45,7 @@ import org.testng.annotations.Test;
 @Test(groups="unit")
 public class EntityInserterTest extends BaseTestCase {
 
-	private static final boolean ENABLE_REPORTING = false;
+	private static final boolean ENABLE_REPORTING = true;
 
 	private static final String SIMPLE_XML =  "<root />";
 
@@ -83,7 +83,7 @@ public class EntityInserterTest extends BaseTestCase {
 
 		ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, MapRegister.newInstance(daoMap));
+		PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
 
 		enableReporting(executionContext, "report_test_entity_insert_with_named_dao.html");
 

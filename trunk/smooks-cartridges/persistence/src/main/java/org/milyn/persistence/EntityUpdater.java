@@ -53,8 +53,8 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('updateBefore') && parameters.updateBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('updateBefore') || parameters.updateBefore.value != 'true'")
-@VisitBeforeReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater_Before.html")
-@VisitAfterReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater_After.html")
+@VisitBeforeReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater.html")
+@VisitAfterReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater.html")
 public class EntityUpdater implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
     private static Log logger = LogFactory.getLog(EntityUpdater.class);

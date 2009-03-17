@@ -53,8 +53,8 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-//@VisitBeforeReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter_Before.html")
-//@VisitAfterReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter_After.html")
+@VisitBeforeReport(summary = "Initializing parameter container to hold the parameters needed for the lookup.", detailTemplate="reporting/EntityLocator_before.html")
+@VisitAfterReport(summary = "Looking up entity to put under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityLocator_after.html")
 public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
 	@ConfigParam()
@@ -188,8 +188,12 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 			}
 
 			BeanRepository beanRepository = BeanRepository.getInstance(executionContext);
-			beanRepository.addBean(beanId, result);
 
+			if(result == null) {
+				beanRepository.removeBean(beanId);
+			} else {
+				beanRepository.addBean(beanId, result);
+			}
 		} finally {
 			if(dao != null) {
 				emr.returnDao(dao);

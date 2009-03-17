@@ -52,8 +52,8 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('deleteBefore') && parameters.deleteBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('deleteBefore') || parameters.deleteBefore.value != 'true'")
-@VisitBeforeReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter_Before.html")
-@VisitAfterReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter_After.html")
+@VisitBeforeReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter.html")
+@VisitAfterReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter.html")
 public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
     private static Log logger = LogFactory.getLog(EntityDeleter.class);

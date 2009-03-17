@@ -37,6 +37,8 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo;
 import org.milyn.javabean.DataDecodeException;
@@ -60,6 +62,17 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@VisitBeforeReport(
+		condition = "parameters.containsKey('wireBeanId') || parameters.containsKey('valueAttributeName')",
+		summary = "<#if resource.parameters.wireBeanId??>Create bean lifecycle observer for the bean under the beanId '${resource.parameters.wireBeanId}'." +
+		"<#elseif resource.parameters.valueAttributeName??>Populating <#if resource.parameters.name??>the '${resource.parameters.name}'</#if> parameter " +
+		"from the '${resource.parameters.valueAttributeName}' attribute." +
+		"</#if>")
+@VisitAfterReport(
+		condition = "!parameters.containsKey('valueAttributeName')",
+		summary = "<#if resource.parameters.wireBeanId??>Removing bean lifecycle observer for the bean under the beanId '${resource.parameters.wireBeanId}'." +
+		"<#else>Populating <#if resource.parameters.name??>the '${resource.parameters.name}'</#if> parameter " +
+		"from <#if resource.parameters.expression??>an expression<#else>this element.</#if></#if>.")
 public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElementVisitor   {
 
 	private static Log logger = LogFactory.getLog(EntityLocatorParameterVisitor.class);

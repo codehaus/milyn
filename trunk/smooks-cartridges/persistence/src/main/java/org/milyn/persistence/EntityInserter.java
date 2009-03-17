@@ -53,8 +53,8 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('insertBefore') && parameters.insertBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('insertBefore') || parameters.insertBefore.value != 'true'")
-@VisitBeforeReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter_Before.html")
-@VisitAfterReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter_After.html")
+@VisitBeforeReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter.html")
+@VisitAfterReport(summary = "Inserting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityInserter.html")
 public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
     private static Log logger = LogFactory.getLog(EntityInserter.class);

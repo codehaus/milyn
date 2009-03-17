@@ -46,8 +46,8 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('flushBefore') && parameters.flushBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('flushBefore') || parameters.flushBefore.value != 'true'")
-@VisitBeforeReport(summary = "Flushing dao '${resource.parameters.dao}'.", detailTemplate="reporting/DaoFlusher_Before.html")
-@VisitAfterReport(summary = "Flushing dao '${resource.parameters.dao}'.", detailTemplate="reporting/DaoFlusher_After.html")
+@VisitBeforeReport(summary = "Flushing <#if !resource.parameters.dao??>default </#if>DAO<#if resource.parameters.dao??> '${resource.parameters.dao}'</#if>.", detailTemplate="reporting/DaoFlusher.html")
+@VisitAfterReport(summary = "Flushing <#if !resource.parameters.dao??>default </#if>DAO<#if resource.parameters.dao??> '${resource.parameters.dao}'</#if>.", detailTemplate="reporting/DaoFlusher.html")
 public class DaoFlusher implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
 
     private static Log logger = LogFactory.getLog(DaoFlusher.class);
