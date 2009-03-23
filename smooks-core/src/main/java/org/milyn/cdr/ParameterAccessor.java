@@ -25,9 +25,9 @@ import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 
 /**
- * Accessor class for looking up profile specific attributes.
+ * Accessor class for looking up global parameters.
  * <p id="decode"/>
- * Profile specific parameters are stored under the "device-parameters" selector
+ * Profile specific parameters are stored under the "global-parameters" selector
  * (see {@link org.milyn.cdr.SmooksResourceConfiguration}).  The parameter values are
  * stored in the &lt;param&gt; elements within this Content Delivery Resource definition.
  * This class iterates over the list of {@link org.milyn.cdr.SmooksResourceConfiguration} 
@@ -187,6 +187,12 @@ public abstract class ParameterAccessor {
                     return param;
                 }
             }
+        }
+
+        // Check the System properties...
+        String systemValue = System.getProperty(name);
+        if(systemValue != null) {
+            return new Parameter(name, systemValue);
         }
 
         return null;
