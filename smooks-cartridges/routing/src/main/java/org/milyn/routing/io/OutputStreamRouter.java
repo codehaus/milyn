@@ -31,6 +31,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepositoryManager;
@@ -64,7 +65,7 @@ import org.w3c.dom.Element;
  */
 @VisitAfterIf(	condition = "!parameters.containsKey('visitBefore') || parameters.visitBefore.value != 'true'")
 @VisitBeforeIf(	condition = "!parameters.containsKey('visitAfter') || parameters.visitAfter.value != 'true'")
-public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter
+public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Consumer
 {
 	@ConfigParam
 	private String resourceName;
@@ -95,8 +96,19 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
     }
     
     //	public
-	
-	public void visitBefore( Element element, ExecutionContext executionContext ) throws SmooksException
+
+    public boolean consumes(String object) {
+        if(object.equals(resourceName)) {
+            return true;
+        } else if(object.startsWith(beanIdName)) {
+            // We use startsWith (Vs equals) so as to catch bean populations e.g. "address.street".
+            return true;
+        }
+
+        return false;
+    }
+
+    public void visitBefore( Element element, ExecutionContext executionContext ) throws SmooksException
 	{
 		write( executionContext );
 	}

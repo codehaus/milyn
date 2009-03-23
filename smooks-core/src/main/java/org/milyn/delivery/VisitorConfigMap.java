@@ -78,6 +78,11 @@ public class VisitorConfigMap {
      */
     private ContentHandlerConfigMapTable<SAXVisitAfter> saxVisitAfters = new ContentHandlerConfigMapTable<SAXVisitAfter>();
     /**
+     * Visit lifecycle Cleanable visitors.
+     */
+    private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables = new ContentHandlerConfigMapTable<VisitLifecycleCleanable>();
+
+    /**
      * Config builder events list.
      */
     private List<ConfigBuilderEvent> configBuilderEvents = new ArrayList<ConfigBuilderEvent>();
@@ -147,6 +152,14 @@ public class VisitorConfigMap {
         this.saxVisitAfters = saxVisitAfters;
     }
 
+    public ContentHandlerConfigMapTable<VisitLifecycleCleanable> getVisitCleanables() {
+        return visitCleanables;
+    }
+
+    public void setVisitCleanables(ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables) {
+        this.visitCleanables = visitCleanables;
+    }
+
     public void setConfigBuilderEvents(List<ConfigBuilderEvent> configBuilderEvents) {
         this.configBuilderEvents = configBuilderEvents;
     }
@@ -181,6 +194,7 @@ public class VisitorConfigMap {
         if(configure) {
             // And configure/initialize the instance...
             Configurator.processFieldContextAnnotation(visitor, applicationContext);
+            Configurator.processFieldConfigAnnotations(visitor, resourceConfig, false);
             Configurator.initialise(visitor);
         }
 
@@ -215,7 +229,6 @@ public class VisitorConfigMap {
                     if(visitor instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, visitor)) {
                         domAssemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) visitor);
                     }
-                    logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
                 } else if (visitPhase.equalsIgnoreCase(VisitPhase.ASSEMBLY.toString())) {
                     // It's an assembly unit...
                     if(visitor instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, visitor)) {
@@ -224,7 +237,6 @@ public class VisitorConfigMap {
                     if(visitor instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, visitor)) {
                         domAssemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) visitor);
                     }
-                    logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
                 } else {
                     // It's a processing unit...
                     if(visitor instanceof DOMVisitBefore && VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, visitor)) {
@@ -233,9 +245,14 @@ public class VisitorConfigMap {
                     if(visitor instanceof DOMVisitAfter && VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, visitor)) {
                         domProcessingVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) visitor);
                     }
-                    logExecutionEvent(resourceConfig, "Added as a DOM Processing Phase resource.");
                 }
+
+                logExecutionEvent(resourceConfig, "Added as a DOM " + visitPhase + " Phase resource.");
             }
+        }
+
+        if(visitor instanceof VisitLifecycleCleanable) {
+            visitCleanables.addMapping(elementName, resourceConfig, (VisitLifecycleCleanable) visitor);
         }
     }
 
@@ -291,6 +308,7 @@ public class VisitorConfigMap {
             domSerializationVisitors.addAll(visitorConfigMap.getDomSerializationVisitors());
             saxVisitBefores.addAll(visitorConfigMap.getSaxVisitBefores());
             saxVisitAfters.addAll(visitorConfigMap.getSaxVisitAfters());
+            visitCleanables.addAll(visitorConfigMap.getVisitCleanables());
 
             visitorCount += visitorConfigMap.getVisitorCount();
             saxVisitorCount += visitorConfigMap.getSaxVisitorCount();

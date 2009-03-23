@@ -16,6 +16,7 @@
 package org.milyn.delivery;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.delivery.ordering.Sorter;
 
 import java.util.*;
 
@@ -119,5 +120,17 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
      */
     public int getCount() {
         return count;
+    }
+
+    /**
+     * Sort the Table in the specified sort order.
+     * @param sortOrder The sort order.
+     */
+    public void sort(Sorter.SortOrder sortOrder) {
+        Set<Map.Entry<String,List<ContentHandlerConfigMap<T>>>> tableEntries = table.entrySet();
+
+        for(Map.Entry<String, List<ContentHandlerConfigMap<T>>> tableEntry : tableEntries) {
+            Sorter.sort(tableEntry.getValue(), sortOrder);
+        }
     }
 }

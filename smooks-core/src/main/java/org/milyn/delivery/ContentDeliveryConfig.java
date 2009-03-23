@@ -20,9 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.dtd.DTDStore;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.types.ConfigBuilderEvent;
+import org.milyn.delivery.ordering.Producer;
+import org.milyn.delivery.ordering.Consumer;
 
 /**
  * Content delivery configuration.
@@ -34,7 +37,14 @@ import org.milyn.event.types.ConfigBuilderEvent;
  */
 public interface ContentDeliveryConfig {
 
-	/**
+    /**
+     * Should Smooks sort the Visitors, targeted at each selector, based on the
+     * what the Visitors {@link Producer produce} and {@link Consumer consume}.
+     * Default value "true".
+     */
+    public static final String SMOOKS_VISITORS_SORT = "smooks.visitors.sort";
+
+    /**
 	 * Get the list of {@link SmooksResourceConfiguration}s for the specified selector definition.
 	 * <p/>
 	 * This list will be preselected and {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator preordered} 
@@ -101,4 +111,12 @@ public interface ContentDeliveryConfig {
      * @return True if default serialization is on, otherwise false.
      */
     public abstract boolean isDefaultSerializationOn();
+
+    /**
+     * Sort the Visitors, targeted at each selector, based on the
+     * what the Visitors {@link Producer produce} and {@link Consumer consume}.
+     * @throws SmooksConfigurationException Sort failure.
+     * @see #SMOOKS_VISITORS_SORT
+     */
+    public void sort() throws SmooksConfigurationException;
 }

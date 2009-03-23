@@ -18,6 +18,7 @@ package org.milyn.javabean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.util.CollectionsUtil;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
@@ -30,6 +31,8 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.delivery.ordering.Producer;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
@@ -49,10 +52,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Bean instance populator visitor class.
@@ -68,7 +68,7 @@ import java.util.Map;
 @VisitAfterReport(condition = "!parameters.containsKey('wireBeanIdName')",
         summary = "Populating <b>${resource.parameters.beanId}</b> with a value from this element.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
-public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor {
+public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor, Producer, Consumer {
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);
 
@@ -592,6 +592,22 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 	private String getId() {
 		return id;
 	}
+
+    public Set<String> getProducts() {
+        return CollectionsUtil.toSet(beanIdName + "." + property, "]." + property);
+    }
+
+    public boolean consumes(String object) {
+        if(object.equals(beanIdName)) {
+            return true;
+        } else if(wireBeanIdName != null && object.equals(wireBeanIdName)) {
+            return true;
+        } else if(expression != null && expression.getExpression().indexOf(object) != -1) {
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * This is a specialized StringWriter that tracks the writes to make sure we don't

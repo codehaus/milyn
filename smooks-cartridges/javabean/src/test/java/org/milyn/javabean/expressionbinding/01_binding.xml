@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
 
+    <!-- resource-config selector="global-parameters">
+        <param name="smooks.visitors.sort">false</param>
+    </resource-config -->
+
     <resource-config selector="message">
         <resource>org.milyn.javabean.BeanPopulator</resource>
         <param name="beanId">message1</param>

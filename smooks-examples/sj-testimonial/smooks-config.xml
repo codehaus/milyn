@@ -84,8 +84,8 @@
 		<jb:wiring beanIdRef="vehicle_comment" />
 	</jb:bindings>
 
-	<jb:bindings beanId="vehicle_comments" class="se.sj.ipl.rollingstock.domain.Comment" createOnElement="rollingstock/vehicle/comments">
-		<jb:value property="comment" data="comment" />
+	<jb:bindings beanId="vehicle_comment" class="se.sj.ipl.rollingstock.domain.Comment" createOnElement="rollingstock/vehicle/comments/comment">
+		<jb:value property="comment" data="comments/comment" />
 	</jb:bindings>
 
     <jb:bindings beanId="vehicle_phonenumbers" class="java.util.ArrayList" createOnElement="rollingstock/vehicle">

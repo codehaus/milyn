@@ -22,5 +22,6 @@ package org.milyn.delivery;
  */
 public enum VisitSequence {
     BEFORE,
-    AFTER
+    AFTER,
+    CLEAN
 }
