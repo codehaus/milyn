@@ -18,8 +18,11 @@ package org.milyn.delivery.dom;
 import org.milyn.delivery.AbstractContentDeliveryConfig;
 import org.milyn.delivery.ContentHandlerConfigMapTable;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.VisitLifecycleCleanable;
+import org.milyn.delivery.ordering.Sorter;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.container.ExecutionContext;
+import org.milyn.cdr.SmooksConfigurationException;
 
 /**
  * DOM specific {@link org.milyn.delivery.ContentDeliveryConfig} implementation.
@@ -35,6 +38,8 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters;
 
     private ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors;
+
+    private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables;
 
     public ContentHandlerConfigMapTable<DOMVisitBefore> getAssemblyVisitBefores() {
         return assemblyVisitBefores;
@@ -76,7 +81,22 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
         this.serailizationVisitors = serailizationVisitors;
     }
 
+    public ContentHandlerConfigMapTable<VisitLifecycleCleanable> getVisitCleanables() {
+        return visitCleanables;
+    }
+
+    public void setVisitCleanables(ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables) {
+        this.visitCleanables = visitCleanables;
+    }
+
     public Filter newFilter(ExecutionContext executionContext) {
         return new SmooksDOMFilter(executionContext);
+    }
+
+    public void sort() throws SmooksConfigurationException {
+        assemblyVisitBefores.sort(Sorter.SortOrder.PRODUCERS_FIRST);
+        assemblyVisitAfters.sort(Sorter.SortOrder.CONSUMERS_FIRST);
+        processingVisitBefores.sort(Sorter.SortOrder.PRODUCERS_FIRST);
+        processingVisitAfters.sort(Sorter.SortOrder.CONSUMERS_FIRST);
     }
 }

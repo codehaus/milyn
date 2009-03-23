@@ -18,6 +18,7 @@ package org.milyn.javabean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.util.CollectionsUtil;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
@@ -29,6 +30,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
@@ -40,6 +42,7 @@ import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Bean instance creator visitor class.
@@ -53,7 +56,7 @@ import java.util.List;
 @VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
         summary = "Ended bean lifecycle. Set bean on any targets.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
-public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
+public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer {
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
@@ -227,6 +230,10 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
         return bean;
     }
 
+    public Set<String> getProducts() {
+        return CollectionsUtil.toSet(beanIdName);
+    }
+
     private String getId() {
 		return id;
 	}
@@ -235,6 +242,4 @@ public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore
     public String toString() {
     	return getId();
     }
-
-
 }

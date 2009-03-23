@@ -16,10 +16,7 @@
 package org.milyn.routing.db;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,12 +33,15 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.delivery.ordering.Producer;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.util.FreeMarkerTemplate;
+import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -49,7 +49,7 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value == 'true'")
 @VisitAfterIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value != 'true'")
-public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor {
+public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, Producer, Consumer {
 
     private static Log logger = LogFactory.getLog(ResultsetRowSelector.class);
 
@@ -78,6 +78,18 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
 
     	beanId = beanIdRegister.register(beanIdName);
     	resultSetBeanId = beanIdRegister.register(resultSetName);
+    }
+
+    public Set<String> getProducts() {
+        return CollectionsUtil.toSet(beanIdName);
+    }
+
+    public boolean consumes(String object) {
+        if(object.equals(resultSetName)) {
+            return true;
+        }
+
+        return false;
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {

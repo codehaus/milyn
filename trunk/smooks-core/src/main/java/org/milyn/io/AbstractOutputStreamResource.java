@@ -22,7 +22,10 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ExecutionLifecycleCleanable;
+import org.milyn.delivery.VisitLifecycleCleanable;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -58,7 +61,7 @@ import java.nio.charset.Charset;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, ExecutionLifecycleCleanable
+public abstract class AbstractOutputStreamResource implements SAXVisitBefore, DOMVisitBefore, Consumer, VisitLifecycleCleanable, ExecutionLifecycleCleanable
 {
 	Log log = LogFactory.getLog( AbstractOutputStreamResource.class );
 
@@ -91,6 +94,13 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
         return resourceName;
     }
 
+    public boolean consumes(String object) {
+        if(object.equals(resourceName)) {
+            return true;
+        }
+        return false;
+    }
+
     /**
 	 * Set the name of this resource
 	 *
@@ -111,24 +121,16 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SA
 		bind ( executionContext );
 	}
 
-	public void visitAfter( final SAXElement element, final ExecutionContext executionContext ) throws SmooksException, IOException
-	{
-		if(closeCondition( executionContext )) {
-			closeResource( executionContext );
-		}
-	}
+    public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
+    {
+        bind ( executionContext );
+    }
 
-	public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
-	{
-		bind ( executionContext );
-	}
-
-	public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
-	{
-		if(closeCondition( executionContext )) {
-			closeResource( executionContext );
-		}
-	}
+    public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+        if(closeCondition( executionContext )) {
+            closeResource( executionContext );
+        }
+    }
 
 	public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
 	{

@@ -26,6 +26,9 @@ public interface ExecutionLifecycleCleanable {
 
     /**
      * Cleanup the resources allocated by this resource for the specified ExecutionContext.
+     * <p/>
+     * Executes the cleanup at the end of the filter execution.
+     *
      * @param executionContext The ExecutionContext.
      */
     public abstract void executeExecutionLifecycleCleanup(ExecutionContext executionContext);

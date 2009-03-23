@@ -58,8 +58,8 @@ public class SmooksVisitorPhaseTest extends TestCase {
         assertTrue(assemblyVBs.get(0).getContentHandler() instanceof AssemblyVisitor1);
         assertTrue(assemblyVBs.get(1).getContentHandler() instanceof ConfigurableVisitor);
         assertEquals(2, assemblyVAs.size());
-        assertTrue(assemblyVAs.get(0).getContentHandler() instanceof AssemblyVisitor1);
-        assertTrue(assemblyVAs.get(1).getContentHandler() instanceof ConfigurableVisitor);
+        assertTrue(assemblyVAs.get(0).getContentHandler() instanceof ConfigurableVisitor);
+        assertTrue(assemblyVAs.get(1).getContentHandler() instanceof AssemblyVisitor1);
 
         List<ContentHandlerConfigMap<DOMVisitBefore>> processingVBs = config.getProcessingVisitBefores().getMappings("a");
         List<ContentHandlerConfigMap<DOMVisitAfter>> processingVAs = config.getProcessingVisitAfters().getMappings("a");
@@ -67,8 +67,8 @@ public class SmooksVisitorPhaseTest extends TestCase {
         assertTrue(processingVBs.get(0).getContentHandler() instanceof ProcessorVisitor1);
         assertTrue(processingVBs.get(1).getContentHandler() instanceof ConfigurableVisitor);
         assertEquals(2, processingVAs.size());
-        assertTrue(processingVAs.get(0).getContentHandler() instanceof ProcessorVisitor1);
-        assertTrue(processingVAs.get(1).getContentHandler() instanceof ConfigurableVisitor);
+        assertTrue(processingVAs.get(0).getContentHandler() instanceof ConfigurableVisitor);
+        assertTrue(processingVAs.get(1).getContentHandler() instanceof ProcessorVisitor1);
     }
 
     public void test_filtering() throws IOException, SAXException {

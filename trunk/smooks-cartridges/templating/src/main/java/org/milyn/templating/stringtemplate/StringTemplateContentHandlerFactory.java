@@ -28,6 +28,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.event.report.annotation.VisitAfterReport;
@@ -114,7 +115,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 	 */
     @VisitBeforeReport(condition = "false")
     @VisitAfterReport(summary = "Applied StringTemplate Template.", detailTemplate = "reporting/StringTemplateTemplateProcessor_After.html")
-	private static class StringTemplateTemplateProcessor extends AbstractTemplateProcessor {
+	private static class StringTemplateTemplateProcessor extends AbstractTemplateProcessor implements Consumer {
 
         private StringTemplate template;
 
@@ -163,5 +164,13 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
             // Process the templating action, supplying the templating result...
             processTemplateAction(element, resultNode, executionContext);
         }
-	}
+
+        public boolean consumes(String object) {
+            if(template.getTemplate().indexOf(object) != -1) {
+                return true;
+            }
+
+            return false;
+        }
+    }
 }

@@ -33,6 +33,7 @@ public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
     public ContentHandlerConfigMapTable processingBefores = new ContentHandlerConfigMapTable();
     public ContentHandlerConfigMapTable processingAfters = new ContentHandlerConfigMapTable();
     public ContentHandlerConfigMapTable serializationUnits = new ContentHandlerConfigMapTable();
+    public ContentHandlerConfigMapTable visitCleanables = new ContentHandlerConfigMapTable();
 	public Map objectsHash = new LinkedHashMap();
 
     public MockContentDeliveryConfig() {
@@ -42,6 +43,7 @@ public class MockContentDeliveryConfig extends DOMContentDeliveryConfig {
         setProcessingVisitBefores(processingBefores);
         setProcessingVisitAfters(processingAfters);
         setSerailizationVisitors(serializationUnits);
+        setVisitCleanables(visitCleanables);
     }
 
 	/* (non-Javadoc)

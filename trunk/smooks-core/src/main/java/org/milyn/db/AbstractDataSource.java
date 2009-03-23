@@ -16,59 +16,55 @@
 package org.milyn.db;
 
 import org.milyn.SmooksException;
+import org.milyn.util.CollectionsUtil;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ExecutionLifecycleCleanable;
+import org.milyn.delivery.VisitLifecycleCleanable;
+import org.milyn.delivery.ordering.Producer;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Set;
 
 /**
  * DataSource management resource.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public abstract class AbstractDataSource implements SAXElementVisitor, DOMElementVisitor, ExecutionLifecycleCleanable {
+public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefore, Producer, VisitLifecycleCleanable, ExecutionLifecycleCleanable {
 
     private static final String DS_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#datasource:";
     private static final String CONNECTION_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#connection:";
 
-    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+    public final void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         bind(executionContext);
     }
 
-    public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
+    public final void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
+        bind(executionContext);
     }
 
-    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+    public final void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
         unbind(executionContext);
     }
 
-    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        bind(executionContext);
-    }
-
-    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+    public final void executeExecutionLifecycleCleanup(ExecutionContext executionContext) {
+        // This guarantees Datasource resource cleanup (at the end of an ExecutionContext lifecycle) in
+        // situations where the Smooks filter operation has terminated prematurely i.e. where the
+        // executeVisitLifecycleCleanup event method was not called...
         unbind(executionContext);
     }
 
     private void bind(ExecutionContext executionContext) {
         executionContext.setAttribute(DS_CONTEXT_KEY_PREFIX + getName(), this);
-    }
-
-    public void executeExecutionLifecycleCleanup(ExecutionContext executionContext) {
-        // This guarantees Datasource resource cleanup (at the end of an ExecutionContext lifecycle) in
-        // situations where the Smooks filter operation has terminated prematurely i.e. where the
-        // visitAfter event methods are not called...
-        unbind(executionContext);
     }
 
     protected void unbind(ExecutionContext executionContext) {
@@ -116,6 +112,10 @@ public abstract class AbstractDataSource implements SAXElementVisitor, DOMElemen
         }
 
         return connection;
+    }
+
+    public Set<String> getProducts() {
+        return CollectionsUtil.toSet(getName());
     }
 
     public abstract String getName();

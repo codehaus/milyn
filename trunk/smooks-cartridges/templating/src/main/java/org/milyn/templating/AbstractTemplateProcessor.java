@@ -18,6 +18,7 @@ package org.milyn.templating;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.util.CollectionsUtil;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -29,6 +30,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.delivery.annotation.Initialize;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
@@ -44,6 +46,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Set;
 
 /**
  * Abstract template processing unit.
@@ -54,7 +57,7 @@ import java.nio.charset.Charset;
  * See implementations.
  * @author tfennelly
  */
-public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
+public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Producer {
 
     /**
      * Template split point processing instruction.
@@ -99,33 +102,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 
     @Initialize
     public void initialize() {
-        if(smooksConfig != null) {
-            if(smooksConfig.getResource() == null) {
-                throw new SmooksConfigurationException("Templating resource undefined in resource configuration: " + smooksConfig);
-            }
-
-            try {
-                loadTemplate(smooksConfig);
-            } catch (Exception e) {
-                throw new SmooksConfigurationException("Error loading Templating resource: " + smooksConfig, e);
-            }
-            String visitBefore = smooksConfig.getStringParameter("visitBefore");
-            if(visitBefore != null) {
-                if(!legactVisitBeforeParamWarn) {
-                    logger.warn("Templating <param> 'visitBefore' deprecated.  Use 'applyTemplateBefore'.");
-                    legactVisitBeforeParamWarn = true;
-                }
-                this.applyTemplateBefore = visitBefore.equalsIgnoreCase("true");
-            }
-
-            if(action == Action.BIND_TO) {
-                if(bindId == null) {
-                    throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
-                } else {
-                    bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
-                }
-            }
-        } else if(templatingConfiguration != null) {
+        if(templatingConfiguration != null) {
             SmooksResourceConfiguration config = new SmooksResourceConfiguration();
 
             config.setResource(templatingConfiguration.getTemplate());
@@ -152,6 +129,32 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
             } catch (Exception e) {
                 throw new SmooksConfigurationException("Error loading Templating resource: " + config, e);
             }
+        } else if(smooksConfig != null) {
+            if(smooksConfig.getResource() == null) {
+                throw new SmooksConfigurationException("Templating resource undefined in resource configuration: " + smooksConfig);
+            }
+
+            try {
+                loadTemplate(smooksConfig);
+            } catch (Exception e) {
+                throw new SmooksConfigurationException("Error loading Templating resource: " + smooksConfig, e);
+            }
+            String visitBefore = smooksConfig.getStringParameter("visitBefore");
+            if(visitBefore != null) {
+                if(!legactVisitBeforeParamWarn) {
+                    logger.warn("Templating <param> 'visitBefore' deprecated.  Use 'applyTemplateBefore'.");
+                    legactVisitBeforeParamWarn = true;
+                }
+                this.applyTemplateBefore = visitBefore.equalsIgnoreCase("true");
+            }
+
+            if(action == Action.BIND_TO) {
+                if(bindId == null) {
+                    throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
+                } else {
+                    bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
+                }
+            }
         } else {
             throw new SmooksConfigurationException(getClass().getSimpleName() + " not configured.");            
         }
@@ -166,6 +169,14 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor {
 
     public boolean applyTemplateBefore() {
         return applyTemplateBefore;
+    }
+
+    public Set<String> getProducts() {
+        if(outputStreamResource != null) {
+            return CollectionsUtil.toSet(outputStreamResource);
+        } else {
+            return CollectionsUtil.toSet();
+        }
     }
 
     protected Action getAction() {

@@ -154,6 +154,7 @@ public class ContentDeliveryConfigBuilder {
 	}
 
     private ContentDeliveryConfig createConfig(VisitorConfigMap extendedVisitorConfigMap) {
+        boolean sortVisitors = ParameterAccessor.getBoolParameter(ContentDeliveryConfig.SMOOKS_VISITORS_SORT, true, resourceConfigTable);
         StreamFilterType filterType;
 
         visitorConfig.addAll(extendedVisitorConfigMap);
@@ -171,10 +172,16 @@ public class ContentDeliveryConfigBuilder {
             domConfig.setProcessingVisitBefores(visitorConfig.getDomProcessingVisitBefores());
             domConfig.setProcessingVisitAfters(visitorConfig.getDomProcessingVisitAfters());
             domConfig.setSerailizationVisitors(visitorConfig.getDomSerializationVisitors());
+            domConfig.setVisitCleanables(visitorConfig.getVisitCleanables());
+
             domConfig.setApplicationContext(applicationContext);
             domConfig.setSmooksResourceConfigurations(resourceConfigTable);
             domConfig.setDtd(dtd);
             domConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
+
+            if(sortVisitors) {
+                domConfig.sort();
+            }
 
             return domConfig;
         } else {
@@ -183,12 +190,18 @@ public class ContentDeliveryConfigBuilder {
             logger.debug("Using the SAX Stream Filter.");
             saxConfig.setVisitBefores(visitorConfig.getSaxVisitBefores());
             saxConfig.setVisitAfters(visitorConfig.getSaxVisitAfters());
+            saxConfig.setVisitCleanables(visitorConfig.getVisitCleanables());
+            
             saxConfig.setApplicationContext(applicationContext);
             saxConfig.setSmooksResourceConfigurations(resourceConfigTable);
             saxConfig.setDtd(dtd);
             saxConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
             
             saxConfig.optimizeConfig();
+
+            if(sortVisitors) {
+                saxConfig.sort();
+            }
 
             return saxConfig;
         }
@@ -203,7 +216,7 @@ public class ContentDeliveryConfigBuilder {
 
         if(visitorConfig.getSaxVisitorCount() == visitorConfig.getVisitorCount() && visitorConfig.getDomVisitorCount() == visitorConfig.getVisitorCount()) {
             // All element handlers support SAX and DOM... must select one then...
-            Parameter filterTypeParam = ParameterAccessor.getParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
+            String filterTypeParam = ParameterAccessor.getStringParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
 
             if(filterTypeParam == null) {
                 filterType = StreamFilterType.DOM;
@@ -214,9 +227,9 @@ public class ContentDeliveryConfigBuilder {
                         "\t\t<resource-config selector=\"" + ParameterAccessor.GLOBAL_PARAMETERS + "\">\n" +
                         "\t\t\t<param name=\"" + Filter.STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
                         "\t\t</resource-config>");
-            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.DOM.name())) {
+            } else if(filterTypeParam.equalsIgnoreCase(StreamFilterType.DOM.name())) {
                 filterType = StreamFilterType.DOM;
-            } else if(filterTypeParam.getValue().equalsIgnoreCase(StreamFilterType.SAX.name())) {
+            } else if(filterTypeParam.equalsIgnoreCase(StreamFilterType.SAX.name())) {
                 filterType = StreamFilterType.SAX;
             } else {
                 throw new SmooksException("Invalid '" + Filter.STREAM_FILTER_TYPE + "' configuration parameter value of '" + filterTypeParam + "'.  Must be 'SAX' or 'DOM'.");

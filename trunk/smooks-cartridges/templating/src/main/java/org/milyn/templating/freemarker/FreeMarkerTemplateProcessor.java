@@ -33,6 +33,7 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.io.AbstractOutputStreamResource;
@@ -68,13 +69,13 @@ import java.util.Map;
  */
 @VisitBeforeReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_before.html")
 @VisitAfterReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_After.html")
-public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor {
+public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor, Consumer {
 
     private static Log logger = LogFactory.getLog(FreeMarkerTemplateProcessor.class);
 
+    private Template defaultTemplate;
     private Template templateBefore;
     private Template templateAfter;
-    private Template defaultTemplate;
     private SmooksResourceConfiguration config;
     private DefaultSAXElementSerializer targetWriter;
 
@@ -133,6 +134,18 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         // where the action is not "replace" or "bindto".
         targetWriter = new DefaultSAXElementSerializer();
         targetWriter.setWriterOwner(this);
+    }
+
+    public boolean consumes(String object) {
+        if(defaultTemplate != null && defaultTemplate.toString().indexOf(object) != -1) {
+            return true;
+        } else if(templateBefore != null && templateBefore.toString().indexOf(object) != -1) {
+            return true;
+        } else if(templateAfter != null && templateAfter.toString().indexOf(object) != -1) {
+            return true;
+        }
+
+        return false;
     }
     
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {

@@ -22,11 +22,7 @@ import org.milyn.cdr.ParameterAccessor;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.ContentHandlerConfigMap;
-import org.milyn.delivery.ExecutionLifecycleCleanable;
-import org.milyn.delivery.ExecutionLifecycleCleanableList;
-import org.milyn.delivery.Filter;
-import org.milyn.delivery.VisitSequence;
+import org.milyn.delivery.*;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.ElementPresentEvent;
@@ -214,6 +210,21 @@ public class SAXHandler extends DefaultHandler2 {
 
         if(flush) {
             flushCurrentWriter();
+        }
+
+        // Process cleanables after applying all the visit afters...
+        if(currentProcessor.elementVisitorConfig != null) {
+            List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables = currentProcessor.elementVisitorConfig.getVisitCleanables();
+
+            if(visitCleanables != null) {
+                int mappingCount = visitCleanables.size();
+                ContentHandlerConfigMap<VisitLifecycleCleanable> mapping;
+
+                for(int i = 0; i < mappingCount; i++) {
+                    mapping = visitCleanables.get(i);
+                    mapping.getContentHandler().executeVisitLifecycleCleanup(execContext);
+                }
+            }
         }
 
         ElementProcessor parentProcessor = currentProcessor.parentProcessor;

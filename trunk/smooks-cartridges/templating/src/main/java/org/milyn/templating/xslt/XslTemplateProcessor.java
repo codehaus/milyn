@@ -27,6 +27,7 @@ import org.milyn.xml.DomUtils;
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
 import org.milyn.delivery.dom.serialize.GhostElementSerializationUnit;
+import org.milyn.delivery.ordering.Consumer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,12 +53,16 @@ import java.io.StringReader;
  */
 @VisitBeforeReport(condition = "false")
 @VisitAfterReport(summary = "Applied XSL Template.", detailTemplate = "reporting/XslTemplateProcessor_After.html")
-public class XslTemplateProcessor extends AbstractTemplateProcessor {
+public class XslTemplateProcessor extends AbstractTemplateProcessor implements Consumer {
     /**
      * Logger.
      */
     private static Log logger = LogFactory.getLog(XslTemplateProcessor.class);
 
+    /**
+     * XSL as a String.
+     */
+    private String xslString;
     /**
      * XSL template to be applied to the visited element.
      */
@@ -66,6 +71,7 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor {
      * Is this processor processing an XSLT <a href="#templatelets">Templatelet</a>.
      */
     private boolean isTemplatelet;
+
     /**
      * Is the template application synchronized or not.
      * <p/>
@@ -73,16 +79,17 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor {
      * must be synchronized.
      */
     private final boolean isSynchronized = Boolean.getBoolean(XslContentHandlerFactory.ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED);
-
     private final DomErrorHandler logErrorHandler = new DomErrorHandler();
 
 
     @Override
     protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
-        byte[] xslBytes = resourceConfig.getBytes();
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         StreamSource xslStreamSource;
         boolean isInlineXSL = resourceConfig.isInline();
+        byte[] xslBytes = resourceConfig.getBytes();
+
+        xslString = new String(xslBytes, getEncoding().name());
 
         // If it's not a full XSL template, we need to make it so by wrapping it...
         isTemplatelet = isTemplatelet(isInlineXSL, new String(xslBytes));
@@ -92,11 +99,12 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor {
 
             templateletWrapper = StringUtils.replace(templateletWrapper, "@@@templatelet@@@", templatelet);
             xslBytes = templateletWrapper.getBytes();
+            xslString = new String(xslBytes, getEncoding().name());
         }
 
         boolean failOnWarning = resourceConfig.getBoolParameter("failOnWarning", true);
 
-        xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), getEncoding()));
+        xslStreamSource = new StreamSource(new StringReader(xslString));
         transformerFactory.setErrorListener(new XslErrorListener(failOnWarning));
         xslTemplate = transformerFactory.newTemplates(xslStreamSource);
     }
@@ -115,6 +123,14 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor {
         } catch (SAXException e) {
             return inlineXSL;
         }
+    }
+
+    public boolean consumes(String object) {
+        if(xslString.indexOf(object) != -1) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

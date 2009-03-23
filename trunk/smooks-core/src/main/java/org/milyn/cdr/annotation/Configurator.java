@@ -71,7 +71,7 @@ public class Configurator {
         AssertArgument.isNotNull(config, "config");
 
         // process the field annotations (@ConfigParam and @Config)...
-        processFieldConfigAnnotations(instance, config);
+        processFieldConfigAnnotations(instance, config, true);
 
         // process the method annotations (@ConfigParam)...
         processMethodConfigAnnotations(instance, config);
@@ -112,25 +112,30 @@ public class Configurator {
         }
     }
 
-    private static <U extends ContentHandler> void processFieldConfigAnnotations(U instance, SmooksResourceConfiguration config) {
+    public static <U extends ContentHandler> void processFieldConfigAnnotations(U instance, SmooksResourceConfiguration config, boolean includeConfigParams) {
         Class contentHandlerClass = instance.getClass();
-        processFieldConfigAnnotations(contentHandlerClass, instance, config);
+        processFieldConfigAnnotations(contentHandlerClass, instance, config, includeConfigParams);
     }
 
-    private static <U extends ContentHandler> void processFieldConfigAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config) {
+    private static <U extends ContentHandler> void processFieldConfigAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config, boolean includeConfigParams) {
         Field[] fields = contentHandlerClass.getDeclaredFields();
 
         // Work back up the Inheritance tree first...
         Class superClass = contentHandlerClass.getSuperclass();
         if(superClass != null) {
-            processFieldConfigAnnotations(superClass, instance, config);
+            processFieldConfigAnnotations(superClass, instance, config, includeConfigParams);
         }
 
         for (Field field : fields) {
-            ConfigParam configParamAnnotation = field.getAnnotation(ConfigParam.class);
-            if(configParamAnnotation != null) {
-                applyConfigParam(configParamAnnotation, field, field.getType(), instance, config);
+            ConfigParam configParamAnnotation = null;
+            
+            if(includeConfigParams) {
+                configParamAnnotation = field.getAnnotation(ConfigParam.class);
+                if(configParamAnnotation != null) {
+                    applyConfigParam(configParamAnnotation, field, field.getType(), instance, config);
+                }
             }
+
             Config configAnnotation = field.getAnnotation(Config.class);
             if(configAnnotation != null) {
                 if(configParamAnnotation != null) {

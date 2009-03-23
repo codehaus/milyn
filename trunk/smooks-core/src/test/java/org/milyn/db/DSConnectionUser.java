@@ -17,6 +17,7 @@ package org.milyn.db;
 
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
 
@@ -25,8 +26,12 @@ import java.io.IOException;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DSConnectionUser implements SAXVisitAfter {
+public class DSConnectionUser implements SAXVisitAfter, Consumer {
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         AbstractDataSource.getConnection(MockDatasource.MOCK_DS_NAME, executionContext);
+    }
+
+    public boolean consumes(String object) {
+        return object.equals(MockDatasource.MOCK_DS_NAME);
     }
 }
