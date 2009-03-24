@@ -15,6 +15,8 @@
 */
 package org.milyn.persistence.parameter;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 
 
 /**
@@ -29,10 +31,17 @@ public class NamedParameter implements Parameter<NamedParameterIndex> {
 
 	private final NamedParameterIndex containerIndex;
 
+	private int hashCode;
+
 	protected NamedParameter(NamedParameterIndex repositoryIndex, int index, String name) {
 		this.containerIndex = repositoryIndex;
 		this.index = index;
 		this.name = name;
+
+		hashCode = new HashCodeBuilder()
+						.append(index)
+						.append(containerIndex)
+						.toHashCode();
 	}
 
 	public int getIndex() {
@@ -53,7 +62,7 @@ public class NamedParameter implements Parameter<NamedParameterIndex> {
 	 */
 	@Override
 	public int hashCode() {
-		return 54 + index;
+		return hashCode;
 	}
 
 	/* (non-Javadoc)
@@ -69,7 +78,11 @@ public class NamedParameter implements Parameter<NamedParameterIndex> {
 			return false;
 		}
 		NamedParameter rhs = (NamedParameter) obj;
-		if(this.name != rhs.name) {
+		if(hashCode != hashCode) {
+			return false;
+		} else if(index != rhs.index) {
+			return false;
+		} else if(containerIndex.equals(rhs.containerIndex)) {
 			return false;
 		}
 		return true;

@@ -17,15 +17,47 @@ package org.milyn.scribe;
 
 
 /**
- * @author maurice_zeijen
+ * The Dao interface provides the most basic DAO operations
+ * to manipulate a datasource.
  *
+ * @author maurice_zeijen
  */
 public interface Dao<E> {
 
+	/**
+	 * Inserts the entity instance in to the datasource
+	 *
+	 * @param entity The entity object to insert
+	 * @return The inserted entity. The Dao should only return an entity that represents the
+	 *         inserted entity but is a different object then the one that was used as the parameter.
+	 *         If this is not the case then NULL should be returned.
+	 * @throws UnsupportedOperationException Indicates that this Dao doesn't support
+	 *         the insert operation.
+	 */
 	E insert(E entity);
 
+	/**
+	 * Updates the entity instance in the datasource
+	 *
+	 * @param entity The entity object to update
+	 * @return The updated entity. The Dao should only return an entity that represents the
+	 *         updated entity but is a different object then the one that was used as the parameter.
+	 *         If this is not the case then NULL should be returned.
+	 * @throws UnsupportedOperationException Indicates that this Dao doesn't support
+	 *         the update operation.
+	 */
 	E update(E entity);
 
+	/**
+	 * Deletes the entity instance from the datasource
+	 *
+	 * @param entity The entity object to delete
+	 * @return The deleted entity. The Dao should only return an entity that represents the
+	 *         deleted entity but is a different object then the one that was used as the parameter.
+	 *         If this is not the case then NULL should be returned.
+	 * @throws UnsupportedOperationException Indicates that this Dao doesn't support
+	 *         the delete operation.
+	 */
 	E delete(E entity);
 
 }

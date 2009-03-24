@@ -15,6 +15,8 @@
 */
 package org.milyn.persistence.parameter;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
@@ -25,9 +27,16 @@ public class PositionalParameter implements Parameter<PositionalParameterIndex> 
 
 	private final PositionalParameterIndex containerIndex;
 
+	private int hashCode;
+
 	protected PositionalParameter(PositionalParameterIndex containerIndex, int index) {
 		this.containerIndex = containerIndex;
 		this.index = index;
+
+		hashCode = new HashCodeBuilder()
+						.append(index)
+						.append(containerIndex)
+						.toHashCode();
 	}
 
 	public int getIndex() {
@@ -43,7 +52,7 @@ public class PositionalParameter implements Parameter<PositionalParameterIndex> 
 	 */
 	@Override
 	public int hashCode() {
-		return index;
+		return hashCode;
 	}
 
 	/* (non-Javadoc)
@@ -59,7 +68,11 @@ public class PositionalParameter implements Parameter<PositionalParameterIndex> 
 			return false;
 		}
 		PositionalParameter rhs = (PositionalParameter) obj;
-		if(this.index != rhs.index) {
+		if(hashCode != hashCode) {
+			return false;
+		} else if(index != rhs.index) {
+			return false;
+		} else if(containerIndex.equals(rhs.containerIndex)) {
 			return false;
 		}
 		return true;

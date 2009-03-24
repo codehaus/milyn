@@ -38,8 +38,8 @@ public interface Consumer extends Visitor {
      * certain that it doesn't consumer the specified named object.  If uncertain, it should
      * error on the side of saying that it does consume the object.
      *
-     * @param object The name of the product
-     * @return True if the consumer consumes the specified named object, otherwise false.
+     * @param object The product representation
+     * @return True if the consumer consumes the specified product, otherwise false.
      */
-    boolean consumes(String object);
+    boolean consumes(Object object);
 }

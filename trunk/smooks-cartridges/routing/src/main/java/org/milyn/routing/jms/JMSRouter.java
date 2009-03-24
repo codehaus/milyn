@@ -179,8 +179,8 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
      */
     private Session session;
 
-    public boolean consumes(String object) {
-        if(object.startsWith(beanId)) {
+    public boolean consumes(Object object) {
+        if(object.toString().startsWith(beanId)) {
             // We use startsWith (Vs equals) so as to catch bean populations e.g. "address.street".
             return true;
         }

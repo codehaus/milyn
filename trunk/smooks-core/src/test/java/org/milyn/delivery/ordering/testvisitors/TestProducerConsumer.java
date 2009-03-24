@@ -41,11 +41,11 @@ public class TestProducerConsumer implements Producer, Consumer {
         return this;
     }
 
-    public Set<String> getProducts() {
+    public Set<? extends Object> getProducts() {
         return products;
     }
 
-    public boolean consumes(String object) {
+    public boolean consumes(Object object) {
         if(consumes == null) {
             return false;
         }

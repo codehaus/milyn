@@ -103,7 +103,7 @@ public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVis
         rsAppContextKey = datasource + ":" + statement;
     }
 
-    public Set<String> getProducts() {
+    public Set<? extends Object> getProducts() {
         if(statementExec.getStatementType() == StatementType.QUERY) {
             return CollectionsUtil.toSet(resultSetName);
         }
@@ -111,8 +111,8 @@ public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVis
         return CollectionsUtil.toSet();
     }
 
-    public boolean consumes(String object) {
-        if(statement.indexOf(object) != -1) {
+    public boolean consumes(Object object) {
+        if(statement.indexOf(object.toString()) != -1) {
             return true;
         }
 

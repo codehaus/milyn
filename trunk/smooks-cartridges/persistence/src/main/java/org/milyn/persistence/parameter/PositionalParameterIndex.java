@@ -36,5 +36,17 @@ public class PositionalParameterIndex extends ParameterIndex<Integer, Positional
 		return new PositionalParameter(this, value);
 	}
 
-
+	/* (non-Javadoc)
+	 * @see org.milyn.persistence.parameter.ParameterIndex#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		}
+		if(obj instanceof PositionalParameterIndex == false) {
+			return false;
+		}
+		return equals((ParameterIndex<?,?>)obj);
+	}
 }

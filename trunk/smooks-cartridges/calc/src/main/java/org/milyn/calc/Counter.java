@@ -222,7 +222,7 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 		}
 	}
 
-    public Set<String> getProducts() {
+    public Set<? extends Object> getProducts() {
         return CollectionsUtil.toSet(beanIdName);
     }
 }

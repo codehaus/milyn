@@ -80,11 +80,11 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
     	resultSetBeanId = beanIdRegister.register(resultSetName);
     }
 
-    public Set<String> getProducts() {
+    public Set<? extends Object> getProducts() {
         return CollectionsUtil.toSet(beanIdName);
     }
 
-    public boolean consumes(String object) {
+    public boolean consumes(Object object) {
         if(object.equals(resultSetName)) {
             return true;
         }

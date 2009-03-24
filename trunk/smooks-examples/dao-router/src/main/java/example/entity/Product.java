@@ -20,12 +20,15 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NamedQuery;
+
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 @Entity
 @Table(name = "products")
+@NamedQuery(name="product.byId", query="from Product p where p.id = :id")
 public class Product extends AbstractEntity {
 
 	@Id

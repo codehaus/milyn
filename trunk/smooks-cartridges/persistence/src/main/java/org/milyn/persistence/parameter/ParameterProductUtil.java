@@ -13,25 +13,23 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.delivery.ordering.testvisitors;
-
-import org.milyn.delivery.ordering.Consumer;
-
-import java.util.List;
-import java.util.Arrays;
+package org.milyn.persistence.parameter;
 
 /**
- * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ *
  */
-public class TestConsumer implements Consumer {
+public class ParameterProductUtil {
 
-    private List<String> consumes;
+	private static final String NAME_PREFIX = Parameter.class.getName() + "#";
 
-    public TestConsumer(String... consumes) {
-        this.consumes = Arrays.asList(consumes);
-    }
+	public static final String toProduct(Parameter<?> parameter){
+		return NAME_PREFIX + parameter.toString();
+	}
 
-    public boolean consumes(Object object) {
-        return consumes.contains(object);
-    }
+	private ParameterProductUtil() {
+	}
+
+
+
 }

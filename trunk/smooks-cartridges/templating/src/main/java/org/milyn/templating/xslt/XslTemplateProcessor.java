@@ -125,8 +125,8 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor implements C
         }
     }
 
-    public boolean consumes(String object) {
-        if(xslString.indexOf(object) != -1) {
+    public boolean consumes(Object object) {
+        if(xslString.indexOf(object.toString()) != -1) {
             return true;
         }
 

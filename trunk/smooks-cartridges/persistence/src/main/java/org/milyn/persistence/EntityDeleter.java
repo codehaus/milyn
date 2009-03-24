@@ -16,6 +16,8 @@
 package org.milyn.persistence;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,8 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -43,6 +47,7 @@ import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
 
@@ -54,7 +59,7 @@ import org.w3c.dom.Element;
 @VisitAfterIf( condition = "!parameters.containsKey('deleteBefore') || parameters.deleteBefore.value != 'true'")
 @VisitBeforeReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter.html")
 @VisitAfterReport(summary = "Deleting bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityDeleter.html")
-public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Consumer, Producer {
 
     private static Log logger = LogFactory.getLog(EntityDeleter.class);
 
@@ -91,6 +96,25 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
     	objectStore = new ApplicationContextObjectStore(appContext);
     }
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ordering.Producer#getProducts()
+	 */
+	public Set<String> getProducts() {
+		if(deletedBeanIdName == null) {
+			return Collections.emptySet();
+		} else {
+			return CollectionsUtil.toSet(deletedBeanIdName);
+		}
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.String)
+	 */
+	public boolean consumes(Object object) {
+		return object.equals(beanIdName);
+	}
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
     	delete(executionContext);
@@ -166,6 +190,9 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 			}
 		}
 	}
+
+
+
 
 
 }

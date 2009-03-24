@@ -31,7 +31,7 @@ public class DSConnectionUser implements SAXVisitAfter, Consumer {
         AbstractDataSource.getConnection(MockDatasource.MOCK_DS_NAME, executionContext);
     }
 
-    public boolean consumes(String object) {
+    public boolean consumes(Object object) {
         return object.equals(MockDatasource.MOCK_DS_NAME);
     }
 }

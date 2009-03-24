@@ -5,13 +5,6 @@
 	xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
 
 	<!--
-		The inserter calls the OrderDao#insertOrder() method at the visitAfter of Order. The inserter
-		knows which method it needs to call via the @Persist annotation on the method.
-		The insertOrder method is responsible for inserting the Order.
-	-->
-	<dao:inserter beanId="order" dao="order" insertOnElement="order" />
-
-	<!--
 		This is the normal Javabean binding. Notice that we have a wiring on customer. The
 	    Customer entity will not be created but looked up by a locator.
 	 -->
@@ -56,5 +49,12 @@
     		<dao:value name="id" data="product" decoder="Integer"/>
     	</dao:params>
     </dao:locator>
+
+	<!--
+		The inserter calls the OrderDao#insertOrder() method at the visitAfter of Order. The inserter
+		knows which method it needs to call via the @Persist annotation on the method.
+		The insertOrder method is responsible for inserting the Order.
+	-->
+	<dao:inserter beanId="order" dao="order" insertOnElement="order" />
 
 </smooks-resource-list>

@@ -158,6 +158,24 @@ public class EntityInserterTest extends BaseTestCase {
 
 	}
 
+
+	public void test_entity_insert_producer_consumer() throws Exception {
+
+		Smooks smooks = new Smooks(getResourceAsStream("entity-inserter-06.xml"));
+
+		ExecutionContext executionContext = smooks.createExecutionContext();
+
+		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+
+		enableReporting(executionContext, "report_test_entity_insert_producer_consumer.html");
+
+		JavaResult result = new JavaResult();
+		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+
+		verify(dao).insert(same((String)result.getBean("toInsert")));
+
+	}
+
 	/**
 	 * @param resource
 	 * @return

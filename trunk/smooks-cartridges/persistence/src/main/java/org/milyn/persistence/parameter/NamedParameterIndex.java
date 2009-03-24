@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
+
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
@@ -35,5 +37,20 @@ public class NamedParameterIndex extends ParameterIndex<String, NamedParameter> 
 	@Override
 	protected NamedParameter createParameter(String value) {
 		return new NamedParameter(this, index++, value);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		}
+		if(obj instanceof NamedParameterIndex == false) {
+			return false;
+		}
+		return equals((ParameterIndex<?,?>)obj);
 	}
 }

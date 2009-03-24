@@ -31,7 +31,7 @@ import java.util.Set;
  * <p/>
  * The {@link Producer}/{@link Consumer} interfaces allows us to order the execution of multiple
  * {@link org.milyn.delivery.Visitor} instances, targetted at the same element selector, based on what the {@link org.milyn.delivery.Visitor}
- * produces and/or consumes. 
+ * produces and/or consumes.
  *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  * @see Consumer
@@ -43,5 +43,5 @@ public interface Producer extends Visitor {
      * Get the set of products produced by this producer instance.
      * @return The set the set of products produced by this producer instance.
      */
-    Set<String> getProducts();
+    Set<? extends Object> getProducts();
 }

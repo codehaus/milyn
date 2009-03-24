@@ -136,18 +136,18 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         targetWriter.setWriterOwner(this);
     }
 
-    public boolean consumes(String object) {
-        if(defaultTemplate != null && defaultTemplate.toString().indexOf(object) != -1) {
+    public boolean consumes(Object object) {
+        if(defaultTemplate != null && defaultTemplate.toString().indexOf(object.toString()) != -1) {
             return true;
-        } else if(templateBefore != null && templateBefore.toString().indexOf(object) != -1) {
+        } else if(templateBefore != null && templateBefore.toString().indexOf(object.toString()) != -1) {
             return true;
-        } else if(templateAfter != null && templateAfter.toString().indexOf(object) != -1) {
+        } else if(templateAfter != null && templateAfter.toString().indexOf(object.toString()) != -1) {
             return true;
         }
 
         return false;
     }
-    
+
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         if(defaultTemplate != null) {
             if(applyTemplateBefore()) {

@@ -59,6 +59,7 @@ public class ParameterManager {
 		return index;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static ParameterIndex<?, ? extends Parameter<?>> getParameterIndex(int id, ApplicationContext applicationContext) {
 		return (ParameterIndex<?, ? extends Parameter<?>>) applicationContext.getAttribute(getParameterIndexName(id));
 	}
@@ -87,6 +88,7 @@ public class ParameterManager {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public static ParameterContainer<Parameter<?>> getParameterContainer(int id, ExecutionContext executionContext) {
 		return (ParameterContainer<Parameter<?>>) executionContext.getAttribute(getParameterContainerName(id));
 	}

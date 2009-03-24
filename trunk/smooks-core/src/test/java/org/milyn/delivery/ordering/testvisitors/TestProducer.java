@@ -32,7 +32,7 @@ public class TestProducer implements Producer {
         this.products.addAll(Arrays.asList(products));
     }
 
-    public Set<String> getProducts() {
+    public Set<? extends Object> getProducts() {
         return products;
     }
 }

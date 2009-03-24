@@ -230,7 +230,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         return bean;
     }
 
-    public Set<String> getProducts() {
+    public Set<? extends Object> getProducts() {
         return CollectionsUtil.toSet(beanIdName);
     }
 
