@@ -1,14 +1,14 @@
 /*
  * Milyn - Copyright (C) 2006
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License (version 2.1) as published
  * by the Free Software Foundation.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.
- * 
+ *
  * See the GNU Lesser General Public License for more details:
  * http://www.gnu.org/licenses/lgpl.txt
  */
@@ -41,9 +41,9 @@ import org.w3c.dom.Element;
  * OutputStreamRouter is a fragment Visitor (DOM/SAX) that can be used to route
  * context beans ({@link org.milyn.javabean.repository.BeanRepository} beans) an OutputStream.
  * </p>
- * An OutputStreamRouter is used in combination with a concreate implementation of 
+ * An OutputStreamRouter is used in combination with a concreate implementation of
  * {@link AbstractOutputStreamResource}, for example a {@link org.milyn.routing.file.FileOutputStreamResource}.
- * 
+ *
  *Example configuration:
  *<pre>
  *&lt;resource-config selector="orderItem"&gt;
@@ -69,38 +69,38 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
 {
 	@ConfigParam
 	private String resourceName;
-	
+
     /*
      *	Character encoding to be used when writing character output
      */
     @ConfigParam( use = ConfigParam.Use.OPTIONAL, defaultVal = "UTF-8" )
 	private String encoding;
-	
+
 	/*
 	 * 	beanId is a key that is used to look up a bean in the execution context
 	 */
     @ConfigParam( name = "beanId", use = ConfigParam.Use.REQUIRED )
     private String beanIdName;
-    
+
     private BeanId beanId;
-    
+
     @AppContext
     private ApplicationContext applicationContext;
-    
+
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-    	
+
     	BeanRepositoryManager beanRepositoryManager = BeanRepositoryManager.getInstance(applicationContext);
     	beanId = beanRepositoryManager.getBeanIdRegister().getBeanId(beanIdName);
-    	
+
     }
-    
+
     //	public
 
-    public boolean consumes(String object) {
+    public boolean consumes(Object object) {
         if(object.equals(resourceName)) {
             return true;
-        } else if(object.startsWith(beanIdName)) {
+        } else if(object.toString().startsWith(beanIdName)) {
             // We use startsWith (Vs equals) so as to catch bean populations e.g. "address.street".
             return true;
         }
@@ -132,9 +132,9 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
 	{
 		return resourceName;
 	}
-	
+
 	//	private
-	
+
 	private void write( final ExecutionContext executionContext )
 	{
 		Object bean = BeanRepositoryManager.getBeanRepository(executionContext).getBean( beanId );
@@ -142,7 +142,7 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
         {
         	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");
         }
-        
+
         OutputStream out = AbstractOutputStreamResource.getOutputStream( resourceName, executionContext );
 		try
 		{
@@ -154,14 +154,14 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
 			{
         		out.write( new String( (byte[]) bean, encoding ).getBytes() ) ;
 			}
-			else 
+			else
 			{
         		out = new ObjectOutputStream( out );
         		((ObjectOutputStream)out).writeObject( bean );
 			}
-			
+
 			out.flush();
-			
+
 		}
 		catch (IOException e)
 		{

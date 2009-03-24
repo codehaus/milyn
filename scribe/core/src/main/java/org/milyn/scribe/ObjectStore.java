@@ -24,7 +24,7 @@ import java.util.Map;
 public interface ObjectStore {
 
 	/**
-	 * Binds an object to this {@link org.milyn.container.BoundAttributeStore} implementation, using the name
+	 * Binds an object to this {@link ObjectStore} implementation, using the name
 	 * specified. If an object of the same name is already bound, the object
 	 * is replaced.
 	 * <p/>
@@ -34,23 +34,23 @@ public interface ObjectStore {
 	public abstract void set(Object key, Object value);
 
 	/**
-	 * Returns the object bound with the specified name in this {@link org.milyn.container.BoundAttributeStore}
+	 * Returns the object bound with the specified name in this {@link ObjectStore}
 	 * implementation, or null if no object is bound under the name.
      * @param key The key against which the object is bound; cannot be null.
-	 * @return The object bound with the specified name in this {@link org.milyn.container.BoundAttributeStore}
+	 * @return The object bound with the specified name in this {@link ObjectStore}
 	 * implementation, or null if no object is bound under the name.
 	 */
 	public abstract Object get(Object key);
 
 	/**
-	 * Returns the Map of attributes bound in this {@link org.milyn.container.BoundAttributeStore}
-	 * @return Map of all objects bound in this {@link org.milyn.container.BoundAttributeStore}
+	 * Returns the Map of attributes bound in this {@link ObjectStore}
+	 * @return Map of all objects bound in this {@link ObjectStore}
 	 */
 	public abstract Map<Object, Object> getAll();
 
 	/**
-	 * Removes the object bound with the specified name from this {@link org.milyn.container.BoundAttributeStore}
-	 * implementation. If the {@link org.milyn.container.BoundAttributeStore} implementation does
+	 * Removes the object bound with the specified name from this {@link ObjectStore}
+	 * implementation. If the {@link ObjectStoree} implementation does
 	 * not have an object bound with the specified name, this method does nothing.
      * @param key The key against which the object is bound; cannot be null.
 	 */

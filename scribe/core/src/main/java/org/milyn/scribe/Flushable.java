@@ -21,6 +21,12 @@ package org.milyn.scribe;
  */
 public interface Flushable {
 
+
+	/**
+	 *
+	 *
+	 * @throws UnsupportedOperationException Indicates that the operation is not supported
+	 */
 	public void flush();
 
 }

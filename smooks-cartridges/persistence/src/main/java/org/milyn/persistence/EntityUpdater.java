@@ -16,6 +16,8 @@
 package org.milyn.persistence;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +32,8 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -44,6 +48,7 @@ import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.ObjectStore;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
 
@@ -55,7 +60,7 @@ import org.w3c.dom.Element;
 @VisitAfterIf( condition = "!parameters.containsKey('updateBefore') || parameters.updateBefore.value != 'true'")
 @VisitBeforeReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater.html")
 @VisitAfterReport(summary = "Updating bean under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityUpdater.html")
-public class EntityUpdater implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+public class EntityUpdater implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer, Consumer {
 
     private static Log logger = LogFactory.getLog(EntityUpdater.class);
 
@@ -92,6 +97,24 @@ public class EntityUpdater implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
     	objectStore = new ApplicationContextObjectStore(appContext);
     }
+
+    /* (non-Javadoc)
+	 * @see org.milyn.delivery.ordering.Producer#getProducts()
+	 */
+	public Set<? extends Object> getProducts() {
+		if(updatedBeanIdName == null) {
+			return Collections.emptySet();
+		} else {
+			return CollectionsUtil.toSet(updatedBeanIdName);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.String)
+	 */
+	public boolean consumes(Object object) {
+		return object.equals(beanIdName);
+	}
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
     	update(executionContext);

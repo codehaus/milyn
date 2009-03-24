@@ -17,6 +17,9 @@ package org.milyn.persistence;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.NonUniqueResultException;
 
@@ -30,6 +33,8 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -40,13 +45,17 @@ import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.parameter.NamedParameterContainer;
+import org.milyn.persistence.parameter.Parameter;
 import org.milyn.persistence.parameter.ParameterContainer;
+import org.milyn.persistence.parameter.ParameterIndex;
 import org.milyn.persistence.parameter.ParameterManager;
+import org.milyn.persistence.parameter.ParameterProductUtil;
 import org.milyn.persistence.parameter.PositionalParameterContainer;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -55,7 +64,7 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeReport(summary = "Initializing parameter container to hold the parameters needed for the lookup.", detailTemplate="reporting/EntityLocator_before.html")
 @VisitAfterReport(summary = "Looking up entity to put under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityLocator_after.html")
-public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter {
+public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer, Consumer {
 
 	@ConfigParam()
 	private int id;
@@ -86,8 +95,9 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
     private ApplicationContextObjectStore objectStore;
 
-    private BeanId beanId;
+    private ParameterIndex<?, ?> parameterIndex;
 
+    private BeanId beanId;
     @Initialize
     public void initialize() throws SmooksConfigurationException {
 
@@ -102,10 +112,24 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
     	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
     	beanId = beanIdRegister.register(beanIdName);
 
-    	ParameterManager.initializeParameterIndex(id, parameterListType, appContext);
+    	parameterIndex = ParameterManager.initializeParameterIndex(id, parameterListType, appContext);
 
     	objectStore = new ApplicationContextObjectStore(appContext);
     }
+
+    /* (non-Javadoc)
+	 * @see org.milyn.delivery.ordering.Producer#getProducts()
+	 */
+	public Set<? extends Object> getProducts() {
+		return CollectionsUtil.toSet(beanIdName);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.String)
+	 */
+	public boolean consumes(Object object) {
+		return parameterIndex.containsParameter(object);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitBefore#visitBefore(org.w3c.dom.Element, org.milyn.container.ExecutionContext)

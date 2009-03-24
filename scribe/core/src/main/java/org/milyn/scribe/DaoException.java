@@ -16,6 +16,8 @@
 package org.milyn.scribe;
 
 /**
+ * Indicates that something went wrong while executing a DAO operation.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */

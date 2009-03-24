@@ -131,7 +131,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = UnsupportedOperationException.class)
 	public void test_flush_non_flushable_dao() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -153,7 +153,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = UnsupportedOperationException.class)
 	public void test_findBy_non_finder_dao() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -187,7 +187,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 	}
 
 
-	@Test(expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = UnsupportedOperationException.class)
 	public void test_lookupByQuery_non_query_finder_dao_map_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);
@@ -198,7 +198,7 @@ public class InterfaceDaoInvokerTest extends BaseTestCase {
 
 	}
 
-	@Test(expectedExceptions = NotImplementedException.class)
+	@Test(expectedExceptions = UnsupportedOperationException.class)
 	public void test_lookupByQuery_non_query_finder_dao_array_params() {
 
 		DaoInvoker invoker = new InterfaceDaoInvoker(minimumDao);

@@ -20,6 +20,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +34,8 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
@@ -53,8 +56,11 @@ import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.parameter.NamedParameterIndex;
 import org.milyn.persistence.parameter.Parameter;
 import org.milyn.persistence.parameter.ParameterContainer;
+import org.milyn.persistence.parameter.ParameterIndex;
 import org.milyn.persistence.parameter.ParameterManager;
+import org.milyn.persistence.parameter.ParameterProductUtil;
 import org.milyn.persistence.parameter.PositionalParameterIndex;
+import org.milyn.util.CollectionsUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -73,12 +79,12 @@ import org.w3c.dom.Element;
 		summary = "<#if resource.parameters.wireBeanId??>Removing bean lifecycle observer for the bean under the beanId '${resource.parameters.wireBeanId}'." +
 		"<#else>Populating <#if resource.parameters.name??>the '${resource.parameters.name}'</#if> parameter " +
 		"from <#if resource.parameters.expression??>an expression<#else>this element.</#if></#if>.")
-public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElementVisitor   {
+public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElementVisitor, Consumer, Producer  {
 
 	private static Log logger = LogFactory.getLog(EntityLocatorParameterVisitor.class);
 
 	@ConfigParam(name="entityLookupperId")
-    private int entityLookupperId;
+    private int entityLocatorId;
 
 	@ConfigParam(use = Use.OPTIONAL)
 	private String name;
@@ -116,6 +122,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
     private BeanId wireBeanId;
 
     private boolean isAttribute = true;
+
     private DataDecoder decoder;
 
     private boolean beanWiring;
@@ -137,14 +144,34 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
         beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
         if(parameterListType == ParameterListType.NAMED) {
-        	NamedParameterIndex parameterIndex = (NamedParameterIndex) ParameterManager.getParameterIndex(entityLookupperId, appContext);
+        	NamedParameterIndex parameterIndex = (NamedParameterIndex) ParameterManager.getParameterIndex(entityLocatorId, appContext);
         	parameter = parameterIndex.register(name);
         } else {
-        	PositionalParameterIndex parameterIndex = (PositionalParameterIndex) ParameterManager.getParameterIndex(entityLookupperId, appContext);
+        	PositionalParameterIndex parameterIndex = (PositionalParameterIndex) ParameterManager.getParameterIndex(entityLocatorId, appContext);
         	parameter = parameterIndex.register(index);
         }
+
     }
 
+    /* (non-Javadoc)
+     * @see org.milyn.delivery.ordering.Consumer#consumes(java.lang.String)
+     */
+    public boolean consumes(Object object) {
+    	if(wireBeanIdName != null && object.equals(wireBeanIdName)) {
+    		return true;
+    	} else if(expression != null && expression.getExpression().indexOf(object.toString()) != -1) {
+    		return true;
+    	}
+    	return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.milyn.delivery.ordering.Producer#getProducts()
+     */
+	@SuppressWarnings("unchecked")
+	public Set<? extends Object> getProducts() {
+    	return CollectionsUtil.toSet(parameter);
+    }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
     	if(beanWiring) {
@@ -307,7 +334,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
     		return;
     	}
 
-    	ParameterContainer<Parameter<?>> container = ParameterManager.getParameterContainer(entityLookupperId, executionContext);
+    	ParameterContainer<Parameter<?>> container = ParameterManager.getParameterContainer(entityLocatorId, executionContext);
     	container.put(parameter, dataObject);
     }
 
@@ -352,7 +379,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
 	}
 
 	public String getId() {
-		return EntityLocatorParameterVisitor.class.getName() + "#" + entityLookupperId + "#" + name;
+		return EntityLocatorParameterVisitor.class.getName() + "#" + entityLocatorId + "#" + name;
 	}
 
 }

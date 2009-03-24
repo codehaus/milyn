@@ -83,7 +83,7 @@ public class NamedParameterContainer implements ParameterContainer<NamedParamete
 
 	private void updateParameterMap(final NamedParameterIndex index) {
 
-		for(String name : index.getKeyMap().keySet()) {
+		for(String name : index.getIndexMap().keySet()) {
 
 			if(!parameterMap.containsKey(name) ) {
 				parameterMap.put(name, null);

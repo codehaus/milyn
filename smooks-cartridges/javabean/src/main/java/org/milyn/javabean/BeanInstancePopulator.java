@@ -593,16 +593,16 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 		return id;
 	}
 
-    public Set<String> getProducts() {
+    public Set<? extends Object> getProducts() {
         return CollectionsUtil.toSet(beanIdName + "." + property, "]." + property);
     }
 
-    public boolean consumes(String object) {
+    public boolean consumes(Object object) {
         if(object.equals(beanIdName)) {
             return true;
         } else if(wireBeanIdName != null && object.equals(wireBeanIdName)) {
             return true;
-        } else if(expression != null && expression.getExpression().indexOf(object) != -1) {
+        } else if(expression != null && expression.getExpression().indexOf(object.toString()) != -1) {
             return true;
         }
 

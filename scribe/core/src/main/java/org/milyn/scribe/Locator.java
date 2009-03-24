@@ -32,7 +32,7 @@ public interface Locator {
 	 * @param name
 	 * @param parameters
 	 * @return
-	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 * @throws OperationNotSupportedException Indicates that the operation is not supported
 	 */
 	Object lookup(String name, Object ... parameters);
 
@@ -41,7 +41,7 @@ public interface Locator {
 	 * @param name
 	 * @param parameters
 	 * @return
-	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 * @throws OperationNotSupportedException Indicates that the operation is not supported
 	 */
 	Object lookup(String name, Map<String, ?> parameters);
 

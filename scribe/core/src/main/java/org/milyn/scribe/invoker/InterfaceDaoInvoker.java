@@ -59,7 +59,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object insert(final Object obj) {
 		if(dao == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't insert the entity.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't insert the entity.");
 		}
 		return dao.insert(obj);
 	}
@@ -69,7 +69,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object insert(String name, Object obj) {
 		if(mappingDao == null) {
-			throw new NotImplementedException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't insert the entity under the name '"+ name +"'.");
+			throw new UnsupportedOperationException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't insert the entity under the name '"+ name +"'.");
 		}
 		return mappingDao.insert(name, obj);
 	}
@@ -79,7 +79,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object update(final Object obj) {
 		if(dao == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't insert the entity.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't insert the entity.");
 		}
 		return dao.update(obj);
 	}
@@ -89,7 +89,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object update(String name, Object obj) {
 		if(mappingDao == null) {
-			throw new NotImplementedException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't update the entity under the name '"+ name +"'.");
+			throw new UnsupportedOperationException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't update the entity under the name '"+ name +"'.");
 		}
 		return mappingDao.update(name, obj);
 	}
@@ -99,7 +99,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object delete(Object entity) {
 		if(dao == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't delete the entity.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Dao.class.getName() + "' interface and there for can't delete the entity.");
 		}
 		return dao.delete(entity);
 	}
@@ -109,7 +109,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object delete(String name, Object entity) {
 		if(mappingDao == null) {
-			throw new NotImplementedException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't delete the entity under the name '"+ name +"'.");
+			throw new UnsupportedOperationException("The DAO '" + mappingDao.getClass().getName() + "' doesn't implement the '" + MappingDao.class.getName() + "' interface and there for can't delete the entity under the name '"+ name +"'.");
 		}
 		return mappingDao.delete(name, entity);
 	}
@@ -120,7 +120,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public void flush() {
 		if(flushableDAO == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Flushable.class.getName() + "' interface and there for can't flush the DAO.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Flushable.class.getName() + "' interface and there for can't flush the DAO.");
 		}
 		flushableDAO.flush();
 	}
@@ -130,7 +130,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object lookupByQuery(final String query, final Object ... parameters) {
 		if(queryFinderDAO == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Queryable.class.getName() + "' interface and there for can't find by query.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Queryable.class.getName() + "' interface and there for can't find by query.");
 		}
 		return queryFinderDAO.lookupByQuery(query, parameters);
 	}
@@ -140,7 +140,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object lookupByQuery(final String query, final Map<String, ?> parameters) {
 		if(queryFinderDAO == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Queryable.class.getName() + "' interface and there for can't find by query.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Queryable.class.getName() + "' interface and there for can't find by query.");
 		}
 		return queryFinderDAO.lookupByQuery(query, parameters);
 	}
@@ -150,7 +150,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object lookup(final String name, final Object ... parameters) {
 		if(finderDAO == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Locator.class.getName() + "' interface and there for can't find by query.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Locator.class.getName() + "' interface and there for can't find by query.");
 		}
 		return finderDAO.lookup(name, parameters);
 	}
@@ -160,7 +160,7 @@ public class InterfaceDaoInvoker implements DaoInvoker  {
 	 */
 	public Object lookup(final String name, final Map<String, ?> parameters) {
 		if(finderDAO == null) {
-			throw new NotImplementedException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Locator.class.getName() + "' interface and there for can't find by query.");
+			throw new UnsupportedOperationException("The DAO '" + dao.getClass().getName() + "' doesn't implement the '" + Locator.class.getName() + "' interface and there for can't find by query.");
 		}
 		return finderDAO.lookup(name, parameters);
 	}

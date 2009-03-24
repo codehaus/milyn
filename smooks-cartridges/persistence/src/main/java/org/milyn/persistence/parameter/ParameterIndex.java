@@ -28,7 +28,7 @@ public abstract class ParameterIndex<K extends Object, P extends Parameter<?>> {
 
 	private final Map<K, P> indexMap = new HashMap<K, P>();
 
-	public synchronized P register(K value) {
+	public P register(K value) {
 
 		P parameter = indexMap.get(value);
 		if(parameter == null) {
@@ -41,20 +41,39 @@ public abstract class ParameterIndex<K extends Object, P extends Parameter<?>> {
 
 	protected abstract P createParameter(K value) ;
 
-	public P getParameter(K keyValue) {
+	public P getParameter(Object keyValue) {
 		return indexMap.get(keyValue);
 	}
 
-	public boolean containsBeanId(String beanId) {
-		return indexMap.containsKey(beanId);
+	public boolean containsKey(Object key) {
+		return indexMap.containsKey(key);
 	}
 
-	public Map<K, P> getKeyMap() {
+	public boolean containsParameter(Object parameter) {
+		return indexMap.containsValue(parameter);
+	}
+
+	public Map<K, P> getIndexMap() {
 		return Collections.unmodifiableMap(indexMap) ;
 	}
 
 	public int size() {
 		return indexMap.size();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return indexMap.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(ParameterIndex<?, ?> rhs) {
+		return indexMap.equals(rhs.indexMap);
 	}
 
 }

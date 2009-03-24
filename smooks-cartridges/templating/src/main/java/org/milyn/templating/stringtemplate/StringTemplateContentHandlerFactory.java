@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -91,7 +91,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 
 	@AppContext
 	private ApplicationContext applicationContext;
-	
+
 	/**
 	 * Create a StringTemplate based ContentHandler.
      * @param resourceConfig The SmooksResourceConfiguration for the StringTemplate.
@@ -165,8 +165,8 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
             processTemplateAction(element, resultNode, executionContext);
         }
 
-        public boolean consumes(String object) {
-            if(template.getTemplate().indexOf(object) != -1) {
+        public boolean consumes(Object object) {
+            if(template.getTemplate().indexOf(object.toString()) != -1) {
                 return true;
             }
 

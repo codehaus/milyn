@@ -23,7 +23,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import java.util.*;
 
 /**
- * 
+ *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
 public class Sorter {
@@ -54,12 +54,12 @@ public class Sorter {
 
         for(DependencySpec outer : dependancySpecs) {
             if(outer.visitor.getContentHandler() instanceof Producer) {
-                Set<String> outerProducts = ((Producer) outer.visitor.getContentHandler()).getProducts();
+                Set<? extends Object> outerProducts = ((Producer) outer.visitor.getContentHandler()).getProducts();
 
                 for(DependencySpec inner : dependancySpecs) {
                     if(inner != outer && inner.visitor.getContentHandler() instanceof Consumer) {
                         Consumer innerConsumer = (Consumer) inner.visitor.getContentHandler();
-                        for(String product : outerProducts) {
+                        for(Object product : outerProducts) {
                             if(innerConsumer.consumes(product)) {
                                 outer.dependants.add(inner);
                             }
@@ -113,7 +113,7 @@ public class Sorter {
                 return score;
             }
         });
-        
+
         dependancySpecs.clear();
         if(sortOrder == SortOrder.PRODUCERS_FIRST) {
             dependancySpecs.addAll(Arrays.asList(array));
@@ -130,7 +130,7 @@ public class Sorter {
 
         for (int i = 0; i < specCount; i++) {
             DependencySpec dependancy = dependencySpecs.get(i);
-            
+
             for (int ii = 0; ii < dependancy.dependants.size(); ii++) {
                 List<DependencySpec> dependants = dependancy.dependants;
                 DependencySpec dependant = dependants.get(ii);

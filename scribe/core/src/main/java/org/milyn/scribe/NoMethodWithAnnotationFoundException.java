@@ -16,6 +16,8 @@
 package org.milyn.scribe;
 
 /**
+ * Indicates that a no method was found with a certain Annotation when one was expected.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */

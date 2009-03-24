@@ -30,7 +30,7 @@ public interface Queryable {
 	 * @param name
 	 * @param parameters
 	 * @return
-	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 * @throws OperationNotSupportedException Indicates that the operation is not supported
 	 */
 	Object lookupByQuery(String query, Object ... parameters);
 
@@ -39,7 +39,7 @@ public interface Queryable {
 	 * @param name
 	 * @param parameters
 	 * @return
-	 * @throws OperationNotSupportedException If the operation is not supported then the {@link OperationNotSupportedException} is thrown
+	 * @throws OperationNotSupportedException Indicates that the operation is not supported
 	 */
 	Object lookupByQuery(String query, Map<String, ?> parameters);
 
