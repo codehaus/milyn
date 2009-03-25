@@ -1,6 +1,7 @@
 package org.milyn.javabean.decoders;
 
-import org.milyn.cdr.*;
+import org.milyn.config.Configurable;
+import org.milyn.cdr.SmooksConfigurationException;
 
 import java.text.*;
 import java.util.*;
@@ -22,7 +23,7 @@ import java.util.*;
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
-public abstract class LocaleAwareDateDecoder
+public abstract class LocaleAwareDateDecoder implements Configurable
 {
     /**
      * Date format configuration key.
@@ -62,16 +63,15 @@ public abstract class LocaleAwareDateDecoder
      */
     protected SimpleDateFormat decoder = new SimpleDateFormat( DEFAULT_DATE_FORMAT );
 
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-        format = resourceConfig.getStringParameter(FORMAT, DEFAULT_DATE_FORMAT);
+    public void setConfiguration(Properties resourceConfig) throws SmooksConfigurationException {
+        format = resourceConfig.getProperty(FORMAT, DEFAULT_DATE_FORMAT);
         if (format == null) {
             throw new SmooksConfigurationException("Decoder must specify a 'format' parameter.");
         }
 
-
-        final String languageCode = resourceConfig.getStringParameter(LOCALE_LANGUAGE_CODE);
-        final String countryCode = resourceConfig.getStringParameter(LOCALE_COUNTRY_CODE);
-        verifyLocale = Boolean.parseBoolean(resourceConfig.getStringParameter(VERIFY_LOCALE, "false"));
+        final String languageCode = resourceConfig.getProperty(LOCALE_LANGUAGE_CODE);
+        final String countryCode = resourceConfig.getProperty(LOCALE_COUNTRY_CODE);
+        verifyLocale = Boolean.parseBoolean(resourceConfig.getProperty(VERIFY_LOCALE, "false"));
 
         decoder = new SimpleDateFormat(format.trim(), getLocale( languageCode, countryCode ));
     }

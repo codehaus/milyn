@@ -15,14 +15,13 @@
 */
 package org.milyn.javabean.decoders;
 
+import junit.framework.TestCase;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.TimeZone;
-
-import junit.framework.TestCase;
-
-import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Tests for the Calendar and Date decoders.
@@ -33,12 +32,12 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 public class CalendarDecoderTest extends TestCase {
 
 	public void test_CalendarDecoder() {
-	    SmooksResourceConfiguration config = new SmooksResourceConfiguration();
-	    config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
+        Properties config = new Properties();
+	    config.setProperty(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
 
 	    CalendarDecoder decoder = new CalendarDecoder();
-	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
-	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
+	    config.setProperty(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setProperty(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
 	    decoder.setConfiguration(config);
 
 	    Calendar cal_a = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
@@ -52,13 +51,13 @@ public class CalendarDecoderTest extends TestCase {
 		final String dateFormat = "EEE MMM dd HH:mm:ss z yyyy";
 		final String dateString = "ti mar 04 15:25:07 CET 2008";
 
-	    SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+        Properties config = new Properties();
 	    CalendarDecoder decoder = new CalendarDecoder();
 
-	    config.setParameter(CalendarDecoder.FORMAT, dateFormat );
-	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "sv");
-	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "SE");
-	    config.setParameter(CalendarDecoder.VERIFY_LOCALE, "true");
+	    config.setProperty(CalendarDecoder.FORMAT, dateFormat );
+	    config.setProperty(CalendarDecoder.LOCALE_LANGUAGE_CODE, "sv");
+	    config.setProperty(CalendarDecoder.LOCALE_COUNTRY_CODE, "SE");
+	    config.setProperty(CalendarDecoder.VERIFY_LOCALE, "true");
 	    decoder.setConfiguration(config);
 
 	    Calendar cal_a = (Calendar) decoder.decode( dateString );

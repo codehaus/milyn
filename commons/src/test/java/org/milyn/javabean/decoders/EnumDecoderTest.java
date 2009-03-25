@@ -16,9 +16,10 @@
 package org.milyn.javabean.decoders;
 
 import junit.framework.TestCase;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.javabean.DataDecodeException;
+
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -27,7 +28,7 @@ public class EnumDecoderTest extends TestCase {
 
     public void test_bad_config() {
         EnumDecoder decoder = new EnumDecoder();
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x");
+        Properties config = new Properties();
 
         // type not defined...
         try {
@@ -38,7 +39,7 @@ public class EnumDecoderTest extends TestCase {
         }
 
         // Not an enum...
-        config.setParameter("enumType", String.class.getName());
+        config.setProperty("enumType", String.class.getName());
         try {
             decoder.setConfiguration(config);
             fail("Expected SmooksConfigurationException");
@@ -49,11 +50,11 @@ public class EnumDecoderTest extends TestCase {
 
     public void test_good_config() {
         EnumDecoder decoder = new EnumDecoder();
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x");
+        Properties config = new Properties();
 
-        config.setParameter("enumType", MyEnum.class.getName());
-        config.setParameter("val-A", "ValA");
-        config.setParameter("val-B", "ValB");
+        config.setProperty("enumType", MyEnum.class.getName());
+        config.setProperty("val-A", "ValA");
+        config.setProperty("val-B", "ValB");
         decoder.setConfiguration(config);
 
         assertEquals(MyEnum.ValA, decoder.decode("ValA"));

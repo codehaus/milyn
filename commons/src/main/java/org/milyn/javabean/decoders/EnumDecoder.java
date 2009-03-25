@@ -16,11 +16,13 @@
 package org.milyn.javabean.decoders;
 
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DecodeType;
 import org.milyn.util.ClassUtil;
+import org.milyn.config.Configurable;
+
+import java.util.Properties;
 
 /**
  * Enum instance decoder.
@@ -32,13 +34,13 @@ import org.milyn.util.ClassUtil;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @DecodeType({Enum.class})
-public class EnumDecoder implements DataDecoder {
+public class EnumDecoder implements DataDecoder, Configurable {
 
     private Class enumType;
     private MappingDecoder mappingDecoder = new MappingDecoder();
 
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
-        String enumTypeName = resourceConfig.getStringParameter("enumType");
+    public void setConfiguration(Properties resourceConfig) throws SmooksConfigurationException {
+        String enumTypeName = resourceConfig.getProperty("enumType");
 
         if(enumTypeName == null || enumTypeName.trim().equals(""))
         {

@@ -15,10 +15,11 @@
 */
 package org.milyn.javabean.decoders;
 
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.config.Configurable;
+
+import java.util.Properties;
 
 /**
  * Mapping decoder.
@@ -28,19 +29,19 @@ import org.milyn.javabean.DataDecoder;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MappingDecoder implements DataDecoder {
+public class MappingDecoder implements DataDecoder, Configurable {
     
-    private SmooksResourceConfiguration resourceConfig;
+    private Properties resourceConfig;
     private boolean strict = true;
 
-    public void setConfiguration(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException {
+    public void setConfiguration(Properties resourceConfig) {
         this.resourceConfig = resourceConfig;
-        strict = resourceConfig.getBoolParameter("strict", true);
+        strict = resourceConfig.getProperty("strict", "true").equals("true");
     }
 
     public Object decode(String data) throws DataDecodeException {
         if(resourceConfig != null) {
-            String mappingValue = resourceConfig.getStringParameter(data);
+            String mappingValue = resourceConfig.getProperty(data);
 
             if(mappingValue == null) {
                 if(strict) {
