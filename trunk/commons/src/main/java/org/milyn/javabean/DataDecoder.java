@@ -15,7 +15,6 @@
 */
 package org.milyn.javabean;
 
-import org.milyn.delivery.ContentHandler;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.javabean.decoders.EnumDecoder;
 import org.milyn.util.ClassUtil;
@@ -52,7 +51,7 @@ import java.util.HashMap;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface DataDecoder extends ContentHandler {
+public interface DataDecoder {
     
     /**
      * Decode the supplied String data into a new Object data instance.

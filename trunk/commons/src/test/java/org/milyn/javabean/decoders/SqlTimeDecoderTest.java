@@ -16,10 +16,9 @@
 package org.milyn.javabean.decoders;
 
 import java.sql.Time;
+import java.util.Properties;
 
 import junit.framework.TestCase;
-
-import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
  * Tests for the SqlTimeDecoder class
@@ -30,12 +29,12 @@ public class SqlTimeDecoderTest extends TestCase {
 
     public void test_DateDecoder() {
         
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
-        config.setParameter(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
+        Properties config = new Properties();
+        config.setProperty(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
         
         SqlTimeDecoder decoder = new SqlTimeDecoder();
-        config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
-	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
+        config.setProperty(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setProperty(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
         decoder.setConfiguration(config);
 
         Object object = decoder.decode("Wed Nov 15 13:45:28 EST 2006");

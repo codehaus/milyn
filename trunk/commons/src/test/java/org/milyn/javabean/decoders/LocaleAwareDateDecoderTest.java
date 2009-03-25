@@ -15,10 +15,10 @@
 
 package org.milyn.javabean.decoders;
 
-import junit.framework.*;
-import org.milyn.cdr.*;
+import junit.framework.TestCase;
 
-import java.util.*;
+import java.util.Locale;
+import java.util.Properties;
 
 /**
  * Unit test for LocaleAwareDateDedoderTest
@@ -48,9 +48,9 @@ public class LocaleAwareDateDecoderTest extends TestCase
 	public void test_non_installed_locale()
 	{
 	    final Locale locale = decoder.getLocale( "xx", "XX" );
-	    SmooksResourceConfiguration config = new SmooksResourceConfiguration();
-	    config.setParameter(CalendarDecoder.LOCALE_LANGUAGE_CODE, locale.getLanguage() );
-	    config.setParameter(CalendarDecoder.LOCALE_COUNTRY_CODE, locale.getCountry() );
+        Properties config = new Properties();
+	    config.setProperty(CalendarDecoder.LOCALE_LANGUAGE_CODE, locale.getLanguage() );
+	    config.setProperty(CalendarDecoder.LOCALE_COUNTRY_CODE, locale.getCountry() );
 	    decoder.setConfiguration( config );
 
 		decoder.getLocale( locale.getLanguage(), locale.getCountry() );

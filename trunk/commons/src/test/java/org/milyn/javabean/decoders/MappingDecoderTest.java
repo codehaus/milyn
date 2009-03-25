@@ -16,8 +16,9 @@
 package org.milyn.javabean.decoders;
 
 import junit.framework.TestCase;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.DataDecodeException;
+
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -26,10 +27,10 @@ public class MappingDecoderTest extends TestCase {
 
     public void test() {
         MappingDecoder decoder = new MappingDecoder();
-        SmooksResourceConfiguration config = new SmooksResourceConfiguration("x");
+        Properties config = new Properties();
 
-        config.setParameter("a", "avalue");
-        config.setParameter("b", "bvalue");
+        config.setProperty("a", "avalue");
+        config.setProperty("b", "bvalue");
         decoder.setConfiguration(config);
 
         assertEquals("avalue", decoder.decode("a"));
