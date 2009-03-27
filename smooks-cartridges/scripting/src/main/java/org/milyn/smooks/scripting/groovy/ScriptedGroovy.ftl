@@ -40,12 +40,20 @@ class ${visitorName} implements DOMVisitBefore, SAXVisitBefore {
         Document document = element.getOwnerDocument();
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
+        def getBean = { beanId ->
+            BeanRepository.getInstance(executionContext).getBean(beanId);
+        }
+
         ${visitorScript}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
         
+        def getBean = { beanId ->
+            BeanRepository.getInstance(executionContext).getBean(beanId);
+        }
+
         ${visitorScript}
     }
 }
@@ -75,6 +83,9 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
         Document document = element.getOwnerDocument();
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
+        def getBean = { beanId ->
+            BeanRepository.getInstance(executionContext).getBean(beanId);
+        }
         def writeFragment = { outNode ->
             if(outNode.getNodeType() == Node.ELEMENT_NODE) {
                 Serializer.recursiveDOMWrite((Element) outNode, writer);
@@ -88,6 +99,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
         ${visitorScript}
     }
 
+    // visitBefore is required purely for setting up the model creator...
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         if(modelCreator != null) {
             if(isWritingFragment) {
@@ -120,6 +132,11 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
             }
         } else {
             Map nodeModels = DOMModel.getModel(executionContext).getModels();
+
+            def getBean = { beanId ->
+                BeanRepository.getInstance(executionContext).getBean(beanId);
+            }
+
             ${visitorScript}
         }
     }
