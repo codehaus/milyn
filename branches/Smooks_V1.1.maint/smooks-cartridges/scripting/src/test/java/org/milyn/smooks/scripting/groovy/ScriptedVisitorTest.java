@@ -18,12 +18,16 @@ package org.milyn.smooks.scripting.groovy;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.delivery.Filter;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
+import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
+import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
@@ -212,6 +216,34 @@ public class ScriptedVisitorTest extends TestCase {
 
         smooks.filter(new StringSource(shoppingList), result);
         assertEquals("<category type=\"supplies\"><item>Paper</item><item quantity=\"6\">Pens</item></category>", result.getResult());
+    }
+
+    public void test_templated_ext_12() throws IOException, SAXException {
+        test_templated_ext_12_13("scripted-ext-12.xml", Filter.StreamFilterType.DOM);
+        test_templated_ext_12_13("scripted-ext-12.xml", Filter.StreamFilterType.SAX);
+    }
+
+    public void test_templated_ext_13() throws IOException, SAXException {
+        test_templated_ext_12_13("scripted-ext-13.xml", Filter.StreamFilterType.DOM);
+        test_templated_ext_12_13("scripted-ext-13.xml", Filter.StreamFilterType.SAX);
+    }
+
+    public void test_templated_ext_12_13(String config, Filter.StreamFilterType filterType) throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
+        JavaResult result = new JavaResult();
+
+        Filter.setFilterType(smooks, filterType);
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), result);
+        Map orderItems = (Map) result.getBean("orderItems");
+        Map orderItem;
+
+        orderItem = (Map) orderItems.get("111");
+        assertEquals("2", orderItem.get("quantity"));
+        assertEquals("8.90", orderItem.get("price"));
+
+        orderItem = (Map) orderItems.get("222");
+        assertEquals("7", orderItem.get("quantity"));
+        assertEquals("5.20", orderItem.get("price"));
     }
 
     private static String shoppingList =

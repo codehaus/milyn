@@ -11,8 +11,8 @@
             use(DOMCategory) {
 
                 // Modify "supplies": we need an extra 2 pens...
-                if (category.'@type' == 'supplies') {
-                    category.item.each { item ->
+                if (element.'@type' == 'supplies') {
+                    element.item.each { item ->
                         if (item.text() == 'Pens') {
                             item['@quantity'] = item.'@quantity'.toInteger() + 2;
                         }
@@ -22,7 +22,7 @@
 
             // When using the SAX filter, we need to explicitly write the fragment
             // to the result stream...
-            writeFragment(category);
+            writeFragment(element);
             -->
         </g:script>
     </g:groovy>
