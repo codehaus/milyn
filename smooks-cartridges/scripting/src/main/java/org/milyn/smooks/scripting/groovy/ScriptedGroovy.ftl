@@ -37,17 +37,23 @@ class ${visitorName} implements DOMVisitBefore, SAXVisitBefore {
 	}
 
     public void visitBefore(Element element, ExecutionContext executionContext) {
-        Element ${elementName} = element;
         Document document = element.getOwnerDocument();
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
+
+        def getBean = { beanId ->
+            BeanRepository.getInstance(executionContext).getBean(beanId);
+        }
 
         ${visitorScript}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        SAXElement ${elementName} = element;
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
         
+        def getBean = { beanId ->
+            BeanRepository.getInstance(executionContext).getBean(beanId);
+        }
+
         ${visitorScript}
     }
 }
@@ -74,10 +80,12 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext, Writer writer) {
-        Element ${elementName} = element;
         Document document = element.getOwnerDocument();
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
+        def getBean = { beanId ->
+            BeanRepository.getInstance(executionContext).getBean(beanId);
+        }
         def writeFragment = { outNode ->
             if(outNode.getNodeType() == Node.ELEMENT_NODE) {
                 Serializer.recursiveDOMWrite((Element) outNode, writer);
@@ -91,6 +99,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
         ${visitorScript}
     }
 
+    // visitBefore is required purely for setting up the model creator...
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         if(modelCreator != null) {
             if(isWritingFragment) {
@@ -105,8 +114,6 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        SAXElement ${elementName} = element;
-
         if(modelCreator != null) {
             Document fragmentDoc = modelCreator.popCreator(executionContext);
             Element fragmentElement = fragmentDoc.getDocumentElement();
@@ -125,6 +132,11 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
             }
         } else {
             Map nodeModels = DOMModel.getModel(executionContext).getModels();
+
+            def getBean = { beanId ->
+                BeanRepository.getInstance(executionContext).getBean(beanId);
+            }
+
             ${visitorScript}
         }
     }

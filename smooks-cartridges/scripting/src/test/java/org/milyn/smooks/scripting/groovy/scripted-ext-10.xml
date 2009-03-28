@@ -16,8 +16,8 @@
             use(DOMCategory) {
 
                 // Modify "supplies": we need an extra 2 pens...
-                if (category.'@type' == 'supplies') {
-                    category.item.each { item ->
+                if (element.'@type' == 'supplies') {
+                    element.item.each { item ->
                         if (item.text() == 'Pens') {
                             item['@quantity'] = item.'@quantity'.toInteger() + 2;
                         }
@@ -25,7 +25,7 @@
                 }
             }
 
-            writeFragment(category);
+            writeFragment(element);
             -->
         </g:script>
     </g:groovy>
