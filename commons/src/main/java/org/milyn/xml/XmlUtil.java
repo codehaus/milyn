@@ -3,14 +3,14 @@
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
- License (version 2.1) as published by the Free Software
+ License (version 2.1) as published by the Free Software 
  Foundation.
 
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
- See the GNU Lesser General Public License for more details:
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+ 
+ See the GNU Lesser General Public License for more details:    
  http://www.gnu.org/licenses/lgpl.txt
  */
 
@@ -312,7 +312,7 @@ public class XmlUtil {
         if (stream == null) {
             throw new IllegalArgumentException("null 'stream' arg in method call.");
         }
-
+        
         try {
             String streamData = StreamUtils.readStream(stream);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -361,26 +361,12 @@ public class XmlUtil {
      * @return Document instance.
      */
     public static Document parseStream(Reader stream) throws ParserConfigurationException, IOException, SAXException {
-        return XmlUtil.parseStream(stream, null);
-    }
-
-    /**
-     * Basic DOM namespace aware parse.
-     * @param stream Document stream.
-     * @param errorHandler {@link ErrorHandler} to be set on the DocumentBuilder.
-     *                      This can be used to controll error reporting. If null
-     *                      the default error handler will be used.
-     * @return Document instance.
-     */
-    public static Document parseStream(Reader stream, final ErrorHandler errorHandler) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
 
         factory.setNamespaceAware(true);
         docBuilder = factory.newDocumentBuilder();
-        if (errorHandler != null) {
-            docBuilder.setErrorHandler(errorHandler);
-        }
+
         return docBuilder.parse(new InputSource(stream));
     }
 
@@ -663,7 +649,7 @@ public class XmlUtil {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see org.xml.sax.ErrorHandler#fatalError(org.xml.sax.SAXParseException)
 		 */
 		public void fatalError(SAXParseException arg0) throws SAXException {

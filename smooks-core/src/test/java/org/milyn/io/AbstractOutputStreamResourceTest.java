@@ -54,7 +54,7 @@ public class AbstractOutputStreamResourceTest
             assertEquals("An OutputStream to the 'Mock' resource is already open.  Cannot open a Writer to this resource now!", e.getMessage());
         }
 
-        resource.executeVisitLifecycleCleanup(executionContext );
+        resource.visitAfter( (Element)null, executionContext );
 
         // Should be unbound "after" and the stream should be closed...
         assertNull(getResource(resource, executionContext));
@@ -83,7 +83,7 @@ public class AbstractOutputStreamResourceTest
             assertEquals("An Writer to the 'Mock' resource is already open.  Cannot open an OutputStream to this resource now!", e.getMessage());
         }
 
-        resource.executeVisitLifecycleCleanup(executionContext);
+        resource.visitAfter( (Element)null, executionContext );
 
         // Should be unbound "after" and the stream should be closed...
         assertNull(getResource(resource, executionContext));

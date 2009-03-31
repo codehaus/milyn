@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -28,7 +28,6 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
-import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.event.report.annotation.VisitAfterReport;
@@ -91,7 +90,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 
 	@AppContext
 	private ApplicationContext applicationContext;
-
+	
 	/**
 	 * Create a StringTemplate based ContentHandler.
      * @param resourceConfig The SmooksResourceConfiguration for the StringTemplate.
@@ -115,7 +114,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 	 */
     @VisitBeforeReport(condition = "false")
     @VisitAfterReport(summary = "Applied StringTemplate Template.", detailTemplate = "reporting/StringTemplateTemplateProcessor_After.html")
-	private static class StringTemplateTemplateProcessor extends AbstractTemplateProcessor implements Consumer {
+	private static class StringTemplateTemplateProcessor extends AbstractTemplateProcessor {
 
         private StringTemplate template;
 
@@ -164,13 +163,5 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
             // Process the templating action, supplying the templating result...
             processTemplateAction(element, resultNode, executionContext);
         }
-
-        public boolean consumes(Object object) {
-            if(template.getTemplate().indexOf(object.toString()) != -1) {
-                return true;
-            }
-
-            return false;
-        }
-    }
+	}
 }

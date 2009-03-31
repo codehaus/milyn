@@ -19,7 +19,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
-import org.milyn.StreamFilterType;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.NullReader;
@@ -97,16 +96,6 @@ public abstract class Filter {
      * Set the default stream filter type on the supplied Smooks instance.
      * @param smooks The Smooks instance.
      * @param filterType The filter type.
-     */
-    public static void setFilterType(Smooks smooks, org.milyn.StreamFilterType filterType) {
-        ParameterAccessor.setParameter(STREAM_FILTER_TYPE, filterType.toString(), smooks);
-    }
-
-    /**
-     * Set the default stream filter type on the supplied Smooks instance.
-     * @param smooks The Smooks instance.
-     * @param filterType The filter type.
-     * @deprecated Use {@link #setFilterType(org.milyn.Smooks, org.milyn.StreamFilterType)}.
      */
     public static void setFilterType(Smooks smooks, StreamFilterType filterType) {
         ParameterAccessor.setParameter(STREAM_FILTER_TYPE, filterType.toString(), smooks);

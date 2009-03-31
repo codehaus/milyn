@@ -15,10 +15,8 @@
 package org.milyn.calc;
 
 import java.io.IOException;
-import java.util.Set;
 
 import org.milyn.SmooksException;
-import org.milyn.util.CollectionsUtil;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
@@ -32,7 +30,6 @@ import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.delivery.ordering.Producer;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepository;
@@ -89,7 +86,7 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "!parameters.containsKey('executeAfter') || parameters.executeAfter.value != 'true'")
 @VisitAfterIf(	condition = "parameters.containsKey('executeAfter') && parameters.executeAfter.value == 'true'")
-public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, DOMVisitAfter, Producer {
+public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, DOMVisitAfter {
 
 	public static final Long DEFAULT_START_INDEX = new Long(0);
 
@@ -222,7 +219,5 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 		}
 	}
 
-    public Set<? extends Object> getProducts() {
-        return CollectionsUtil.toSet(beanIdName);
-    }
+
 }

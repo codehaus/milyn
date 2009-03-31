@@ -21,9 +21,12 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
+import org.milyn.delivery.dom.DOMVisitAfter;
+import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.w3c.dom.Element;
 
 import java.io.IOException;
 
@@ -37,14 +40,14 @@ public class VisitIfAndIfNotTest extends TestCase {
 
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "true");
-        assertTrue(VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
+        assertTrue(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
 
         resourceConfig = new SmooksResourceConfiguration ();
-        assertFalse(VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
+        assertFalse(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
 
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "false");
-        assertFalse(VisitorConfigMap.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
+        assertFalse(ContentDeliveryConfigBuilder.visitBeforeAnnotationsOK(resourceConfig, new MySAXVisitBeforeVisitor1()));
     }
 
     public void test_sax_visitAfter() {
@@ -52,14 +55,14 @@ public class VisitIfAndIfNotTest extends TestCase {
 
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "true");
-        assertFalse(VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
+        assertFalse(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
 
         resourceConfig = new SmooksResourceConfiguration ();
-        assertTrue(VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
+        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
 
         resourceConfig = new SmooksResourceConfiguration ();
         resourceConfig.setParameter("visitBefore", "false");
-        assertTrue(VisitorConfigMap.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
+        assertTrue(ContentDeliveryConfigBuilder.visitAfterAnnotationsOK(resourceConfig, new MySAXVisitAfterVisitor1()));
     }
 
     /* ====================================================================================================

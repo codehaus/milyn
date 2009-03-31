@@ -48,7 +48,6 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Stack;
-import java.util.Map;
 
 /**
  * JSON to SAX event reader.
@@ -150,13 +149,13 @@ public class JSONReader implements SmooksXMLReader {
 
 	private static Log logger = LogFactory.getLog(JSONReader.class);
 
-	public static final String CONFIG_PARAM_KEY_MAP = "keyMap";
+	private static final String CONFIG_PARAM_KEY_MAP = "keyMap";
 
-	public static final String XML_ROOT = "json";
+	private static final String XML_ROOT = "json";
 
-	public static final String XML_ARRAY_ELEMENT_NAME = "element";
+	private static final String XML_ARRAY_ELEMENT_NAME = "element";
 
-	public static final String DEFAULT_NULL_VALUE_REPLACEMENT = "";
+	private static final String DEFAULT_NULL_VALUE_REPLACEMENT = "";
 
     private static final Attributes EMPTY_ATTRIBS = new AttributesImpl();
 
@@ -407,20 +406,14 @@ public class JSONReader implements SmooksXMLReader {
 		Parameter keyMapParam = config.getParameter(CONFIG_PARAM_KEY_MAP);
 
        if (keyMapParam != null) {
-           Object objValue = keyMapParam.getObjValue();
+           Element keyMapParamElement = keyMapParam.getXml();
 
-           if(objValue instanceof Map) {
-               keyMap = (HashMap<String, String>) objValue;
+           if(keyMapParamElement != null) {
+
+        	   setKeyMap(KeyMapDigester.digest(keyMapParamElement));
+
            } else {
-               Element keyMapParamElement = keyMapParam.getXml();
-
-               if(keyMapParamElement != null) {
-
-                   setKeyMap(KeyMapDigester.digest(keyMapParamElement));
-
-               } else {
-                logger.error("Sorry, the key properties must be available as XML DOM. Please configure using XML.");
-               }
+           	logger.error("Sorry, the key properties must be available as XML DOM. Please configure using XML.");
            }
        }
 	}

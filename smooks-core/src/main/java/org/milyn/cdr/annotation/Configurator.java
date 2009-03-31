@@ -22,7 +22,6 @@ import org.milyn.container.*;
 import org.milyn.delivery.*;
 import org.milyn.delivery.annotation.*;
 import org.milyn.javabean.*;
-import org.milyn.config.Configurable;
 
 import java.lang.annotation.*;
 import java.lang.reflect.*;
@@ -48,7 +47,7 @@ public class Configurator {
      * @return The configured ContentHandler instance.
      * @throws SmooksConfigurationException Invalid field annotations.
      */
-    public static <U> U configure(U instance, SmooksResourceConfiguration config, ApplicationContext appContext) throws SmooksConfigurationException {
+    public static <U extends ContentHandler> U configure(U instance, SmooksResourceConfiguration config, ApplicationContext appContext) throws SmooksConfigurationException {
         AssertArgument.isNotNull(appContext, "appContext");
 
         // process the field annotations (@AppContext)...
@@ -67,12 +66,12 @@ public class Configurator {
      * @return The configured ContentHandler instance.
      * @throws SmooksConfigurationException Invalid field annotations.
      */
-    public static <U> U configure(U instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
+    public static <U extends ContentHandler> U configure(U instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         AssertArgument.isNotNull(instance, "instance");
         AssertArgument.isNotNull(config, "config");
 
         // process the field annotations (@ConfigParam and @Config)...
-        processFieldConfigAnnotations(instance, config, true);
+        processFieldConfigAnnotations(instance, config);
 
         // process the method annotations (@ConfigParam)...
         processMethodConfigAnnotations(instance, config);
@@ -86,13 +85,13 @@ public class Configurator {
         return instance;
     }
 
-    public static <U> void processFieldContextAnnotation(U instance, ApplicationContext appContext) {
+    private static <U extends ContentHandler> void processFieldContextAnnotation(U instance, ApplicationContext appContext) {
     	
         processFieldContextAnnotation(instance.getClass(), instance, appContext);
         
     }
     
-    private static <U> void processFieldContextAnnotation(Class contentHandlerClass, U instance, ApplicationContext appContext) {
+    private static <U extends ContentHandler> void processFieldContextAnnotation(Class contentHandlerClass, U instance, ApplicationContext appContext) {
     	Field[] fields = contentHandlerClass.getDeclaredFields();
     	
     	// Work back up the Inheritance tree first...
@@ -113,30 +112,25 @@ public class Configurator {
         }
     }
 
-    public static <U> void processFieldConfigAnnotations(U instance, SmooksResourceConfiguration config, boolean includeConfigParams) {
+    private static <U extends ContentHandler> void processFieldConfigAnnotations(U instance, SmooksResourceConfiguration config) {
         Class contentHandlerClass = instance.getClass();
-        processFieldConfigAnnotations(contentHandlerClass, instance, config, includeConfigParams);
+        processFieldConfigAnnotations(contentHandlerClass, instance, config);
     }
 
-    private static <U> void processFieldConfigAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config, boolean includeConfigParams) {
+    private static <U extends ContentHandler> void processFieldConfigAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config) {
         Field[] fields = contentHandlerClass.getDeclaredFields();
 
         // Work back up the Inheritance tree first...
         Class superClass = contentHandlerClass.getSuperclass();
         if(superClass != null) {
-            processFieldConfigAnnotations(superClass, instance, config, includeConfigParams);
+            processFieldConfigAnnotations(superClass, instance, config);
         }
 
         for (Field field : fields) {
-            ConfigParam configParamAnnotation = null;
-            
-            if(includeConfigParams) {
-                configParamAnnotation = field.getAnnotation(ConfigParam.class);
-                if(configParamAnnotation != null) {
-                    applyConfigParam(configParamAnnotation, field, field.getType(), instance, config);
-                }
+            ConfigParam configParamAnnotation = field.getAnnotation(ConfigParam.class);
+            if(configParamAnnotation != null) {
+                applyConfigParam(configParamAnnotation, field, field.getType(), instance, config);
             }
-
             Config configAnnotation = field.getAnnotation(Config.class);
             if(configAnnotation != null) {
                 if(configParamAnnotation != null) {
@@ -147,7 +141,7 @@ public class Configurator {
         }
     }
 
-    private static <U> void processMethodConfigAnnotations(U instance, SmooksResourceConfiguration config) {
+    private static <U extends ContentHandler> void processMethodConfigAnnotations(U instance, SmooksResourceConfiguration config) {
         Method[] methods = instance.getClass().getMethods();
 
         for (Method method : methods) {
@@ -164,7 +158,7 @@ public class Configurator {
         }
     }
 
-    private static <U> void applyConfigParam(ConfigParam configParam, Member member, Class type, U instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
+    private static void applyConfigParam(ConfigParam configParam, Member member, Class type, ContentHandler instance, SmooksResourceConfiguration config) throws SmooksConfigurationException {
         String name = configParam.name();
         String paramValue;
 
@@ -253,7 +247,7 @@ public class Configurator {
         throw new SmooksConfigurationException("Value '" + paramValue + "' for paramater '" + name + "' is invalid.  Valid choices for this paramater are: " + Arrays.asList(choices));
     }
 
-    private static <U> void applyConfig(Field field, U instance, SmooksResourceConfiguration config) {
+    private static void applyConfig(Field field, ContentHandler instance, SmooksResourceConfiguration config) {
         try {
             setField(field, instance, config);
         } catch (IllegalAccessException e) {
@@ -261,25 +255,21 @@ public class Configurator {
         }
     }
 
-    private static <U> void setConfiguration(U instance, SmooksResourceConfiguration config) {
-        if(instance instanceof Configurable) {
-            ((Configurable)instance).setConfiguration(config.toProperties());
-        } else {
-            try {
-                Method setConfigurationMethod = instance.getClass().getMethod("setConfiguration", SmooksResourceConfiguration.class);
+    private static void setConfiguration(ContentHandler instance, SmooksResourceConfiguration config) {
+        try {
+            Method setConfigurationMethod = instance.getClass().getMethod("setConfiguration", SmooksResourceConfiguration.class);
 
-                setConfigurationMethod.invoke(instance, config);
-            } catch (NoSuchMethodException e) {
-                // That's fine
-            } catch (IllegalAccessException e) {
-                throw new SmooksConfigurationException("Error invoking 'setConfiguration' method on class '" + instance.getClass().getName() + "'.  This class must be public.  Alternatively, use the @Config annotation on a class field.", e);
-            } catch (InvocationTargetException e) {
-                if(e.getTargetException() instanceof SmooksConfigurationException) {
-                    throw (SmooksConfigurationException)e.getTargetException();
-                } else {
-                    Throwable cause = e.getTargetException();
-                    throw new SmooksConfigurationException("Error invoking 'setConfiguration' method on class '" + instance.getClass().getName() + "'.", (cause != null?cause:e));
-                }
+            setConfigurationMethod.invoke(instance, config);
+        } catch (NoSuchMethodException e) {
+            // That's fine
+        } catch (IllegalAccessException e) {
+            throw new SmooksConfigurationException("Error invoking 'setConfiguration' method on class '" + instance.getClass().getName() + "'.  This class must be public.  Alternatively, use the @Config annotation on a class field.", e);
+        } catch (InvocationTargetException e) {
+            if(e.getTargetException() instanceof SmooksConfigurationException) {
+                throw (SmooksConfigurationException)e.getTargetException();
+            } else {
+                Throwable cause = e.getTargetException();
+                throw new SmooksConfigurationException("Error invoking 'setConfiguration' method on class '" + instance.getClass().getName() + "'.", (cause != null?cause:e));
             }
         }
     }
@@ -288,7 +278,7 @@ public class Configurator {
         return field.getDeclaringClass().getName() + "#" + field.getName();
     }
 
-    private static <U> void setMember(Member member, U instance, Object value) {
+    private static void setMember(Member member, ContentHandler instance, Object value) {
         try {
             if(member instanceof Field) {
                 setField((Field)member, instance, value);
@@ -304,7 +294,7 @@ public class Configurator {
         }
     }
 
-    private static <U> void setField(Field field, U instance, Object value) throws IllegalAccessException {
+    private static void setField(Field field, ContentHandler instance, Object value) throws IllegalAccessException {
         boolean isAccessible = field.isAccessible();
 
         if(!isAccessible) {
@@ -318,19 +308,19 @@ public class Configurator {
         }
     }
 
-    private static <U> void setMethod(Method method, U instance, Object value) throws IllegalAccessException, InvocationTargetException {
+    private static void setMethod(Method method, ContentHandler instance, Object value) throws IllegalAccessException, InvocationTargetException {
         method.invoke(instance, value);
     }
 
-    public static <U> void initialise(U instance) {
+    private static <U extends ContentHandler> void initialise(U instance) {
         invoke(instance, Initialize.class);
     }
 
-    public static <U> void uninitialise(U instance) {
+    public static <U extends ContentHandler> void uninitialise(U instance) {
         invoke(instance, Uninitialize.class);
     }
 
-    private static <U> void invoke(U instance, Class<? extends Annotation> annotation) {
+    private static <U extends ContentHandler> void invoke(U instance, Class<? extends Annotation> annotation) {
         Method[] methods = instance.getClass().getMethods();
 
         for (Method method : methods) {

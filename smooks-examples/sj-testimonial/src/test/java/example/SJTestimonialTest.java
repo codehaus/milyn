@@ -27,11 +27,8 @@ import java.util.Map;
  */
 public class SJTestimonialTest extends TestCase {
 
-    public void test_dom() throws IOException, SAXException {
-        test("smooks-config.xml");
-    }
-
     public void test_sax() throws IOException, SAXException {
+        test("smooks-config.xml");
         test("smooks-config-sax.xml");
     }
 

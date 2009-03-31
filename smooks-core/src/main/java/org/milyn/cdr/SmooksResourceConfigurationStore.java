@@ -30,7 +30,6 @@ import org.milyn.profile.ProfileSet;
 import org.milyn.profile.ProfileStore;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
-import org.milyn.javabean.DataDecoder;
 import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
@@ -60,15 +59,15 @@ public class SmooksResourceConfigurationStore {
 	 */
 	private List<SmooksResourceConfigurationList> configLists = new ArrayList<SmooksResourceConfigurationList>();
     /**
-     * A complete list of all the that have been initialized and added to this store.
+     * A complete list of all the content handlers allocated by this store.
      */
-    private List<Object> initializedObjects = new ArrayList<Object>() {
-        public boolean add(Object object) {
-            if(contains(object)) {
-                // Don't add the same object again...
+    private List<ContentHandler> allocatedHandlers = new ArrayList<ContentHandler>() {
+        public boolean add(ContentHandler contentHandler) {
+            if(contains(contentHandler)) {
+                // Don't add the same handler again...
                 return false;
             }
-            return super.add(object);
+            return super.add(contentHandler);
         }
     };
 
@@ -350,16 +349,16 @@ public class SmooksResourceConfigurationStore {
 			}
 		}
 
-		if(object instanceof ContentHandler || object instanceof DataDecoder) {
-			Configurator.configure(object, resourceConfig, applicationContext);
-            initializedObjects.add(object);
+		if(object instanceof ContentHandler) {
+			Configurator.configure((ContentHandler)object, resourceConfig, applicationContext);
+            allocatedHandlers.add((ContentHandler)object);
         }
 
 		return object;
 	}
 
-    public List<Object> getInitializedObjects() {
-        return initializedObjects;
+    public List<ContentHandler> getAllocatedHandlers() {
+        return allocatedHandlers;
     }
 
     /**
@@ -403,17 +402,17 @@ public class SmooksResourceConfigurationStore {
     }
 
     private void _close() {
-        if(initializedObjects != null) {
+        if(allocatedHandlers != null) {
             logger.debug("Uninitializing all ContentHandler instances allocated through this store.");
-            for(Object object : initializedObjects) {
+            for(ContentHandler deliveryUnit : allocatedHandlers) {
                 try {
-                    logger.debug("Uninitializing ContentHandler instance: " + object.getClass().getName());
-                    Configurator.uninitialise(object);
+                    logger.debug("Uninitializing ContentHandler instance: " + deliveryUnit.getClass().getName());
+                    Configurator.uninitialise(deliveryUnit);
                 } catch (Throwable throwable) {
-                    logger.error("Error uninitializing " + object.getClass().getName() + ".", throwable);
+                    logger.error("Error uninitializing " + deliveryUnit.getClass().getName() + ".", throwable);
                 }
             }
-            initializedObjects = null;
+            allocatedHandlers = null;
         }
     }
 }

@@ -25,9 +25,9 @@ import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
 
 /**
- * Accessor class for looking up global parameters.
+ * Accessor class for looking up profile specific attributes.
  * <p id="decode"/>
- * Profile specific parameters are stored under the "global-parameters" selector
+ * Profile specific parameters are stored under the "device-parameters" selector
  * (see {@link org.milyn.cdr.SmooksResourceConfiguration}).  The parameter values are
  * stored in the &lt;param&gt; elements within this Content Delivery Resource definition.
  * This class iterates over the list of {@link org.milyn.cdr.SmooksResourceConfiguration} 
@@ -107,44 +107,27 @@ public abstract class ParameterAccessor {
 	 */
 	public static boolean getBoolParameter(String name, boolean defaultVal, ContentDeliveryConfig config) {
 		Parameter param = getParamter(name, config);
-        return toBoolean(param, defaultVal);
+		String paramVal;
+
+		if(param == null) {
+			return defaultVal;
+		}
+		
+		paramVal = param.getValue();
+		if(paramVal == null) {
+			return defaultVal;
+		}
+		paramVal = paramVal.trim();
+		if(paramVal.equals("true")) {
+			return true;
+		} else if(paramVal.equals("false")) {
+			return false;
+		} else {
+			return defaultVal;
+		}
 	}
 
-    /**
-     * Get the named SmooksResourceConfiguration parameter as a boolean.
-     * @param name Name of parameter to get.
-     * @param defaultVal The default value to be returned if there are no
-     * parameters on the this SmooksResourceConfiguration instance, or the parameter is not defined.
-     * @param config The config map.
-     * @return true if the parameter is set to true, defaultVal if not defined, otherwise false.
-     */
-    public static boolean getBoolParameter(String name, boolean defaultVal, Map<String, List<SmooksResourceConfiguration>> config) {
-        Parameter param = getParameter(name, config);
-        return toBoolean(param, defaultVal);
-    }
-
-    private static boolean toBoolean(Parameter param, boolean defaultVal) {
-        String paramVal;
-
-        if(param == null) {
-            return defaultVal;
-        }
-
-        paramVal = param.getValue();
-        if(paramVal == null) {
-            return defaultVal;
-        }
-        paramVal = paramVal.trim();
-        if(paramVal.equals("true")) {
-            return true;
-        } else if(paramVal.equals("false")) {
-            return false;
-        } else {
-            return defaultVal;
-        }
-    }
-
-    /**
+	/**
 	 * Get the named parameter.
      * <p/>
      * Calls {@link org.milyn.delivery.ContentDeliveryConfig#getSmooksResourceConfigurations()}
@@ -164,6 +147,8 @@ public abstract class ParameterAccessor {
 
     /**
      * Get the named parameter from the supplied resource config map.
+     * <p/>
+     * This method works by looking up
      *
      * @param name The parameter name.
      * @param resourceConfigurations The resource configuration map.
@@ -187,29 +172,6 @@ public abstract class ParameterAccessor {
                     return param;
                 }
             }
-        }
-
-        // Check the System properties...
-        String systemValue = System.getProperty(name);
-        if(systemValue != null) {
-            return new Parameter(name, systemValue);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the named parameter from the supplied resource config map.
-     *
-     * @param name The parameter name.
-     * @param resourceConfigurations The resource configuration map.
-     * @return The parameter value, or null if not found.
-     */
-    public static String getStringParameter(String name, Map<String, List<SmooksResourceConfiguration>> resourceConfigurations) {
-        Parameter parameter = getParameter(name, resourceConfigurations);
-
-        if(parameter != null) {
-            return parameter.getValue();
         }
 
         return null;

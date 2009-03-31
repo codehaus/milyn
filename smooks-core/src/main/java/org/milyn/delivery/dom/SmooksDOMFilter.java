@@ -522,9 +522,8 @@ public class SmooksDOMFilter extends Filter {
      */
     private void buildProcessingList(List processingList, Element element, boolean isRoot) {
         String elementName;
-        List<ContentHandlerConfigMap<DOMVisitBefore>> processingBefores;
+        List<ContentHandlerConfigMap<DOMVisitBefore>> processingBefores = null;
         List<ContentHandlerConfigMap<DOMVisitAfter>> processingAfters;
-        List<ContentHandlerConfigMap<VisitLifecycleCleanable>> processingCleanables;
 
         // Register the "presence" of the element...
         if (eventListener != null) {
@@ -536,11 +535,9 @@ public class SmooksDOMFilter extends Filter {
             // The document as a whole (root node) can also be targeted through the "$document" selector.
             processingBefores = deliveryConfig.getProcessingVisitBefores().getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
             processingAfters = deliveryConfig.getProcessingVisitAfters().getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
-            processingCleanables = deliveryConfig.getVisitCleanables().getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
         } else {
             processingBefores = deliveryConfig.getProcessingVisitBefores().getMappings(elementName);
             processingAfters = deliveryConfig.getProcessingVisitAfters().getMappings(elementName);
-            processingCleanables = deliveryConfig.getVisitCleanables().getMappings(elementName);
         }
 
         if (processingBefores != null && !processingBefores.isEmpty()) {
@@ -574,12 +571,6 @@ public class SmooksDOMFilter extends Filter {
             // TODO: Inefficient. Find a better way!
             ElementProcessor processor = new ElementProcessor(element);
             processor.setVisitAfters(globalProcessingAfters);
-            processingList.add(processor);
-        }
-
-        if (processingCleanables != null && !processingCleanables.isEmpty()) {
-            ElementProcessor processor = new ElementProcessor(element);
-            processor.setVisitCleanable(processingCleanables);
             processingList.add(processor);
         }
     }
@@ -639,7 +630,7 @@ public class SmooksDOMFilter extends Filter {
 
         return copy;
     }
-    
+
     /**
      * Element Prcessor class.
      * <p/>
@@ -655,7 +646,6 @@ public class SmooksDOMFilter extends Filter {
 
         private List<ContentHandlerConfigMap<DOMVisitBefore>> visitBefores;
         private List<ContentHandlerConfigMap<DOMVisitAfter>> visitAfters;
-        private List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanable;
 
         /**
          * Constructor.
@@ -674,10 +664,6 @@ public class SmooksDOMFilter extends Filter {
             this.visitAfters = visitAfters;
         }
 
-        public void setVisitCleanable(List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanable) {
-            this.visitCleanable = visitCleanable;
-        }
-
         /**
          * Apply the ProcessingUnits.
          * <p/>
@@ -691,36 +677,35 @@ public class SmooksDOMFilter extends Filter {
                 int loopLength = visitBefores.size();
                 for (int i = 0; i < loopLength; i++) {
                     ContentHandlerConfigMap configMap = visitBefores.get(i);
-                    processMapping(executionContext, configMap, VisitSequence.BEFORE);
+                    processMapping(executionContext, configMap, true);
                 }
-            } else if(visitAfters != null) {
+            } else {
                 int loopLength = visitAfters.size();
                 if (reverseVisitOrderOnVisitAfter) {
                     for (int i = loopLength - 1; i >= 0; i--) {
                         ContentHandlerConfigMap configMap = visitAfters.get(i);
-                        processMapping(executionContext, configMap, VisitSequence.AFTER);
+                        processMapping(executionContext, configMap, false);
                     }
                 } else {
                     for (int i = 0; i < loopLength; i++) {
                         ContentHandlerConfigMap configMap = visitAfters.get(i);
-                        processMapping(executionContext, configMap, VisitSequence.AFTER);
+                        processMapping(executionContext, configMap, false);
                     }
-                }
-            } else {
-                int loopLength = visitCleanable.size();
-                for (int i = 0; i < loopLength; i++) {
-                    ContentHandlerConfigMap configMap = visitCleanable.get(i);
-                    processMapping(executionContext, configMap, VisitSequence.CLEAN);
                 }
             }
         }
 
-        private void processMapping(ExecutionContext executionContext, ContentHandlerConfigMap configMap, VisitSequence visitSequence) {
+        private void processMapping(ExecutionContext executionContext, ContentHandlerConfigMap configMap, boolean visitBefore) {
             SmooksResourceConfiguration config = configMap.getResourceConfig();
 
             // Make sure the processing unit is targeted at this element...
             if (!config.isTargetedAtElement(element)) {
                 return;
+            }
+
+            // Register the targeting event...
+            if (eventListener != null) {
+                eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitSequence.BEFORE, VisitPhase.PROCESSING));
             }
 
             // Could add an "is-element-in-document-tree" check here
@@ -729,12 +714,7 @@ public class SmooksDOMFilter extends Filter {
             // every time. Doing this for every element could be very
             // costly.
 
-            if(visitSequence == VisitSequence.BEFORE) {
-                // Register the targeting event...
-                if (eventListener != null) {
-                    eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitSequence.BEFORE));
-                }
-
+            if(visitBefore) {
                 DOMVisitBefore visitor = (DOMVisitBefore) configMap.getContentHandler();
                 try {
                     if (logger.isDebugEnabled()) {
@@ -751,12 +731,7 @@ public class SmooksDOMFilter extends Filter {
                     String errorMsg = "Failed to apply processing unit [" + visitor.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
                     processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
                 }
-            } else if(visitSequence == VisitSequence.AFTER) {
-                // Register the targeting event...
-                if (eventListener != null) {
-                    eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitSequence.AFTER));
-                }
-
+            } else {
                 DOMVisitAfter visitor = (DOMVisitAfter) configMap.getContentHandler();
                 try {
                     if (logger.isDebugEnabled()) {
@@ -772,25 +747,6 @@ public class SmooksDOMFilter extends Filter {
                 } catch (Throwable e) {
                     String errorMsg = "Failed to apply processing unit [" + visitor.getClass().getName() + "] to [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
                     processVisitorException(element, e, configMap, VisitSequence.BEFORE, errorMsg);
-                }
-            } else {
-                // Register the targeting event...
-                if (eventListener != null) {
-                    eventListener.onEvent(new ResourceTargetingEvent(element, config, VisitSequence.CLEAN));
-                }
-
-                VisitLifecycleCleanable visitor = (VisitLifecycleCleanable) configMap.getContentHandler();
-                try {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Cleaning up processing resource [" + config + "] that was targeted to element [" + DomUtils.getXPath(element) + "].");
-                    }
-                    visitor.executeVisitLifecycleCleanup(executionContext);
-                    if (eventListener != null) {
-                        eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.CLEAN));
-                    }
-                } catch (Throwable e) {
-                    String errorMsg = "Failed to clean up [" + visitor.getClass().getName() + "]. Targeted at [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "].";
-                    processVisitorException(element, e, configMap, VisitSequence.CLEAN, errorMsg);
                 }
             }
         }

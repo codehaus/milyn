@@ -16,16 +16,17 @@
 
 package org.milyn.javabean.repository;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import junit.framework.TestCase;
+
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.javabean.MyGoodBean;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -144,12 +145,6 @@ public class BeanRepositoryTest extends TestCase {
         assertEquals(parent, beanRepository.getBean(brIdParent));
         assertEquals(child, beanRepository.getBean(brIdChild));
 
-        // Mark all beans as being "out of context"...
-        beanRepository.setBeanInContext(brIdParent, false);
-        beanRepository.setBeanInContext(brIdChild, false);
-
-        // When we add a new parent bean old instances should be cleaned along with all associated
-        // beans that are no longer in context (that's why we mark them as being out of context above)...
         beanRepository.addBean(brIdParent, parent);
 
         assertEquals(parent, beanRepository.getBean(brIdParent));
@@ -160,11 +155,6 @@ public class BeanRepositoryTest extends TestCase {
 
         beanRepository.addBean(brIdChild2, child2);
         beanRepository.associateLifecycles(brIdParent, brIdChild2);
-
-        // Mark all beans as being "out of context"...
-        beanRepository.setBeanInContext(brIdParent, false);
-        beanRepository.setBeanInContext(brIdChild, false);
-        beanRepository.setBeanInContext(brIdChild2, false);
 
         beanRepository.addBean(brIdParent, parent);
 
@@ -181,12 +171,6 @@ public class BeanRepositoryTest extends TestCase {
         assertEquals(parent, beanRepository.getBean(brIdParent));
         assertEquals(child, beanRepository.getBean(brIdChild));
         assertEquals(childChild, beanRepository.getBean(brIdChildChild));
-
-        // Mark all beans as being "out of context"...
-        beanRepository.setBeanInContext(brIdParent, false);
-        beanRepository.setBeanInContext(brIdChild, false);
-        beanRepository.setBeanInContext(brIdChild2, false);
-        beanRepository.setBeanInContext(brIdChildChild, false);
 
         beanRepository.addBean(brIdParent, parent);
 
@@ -363,9 +347,6 @@ public class BeanRepositoryTest extends TestCase {
 		assertFalse(beanMap.containsValue(new Object()));
 
 		assertFalse(beanMap.isEmpty());
-
-        // Mark bean as being "out of context" so we can remove it...
-        beanRepository.setBeanInContext(beanId1, false);
 
 		beanMap.remove("bean1");
 

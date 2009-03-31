@@ -1,6 +1,5 @@
 package org.milyn.javabean;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,9 +32,5 @@ public class Order {
 
     public OrderItem[] getOrderItemsArray() {
         return orderItemsArray;
-    }
-
-    public String toString() {
-        return "Order:" + System.identityHashCode(this) + "[header[" + header + "]\norderItems[" + orderItems + "]\nnorderItemsArray[" + Arrays.asList(orderItemsArray) + "]]";
     }
 }

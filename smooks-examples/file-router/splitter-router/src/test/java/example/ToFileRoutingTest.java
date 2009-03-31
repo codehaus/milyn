@@ -17,8 +17,6 @@ package example;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.StreamFilterType;
-import org.milyn.FilterSettings;
 import org.milyn.delivery.Filter;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
@@ -63,14 +61,14 @@ public class ToFileRoutingTest extends TestCase {
     }
 
     public void test_dom() throws IOException, SAXException {
-        test(StreamFilterType.DOM);
+        test(Filter.StreamFilterType.DOM);
     }
 
     public void test_sax() throws IOException, SAXException {
-        test(StreamFilterType.SAX);
+        test(Filter.StreamFilterType.SAX);
     }
 
-    public void test(StreamFilterType filterType) throws IOException, SAXException {
+    public void test(Filter.StreamFilterType filterType) throws IOException, SAXException {
         startSmooksThread(filterType);
 
         // The highWaterMark is set to 3 in the smooks config...
@@ -104,7 +102,7 @@ public class ToFileRoutingTest extends TestCase {
         assertTrue(listFile.exists());
     }
 
-    private void startSmooksThread(StreamFilterType filterType) {
+    private void startSmooksThread(Filter.StreamFilterType filterType) {
         SmooksThread thread = new SmooksThread(filterType);
 
         thread.start();
@@ -131,9 +129,9 @@ public class ToFileRoutingTest extends TestCase {
 
     private class SmooksThread extends Thread {
         boolean running = false;
-        private StreamFilterType filterType;
+        private Filter.StreamFilterType filterType;
 
-        public SmooksThread(StreamFilterType filterType) {
+        public SmooksThread(Filter.StreamFilterType filterType) {
             this.filterType = filterType;
         }
 
@@ -149,7 +147,7 @@ public class ToFileRoutingTest extends TestCase {
 
             ExecutionContext execCtx = smooks.createExecutionContext();
             //execCtx.setEventListener(new HtmlReportGenerator("/zap/x.html"));
-            smooks.setFilterSettings(new FilterSettings(filterType));
+            Filter.setFilterType(smooks, filterType);
             running = true;
             smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), null, execCtx);
         }

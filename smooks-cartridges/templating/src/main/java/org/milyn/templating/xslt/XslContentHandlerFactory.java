@@ -3,29 +3,61 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
 package org.milyn.templating.xslt;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
+import org.milyn.delivery.dom.serialize.GhostElementSerializationUnit;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.io.StreamUtils;
+import org.milyn.templating.AbstractTemplateProcessor;
+import org.milyn.util.ClassUtil;
+import org.milyn.xml.DomUtils;
+import org.milyn.xml.XmlUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 
 
 /**
@@ -133,13 +165,17 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      */
     public static final String IS_XSLT_TEMPLATELET = "is-xslt-templatelet";
     /**
+     * Logger.
+     */
+    private static Log logger = LogFactory.getLog(XslContentHandlerFactory.class);
+    /**
      * Synchonized template application system property key.
      */
     public static final String ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED = "org.milyn.templating.xslt.synchronized";
 
     @AppContext
     private ApplicationContext applicationContext;
-
+    
     /**
      * Create an XSL based ContentHandler instance ie from an XSL byte streamResult.
      *
@@ -150,7 +186,7 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
      */
     public synchronized ContentHandler create(SmooksResourceConfiguration resourceConfig) throws SmooksConfigurationException, InstantiationException {
         try {
-            return Configurator.configure(new XslTemplateProcessor(), resourceConfig, applicationContext);
+            return Configurator.configure(new XslProcessor(), resourceConfig, applicationContext);
         } catch(SmooksConfigurationException e) {
             throw e;
         } catch (Exception e) {
@@ -160,4 +196,141 @@ public class XslContentHandlerFactory implements ContentHandlerFactory {
         }
     }
 
+    /**
+     * XSLT template application ProcessingUnit.
+     *
+     * @author tfennelly
+     */
+    @VisitBeforeReport(condition = "false")
+    @VisitAfterReport(summary = "Applied XSL Template.", detailTemplate = "reporting/XslTemplateProcessor_After.html")
+    private static class XslProcessor extends AbstractTemplateProcessor {
+
+        /**
+         * XSL template to be applied to the visited element.
+         */
+        private Templates xslTemplate;
+        /**
+         * Is this processor processing an XSLT <a href="#templatelets">Templatelet</a>.
+         */
+        private boolean isTemplatelet;
+        /**
+         * Is the template application synchronized or not.
+         * <p/>
+         * Xalan v2.7.0 has/had a threading issue - kick-on effect being that template application
+         * must be synchronized.
+         */
+        private final boolean isSynchronized = Boolean.getBoolean(ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED);
+
+        @Override
+		protected void loadTemplate(SmooksResourceConfiguration resourceConfig) throws IOException, TransformerConfigurationException {
+            byte[] xslBytes = resourceConfig.getBytes();
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            StreamSource xslStreamSource;
+            boolean isInlineXSL = resourceConfig.isInline();
+
+            // If it's not a full XSL template, we need to make it so by wrapping it...
+            isTemplatelet = isTemplatelet(isInlineXSL, new String(xslBytes));
+            if (isTemplatelet) {
+                String templateletWrapper = new String(StreamUtils.readStream(ClassUtil.getResourceAsStream("doc-files/templatelet.xsl", getClass())));
+                String templatelet = new String(xslBytes);
+
+                templateletWrapper = StringUtils.replace(templateletWrapper, "@@@templatelet@@@", templatelet);
+                xslBytes = templateletWrapper.getBytes();
+            }
+
+            boolean failOnWarning = resourceConfig.getBoolParameter("failOnWarning", true);
+
+            xslStreamSource = new StreamSource(new InputStreamReader(new ByteArrayInputStream(xslBytes), getEncoding()));
+            transformerFactory.setErrorListener(new XslErrorListener(failOnWarning));
+            xslTemplate = transformerFactory.newTemplates(xslStreamSource);
+        }
+
+        private boolean isTemplatelet(boolean inlineXSL, String templateCode) {
+            try {
+                Document xslDoc = XmlUtil.parseStream(new StringReader(templateCode));
+                Element rootElement = xslDoc.getDocumentElement();
+                String rootElementNS = rootElement.getNamespaceURI();
+
+                return (inlineXSL && !(rootElementNS != null && rootElementNS.equals("http://www.w3.org/1999/XSL/Transform") && DomUtils.getName(rootElement).equals("stylesheet")));
+            } catch (ParserConfigurationException e) {
+                throw new SmooksConfigurationException("Unable to parse XSL Document (Stylesheet/Templatelet).", e);
+            } catch (IOException e) {
+                throw new SmooksConfigurationException("Unable to parse XSL Document (Stylesheet/Templatelet).", e);
+            } catch (SAXException e) {
+                return inlineXSL;
+            }
+        }
+
+        @Override
+		protected void visit(Element element, ExecutionContext executionContext) throws SmooksException {
+            Document ownerDoc = element.getOwnerDocument();
+            Element ghostElement = GhostElementSerializationUnit.createElement(ownerDoc);
+
+            try {
+                if (isSynchronized) {
+                    synchronized (xslTemplate) {
+                        performTransform(element, ghostElement, ownerDoc);
+                    }
+                } else {
+                    performTransform(element, ghostElement, ownerDoc);
+                }
+            } catch (TransformerException e) {
+                throw new SmooksException("Error applying XSLT to node [" + executionContext.getDocumentSource() + ":" + DomUtils.getXPath(element) + "]", e);
+            }
+
+            if(getOutputStreamResource() != null || getAction() == Action.BIND_TO) {
+                // For bindTo or streamTo actions, we need to serialize the content and supply is as a Text DOM node.
+                // AbstractTemplateProcessor will look after the rest, by extracting the content from the
+                // Text node and attaching it to the ExecutionContext...
+                String serializedContent = XmlUtil.serialize(ghostElement.getChildNodes());
+                Text textNode = element.getOwnerDocument().createTextNode(serializedContent);
+
+                processTemplateAction(element, textNode, executionContext);
+            } else {
+                NodeList children = ghostElement.getChildNodes();
+
+                // Process the templating action, supplying the templating result...
+                if(children.getLength() == 1 && children.item(0).getNodeType() == Node.ELEMENT_NODE) {
+                    processTemplateAction(element, children.item(0), executionContext);
+                } else {
+                    processTemplateAction(element, ghostElement, executionContext);
+                }
+            }
+        }
+
+        private void performTransform(Element element, Element transRes, Document ownerDoc) throws TransformerException {
+            Transformer transformer;
+            transformer = xslTemplate.newTransformer();
+
+            if (element == ownerDoc.getDocumentElement()) {
+                transformer.transform(new DOMSource(ownerDoc), new DOMResult(transRes));
+            } else {
+                transformer.transform(new DOMSource(element), new DOMResult(transRes));
+            }
+        }
+
+        private static class XslErrorListener implements ErrorListener {
+            private final boolean failOnWarning;
+
+            public XslErrorListener(boolean failOnWarning) {
+                this.failOnWarning = failOnWarning;
+            }
+
+            public void warning(TransformerException exception) throws TransformerException {
+                if(failOnWarning) {
+                    throw exception;
+                } else {
+                    logger.warn("XSL Warning.", exception);
+                }
+            }
+
+            public void error(TransformerException exception) throws TransformerException {
+                throw exception;
+            }
+
+            public void fatalError(TransformerException exception) throws TransformerException {
+                throw exception;
+            }
+        }
+    }
 }

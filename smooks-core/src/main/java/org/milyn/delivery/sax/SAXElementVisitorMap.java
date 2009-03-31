@@ -16,7 +16,6 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.delivery.ContentHandlerConfigMap;
-import org.milyn.delivery.VisitLifecycleCleanable;
 
 import java.util.List;
 
@@ -30,7 +29,6 @@ public class SAXElementVisitorMap {
     private List<ContentHandlerConfigMap<SAXVisitBefore>> visitBefores;
     private List<ContentHandlerConfigMap<SAXVisitChildren>> childVisitors;
     private List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters;
-    private List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables;
 
     public List<ContentHandlerConfigMap<SAXVisitBefore>> getVisitBefores() {
         return visitBefores;
@@ -54,13 +52,5 @@ public class SAXElementVisitorMap {
 
     public void setVisitAfters(List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters) {
         this.visitAfters = visitAfters;
-    }
-
-    public List<ContentHandlerConfigMap<VisitLifecycleCleanable>> getVisitCleanables() {
-        return visitCleanables;
-    }
-
-    public void setVisitCleanables(List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables) {
-        this.visitCleanables = visitCleanables;
     }
 }

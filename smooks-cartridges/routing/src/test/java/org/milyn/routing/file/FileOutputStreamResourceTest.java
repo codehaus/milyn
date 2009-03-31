@@ -67,7 +67,7 @@ public class FileOutputStreamResourceTest
 		assertNotNull( outputStream );
 		assertTrue( outputStream instanceof FileOutputStream );
 		
-		resource.executeVisitLifecycleCleanup(executionContext );
+		resource.visitAfter( (Element)null, executionContext );
 		
 		File file = new File ( destinationDirectory, fileNamePattern );
 		assertTrue( file.exists() );

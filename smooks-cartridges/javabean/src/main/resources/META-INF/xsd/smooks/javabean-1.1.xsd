@@ -43,20 +43,20 @@
         						ref="smooks-javabean:expression" />
         				</xs:choice>
         			</xs:sequence>
-                    <xs:attribute name="beanId" type="xs:string"
-                        use="required">
-                        <xs:annotation>
-                            <xs:documentation xml:lang="en">
-                                The ID under which the created bean is
-                                to be bound in the bean context.
-                            </xs:documentation>
-                        </xs:annotation>
-                    </xs:attribute>
         			<xs:attribute name="class" type="xs:string"
         				use="required">
         				<xs:annotation>
         					<xs:documentation xml:lang="en">
         						The fully qualified bean Class name.
+        					</xs:documentation>
+        				</xs:annotation>
+        			</xs:attribute>
+        			<xs:attribute name="beanId" type="xs:string"
+        				use="required">
+        				<xs:annotation>
+        					<xs:documentation xml:lang="en">
+        						The ID under which the created bean is
+        						to be bound in the bean context.
         					</xs:documentation>
         				</xs:annotation>
         			</xs:attribute>

@@ -16,20 +16,15 @@
 
 package org.milyn;
 
+import com.sun.org.apache.xerces.internal.parsers.XIncludeParserConfiguration;
 import junit.framework.TestCase;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneExecutionContext;
 import org.milyn.delivery.JavaContentHandlerFactory;
-import org.milyn.delivery.dom.DOMVisitAfter;
-import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.dom.SmooksDOMFilter;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXVisitAfter;
-import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
 import org.milyn.profile.DefaultProfileSet;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -54,7 +49,7 @@ public class SmooksTest extends TestCase {
     protected void setUp() throws Exception {
         Smooks smooks = new Smooks();
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"profile1"}), smooks);
-        execContext = new StandaloneExecutionContext("device1", smooks.getApplicationContext(), null);
+        execContext = new StandaloneExecutionContext("device1", smooks.getApplicationContext());
     }
 	
 	public void test_applyTransform_bad_params() {
@@ -106,64 +101,8 @@ public class SmooksTest extends TestCase {
         assertTrue(contextClassLoader == Thread.currentThread().getContextClassLoader());
     }
 
-    public void test_addVisitor_DOM_01() {
-        Smooks smooks = new Smooks();
-        TestDOMVisitorBefore visitor1 = new TestDOMVisitorBefore();
-        TestDOMVisitorAfter visitor2 = new TestDOMVisitorAfter();
-
-        smooks.addVisitor(visitor1, "c/xxx");
-        smooks.addVisitor(visitor2, "c");
-
-        smooks.filter(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
-
-        assertEquals(2, visitor1.callCount);
-        assertEquals(1, visitor2.callCount);
-    }
-
-    public void test_addVisitor_SAX_01() {
-        Smooks smooks = new Smooks();
-        TestSAXVisitorBefore visitor1 = new TestSAXVisitorBefore();
-        TestSAXVisitorAfter visitor2 = new TestSAXVisitorAfter();
-
-        smooks.addVisitor(visitor1, "c/xxx");
-        smooks.addVisitor(visitor2, "c");
-
-        smooks.filter(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
-
-        assertEquals(2, visitor1.callCount);
-        assertEquals(1, visitor2.callCount);
-    }
-
-    private class TestDOMVisitorBefore implements DOMVisitBefore {
-        private int callCount = 0;
-        public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-            callCount++;
-        }
-    }
-
-    private class TestDOMVisitorAfter implements DOMVisitAfter {
-        private int callCount = 0;
-        public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-            callCount++;
-        }
-    }
-
-    private class TestSAXVisitorBefore implements SAXVisitBefore {
-        private int callCount = 0;
-        public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-            callCount++;
-        }
-    }
-
-    private class TestSAXVisitorAfter implements SAXVisitAfter {
-        private int callCount = 0;
-        public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-            callCount++;
-        }
-    }
-
     private class TestClassLoader extends ClassLoader {
-
+        
         private Set requests = new HashSet();
 
         public TestClassLoader(ClassLoader contextClassLoader) {

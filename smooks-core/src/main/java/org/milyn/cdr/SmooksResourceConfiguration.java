@@ -1307,21 +1307,6 @@ public class SmooksResourceConfiguration {
         return builder.toString();
     }
 
-    /**
-     * Create a {@link Properties} instance from this supplied {@link org.milyn.cdr.SmooksResourceConfiguration}
-     * @return The resource parameters as a {@link Properties} instance.
-     */
-    public Properties toProperties() {
-        Properties properties = new Properties();
-        Set<String> names = parameters.keySet();
-
-        for(String name : names) {
-            properties.setProperty(name, getStringParameter(name));
-        }
-
-        return properties;
-    }
-
     private class Index {
         private int i;
     }

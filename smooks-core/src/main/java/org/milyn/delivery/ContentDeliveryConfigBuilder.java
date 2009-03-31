@@ -19,31 +19,24 @@ package org.milyn.delivery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.StreamFilterType;
-import org.milyn.cdr.Parameter;
-import org.milyn.cdr.ParameterAccessor;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksResourceConfigurationSortComparator;
-import org.milyn.cdr.SmooksResourceConfigurationStore;
+import org.milyn.cdr.*;
 import org.milyn.container.ApplicationContext;
-import org.milyn.delivery.dom.DOMContentDeliveryConfig;
+import org.milyn.delivery.annotation.VisitAfterIf;
+import org.milyn.delivery.annotation.VisitBeforeIf;
+import org.milyn.delivery.dom.*;
+import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.delivery.sax.SAXContentDeliveryConfig;
+import org.milyn.delivery.sax.SAXVisitAfter;
+import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.dtd.DTDStore;
 import org.milyn.dtd.DTDStore.DTDObjectContainer;
 import org.milyn.event.types.ConfigBuilderEvent;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.profile.ProfileSet;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 /**
  * Content delivery configuration builder.
@@ -81,9 +74,34 @@ public class ContentDeliveryConfigBuilder {
 	 */
 	private LinkedHashMap<String, List<SmooksResourceConfiguration>> resourceConfigTable = new LinkedHashMap<String, List<SmooksResourceConfiguration>>();
     /**
-     * Visitor Config.
+	 * Assembly Visit Befores.
+	 */
+	private ContentHandlerConfigMapTable<DOMVisitBefore> assemblyVisitBefores = new ContentHandlerConfigMapTable<DOMVisitBefore>();
+    /**
+	 * Assembly Visit Afters.
+	 */
+	private ContentHandlerConfigMapTable<DOMVisitAfter> assemblyVisitAfters = new ContentHandlerConfigMapTable<DOMVisitAfter>();
+    /**
+	 * Processing Visit Befores.
+	 */
+	private ContentHandlerConfigMapTable<DOMVisitBefore> processingVisitBefores = new ContentHandlerConfigMapTable<DOMVisitBefore>();
+    /**
+	 * Processing Visit Afters.
+	 */
+	private ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters = new ContentHandlerConfigMapTable<DOMVisitAfter>();
+    /**
+	 * Table of SerializationUnit instances keyed by selector. Each table entry
+	 * contains a single SerializationUnit instances.
+	 */
+	private ContentHandlerConfigMapTable<SerializationUnit> serializationUnitTable = new ContentHandlerConfigMapTable<SerializationUnit>();
+    /**
+     * SAX Visit Befores.
      */
-    private VisitorConfigMap visitorConfig;
+    private ContentHandlerConfigMapTable<SAXVisitBefore> saxVisitBefores = new ContentHandlerConfigMapTable<SAXVisitBefore>();
+    /**
+     * SAX Visit Afters.
+     */
+    private ContentHandlerConfigMapTable<SAXVisitAfter> saxVisitAfters = new ContentHandlerConfigMapTable<SAXVisitAfter>();
     /**
      * Config builder events list.
      */
@@ -93,6 +111,10 @@ public class ContentDeliveryConfigBuilder {
 	 * DTD for the associated device.
 	 */
 	private DTDObjectContainer dtd;
+    private int elementHandlerCount = 0;
+    private int saxElementHandlerCount = 0;
+
+    private int domElementHandlerCount = 0;
 
     /**
 	 * Private (hidden) constructor.
@@ -102,18 +124,15 @@ public class ContentDeliveryConfigBuilder {
 	private ContentDeliveryConfigBuilder(ProfileSet profileSet, ApplicationContext applicationContext) {
 		this.profileSet = profileSet;
 		this.applicationContext = applicationContext;
-        visitorConfig = new VisitorConfigMap(applicationContext);
-        visitorConfig.setConfigBuilderEvents(configBuilderEvents);
     }
 	
 	/**
 	 * Get the ContentDeliveryConfig instance for the specified profile set.
 	 * @param profileSet The profile set with which this delivery config is associated.
 	 * @param applicationContext Application context.
-     * @param extendedVisitorConfigMap Preconfigured/extended Visitor Configuration Map.
-     * @return The ContentDeliveryConfig instance for the named table.
+	 * @return The ContentDeliveryConfig instance for the named table.
 	 */
-	public static ContentDeliveryConfig getConfig(ProfileSet profileSet, ApplicationContext applicationContext, VisitorConfigMap extendedVisitorConfigMap) {
+	public static ContentDeliveryConfig getConfig(ProfileSet profileSet, ApplicationContext applicationContext) {
 		ContentDeliveryConfig config;
 		LinkedHashMap<String, ContentDeliveryConfig> configTable;
 		
@@ -135,7 +154,7 @@ public class ContentDeliveryConfigBuilder {
                 }
             }
         }
-		// Get the delivery config instance for the base profile...
+		// Get the delivery config instance for this UAContext
 		config = configTable.get(profileSet.getBaseProfile());
 		if(config == null) {
             synchronized(ContentDeliveryConfigBuilder.class) {
@@ -144,7 +163,7 @@ public class ContentDeliveryConfigBuilder {
                 if(config == null) {
                     ContentDeliveryConfigBuilder configBuilder = new ContentDeliveryConfigBuilder(profileSet, applicationContext);
                     configBuilder.load();
-                    config = configBuilder.createConfig(extendedVisitorConfigMap);
+                    config = configBuilder.createConfig();
                     configTable.put(profileSet.getBaseProfile(), config);
                 }
             }
@@ -153,45 +172,33 @@ public class ContentDeliveryConfigBuilder {
 		return config;
 	}
 
-    private ContentDeliveryConfig createConfig(VisitorConfigMap extendedVisitorConfigMap) {
-        boolean sortVisitors = ParameterAccessor.getBoolParameter(ContentDeliveryConfig.SMOOKS_VISITORS_SORT, true, resourceConfigTable);
-        StreamFilterType filterType;
+    private ContentDeliveryConfig createConfig() {
+        Filter.StreamFilterType filterType = getStreamFilterType();
 
-        visitorConfig.addAll(extendedVisitorConfigMap);
-
-        filterType = getStreamFilterType();
         configBuilderEvents.add(new ConfigBuilderEvent("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics()));
         configBuilderEvents.add(new ConfigBuilderEvent("Using Stream Filter Type: " + filterType));
 
-        if(filterType == StreamFilterType.DOM) {
+        if(filterType == Filter.StreamFilterType.DOM) {
             DOMContentDeliveryConfig domConfig = new DOMContentDeliveryConfig();
 
             logger.debug("Using the DOM Stream Filter.");
-            domConfig.setAssemblyVisitBefores(visitorConfig.getDomAssemblyVisitBefores());
-            domConfig.setAssemblyVisitAfters(visitorConfig.getDomAssemblyVisitAfters());
-            domConfig.setProcessingVisitBefores(visitorConfig.getDomProcessingVisitBefores());
-            domConfig.setProcessingVisitAfters(visitorConfig.getDomProcessingVisitAfters());
-            domConfig.setSerailizationVisitors(visitorConfig.getDomSerializationVisitors());
-            domConfig.setVisitCleanables(visitorConfig.getVisitCleanables());
-
+            domConfig.setAssemblyVisitBefores(assemblyVisitBefores);
+            domConfig.setAssemblyVisitAfters(assemblyVisitAfters);
+            domConfig.setProcessingVisitBefores(processingVisitBefores);
+            domConfig.setProcessingVisitAfters(processingVisitAfters);
+            domConfig.setSerailizationVisitors(serializationUnitTable);
             domConfig.setApplicationContext(applicationContext);
             domConfig.setSmooksResourceConfigurations(resourceConfigTable);
             domConfig.setDtd(dtd);
             domConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
-
-            if(sortVisitors) {
-                domConfig.sort();
-            }
 
             return domConfig;
         } else {
             SAXContentDeliveryConfig saxConfig = new SAXContentDeliveryConfig();
 
             logger.debug("Using the SAX Stream Filter.");
-            saxConfig.setVisitBefores(visitorConfig.getSaxVisitBefores());
-            saxConfig.setVisitAfters(visitorConfig.getSaxVisitAfters());
-            saxConfig.setVisitCleanables(visitorConfig.getVisitCleanables());
-            
+            saxConfig.setVisitBefores(saxVisitBefores);
+            saxConfig.setVisitAfters(saxVisitAfters);
             saxConfig.setApplicationContext(applicationContext);
             saxConfig.setSmooksResourceConfigurations(resourceConfigTable);
             saxConfig.setDtd(dtd);
@@ -199,27 +206,23 @@ public class ContentDeliveryConfigBuilder {
             
             saxConfig.optimizeConfig();
 
-            if(sortVisitors) {
-                saxConfig.sort();
-            }
-
             return saxConfig;
         }
     }
 
-    private StreamFilterType getStreamFilterType() {
-        StreamFilterType filterType;
+    private Filter.StreamFilterType getStreamFilterType() {
+        Filter.StreamFilterType filterType;
 
         if(logger.isDebugEnabled()) {
             logger.debug("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics());
         }
 
-        if(visitorConfig.getSaxVisitorCount() == visitorConfig.getVisitorCount() && visitorConfig.getDomVisitorCount() == visitorConfig.getVisitorCount()) {
+        if(saxElementHandlerCount == elementHandlerCount && domElementHandlerCount == elementHandlerCount) {
             // All element handlers support SAX and DOM... must select one then...
-            String filterTypeParam = ParameterAccessor.getStringParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
+            Parameter filterTypeParam = ParameterAccessor.getParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
 
             if(filterTypeParam == null) {
-                filterType = StreamFilterType.DOM;
+                filterType = Filter.StreamFilterType.DOM;
                 logger.debug("All configured XML Element Content Handler resource configurations can be " +
                         "applied using the SAX or DOM Stream Filter.  Defaulting to DOM Filter.  Set '" + ParameterAccessor.GLOBAL_PARAMETERS + ":"
                         + Filter.STREAM_FILTER_TYPE + "'.");
@@ -227,17 +230,17 @@ public class ContentDeliveryConfigBuilder {
                         "\t\t<resource-config selector=\"" + ParameterAccessor.GLOBAL_PARAMETERS + "\">\n" +
                         "\t\t\t<param name=\"" + Filter.STREAM_FILTER_TYPE + "\">SAX/DOM</param>\n" +
                         "\t\t</resource-config>");
-            } else if(filterTypeParam.equalsIgnoreCase(StreamFilterType.DOM.name())) {
-                filterType = StreamFilterType.DOM;
-            } else if(filterTypeParam.equalsIgnoreCase(StreamFilterType.SAX.name())) {
-                filterType = StreamFilterType.SAX;
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(Filter.StreamFilterType.DOM.name())) {
+                filterType = Filter.StreamFilterType.DOM;
+            } else if(filterTypeParam.getValue().equalsIgnoreCase(Filter.StreamFilterType.SAX.name())) {
+                filterType = Filter.StreamFilterType.SAX;
             } else {
                 throw new SmooksException("Invalid '" + Filter.STREAM_FILTER_TYPE + "' configuration parameter value of '" + filterTypeParam + "'.  Must be 'SAX' or 'DOM'.");
             }
-        } else if(visitorConfig.getDomVisitorCount() == visitorConfig.getVisitorCount()) {
-            filterType = StreamFilterType.DOM;
-        } else if(visitorConfig.getSaxVisitorCount() == visitorConfig.getVisitorCount()) {
-            filterType = StreamFilterType.SAX;
+        } else if(domElementHandlerCount == elementHandlerCount) {
+            filterType = Filter.StreamFilterType.DOM;
+        } else if(saxElementHandlerCount == elementHandlerCount) {
+            filterType = Filter.StreamFilterType.SAX;
         } else {
             throw new SmooksException("Ambiguous Resource Configuration set.  All Element Content Handlers must support processing on the SAX and/or DOM Filter:\n" + getResourceFilterCharacteristics());
         }
@@ -256,13 +259,13 @@ public class ContentDeliveryConfigBuilder {
         stringBuf.append("\t\tDOM   SAX    Resource  ('x' equals supported)\n");
         stringBuf.append("\t\t---------------------------------------------------------------------\n");
 
-        printHandlerCharacteristics(visitorConfig.getDomAssemblyVisitBefores(), stringBuf, printedHandlers);
-        printHandlerCharacteristics(visitorConfig.getDomAssemblyVisitAfters(), stringBuf, printedHandlers);
-        printHandlerCharacteristics(visitorConfig.getDomProcessingVisitBefores(), stringBuf, printedHandlers);
-        printHandlerCharacteristics(visitorConfig.getDomProcessingVisitAfters(), stringBuf, printedHandlers);
-        printHandlerCharacteristics(visitorConfig.getDomSerializationVisitors(), stringBuf, printedHandlers);
-        printHandlerCharacteristics(visitorConfig.getSaxVisitBefores(), stringBuf, printedHandlers);
-        printHandlerCharacteristics(visitorConfig.getSaxVisitAfters(), stringBuf, printedHandlers);
+        printHandlerCharacteristics(assemblyVisitBefores, stringBuf, printedHandlers);
+        printHandlerCharacteristics(assemblyVisitAfters, stringBuf, printedHandlers);
+        printHandlerCharacteristics(processingVisitBefores, stringBuf, printedHandlers);
+        printHandlerCharacteristics(processingVisitAfters, stringBuf, printedHandlers);
+        printHandlerCharacteristics(serializationUnitTable, stringBuf, printedHandlers);
+        printHandlerCharacteristics(saxVisitBefores, stringBuf, printedHandlers);
+        printHandlerCharacteristics(saxVisitAfters, stringBuf, printedHandlers);
 
         stringBuf.append("\n\n");
 
@@ -275,8 +278,8 @@ public class ContentDeliveryConfigBuilder {
         for (List<ContentHandlerConfigMap<U>> mapList : map) {
             for (ContentHandlerConfigMap<U> configMap : mapList) {
                 ContentHandler handler = configMap.getContentHandler();
-                boolean domSupported = VisitorConfigMap.isDOMVisitor(handler);
-                boolean saxSupported = VisitorConfigMap.isSAXVisitor(handler);
+                boolean domSupported = isDOMContentHandler(handler);
+                boolean saxSupported = isSAXContentHandler(handler);
 
                 if(printedHandlers.contains(handler)) {
                     continue;
@@ -503,6 +506,15 @@ public class ContentDeliveryConfigBuilder {
         configBuilderEvents.add(new ConfigBuilderEvent(resourceConfig, message));
     }
 
+    private boolean isDOMContentHandler(ContentHandler contentHandler) {
+        return (contentHandler instanceof DOMVisitBefore || contentHandler instanceof DOMVisitAfter || contentHandler instanceof SerializationUnit);
+    }
+
+    private boolean isSAXContentHandler(ContentHandler contentHandler) {
+        // Intentionally not checking for SAXVisitChildren.  Must be incorporated into a visit before or after...
+        return (contentHandler instanceof SAXVisitBefore || contentHandler instanceof SAXVisitAfter);
+    }
+
     /**
 	 * ContentHandler extraction strategy.
 	 * @author tfennelly
@@ -604,7 +616,7 @@ public class ContentDeliveryConfigBuilder {
 			// Create the ContentHandler.
 			try {
 				contentHandler = handlerFactory.create(resourceConfig);
-                store.getInitializedObjects().add(contentHandler);
+                store.getAllocatedHandlers().add(contentHandler);
             } catch(SmooksConfigurationException e) {
                 throw e;
             } catch(Throwable thrown) {
@@ -620,10 +632,64 @@ public class ContentDeliveryConfigBuilder {
                 return false;
 			}
 
-            if(contentHandler instanceof Visitor) {
-                // Add the visitor.  No need to configure it as that should have been done by
-                // creator...
-                visitorConfig.addVisitor((Visitor) contentHandler, resourceConfig, false);
+            if(isSAXContentHandler(contentHandler) || isDOMContentHandler(contentHandler)) {
+                elementHandlerCount++;
+
+                if(isSAXContentHandler(contentHandler)) {
+                    saxElementHandlerCount++;
+                    if(contentHandler instanceof SAXVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
+                        saxVisitBefores.addMapping(elementName, resourceConfig, (SAXVisitBefore) contentHandler);
+                    }
+                    if(contentHandler instanceof SAXVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
+                        saxVisitAfters.addMapping(elementName, resourceConfig, (SAXVisitAfter) contentHandler);
+                    }
+                    logExecutionEvent(resourceConfig, "Added as a SAX resource.");
+                }
+
+                if(isDOMContentHandler(contentHandler)) {
+                    domElementHandlerCount++;
+
+                    if(contentHandler instanceof SerializationUnit) {
+                        serializationUnitTable.addMapping(elementName, resourceConfig, (SerializationUnit) contentHandler);
+                        logExecutionEvent(resourceConfig, "Added as a DOM " + SerializationUnit.class.getSimpleName() + " resource.");
+                    } else {
+                        Phase phaseAnnotation = contentHandler.getClass().getAnnotation(Phase.class);
+                        String visitPhase = resourceConfig.getStringParameter("VisitPhase", VisitPhase.PROCESSING.toString());
+
+                        if(phaseAnnotation != null && phaseAnnotation.value() == VisitPhase.ASSEMBLY) {
+                            // It's an assembly unit...
+                            if(contentHandler instanceof DOMVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
+                                assemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
+                            }
+                            if(contentHandler instanceof DOMVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
+                                assemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
+                            }
+                            logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
+                        } else if (visitPhase.equalsIgnoreCase(VisitPhase.ASSEMBLY.toString())) {
+                            // It's an assembly unit...
+                            if(contentHandler instanceof DOMVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
+                                assemblyVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
+                            }
+                            if(contentHandler instanceof DOMVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
+                                assemblyVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
+                            }
+                            logExecutionEvent(resourceConfig, "Added as a DOM Assembly Phase resource.");
+                        } else {
+                            // It's a processing unit...
+                            if(contentHandler instanceof DOMVisitBefore && visitBeforeAnnotationsOK(resourceConfig, contentHandler)) {
+                                processingVisitBefores.addMapping(elementName, resourceConfig, (DOMVisitBefore) contentHandler);
+                            }
+                            if(contentHandler instanceof DOMVisitAfter && visitAfterAnnotationsOK(resourceConfig, contentHandler)) {
+                                processingVisitAfters.addMapping(elementName, resourceConfig, (DOMVisitAfter) contentHandler);
+                            }
+                            logExecutionEvent(resourceConfig, "Added as a DOM Processing Phase resource.");
+                        }
+                    }
+                }
+            } else if(!(contentHandler instanceof ConfigurationExpander)) {
+                // It's not a ContentHandler type we care about!  Leave for now - whatever's using it
+                // can instantiate it itself.
+                return false;
             }
 
             // Content delivery units are allowed to dynamically add new configurations...
@@ -638,10 +704,6 @@ public class ContentDeliveryConfigBuilder {
                     }
                     processExpansionConfigurations(additionalConfigs);
                 }
-            }
-
-            if(contentHandler instanceof VisitorAppender) {
-                ((VisitorAppender)contentHandler).addVisitors(visitorConfig);
             }
 
             return true;
@@ -662,16 +724,15 @@ public class ContentDeliveryConfigBuilder {
                 }
             }
         }
-
     }
 
-    /**
-	 * Iterate over the SmooksResourceConfiguration table applying the constructor
+	/**
+	 * Iterate over the SmooksResourceConfiguration table applying the constructor 
 	 * supplied SmooksResourceConfigurationStrategy.
 	 * @author tfennelly
 	 */
 	private class SmooksResourceConfigurationTableIterator {
-
+		
 		/**
 		 * Iteration strategy.
 		 */
@@ -708,4 +769,32 @@ public class ContentDeliveryConfigBuilder {
 		 */
 		public void applyStrategy(String elementName, SmooksResourceConfiguration unitDef);
 	}
+
+    protected static boolean visitBeforeAnnotationsOK(SmooksResourceConfiguration resourceConfig, ContentHandler contentHandler) {
+        Class<? extends ContentHandler> handlerClass = contentHandler.getClass();
+        VisitBeforeIf visitBeforeIf = handlerClass.getAnnotation(VisitBeforeIf.class);
+
+        if(visitBeforeIf != null) {
+            MVELExpressionEvaluator conditionEval = new MVELExpressionEvaluator();
+
+            conditionEval.setExpression(visitBeforeIf.condition());
+            return conditionEval.eval(resourceConfig);
+        }
+
+        return true;
+    }
+
+    protected static boolean visitAfterAnnotationsOK(SmooksResourceConfiguration resourceConfig, ContentHandler contentHandler) {
+        Class<? extends ContentHandler> handlerClass = contentHandler.getClass();
+        VisitAfterIf visitAfterIf = handlerClass.getAnnotation(VisitAfterIf.class);
+
+        if(visitAfterIf != null) {
+            MVELExpressionEvaluator conditionEval = new MVELExpressionEvaluator();
+
+            conditionEval.setExpression(visitAfterIf.condition());
+            return conditionEval.eval(resourceConfig);
+        }
+
+        return true;
+    }
 }

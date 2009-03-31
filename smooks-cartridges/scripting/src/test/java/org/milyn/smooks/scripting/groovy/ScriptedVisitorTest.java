@@ -18,8 +18,7 @@ package org.milyn.smooks.scripting.groovy;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.FilterSettings;
-import org.milyn.StreamFilterType;
+import org.milyn.delivery.Filter;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
@@ -220,20 +219,20 @@ public class ScriptedVisitorTest extends TestCase {
     }
 
     public void test_templated_ext_12() throws IOException, SAXException {
-        test_templated_ext_12_13("scripted-ext-12.xml", StreamFilterType.DOM);
-        test_templated_ext_12_13("scripted-ext-12.xml", StreamFilterType.SAX);
+        test_templated_ext_12_13("scripted-ext-12.xml", Filter.StreamFilterType.DOM);
+        test_templated_ext_12_13("scripted-ext-12.xml", Filter.StreamFilterType.SAX);
     }
 
     public void test_templated_ext_13() throws IOException, SAXException {
-        test_templated_ext_12_13("scripted-ext-13.xml", StreamFilterType.DOM);
-        test_templated_ext_12_13("scripted-ext-13.xml", StreamFilterType.SAX);
+        test_templated_ext_12_13("scripted-ext-13.xml", Filter.StreamFilterType.DOM);
+        test_templated_ext_12_13("scripted-ext-13.xml", Filter.StreamFilterType.SAX);
     }
 
-    public void test_templated_ext_12_13(String config, StreamFilterType filterType) throws IOException, SAXException {
+    public void test_templated_ext_12_13(String config, Filter.StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
         JavaResult result = new JavaResult();
 
-        smooks.setFilterSettings(new FilterSettings(filterType));
+        Filter.setFilterType(smooks, filterType);
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), result);
         Map orderItems = (Map) result.getBean("orderItems");
         Map orderItem;

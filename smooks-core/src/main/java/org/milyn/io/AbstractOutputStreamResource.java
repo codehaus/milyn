@@ -18,14 +18,10 @@ package org.milyn.io;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.ExecutionLifecycleCleanable;
-import org.milyn.delivery.VisitLifecycleCleanable;
-import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -61,7 +57,7 @@ import java.nio.charset.Charset;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public abstract class AbstractOutputStreamResource implements SAXVisitBefore, DOMVisitBefore, Consumer, VisitLifecycleCleanable, ExecutionLifecycleCleanable
+public abstract class AbstractOutputStreamResource implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, ExecutionLifecycleCleanable
 {
 	Log log = LogFactory.getLog( AbstractOutputStreamResource.class );
 
@@ -73,7 +69,7 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, DO
     private String resourceName;
 
     @ConfigParam(defaultVal = "UTF-8")
-    private Charset writerEncoding = Charset.forName("UTF-8");
+    private Charset writerEncoding;
 
     //	public
 
@@ -86,30 +82,12 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, DO
 	public abstract OutputStream getOutputStream( final ExecutionContext executionContext ) throws IOException;
 
     /**
-	 * Get the name of this resource
+	 * Return the name of this resource
 	 *
-	 * @return The name of the resource
+	 * @return <code>String</code>	- the name of the resource
 	 */
 	public String getResourceName() {
         return resourceName;
-    }
-
-    public boolean consumes(Object object) {
-        if(object.equals(resourceName)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-	 * Set the name of this resource
-	 *
-	 * @param resourceName The name of the resource
-	 */
-    public AbstractOutputStreamResource setResourceName(String resourceName) {
-        AssertArgument.isNotNullAndNotEmpty(resourceName, "resourceName");
-        this.resourceName = resourceName;
-        return this;
     }
 
     public Charset getWriterEncoding() {
@@ -121,16 +99,24 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, DO
 		bind ( executionContext );
 	}
 
-    public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
-    {
-        bind ( executionContext );
-    }
+	public void visitAfter( final SAXElement element, final ExecutionContext executionContext ) throws SmooksException, IOException
+	{
+		if(closeCondition( executionContext )) {
+			closeResource( executionContext );
+		}
+	}
 
-    public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
-        if(closeCondition( executionContext )) {
-            closeResource( executionContext );
-        }
-    }
+	public void visitBefore( final Element element, final ExecutionContext executionContext ) throws SmooksException
+	{
+		bind ( executionContext );
+	}
+
+	public void visitAfter( final Element element, final ExecutionContext executionContext ) throws SmooksException
+	{
+		if(closeCondition( executionContext )) {
+			closeResource( executionContext );
+		}
+	}
 
 	public void executeExecutionLifecycleCleanup( ExecutionContext executionContext )
 	{

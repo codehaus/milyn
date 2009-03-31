@@ -48,7 +48,6 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.ordering.Consumer;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
 import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
@@ -119,7 +118,7 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
 @VisitAfterIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
-public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
+public class JMSRouter implements DOMElementVisitor, SAXElementVisitor
 {
 	/*
 	 *	Log instance
@@ -178,15 +177,6 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
      * 	JMS Session
      */
     private Session session;
-
-    public boolean consumes(Object object) {
-        if(object.toString().startsWith(beanId)) {
-            // We use startsWith (Vs equals) so as to catch bean populations e.g. "address.street".
-            return true;
-        }
-
-        return false;
-    }
 
     //	Vistor methods
 

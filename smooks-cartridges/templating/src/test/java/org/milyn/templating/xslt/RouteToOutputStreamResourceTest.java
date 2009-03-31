@@ -17,8 +17,6 @@ package org.milyn.templating.xslt;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.StreamFilterType;
-import org.milyn.FilterSettings;
 import org.milyn.payload.StringSource;
 import org.milyn.delivery.Filter;
 import org.milyn.templating.MockOutStreamResource;
@@ -37,33 +35,33 @@ public class RouteToOutputStreamResourceTest extends TestCase {
     }
 
     public void test_dom_1() throws IOException, SAXException {
-        test_1(StreamFilterType.DOM);
+        test_1(Filter.StreamFilterType.DOM);
     }
 
     public void test_dom_2() throws IOException, SAXException {
-        test_2(StreamFilterType.DOM);
+        test_2(Filter.StreamFilterType.DOM);
     }
 
     public void test_sax_1() throws IOException, SAXException {
-        test_1(StreamFilterType.SAX);
+        test_1(Filter.StreamFilterType.SAX);
     }
 
     public void test_sax_2() throws IOException, SAXException {
-        test_2(StreamFilterType.SAX);
+        test_2(Filter.StreamFilterType.SAX);
     }
 
-    public void test_1(StreamFilterType filterType) throws IOException, SAXException {
+    public void test_1(Filter.StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("route-to-stream-01.cdrl"));
 
-        smooks.setFilterSettings(new FilterSettings(filterType));
+        Filter.setFilterType(smooks, filterType);
         smooks.filter(new StringSource("<a><c x='cx' /><d><e x='ex' /></d></a>"), null);
         assertEquals("xslfrome xslfromd ", new String(MockOutStreamResource.outputStream.toByteArray()));
     }
 
-    public void test_2(StreamFilterType filterType) throws IOException, SAXException {
+    public void test_2(Filter.StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("route-to-stream-02.cdrl"));
 
-        smooks.setFilterSettings(new FilterSettings(filterType));
+        Filter.setFilterType(smooks, filterType);
         smooks.filter(new StringSource("<a><c x='cx' /><d><e x='ex' /></d></a>"), null);
         assertEquals("xslfromd xslfrome ", new String(MockOutStreamResource.outputStream.toByteArray()));
     }

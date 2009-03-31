@@ -15,22 +15,6 @@
 */
 package org.milyn.util;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
@@ -38,13 +22,21 @@ import org.milyn.classpath.InstanceOfFilter;
 import org.milyn.classpath.IsAnnotationPresentFilter;
 import org.milyn.classpath.Scanner;
 
+import java.io.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.*;
+
 /**
  * Utility methods to aid in class/resource loading.
- *
+ * 
  * @author Kevin Conner
  */
 public class ClassUtil {
-
+    
     private static Log logger = LogFactory.getLog(ClassUtil.class);
     private static final Map<String, Class> primitives;
 
@@ -59,10 +51,10 @@ public class ClassUtil {
         primitives.put("byte", Byte.TYPE);
         primitives.put("short", Short.TYPE);
     }
-
+    
     /**
 	 * Load the specified class.
-	 *
+	 * 
 	 * @param className
 	 *            The name of the class to load.
 	 * @param caller
@@ -78,7 +70,7 @@ public class ClassUtil {
         if(primitiveClass != null) {
             return primitiveClass;
         }
-
+        
         if (threadClassLoader != null) {
 			try {
 				return threadClassLoader.loadClass(className);
@@ -100,7 +92,7 @@ public class ClassUtil {
 
 	/**
 	 * Get the specified resource as a stream.
-	 *
+	 * 
 	 * @param resourceName
 	 *            The name of the class to load.
 	 * @param caller
@@ -198,12 +190,12 @@ public class ClassUtil {
             return Proxy.newProxyInstance(ClassUtil.class.getClassLoader(), classes, handler);
         }
     }
-
+    
     /**
-     * Will try to create a List of classes that are listed
+     * Will try to create a List of classes that are listed 
      * in the passed in file.
      * The fileName is expected to be found on the classpath.
-     *
+     * 
      * @param fileName The name of the file containing the list of classes,
      * one class name per line.
      * @param instanceOf The instanceof filter.
@@ -256,7 +248,7 @@ public class ClassUtil {
                 Class clazz;
 
                 className = className.trim();
-
+                
                 // Ignore blank lines and lines that start with a hash...
                 if(className.equals("") || className.startsWith("#")) {
                     continue;
@@ -309,7 +301,7 @@ public class ClassUtil {
 			try
 			{
 				closable.close();
-			}
+			} 
     		catch (IOException e)
 			{
     			logger.warn( "Exception while trying to close : " + closable, e);
@@ -320,35 +312,4 @@ public class ClassUtil {
     public static String toFilePath(Package aPackage) {
         return "/" + aPackage.getName().replace('.', '/');
     }
-
-    /**
-	 * Checks if the class in the first parameter is assignable
-	 * to one of the classes in the second or any later parameter.
-	 *
-	 * @param toFind
-	 * @param classes
-	 * @return
-	 */
-	public static boolean containsAssignableClass(final Class<?> toFind, final Class<?> ... classes) {
-		return indexOffFirstAssignableClass(toFind, classes) != -1;
-	}
-
-	/**
-	 *
-	 * @param toFind
-	 * @param classes
-	 * @return
-	 */
-	public static int indexOffFirstAssignableClass(final Class<?> toFind, final Class<?> ... classes) {
-
-		for(int i = 0; i < classes.length; i++) {
-			final Class<?> cls = classes[i];
-
-			if(cls.isAssignableFrom(toFind)) {
-				return i;
-			}
-
-		}
-		return -1;
-	}
 }

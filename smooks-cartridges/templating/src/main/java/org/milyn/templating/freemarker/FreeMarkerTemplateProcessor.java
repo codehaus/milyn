@@ -33,14 +33,12 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
-import org.milyn.delivery.ordering.Consumer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.io.NullWriter;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.templating.AbstractTemplateProcessor;
-import org.milyn.templating.TemplatingConfiguration;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -69,30 +67,15 @@ import java.util.Map;
  */
 @VisitBeforeReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_before.html")
 @VisitAfterReport(summary = "FreeMarker Template - See Detail.", detailTemplate = "reporting/FreeMarkerTemplateProcessor_After.html")
-public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor, Consumer {
+public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor {
 
     private static Log logger = LogFactory.getLog(FreeMarkerTemplateProcessor.class);
 
-    private Template defaultTemplate;
     private Template templateBefore;
     private Template templateAfter;
+    private Template defaultTemplate;
     private SmooksResourceConfiguration config;
     private DefaultSAXElementSerializer targetWriter;
-
-    /**
-     * Default constructor.
-     */
-    protected FreeMarkerTemplateProcessor() {
-    }
-
-    /**
-     * Programmatically configure the FreeMarker Templating Visitor.
-     * @param templatingConfiguration The templating configuration.
-     * @return This Visitor instance.
-     */
-    public FreeMarkerTemplateProcessor(TemplatingConfiguration templatingConfiguration) {
-        super.setTemplatingConfiguration(templatingConfiguration);
-    }
 
     @Override
 	protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {
@@ -135,19 +118,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         targetWriter = new DefaultSAXElementSerializer();
         targetWriter.setWriterOwner(this);
     }
-
-    public boolean consumes(Object object) {
-        if(defaultTemplate != null && defaultTemplate.toString().indexOf(object.toString()) != -1) {
-            return true;
-        } else if(templateBefore != null && templateBefore.toString().indexOf(object.toString()) != -1) {
-            return true;
-        } else if(templateAfter != null && templateAfter.toString().indexOf(object.toString()) != -1) {
-            return true;
-        }
-
-        return false;
-    }
-
+    
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         if(defaultTemplate != null) {
             if(applyTemplateBefore()) {

@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.milyn</groupId>
         <artifactId>milyn</artifactId>
-        <version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+        <version>1.1.4</version> <!-- base pom version - do not remove this comment -->
     </parent>
     <name>Milyn Smooks Cartridges (Base POM)</name>
     <groupId>org.milyn</groupId>
     <artifactId>smooks-cartridge-base-pom</artifactId>
     <packaging>pom</packaging>
-    <version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.1.4</version> <!-- base pom version - do not remove this comment -->
 
     <properties>
         <milyn.smooks.servlet.version.base>${milyn.smooks.core.version}</milyn.smooks.servlet.version.base>
@@ -22,10 +22,10 @@
 
         <milyn.smooks.dtd.version.base>${milyn.smooks.core.version}</milyn.smooks.dtd.version.base>
         <milyn.smooks.dtd.version>${milyn.smooks.dtd.version.base}</milyn.smooks.dtd.version>
-
+		
         <milyn.smooks.calc.version.base>${milyn.smooks.core.version}</milyn.smooks.calc.version.base>
         <milyn.smooks.calc.version>${milyn.smooks.calc.version.base}</milyn.smooks.calc.version>
-
+		
         <milyn.smooks.css.version.base>${milyn.smooks.core.version}</milyn.smooks.css.version.base>
         <milyn.smooks.css.version>${milyn.smooks.css.version.base}</milyn.smooks.css.version>
 
@@ -49,13 +49,6 @@
 
         <milyn.smooks.routing.version.base>${milyn.smooks.core.version}</milyn.smooks.routing.version.base>
         <milyn.smooks.routing.version>${milyn.smooks.routing.version.base}</milyn.smooks.routing.version>
-
-        <milyn.smooks.persistence.version.base>${milyn.smooks.core.version}</milyn.smooks.persistence.version.base>
-        <milyn.smooks.persistence.version>${milyn.smooks.persistence.version.base}</milyn.smooks.persistence.version>
-
-        <milyn.smooks.validation.version.base>${milyn.smooks.core.version}</milyn.smooks.validation.version.base>
-        <milyn.smooks.validation.version>${milyn.smooks.validation.version.base}</milyn.smooks.validation.version>
-
     </properties>
 
     <modules>
@@ -71,17 +64,10 @@
         <module>templating</module>
         <module>routing</module>
 		<module>calc</module>
-		<module>persistence</module>
-		<module>validation</module>
+        <!-- module>perfcomp</module -->
     </modules>
 
     <dependencies>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>testres</artifactId>
-            <version>${milyn.smooks.core.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-core</artifactId>

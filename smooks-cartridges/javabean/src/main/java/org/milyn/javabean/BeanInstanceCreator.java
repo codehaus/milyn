@@ -15,14 +15,19 @@
 */
 package org.milyn.javabean;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.util.CollectionsUtil;
-import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
@@ -30,19 +35,14 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.delivery.ordering.Producer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.util.ClassUtil;
 import org.w3c.dom.Element;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Bean instance creator visitor class.
@@ -56,7 +56,7 @@ import java.util.Set;
 @VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
         summary = "Ended bean lifecycle. Set bean on any targets.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
-public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer {
+public class    BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore ,SAXVisitAfter{
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
@@ -77,37 +77,6 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
     private BeanId beanId;
 
-    /**
-     * Public default constructor.
-     */
-    public BeanInstanceCreator() {
-    }
-
-    /**
-     * Public default constructor.
-     * @param beanId The beanId under which the bean instance is registered in the bean context.
-     * @param beanClass The bean runtime class.
-     */
-    public BeanInstanceCreator(String beanId, Class beanClass) {
-        AssertArgument.isNotNull(beanId, "beanId");
-        AssertArgument.isNotNull(beanClass, "beanClass");
-        this.beanIdName = beanId;
-
-        if(!beanClass.isArray()){
-            this.beanClassName = beanClass.getName();
-        } else {
-            this.beanClassName = beanClass.getComponentType().getName() + "[]";
-        }
-    }
-
-    /**
-     * Get the beanId of this Bean configuration.
-     *
-     * @return The beanId of this Bean configuration.
-     */
-    public String getBeanId() {
-        return beanIdName;
-    }
 
     /**
      * Set the resource configuration on the bean populator.
@@ -124,16 +93,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, beanClassName, appContext);
 
         if(logger.isDebugEnabled()) {
-        	logger.debug("BeanInstanceCreator created for [" + beanIdName + "]. BeanRuntimeInfo: " + beanRuntimeInfo);
+        	logger.debug("BeanInstanceCreator created for [" + beanIdName + "].");
         }
-    }
-
-    /**
-     * Get the bean runtime information.
-     * @return The bean runtime information.
-     */
-    public BeanRuntimeInfo getBeanRuntimeInfo() {
-        return beanRuntimeInfo;
     }
 
     private void buildId() {
@@ -158,32 +119,34 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
-	public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+	public void visitAfter(Element element, ExecutionContext executionContext)
+			throws SmooksException {
+
 		visitAfter(executionContext);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
 	 */
-	public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+	public void visitAfter(SAXElement element, ExecutionContext executionContext)
+			throws SmooksException, IOException {
+
 		visitAfter(executionContext);
 	}
 
 	public void visitAfter(ExecutionContext executionContext) {
-        BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
-        Classification thisBeanType = beanRuntimeInfo.getClassification();
-        boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 
-        beanRepo.setBeanInContext(beanId, false);
+		Classification thisBeanType = beanRuntimeInfo.getClassification();
 
-        if(isBeanTypeArray) {
-            Object bean  = beanRepo.getBean(beanId);
+		boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 
-            if(logger.isDebugEnabled()) {
-                logger.debug("Converting bean [" + beanIdName + "] to an array and rebinding to context.");
-            }
-            bean = convert(executionContext, bean);
-        }
+		if(isBeanTypeArray) {
+			Object bean  = BeanRepositoryManager.getBeanRepository(executionContext).getBean(beanId);
+
+			bean = convert(executionContext, bean);
+
+		}
+
 	}
 
 
@@ -198,13 +161,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
 	private void createAndSetBean(ExecutionContext executionContext) {
         Object bean;
-        BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
-
         bean = createBeanInstance();
 
-        beanRepo.setBeanInContext(beanId, false);
-        beanRepo.addBean(beanId, bean);
-        beanRepo.setBeanInContext(beanId, true);
+        BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanId, bean);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Bean [" + beanIdName + "] instance created.");
@@ -230,10 +189,6 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         return bean;
     }
 
-    public Set<? extends Object> getProducts() {
-        return CollectionsUtil.toSet(beanIdName);
-    }
-
     private String getId() {
 		return id;
 	}
@@ -242,4 +197,6 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     public String toString() {
     	return getId();
     }
+
+
 }

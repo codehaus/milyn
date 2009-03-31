@@ -16,7 +16,6 @@
 package org.milyn.routing.db;
 
 import org.milyn.SmooksException;
-import org.milyn.util.CollectionsUtil;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -30,8 +29,6 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.delivery.ordering.Producer;
-import org.milyn.delivery.ordering.Consumer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.DataDecodeException;
@@ -45,7 +42,10 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * SQLExecutor Visitor.
@@ -58,7 +58,7 @@ import java.util.*;
 @VisitAfterIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
 @VisitBeforeReport(summary = "Execute statement '${resource.parameters.statement}' on Datasource '${resource.parameters.datasource}'.", detailTemplate = "reporting/SQLExecutor.html")
 @VisitAfterReport(summary = "Execute statement '${resource.parameters.statement}' on Datasource '${resource.parameters.datasource}'.", detailTemplate = "reporting/SQLExecutor.html")
-public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, Producer, Consumer {
+public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor {
 
     @ConfigParam
     private String datasource;
@@ -101,22 +101,6 @@ public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVis
 	        resultSetBeanId = beanIdRegister.register(resultSetName);
         }
         rsAppContextKey = datasource + ":" + statement;
-    }
-
-    public Set<? extends Object> getProducts() {
-        if(statementExec.getStatementType() == StatementType.QUERY) {
-            return CollectionsUtil.toSet(resultSetName);
-        }
-
-        return CollectionsUtil.toSet();
-    }
-
-    public boolean consumes(Object object) {
-        if(statement.indexOf(object.toString()) != -1) {
-            return true;
-        }
-
-        return false;
     }
 
     public void visitBefore(SAXElement saxElement, ExecutionContext executionContext) throws SmooksException, IOException {

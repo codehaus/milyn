@@ -19,7 +19,7 @@ import org.milyn.event.ExecutionEvent;
 import org.milyn.cdr.SmooksResourceConfiguration;
 
 /**
- * Configuration Builder Event.
+ * Condifuration Builder Event.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
