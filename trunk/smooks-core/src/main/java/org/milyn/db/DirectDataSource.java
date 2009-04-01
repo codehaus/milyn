@@ -20,6 +20,7 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.util.ClassUtil;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.assertion.AssertArgument;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -38,13 +39,13 @@ import java.sql.SQLException;
 public class DirectDataSource extends AbstractDataSource {
 
     @ConfigParam(name = "datasource")
-    private String datasourceName;
+    private String name;
 
     @ConfigParam
     private boolean autoCommit;
 
     @ConfigParam
-    private String driver;
+    private Class driver;
 
     @ConfigParam
     private String url;
@@ -56,17 +57,56 @@ public class DirectDataSource extends AbstractDataSource {
     private String password;
 
     public String getName() {
-        return datasourceName;
+        return name;
+    }
+
+    public DirectDataSource setName(String name) {
+        AssertArgument.isNotNullAndNotEmpty(name, "name");
+        this.name = name;
+        return this;
+    }
+
+    public DirectDataSource setAutoCommit(boolean autoCommit) {
+        this.autoCommit = autoCommit;
+        return this;
+    }
+
+    public DirectDataSource setDriver(Class driver) {
+        AssertArgument.isNotNull(driver, "driver");
+        this.driver = driver;
+        return this;
+    }
+
+    public DirectDataSource setUrl(String url) {
+        AssertArgument.isNotNullAndNotEmpty(url, "url");
+        this.url = url;
+        return this;
+    }
+
+    public DirectDataSource setUsername(String username) {
+        AssertArgument.isNotNull(username, "username");
+        this.username = username;
+        return this;
+    }
+
+    public DirectDataSource setPassword(String password) {
+        AssertArgument.isNotNull(password, "password");
+        this.password = password;
+        return this;
     }
 
     @Initialize
     public void registerDriver() throws SQLException {
         Driver driverInstance;
 
+        AssertArgument.isNotNullAndNotEmpty(name, "name");
+        AssertArgument.isNotNull(driver, "driver");
+        AssertArgument.isNotNullAndNotEmpty(url, "url");
+        AssertArgument.isNotNull(username, "username");
+        AssertArgument.isNotNull(password, "password");
+
         try {
-            driverInstance = (Driver) ClassUtil.forName(driver, getClass()).newInstance();
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Failed to register JDBC driver '" + driver + "'.  Driver class not available on classpath.");
+            driverInstance = (Driver) driver.newInstance();
         } catch (Exception e) {
             throw new SQLException("Failed to register JDBC driver '" + driver + "'.  Unable to create instance of driver class.");
         }

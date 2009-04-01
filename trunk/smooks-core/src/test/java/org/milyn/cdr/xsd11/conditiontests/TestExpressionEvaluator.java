@@ -17,6 +17,7 @@ package org.milyn.cdr.xsd11.conditiontests;
 
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
+import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.SmooksConfigurationException;
 
@@ -36,8 +37,9 @@ public class TestExpressionEvaluator implements ExecutionContextExpressionEvalua
         return valVal;
     }
 
-    public void setExpression(String expression) throws SmooksConfigurationException {
+    public ExpressionEvaluator setExpression(String expression) throws SmooksConfigurationException {
         this.expression = expression;
+        return this;
     }
 
     public String getExpression() {

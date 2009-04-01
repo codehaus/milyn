@@ -38,11 +38,13 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
 
     private boolean containsVariablesVariable;
 
-    public void setExpression(String expression) throws SmooksConfigurationException {
+    public ExpressionEvaluator setExpression(String expression) throws SmooksConfigurationException {
         this.expression = expression.trim();
         compiled = MVEL.compileExpression(this.expression);
 
         containsVariablesVariable = this.expression.contains(MVEL_VARIABLES_VARIABLE_NAME);
+
+        return this;
     }
 
     public String getExpression() {
@@ -52,7 +54,6 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
     public boolean eval(Object contextObject) throws ExpressionEvaluationException {
         return (Boolean) getValue(contextObject);
     }
-
 
     @SuppressWarnings("unchecked")
 	public Object getValue(final Object contextObject) throws ExpressionEvaluationException {

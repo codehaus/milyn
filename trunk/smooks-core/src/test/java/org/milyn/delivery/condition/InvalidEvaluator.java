@@ -29,7 +29,8 @@ import org.milyn.expression.ExpressionEvaluationException;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class InvalidEvaluator implements ExpressionEvaluator {
-    public void setExpression(String conditionExpression) throws SmooksConfigurationException {
+    public ExpressionEvaluator setExpression(String conditionExpression) throws SmooksConfigurationException {
+        return this;
     }
 
     public String getExpression() {

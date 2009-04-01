@@ -16,8 +16,11 @@
 package org.milyn.routing.db;
 
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfigurationFactory;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
@@ -32,6 +35,8 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.VisitorAppender;
+import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.DataDecodeException;
@@ -58,7 +63,7 @@ import java.util.*;
 @VisitAfterIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
 @VisitBeforeReport(summary = "Execute statement '${resource.parameters.statement}' on Datasource '${resource.parameters.datasource}'.", detailTemplate = "reporting/SQLExecutor.html")
 @VisitAfterReport(summary = "Execute statement '${resource.parameters.statement}' on Datasource '${resource.parameters.datasource}'.", detailTemplate = "reporting/SQLExecutor.html")
-public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, Producer, Consumer {
+public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, Producer, Consumer {
 
     @ConfigParam
     private String datasource;
@@ -72,20 +77,61 @@ public class SQLExecutor implements SAXVisitBefore, SAXVisitAfter, DOMElementVis
     private String resultSetName;
 
     @ConfigParam(defaultVal = "EXECUTION", choice = {"EXECUTION", "APPLICATION"}, decoder = ResultSetScopeDecoder.class)
-    private ResultSetScope resultSetScope;
+    private ResultSetScope resultSetScope = ResultSetScope.EXECUTION;
 
     @ConfigParam(defaultVal = "900000")
-    private long resultSetTTL;
+    private long resultSetTTL = 900000L;
 
-    private enum ResultSetScope {
-        EXECUTION,
-        APPLICATION
-    }
+    private boolean executeBefore = false;
 
     @AppContext
     private ApplicationContext appContext;
 
     private BeanId resultSetBeanId;
+
+    public SQLExecutor setDatasource(AbstractDataSource datasource) {
+        AssertArgument.isNotNull(datasource, "datasource");
+        this.datasource = datasource.getName();
+        return this;
+    }
+
+    public SQLExecutor setStatement(String statement) {
+        AssertArgument.isNotNullAndNotEmpty(statement, "statement");
+        this.statement = statement;
+        return this;
+    }
+
+    public SQLExecutor setResultSetName(String resultSetName) {
+        AssertArgument.isNotNullAndNotEmpty(resultSetName, "resultSetName");
+        this.resultSetName = resultSetName;
+        return this;
+    }
+
+    public String getResultSetName() {
+        return resultSetName;
+    }
+
+    public SQLExecutor setResultSetScope(ResultSetScope resultSetScope) {
+        AssertArgument.isNotNull(resultSetScope, "resultSetScope");
+        this.resultSetScope = resultSetScope;
+        return this;
+    }
+
+    public SQLExecutor setResultSetTTL(long resultSetTTL) {
+        this.resultSetTTL = resultSetTTL;
+        return this;
+    }
+
+    public SQLExecutor setExecuteBefore(boolean executeBefore) {
+        this.executeBefore = executeBefore;
+        return this;
+    }
+
+    public SmooksResourceConfiguration createConfiguration() {
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+        config.setParameter("executeBefore", Boolean.toString(executeBefore));
+        return config;
+    }
 
     @Initialize
     public void intitialize() throws SmooksConfigurationException {

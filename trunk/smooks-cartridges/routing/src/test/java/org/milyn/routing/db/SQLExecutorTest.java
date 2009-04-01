@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.db.DirectDataSource;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
@@ -36,6 +37,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
+import org.hsqldb.jdbcDriver;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -59,17 +61,56 @@ public class SQLExecutorTest
 
     @Test
     public void test_appContextTime() throws Exception {
-    	test_appContextTimeout("smooks-config.xml");
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
+    	test_appContextTime(smooks);
     }
 
     @Test
     public void test_appContextTimeExtendedConfig() throws Exception {
-    	test_appContextTimeout("smooks-extended-config.xml");
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config.xml"));
+    	test_appContextTime(smooks);
+    }
+
+    @Test
+    public void test_appContextTimeProgrammatic() throws Exception {
+        Smooks smooks = new Smooks();
+
+        // Now programmaticly configure...
+        DirectDataSource datasource = new DirectDataSource()
+                          .setDriver(jdbcDriver.class)
+                          .setName("OrdersDS")
+                          .setUrl("jdbc:hsqldb:hsql://localhost:9992/milyn-hsql-9992")
+                          .setUsername("sa")
+                          .setPassword("")
+                          .setAutoCommit(true);
+        SQLExecutor orderSelector = new SQLExecutor()
+                          .setDatasource(datasource)
+                          .setStatement("select * from ORDERS")
+                          .setResultSetName("orders1")
+                          .setExecuteBefore(true);
+
+        smooks.addVisitor(datasource);
+        smooks.addVisitor(orderSelector);
+
+        smooks.addVisitor(new ResultsetRowSelector()
+                          .setSelector(orderSelector)
+                          .setBeanId("myOrder")
+                          .setWhereClause("row.ORDERNUMBER == 2")
+                          .setFailedSelectError("Order with ORDERNUMBER=2 not found in Database"));
+
+        smooks.addVisitor(new SQLExecutor()
+                          .setDatasource(datasource)
+                          .setStatement("select * from ORDERS")
+                          .setResultSetName("orders2")
+                          .setResultSetScope(ResultSetScope.APPLICATION)
+                          .setResultSetTTL(2000L)
+                          .setExecuteBefore(true));
+
+        test_appContextTime(smooks);
     }
 
     @SuppressWarnings("unchecked")
-	private void test_appContextTimeout(String config) throws IOException, SAXException, InterruptedException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
+	private void test_appContextTime(Smooks smooks) throws IOException, SAXException, InterruptedException {
         ExecutionContext execContext = smooks.createExecutionContext();
         BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 

@@ -18,6 +18,7 @@ package org.milyn.db;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.delivery.annotation.Initialize;
+import org.milyn.assertion.AssertArgument;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -33,12 +34,22 @@ import java.sql.SQLException;
 public class JndiDataSource extends AbstractDataSource {
 
     @ConfigParam(name = "datasource")
-    private String datasourceName;
+    private String name;
 
     @ConfigParam
     private boolean autoCommit;
 
     private DataSource datasource;
+
+    public JndiDataSource(String name, boolean autoCommit) {
+        AssertArgument.isNotNullAndNotEmpty(name, "name");
+        this.name = name;
+        this.autoCommit = autoCommit;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     @Initialize
     public void intitialize() {
@@ -46,22 +57,18 @@ public class JndiDataSource extends AbstractDataSource {
 
         try {
             context = new InitialContext();
-            datasource = (DataSource) context.lookup(datasourceName);
+            datasource = (DataSource) context.lookup(name);
         } catch (NamingException e) {
-            throw new SmooksConfigurationException("DataSource lookup failed for DataSource '" + datasourceName + "'.  Make sure you have the DataSource descriptor deployed and that the JNDI names match.", e);
+            throw new SmooksConfigurationException("DataSource lookup failed for DataSource '" + name + "'.  Make sure you have the DataSource descriptor deployed and that the JNDI names match.", e);
         } finally {
             if(context != null) {
                 try {
                     context.close();
                 } catch (NamingException e) {
-                    throw new SmooksConfigurationException("Error closing Naming Context after looking up DataSource '" + datasourceName + "'.", e);
+                    throw new SmooksConfigurationException("Error closing Naming Context after looking up DataSource '" + name + "'.", e);
                 }
             }
         }
-    }
-
-    public String getName() {
-        return datasourceName;
     }
 
     public Connection getConnection() throws SQLException {

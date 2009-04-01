@@ -31,7 +31,7 @@ public interface ExpressionEvaluator {
      * @param expression The expression to be evaluated by the evaluator implementation.
      * @throws SmooksConfigurationException Invalid expression configuration.
      */
-    public void setExpression(String expression) throws SmooksConfigurationException;
+    public ExpressionEvaluator setExpression(String expression) throws SmooksConfigurationException;
 
     /**
      * Get the String representation of the active expression on the evaluator instance.
