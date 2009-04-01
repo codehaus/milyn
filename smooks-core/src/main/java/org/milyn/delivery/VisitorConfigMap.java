@@ -25,6 +25,7 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksResourceConfigurationFactory;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.event.types.ConfigBuilderEvent;
@@ -180,7 +181,14 @@ public class VisitorConfigMap {
         AssertArgument.isNotNull(visitor, "visitor");
         AssertArgument.isNotNull(targetSelector, "targetSelector");
 
-        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
+        SmooksResourceConfiguration resourceConfig;
+        if (visitor instanceof SmooksResourceConfigurationFactory) {
+            resourceConfig = ((SmooksResourceConfigurationFactory)visitor).createConfiguration();
+            resourceConfig.setResource(visitor.getClass().getName());
+            resourceConfig.setSelector(targetSelector);
+        } else {
+            resourceConfig = new SmooksResourceConfiguration(targetSelector, visitor.getClass().getName());
+        }
 
         resourceConfig.setSelectorNamespaceURI(targetSelectorNS);
         addVisitor(visitor, resourceConfig, configure);

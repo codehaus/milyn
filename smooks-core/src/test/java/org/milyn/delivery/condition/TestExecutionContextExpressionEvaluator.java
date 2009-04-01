@@ -19,6 +19,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.expression.ExecutionContextExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluationException;
+import org.milyn.expression.ExpressionEvaluator;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -29,9 +30,10 @@ public class TestExecutionContextExpressionEvaluator implements ExecutionContext
     public boolean evalResult = true;
     public static ExecutionContext context;
 
-    public void setExpression(String conditionExpression) throws SmooksConfigurationException {
+    public ExpressionEvaluator setExpression(String conditionExpression) throws SmooksConfigurationException {
         condition = conditionExpression;
         evalResult = conditionExpression.trim().equals("true");
+        return this;
     }
 
     public String getExpression() {

@@ -21,7 +21,10 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksResourceConfigurationFactory;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
@@ -36,10 +39,12 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
 import org.milyn.util.FreeMarkerTemplate;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
@@ -49,39 +54,92 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value == 'true'")
 @VisitAfterIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value != 'true'")
-public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, Producer, Consumer {
+public class ResultsetRowSelector implements SmooksResourceConfigurationFactory, SAXVisitBefore, SAXVisitAfter, DOMElementVisitor, Producer, Consumer {
 
     private static Log logger = LogFactory.getLog(ResultsetRowSelector.class);
 
     @ConfigParam
     private String resultSetName;
 
-    @ConfigParam(name = "where")
-    private MVELExpressionEvaluator whereEvaluator;
+    @ConfigParam(name = "where", decoder = MVELExpressionEvaluatorDecoder.class)
+    private ExpressionEvaluator whereEvaluator;
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private FreeMarkerTemplate failedSelectError;
 
     @ConfigParam(name="beanId")
-    private String beanIdName;
+    private String beanId;
+
+    private boolean executeBefore = true;
 
     private BeanId resultSetBeanId;
 
-    private BeanId beanId;
+    private BeanId beanIdObj;
 
     @AppContext
     private ApplicationContext appContext;
+
+    public ResultsetRowSelector setResultSetName(String resultSetName) {
+        AssertArgument.isNotNullAndNotEmpty(resultSetName, "resultSetName");
+        this.resultSetName = resultSetName;
+        return this;
+    }
+
+    public ResultsetRowSelector setSelector(SQLExecutor executor) {
+        AssertArgument.isNotNull(executor, "executor");
+        this.resultSetName = executor.getResultSetName();
+        if(this.resultSetName == null) {
+            throw new IllegalArgumentException("Invalid 'executor' argument.  Executor must specify a 'resultSetName' in order to be used by a ResultsetRowSelector.");
+        }
+        return this;
+    }
+
+    public ResultsetRowSelector setWhereClause(String whereClause) {
+        AssertArgument.isNotNullAndNotEmpty(whereClause, "whereClause");
+        this.whereEvaluator = new MVELExpressionEvaluator();
+        this.whereEvaluator.setExpression(whereClause);
+        return this;
+    }
+
+    public ResultsetRowSelector setWhereEvaluator(ExpressionEvaluator whereEvaluator) {
+        AssertArgument.isNotNull(whereEvaluator, "whereEvaluator");
+        this.whereEvaluator = whereEvaluator;
+        return this;
+    }
+
+    public ResultsetRowSelector setFailedSelectError(String failedSelectError) {
+        AssertArgument.isNotNullAndNotEmpty(failedSelectError, "failedSelectError");
+        this.failedSelectError = new FreeMarkerTemplate(failedSelectError);
+        return this;
+    }
+
+    public ResultsetRowSelector setBeanId(String beanId) {
+        AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+        this.beanId = beanId;
+        return this;
+    }
+
+    public ResultsetRowSelector setExecuteBefore(boolean executeBefore) {
+        this.executeBefore = executeBefore;
+        return this;
+    }
+
+    public SmooksResourceConfiguration createConfiguration() {
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+        config.setParameter("executeBefore", Boolean.toString(executeBefore));
+        return config;
+    }
 
     @Initialize
     public void intitialize() throws SmooksConfigurationException {
     	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
 
-    	beanId = beanIdRegister.register(beanIdName);
+    	beanIdObj = beanIdRegister.register(beanId);
     	resultSetBeanId = beanIdRegister.register(resultSetName);
     }
 
     public Set<? extends Object> getProducts() {
-        return CollectionsUtil.toSet(beanIdName);
+        return CollectionsUtil.toSet(beanId);
     }
 
     public boolean consumes(Object object) {
@@ -100,7 +158,7 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
         selectRow(executionContext);
     }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitBefore#visitBefore(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitBefore(Element element, ExecutionContext executionContext)
@@ -108,7 +166,7 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
 		selectRow(executionContext);
 	}
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext)
@@ -116,7 +174,7 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
 		selectRow(executionContext);
 	}
 
-	private void selectRow(ExecutionContext executionContext) throws SmooksException {
+    private void selectRow(ExecutionContext executionContext) throws SmooksException {
     	BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
 
     	Map<String, Object> beanMapClone = new HashMap<String, Object>(beanRepository.getBeanMap());
@@ -141,7 +199,7 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
 
                     if(whereEvaluator.eval(beanMapClone)) {
                     	selectedRow = row;
-                    	beanRepository.addBean(beanId, selectedRow);
+                    	beanRepository.addBean(beanIdObj, selectedRow);
                     }
                 }
 
@@ -159,5 +217,4 @@ public class ResultsetRowSelector implements SAXVisitBefore, SAXVisitAfter, DOME
             throw new SmooksException("Bean '" + resultSetName + "' cannot be used as a Reference Data resultset.  A resultset must be of type List<Map<String, Object>>. '" + resultSetName + "' is of type '" + beanRepository.getBean(resultSetBeanId).getClass().getName() + "'.");
         }
     }
-
 }
