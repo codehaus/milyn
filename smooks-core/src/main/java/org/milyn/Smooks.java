@@ -160,20 +160,6 @@ public class Smooks {
     }
 
     /**
-     * Set the default stream filter type on this Smooks instance.
-     * @param filterType The filter type.
-     * @deprecated Use {@link #setFilterSettings(FilterSettings)}.
-     */
-    public void setFilterType(Filter.StreamFilterType filterType) {
-        assertIsConfigurable();
-        if(filterType == Filter.StreamFilterType.DOM) {
-            setFilterSettings(FilterSettings.DEFAULT_DOM);
-        } else {
-            setFilterSettings(FilterSettings.DEFAULT_SAX);
-        }
-    }
-
-    /**
      * Set the filter settings for this Smooks instance.
      * @param filterSettings The filter settings to be used.
      */
