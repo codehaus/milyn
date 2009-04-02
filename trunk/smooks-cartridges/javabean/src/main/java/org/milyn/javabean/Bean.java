@@ -125,6 +125,18 @@ public class Bean implements VisitorAppender {
 
     /**
      * Create a Bean binding configuration.
+     * <p/>
+     * The bean instance is created on the root/document fragment.
+     *
+     * @param beanClass        The bean runtime class.
+     * @param beanId           The bean ID.
+     */
+    public Bean(Class beanClass, String beanId) {
+        this(beanClass, beanId, "$document", null);
+    }
+
+    /**
+     * Create a Bean binding configuration.
      *
      * @param beanClass        The bean runtime class.
      * @param beanId           The bean ID.

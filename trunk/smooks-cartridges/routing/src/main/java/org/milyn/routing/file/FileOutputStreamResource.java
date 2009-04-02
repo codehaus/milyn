@@ -28,11 +28,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
 import org.milyn.javabean.repository.BeanRepository;
@@ -112,19 +115,71 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     private String listFileNamePatternCtxKey;
 
     @ConfigParam(defaultVal = "200")
-    private int highWaterMark;
+    private int highWaterMark = 200;
     @ConfigParam(defaultVal = "60000")
-    private long highWaterMarkTimeout;
+    private long highWaterMarkTimeout = 60000;
     @ConfigParam(defaultVal = "1000")
-    private long highWaterMarkPollFrequency;
+    private long highWaterMarkPollFrequency = 1000;
 
     @ConfigParam(use=Use.OPTIONAL, decoder = MVELExpressionEvaluatorDecoder.class)
-    private MVELExpressionEvaluator closeOnCondition;
+    private ExpressionEvaluator closeOnCondition;
 
     //	public
 
+    public FileOutputStreamResource setFileNamePattern(String fileNamePattern) {
+        AssertArgument.isNotNullAndNotEmpty(fileNamePattern, "fileNamePattern");
+        this.fileNamePattern = fileNamePattern;
+        return this;
+    }
+
+    public FileOutputStreamResource setDestinationDirectoryPattern(String destinationDirectoryPattern) {
+        AssertArgument.isNotNullAndNotEmpty(destinationDirectoryPattern, "destinationDirectoryPattern");
+        this.destinationDirectoryPattern = destinationDirectoryPattern;
+        return this;
+    }
+
+    public FileOutputStreamResource setListFileNamePattern(String listFileNamePattern) {
+        AssertArgument.isNotNullAndNotEmpty(listFileNamePattern, "listFileNamePattern");
+        this.listFileNamePattern = listFileNamePattern;
+        return this;
+    }
+
+    public FileOutputStreamResource setListFileNamePatternCtxKey(String listFileNamePatternCtxKey) {
+        AssertArgument.isNotNullAndNotEmpty(listFileNamePatternCtxKey, "listFileNamePatternCtxKey");
+        this.listFileNamePatternCtxKey = listFileNamePatternCtxKey;
+        return this;
+    }
+
+    public FileOutputStreamResource setHighWaterMark(int highWaterMark) {
+        this.highWaterMark = highWaterMark;
+        return this;
+    }
+
+    public FileOutputStreamResource setHighWaterMarkTimeout(long highWaterMarkTimeout) {
+        this.highWaterMarkTimeout = highWaterMarkTimeout;
+        return this;
+    }
+
+    public FileOutputStreamResource setHighWaterMarkPollFrequency(long highWaterMarkPollFrequency) {
+        this.highWaterMarkPollFrequency = highWaterMarkPollFrequency;
+        return this;
+    }
+
+    public void setCloseOnCondition(String closeOnCondition) {
+        AssertArgument.isNotNullAndNotEmpty(closeOnCondition, "closeOnCondition");
+        this.closeOnCondition = new MVELExpressionEvaluator();
+        this.closeOnCondition.setExpression(closeOnCondition);
+    }
+
     @Initialize
-    public void intialize() {
+    public void intialize() throws SmooksConfigurationException {
+        if(fileNamePattern == null) {
+            throw new SmooksConfigurationException("Null 'fileNamePattern' configuration parameter.");
+        }
+        if(destinationDirectoryPattern == null) {
+            throw new SmooksConfigurationException("Null 'destinationDirectoryPattern' configuration parameter.");
+        }
+
         fileNameTemplate = new FreeMarkerTemplate(fileNamePattern);
         destinationDirectoryTemplate = new FreeMarkerTemplate(destinationDirectoryPattern);
 

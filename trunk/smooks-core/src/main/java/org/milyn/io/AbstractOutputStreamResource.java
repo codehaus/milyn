@@ -112,6 +112,12 @@ public abstract class AbstractOutputStreamResource implements SAXVisitBefore, DO
         return this;
     }
 
+    public AbstractOutputStreamResource setWriterEncoding(Charset writerEncoding) {
+        AssertArgument.isNotNull(writerEncoding, "writerEncoding");
+        this.writerEncoding = writerEncoding;
+        return this;
+    }
+
     public Charset getWriterEncoding() {
         return writerEncoding;
     }

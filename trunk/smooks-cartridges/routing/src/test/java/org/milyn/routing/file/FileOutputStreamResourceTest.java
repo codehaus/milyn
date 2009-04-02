@@ -22,15 +22,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.HashMap;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.io.AbstractOutputStreamResource;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.milyn.io.StreamUtils;
+import org.milyn.Smooks;
+import org.milyn.FilterSettings;
+import org.milyn.templating.freemarker.FreeMarkerTemplateProcessor;
+import org.milyn.templating.TemplatingConfiguration;
+import org.milyn.templating.OutputTo;
+import org.milyn.javabean.Bean;
+import org.milyn.payload.StringSource;
+import org.testng.annotations.*;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test for {@link FileOutputStreamResource}
@@ -89,14 +98,58 @@ public class FileOutputStreamResourceTest
 			new File( listFile ).delete();
 		}
 	}
-	
-	@BeforeClass
+
+    File file1 = new File("target/config-01-test/1/1.xml");
+    File file2 = new File("target/config-01-test/2/2.xml");
+    File file3 = new File("target/config-01-test/3/3.xml");
+    
+    @Test
+    public void test_config_01() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config-01.xml"));
+
+        smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+
+        assertEquals("1", getFileContents(file1));
+        assertEquals("2", getFileContents(file2));
+        assertEquals("3", getFileContents(file3));
+    }
+
+    @Test
+    public void test_config_01_programmatic() throws IOException, SAXException {
+        Smooks smooks = new Smooks();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+
+        smooks.addVisitor(new Bean(HashMap.class, "object").bindTo("a", "a"));
+        smooks.addVisitor(new FreeMarkerTemplateProcessor(new TemplatingConfiguration("${object.a}").setUsage(OutputTo.stream("fileOS"))), "a");
+        smooks.addVisitor(new FileOutputStreamResource().setFileNamePattern("${object.a}.xml").setDestinationDirectoryPattern("target/config-01-test/${object.a}").setResourceName("fileOS"), "a");
+
+        smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+
+        assertEquals("1", getFileContents(file1));
+        assertEquals("2", getFileContents(file2));
+        assertEquals("3", getFileContents(file3));
+    }
+
+    private String getFileContents(File file) throws IOException {
+        return new String(StreamUtils.readFile(file));
+    }
+
+    @BeforeClass
 	public void setup()
 	{
     	config = createConfig( resourceName, fileNamePattern, destinationDirectory, listFileName);
-	}
-	
-	//	private
+    }
+
+    @BeforeMethod
+    @AfterMethod
+    public void deleteFiles() {
+        file1.delete();
+        file2.delete();
+        file3.delete();
+    }
+
+    //	private
 	
 	private SmooksResourceConfiguration createConfig( 
 			final String resourceName, 
