@@ -13,19 +13,30 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
+package org.milyn.ejc.classes;
 
-package org.milyn.edisax.model.internal;
+/**
+ * The visibilty of a {@link org.milyn.ejc.classes.JClass}, {@link org.milyn.ejc.classes.JAttribute} and
+ * {@link org.milyn.ejc.classes.JMethod}.
+ * @author bardl
+ */
+public enum JVisibility {
+    PUBLIC("public"),
+    DEFAULT(""),
+    PRIVATE("private"),
+    PROTECTED("protected");
 
-public class SubComponent extends ValueNode {
+    private String name;
 
-    private Boolean required;
-
-    public boolean isRequired() {
-        return required != null && required;
+    JVisibility(String name) {
+        this.name = name;
     }
 
-    public void setRequired(Boolean value) {
-        this.required = value;
+    public String getName() {
+        return name;
     }
 
+    public String toString() {
+        return name;
+    }
 }

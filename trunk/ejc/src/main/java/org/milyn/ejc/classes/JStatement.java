@@ -13,19 +13,27 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
+package org.milyn.ejc.classes;
 
-package org.milyn.edisax.model.internal;
+/**
+ * JStatement are the statements found in {@link org.milyn.ejc.classes.JMethod}.
+ * @see org.milyn.ejc.classes.JMethod
+ * @author bardl
+ */
+public class JStatement {
+    public static String STATEMENT_SUFFIX = ";";
 
-public class SubComponent extends ValueNode {
+    private String statement;
 
-    private Boolean required;
-
-    public boolean isRequired() {
-        return required != null && required;
+    public JStatement(String statement) {
+        this.statement = statement;
     }
 
-    public void setRequired(Boolean value) {
-        this.required = value;
+    public String getStatement() {
+        return statement;
     }
 
+    public String toString() {
+        return statement;
+    }
 }

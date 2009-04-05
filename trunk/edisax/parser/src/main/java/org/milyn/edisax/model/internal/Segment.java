@@ -27,6 +27,7 @@ public class Segment extends SegmentGroup {
     private Pattern segcodePattern;
     private String segref;
     private Boolean truncatable;
+    private String description;
 
     public List<Field> getFields() {
         if (fields == null) {
@@ -64,4 +65,11 @@ public class Segment extends SegmentGroup {
         this.truncatable = value;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

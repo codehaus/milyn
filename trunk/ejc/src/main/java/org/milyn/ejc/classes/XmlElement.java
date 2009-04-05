@@ -13,19 +13,22 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
+package org.milyn.ejc.classes;
 
-package org.milyn.edisax.model.internal;
+/**
+ * XmlElement holds information about which element-name the edi-mapping-file will have.
+ * @see org.milyn.ejc.classes.JClass
+ * @see org.milyn.ejc.classes.JAttribute
+ * @see org.milyn.ejc.classes.JJavaClass
+ */
+public class XmlElement {
+    private String xmlElementName;
 
-public class SubComponent extends ValueNode {
-
-    private Boolean required;
-
-    public boolean isRequired() {
-        return required != null && required;
+    public String getXmlElementName() {
+        return xmlElementName;
     }
 
-    public void setRequired(Boolean value) {
-        this.required = value;
+    public void setXmlElementName(String xmlElementName) {
+        this.xmlElementName = xmlElementName;
     }
-
 }

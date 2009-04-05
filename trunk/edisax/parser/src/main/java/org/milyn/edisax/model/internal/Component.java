@@ -19,7 +19,7 @@ package org.milyn.edisax.model.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Component extends MappingNode {
+public class Component extends ValueNode {
 
     private List<SubComponent> subComponent;
     private Boolean required;

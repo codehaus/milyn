@@ -1,0 +1,34 @@
+<test.packageName.Order>
+  <header>
+    <orderId>1</orderId>
+    <statusCode>0</statusCode>
+    <netAmount>59.97</netAmount>
+    <totalAmount>64.92</totalAmount>
+    <tax>4.95</tax>
+    <date/>
+  </header>
+  <customerDetails>
+    <username>user1</username>
+    <name>
+      <firstname>Harry</firstname>
+      <lastname>Fletcher</lastname>
+    </name>
+    <state>SD</state>
+  </customerDetails>
+  <orderItems>
+    <test.packageName.OrderItem>
+      <position>1</position>
+      <quantity>1</quantity>
+      <productId>364</productId>
+      <title>The 40-Year-Old Virgin</title>
+      <price>29.98</price>
+    </test.packageName.OrderItem>
+    <test.packageName.OrderItem>
+      <position>2</position>
+      <quantity>1</quantity>
+      <productId>299</productId>
+      <title>Pulp Fiction</title>
+      <price>29.99</price>
+    </test.packageName.OrderItem>
+  </orderItems>
+</test.packageName.Order>
