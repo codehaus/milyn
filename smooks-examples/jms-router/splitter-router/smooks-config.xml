@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-                      xmlns:jms="http://www.milyn.org/xsd/smooks/jms-routing-1.1.xsd"
+                      xmlns:jms="http://www.milyn.org/xsd/smooks/jms-routing-1.2.xsd"
                       xmlns:ftl="http://www.milyn.org/xsd/smooks/freemarker-1.1.xsd">
 
     <!--
@@ -11,18 +11,12 @@
         <param name="stream.filter.type">SAX</param>
     </params>
 
+    <!-- Capture the message data 2 seperate DOM models, for "order" and "order-item" fragments... -->
     <resource-config selector="order,order-item">
         <resource>org.milyn.delivery.DomModelCreator</resource>
     </resource-config>
 
-    <jms:router routeOnElement="order-item" beanId="orderItem_xml" destination="smooks.exampleQueue">
-        <jms:message>
-            <!-- Need to use special FreeMarker variable ".vars" -->
-            <jms:correlationIdPattern>${order.@id}-${.vars["order-item"].@id}</jms:correlationIdPattern>
-        </jms:message>
-        <jms:highWaterMark mark="3"/>
-    </jms:router>
-
+    <!-- At each "order-iteam", apply a template to the "order" and "order-item" DOM models... -->
     <ftl:freemarker applyOnElement="order-item">
         <!--
             Note in the template that we need to use the special FreeMarker variable ".vars"
@@ -35,5 +29,15 @@
             <ftl:bindTo id="orderItem_xml"/>
         </ftl:use>
     </ftl:freemarker>
+
+    <!-- At each "order-iteam", route the "orderItem_xml" to the ActiveMQ JMS Queue... -->
+    <jms:router routeOnElement="order-item" beanId="orderItem_xml" destination="smooks.exampleQueue">
+        <jms:message>
+            <!-- Need to use special FreeMarker variable ".vars" -->
+            <jms:correlationIdPattern>${order.@id}-${.vars["order-item"].@id}</jms:correlationIdPattern>
+        </jms:message>
+        <jms:jndi properties="/activemq.sr.jndi.properties" />
+        <jms:highWaterMark mark="3"/>
+    </jms:router>
 
 </smooks-resource-list>

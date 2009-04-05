@@ -157,7 +157,7 @@ public class JMSRouterTest
     @Test ( groups = "unit" )
 	public void setJndiContextFactory()
 	{
-		final String contextFactory = "org.jnp.interfaces.NamingContextFactory";
+		final String contextFactory = MockContextFactory.class.getName();
     	SmooksResourceConfiguration config = new SmooksResourceConfiguration(selector, JMSRouter.class.getName());
 		setManadatoryProperties( config );
         config.setParameter( "jndiContextFactory", contextFactory );
@@ -165,7 +165,7 @@ public class JMSRouterTest
         Configurator.configure( router, config, new MockApplicationContext() );
 
         assertEquals( "ContextFactory did not match the one set on the Router",
-        		contextFactory, router.getJndiContectFactory() );
+        		contextFactory, router.getJndiContextFactory() );
 	}
 
     @Test ( groups = "unit" )

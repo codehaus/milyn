@@ -44,6 +44,10 @@
         <priority value="ERROR"/>
     </category>
 
+    <category name="org.apache.activemq">
+        <priority value="INFO"/>
+    </category>
+
     <!-- ======================= -->
     <!-- Setup the Root category -->
     <!-- ======================= -->
