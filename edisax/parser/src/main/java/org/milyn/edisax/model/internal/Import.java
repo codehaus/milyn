@@ -20,6 +20,7 @@ public class Import {
 
     private String resource;
     private String namespace;
+    private Boolean truncatableSegments;
     private Boolean truncatableFields;
     private Boolean truncatableComponents;
 
@@ -55,4 +56,11 @@ public class Import {
         this.truncatableComponents = value;
     }
 
+    public Boolean isTruncatableSegments() {
+        return truncatableSegments;
+    }
+
+    public void setTruncatableSegments(Boolean truncatableSegments) {
+        this.truncatableSegments = truncatableSegments;
+    }
 }

@@ -18,11 +18,8 @@ package org.milyn.edisax;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Component;
-import org.milyn.edisax.model.internal.Field;
-import org.milyn.edisax.model.internal.Segment;
-import org.milyn.edisax.model.internal.SegmentGroup;
-import org.milyn.edisax.model.internal.SubComponent;
+import org.milyn.edisax.model.internal.*;
+import org.milyn.edisax.EDITypeEnum;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -137,6 +134,7 @@ public class EDIParser implements XMLReader {
 
     private EdifactModel edifactModel;
     private BufferedSegmentReader segmentReader;
+    private static final String FORMAT = "format";
 
     /**
      * Parse the supplied mapping model config stream and return the generated EdiMap.
@@ -488,15 +486,22 @@ public class EDIParser implements XMLReader {
                 throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segment.getSegcode() + "] expected to contain " + (numFieldsExpected - 1) + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
         }
+
+        for (int i = 1; i < currentSegmentFields.length; i++) {
+            Field field = expectedFields.get(i-1);
+            if (field.getComponent().size() == 0 && (!currentSegmentFields[i].equals(""))) {
+                validateValueNode(field, currentSegmentFields[i]);
+            }
+        }
     }
 
-    private void assertComponentsOK(Field expectedField, int fieldIndex, String segmentCode, List<Component> expectedComponents, String[] currentFieldComponents) throws EDIParseException {
+    private void assertComponentsOK(Field expectedField, int fieldIndex, String segmentCode, List<Component> expectedComponents, String[] currentFieldComponents) throws EDIParseException {        
         if (currentFieldComponents.length != expectedComponents.size()) {
             boolean throwException = false;            
 
             if (expectedField.isTruncatable()){
 
-                //B�rd: When there are no Components in Field it should not throw exception, since
+                //When there are no Components in Field it should not throw exception, since
                 //the Field is just created (with Field-separator) for satisfying requirement for Fields
                 //that are required later in Segment.
                 if (currentFieldComponents.length == 0) {
@@ -519,6 +524,13 @@ public class EDIParser implements XMLReader {
                 throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain " + expectedComponents.size() + " components.  Actually contains " + currentFieldComponents.length + " components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
         }
+
+        for (int i = 0; i < currentFieldComponents.length; i++) {
+            Component component = expectedComponents.get(i);
+            if (component.getSubComponent().size() == 0 && (!currentFieldComponents[i].equals(""))) {
+                validateValueNode(component, currentFieldComponents[i]);
+            }
+        }
     }
 
     private void assertSubComponentsOK(Component expectedComponent, int fieldIndex, int componentIndex, String segmentCode, String field, List<SubComponent> expectedSubComponents, String[] currentComponentSubComponents) throws EDIParseException {
@@ -527,7 +539,7 @@ public class EDIParser implements XMLReader {
 
             if (expectedComponent.isTruncatable()) {
 
-                //B�rd: When there are no SubComponents in field it should not throw exception, since
+                //When there are no SubComponents in field it should not throw exception, since
                 //the Component is just created (with Component-separator) for satisfying requirement
                 //for Components that are required later in Field.
                 if (currentComponentSubComponents.length == 0) {
@@ -548,6 +560,38 @@ public class EDIParser implements XMLReader {
 
             if (throwException) {
                 throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain " + expectedSubComponents.size() + " sub-components.  Actually contains " + currentComponentSubComponents.length + " sub-components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+            }
+        }
+
+        for (int i = 0; i < currentComponentSubComponents.length; i++) {
+            SubComponent subComponent = expectedSubComponents.get(i);
+            if (!currentComponentSubComponents[i].equals("")) {
+                validateValueNode(subComponent, currentComponentSubComponents[i]);
+            }
+        }
+    }
+
+    private void validateValueNode(ValueNode valueNode, String value) throws EDIParseException {
+
+        // Validate type.
+        if (valueNode.getType() != null && !valueNode.getType().equals("")) {
+            EDITypeEnum ediType = EDITypeEnum.valueOf(valueNode.getType());
+            if (!ediType.validateType(value, valueNode.getParameters())) {
+                throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+            }
+        }
+
+        //Test minLength.
+        if (valueNode.getMinLength() != null) {
+            if (value.length() < valueNode.getMinLength()) {
+                throw new EDIParseException(edifactModel.getEdimap(), "Value [" + value + "] should have a length greater than [" + valueNode.getMinLength() + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+            }
+        }
+
+        //Test maxLength.
+        if (valueNode.getMaxLength() != null) {
+            if (value.length() > valueNode.getMaxLength()) {
+                throw new EDIParseException(edifactModel.getEdimap(), "Value [" + value + "] exceeds allowed maximum length of [" + valueNode.getMaxLength() + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
         }
     }

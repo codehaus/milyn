@@ -20,6 +20,7 @@ import org.milyn.xml.XmlUtil;
 import org.milyn.xml.XsdDOMValidator;
 import org.milyn.io.StreamUtils;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.EDITypeEnum;
 import org.milyn.edisax.model.internal.*;
 import org.xml.sax.SAXException;
 import org.w3c.dom.*;
@@ -28,7 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -40,6 +41,7 @@ public class EDIConfigDigester {
 
     public static final String XSD_V10 = "http://www.milyn.org/schema/edi-message-mapping-1.0.xsd";
     public static final String XSD_V11 = "http://www.milyn.org/schema/edi-message-mapping-1.1.xsd";
+    public static final String XSD_V12 = "http://www.milyn.org/schema/edi-message-mapping-1.2.xsd";
     private static final String NAMESPACE_SUFFIX = ":";
 
     /**
@@ -90,7 +92,7 @@ public class EDIConfigDigester {
      * @return true if ediNS is valid, false otherwise.
      */
     private static boolean assertValidXSD(String ediNS) {
-        return XSD_V10.equals(ediNS) || XSD_V11.equals(ediNS);
+        return XSD_V10.equals(ediNS) || XSD_V11.equals(ediNS) || XSD_V12.equals(ediNS);
     }
 
     /**
@@ -98,6 +100,7 @@ public class EDIConfigDigester {
      * @param configDoc the Edimap element.
      * @param edimap the {@link org.milyn.edisax.model.internal.Edimap} to populate.
      * @param schemaName the schema uri.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when unable to retrieve namespace in configuration.
      */
     private static void digestXSDValidatedConfig(Document configDoc, Edimap edimap, String schemaName) throws EDIConfigurationException {
 
@@ -159,15 +162,17 @@ public class EDIConfigDigester {
         edimapImport.setNamespace(getNodeValue(node, "namespace"));
         edimapImport.setTruncatableFields(getNodeValueAsBoolean(node, "truncatableFields"));
         edimapImport.setTruncatableComponents(getNodeValueAsBoolean(node, "truncatableComponents"));
+        edimapImport.setTruncatableSegments(getNodeValueAsBoolean(node, "truncatableSegments"));
     }
 
     /**
      * Digest attributes and child elements of Segments element. Populates Segments.
      * @param node the Segments element.
      * @param edimap the {@link org.milyn.edisax.model.internal.Edimap} to populate.
-     * @param namespacePrefix the prefix used to name elements in xml. 
+     * @param namespacePrefix the prefix used to name elements in xml.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void digestSegments(Node node, Edimap edimap, String namespacePrefix) {
+    private static void digestSegments(Node node, Edimap edimap, String namespacePrefix) throws EDIConfigurationException {
         SegmentGroup segments = new SegmentGroup();
         setValuesForMappingNode(node, segments);
         edimap.setSegments(segments);
@@ -185,8 +190,9 @@ public class EDIConfigDigester {
      * @param node the Segment element.
      * @param segmentGroup the {@link org.milyn.edisax.model.internal.SegmentGroup} to populate.
      * @param namespacePrefix the prefix used to name elements in xml.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void digestSegment(Node node, SegmentGroup segmentGroup, String namespacePrefix) {
+    private static void digestSegment(Node node, SegmentGroup segmentGroup, String namespacePrefix) throws EDIConfigurationException {
 
         if(segmentGroup instanceof Segment) {
             Segment segment = (Segment) segmentGroup;
@@ -218,7 +224,7 @@ public class EDIConfigDigester {
         }
     }
 
-    private static boolean digestSegmentGroup(Node currentNode, List<SegmentGroup> segmentGroupList, String namespacePrefix) {
+    private static boolean digestSegmentGroup(Node currentNode, List<SegmentGroup> segmentGroupList, String namespacePrefix) throws EDIConfigurationException {
         
         if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "segmentGroup")) {
             SegmentGroup segment = new SegmentGroup();
@@ -242,8 +248,9 @@ public class EDIConfigDigester {
      * @param node the Field element.
      * @param field the {@link org.milyn.edisax.model.internal.Field} to populate
      * @param namespacePrefix the prefix used to name elements in xml.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void digestField(Node node, Field field, String namespacePrefix) {
+    private static void digestField(Node node, Field field, String namespacePrefix) throws EDIConfigurationException {
         setValuesForField(field, node);
 
         NodeList nodes = node.getChildNodes();
@@ -263,8 +270,9 @@ public class EDIConfigDigester {
      * @param node the Component element.
      * @param component the {@link org.milyn.edisax.model.internal.Component} to populate.
      * @param namespacePrefix the prefix used to name elements in xml.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void digestComponent(Node node, Component component, String namespacePrefix) {
+    private static void digestComponent(Node node, Component component, String namespacePrefix) throws EDIConfigurationException {
         setValuesForComponent(component, node);
 
         NodeList nodes = node.getChildNodes();
@@ -290,6 +298,7 @@ public class EDIConfigDigester {
         segment.setSegcode(getNodeValue(node, "segcode"));
         segment.setSegref(getNodeValue(node, "segref"));
         segment.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
+        segment.setDescription(getNodeValue(node, "description"));
         setValuesForMappingNode(node, segment);
     }
 
@@ -297,32 +306,35 @@ public class EDIConfigDigester {
      * Set values in {@link org.milyn.edisax.model.internal.Field}.
      * @param field the {@link org.milyn.edisax.model.internal.Field} to populate.
      * @param node the Field element.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void setValuesForField(Field field, Node node) {
+    private static void setValuesForField(Field field, Node node) throws EDIConfigurationException {
         field.setRequired(getNodeValueAsBoolean(node, "required"));
         field.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
-        setValuesForMappingNode(node, field);
+        setValuesForValueNode(node, field);
     }
 
     /**
      * Set values in {@link org.milyn.edisax.model.internal.Component}.
      * @param component the {@link org.milyn.edisax.model.internal.Component} to populate.
      * @param node the Component element.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void setValuesForComponent(Component component, Node node) {
+    private static void setValuesForComponent(Component component, Node node) throws EDIConfigurationException {
         component.setRequired(getNodeValueAsBoolean(node, "required"));
         component.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
-        setValuesForMappingNode(node, component);
+        setValuesForValueNode(node, component);
     }
 
     /**
      * Set values in {@link org.milyn.edisax.model.internal.SubComponent}.
      * @param node the {@link org.milyn.edisax.model.internal.SubComponent} to populate.
      * @param subComponent the SubComponent element.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void setValuesForSubComponent(Node node, SubComponent subComponent) {
+    private static void setValuesForSubComponent(Node node, SubComponent subComponent) throws EDIConfigurationException {
         subComponent.setRequired(getNodeValueAsBoolean(node, "required"));
-        setValuesForMappingNode(node, subComponent);
+        setValuesForValueNode(node, subComponent);
     }
 
     /**
@@ -332,6 +344,62 @@ public class EDIConfigDigester {
      */
     private static void setValuesForMappingNode(Node node, MappingNode mappingNode) {
         mappingNode.setXmltag(getNodeValue(node, "xmltag"));
+    }
+
+    /**
+     * Set values in {@link org.milyn.edisax.model.internal.ValueNode}.
+     * @param node the {@link org.milyn.edisax.model.internal.ValueNode} to populate.
+     * @param valueNode the ValueNode element.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
+     */
+    private static void setValuesForValueNode(Node node, ValueNode valueNode) throws EDIConfigurationException {
+        setValuesForMappingNode(node, valueNode);
+        valueNode.setType(getNodeValue(node, "type"));
+        valueNode.setMinLength(getNodeValueAsInteger(node, "minLength"));
+        valueNode.setMaxLength(getNodeValueAsInteger(node, "maxLength"));
+        digestParameters(valueNode, getNodeValue(node, "parameters"));
+    }
+
+    /**
+     * Digests parameters from parameters attribute and insertsthe parameters into
+     * the valueNode. If first parameter is not a key-value-pair the parameter is
+     * considered to be a custom class name.
+     * @param valueNode the valueNode to populate. 
+     * @param value the parameters as a string value.
+     * @throws EDIConfigurationException is thrown when parameters are used incorrectly.
+     */
+    private static void digestParameters(ValueNode valueNode, String value) throws EDIConfigurationException {
+
+        if (value != null && !value.equals("")) {
+            List<Map.Entry<String, String>> result = new ArrayList<Map.Entry<String, String>>();
+            String[] parameters = value.split(";");
+            String[] entry;
+            String customClass = null;
+            for (int i = 0; i < parameters.length; i++) {
+                String parameter = parameters[i];
+                entry = parameter.split("=");
+                if (entry.length == 1) {
+                    if (i == 0) {
+                        customClass = entry[0];
+                        result.add(new ParamEntry<String, String>(EDITypeEnum.Custom.name(), entry[0]));
+                    } else {
+                        throw new EDIConfigurationException("Invalid use of paramaters in ValueNode. A parameter-entry should consist of a key-value-pair separated with the '='-character. Example: [parameters=\"key1=value1;key2=value2\"]"); 
+                    }
+                } else if (entry.length == 2) {
+                    result.add(new ParamEntry<String, String>(entry[0], entry[1]));
+                } else {
+                    throw new EDIConfigurationException("Invalid use of paramaters in ValueNode. A parameter-entry should consist of a key-value-pair separated with the '='-character. Example: [parameters=\"key1=value1;key2=value2\"]");
+                }
+            }
+            valueNode.setParameters(result);
+
+            if ( valueNode.getType().equals(EDITypeEnum.CUSTOM_NAME) && customClass == null) {
+                throw new EDIConfigurationException("When using the Custom type in ValueNode the custom class type must exist as the first element in parameters");
+            } else if ( customClass != null && !valueNode.getType().equals(EDITypeEnum.CUSTOM_NAME)) {
+                throw new EDIConfigurationException("When first parameter in list of parameters is not a key-value-pair the type of the ValueNode should be Custom.");
+            }
+
+        }
     }
 
     /**
@@ -377,6 +445,7 @@ public class EDIConfigDigester {
      * @param documentElement the edimap element.
      * @param schemaName the schema uri.
      * @return the namespaceprefix used in the edi-message-mapping.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when no namespace exists in configuration.
      */
     private static String retrieveNamespace(Element documentElement, String schemaName) throws EDIConfigurationException {
         NamedNodeMap attributes = documentElement.getAttributes();

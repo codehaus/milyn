@@ -16,16 +16,34 @@
 
 package org.milyn.edisax.model.internal;
 
-public class SubComponent extends ValueNode {
+import java.util.Map;
 
-    private Boolean required;
+/**
+ * ParamEntry.
+ *
+ * @author bardl
+ */
+public class ParamEntry<K,V> implements Map.Entry<K,V> {
 
-    public boolean isRequired() {
-        return required != null && required;
+    private K key;
+    private V value;
+
+    public ParamEntry(K key, V value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public void setRequired(Boolean value) {
-        this.required = value;
+    public K getKey() {
+        return key;
     }
 
+    public V getValue() {
+        return value;
+    }
+
+    public V setValue(V value) {
+        V oldValue = this.value;
+        this.value = value;
+        return oldValue;
+    }
 }

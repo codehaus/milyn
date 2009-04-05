@@ -76,7 +76,6 @@ public class EdifactModel {
 
         edimap = EDIConfigDigester.digestConfig(inputStream);
         importFiles(tree.getRoot(), edimap, tree);
-        System.out.println("");
     }
 
     /**
@@ -135,14 +134,8 @@ public class EdifactModel {
             if (importedSegment == null) {
                 throw new EDIParseException(edimap, "Referenced segment [" + key + "] does not exist in imported edi-message-mapping [" + imp.getResource() + "]");
             }
-            insertImportedSegmentInfo(segment, importedSegment, imp.isTruncatableFields(), imp.isTruncatableComponents());
+            insertImportedSegmentInfo(segment, importedSegment, imp.isTruncatableSegments(), imp.isTruncatableFields(), imp.isTruncatableComponents());
         }
-
-//        for (SegmentGroup segmentGroup : segment.getSegments()) {
-//            if(segmentGroup instanceof Segment) {
-//                applyImportOnSegment((Segment) segmentGroup, imp, importedSegments);
-//            }
-//        }
     }
 
     /**
@@ -154,9 +147,8 @@ public class EdifactModel {
      * @param truncatableFields a global attribute for overriding the truncatable attribute in imported segment.
      * @param truncatableComponents a global attribute for overriding the truncatable attribute in imported segment.
      */
-    private void insertImportedSegmentInfo(Segment segment, Segment importedSegment, Boolean truncatableFields, Boolean truncatableComponents) {
+    private void insertImportedSegmentInfo(Segment segment, Segment importedSegment, Boolean truncatableSegments, Boolean truncatableFields, Boolean truncatableComponents) {
         //Overwrite all existing fields in segment, but add additional segments to existing segments.
-        //segment.getFields().clear();
         segment.getFields().addAll(importedSegment.getFields());
 
         if (importedSegment.getSegments().size() > 0) {
@@ -165,6 +157,10 @@ public class EdifactModel {
 
         //If global truncatable attributes are set in importing mapping, then
         //override the attributes in the imported files.
+        if (truncatableSegments != null) {
+            segment.setTruncatable(truncatableSegments);
+        }
+        
         if (truncatableFields != null || truncatableComponents != null) {
             for ( Field field : segment.getFields()) {
                 field.setTruncatable(isTruncatable(truncatableFields, field.isTruncatable()));
