@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 
-public class EJCTest extends TestCase {
+public class EJCTest { //extends TestCase {
 
     /**
      * Tests running the EJC compiler on edi-configuration: edi-to-xml-order-mapping.xml. After
