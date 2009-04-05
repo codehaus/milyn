@@ -17,6 +17,7 @@ package org.milyn.routing.jms;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -45,9 +46,7 @@ import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.*;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.routing.SmooksRoutingException;
 import org.milyn.routing.jms.message.creationstrategies.MessageCreationStrategy;
@@ -119,7 +118,7 @@ import org.w3c.dom.Element;
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
 @VisitAfterIf(	condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
-public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
+public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Consumer
 {
 	/*
 	 *	Log instance
@@ -220,16 +219,6 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
         sendMessage(message);
 	}
 
-    public void onChildElement( final SAXElement saxElement, final SAXElement saxElement2, final ExecutionContext execContect ) throws SmooksException, IOException
-	{
-		//	NoOp
-	}
-
-    public void onChildText( final SAXElement saxElement, final SAXText saxText, final ExecutionContext execContext ) throws SmooksException, IOException
-	{
-		//	NoOp
-	}
-
     //	Lifecycle
 
     @Initialize
@@ -243,8 +232,14 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
                 correlationIdTemplate = new FreeMarkerTemplate(correlationIdPattern);
             }
 
-	    	context = new InitialContext();
-			destination = (Destination) context.lookup( jmsProperties.getDestinationName() );
+            Properties jndiContextProperties = jndiProperties.toProperties();
+
+            if(jndiContextProperties.isEmpty()) {
+                context = new InitialContext();
+            } else {
+                context = new InitialContext(jndiContextProperties);
+            }
+            destination = (Destination) context.lookup( jmsProperties.getDestinationName() );
 			msgProducer = createMessageProducer( destination, context );
 			setMessageProducerProperties( );
 
@@ -437,19 +432,25 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
 		return destination;
 	}
 
-    @ConfigParam ( use = Use.OPTIONAL, defaultVal = "org.jnp.interfaces.NamingContextFactory" )
+    @ConfigParam ( use = Use.OPTIONAL )
     public void setJndiContextFactory( final String contextFactory )
     {
     	jndiProperties.setContextFactory( contextFactory );
     }
 
-    public String getJndiContectFactory()
+    public String getJndiContextFactory()
 	{
 		return jndiProperties.getContextFactory();
 	}
+    
 
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setJndiProperties(final String properties )
+    {
+    	jndiProperties.setPropertiesFile( properties );
+    }
 
-    @ConfigParam ( use = Use.OPTIONAL, defaultVal = "jnp://localhost:1099" )
+    @ConfigParam ( use = Use.OPTIONAL )
     public void setJndiProviderUrl(final String providerUrl )
     {
     	jndiProperties.setProviderUrl( providerUrl );
@@ -465,7 +466,7 @@ public class JMSRouter implements DOMElementVisitor, SAXElementVisitor, Consumer
 		return jndiProperties.getNamingFactoryUrlPkgs();
 	}
 
-    @ConfigParam ( use = Use.OPTIONAL, defaultVal = "org.jboss.naming:java.naming.factory.url.pkgs" )
+    @ConfigParam ( use = Use.OPTIONAL )
     public void setJndiNamingFactoryUrl(final String pkgUrl )
     {
     	jndiProperties.setNamingFactoryUrlPkgs( pkgUrl );
