@@ -45,8 +45,8 @@ public class EJCTest extends TestCase {
             String expected = org.milyn.io.StreamUtils.readStreamAsString(getClass().getResourceAsStream("expected.xml"));
 
             // Compile edi-configuration using the EJC.
-            EJC ejc = new EJC();
-            String _folder = URLDecoder.decode(Thread.currentThread().getContextClassLoader().getResource("").toString().replace("file:/", ""), "utf-8");
+            EJC ejc = new EJC();            
+            String _folder = getClass().getResource("").toString().replace("file:/", "");
             String packageName = "test.packageName";
             ejc.compile("edi-to-xml-order-mapping.xml", packageName, _folder, _folder + "binding-config.xml");
 
@@ -56,8 +56,8 @@ public class EJCTest extends TestCase {
             // Test the generated files in Smooks using a previously defined edi-smooks-config
             // and the generated binding-config.
             Smooks smooks = new Smooks();
-            smooks.addConfigurations(new FileInputStream(_folder + "edi-config.xml"));
-            smooks.addConfigurations(new FileInputStream(_folder + "binding-config.xml"));
+            smooks.addConfigurations(getClass().getResourceAsStream("edi-config.xml"));
+            smooks.addConfigurations(getClass().getResourceAsStream("binding-config.xml"));
             ExecutionContext context = smooks.createExecutionContext();
 
             JavaResult result = new JavaResult();
