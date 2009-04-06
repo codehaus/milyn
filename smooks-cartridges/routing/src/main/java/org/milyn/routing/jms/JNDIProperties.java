@@ -37,6 +37,8 @@ public class JNDIProperties
     
     private String propertiesFile;
 
+    private Properties properties;
+
     public String getContextFactory()
 	{
 		return contextFactory;
@@ -67,12 +69,18 @@ public class JNDIProperties
 		this.namingFactoryUrlPkgs = namingFactoryUrl;
 	}
 
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
     public void setPropertiesFile(String propertiesFile) {
         this.propertiesFile = propertiesFile;
     }
 
     public Properties toProperties() throws SmooksConfigurationException {
-        Properties properties = new Properties();
+        if(properties == null) {
+            properties = new Properties();
+        }
 
         if(propertiesFile != null) {
             try {

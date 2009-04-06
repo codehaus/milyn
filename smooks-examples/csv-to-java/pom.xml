@@ -19,12 +19,6 @@
             <version>${milyn.smooks.csv.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-javabean</artifactId>
-            <version>${milyn.smooks.csv.version}</version>
-        </dependency>
-
 	</dependencies>
 
     <repositories>

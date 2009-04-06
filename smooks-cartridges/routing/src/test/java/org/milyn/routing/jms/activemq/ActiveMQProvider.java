@@ -74,7 +74,7 @@ public class ActiveMQProvider {
         // configure the brokerService
         brokerService.setDataDirectory(new File("./target/activeMQData"));
         brokerService.setPersistent(false);
-        brokerService.setUseJmx(true);
+        brokerService.setUseJmx(false);
         brokerService.addConnector(providerUrl);
 
         brokerService.start();

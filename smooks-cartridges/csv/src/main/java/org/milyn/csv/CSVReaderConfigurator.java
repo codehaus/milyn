@@ -18,6 +18,7 @@ package org.milyn.csv;
 import org.milyn.ReaderConfigurator;
 import org.milyn.GenericReaderConfigurator;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.assertion.AssertArgument;
 
 import java.nio.charset.Charset;
@@ -107,7 +108,13 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         if(binding != null) {
             configurator.getParameters().setProperty("bindBeanId", binding.getBeanId());
             configurator.getParameters().setProperty("bindBeanClass", binding.getBeanClass().getName());
-            configurator.getParameters().setProperty("bindBeanAsList", Boolean.toString(binding.isCreateList()));
+            configurator.getParameters().setProperty("bindingType", binding.getBindingType().toString());
+            if(binding.getBindingType() == CSVBindingType.MAP) {
+                if(binding.getKeyField() == null) {
+                    throw new SmooksConfigurationException("CSV 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
+                }
+                configurator.getParameters().setProperty("bindMapKeyField", binding.getKeyField());                
+            }
         }
 
         configurator.setTargetProfile(targetProfile);

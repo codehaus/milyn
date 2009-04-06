@@ -21,21 +21,30 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.xml.SmooksXMLReader;
-import org.milyn.delivery.ConfigurationExpander;
 import org.milyn.delivery.VisitorAppender;
 import org.milyn.delivery.VisitorConfigMap;
+import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.sax.SAXVisitAfter;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.javabean.Bean;
+import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.SmooksException;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -46,6 +55,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.AttributesImpl;
+import org.w3c.dom.Element;
 
 
 /**
@@ -55,12 +65,37 @@ import org.xml.sax.helpers.AttributesImpl;
  * CSV based message stream into a stream of SAX events to be consumed by the DOMBuilder.
  *
  * <h3>Configuration</h3>
+ * To maintain a single binding instance in memory:
  * <pre>
  * &lt;?xml version="1.0"?&gt;
  * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:csv="http://www.milyn.org/xsd/smooks/csv-1.2.xsd"&gt;
  *
  *     &lt;csv:reader fields="" separator="" quote="" skipLines="" rootElementName="" recordElementName=""&gt;
- *         &lt;csv:binding beanId="" class="" createList="" /&gt;
+ *         &lt;csv:singleBinding beanId="" class="" /&gt;
+ *     &lt;/csv:reader&gt;
+ *
+ * &lt;/smooks-resource-list&gt;</pre>
+ *
+ * <p/>
+ * To maintain a {@link List} of binding instances in memory:
+ * <pre>
+ * &lt;?xml version="1.0"?&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:csv="http://www.milyn.org/xsd/smooks/csv-1.2.xsd"&gt;
+ *
+ *     &lt;csv:reader fields="" separator="" quote="" skipLines="" rootElementName="" recordElementName=""&gt;
+ *         &lt;csv:listBinding beanId="" class="" /&gt;
+ *     &lt;/csv:reader&gt;
+ *
+ * &lt;/smooks-resource-list&gt;</pre>
+ *
+ * <p/>
+ * To maintain a {@link Map} of binding instances in memory:
+ * <pre>
+ * &lt;?xml version="1.0"?&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:csv="http://www.milyn.org/xsd/smooks/csv-1.2.xsd"&gt;
+ *
+ *     &lt;csv:reader fields="" separator="" quote="" skipLines="" rootElementName="" recordElementName=""&gt;
+ *         &lt;csv:mapBinding beanId="" class="" keyField="" /&gt;
  *     &lt;/csv:reader&gt;
  *
  * &lt;/smooks-resource-list&gt;</pre>
@@ -137,13 +172,17 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     private Class bindBeanClass;
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    private boolean bindBeanAsList;
+    private CSVBindingType bindingType;
+
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
+    private String bindMapKeyField;
+    private static final String RECORD_BEAN = "csvRecordBean";
 
     public void addVisitors(VisitorConfigMap visitorMap) {
         if(bindBeanId != null && bindBeanClass != null) {
             Bean bean;
 
-            if(bindBeanAsList) {
+            if(bindingType == CSVBindingType.LIST) {
                 Bean listBean = new Bean(ArrayList.class, bindBeanId, "$document");
 
                 bean = listBean.newBean(bindBeanClass, recordElementName);
@@ -151,6 +190,22 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
                 addFieldBindings(bean);
 
                 listBean.addVisitors(visitorMap);
+            } else if(bindingType == CSVBindingType.MAP) {
+                if(bindMapKeyField == null) {
+                    throw new SmooksConfigurationException("CSV 'MAP' Binding must specify a 'keyField' property on the binding configuration.");
+                }
+
+                assertValidFieldName(bindMapKeyField);
+                
+                Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId, "$document");
+                Bean recordBean = new Bean(bindBeanClass, RECORD_BEAN, recordElementName);
+                MapBindingWiringVisitor wiringVisitor = new MapBindingWiringVisitor(bindMapKeyField, bindBeanId);
+                
+                addFieldBindings(recordBean);
+                
+                mapBean.addVisitors(visitorMap);
+                recordBean.addVisitors(visitorMap);
+                visitorMap.addVisitor(wiringVisitor, recordElementName, null, false);
             } else {
                 bean = new Bean(bindBeanClass, bindBeanId, recordElementName);
                 addFieldBindings(bean);
@@ -241,6 +296,16 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         return contentHandler;
     }
 
+    private void assertValidFieldName(String field) {
+        for(String csvField : csvFields) {
+            if(csvField.equals(field)) {
+                return;
+            }
+        }
+
+        throw new SmooksConfigurationException("Invalid field name '" + field + "'.  Valid names: " + Arrays.asList(csvFields) + ".");
+    }
+
     /****************************************************************************
      *
      * The following methods are currently unimplemnted...
@@ -288,5 +353,42 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
     public void setProperty(String name, Object value)
             throws SAXNotRecognizedException, SAXNotSupportedException {
+    }
+
+    private class MapBindingWiringVisitor implements DOMVisitAfter, SAXVisitAfter, Consumer {
+
+        private MVELExpressionEvaluator keyExtractor = new MVELExpressionEvaluator();
+        private String mapBindingKey;
+
+        private MapBindingWiringVisitor(String bindKeyField, String mapBindingKey) {
+            keyExtractor.setExpression(RECORD_BEAN + "." + bindKeyField);
+            this.mapBindingKey = mapBindingKey;
+        }
+
+        public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+            wireObject(executionContext);
+        }
+
+        public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+            wireObject(executionContext);
+        }
+
+        private void wireObject(ExecutionContext executionContext) {
+            BeanRepository repository = BeanRepositoryManager.getBeanRepository(executionContext);
+            Map<String, Object> beanMap = repository.getBeanMap();
+            Object key = keyExtractor.getValue(beanMap);
+            Map map = (Map) repository.getBean(mapBindingKey);
+            Object record = repository.getBean(RECORD_BEAN);
+
+            map.put(key, record);
+        }
+
+        public boolean consumes(Object object) {
+            if(keyExtractor.getExpression().indexOf(object.toString()) != -1) {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

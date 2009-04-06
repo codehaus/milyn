@@ -394,7 +394,7 @@ public class Bean implements VisitorAppender {
 
     /**
      * Add the visitors, associated with this Bean instance, to the visitor map.
-     * @param visitorMap
+     * @param visitorMap The visitor Map.
      */
     public void addVisitors(VisitorConfigMap visitorMap) {
 
@@ -407,9 +407,9 @@ public class Bean implements VisitorAppender {
         processed = true;
 
         // Add the create bean visitor...
-        SmooksResourceConfiguration resourceConfig = visitorMap.addVisitor(beanInstanceCreator, createOnElement, targetNamespace, true);
-        resourceConfig.setParameter("beanId", beanId);
-        resourceConfig.setParameter("beanClass", beanClass.getName());
+        SmooksResourceConfiguration creatorConfig = visitorMap.addVisitor(beanInstanceCreator, createOnElement, targetNamespace, true);
+        creatorConfig.setParameter("beanId", beanId);
+        creatorConfig.setParameter("beanClass", beanClass.getName());
 
         // Recurse down the wired beans...
         for(Bean bean : wirings) {
@@ -418,7 +418,8 @@ public class Bean implements VisitorAppender {
 
         // Add the populate bean visitors...
         for(Binding binding : bindings) {
-            visitorMap.addVisitor(binding.beanInstancePopulator, binding.selector, targetNamespace, true);
+            SmooksResourceConfiguration populatorConfig = visitorMap.addVisitor(binding.beanInstancePopulator, binding.selector, targetNamespace, true);
+            populatorConfig.setParameter("beanId", beanId);
             if(binding.assertTargetIsCollection) {
                 assertBeanClassIsCollection();
             }

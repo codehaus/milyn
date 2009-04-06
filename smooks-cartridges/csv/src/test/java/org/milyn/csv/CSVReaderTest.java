@@ -20,6 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamSource;
@@ -29,9 +31,11 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
+import org.milyn.FilterSettings;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.JavaResult;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.xml.XmlUtil;
@@ -163,8 +167,18 @@ public class CSVReaderTest extends TestCase {
         assertEquals("<customers><customer><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></customer><customer><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></customer></customers>", result.getResult());
     }
 
-    public void test_09() throws SmooksException, IOException, SAXException {
+    public void test_09_1() throws SmooksException, IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-07.xml"));
+
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        Person person = (Person) result.getBean("person");
+        assertEquals("(Linda, Coughlan, Ireland, Female, 22)", person.toString());
+    }
+
+    public void test_09_2() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-08.xml"));
 
         JavaResult result = new JavaResult();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
@@ -177,7 +191,7 @@ public class CSVReaderTest extends TestCase {
         Smooks smooks = new Smooks();
 
         smooks.setReaderConfig(new CSVReaderConfigurator("firstname,lastname,$ignore$,gender,age,country")
-                .setBinding(new CSVBinding("people", Person.class, true)));
+                .setBinding(new CSVBinding("people", Person.class, CSVBindingType.LIST)));
 
         JavaResult result = new JavaResult();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
@@ -190,12 +204,168 @@ public class CSVReaderTest extends TestCase {
         Smooks smooks = new Smooks();
 
         smooks.setReaderConfig(new CSVReaderConfigurator("firstname,lastname,$ignore$,gender,age,country")
-                .setBinding(new CSVBinding("person", Person.class, false)));
+                .setBinding(new CSVBinding("person", Person.class, CSVBindingType.SINGLE)));
 
         JavaResult result = new JavaResult();
         smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         Person person = (Person) result.getBean("person");
         assertEquals("(Linda, Coughlan, Ireland, Female, 22)", person.toString());
+    }
+
+    public void test_12() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+
+        smooks.setReaderConfig(new CSVReaderConfigurator("firstname,lastname,$ignore$,gender,age,country")
+                .setBinding(new CSVBinding("people", HashMap.class, CSVBindingType.LIST)));
+
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        List<Map> people = (List<Map>) result.getBean("people");
+        Map person;
+
+        assertEquals(3, people.size());
+
+        person = people.get(0);
+        assertEquals("Tom", person.get("firstname"));
+        assertEquals("Fennelly", person.get("lastname"));
+        assertEquals("Male", person.get("gender"));
+        assertEquals("4", person.get("age"));
+        assertEquals("Ireland", person.get("country"));
+
+        person = people.get(1);
+        assertEquals("Mike", person.get("firstname"));
+        assertEquals("Fennelly", person.get("lastname"));
+        assertEquals("Male", person.get("gender"));
+        assertEquals("2", person.get("age"));
+        assertEquals("Ireland", person.get("country"));
+
+        person = people.get(2);
+        assertEquals("Linda", person.get("firstname"));
+        assertEquals("Coughlan", person.get("lastname"));
+        assertEquals("Female", person.get("gender"));
+        assertEquals("22", person.get("age"));
+        assertEquals("Ireland", person.get("country"));
+    }
+
+    public void test_13_xml_dom() throws SmooksException, IOException, SAXException {
+        test_13_xml(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void test_13_xml_sax() throws SmooksException, IOException, SAXException {
+        test_13_xml(FilterSettings.DEFAULT_SAX);
+    }
+
+    public void test_13_programmatic_dom() throws SmooksException, IOException, SAXException {
+        test_13_programmatic(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void test_13_programmatic_sax() throws SmooksException, IOException, SAXException {
+        test_13_programmatic(FilterSettings.DEFAULT_SAX);
+    }
+
+    public void test_13_xml(FilterSettings filterSettings) throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-09.xml"));
+        smooks.setFilterSettings(filterSettings);
+        test_13(smooks);
+    }
+
+    public void test_13_programmatic(FilterSettings filterSettings) throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+
+        smooks.setReaderConfig(new CSVReaderConfigurator("firstname,lastname,$ignore$,gender,age,country")
+                .setBinding(new CSVBinding("people", Person.class, CSVBindingType.MAP).setKeyField("age")));
+
+        smooks.setFilterSettings(filterSettings);
+        test_13(smooks);
+    }
+
+    private void test_13(Smooks smooks) {
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        Map<Integer, Person> people = (Map<Integer, Person>) result.getBean("people");
+        Person person;
+
+        person = people.get(4);
+        assertEquals("(Tom, Fennelly, Ireland, Male, 4)", person.toString());
+        person = people.get(2);
+        assertEquals("(Mike, Fennelly, Ireland, Male, 2)", person.toString());
+        person = people.get(22);
+        assertEquals("(Linda, Coughlan, Ireland, Female, 22)", person.toString());
+    }
+
+    public void test_14_xml_dom() throws SmooksException, IOException, SAXException {
+        test_14_xml(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void test_14_xml_sax() throws SmooksException, IOException, SAXException {
+        test_14_xml(FilterSettings.DEFAULT_SAX);
+    }
+
+    public void test_14_programmatic_dom() throws SmooksException, IOException, SAXException {
+        test_14_programmatic(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void test_14_programmatic_sax() throws SmooksException, IOException, SAXException {
+        test_14_programmatic(FilterSettings.DEFAULT_SAX);
+    }
+
+    public void test_14_xml(FilterSettings filterSettings) throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-10.xml"));
+        smooks.setFilterSettings(filterSettings);
+        test_14(smooks);
+    }
+
+    public void test_14_programmatic(FilterSettings filterSettings) throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+
+        smooks.setReaderConfig(new CSVReaderConfigurator("firstname,lastname,$ignore$,gender,age,country")
+                .setBinding(new CSVBinding("people", HashMap.class, CSVBindingType.MAP).setKeyField("firstname")));
+
+        smooks.setFilterSettings(filterSettings);
+        test_14(smooks);
+    }
+
+    private void test_14(Smooks smooks) {
+        JavaResult result = new JavaResult();
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        Map<String, Map> people = (Map<String, Map>) result.getBean("people");
+        Map person;
+
+        person = people.get("Tom");
+        assertEquals("Tom", person.get("firstname"));
+        assertEquals("Fennelly", person.get("lastname"));
+        assertEquals("Male", person.get("gender"));
+        assertEquals("4", person.get("age"));
+        assertEquals("Ireland", person.get("country"));
+
+        person = people.get("Mike");
+        assertEquals("Mike", person.get("firstname"));
+        assertEquals("Fennelly", person.get("lastname"));
+        assertEquals("Male", person.get("gender"));
+        assertEquals("2", person.get("age"));
+        assertEquals("Ireland", person.get("country"));
+
+        person = people.get("Linda");
+        assertEquals("Linda", person.get("firstname"));
+        assertEquals("Coughlan", person.get("lastname"));
+        assertEquals("Female", person.get("gender"));
+        assertEquals("22", person.get("age"));
+        assertEquals("Ireland", person.get("country"));
+    }
+
+    public void test_15() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-11.xml"));
+
+        JavaResult result = new JavaResult();
+        try {
+            smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+            fail("Expected SmooksConfigurationException");
+        } catch(SmooksConfigurationException e) {
+            assertEquals("Invalid field name 'xxxx'.  Valid names: [firstname, lastname, $ignore$, gender, age, country].", e.getMessage());
+        }
     }
 }
