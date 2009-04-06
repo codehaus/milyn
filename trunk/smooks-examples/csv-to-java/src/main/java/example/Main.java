@@ -21,6 +21,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.JavaResult;
+import org.milyn.payload.StringSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -36,7 +37,7 @@ import java.util.List;
  */
 public class Main {
 
-    private static byte[] messageIn = readInputMessage();
+    private static String messageIn = readInputMessage();
 
     protected static List runSmooksTransform() throws IOException, SAXException, SmooksException {
 
@@ -47,7 +48,7 @@ public class Main {
         // Configure the execution context to generate a report...
         executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        smooks.filter(new StreamSource(new InputStreamReader(new ByteArrayInputStream(messageIn), "UTF-8")), result, executionContext);
+        smooks.filter(new StringSource(messageIn), result, executionContext);
 
         return (List) result.getBean("customerList");
     }
@@ -64,12 +65,12 @@ public class Main {
         System.out.println("======================================\n\n");
     }
 
-    private static byte[] readInputMessage() {
+    private static String readInputMessage() {
         try {
-            return StreamUtils.readStream(new FileInputStream("input-message.csv"));
+            return StreamUtils.readStreamAsString(new FileInputStream("input-message.csv"));
         } catch (IOException e) {
             e.printStackTrace();
-            return "<no-message/>".getBytes();
+            return "<no-message/>";
         }
     }
 }

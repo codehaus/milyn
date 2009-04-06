@@ -37,6 +37,7 @@ import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
@@ -147,12 +148,12 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
     private FreeMarkerTemplate correlationIdTemplate;
 
     @ConfigParam(defaultVal = "200")
-    private int highWaterMark;
+    private int highWaterMark = 200;
     @ConfigParam(defaultVal = "60000")
-    private long highWaterMarkTimeout;
+    private long highWaterMarkTimeout = 60000;
 
     @ConfigParam(defaultVal = "1000")
-    private long highWaterMarkPollFrequency;
+    private long highWaterMarkPollFrequency = 1000;
 
     /*
      * 	Strategy for JMS Message object creation
@@ -178,56 +179,20 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
      */
     private Session session;
 
-    public boolean consumes(Object object) {
-        if(object.toString().startsWith(beanId)) {
-            // We use startsWith (Vs equals) so as to catch bean populations e.g. "address.street".
-            return true;
-        }
-
-        return false;
-    }
-
-    //	Vistor methods
-
-    public void visitAfter( final Element element, final ExecutionContext execContext ) throws SmooksException
-	{
-		visit( execContext );
-	}
-
-	public void visitBefore( final Element element, final ExecutionContext execContext ) throws SmooksException
-	{
-		visit( execContext );
-	}
-
-	public void visitAfter( final SAXElement element, final ExecutionContext execContext ) throws SmooksException, IOException
-	{
-		visit( execContext );
-	}
-
-	public void visitBefore( final SAXElement element, final ExecutionContext execContext ) throws SmooksException, IOException
-	{
-		visit( execContext );
-	}
-
-	private void visit( final ExecutionContext execContext ) throws SmooksException	{
-        Message message = msgCreationStrategy.createJMSMessage(beanId, execContext, session);
-
-        if(correlationIdTemplate != null) {
-            setCorrelationID(execContext, message);
-        }
-
-        sendMessage(message);
-	}
-
-    //	Lifecycle
-
     @Initialize
     public void initialize() throws SmooksConfigurationException, JMSException {
-    	Context context = null;
+        Context context = null;
         boolean initialized = false;
 
+        if(beanId == null) {
+            throw new SmooksConfigurationException("Mandatory 'beanId' property not defined.");
+        }
+        if(jmsProperties.getDestinationName() == null) {
+            throw new SmooksConfigurationException("Mandatory 'destinationName' property not defined.");
+        }
+
         try
-		{
+        {
             if(correlationIdPattern != null) {
                 correlationIdTemplate = new FreeMarkerTemplate(correlationIdPattern);
             }
@@ -240,21 +205,21 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
                 context = new InitialContext(jndiContextProperties);
             }
             destination = (Destination) context.lookup( jmsProperties.getDestinationName() );
-			msgProducer = createMessageProducer( destination, context );
-			setMessageProducerProperties( );
+            msgProducer = createMessageProducer( destination, context );
+            setMessageProducerProperties( );
 
             initialized = true;
         }
-    	catch (NamingException e)
-		{
-    		final String errorMsg = "NamingException while trying to lookup [" + jmsProperties.getDestinationName() + "]";
-    		logger.error( errorMsg, e );
-    		throw new SmooksConfigurationException( errorMsg, e );
+        catch (NamingException e)
+        {
+            final String errorMsg = "NamingException while trying to lookup [" + jmsProperties.getDestinationName() + "]";
+            logger.error( errorMsg, e );
+            throw new SmooksConfigurationException( errorMsg, e );
         } finally {
-    		if ( context != null )
-    		{
-				try { context.close(); } catch (NamingException e) { logger.warn( "NamingException while trying to close initial Context"); }
-    		}
+            if ( context != null )
+            {
+                try { context.close(); } catch (NamingException e) { logger.warn( "NamingException while trying to close initial Context"); }
+            }
 
             if(!initialized) {
                 releaseJMSResources();
@@ -266,6 +231,165 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
     public void uninitialize() throws JMSException {
         releaseJMSResources();
     }
+
+    public boolean consumes(Object object) {
+        if(object.toString().startsWith(beanId)) {
+            // We use startsWith (Vs equals) so as to catch bean populations e.g. "address.street".
+            return true;
+        }
+
+        return false;
+    }
+
+    public void setBeanId(String beanId) {
+        AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
+        this.beanId = beanId;
+    }
+
+    public void setCorrelationIdPattern(String correlationIdPattern) {
+        this.correlationIdPattern = correlationIdPattern;
+    }
+
+    public void setHighWaterMark(int highWaterMark) {
+        this.highWaterMark = highWaterMark;
+    }
+
+    public void setHighWaterMarkTimeout(long highWaterMarkTimeout) {
+        this.highWaterMarkTimeout = highWaterMarkTimeout;
+    }
+
+    public void setHighWaterMarkPollFrequency(long highWaterMarkPollFrequency) {
+        this.highWaterMarkPollFrequency = highWaterMarkPollFrequency;
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setJndiContextFactory( final String contextFactory )
+    {
+        jndiProperties.setContextFactory( contextFactory );
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setJndiProperties(final String propertiesFile )
+    {
+        jndiProperties.setPropertiesFile( propertiesFile );
+    }
+
+    public void setJndiProperties(final Properties properties )
+    {
+        jndiProperties.setProperties(properties);
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setJndiProviderUrl(final String providerUrl )
+    {
+        jndiProperties.setProviderUrl( providerUrl );
+    }
+
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setJndiNamingFactoryUrl(final String pkgUrl )
+    {
+        jndiProperties.setNamingFactoryUrlPkgs( pkgUrl );
+    }
+
+    @ConfigParam ( use = Use.REQUIRED )
+    public void setDestinationName( final String destinationName )
+    {
+        AssertArgument.isNotNullAndNotEmpty(destinationName, "destinationName");
+        jmsProperties.setDestinationName( destinationName );
+    }
+
+    @ConfigParam ( choice = { "persistent", "non-persistent" }, defaultVal = "persistent", use = Use.OPTIONAL )
+    public void setDeliveryMode( final String deliveryMode )
+    {
+        jmsProperties.setDeliveryMode( deliveryMode );
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setTimeToLive( final long timeToLive )
+    {
+        jmsProperties.setTimeToLive( timeToLive );
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setSecurityPrincipal( final String securityPrincipal )
+    {
+        jmsProperties.setSecurityPrincipal( securityPrincipal );
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setSecurityCredential( final String securityCredential )
+    {
+        jmsProperties.setSecurityCredential( securityCredential );
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL, defaultVal = "false" )
+    public void setTransacted( final boolean transacted )
+    {
+        jmsProperties.setTransacted( transacted );
+    }
+
+    @ConfigParam( defaultVal = "ConnectionFactory" , use = Use.OPTIONAL )
+    public void setConnectionFactoryName( final String connectionFactoryName )
+    {
+        jmsProperties.setConnectionFactoryName( connectionFactoryName );
+    }
+
+    @ConfigParam ( use = Use.OPTIONAL )
+    public void setPriority( final int priority )
+    {
+        jmsProperties.setPriority( priority );
+    }
+
+    @ConfigParam (defaultVal = "AUTO_ACKNOWLEDGE",
+            choice = {"AUTO_ACKNOWLEDGE", "CLIENT_ACKNOWLEDGE", "DUPS_OK_ACKNOWLEDGE" } )
+    public void setAcknowledgeMode( final String jmsAcknowledgeMode )
+    {
+        jmsProperties.setAcknowledgeMode( jmsAcknowledgeMode );
+    }
+
+    @ConfigParam (
+            defaultVal = StrategyFactory.TEXT_MESSAGE,
+            choice = { StrategyFactory.TEXT_MESSAGE ,  StrategyFactory.OBJECT_MESSAGE }  )
+    public void setMessageType( final String messageType )
+    {
+        msgCreationStrategy = StrategyFactory.getInstance().createStrategy( messageType );
+        jmsProperties.setMessageType( messageType );
+    }
+
+    //	Vistor methods
+
+    public void visitAfter( final Element element, final ExecutionContext execContext ) throws SmooksException
+	{
+		visit( execContext );
+	}
+
+    public void visitBefore( final Element element, final ExecutionContext execContext ) throws SmooksException
+	{
+		visit( execContext );
+	}
+
+    public void visitAfter( final SAXElement element, final ExecutionContext execContext ) throws SmooksException, IOException
+	{
+		visit( execContext );
+	}
+
+    public void visitBefore( final SAXElement element, final ExecutionContext execContext ) throws SmooksException, IOException
+	{
+		visit( execContext );
+	}
+
+    private void visit( final ExecutionContext execContext ) throws SmooksException	{
+        Message message = msgCreationStrategy.createJMSMessage(beanId, execContext, session);
+
+        if(correlationIdTemplate != null) {
+            setCorrelationID(execContext, message);
+        }
+
+        sendMessage(message);
+	}
+
+    //	Lifecycle
 
     protected MessageProducer createMessageProducer( final Destination destination, final Context context ) throws JMSException {
 		try
@@ -425,36 +549,15 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
 		}
 	}
 
-    // getter/setter
-
     public Destination getDestination()
 	{
 		return destination;
 	}
 
-    @ConfigParam ( use = Use.OPTIONAL )
-    public void setJndiContextFactory( final String contextFactory )
-    {
-    	jndiProperties.setContextFactory( contextFactory );
-    }
-
     public String getJndiContextFactory()
 	{
 		return jndiProperties.getContextFactory();
 	}
-    
-
-    @ConfigParam ( use = Use.OPTIONAL )
-    public void setJndiProperties(final String properties )
-    {
-    	jndiProperties.setPropertiesFile( properties );
-    }
-
-    @ConfigParam ( use = Use.OPTIONAL )
-    public void setJndiProviderUrl(final String providerUrl )
-    {
-    	jndiProperties.setProviderUrl( providerUrl );
-    }
 
     public String getJndiProviderUrl()
 	{
@@ -466,27 +569,9 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
 		return jndiProperties.getNamingFactoryUrlPkgs();
 	}
 
-    @ConfigParam ( use = Use.OPTIONAL )
-    public void setJndiNamingFactoryUrl(final String pkgUrl )
-    {
-    	jndiProperties.setNamingFactoryUrlPkgs( pkgUrl );
-    }
-
-    @ConfigParam ( use = Use.REQUIRED )
-	public void setDestinationName( final String destinationName )
-	{
-		jmsProperties.setDestinationName( destinationName );
-	}
-
     public String getDestinationName()
 	{
 		return jmsProperties.getDestinationName();
-	}
-
-    @ConfigParam ( choice = { "persistent", "non-persistent" }, defaultVal = "persistent", use = Use.OPTIONAL )
-	public void setDeliveryMode( final String deliveryMode )
-	{
-    	jmsProperties.setDeliveryMode( deliveryMode );
 	}
 
     private void setCorrelationID(ExecutionContext execContext, Message message) {
@@ -505,21 +590,9 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
 		return jmsProperties.getDeliveryMode();
 	}
 
-    @ConfigParam ( use = Use.OPTIONAL )
-	public void setTimeToLive( final long timeToLive )
-	{
-    	jmsProperties.setTimeToLive( timeToLive );
-	}
-
     public long getTimeToLive()
 	{
 		return jmsProperties.getTimeToLive();
-	}
-
-    @ConfigParam ( use = Use.OPTIONAL )
-	public void setSecurityPrincipal( final String securityPrincipal )
-	{
-		jmsProperties.setSecurityPrincipal( securityPrincipal );
 	}
 
     public String getSecurityPrincipal()
@@ -527,21 +600,9 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
 		return jmsProperties.getSecurityPrincipal();
 	}
 
-    @ConfigParam ( use = Use.OPTIONAL )
-	public void setSecurityCredential( final String securityCredential )
-	{
-    	jmsProperties.setSecurityCredential( securityCredential );
-	}
-
     public String getSecurityCredential()
 	{
 		return jmsProperties.getSecurityCredential();
-	}
-
-    @ConfigParam ( use = Use.OPTIONAL, defaultVal = "false" )
-	public void setTransacted( final boolean transacted )
-	{
-		jmsProperties.setTransacted( transacted );
 	}
 
     public boolean isTransacted()
@@ -549,21 +610,9 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
 		return jmsProperties.isTransacted();
 	}
 
-    @ConfigParam( defaultVal = "ConnectionFactory" , use = Use.OPTIONAL )
-	public void setConnectionFactoryName( final String connectionFactoryName )
-	{
-		jmsProperties.setConnectionFactoryName( connectionFactoryName );
-	}
-
     public String getConnectionFactoryName()
 	{
 		return jmsProperties.getConnectionFactoryName();
-	}
-
-    @ConfigParam ( use = Use.OPTIONAL )
-	public void setPriority( final int priority )
-	{
-    	jmsProperties.setPriority( priority );
 	}
 
     public int getPriority()
@@ -571,25 +620,9 @@ public class JMSRouter implements DOMElementVisitor, SAXVisitBefore, SAXVisitAft
 		return jmsProperties.getPriority();
 	}
 
-    @ConfigParam (defaultVal = "AUTO_ACKNOWLEDGE",
-    		choice = {"AUTO_ACKNOWLEDGE", "CLIENT_ACKNOWLEDGE", "DUPS_OK_ACKNOWLEDGE" } )
-	public void setAcknowledgeMode( final String jmsAcknowledgeMode )
-	{
-		jmsProperties.setAcknowledgeMode( jmsAcknowledgeMode );
-	}
-
     public String getAcknowledgeMode()
 	{
 		return jmsProperties.getAcknowledgeMode();
-	}
-
-    @ConfigParam (
-    		defaultVal = StrategyFactory.TEXT_MESSAGE,
-    		choice = { StrategyFactory.TEXT_MESSAGE ,  StrategyFactory.OBJECT_MESSAGE }  )
-	public void setMessageType( final String messageType )
-	{
-		msgCreationStrategy = StrategyFactory.getInstance().createStrategy( messageType );
-		jmsProperties.setMessageType( messageType );
 	}
 
     public void setMsgCreationStrategy( final MessageCreationStrategy msgCreationStrategy )

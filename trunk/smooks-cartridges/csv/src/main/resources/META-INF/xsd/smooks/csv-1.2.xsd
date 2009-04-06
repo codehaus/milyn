@@ -28,9 +28,11 @@
     	</xs:annotation>
     	<xs:complexContent>
     		<xs:extension base="smooks:abstract-reader">
-                <xs:sequence>
-                    <xs:element name="binding" type="smooks-csv:binding" minOccurs="0" maxOccurs="1" />
-                </xs:sequence>
+                <xs:choice minOccurs="0" maxOccurs="1">
+                    <xs:element name="singleBinding" type="smooks-csv:binding" />
+                    <xs:element name="listBinding" type="smooks-csv:binding" />
+                    <xs:element name="mapBinding" type="smooks-csv:mapBinding" />
+                </xs:choice>
     			<xs:attribute name="fields" type="xs:string">
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
@@ -110,10 +112,26 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="createList" type="xs:boolean" use="required">
+    		</xs:extension>
+    	</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="mapBinding">
+    	<xs:annotation>
+            <xs:documentation xml:lang="en">
+                CSV Binding Configuration.
+                <p/>
+                Supports simple automatic java binding of CSV records onto a bean based on the configured field
+                names matching the target bean's property names.  For more complex binding, use the main Java
+                binding configurations.
+            </xs:documentation>
+    	</xs:annotation>
+    	<xs:complexContent>
+    		<xs:extension base="smooks-csv:binding">
+                <xs:attribute name="keyField" type="xs:string" use="required">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
-                            Should a list of the bindings be created.
+                            The CSV field whose value is used as the Map key value.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>

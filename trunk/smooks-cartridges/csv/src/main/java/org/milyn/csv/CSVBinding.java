@@ -28,14 +28,15 @@ public class CSVBinding {
 
     private String beanId;
     private Class beanClass;
-    private boolean createList;
+    private CSVBindingType bindingType;
+    private String keyField;
 
-    public CSVBinding(String beanId, Class beanClass, boolean createList) {
+    public CSVBinding(String beanId, Class beanClass, CSVBindingType bindingType) {
         AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
         AssertArgument.isNotNull(beanClass, "beanClass");
         this.beanId = beanId;
         this.beanClass = beanClass;
-        this.createList = createList;
+        this.bindingType = bindingType;
     }
 
     public String getBeanId() {
@@ -46,7 +47,16 @@ public class CSVBinding {
         return beanClass;
     }
 
-    public boolean isCreateList() {
-        return createList;
+    public CSVBindingType getBindingType() {
+        return bindingType;
+    }
+
+    public String getKeyField() {
+        return keyField;
+    }
+
+    public CSVBinding setKeyField(String keyField) {
+        this.keyField = keyField;
+        return this;
     }
 }

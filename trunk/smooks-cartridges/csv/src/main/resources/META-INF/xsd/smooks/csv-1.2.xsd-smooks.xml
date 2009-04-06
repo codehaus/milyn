@@ -53,22 +53,40 @@
         <param name="attribute">recordElementName</param>
     </resource-config>
 
-    <resource-config selector="binding">
+    <resource-config selector="singleBinding">
+        <resource>org.milyn.cdr.extension.SetOnResourceConfig</resource>
+        <param name="setOn">bindingType</param>
+        <param name="value">SINGLE</param>
+    </resource-config>
+
+    <resource-config selector="listBinding">
+        <resource>org.milyn.cdr.extension.SetOnResourceConfig</resource>
+        <param name="setOn">bindingType</param>
+        <param name="value">LIST</param>
+    </resource-config>
+
+    <resource-config selector="mapBinding">
+        <resource>org.milyn.cdr.extension.SetOnResourceConfig</resource>
+        <param name="setOn">bindingType</param>
+        <param name="value">MAP</param>
+    </resource-config>
+
+    <resource-config selector="singleBinding,listBinding,mapBinding">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanId</param>
         <param name="mapTo">bindBeanId</param>
     </resource-config>
 
-    <resource-config selector="binding">
+    <resource-config selector="singleBinding,listBinding,mapBinding">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">class</param>
         <param name="mapTo">bindBeanClass</param>
     </resource-config>
 
-    <resource-config selector="binding">
+    <resource-config selector="mapBinding">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">createList</param>
-        <param name="mapTo">bindBeanAsList</param>
+        <param name="attribute">keyField</param>
+        <param name="mapTo">bindMapKeyField</param>
     </resource-config>
 
 </smooks-resource-list>

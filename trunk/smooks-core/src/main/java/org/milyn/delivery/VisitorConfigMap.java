@@ -204,6 +204,7 @@ public class VisitorConfigMap {
             Configurator.processFieldContextAnnotation(visitor, applicationContext);
             Configurator.processFieldConfigAnnotations(visitor, resourceConfig, false);
             Configurator.initialise(visitor);
+            applicationContext.getStore().getInitializedObjects().add(visitor);
         }
 
         visitorCount++;

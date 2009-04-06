@@ -15,6 +15,8 @@
 
 package org.milyn.routing.jms;
 
+import org.milyn.routing.jms.message.creationstrategies.StrategyFactory;
+
 import javax.jms.Message;
 
 /**
@@ -25,16 +27,16 @@ import javax.jms.Message;
  */
 public class JMSProperties
 {
-    private String connectionFactoryName;
+    private String connectionFactoryName = "ConnectionFactory";
     private String destinationName;
-    private String deliveryMode;
+    private String deliveryMode = "persistent";
     private int priority = Message.DEFAULT_PRIORITY;
     private long timeToLive = Message.DEFAULT_TIME_TO_LIVE;
     private String securityPrincipal;
     private String securityCredential;
-    private boolean transacted;
-    private String jmsAcknowledgeMode;
-    private String messageType;
+    private boolean transacted = false;
+    private String jmsAcknowledgeMode = "AUTO_ACKNOWLEDGE";
+    private String messageType = StrategyFactory.TEXT_MESSAGE;
 
 	public String getConnectionFactoryName()
 	{
