@@ -35,9 +35,9 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.scribe.register.DaoRegister;
 import org.w3c.dom.Element;
 
 /**

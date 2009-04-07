@@ -20,24 +20,53 @@ import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.scribe.DaoRegister;
 
 /**
+ * Enables multiple {@link DaoRegister} objects to be used as one DaoRegister.
+ * Each DaoRegister gets a name. To get the correct DAO the following name notation
+ * is used "{DaoRegister name}.{Dao name}".
+ * <p>
+ * A {@link MultiDaoRegister} can be created via the static {@link #newInstance(Map)} method
+ * or via the {@link Builder} object. The Builder object can be created via it's constructor
+ * or the static {@link #builder()} or {@link #builder(Map)} methods.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 public class MultiDaoRegister<T> extends AbstractDaoRegister<T> {
 
+	/**
+	 * Creates a new {@link MultiDaoRegister} and fills it with the provided map.
+	 *
+	 * @param <T> the type of the DAO
+	 * @param map the map that fills the new {@link MultiDaoRegister}
+	 * @return the new {@link MultiDaoRegister}
+	 */
 	public static <T> MultiDaoRegister<T> newInstance(Map<String, ? extends DaoRegister<T>> map) {
 		AssertArgument.isNotNull(map, "map");
 
 		return new MultiDaoRegister<T>(new HashMap<String, DaoRegister<T>>(map));
 	}
 
+	/**
+	 * Creates a Builder object that can build a {@link MultiDaoRegister}
+	 *
+	 * @param <T> The type of the DAO
+	 * @return The builder
+	 */
 	public static <T> Builder<T> builder() {
 		return new Builder<T>();
 	}
 
+
+	/**
+	 * Creates a Builder object that can build a {@link MultiDaoRegister}.
+	 * The builder will be instantiated with the provided map.
+	 *
+	 * @param <T> The type of the DAO
+	 * @param map The map that is added to the builder
+	 * @return The builder
+	 */
 	public static <T> Builder<T> builder(Map<String, ? extends DaoRegister<T>> map) {
 		return new Builder<T>(map);
 	}
@@ -120,22 +149,26 @@ public class MultiDaoRegister<T> extends AbstractDaoRegister<T> {
 	}
 
 	/**
-	 * Builds MultiDaoRegister
+	 * Builds a MapDaoRegister object.
 	 *
+	 * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+	 *
+	 * @param <T> The DAO type
 	 */
 	static class Builder<T> {
 
 		private final Map<String, DaoRegister<T>> map;
 
 		/**
-		 *
+		 * creates an empty Builder
 		 */
-		private Builder() {
+		public Builder() {
 			map = new HashMap<String, DaoRegister<T>>();
 		}
 
 		/**
-		 *
+		 * Creates an Builder and copies all of the mappings for the
+		 * specified map to this builder
 		 */
 		public Builder(Map<String, ? extends DaoRegister<T>> map) {
 			AssertArgument.isNotNull(map, "map");
@@ -143,6 +176,13 @@ public class MultiDaoRegister<T> extends AbstractDaoRegister<T> {
 			this.map = new HashMap<String, DaoRegister<T>>(map);
 		}
 
+		/**
+		 * Adds a DAO register under a specified name
+		 *
+		 * @param name the name of the DAO
+		 * @param dao the DAO
+		 * @return the builder
+		 */
 		public Builder<T> put(String name, DaoRegister<T> daoRegister) {
 			AssertArgument.isNotNull(name, "name");
 			AssertArgument.isNotNull(daoRegister, "daoRegister");
@@ -152,6 +192,12 @@ public class MultiDaoRegister<T> extends AbstractDaoRegister<T> {
 			return this;
 		}
 
+		/**
+		 * Copies all of the mappings for the specified map to this builder
+		 *
+		 * @param map mapping to be stored in this builder
+		 * @return the builder
+		 */
 		public Builder<T> putAll(Map<String, ? extends DaoRegister<T>> map) {
 			AssertArgument.isNotNull(map, "map");
 
@@ -160,6 +206,12 @@ public class MultiDaoRegister<T> extends AbstractDaoRegister<T> {
 			return this;
 		}
 
+		/**
+		 * Creates the {@link MultiDaoRegister} and provides it with the
+		 * DAO register mapping
+		 *
+		 * @return the created {@link MultiDaoRegister}
+		 */
 		public MultiDaoRegister<T> build() {
 			return new MultiDaoRegister<T>(map);
 		}

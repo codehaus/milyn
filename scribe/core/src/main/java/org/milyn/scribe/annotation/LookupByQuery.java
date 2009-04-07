@@ -20,14 +20,23 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Map;
 
 /**
- * @author maurice_zeijen
+ * Indicates that the method can lookup entities by a query string.
+ * <p>
+ * The method must have one {@link String} parameter for the query string and
+ * a array or {@link Map} parameter for the positional or named parameters of
+ * the query.
+ *
+ * If no parameters are present then an empty parameter array or empty parameter Map is
+ * handed over.
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface LookupByQuery {
-
 }

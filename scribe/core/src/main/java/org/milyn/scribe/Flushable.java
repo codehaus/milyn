@@ -16,6 +16,11 @@
 package org.milyn.scribe;
 
 /**
+ * The Flusable interface
+ * <p>
+ * Provides a method for flushing the DAO. What 'flushing' means depends
+ * on the implementation.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
@@ -23,9 +28,9 @@ public interface Flushable {
 
 
 	/**
+	 * Flush the DAO
 	 *
-	 *
-	 * @throws UnsupportedOperationException Indicates that the operation is not supported
+	 * @throws UnsupportedOperationException if the operation is not supported
 	 */
 	public void flush();
 

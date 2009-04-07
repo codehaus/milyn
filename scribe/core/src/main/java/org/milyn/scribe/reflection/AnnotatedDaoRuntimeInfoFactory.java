@@ -18,7 +18,7 @@ package org.milyn.scribe.reflection;
 import java.util.HashMap;
 
 /**
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 public class AnnotatedDaoRuntimeInfoFactory {

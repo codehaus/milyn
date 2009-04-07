@@ -22,12 +22,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author maurice_zeijen
+ * Indicates the name of a parameter.
+ * <p>
+ * Maybe you wonder why the variable name of the parameter can't be used? That
+ * name is lost when java compiles the java code.
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Param {
-	String value() default "[unassigned]";
+
+	/**
+	 * The name of the parameter
+	 *
+	 * @return the name of the parameter
+	 */
+	String value();
 }

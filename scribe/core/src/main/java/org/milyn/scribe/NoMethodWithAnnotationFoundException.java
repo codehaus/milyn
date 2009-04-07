@@ -16,7 +16,7 @@
 package org.milyn.scribe;
 
 /**
- * Indicates that a no method was found with a certain Annotation when one was expected.
+ * Is thrown when no 'expected' method was found with a certain annotation.
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *

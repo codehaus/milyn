@@ -22,16 +22,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * DAO Insert and Update anotated methods with this Annotation indicate that
- * the method does not return an entity and that the returned value shouldn't
- * be used by the DAO framework as an entity result.
+ * DAO {@link Insert} and {@link Update} annotated methods with this annotation
+ * indicate that the method does not return an entity and that the returned
+ * object shouldn't be used by the DAO framework as an entity result.
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
- *
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ReturnsNoEntity {
-
 }

@@ -24,10 +24,13 @@ import org.milyn.scribe.Locator;
 import org.milyn.scribe.MappingDao;
 import org.milyn.scribe.ObjectStore;
 import org.milyn.scribe.Queryable;
+import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfo;
 import org.milyn.scribe.reflection.AnnotatedDaoRuntimeInfoFactory;
 
 /**
- * @author maurice_zeijen
+ * Manages the creation of DaoInvokers
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 public class DaoInvokerFactory {
@@ -36,6 +39,11 @@ public class DaoInvokerFactory {
 
 	public static final String REPOSITORY_KEY = DaoInvokerFactory.class.getName() + "#REPOSITORY_KEY";
 
+	/**
+	 * Returns the DaoInvokerFactory instance
+	 *
+	 * @return the DaoInvokerFactory instance
+	 */
 	public static final DaoInvokerFactory getInstance() {
 		return instance;
 	}
@@ -43,6 +51,19 @@ public class DaoInvokerFactory {
 	private DaoInvokerFactory() {
 	}
 
+	/**
+	 * Creates a DaoInvoker depending on the DAO object.
+	 * If the DAO object is a instance of {@link Dao}, {@link MappingDao},
+	 * {@link Queryable}, {@link Locator} or {@link Flushable} then a {@link InterfaceDaoInvoker}
+	 * is created and returned. If the DAO class is annotated with the {@link Dao} annotation
+	 * then a {@link AnnotatedDaoInvoker} is created and returned. If neither is the case then a
+	 * {@link IllegalArgumentException} exception is thrown.
+	 *
+	 * @param dao The DAO for which the invoker instantiated
+	 * @param objectStore An object store for caching and retrieving a cached {@link AnnotatedDaoRuntimeInfoFactory} object.
+	 * @return the DaoInvoker for the specified DAO
+	 * @throws IllegalArgumentException if the DAO object doesn't match for a {@link InterfaceDaoInvoker} or {@link AnnotatedDaoInvoker}.
+	 */
 	public DaoInvoker create(final Object dao, final ObjectStore objectStore) {
 		AssertArgument.isNotNull(dao, "dao");
 		AssertArgument.isNotNull(objectStore, "objectStore");

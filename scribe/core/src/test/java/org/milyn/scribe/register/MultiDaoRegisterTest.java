@@ -20,7 +20,6 @@ import static junit.framework.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.milyn.scribe.DaoRegister;
 import org.testng.annotations.Test;
 
 /**

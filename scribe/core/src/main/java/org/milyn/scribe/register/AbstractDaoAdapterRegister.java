@@ -22,6 +22,10 @@ import java.util.Map.Entry;
 import org.milyn.assertion.AssertArgument;
 
 /**
+ * An abstract implementation of a DAO adapter
+ *
+ * TODO: finish documentation
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
@@ -91,8 +95,8 @@ public abstract class AbstractDaoAdapterRegister<D, A> extends AbstractDaoRegist
 
 	/**
 	 * This method creates the Dao Adapter from the Adaptable.
-	 *
-	 * NOTE
+	 * <p>
+	 * <b>NOTE</b><br>
 	 * This method can not reference any object fields because this
 	 * method is called in the constructor of the
 	 * {@link AbstractDaoAdapterRegister} class.

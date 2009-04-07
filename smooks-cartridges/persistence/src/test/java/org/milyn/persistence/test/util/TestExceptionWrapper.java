@@ -16,7 +16,7 @@
 package org.milyn.persistence.test.util;
 
 /**
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 public class TestExceptionWrapper extends RuntimeException {

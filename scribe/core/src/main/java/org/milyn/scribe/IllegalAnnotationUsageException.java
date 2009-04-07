@@ -16,7 +16,8 @@
 package org.milyn.scribe;
 
 /**
- * Indicates that a Annotation was used in an illegal way.
+ * A IllegalAnnotationUsageException is thrown when a Annotation
+ * was used in a wrong 'illegal' way.
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *

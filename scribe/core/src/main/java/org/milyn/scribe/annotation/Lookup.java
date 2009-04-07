@@ -22,12 +22,30 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author maurice_zeijen
+ * Indicates that this method looks entities up.
+ * <p>
+ * The method can have one or more parameters. With the {@link Param} annotation
+ * the parameters can be 'named'. This makes it possible to reference the parameter
+ * by its name instead of its position. If one parameter is annotated with the {@link Param}
+ * parameter then all the parameters need to be annotated. If no parameters are annotated
+ * then the parameters need to be referenced by there position, starting by zero.
+ * <p>
+ * This annotation should only be used on classes that
+ * are annotated with the {@link Dao} annotation.
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Lookup {
+
+	/**
+	 * The name of the lookup operation. If it is not set then
+	 * the name of the method will be the name of the operation.
+	 *
+	 * @return the operation name
+	 */
 	String name() default "";
 }

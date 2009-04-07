@@ -18,7 +18,7 @@ package org.milyn.persistence.test.model;
 import java.sql.Date;
 
 /**
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 public class Person {
