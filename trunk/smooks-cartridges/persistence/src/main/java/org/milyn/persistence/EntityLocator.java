@@ -52,9 +52,9 @@ import org.milyn.persistence.parameter.ParameterManager;
 import org.milyn.persistence.parameter.ParameterProductUtil;
 import org.milyn.persistence.parameter.PositionalParameterContainer;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.scribe.register.DaoRegister;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 

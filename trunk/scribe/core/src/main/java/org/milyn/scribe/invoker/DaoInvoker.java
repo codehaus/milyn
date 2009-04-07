@@ -18,7 +18,12 @@ package org.milyn.scribe.invoker;
 import java.util.Map;
 
 /**
- * @author maurice_zeijen
+ * The DAO Invoker interface
+ * <p>
+ * A DAO invoker is a bridge between a DAO and the object that needs to invoke the DAO without knowing
+ * the actual DAO.
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 public interface DaoInvoker {

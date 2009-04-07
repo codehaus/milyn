@@ -32,7 +32,7 @@ public enum ParameterListType {
 	/**
 	 * A Data decoder for this Enum
 	 *
-	 * @author maurice_zeijen
+	 * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
 	 *
 	 */
 	public static class DataDecoder implements org.milyn.javabean.DataDecoder {

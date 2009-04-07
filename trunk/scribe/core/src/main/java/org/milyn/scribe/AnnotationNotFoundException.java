@@ -16,8 +16,8 @@
 package org.milyn.scribe;
 
 /**
- * Thrown to indicate that an expected annotation wasn't found
- * 
+ * Is thrown to indicate that an expected annotation wasn't found.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class AnnotationNotFoundException extends RuntimeException {

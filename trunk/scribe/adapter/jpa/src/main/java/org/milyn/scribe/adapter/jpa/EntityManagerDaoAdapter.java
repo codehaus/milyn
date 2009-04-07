@@ -36,7 +36,7 @@ import org.milyn.scribe.Queryable;
  * the query is handled as a named query. The @
  * is off course removed before the named query is called
  *
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
 class EntityManagerDaoAdapter implements Dao<Object>, Locator, Queryable, Flushable {

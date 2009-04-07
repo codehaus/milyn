@@ -44,10 +44,10 @@ import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.util.PersistenceUtil;
-import org.milyn.scribe.DaoRegister;
 import org.milyn.scribe.ObjectStore;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
+import org.milyn.scribe.register.DaoRegister;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 

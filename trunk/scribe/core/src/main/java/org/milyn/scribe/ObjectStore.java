@@ -18,6 +18,10 @@ package org.milyn.scribe;
 import java.util.Map;
 
 /**
+ * The ObjectStore interface
+ * <p>
+ * An object that stores objects.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */

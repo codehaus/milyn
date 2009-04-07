@@ -15,11 +15,17 @@
 */
 package org.milyn.scribe.register;
 
-import org.milyn.scribe.DaoRegister;
 
 /**
+ * A abstract convenience implementation of the DaoRegister
+ *
+ * The {@link #getDefaultDao()} and {@link #getDao(String)} methods both throw a
+ * {@link UnsupportedOperationException}. The {@link #returnDao(Object)} methods
+ * does nothing.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
+ * @param <T> The DAO type
  */
 public abstract class AbstractDaoRegister<D> implements DaoRegister<D> {
 

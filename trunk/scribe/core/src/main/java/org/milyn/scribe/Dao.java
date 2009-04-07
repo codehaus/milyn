@@ -17,10 +17,12 @@ package org.milyn.scribe;
 
 
 /**
- * The Dao interface provides the most basic DAO operations
- * to manipulate a datasource.
+ * The DAO interface
+ * <p>
+ * Provides the most basic DAO operations to
+ * manipulate a data source.
  *
- * @author maurice_zeijen
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public interface Dao<E> {
 
