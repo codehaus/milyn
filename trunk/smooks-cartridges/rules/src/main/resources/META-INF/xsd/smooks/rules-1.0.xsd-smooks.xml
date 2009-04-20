@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" default-selector-namespace="http://www.milyn.org/xsd/smooks/rules-1.0.xsd">
+
+    <!--
+        Bean Instance Creator Resource...
+    -->
+
+    <resource-config selector="ruleBase">
+        <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
+        <param name="resource">org.milyn.rules.RulesContentHandlerFactory</param>
+    </resource-config>
+    
+    <resource-config selector="ruleBase">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">name</param>
+        <param name="mapTo">name</param>
+    </resource-config>
+    
+    <resource-config selector="ruleBase">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">src</param>
+        <param name="mapTo">src</param>
+    </resource-config>
+
+    <resource-config selector="ruleBase">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">provider</param>
+        <param name="mapTo">provider</param>
+    </resource-config>
+
+
+</smooks-resource-list>
