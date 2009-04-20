@@ -53,6 +53,9 @@
         <milyn.smooks.persistence.version.base>${milyn.smooks.core.version}</milyn.smooks.persistence.version.base>
         <milyn.smooks.persistence.version>${milyn.smooks.persistence.version.base}</milyn.smooks.persistence.version>
 
+        <milyn.smooks.rules.version.base>${milyn.smooks.core.version}</milyn.smooks.rules.version.base>
+        <milyn.smooks.rules.version>${milyn.smooks.validation.version.base}</milyn.smooks.rules.version>
+
         <milyn.smooks.validation.version.base>${milyn.smooks.core.version}</milyn.smooks.validation.version.base>
         <milyn.smooks.validation.version>${milyn.smooks.validation.version.base}</milyn.smooks.validation.version>
 
