@@ -19,26 +19,14 @@ package org.milyn.edisax;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.*;
-import org.milyn.edisax.EDITypeEnum;
 import org.milyn.io.StreamUtils;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.DTDHandler;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
+import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -126,6 +114,9 @@ import java.util.regex.Pattern;
  */
 public class EDIParser implements XMLReader {
 
+    protected static final String VALIDATE = "http://xml.org/sax/features/validation";
+    private Map<String, Boolean> features;
+
     private ContentHandler contentHandler;
     private int depth = 0;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
@@ -134,7 +125,6 @@ public class EDIParser implements XMLReader {
 
     private EdifactModel edifactModel;
     private BufferedSegmentReader segmentReader;
-    private static final String FORMAT = "format";
 
     /**
      * Parse the supplied mapping model config stream and return the generated EdiMap.
@@ -147,6 +137,7 @@ public class EDIParser implements XMLReader {
      * @return The Edimap for the mapping model.
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
+     * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
     public static EdifactModel parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
@@ -168,6 +159,7 @@ public class EDIParser implements XMLReader {
      * @return The EdifactModel for the mapping model.
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.
+     * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
     public static EdifactModel parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
@@ -224,7 +216,6 @@ public class EDIParser implements XMLReader {
 
     		// If we reach the end of the mapping model and we still have more EDI segments in the message....     		
             while (segmentReader.hasCurrentSegment()) {
-                String segment = segmentReader.getCurrentSegment().toString();
                 if (!EMPTY_LINE.matcher(segmentReader.getCurrentSegment().toString()).matches()) {
                     throw new EDIParseException(edifactModel.getEdimap(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s). Current EDI segment is [" + segmentReader.getCurrentSegment() + "]");
                 }
@@ -573,6 +564,17 @@ public class EDIParser implements XMLReader {
 
     private void validateValueNode(ValueNode valueNode, String value) throws EDIParseException {
 
+        // Return when validation is turned off.
+        try {
+            if (!getFeature(VALIDATE)) {
+                return;
+            }
+        } catch (SAXNotRecognizedException e) {
+            throw new EDIParseException("Unable to decide whether to validate value-node or not.", e);
+        } catch (SAXNotSupportedException e) {
+            throw new EDIParseException("Unable to decide whether to validate value-node or not.", e);
+        }
+
         // Validate type.
         if (valueNode.getType() != null && !valueNode.getType().equals("")) {
             EDITypeEnum ediType = EDITypeEnum.valueOf(valueNode.getType());
@@ -636,13 +638,12 @@ public class EDIParser implements XMLReader {
         throw new UnsupportedOperationException("Operation not supports by this reader.");
     }
 
-    public boolean getFeature(String name) throws SAXNotRecognizedException,
-            SAXNotSupportedException {
-        return false;
+    public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
+        return getFeatures().get(name);
     }
 
-    public void setFeature(String name, boolean value)
-            throws SAXNotRecognizedException, SAXNotSupportedException {
+    public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
+        getFeatures().put(name, value);
     }
 
     public DTDHandler getDTDHandler() {
@@ -666,12 +667,21 @@ public class EDIParser implements XMLReader {
     public void setErrorHandler(ErrorHandler arg0) {
     }
 
-    public Object getProperty(String name) throws SAXNotRecognizedException,
-            SAXNotSupportedException {
+    public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
         return null;
     }
 
-    public void setProperty(String name, Object value)
-            throws SAXNotRecognizedException, SAXNotSupportedException {
+    public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
+    }
+
+    private Map<String, Boolean> getFeatures() {
+        if (features == null) {
+            initializeFeatures();
+        }
+        return features;
+    }
+    private void initializeFeatures() {
+        features = new HashMap<String,Boolean>();
+        features.put(VALIDATE, true);
     }
 }

@@ -23,8 +23,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 /**
- * The BinaryDecoder is used for validation rather than decoding. It validates
- * that CharacterSequence only consists of zeros and ones.
+ * The BinaryDecoder validates that CharacterSequence only consists of zeros and ones.
  *  
  * @author bardl
  */

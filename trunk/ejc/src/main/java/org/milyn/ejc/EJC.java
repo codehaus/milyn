@@ -18,6 +18,7 @@ package org.milyn.ejc;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
 
 import java.io.*;
@@ -55,35 +56,26 @@ public class EJC {
      * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
      * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
      * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
-     * @param inputfile the edi-mapping-configuration.
+     * @param configFile the edi-mapping-configuration.
      * @param beanPackage the package name of generated java classes.
      * @param beanFolder the folder to place the generated java classes.
      * @param bindingFile the path and name to place the generated binding-file.
      * @throws EDIConfigurationException When edi-mapping-configuration is badly formatted.
      * @throws IOException When unable to read edi-mapping-configuration.
      * @throws SAXException When edi-mapping-configuration is badly formatted.
+     * @throws IllegalNameException when name of java-classes is illegal.
      */
-    public void compile(String inputfile, String beanPackage, String beanFolder, String bindingFile) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
+    public void compile(InputStream configFile, String beanPackage, String beanFolder, String bindingFile) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
 
-        InputStream inputStream = null;
-        try {
-            
             //Read edifact configuration
-            inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(inputfile);
-            Edimap edimap = readEDIConfig(inputStream);
+            Edimap edimap = readEDIConfig(configFile);
 
-            EdiConfigReader _ediConfigReader = new EdiConfigReader();
-            ClassModel model = _ediConfigReader.parse(edimap, beanPackage);
+            EdiConfigReader ediConfigReader = new EdiConfigReader();
+            ClassModel model = ediConfigReader.parse(edimap, beanPackage);
 
             BeanWriter.writeBeans(model, beanFolder);
 
             BindingWriter.parse(model, bindingFile );
-            
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-        }
 
     }
 
@@ -105,7 +97,7 @@ public class EJC {
      * The main method parsing in-parameters and invoking the compile method.
      * @param args the arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, EDIConfigurationException, IllegalNameException, SAXException {
         EJC ejc = new EJC();
 
         String configFile = args[args.length-1];
@@ -113,18 +105,15 @@ public class EJC {
         String beanFolder = getParameter(PARAMETER_BEAN_FOLDER, args);
         String bindingFile = getParameter(PARAMETER_BINDING_FILE, args);
 
+        InputStream configInputStream = null;
         try {
-            ejc.compile(configFile, beanPackage, beanFolder, bindingFile);
+            configInputStream = new ByteArrayInputStream(StreamUtils.readStream(new FileInputStream(configFile)));
+            ejc.compile(configInputStream, beanPackage, beanFolder, bindingFile);
 
-        //TODO :: Take care of exceptions    
-        } catch (EDIConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IllegalNameException e) {
-            e.printStackTrace();
+        } finally {
+            if (configInputStream != null) {
+                configInputStream.close();
+            }
         }
 
         if (containsParameter(PARAMETER_HELP, args)) {

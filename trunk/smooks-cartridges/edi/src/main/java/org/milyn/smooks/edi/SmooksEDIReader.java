@@ -32,6 +32,8 @@ import org.milyn.resource.URIResourceLocator;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXNotRecognizedException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -99,6 +101,9 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
+    @ConfigParam(defaultVal = "true")
+    private Boolean validate;
+
     public void setExecutionContext(ExecutionContext executionContext) {
 		AssertArgument.isNotNull(executionContext, "executionContext");
 		this.executionContext = executionContext;
@@ -113,10 +118,20 @@ public class SmooksEDIReader extends EDIParser implements SmooksXMLReader {
 		EdifactModel edi2xmlMappingModel = getMappingModel();
 		
 		setMappingModel(edi2xmlMappingModel);
-		super.parse(ediSource);
+        setValidateValueNodes();
+        super.parse(ediSource);
 	}
 
-	/**
+    /**
+     * Activates or deactivates validation of value-nodes in EDIParser.
+     * @throws SAXNotSupportedException When the XMLReader recognizes the property name but cannot set the requested value.
+     * @throws SAXNotRecognizedException If the property value can't be assigned or retrieved.
+     */
+    private void setValidateValueNodes() throws SAXNotSupportedException, SAXNotRecognizedException {
+        super.setFeature(VALIDATE, validate);        
+    }
+
+    /**
 	 * Get the mapping model associated with the supplied SmooksResourceConfiguration.
 	 * <p/>
 	 * The parsed and validated models are cached in the Smooks container context, keyed
