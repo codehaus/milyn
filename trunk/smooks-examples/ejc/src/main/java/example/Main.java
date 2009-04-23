@@ -153,7 +153,7 @@ public class Main {
             compileSourceFile(folder,  packageName, "Order");
 
             Smooks smooks = new Smooks();
-            smooks.addConfigurations(new FileInputStream(folder + "../../" + "edi-config.xml"));
+            smooks.addConfigurations(new ByteArrayInputStream(getResource("edi-config.xml")));
             smooks.addConfigurations(new FileInputStream(folder + "binding-config.xml"));
             ExecutionContext context = smooks.createExecutionContext();
 
