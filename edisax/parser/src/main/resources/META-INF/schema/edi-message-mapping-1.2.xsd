@@ -72,19 +72,11 @@ truncatable attribute for all Components in edi-definition.
 			<xs:attribute name="sub-component" type="xs:string" use="required"/>
 			<xs:attribute name="escape" type="xs:string" use="optional">
 				<xs:annotation>
-					<xs:documentation>
-						The delimiter attributes mark the boundary
-						tokens between the EDI message parts - segment,
-						field, component and sub-component.
+					<xs:documentation>The delimiter attributes mark the boundary tokens between the EDI message parts - segment, field, component and sub-component.
 
-						These boundary tokens may contain special
-						characters (non-printable). These are defined
-						using XML character references e.g. LF =
-						&quot;&amp;#10;&quot;
+These boundary tokens may contain special characters (non-printable). These are defined using XML character references e.g. LF = &quot;&amp;#10;&quot;
 
-                        The escape attribute specifies a character that
-                        can be used before a delimiter to prevent the delimiter
-                        from separating the EDI message into the specified part.
+The escape attribute specifies a character that can be used before a delimiter to prevent the delimiter from separating the EDI message into the specified part.
                     </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>

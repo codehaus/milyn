@@ -8,7 +8,7 @@
     </parent>
     <name>Edifact Java Compiler</name>
 	<groupId>org.milyn</groupId>
-	<artifactId>milyn-ejc</artifactId>
+	<artifactId>milyn-smooks-ejc</artifactId>
     <packaging>jar</packaging>
     <version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
 	    
@@ -16,15 +16,15 @@
         <dependency>
 			<groupId>org.milyn</groupId>
 			<artifactId>milyn-smooks-javabean</artifactId>
-			<!--<version>${milyn.edisax.parser.version.base}</version>-->
-			<version>1.2-SNAPSHOT</version>
+			<version>${milyn.smooks.core.version}</version>
+			<!--<version>1.2-SNAPSHOT</version>-->
 		</dependency>
 
         <dependency>
 			<groupId>org.milyn</groupId>
 			<artifactId>milyn-smooks-edi</artifactId>
-			<!--<version>${milyn.edisax.parser.version.base}</version>-->
-			<version>1.2-SNAPSHOT</version>
+			<version>${milyn.smooks.core.version}</version>
+			<!--<version>1.2-SNAPSHOT</version>-->
 		</dependency>
 
         <!--<dependency>

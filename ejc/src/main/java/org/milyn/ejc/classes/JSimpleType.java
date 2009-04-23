@@ -29,16 +29,6 @@ public class JSimpleType implements JType {
     public static final String DEFAULT_TYPE = "String";
     
     public static final JSimpleType VOID = new JSimpleType("void", null, null);
-//    VOID("void"),
-//    BOOLEAN("boolean"),
-//    BYTE("byte"),
-//    SHORT("short"),
-//    CHAR("char"),
-//    INT("int"),
-//    FLOAT("float"),
-//    LONG("long"),
-//    DOUBLE("double"),
-//    STRING("String");
 
     private String name;
     private JPackage classPackage;

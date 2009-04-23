@@ -36,6 +36,8 @@
         <module>sj-testimonial</module>
 		<module>dao-router</module>
         <module>validation-basic</module>
+        <module>ejc</module>
+        <module>edi-with-import-to-java</module>
     </modules>
 
     <properties>
@@ -54,6 +56,7 @@
 		<milyn.smooks.persistence.version>${milyn.smooks.core.version}</milyn.smooks.persistence.version>
 		<milyn.scribe.jpa.version>${milyn.smooks.core.version}</milyn.scribe.jpa.version>
         <milyn.smooks.validation.version>${milyn.smooks.core.version}</milyn.smooks.validation.version>
+        <milyn.smooks.ejc.version>${milyn.smooks.core.version}</milyn.smooks.ejc.version>
     </properties>
 
     <dependencies>
