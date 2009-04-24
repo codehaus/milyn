@@ -31,6 +31,7 @@ import org.milyn.profile.ProfileStore;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.Smooks;
 import org.xml.sax.SAXException;
 
 import java.io.BufferedReader;
@@ -80,10 +81,6 @@ public class SmooksResourceConfigurationStore {
 	 * Container context in which this store lives.
 	 */
 	private ApplicationContext applicationContext;
-    /**
-     * Store shutdown hook.
-     */
-    private Thread shutdownHook;
     private static final String CDU_CREATOR = "cdu-creator";
 
     /**
@@ -104,31 +101,14 @@ public class SmooksResourceConfigurationStore {
         registerInstalledResources("null-sax.cdrl");
         registerInstalledResources("installed-param-decoders.cdrl");
         registerInstalledResources("installed-serializers.cdrl");
-
-        addShutdownHook();
-    }
-
-    private void addShutdownHook() {
-        shutdownHook = new Thread() {
-            public void run() {
-                _close();
-            }
-        };
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
     /**
      * Remove the shutdown hook associated with this store instance.
+     * @deprecated Smooks no longer uses shutdown hooks.  The containing application
+     * is responsible for calling {@link Smooks#close()}.
      */
     public void removeShutdownHook() {
-        if(shutdownHook != null) {
-            synchronized (shutdownHook) {
-                if(shutdownHook != null) {
-                    Runtime.getRuntime().removeShutdownHook(shutdownHook);
-                    shutdownHook = null;
-                }
-            }
-        }
     }
 
     private void registerInstalledHandlerFactories() {
@@ -398,11 +378,6 @@ public class SmooksResourceConfigurationStore {
      * all {@link org.milyn.delivery.ContentHandler ContentHandlers} allocated from this store instance.
      */
     public void close() {
-        _close();
-        removeShutdownHook();
-    }
-
-    private void _close() {
         if(initializedObjects != null) {
             logger.debug("Uninitializing all ContentHandler instances allocated through this store.");
             for(Object object : initializedObjects) {
