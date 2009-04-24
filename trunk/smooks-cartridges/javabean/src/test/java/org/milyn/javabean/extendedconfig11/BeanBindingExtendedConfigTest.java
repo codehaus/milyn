@@ -42,7 +42,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         JavaResult result = new JavaResult();
         ExecutionContext execContext = smooks.createExecutionContext();
 
-        execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
+        //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
 
         ExtendedOrder order = (ExtendedOrder) result.getBean("order");
