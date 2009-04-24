@@ -11,9 +11,9 @@
         </jb:expression>
     </jb:bindings>
 
-    <jb:bindings beanId="headerBean" class="org.milyn.javabean.Header" createOnElement="header" createOnElementNS="http://x">
+    <jb:bindings beanId="headerBean" class="org.milyn.javabean.Header" createOnElement="header">
         <jb:wiring property="order" beanIdRef="order" />
-        <jb:value property="date" data="header/date" decoder="Date" dataNS="http://y">
+        <jb:value property="date" data="header/date" decoder="Date">
             <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
             <jb:decodeParam name="locale-language">en</jb:decodeParam>
             <jb:decodeParam name="locale-country">IE</jb:decodeParam>
@@ -23,7 +23,7 @@
         <jb:value property="privatePerson" data="header/privatePerson" decoder="Boolean" default="true" />
     </jb:bindings>
 
-    <jb:bindings beanId="headerBeanHash" class="java.util.HashMap" createOnElement="header" createOnElementNS="http://x">
+    <jb:bindings beanId="headerBeanHash" class="java.util.HashMap" createOnElement="header">
         <jb:value data="header/*" />
     </jb:bindings>
 

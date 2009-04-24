@@ -18,6 +18,7 @@ package org.milyn.javabean.extendedconfig11;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.B;
 import org.milyn.javabean.Header;
@@ -41,7 +42,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         JavaResult result = new JavaResult();
         ExecutionContext execContext = smooks.createExecutionContext();
 
-        //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
+        execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
 
         ExtendedOrder order = (ExtendedOrder) result.getBean("order");
