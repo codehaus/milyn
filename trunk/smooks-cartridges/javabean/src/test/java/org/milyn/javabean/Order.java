@@ -36,6 +36,11 @@ public class Order {
     }
 
     public String toString() {
-        return "Order:" + System.identityHashCode(this) + "[header[" + header + "]\norderItems[" + orderItems + "]\nnorderItemsArray[" + Arrays.asList(orderItemsArray) + "]]";
+        String string = "Order:" + System.identityHashCode(this) + "[header[" + header + "]\norderItems[" + orderItems + "]";
+        try {
+            return string + "\nnorderItemsArray[" + Arrays.asList(orderItemsArray) + "]]";
+        } catch (Exception e) {
+            return string;
+        }
     }
 }

@@ -53,6 +53,12 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
         test_ftl(smooks, "<c x='xvalueonc1' />", "<mybean>xvalueonc1</mybean>");
     }
 
+    public void testFreeMarkerTrans_01_NS() throws SAXException, IOException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-ext-01-NS.cdrl"));
+
+        test_ftl(smooks, "<a xmlns:x=\"http://x\"><b><x:c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a xmlns:x=\"http://x\"><b><mybean>xvalueonc1</mybean><c x=\"xvalueonc2\"></c></b></a>");
+    }
+
     public void test_nodeModel_1() throws IOException, SAXException {
         test_nodeModel_1(StreamFilterType.DOM);
         test_nodeModel_1(StreamFilterType.SAX);

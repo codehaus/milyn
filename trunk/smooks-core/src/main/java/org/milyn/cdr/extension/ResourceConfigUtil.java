@@ -35,7 +35,7 @@ public abstract class ResourceConfigUtil {
             config.setResource(value);
         } else if(setOn.equals("resourceType")) {
             config.setResourceType(value);
-        } else if(setOn.equals("selectorNamespaceURI")) {
+        } else if(setOn.equals("selector-namespace")) {
             config.setSelectorNamespaceURI(value);
         } else if(setOn.equals("defaultResource")) {
             config.setDefaultResource(Boolean.parseBoolean(value));
@@ -63,7 +63,7 @@ public abstract class ResourceConfigUtil {
             config.setResource(null);
         } else if(property.equals("resourceType")) {
             config.setResourceType(null);
-        } else if(property.equals("selectorNamespaceURI")) {
+        } else if(property.equals("selector-namespace")) {
             config.setSelectorNamespaceURI(null);
         } else if(property.equals("defaultResource")) {
             config.setDefaultResource(false);
@@ -83,7 +83,7 @@ public abstract class ResourceConfigUtil {
             setProperty(toConfig, toProperty, fromConfig.getResource(), executionContext);
         } else if(fromProperty.equals("resourceType")) {
             setProperty(toConfig, toProperty, fromConfig.getResourceType(), executionContext);
-        } else if(fromProperty.equals("selectorNamespaceURI")) {
+        } else if(fromProperty.equals("selector-namespace")) {
             setProperty(toConfig, toProperty, fromConfig.getSelectorNamespaceURI(), executionContext);
         } else if(fromProperty.equals("defaultResource")) {
             setProperty(toConfig, toProperty, Boolean.toString(fromConfig.isDefaultResource()), executionContext);

@@ -89,6 +89,12 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         test_ftl(smooks, "<c x='xvalueonc1' />", "<mybean>xvalueonc1</mybean>");
     }
 
+    public void testFreeMarkerTrans_01_NS() throws SAXException, IOException {
+        Smooks smooks = new Smooks("/org/milyn/templating/freemarker/test-configs-01-NS.cdrl");
+
+        test_ftl(smooks, "<a xmlns:x=\"http://x\"><b><x:c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a xmlns:x=\"http://x\"><b><mybean>xvalueonc1</mybean><c x=\"xvalueonc2\"></c></b></a>");
+    }
+
     public void testFreeMarkerTrans_02() throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-02.cdrl"));
 
