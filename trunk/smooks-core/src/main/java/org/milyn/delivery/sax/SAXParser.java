@@ -15,38 +15,40 @@
 */
 package org.milyn.delivery.sax;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.io.Writer;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-
-import java.io.Reader;
-import java.io.Writer;
-import java.io.IOException;
 
 /**
  * Smooks SAX data stream parser.
  * <p/>
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class SAXParser extends AbstractParser {
 
-    private static Log logger = LogFactory.getLog(SAXParser.class);
     private SAXHandler saxHandler;
 
     public SAXParser(ExecutionContext execContext) {
         super(execContext);
     }
 
-    protected void parse(Reader reader, Writer writer) throws SAXException, IOException {
+    protected Writer parse(Source source, Result result, ExecutionContext executionContext) throws SAXException, IOException {
+
+        Writer writer = getWriter(result, executionContext);
         XMLReader saxReader;
 
         saxHandler = new SAXHandler(getExecContext(), writer);
         saxReader = createXMLReader(saxHandler);
-        saxReader.parse(new InputSource(reader));
+        saxReader.parse(createInputSource(saxReader, source, executionContext));
+        return writer;
     }
 
     public void cleanup() {

@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -87,7 +87,7 @@ public class SmooksEDIParserTest extends TestCase {
 			assertEquals("Error parsing EDI mapping model [<z/>].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getCause().getMessage());
 		}
 	}
-	
+
 	public void test_caching() throws IOException, SAXException {
 		byte[] input = StreamUtils.readStream(getClass().getResourceAsStream("edi-input.txt"));
 		Smooks smooks = new Smooks();
@@ -103,8 +103,8 @@ public class SmooksEDIParserTest extends TestCase {
 
 		// Create 1st parser using the config, and run a parse through it...
 		parser = new DOMParser(smooks.createExecutionContext(), config);
-		parser.parse(new InputStreamReader(new ByteArrayInputStream(input)));
-		
+		parser.parse(new StreamSource(new ByteArrayInputStream(input)));
+
 		// Check make sure the parsed and validated model was cached...
 		Hashtable mappingTable = SmooksEDIReader.getMappingTable(smooks.getApplicationContext());
 		assertNotNull("No mapping table in context!", mappingTable);
@@ -114,8 +114,8 @@ public class SmooksEDIParserTest extends TestCase {
 
 		// Create 2nd parser using the same config, and run a parse through it...
 		parser = new DOMParser(smooks.createExecutionContext(), config);
-		parser.parse(new InputStreamReader(new ByteArrayInputStream(input)));
-		
+		parser.parse(new StreamSource(new ByteArrayInputStream(input)));
+
 		// Make sure the cached model was used on the 2nd parse...
 		assertEquals("Not the same model instance => cache not working properly!", mappingModel_request1, (EdifactModel) mappingTable.get(config));
 	}
@@ -135,7 +135,7 @@ public class SmooksEDIParserTest extends TestCase {
 		}
 
 		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
-		Document doc = parser.parse(new InputStreamReader(input));
+		Document doc = parser.parse(new StreamSource(input));
 
 		Diff diff = new Diff(expected, XmlUtil.serialize(doc.getChildNodes()));
 		assertTrue(diff.identical());
@@ -157,7 +157,7 @@ public class SmooksEDIParserTest extends TestCase {
 
 		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
         try {
-            parser.parse(new InputStreamReader(input));
+            parser.parse(new StreamSource(input));
             assert false : "Parser should fail when importing importing message mappings with cyclic dependency";
         } catch (Exception e) {
             assert true : "Parser should fail when importing importing message mappings with cyclic dependency";
@@ -173,6 +173,7 @@ public class SmooksEDIParserTest extends TestCase {
         // Create and initialise the Smooks config for the parser...
         smooks.setReaderConfig(new EDIReaderConfigurator(mapping));
         smooks.filter(new StreamSource(getClass().getResourceAsStream("edi-input.txt")), domResult);
+
 
 		Diff diff = new Diff(expected, XmlUtil.serialize(domResult.getNode().getChildNodes()));
 		assertTrue(diff.identical());

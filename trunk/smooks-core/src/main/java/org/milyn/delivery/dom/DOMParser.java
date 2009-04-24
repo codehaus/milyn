@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -25,7 +25,8 @@ import org.w3c.dom.*;
 import org.xml.sax.*;
 
 import java.io.IOException;
-import java.io.Reader;
+
+import javax.xml.transform.Source;
 
 /**
  * Smooks DOM data stream parser.
@@ -37,17 +38,17 @@ import java.io.Reader;
  * If the configured parser implements the {@link org.milyn.xml.SmooksXMLReader}, the configuration will be
  * passed to the parser via {@link org.milyn.cdr.annotation.ConfigParam} annotaions on config properties
  * defined on the implementation.
- * 
+ *
  * <h3 id="parserconfig">.cdrl Configuration</h3>
  * <pre>
  * &lt;smooks-resource selector="org.xml.sax.driver" path="org.milyn.protocolx.XParser" &gt;
- * 	&lt;!-- 
+ * 	&lt;!--
  * 		Optional list of driver parameters for {@link org.milyn.xml.SmooksXMLReader} implementations.
- * 		See {@link org.milyn.cdr.SmooksResourceConfiguration} for how to add configuration parameters. 
+ * 		See {@link org.milyn.cdr.SmooksResourceConfiguration} for how to add configuration parameters.
  * 	--&gt;
  * &lt;/smooks-resource&gt;
  * </pre>
- * 
+ *
  * @author tfennelly
  */
 public class DOMParser extends AbstractParser {
@@ -64,7 +65,7 @@ public class DOMParser extends AbstractParser {
 	public DOMParser(ExecutionContext execContext) {
         super(execContext);
 	}
-    
+
 	/**
 	 * Public constructor.
 	 * @param execContext The Smooks Container Request that the parser is being instantiated on behalf of.
@@ -81,7 +82,7 @@ public class DOMParser extends AbstractParser {
 	 * @throws SAXException Unable to parse the content.
 	 * @throws IOException Unable to read the input stream.
 	 */
-	public Document parse(Reader source) throws IOException, SAXException {
+	public Document parse(Source source) throws IOException, SAXException {
 	   	DOMBuilder contentHandler = new DOMBuilder(getExecContext());
 
 	   	parse(source, contentHandler);
@@ -89,35 +90,36 @@ public class DOMParser extends AbstractParser {
 		return contentHandler.getDocument();
 	}
 
-    /**
-	 * Append the content, behind the supplied input stream, to suplied
-	 * document element.
-	 * <p/>
-	 * Used to merge document fragments into a document.
-	 * @param source Source content stream to be parsed.
-	 * @param appendElement DOM element to which the content fragment is to
-	 * be added.
-	 * @throws SAXException Unable to parse the content.
-	 * @throws IOException Unable to read the input stream.
-	 */
-	public void append(Reader source, Element appendElement) throws IOException, SAXException {
-	   	DOMBuilder contentHandler = new DOMBuilder(getExecContext());
+      /**
+  	 * Append the content, behind the supplied input stream, to suplied
+  	 * document element.
+  	 * <p/>
+  	 * Used to merge document fragments into a document.
+  	 * @param source Source content stream to be parsed.
+  	 * @param appendElement DOM element to which the content fragment is to
+  	 * be added.
+  	 * @throws SAXException Unable to parse the content.
+  	 * @throws IOException Unable to read the input stream.
+  	 */
+  	public void append(Source source, Element appendElement) throws IOException, SAXException {
+  	   	DOMBuilder contentHandler = new DOMBuilder(getExecContext());
 
-		contentHandler.setAppendElement(appendElement);
-	   	parse(source, contentHandler);
-	}
+  		contentHandler.setAppendElement(appendElement);
+  	   	parse(source, contentHandler);
+  	}
 
-    /**
-	 * Perform the actual parse into the supplied content handler.
-	 * @param source Source content stream to be parsed.
-	 * @param contentHandler Content handler instance that will build/append-to the DOM.
-	 * @throws SAXException Unable to parse the content.
-	 * @throws IOException Unable to read the input stream.
-	 */
-	private void parse(Reader source, DOMBuilder contentHandler) throws SAXException, IOException {
-        XMLReader reader = createXMLReader(contentHandler);
+      /**
+  	 * Perform the actual parse into the supplied content handler.
+  	 * @param source Source content stream to be parsed.
+  	 * @param contentHandler Content handler instance that will build/append-to the DOM.
+  	 * @throws SAXException Unable to parse the content.
+  	 * @throws IOException Unable to read the input stream.
+  	 */
+  	private void parse(Source source, DOMBuilder contentHandler) throws SAXException, IOException {
+          XMLReader domReader = createXMLReader(contentHandler);
+          domReader.parse(createInputSource(domReader, source, getExecContext()));
+  	}
 
-        reader.parse(new InputSource(source));
-	}
+
 
 }
