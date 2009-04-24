@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -76,7 +76,7 @@ import java.util.Vector;
  * <ol>
  * <li>
  * <b><u>Visit</u></b>: This phase is executed via either of the
- * {@link #filter(Document)} or {@link #filter(Reader)} methods.
+ * {@link #filter(Document)} or {@link #filter(Source)} methods.
  * This phase is really 2 "sub" phases.
  * <ul>
  * <li>
@@ -235,7 +235,7 @@ public class SmooksDOMFilter extends Filter {
                     throw new IllegalArgumentException("DOMSource Source types must contain a Document or Element node.");
                 }
             } else {
-                resultNode = filter(getReader(source, executionContext));
+                resultNode = filter(source);
             }
 
             // Populate the Result
@@ -275,7 +275,7 @@ public class SmooksDOMFilter extends Filter {
      * @return Node representing filtered document.
      * @throws SmooksException
      */
-    public Node filter(Reader source) throws SmooksException {
+    public Node filter(Source source) throws SmooksException {
         Node deliveryNode;
 
         if (source == null) {

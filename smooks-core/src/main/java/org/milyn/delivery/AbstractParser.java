@@ -17,6 +17,7 @@ package org.milyn.delivery;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -26,6 +27,8 @@ import org.milyn.payload.JavaSource;
 import org.milyn.payload.FilterSource;
 import org.milyn.delivery.java.JavaXMLReader;
 import org.milyn.delivery.java.XStreamXMLReader;
+import org.milyn.io.NullReader;
+import org.milyn.io.NullWriter;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.NullSourceXMLReader;
 import org.milyn.xml.SmooksXMLReader;
@@ -33,7 +36,17 @@ import org.xml.sax.*;
 import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.List;
 
 /**
@@ -42,9 +55,9 @@ import java.util.List;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class AbstractParser {
-    
+
     private static Log logger = LogFactory.getLog(AbstractParser.class);
-    
+
     private ExecutionContext execContext;
     private SmooksResourceConfiguration saxDriverConfig;
     public static final String ORG_XML_SAX_DRIVER = "org.xml.sax.driver";
@@ -53,7 +66,8 @@ public class AbstractParser {
 
     /**
      * Public constructor.
-     * @param execContext The Smooks Container Request that the parser is being instantiated on behalf of.
+     *
+     * @param execContext     The Smooks Container Request that the parser is being instantiated on behalf of.
      * @param saxDriverConfig SAX Parser configuration. See <a href="#parserconfig">.cdrl Configuration</a>.
      */
     public AbstractParser(ExecutionContext execContext, SmooksResourceConfiguration saxDriverConfig) {
@@ -76,45 +90,117 @@ public class AbstractParser {
 
     /**
      * Get the SAX Parser configuration for the profile associated with the supplied delivery configuration.
+     *
      * @param deliveryConfig Content delivery configuration.
      * @return Returns the SAX Parser configuration for the profile associated with the supplied delivery
-     * configuration, or null if no parser configuration is specified.
+     *         configuration, or null if no parser configuration is specified.
      */
     public static SmooksResourceConfiguration getSAXParserConfiguration(ContentDeliveryConfig deliveryConfig) {
-        if(deliveryConfig == null) {
+        if (deliveryConfig == null) {
             throw new IllegalArgumentException("null 'deliveryConfig' arg in method call.");
         }
 
         SmooksResourceConfiguration saxDriverConfig = null;
         List<SmooksResourceConfiguration> saxConfigs = deliveryConfig.getSmooksResourceConfigurations(ORG_XML_SAX_DRIVER);
 
-        if(saxConfigs != null && !saxConfigs.isEmpty()) {
+        if (saxConfigs != null && !saxConfigs.isEmpty()) {
             saxDriverConfig = saxConfigs.get(0);
         }
 
         return saxDriverConfig;
     }
 
+    protected Reader getReader(Source source, ExecutionContext executionContext) {
+        if (source instanceof StreamSource) {
+            StreamSource streamSource = (StreamSource) source;
+            if (streamSource.getReader() != null) {
+                return streamSource.getReader();
+            } else if (streamSource.getInputStream() != null) {
+                try {
+                    if (executionContext != null) {
+                        return new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding());
+                    } else {
+                        return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    throw new SmooksException("Unable to decode input stream.", e);
+                }
+            } else {
+                throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
+            }
+        }
+
+        return new NullReader();
+    }
+
+    protected InputSource createInputSource(XMLReader inputReader, Source source, ExecutionContext executionContext) {
+        InputSource inputSource;
+        if (inputReader instanceof StreamReader) { // Base on marker interface StreamReader, the Source will be created from Reader or from inputStream
+            inputSource = new InputSource(getInputStream(source));
+        } else {
+            Reader reader = getReader(source, executionContext);
+            inputSource = new InputSource(reader);
+        }
+        return inputSource;
+
+    }
+
+    protected InputStream getInputStream(Source source) {
+        if (source instanceof StreamSource) {
+            StreamSource streamSource = (StreamSource) source;
+            return streamSource.getInputStream();
+        } else {
+            throw new SmooksException("Invalid Source class instance");
+        }
+
+
+    }
+
+
+    protected Writer getWriter(Result result, ExecutionContext executionContext) {
+        if (!(result instanceof StreamResult)) {
+            return new NullWriter();
+        }
+
+        StreamResult streamResult = (StreamResult) result;
+        if (streamResult.getWriter() != null) {
+            return streamResult.getWriter();
+        } else if (streamResult.getOutputStream() != null) {
+            try {
+                if (executionContext != null) {
+                    return new OutputStreamWriter(streamResult.getOutputStream(), executionContext.getContentEncoding());
+                } else {
+                    return new OutputStreamWriter(streamResult.getOutputStream(), "UTF-8");
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new SmooksException("Unable to encode output stream.", e);
+            }
+        } else {
+            throw new SmooksException("Invalid " + StreamResult.class.getName() + ".  No OutputStream or Writer instance.");
+        }
+    }
+
+
     protected XMLReader createXMLReader(DefaultHandler2 handler) throws SAXException {
         XMLReader reader;
         ExecutionContext execContext = getExecContext();
         Source source = FilterSource.getSource(execContext);
 
-        if(saxDriverConfig != null && saxDriverConfig.getResource() != null) {
+        if (saxDriverConfig != null && saxDriverConfig.getResource() != null) {
             String className = saxDriverConfig.getResource();
 
             reader = XMLReaderFactory.createXMLReader(className);
-        } else if(source instanceof JavaSource) {
+        } else if (source instanceof JavaSource) {
             JavaSource javaSource = (JavaSource) source;
 
-            if(isFeatureOn(JavaSource.FEATURE_GENERATE_EVENT_STREAM, saxDriverConfig) && !javaSource.isEventStreamRequired()) {
+            if (isFeatureOn(JavaSource.FEATURE_GENERATE_EVENT_STREAM, saxDriverConfig) && !javaSource.isEventStreamRequired()) {
                 throw new SAXException("Invalid Smooks configuration.  Feature '" + JavaSource.FEATURE_GENERATE_EVENT_STREAM + "' is explicitly configured 'on' in the Smooks configuration, while the supplied JavaSource has explicitly configured event streaming to be off (through a call to JavaSource.setEventStreamRequired).");
             }
 
             // Event streaming must be explicitly turned off.  If is on as long as it is (a) not configured "off" in
             // the smooks config (via the reader features) and (b) not turned off via the supplied JavaSource...
             boolean eventStreamingOn = (!isFeatureOff(JavaSource.FEATURE_GENERATE_EVENT_STREAM, saxDriverConfig) && javaSource.isEventStreamRequired());
-            if(eventStreamingOn && javaSource.getSourceObjects() != null) {
+            if (eventStreamingOn && javaSource.getSourceObjects() != null) {
                 reader = new XStreamXMLReader();
             } else {
                 reader = new NullSourceXMLReader();
@@ -123,18 +209,18 @@ public class AbstractParser {
             reader = XMLReaderFactory.createXMLReader();
         }
 
-        if(reader instanceof SmooksXMLReader) {
-            if(saxDriverConfig != null) {
-                Configurator.configure((SmooksXMLReader)reader, saxDriverConfig, execContext.getContext());
+        if (reader instanceof SmooksXMLReader) {
+            if (saxDriverConfig != null) {
+                Configurator.configure((SmooksXMLReader) reader, saxDriverConfig, execContext.getContext());
             }
-            ((SmooksXMLReader)reader).setExecutionContext(execContext);
+            ((SmooksXMLReader) reader).setExecutionContext(execContext);
         }
 
-        if(reader instanceof JavaXMLReader) {
-            if(!(source instanceof JavaSource)) {
+        if (reader instanceof JavaXMLReader) {
+            if (!(source instanceof JavaSource)) {
                 throw new SAXException("A " + JavaSource.class.getName() + " source must be supplied for " + JavaXMLReader.class.getName() + " implementations.");
             }
-            ((JavaXMLReader)reader).setSourceObjects(((JavaSource)source).getSourceObjects());
+            ((JavaXMLReader) reader).setSourceObjects(((JavaSource) source).getSourceObjects());
         }
 
         reader.setContentHandler(handler);
@@ -153,21 +239,21 @@ public class AbstractParser {
     }
 
     private void setHandlers(XMLReader reader) throws SAXException {
-        if(saxDriverConfig != null) {
+        if (saxDriverConfig != null) {
             List<Parameter> handlers;
 
             handlers = saxDriverConfig.getParameters("sax-handler");
-            if(handlers != null) {
+            if (handlers != null) {
                 for (Parameter handler : handlers) {
                     Object handlerObj = createHandler(handler.getValue());
 
-                    if(handlerObj instanceof EntityResolver) {
+                    if (handlerObj instanceof EntityResolver) {
                         reader.setEntityResolver((EntityResolver) handlerObj);
                     }
-                    if(handlerObj instanceof DTDHandler) {
+                    if (handlerObj instanceof DTDHandler) {
                         reader.setDTDHandler((DTDHandler) handlerObj);
                     }
-                    if(handlerObj instanceof ErrorHandler) {
+                    if (handlerObj instanceof ErrorHandler) {
                         reader.setErrorHandler((ErrorHandler) handlerObj);
                     }
                 }
@@ -192,22 +278,22 @@ public class AbstractParser {
         // Try setting the xerces "notify-char-refs" feature, may fail if it's not Xerces but that's OK...
         try {
             reader.setFeature("http://apache.org/xml/features/scanner/notify-char-refs", true);
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             // Ignore
         }
 
-        if(saxDriverConfig != null) {
+        if (saxDriverConfig != null) {
             List<Parameter> features;
 
             features = saxDriverConfig.getParameters(FEATURE_ON);
-            if(features != null) {
+            if (features != null) {
                 for (Parameter feature : features) {
                     reader.setFeature(feature.getValue(), true);
                 }
             }
 
             features = saxDriverConfig.getParameters(FEATURE_OFF);
-            if(features != null) {
+            if (features != null) {
                 for (Parameter feature : features) {
                     reader.setFeature(feature.getValue(), false);
                 }
@@ -219,7 +305,7 @@ public class AbstractParser {
         boolean featureOn = isFeature(name, FeatureValue.ON, saxDriverConfig);
 
         // Make sure the same feature is not also configured off...
-        if(featureOn && isFeature(name, FeatureValue.OFF, saxDriverConfig)) {
+        if (featureOn && isFeature(name, FeatureValue.OFF, saxDriverConfig)) {
             throw new SAXException("Invalid Smooks configuration.  Feature '" + name + "' is explicitly configured 'on' and 'off'.  Must be one or the other!");
         }
 
@@ -230,7 +316,7 @@ public class AbstractParser {
         boolean featureOff = isFeature(name, FeatureValue.OFF, saxDriverConfig);
 
         // Make sure the same feature is not also configured on...
-        if(featureOff && isFeature(name, FeatureValue.ON, saxDriverConfig)) {
+        if (featureOff && isFeature(name, FeatureValue.ON, saxDriverConfig)) {
             throw new SAXException("Invalid Smooks configuration.  Feature '" + name + "' is explicitly configured 'on' and 'off'.  Must be one or the other!");
         }
 
@@ -243,17 +329,17 @@ public class AbstractParser {
     }
 
     private static boolean isFeature(String name, FeatureValue featureValue, SmooksResourceConfiguration saxDriverConfig) {
-        if(saxDriverConfig != null) {
+        if (saxDriverConfig != null) {
             List<Parameter> features;
 
-            if(featureValue == FeatureValue.ON) {
+            if (featureValue == FeatureValue.ON) {
                 features = saxDriverConfig.getParameters(FEATURE_ON);
             } else {
                 features = saxDriverConfig.getParameters(FEATURE_OFF);
             }
-            if(features != null) {
+            if (features != null) {
                 for (Parameter feature : features) {
-                    if(feature.getValue().equals(name)) {
+                    if (feature.getValue().equals(name)) {
                         return true;
                     }
                 }
@@ -261,5 +347,6 @@ public class AbstractParser {
         }
         return false;
     }
+
+
 }
-                                                    

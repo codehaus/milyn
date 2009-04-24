@@ -26,7 +26,6 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.Reader;
 import java.io.Writer;
 
 /**
@@ -35,7 +34,7 @@ import java.io.Writer;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class SmooksSAXFilter extends Filter {
-    
+
     private ExecutionContext executionContext;
     private SAXParser parser;
     private boolean closeSource;
@@ -59,10 +58,7 @@ public class SmooksSAXFilter extends Filter {
         }
 
         try {
-            Reader reader = getReader(source, executionContext);
-            Writer writer = getWriter(result, executionContext);            
-
-            parser.parse(reader, writer);
+            Writer writer = parser.parse(source, result, executionContext);
             writer.flush();
         } catch (Exception e) {
             throw new SmooksException("Failed to filter source.", e);

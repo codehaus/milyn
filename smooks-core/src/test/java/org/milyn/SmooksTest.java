@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -40,14 +40,17 @@ import java.io.Reader;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
 /**
- * 
+ *
  * @author tfennelly
  */
 public class SmooksTest extends TestCase {
 
     private ExecutionContext execContext;
-    
+
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
@@ -56,36 +59,38 @@ public class SmooksTest extends TestCase {
         SmooksUtil.registerProfileSet(DefaultProfileSet.create("device1", new String[] {"profile1"}), smooks);
         execContext = new StandaloneExecutionContext("device1", smooks.getApplicationContext(), null);
     }
-	
-	public void test_applyTransform_bad_params() {
-		SmooksDOMFilter smooks = new SmooksDOMFilter(execContext);
-		
-		try {
-			smooks.filter((Reader)null);
-			fail("Expected exception on null stream");
-		} catch (IllegalArgumentException e) {
-			//Expected
-		} catch (SmooksException e) {
-			e.printStackTrace();
-			fail("unexpected exception: " + e.getMessage());
+
+		public void test_applyTransform_bad_params() {
+			SmooksDOMFilter smooks = new SmooksDOMFilter(execContext);
+
+			try {
+				smooks.filter((Source)null);
+				fail("Expected exception on null stream");
+			} catch (IllegalArgumentException e) {
+				//Expected
+			} catch (SmooksException e) {
+				e.printStackTrace();
+				fail("unexpected exception: " + e.getMessage());
+			}
 		}
-	}
-	
-	public void test_applyTransform_DocumentCheck() {
-		SmooksDOMFilter smooks;
-		InputStream stream = null;
-		Node deliveryNode = null;
-		
-		stream = getClass().getResourceAsStream("html_1.html");
-		smooks = new SmooksDOMFilter(execContext);
-		try {
-			deliveryNode = smooks.filter(new InputStreamReader(stream));
-		} catch (SmooksException e) {
-			e.printStackTrace();
-			fail("unexpected exception: " + e.getMessage());
+
+
+		public void test_applyTransform_DocumentCheck() {
+			SmooksDOMFilter smooks;
+			InputStream stream = null;
+			Node deliveryNode = null;
+
+			stream = getClass().getResourceAsStream("html_1.html");
+			smooks = new SmooksDOMFilter(execContext);
+			try {
+				deliveryNode = smooks.filter(new StreamSource( stream));
+			} catch (SmooksException e) {
+				e.printStackTrace();
+				fail("unexpected exception: " + e.getMessage());
+			}
+			assertNotNull("Null transform 'Document' return.", deliveryNode);
 		}
-		assertNotNull("Null transform 'Document' return.", deliveryNode);
-	}
+
 
     public void test_setClassPath() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test_setClassLoader_01.xml"));
