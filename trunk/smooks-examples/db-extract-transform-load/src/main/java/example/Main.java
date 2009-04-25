@@ -80,14 +80,19 @@ public class Main {
     	Locale.setDefault(new Locale("en", "IE"));
     	
     	Smooks smooks = new Smooks("./smooks-configs/smooks-config.xml");
-        ExecutionContext executionContext = smooks.createExecutionContext();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
-        
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, executionContext);
-        
-        Locale.setDefault(defaultLocale);
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
+
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, executionContext);
+
+            Locale.setDefault(defaultLocale);
+        } finally {
+            smooks.close();
+        }
     }
 
     public void printOrders() throws SQLException {

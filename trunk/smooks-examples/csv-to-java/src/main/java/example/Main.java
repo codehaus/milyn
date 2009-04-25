@@ -42,15 +42,20 @@ public class Main {
     protected static List runSmooksTransform() throws IOException, SAXException, SmooksException {
 
         Smooks smooks = new Smooks("smooks-config.xml");
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        JavaResult result = new JavaResult();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            JavaResult result = new JavaResult();
 
-        smooks.filter(new StringSource(messageIn), result, executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return (List) result.getBean("customerList");
+            smooks.filter(new StringSource(messageIn), result, executionContext);
+
+            return (List) result.getBean("customerList");
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

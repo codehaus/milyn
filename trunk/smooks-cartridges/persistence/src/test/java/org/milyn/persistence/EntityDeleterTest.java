@@ -60,39 +60,48 @@ public class EntityDeleterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-deleter-01.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_delete.html");
+            enableReporting(executionContext, "report_test_entity_delete.html");
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toDelete1", toDelete1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toDelete1", toDelete1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).delete(same(toDelete1));
+            verify(dao).delete(same(toDelete1));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_delete_with_named_dao() throws Exception {
 		String toDelete1 = new String("toDelete1");
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-deleter-02.xml"));
-		Map<String, Object> daoMap = new HashMap<String, Object>();
-		daoMap.put("dao1", dao);
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            Map<String, Object> daoMap = new HashMap<String, Object>();
+            daoMap.put("dao1", dao);
 
-		PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		enableReporting(executionContext, "report_test_entity_delete_with_named_dao.html");
+            PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toDelete1", toDelete1);
+            enableReporting(executionContext, "report_test_entity_delete_with_named_dao.html");
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toDelete1", toDelete1);
 
-		verify(dao).delete(same(toDelete1));
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+
+            verify(dao).delete(same(toDelete1));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_delete_to_other_beanId() throws Exception {
@@ -102,21 +111,24 @@ public class EntityDeleterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-deleter-03.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_delete_to_other_beanId.html");
+            enableReporting(executionContext, "report_test_entity_delete_to_other_beanId.html");
 
-		when(dao.delete(toDelete1)).thenReturn(deleted1);
+            when(dao.delete(toDelete1)).thenReturn(deleted1);
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toDelete1", toDelete1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toDelete1", toDelete1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		assertSame(deleted1, result.getBean("deleted1"));
-
+            assertSame(deleted1, result.getBean("deleted1"));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_delete_with_mapped_dao() throws Exception {
@@ -124,18 +136,22 @@ public class EntityDeleterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-deleter-04.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(mappedDao));
+            PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(mappedDao));
 
-		enableReporting(executionContext, "report_test_entity_delete_with_mapped_dao.html");
+            enableReporting(executionContext, "report_test_entity_delete_with_mapped_dao.html");
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toDelete1", toDelete1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toDelete1", toDelete1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(mappedDao).delete(eq("delete1"), same(toDelete1));
+            verify(mappedDao).delete(eq("delete1"), same(toDelete1));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_delete_with_deleteBefore() throws Exception {
@@ -143,18 +159,22 @@ public class EntityDeleterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-deleter-05.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_delete_with_deleteBefore.html");
+            enableReporting(executionContext, "report_test_entity_delete_with_deleteBefore.html");
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toDelete1", toDelete1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toDelete1", toDelete1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).delete(same(toDelete1));
+            verify(dao).delete(same(toDelete1));
+        } finally {
+            smooks.close();
+        }
 
 	}
 
@@ -162,16 +182,20 @@ public class EntityDeleterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-deleter-06.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_delete_producer_consumer.html");
+            enableReporting(executionContext, "report_test_entity_delete_producer_consumer.html");
 
-		JavaResult result = new JavaResult();
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            JavaResult result = new JavaResult();
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).delete(same((String)result.getBean("toDelete")));
+            verify(dao).delete(same((String)result.getBean("toDelete")));
+        } finally {
+            smooks.close();
+        }
 
 	}
 

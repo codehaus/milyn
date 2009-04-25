@@ -70,23 +70,28 @@ public class Main {
 
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
-        ExecutionContext executionContext;
 
-        // Set the Resource locator for picking up the <link/> ref'd .css files
-        // from the local File sys... Only need to do this because of a bug in
-        // the URIResourceLocator (which has been fixed: http://jira.codehaus.org/browse/MILYN-56).
-        smooks.getApplicationContext().setResourceLocator(new LocalFilesysLocator());
+        try {
+            ExecutionContext executionContext;
 
-         // Create an exec context - no profiles....
-        executionContext = smooks.createExecutionContext();
+            // Set the Resource locator for picking up the <link/> ref'd .css files
+            // from the local File sys... Only need to do this because of a bug in
+            // the URIResourceLocator (which has been fixed: http://jira.codehaus.org/browse/MILYN-56).
+            smooks.getApplicationContext().setResourceLocator(new LocalFilesysLocator());
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+             // Create an exec context - no profiles....
+            executionContext = smooks.createExecutionContext();
 
-        // Filter the input html through Smooks... we're only analysing...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(htmlIn)), new DOMResult(), executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return executionContext;
+            // Filter the input html through Smooks... we're only analysing...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(htmlIn)), new DOMResult(), executionContext);
+
+            return executionContext;
+        } finally {
+            smooks.close();
+        }
     }
 
     private static byte[] readInputMessage() {

@@ -51,21 +51,24 @@ public class Main {
     }
 
     protected String runSmooksTransform(ExecutionContext executionContext) throws IOException, SAXException, SmooksException {
+        try {
+            Locale defaultLocale = Locale.getDefault();
+            Locale.setDefault(new Locale("en", "IE"));
 
-    	Locale defaultLocale = Locale.getDefault();
-    	Locale.setDefault(new Locale("en", "IE"));
+            DOMResult domResult = new DOMResult();
 
-        DOMResult domResult = new DOMResult();
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            // Filter the input message to the outputWriter, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
 
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
+            Locale.setDefault(defaultLocale);
 
-        Locale.setDefault(defaultLocale);
-
-        return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
+            return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

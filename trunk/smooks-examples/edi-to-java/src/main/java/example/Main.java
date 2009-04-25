@@ -16,6 +16,7 @@
 package example;
 
 import org.milyn.*;
+import org.milyn.payload.JavaResult;
 import org.milyn.container.*;
 import org.milyn.event.report.*;
 import org.milyn.io.*;
@@ -40,22 +41,25 @@ public class Main {
         smooks = new Smooks("smooks-config.xml");
     }
 
-    protected org.milyn.payload.JavaResult runSmooksTransform(ExecutionContext executionContext) throws IOException, SAXException, SmooksException {
-    	
-    	Locale defaultLocale = Locale.getDefault();
-    	Locale.setDefault(new Locale("en", "IE"));
-    	
-        org.milyn.payload.JavaResult javaResult = new org.milyn.payload.JavaResult();
+    protected JavaResult runSmooksTransform(ExecutionContext executionContext) throws IOException, SAXException, SmooksException {
+    	try {
+            Locale defaultLocale = Locale.getDefault();
+            Locale.setDefault(new Locale("en", "IE"));
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            org.milyn.payload.JavaResult javaResult = new org.milyn.payload.JavaResult();
 
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), javaResult, executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        Locale.setDefault(defaultLocale);
-        
-        return javaResult;
+            // Filter the input message to the outputWriter, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), javaResult, executionContext);
+
+            Locale.setDefault(defaultLocale);
+
+            return javaResult;
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

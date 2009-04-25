@@ -38,19 +38,24 @@ public class Main {
      */
     protected LineOrder runSmooksTransform(Order srcOrder) throws IOException, SAXException {
         Smooks smooks = new Smooks("smooks-config.xml");
-        ExecutionContext executionContext = smooks.createExecutionContext();
 
-        // Transform the source Order to the target LineOrder via a
-        // JavaSource and JavaResult instance...
-        JavaSource source = new JavaSource(srcOrder);
-        JavaResult result = new JavaResult();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            // Transform the source Order to the target LineOrder via a
+            // JavaSource and JavaResult instance...
+            JavaSource source = new JavaSource(srcOrder);
+            JavaResult result = new JavaResult();
 
-        smooks.filter(source, result, executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return (LineOrder) result.getBean("lineOrder");
+            smooks.filter(source, result, executionContext);
+
+            return (LineOrder) result.getBean("lineOrder");
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

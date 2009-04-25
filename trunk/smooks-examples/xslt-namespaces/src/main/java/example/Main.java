@@ -38,17 +38,22 @@ public class Main {
 
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
-         // Create an exec context - no profiles....
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        CharArrayWriter outputWriter = new CharArrayWriter();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        try {
+             // Create an exec context - no profiles....
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            CharArrayWriter outputWriter = new CharArrayWriter();
 
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return outputWriter.toString();
+            // Filter the input message to the outputWriter, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
+
+            return outputWriter.toString();
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

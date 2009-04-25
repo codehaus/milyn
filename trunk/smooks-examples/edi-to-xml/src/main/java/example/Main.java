@@ -48,20 +48,24 @@ public class Main {
     	
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
-         // Create an exec context - no profiles....
-        ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+             // Create an exec context - no profiles....
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-        DOMResult domResult = new DOMResult();
+            DOMResult domResult = new DOMResult();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
-       
-        Locale.setDefault(defaultLocale);
-        
-        return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
+            // Filter the input message to the outputWriter, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
+
+            Locale.setDefault(defaultLocale);
+
+            return XmlUtil.serialize(domResult.getNode().getChildNodes(), true);
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

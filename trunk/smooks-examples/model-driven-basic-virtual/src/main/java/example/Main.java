@@ -45,19 +45,22 @@ public class Main {
      * @return The transformed request/response.
      */
     protected String runSmooksTransform(byte[] message) throws IOException {
+        try {
+            // Create an exec context for the target profile....
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            StringSource stringSource = new StringSource(new String(message));
+            StringResult stringResult = new StringResult();
 
-        // Create an exec context for the target profile....
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        StringSource stringSource = new StringSource(new String(message));
-        StringResult stringResult = new StringResult();
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            // Filter the message to the outputWriter, using the execution context...
+            smooks.filter(stringSource, stringResult, executionContext);
 
-        // Filter the message to the outputWriter, using the execution context...
-        smooks.filter(stringSource, stringResult, executionContext);
-
-        return stringResult.toString();
+            return stringResult.toString();
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

@@ -46,24 +46,28 @@ public class Main
     protected void runSmooksTransform() throws IOException, SAXException, ClassNotFoundException
     {
         final Smooks smooks = new Smooks( "smooks-config.xml" );
-        final ExecutionContext executionContext = smooks.createExecutionContext();
-        
-    	//	create the source and result 
-        final StreamSource source = new StreamSource( new FileInputStream( "target/input-message.xml" ) );
-        final StreamResult result = null;
 
-        //executionContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+        try {
+            final ExecutionContext executionContext = smooks.createExecutionContext();
 
-        //	perform the transform
-        smooks.filter( source, result, executionContext );
-        
-        //	display the output from the transform
-        System.out.println( LINE_SEP );
-        System.out.println( "List file : [" + FileListAccessor.getListFileNames( executionContext ) + "]" );
-        
-        //	uncomment to print the files
-        printFiles( executionContext );
-        
+            //	create the source and result
+            final StreamSource source = new StreamSource( new FileInputStream( "target/input-message.xml" ) );
+            final StreamResult result = null;
+
+            //executionContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+
+            //	perform the transform
+            smooks.filter( source, result, executionContext );
+
+            //	display the output from the transform
+            System.out.println( LINE_SEP );
+            System.out.println( "List file : [" + FileListAccessor.getListFileNames( executionContext ) + "]" );
+
+            //	uncomment to print the files
+            printFiles( executionContext );
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException, InterruptedException, ClassNotFoundException
