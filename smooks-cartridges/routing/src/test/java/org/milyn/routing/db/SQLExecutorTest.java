@@ -62,51 +62,64 @@ public class SQLExecutorTest
     @Test
     public void test_appContextTime() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
-    	test_appContextTime(smooks);
+        try {
+            test_appContextTime(smooks);
+        } finally {
+            smooks.close();
+        }
     }
 
     @Test
     public void test_appContextTimeExtendedConfig() throws Exception {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config.xml"));
     	test_appContextTime(smooks);
+        try {
+            test_appContextTime(smooks);
+        } finally {
+            smooks.close();
+        }
     }
 
     @Test
     public void test_appContextTimeProgrammatic() throws Exception {
         Smooks smooks = new Smooks();
 
-        // Now programmaticly configure...
-        DirectDataSource datasource = new DirectDataSource()
-                          .setDriver(jdbcDriver.class)
-                          .setName("OrdersDS")
-                          .setUrl("jdbc:hsqldb:hsql://localhost:9992/milyn-hsql-9992")
-                          .setUsername("sa")
-                          .setPassword("")
-                          .setAutoCommit(true);
-        SQLExecutor orderSelector = new SQLExecutor()
-                          .setDatasource(datasource)
-                          .setStatement("select * from ORDERS")
-                          .setResultSetName("orders1")
-                          .setExecuteBefore(true);
+        try {
+            // Now programmaticly configure...
+            DirectDataSource datasource = new DirectDataSource()
+                              .setDriver(jdbcDriver.class)
+                              .setName("OrdersDS")
+                              .setUrl("jdbc:hsqldb:hsql://localhost:9992/milyn-hsql-9992")
+                              .setUsername("sa")
+                              .setPassword("")
+                              .setAutoCommit(true);
+            SQLExecutor orderSelector = new SQLExecutor()
+                              .setDatasource(datasource)
+                              .setStatement("select * from ORDERS")
+                              .setResultSetName("orders1")
+                              .setExecuteBefore(true);
 
-        smooks.addVisitor(datasource);
-        smooks.addVisitor(orderSelector);
+            smooks.addVisitor(datasource);
+            smooks.addVisitor(orderSelector);
 
-        smooks.addVisitor(new ResultsetRowSelector()
-                          .setSelector(orderSelector)
-                          .setBeanId("myOrder")
-                          .setWhereClause("row.ORDERNUMBER == 2")
-                          .setFailedSelectError("Order with ORDERNUMBER=2 not found in Database"));
+            smooks.addVisitor(new ResultsetRowSelector()
+                              .setSelector(orderSelector)
+                              .setBeanId("myOrder")
+                              .setWhereClause("row.ORDERNUMBER == 2")
+                              .setFailedSelectError("Order with ORDERNUMBER=2 not found in Database"));
 
-        smooks.addVisitor(new SQLExecutor()
-                          .setDatasource(datasource)
-                          .setStatement("select * from ORDERS")
-                          .setResultSetName("orders2")
-                          .setResultSetScope(ResultSetScope.APPLICATION)
-                          .setResultSetTTL(2000L)
-                          .setExecuteBefore(true));
+            smooks.addVisitor(new SQLExecutor()
+                              .setDatasource(datasource)
+                              .setStatement("select * from ORDERS")
+                              .setResultSetName("orders2")
+                              .setResultSetScope(ResultSetScope.APPLICATION)
+                              .setResultSetTTL(2000L)
+                              .setExecuteBefore(true));
 
-        test_appContextTime(smooks);
+            test_appContextTime(smooks);
+        } finally {
+            smooks.close();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -147,13 +160,18 @@ public class SQLExecutorTest
     @SuppressWarnings("unchecked")
 	public void test_ResultsetRowSelector_01() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
-        ExecutionContext execContext = smooks.createExecutionContext();
-        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
-        smooks.filter(new StringSource("<doc/>"), null, execContext);
-        Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
+        try {
+            ExecutionContext execContext = smooks.createExecutionContext();
+            BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
-        assertEquals("{ORDERNUMBER=2, CUSTOMERNUMBER=2, PRODUCTCODE=456}", myOrder.toString());
+            smooks.filter(new StringSource("<doc/>"), null, execContext);
+            Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
+
+            assertEquals("{ORDERNUMBER=2, CUSTOMERNUMBER=2, PRODUCTCODE=456}", myOrder.toString());
+        } finally {
+            smooks.close();
+        }
     }
 
 
@@ -161,30 +179,40 @@ public class SQLExecutorTest
     @SuppressWarnings("unchecked")
 	public void test_ResultsetRowSelector_02() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-failed-select-01.xml"));
-        ExecutionContext execContext = smooks.createExecutionContext();
-        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
-        smooks.filter(new StringSource("<doc/>"), null, execContext);
-        Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
+        try {
+            ExecutionContext execContext = smooks.createExecutionContext();
+            BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
-        assertEquals(null, myOrder);
+            smooks.filter(new StringSource("<doc/>"), null, execContext);
+            Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
+
+            assertEquals(null, myOrder);
+        } finally {
+            smooks.close();
+        }
     }
 
     @Test
     public void test_ResultsetRowSelector_03() throws IOException, SAXException, InterruptedException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-failed-select-02.xml"));
-        ExecutionContext execContext = smooks.createExecutionContext();
-        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
-        BeanIdRegister beanIdRegister =  BeanRepositoryManager.getInstance(execContext.getContext()).getBeanIdRegister();
 
-        BeanId requiredOrderNumId = beanIdRegister.register("requiredOrderNum");
-
-        beanRepository.addBean(requiredOrderNumId, 9999);
         try {
-            smooks.filter(new StringSource("<doc/>"), null, execContext);
-            fail("Expected DataSelectionException");
-        } catch(SmooksException e) {
-            assertEquals("Order with ORDERNUMBER=9999 not found in Database", e.getCause().getMessage());
+            ExecutionContext execContext = smooks.createExecutionContext();
+            BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
+            BeanIdRegister beanIdRegister =  BeanRepositoryManager.getInstance(execContext.getContext()).getBeanIdRegister();
+
+            BeanId requiredOrderNumId = beanIdRegister.register("requiredOrderNum");
+
+            beanRepository.addBean(requiredOrderNumId, 9999);
+            try {
+                smooks.filter(new StringSource("<doc/>"), null, execContext);
+                fail("Expected DataSelectionException");
+            } catch(SmooksException e) {
+                assertEquals("Order with ORDERNUMBER=9999 not found in Database", e.getCause().getMessage());
+            }
+        } finally {
+            smooks.close();
         }
     }
 }

@@ -153,18 +153,23 @@ public class Main {
             compileSourceFile(folder,  packageName, "Order");
 
             Smooks smooks = new Smooks();
-            smooks.addConfigurations(new ByteArrayInputStream(getResource("edi-config.xml")));
-            smooks.addConfigurations(new FileInputStream(folder + "binding-config.xml"));
-            ExecutionContext context = smooks.createExecutionContext();
 
-            JavaResult result = new JavaResult();
-            inputStream = new FileInputStream(folder + "../../" + "input-message.edi");
-            StreamSource source = new StreamSource(inputStream);
-            smooks.filter(source, result, context);
+            try {
+                smooks.addConfigurations(new ByteArrayInputStream(getResource("edi-config.xml")));
+                smooks.addConfigurations(new FileInputStream(folder + "binding-config.xml"));
+                ExecutionContext context = smooks.createExecutionContext();
 
-            com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream();
+                JavaResult result = new JavaResult();
+                inputStream = new FileInputStream(folder + "../../" + "input-message.edi");
+                StreamSource source = new StreamSource(inputStream);
+                smooks.filter(source, result, context);
 
-            return xstream.toXML(result.getBean("order"));
+                com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream();
+
+                return xstream.toXML(result.getBean("order"));
+            } finally {
+                smooks.close();
+            }
         } finally {
             if (inputStream != null) {
                 inputStream.close();

@@ -99,9 +99,8 @@ public class ActiveMQTest {
     }
 
     private void test(Smooks smooks, FilterSettings filterSettings) throws JMSException, InterruptedException {
-        smooks.setFilterSettings(filterSettings);
-
         try {
+            smooks.setFilterSettings(filterSettings);
             listener.getMessages().clear();
             smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
 

@@ -41,18 +41,23 @@ public class Main {
 
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks("smooks-config.xml");
-         // Create an exec context - no profiles....
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        // The result of this transform is a set of Java objects...
-        JavaResult result = new JavaResult();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        try {
+             // Create an exec context - no profiles....
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            // The result of this transform is a set of Java objects...
+            JavaResult result = new JavaResult();
 
-        // Filter the input message to extract, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return (Order) result.getBean("order");
+            // Filter the input message to extract, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
+
+            return (Order) result.getBean("order");
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

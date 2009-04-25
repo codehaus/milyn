@@ -55,50 +55,64 @@ public class DaoFlusherTest  extends BaseTestCase   {
 	public void test_dao_flush() throws Exception {
 		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-01.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_dao_flush.html");
+            enableReporting(executionContext, "report_test_dao_flush.html");
 
-		smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
 
-		verify(dao).flush();
+            verify(dao).flush();
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_dao_flush_with_named_dao() throws Exception {
 
 		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-02.xml"));
-		Map<String, Object> daoMap = new HashMap<String, Object>();
-		daoMap.put("dao1", dao);
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            Map<String, Object> daoMap = new HashMap<String, Object>();
+            daoMap.put("dao1", dao);
 
-		PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		enableReporting(executionContext, "report_test_dao_flush_with_named_dao.html");
+            PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
 
-		smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+            enableReporting(executionContext, "report_test_dao_flush_with_named_dao.html");
 
-		verify(dao).flush();
+            smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+
+            verify(dao).flush();
+        } finally {
+            smooks.close();
+        }
 	}
 
 
 	public void test_dao_flush_with_flushBefore() throws Exception {
 		Smooks smooks = new Smooks(getResourceAsStream("doa-flusher-03.xml"));
-		Map<String, Object> daoMap = new HashMap<String, Object>();
-		daoMap.put("mappedDao", mappedDao);
-		daoMap.put("dao", dao);
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            Map<String, Object> daoMap = new HashMap<String, Object>();
+            daoMap.put("mappedDao", mappedDao);
+            daoMap.put("dao", dao);
 
-		PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		enableReporting(executionContext, "report_test_dao_flush_with_flushBefore.html");
+            PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
 
-		smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+            enableReporting(executionContext, "report_test_dao_flush_with_flushBefore.html");
 
-		verify(dao).flush();
+            smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+
+            verify(dao).flush();
+        } finally {
+            smooks.close();
+        }
 	}
 
 

@@ -42,18 +42,23 @@ public class Main {
     protected static Map runSmooksTransform(String config) throws IOException, SAXException, SmooksException {
         // Instantiate Smooks with the config...
         Smooks smooks = new Smooks(config);
-         // Create an exec context - no profiles....
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        // The result of this transform is a set of Java objects...
-        JavaResult result = new JavaResult();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        try {
+             // Create an exec context - no profiles....
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            // The result of this transform is a set of Java objects...
+            JavaResult result = new JavaResult();
 
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return result.getResultMap();
+            // Filter the input message to the outputWriter, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), result, executionContext);
+
+            return result.getResultMap();
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

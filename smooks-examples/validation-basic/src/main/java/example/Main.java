@@ -68,18 +68,23 @@ public class Main
     {
         // Instantiate Smooks with the config...
         final Smooks smooks = new Smooks("smooks-config.xml");
-         // Create an exec context - no profiles....
-        final ExecutionContext executionContext = smooks.createExecutionContext();
 
-        final CharArrayWriter outputWriter = new CharArrayWriter();
+        try {
+             // Create an exec context - no profiles....
+            final ExecutionContext executionContext = smooks.createExecutionContext();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            final CharArrayWriter outputWriter = new CharArrayWriter();
 
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return ValidationFailures.getAll(executionContext);
+            // Filter the input message to the outputWriter, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
+
+            return ValidationFailures.getAll(executionContext);
+        } finally {
+            smooks.close();
+        }
     }
 
     private static byte[] readInputMessage()

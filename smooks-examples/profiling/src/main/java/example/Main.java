@@ -42,18 +42,21 @@ public class Main {
     }
 
     protected String runSmooksTransform(String targetProfile) throws IOException {
+        try {
+            // Create an exec context for the target profile....
+            ExecutionContext executionContext = smooks.createExecutionContext(targetProfile);
+            CharArrayWriter outputWriter = new CharArrayWriter();
 
-        // Create an exec context for the target profile....
-        ExecutionContext executionContext = smooks.createExecutionContext(targetProfile);
-        CharArrayWriter outputWriter = new CharArrayWriter();
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            // Filter the input message to the outputWriter, using the execution context...
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
 
-        // Filter the input message to the outputWriter, using the execution context...
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
-
-        return outputWriter.toString();
+            return outputWriter.toString();
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

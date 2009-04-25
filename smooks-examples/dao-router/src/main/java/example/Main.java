@@ -127,53 +127,56 @@ public class Main {
 
     protected void runSmooksTransformWithDao() throws IOException, SAXException, SmooksException {
 
-
-
     	Smooks smooks = new Smooks("./smooks-configs/smooks-dao-config.xml");
-        ExecutionContext executionContext = smooks.createExecutionContext();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report-dao.html"));
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-        DaoRegister<Object> register =
-        	MapDaoRegister.builder()
-        		.put("product", new ProductDao(em))
-        		.put("customer", new CustomerDao(em))
-        		.put("order", new OrderDao(em))
-        		.build();
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report-dao.html"));
 
-        PersistenceUtil.setDAORegister(executionContext, register);
+            DaoRegister<Object> register =
+                MapDaoRegister.builder()
+                    .put("product", new ProductDao(em))
+                    .put("customer", new CustomerDao(em))
+                    .put("order", new OrderDao(em))
+                    .build();
 
-        EntityTransaction tx = em.getTransaction();
-        tx.begin();
+            PersistenceUtil.setDAORegister(executionContext, register);
 
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageInDao)), null, executionContext);
+            EntityTransaction tx = em.getTransaction();
+            tx.begin();
 
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageInDao)), null, executionContext);
 
-        tx.commit();
-
+            tx.commit();
+        } finally {
+            smooks.close();
+        }
     }
 
     protected void runSmooksTransformWithJpa() throws IOException, SAXException, SmooksException {
 
-
-
     	Smooks smooks = new Smooks("./smooks-configs/smooks-jpa-config.xml");
-        ExecutionContext executionContext = smooks.createExecutionContext();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report-jpa.html"));
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-        PersistenceUtil.setDAORegister(executionContext, new EntityManagerRegister(em));
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report-jpa.html"));
 
-        EntityTransaction tx = em.getTransaction();
+            PersistenceUtil.setDAORegister(executionContext, new EntityManagerRegister(em));
 
-        tx.begin();
+            EntityTransaction tx = em.getTransaction();
 
-        smooks.filter(new StreamSource(new ByteArrayInputStream(messageInJpa)), null, executionContext);
+            tx.begin();
 
-        tx.commit();
+            smooks.filter(new StreamSource(new ByteArrayInputStream(messageInJpa)), null, executionContext);
 
+            tx.commit();
+        } finally {
+            smooks.close();
+        }
     }
 
     public void printOrders() throws SQLException {

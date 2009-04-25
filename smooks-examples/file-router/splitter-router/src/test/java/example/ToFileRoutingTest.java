@@ -139,19 +139,24 @@ public class ToFileRoutingTest extends TestCase {
 
         public void run() {
             Smooks smooks = null;
-            try {
-                smooks = new Smooks(new FileInputStream("smooks-config.xml"));
-            } catch (IOException e) {
-                TestCase.fail(e.getMessage());
-            } catch (SAXException e) {
-                TestCase.fail(e.getMessage());
-            }
 
-            ExecutionContext execCtx = smooks.createExecutionContext();
-            //execCtx.setEventListener(new HtmlReportGenerator("/zap/x.html"));
-            smooks.setFilterSettings(new FilterSettings(filterType));
-            running = true;
-            smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), null, execCtx);
+            try {
+                try {
+                    smooks = new Smooks(new FileInputStream("smooks-config.xml"));
+                } catch (IOException e) {
+                    TestCase.fail(e.getMessage());
+                } catch (SAXException e) {
+                    TestCase.fail(e.getMessage());
+                }
+
+                ExecutionContext execCtx = smooks.createExecutionContext();
+                //execCtx.setEventListener(new HtmlReportGenerator("/zap/x.html"));
+                smooks.setFilterSettings(new FilterSettings(filterType));
+                running = true;
+                smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), null, execCtx);
+            } finally {
+                smooks.close();
+            }
         }
     }
 }

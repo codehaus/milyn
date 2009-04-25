@@ -68,17 +68,20 @@ public class EntityLocatorTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-locator-01.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "test_entity_locate.html");
+            enableReporting(executionContext, "test_entity_locate.html");
 
-		Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
-		smooks.filter(source, null, executionContext);
+            Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
+            smooks.filter(source, null, executionContext);
 
-		assertSame(result, BeanRepository.getInstance(executionContext).getBean("entity"));
-
+            assertSame(result, BeanRepository.getInstance(executionContext).getBean("entity"));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	/**

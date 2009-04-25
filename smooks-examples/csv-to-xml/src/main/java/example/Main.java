@@ -37,15 +37,20 @@ public class Main {
     protected static String runSmooksTransform() throws IOException, SAXException, SmooksException {
 
         Smooks smooks = new Smooks("smooks-config.xml");
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        StringWriter writer = new StringWriter();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            StringWriter writer = new StringWriter();
 
-        smooks.filter(new StreamSource(new InputStreamReader(new ByteArrayInputStream(messageIn), "UTF-8")), new StreamResult(writer), executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return writer.toString();
+            smooks.filter(new StreamSource(new InputStreamReader(new ByteArrayInputStream(messageIn), "UTF-8")), new StreamResult(writer), executionContext);
+
+            return writer.toString();
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

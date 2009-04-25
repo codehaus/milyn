@@ -42,16 +42,21 @@ public class Main {
      */
     protected String runSmooksTransform(Object inputJavaObject) throws IOException, SAXException {
         Smooks smooks = new Smooks("smooks-config.xml");
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        StringWriter writer = new StringWriter();
 
-        // Configure the execution context to generate a report...
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            StringWriter writer = new StringWriter();
 
-        // Filter the message to the result writer, using the execution context...
-        smooks.filter(new JavaSource(inputJavaObject), new StreamResult(writer), executionContext);
+            // Configure the execution context to generate a report...
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        return writer.toString();
+            // Filter the message to the result writer, using the execution context...
+            smooks.filter(new JavaSource(inputJavaObject), new StreamResult(writer), executionContext);
+
+            return writer.toString();
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

@@ -47,21 +47,25 @@ public class Main {
 
         Smooks smooks = new Smooks();
 
-        // ****
-        // And here's the configuration... configuring the CSV reader and the direct
-        // binding config to create a List of Person objects (List<Person>)...
-        // ****
-        smooks.setReaderConfig(new CSVReaderConfigurator("firstName,lastName,gender,age,country")
-                .setBinding(new CSVBinding("customerList", Customer.class, CSVBindingType.LIST)));
+        try {
+            // ****
+            // And here's the configuration... configuring the CSV reader and the direct
+            // binding config to create a List of Person objects (List<Person>)...
+            // ****
+            smooks.setReaderConfig(new CSVReaderConfigurator("firstName,lastName,gender,age,country")
+                    .setBinding(new CSVBinding("customerList", Customer.class, CSVBindingType.LIST)));
 
-        // Configure the execution context to generate a report...
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+            // Configure the execution context to generate a report...
+            ExecutionContext executionContext = smooks.createExecutionContext();
+            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-        JavaResult javaResult = new JavaResult();
-        smooks.filter(new StringSource(messageIn), javaResult, executionContext);
+            JavaResult javaResult = new JavaResult();
+            smooks.filter(new StringSource(messageIn), javaResult, executionContext);
 
-        return (List) javaResult.getBean("customerList");
+            return (List) javaResult.getBean("customerList");
+        } finally {
+            smooks.close();
+        }
     }
 
     public static void main(String[] args) throws IOException, SAXException, SmooksException {

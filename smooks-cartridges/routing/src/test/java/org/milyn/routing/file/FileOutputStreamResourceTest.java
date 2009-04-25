@@ -107,28 +107,36 @@ public class FileOutputStreamResourceTest
     public void test_config_01() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config-01.xml"));
 
-        smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+        try {
+            smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
 
-        assertEquals("1", getFileContents(file1));
-        assertEquals("2", getFileContents(file2));
-        assertEquals("3", getFileContents(file3));
+            assertEquals("1", getFileContents(file1));
+            assertEquals("2", getFileContents(file2));
+            assertEquals("3", getFileContents(file3));
+        } finally {
+            smooks.close();
+        }
     }
 
     @Test
     public void test_config_01_programmatic() throws IOException, SAXException {
         Smooks smooks = new Smooks();
 
-        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+        try {
+            smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
 
-        smooks.addVisitor(new Bean(HashMap.class, "object").bindTo("a", "a"));
-        smooks.addVisitor(new FreeMarkerTemplateProcessor(new TemplatingConfiguration("${object.a}").setUsage(OutputTo.stream("fileOS"))), "a");
-        smooks.addVisitor(new FileOutputStreamResource().setFileNamePattern("${object.a}.xml").setDestinationDirectoryPattern("target/config-01-test/${object.a}").setResourceName("fileOS"), "a");
+            smooks.addVisitor(new Bean(HashMap.class, "object").bindTo("a", "a"));
+            smooks.addVisitor(new FreeMarkerTemplateProcessor(new TemplatingConfiguration("${object.a}").setUsage(OutputTo.stream("fileOS"))), "a");
+            smooks.addVisitor(new FileOutputStreamResource().setFileNamePattern("${object.a}.xml").setDestinationDirectoryPattern("target/config-01-test/${object.a}").setResourceName("fileOS"), "a");
 
-        smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+            smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
 
-        assertEquals("1", getFileContents(file1));
-        assertEquals("2", getFileContents(file2));
-        assertEquals("3", getFileContents(file3));
+            assertEquals("1", getFileContents(file1));
+            assertEquals("2", getFileContents(file2));
+            assertEquals("3", getFileContents(file3));
+        } finally {
+            smooks.close();
+        }
     }
 
     private String getFileContents(File file) throws IOException {

@@ -63,14 +63,19 @@ public class DbETLTest extends TestCase {
 
     private static void eatBigFile() throws IOException, SAXException {
         Smooks smooks = new Smooks("./smooks-configs/smooks-config.xml");
-        FileReader reader = new FileReader("/zap/big-edi.edi");
 
         try {
-            long start = System.currentTimeMillis();
-            smooks.filter(new StreamSource(reader), null, smooks.createExecutionContext());
-            System.out.println("Took: " + (System.currentTimeMillis() - start));
+            FileReader reader = new FileReader("/zap/big-edi.edi");
+
+            try {
+                long start = System.currentTimeMillis();
+                smooks.filter(new StreamSource(reader), null, smooks.createExecutionContext());
+                System.out.println("Took: " + (System.currentTimeMillis() - start));
+            } finally {
+                reader.close();
+            }
         } finally {
-            reader.close();
+            smooks.close();
         }
     }
 

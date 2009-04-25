@@ -60,39 +60,48 @@ public class EntityInserterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-inserter-01.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_insert.html");
+            enableReporting(executionContext, "report_test_entity_insert.html");
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toInsert1", toInsert1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toInsert1", toInsert1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).insert(same(toInsert1));
+            verify(dao).insert(same(toInsert1));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_insert_with_named_dao() throws Exception {
 		String toInsert1 = new String("toInsert1");
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-inserter-02.xml"));
-		Map<String, Object> daoMap = new HashMap<String, Object>();
-		daoMap.put("dao1", dao);
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            Map<String, Object> daoMap = new HashMap<String, Object>();
+            daoMap.put("dao1", dao);
 
-		PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		enableReporting(executionContext, "report_test_entity_insert_with_named_dao.html");
+            PersistenceUtil.setDAORegister(executionContext, MapDaoRegister.newInstance(daoMap));
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toInsert1", toInsert1);
+            enableReporting(executionContext, "report_test_entity_insert_with_named_dao.html");
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toInsert1", toInsert1);
 
-		verify(dao).insert(same(toInsert1));
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+
+            verify(dao).insert(same(toInsert1));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_insert_to_other_beanId() throws Exception {
@@ -102,21 +111,24 @@ public class EntityInserterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-inserter-03.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_insert_to_other_beanId.html");
+            enableReporting(executionContext, "report_test_entity_insert_to_other_beanId.html");
 
-		when(dao.insert(toInsert1)).thenReturn(inserted1);
+            when(dao.insert(toInsert1)).thenReturn(inserted1);
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toInsert1", toInsert1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toInsert1", toInsert1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		assertSame(inserted1, result.getBean("inserted1"));
-
+            assertSame(inserted1, result.getBean("inserted1"));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_insert_with_mapped_dao() throws Exception {
@@ -124,18 +136,22 @@ public class EntityInserterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-inserter-04.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(mappedDao));
+            PersistenceUtil.setDAORegister(executionContext,  new SingleDaoRegister<Object>(mappedDao));
 
-		enableReporting(executionContext, "report_test_entity_insert_with_mapped_dao.html");
+            enableReporting(executionContext, "report_test_entity_insert_with_mapped_dao.html");
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toInsert1", toInsert1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toInsert1", toInsert1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(mappedDao).insert(eq("insert1"), same(toInsert1));
+            verify(mappedDao).insert(eq("insert1"), same(toInsert1));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	public void test_entity_insert_with_insertBefore() throws Exception {
@@ -143,19 +159,22 @@ public class EntityInserterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-inserter-05.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_insert_with_insertBefore.html");
+            enableReporting(executionContext, "report_test_entity_insert_with_insertBefore.html");
 
-		JavaResult result = new JavaResult();
-		result.getResultMap().put("toInsert1", toInsert1);
+            JavaResult result = new JavaResult();
+            result.getResultMap().put("toInsert1", toInsert1);
 
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).insert(same(toInsert1));
-
+            verify(dao).insert(same(toInsert1));
+        } finally {
+            smooks.close();
+        }
 	}
 
 
@@ -163,17 +182,20 @@ public class EntityInserterTest extends BaseTestCase {
 
 		Smooks smooks = new Smooks(getResourceAsStream("entity-inserter-06.xml"));
 
-		ExecutionContext executionContext = smooks.createExecutionContext();
+        try {
+            ExecutionContext executionContext = smooks.createExecutionContext();
 
-		PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
+            PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
-		enableReporting(executionContext, "report_test_entity_insert_producer_consumer.html");
+            enableReporting(executionContext, "report_test_entity_insert_producer_consumer.html");
 
-		JavaResult result = new JavaResult();
-		smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            JavaResult result = new JavaResult();
+            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
 
-		verify(dao).insert(same((String)result.getBean("toInsert")));
-
+            verify(dao).insert(same((String)result.getBean("toInsert")));
+        } finally {
+            smooks.close();
+        }
 	}
 
 	/**
