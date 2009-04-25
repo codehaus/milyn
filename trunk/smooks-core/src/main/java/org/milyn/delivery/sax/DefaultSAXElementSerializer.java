@@ -55,22 +55,26 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
 
     public void writeStartElement(SAXElement element) throws IOException {
         // We set a flag in the cache so as to mark the fact that the start element has been writen
-        if(!isStartWritten(element)) {
-            element.setCache(true);
-            WriterUtil.writeStartElement(element, element.getWriter(writerOwner));
+        if(element.isWriterOwner(writerOwner)) {
+            if(!isStartWritten(element)) {
+                element.setCache(this, true);
+                WriterUtil.writeStartElement(element, element.getWriter(writerOwner));
+            }
         }
     }
 
     private void writeEndElement(SAXElement element) throws IOException {
-        if(!isStartWritten(element)) {
-            // It's an empty element...
-            WriterUtil.writeEmptyElement(element, element.getWriter(writerOwner));
-        } else {
-            WriterUtil.writeEndElement(element, element.getWriter(writerOwner));
+        if(element.isWriterOwner(writerOwner)) {
+            if(!isStartWritten(element)) {
+                // It's an empty element...
+                WriterUtil.writeEmptyElement(element, element.getWriter(writerOwner));
+            } else {
+                WriterUtil.writeEndElement(element, element.getWriter(writerOwner));
+            }
         }
     }
 
     public boolean isStartWritten(SAXElement element) {
-        return element.getCache() != null;
+        return element.getCache(this) != null;
     }
 }

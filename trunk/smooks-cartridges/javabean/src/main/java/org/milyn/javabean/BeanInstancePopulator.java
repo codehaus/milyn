@@ -27,10 +27,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.delivery.sax.*;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.event.report.annotation.VisitAfterReport;
@@ -48,7 +45,6 @@ import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -256,7 +252,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(!beanWiring && !isAttribute) {
-            element.setCache(new TrackedStringWriter());
+            element.setCache(this, new TrackedStringWriter());
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
@@ -265,7 +261,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
         if(!beanWiring && !isAttribute) {
-            childText.toWriter((Writer) element.getCache());
+            childText.toWriter((Writer) element.getCache(this));
         }
     }
 
@@ -325,7 +321,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            dataString = element.getCache().toString();
+            dataString = element.getCache(this).toString();
         }
 
         String mapPropertyName;
@@ -609,68 +605,4 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         return false;
     }
 
-    /**
-     * This is a specialized StringWriter that tracks the writes to make sure we don't
-     * write the same buffer segment multiple times.
-     *
-     * See JIRA: http://jira.codehaus.org/browse/MILYN-238
-     */
-    public static class TrackedStringWriter extends StringWriter {
-        private char[] lastWriteBuf;
-        private int lastWriteOff;
-        private int lastWriteLen;
-        private List<WriteRecord> writeTrackingList;
-
-        public void write(char cbuf[], int off, int len) {
-            if(cbuf == lastWriteBuf && off == lastWriteOff && len == lastWriteLen) {
-                // we've already written this character buffer segment...
-                return;
-            }
-            if(lastWriteBuf != null) {
-                // We've written to this writer already and the new incoming buffer
-                // is not the same as the last buffer...
-
-                if(writeTrackingList == null) {
-                    writeTrackingList = new ArrayList<WriteRecord>();
-                } else {
-                    if(isAlreadyWritten(cbuf, off, len)) {
-                        // we've already written this character buffer segment...
-                        return;
-                    }
-                }
-                writeTrackingList.add(new WriteRecord(lastWriteBuf, lastWriteOff, lastWriteLen));
-            }
-
-            super.write(cbuf, off, len);
-            lastWriteBuf = cbuf;
-            lastWriteOff = off;
-            lastWriteLen = len;
-        }
-
-        private boolean isAlreadyWritten(char cbuf[], int off, int len) {
-            int trackListLen = writeTrackingList.size();
-
-            for(int i = 0; i < trackListLen; i++) {
-                WriteRecord listEntry = writeTrackingList.get(i);
-                if(cbuf == listEntry.lastWriteBuf && off == listEntry.lastWriteOff && len == listEntry.lastWriteLen) {
-                    // we've already written this character buffer segment...
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private class WriteRecord {
-            private char[] lastWriteBuf;
-            private int lastWriteOff;
-            private int lastWriteLen;
-
-            private WriteRecord(char[] lastWriteBuf, int lastWriteOff, int lastWriteLen) {
-                this.lastWriteBuf = lastWriteBuf;
-                this.lastWriteOff = lastWriteOff;
-                this.lastWriteLen = lastWriteLen;
-            }
-        }
-    }
 }
