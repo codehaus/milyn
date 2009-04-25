@@ -560,6 +560,10 @@ public class SAXHandler extends DefaultHandler2 {
             }
         }
 
+        public boolean isWriterOwner(SAXVisitor visitor) {
+            return (visitor != null && visitor == writerOwner);
+        }
+
         public SAXElement getParent() {
             if(!maintainElementStack) {
                 throw new SmooksConfigurationException("Invalid Smooks configuration.  Call to 'SAXElement.getParent()' when the '" + Filter.MAINTAIN_ELEMENT_STACK + "' is set to 'false'.  You need to change this configuration, or modify the calling code.");

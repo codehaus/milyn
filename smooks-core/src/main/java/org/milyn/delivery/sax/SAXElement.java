@@ -24,6 +24,8 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.namespace.QName;
 import java.io.Writer;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Element details as described by the SAX even model API.
@@ -34,7 +36,7 @@ import java.io.Writer;
  * <p/>
  * <h3 id="element_cache_object">Element Cache Object</h3>
  * This class supports the concept of a "cache" object which can be get and set through
- * the {@link #getCache()} and {@link #setCache(Object)} methods.  The cache object can be used by
+ * the {@link #getCache(SAXVisitor)} and {@link #setCache(SAXVisitor, Object)} methods.  The cache object can be used by
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations to store information
  * between calls to the {@link org.milyn.delivery.sax.SAXVisitor} event methods.
  * <p/>
@@ -71,9 +73,17 @@ public class SAXElement {
 
     private QName name;
     private Attributes attributes;
-    private Object cache;
     private SAXElement parent;
     private Writer writer;
+
+    /**
+     * We use a "level 1" cache so as to avoid creating the HashMap
+     * where only one visitor is caching data, which is often the case.
+     * 2nd, 3rd etc visitors will use the l2Caches Map.
+     */
+    private Object l1Cache;
+    private SAXVisitor l1CacheOwner;
+    private Map<SAXVisitor, Object> l2Caches;
 
     /**
      * Public constructor.
@@ -200,6 +210,22 @@ public class SAXElement {
     }
 
     /**
+     * Is the supplied {@link SAXVisitor} the owner of the {@link Writer} associated
+     * with this {@link SAXElement} instance.
+     * <p/>
+     * See <a href="#element-writing">element writing</a>.
+     *
+     * @param visitor The visitor being checked.
+     * @return True if the {@link SAXVisitor} owns the {@link Writer} associated
+     * with this {@link SAXElement} instance, otherwise false.
+     */
+    public boolean isWriterOwner(SAXVisitor visitor) {
+        // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
+        // within the SAXHandler.
+        return true;
+    }
+
+    /**
      * Get the element naming details.
      *
      * @return Element naming details.
@@ -241,18 +267,57 @@ public class SAXElement {
      * Get the <a href="#element_cache_object">element cache object</a>.
      *
      * @return The element cache Object.
+     * @deprecated Use {@link #getCache(SAXVisitor)}.
      */
     public Object getCache() {
-        return cache;
+        return l1Cache;
     }
 
     /**
      * Set the <a href="#element_cache_object">element cache object</a>.
      *
      * @param cache The element cache Object.
+     * @deprecated Use {@link #setCache(SAXVisitor, Object)}.
      */
     public void setCache(Object cache) {
-        this.cache = cache;
+        this.l1Cache = cache;
+    }
+
+    /**
+     * Get the <a href="#element_cache_object">element cache object</a>.
+     *
+     * @param visitor The SAXElement instance associated with the cache object.
+     * @return The element cache Object.
+     */
+    public Object getCache(SAXVisitor visitor) {
+        if(visitor == l1CacheOwner) {
+            // This visitor owns the level 1 cache...
+            return l1Cache;
+        } else if(l2Caches == null) {
+            return null;
+        }
+
+        return l2Caches.get(visitor);
+    }
+
+    /**
+     * Set the <a href="#element_cache_object">element cache object</a>.
+     *
+     * @param visitor The SAXElement instance to which the cache object is to be associated.
+     * @param cache The element cache Object.
+     */
+    public void setCache(SAXVisitor visitor, Object cache) {
+        if(l1Cache == null && l1CacheOwner == null) {
+            // This visitor is going to own the level 1 cache...
+            l1Cache = cache;
+            l1CacheOwner = visitor;
+            return;
+        }
+
+        if(l2Caches == null) {
+            l2Caches = new HashMap<SAXVisitor, Object>();
+        }
+        l2Caches.put(visitor, cache);
     }
 
     /**

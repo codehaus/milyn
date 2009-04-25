@@ -36,10 +36,7 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.ordering.Producer;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.delivery.sax.*;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
@@ -194,7 +191,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
         if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(!beanWiring && !isAttribute) {
-            element.setCache(new StringWriter());
+            element.setCache(this, new TrackedStringWriter());
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
@@ -203,7 +200,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
         if(!beanWiring && !isAttribute) {
-            childText.toWriter((Writer) element.getCache());
+            childText.toWriter((Writer) element.getCache(this));
         }
     }
 
@@ -243,7 +240,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            dataString = element.getCache().toString();
+            dataString = element.getCache(this).toString();
         }
 
 

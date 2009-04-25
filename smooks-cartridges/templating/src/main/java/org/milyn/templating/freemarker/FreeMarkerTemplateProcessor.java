@@ -241,7 +241,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
                 if(templateBefore != null) {
                     applyTemplate(templateBefore, element, executionContext);
                 } else if(executionContext.isDefaultSerializationOn()) {
-                    // If Default Serialization is on, we want to block output o the
+                    // If Default Serialization is on, we want to block output to the
                     // output stream...
                     element.setWriter(new NullWriter(currentWriter), this);
                 }
