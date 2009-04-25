@@ -41,7 +41,9 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
 
     public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
         writeStartElement(element);
-        text.toWriter(element.getWriter(writerOwner));
+        if(element.isWriterOwner(writerOwner)) {
+            text.toWriter(element.getWriter(writerOwner));
+        }
     }
 
     public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
