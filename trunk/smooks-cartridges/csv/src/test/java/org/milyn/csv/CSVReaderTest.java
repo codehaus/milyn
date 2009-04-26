@@ -55,6 +55,7 @@ public class CSVReaderTest extends TestCase {
 		test_01(CSVParser.class);
 	}
 
+	
 	public void test_01(Class<?> readerClass) throws SmooksException, UnsupportedEncodingException {
 		Smooks smooks = new Smooks();
 		SmooksResourceConfiguration config;
@@ -368,4 +369,30 @@ public class CSVReaderTest extends TestCase {
             assertEquals("Invalid field name 'xxxx'.  Valid names: [firstname, lastname, $ignore$, gender, age, country].", e.getMessage());
         }
     }
+
+	public void test_16() throws SmooksException, IOException, SAXException {
+	       Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-12.xml"));
+
+	        ExecutionContext context = smooks.createExecutionContext();
+	        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-01.csv"), smooks);
+	        
+	        assertEquals("<main-set><record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></record><record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></record></main-set>", result);
+	 	}
+	
+	public void test_17() throws SmooksException, IOException, SAXException {
+	       Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-13.xml"));
+
+	        ExecutionContext context = smooks.createExecutionContext();
+	        String result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-13.csv"), smooks);
+	        
+	        assertEquals("<main-set><record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></record><record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></record></main-set>", result);
+
+	        smooks = new Smooks(getClass().getResourceAsStream("smooks-config-12.xml"));
+
+	        context = smooks.createExecutionContext();
+	        result = SmooksUtil.filterAndSerialize(context, getClass().getResourceAsStream("input-message-13.csv"), smooks);
+	        
+	        assertNotSame("<main-set><record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></record><record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></record></main-set>", result);
+
+	}
 }
