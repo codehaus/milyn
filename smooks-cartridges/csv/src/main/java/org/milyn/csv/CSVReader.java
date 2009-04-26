@@ -262,23 +262,33 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
         // Output each of the CVS line entries...
         int lineNumber = 0;
+        int expectedCount = getExpectedColumnsCount();
+        
         while ((csvRecord = csvLineReader.readNext()) != null) {
         	lineNumber++; // First line is line "1"
 
-        	if(csvRecord.length != csvFields.length) {
-        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain the following " + csvFields.length + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
+        	if(csvRecord.length < expectedCount) {
+        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain number of items at least as in CSV config file " + csvFields.length + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
         		continue;
         	}
 
             contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", EMPTY_ATTRIBS);
-        	for(int i = 0; i < csvRecord.length; i++) {
-                String fieldName = csvFields[i];
+        	int recordIt = 0;
+            for(int fieldIt = 0; fieldIt < csvFields.length; fieldIt++) {
+                String fieldName = csvFields[fieldIt];
 
-                if(!fieldName.equals(IGNORE_FIELD)) {
-                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", EMPTY_ATTRIBS);
-                    contentHandler.characters(csvRecord[i].toCharArray(), 0, csvRecord[i].length());
-                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
-                }
+                if(fieldName.startsWith(IGNORE_FIELD)) {
+                	int toSkip = parseIgnoreFieldDirective(fieldName);
+                	if(toSkip == Integer.MAX_VALUE){
+                		break;
+                	}
+                	recordIt += toSkip;
+                	continue;
+                }                
+                contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", EMPTY_ATTRIBS);
+                contentHandler.characters(csvRecord[recordIt].toCharArray(), 0, csvRecord[recordIt].length());
+                contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
+                recordIt++;
             }
             contentHandler.endElement(null, recordElementName, "");
         }
@@ -287,6 +297,32 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
         contentHandler.endDocument();
 	}
+
+    private int parseIgnoreFieldDirective(String field) {
+        String op = field.substring(IGNORE_FIELD.length());
+        int toSkip = 0;
+        if (op.length() == 0) {
+            toSkip = 1;
+        } else if ("+".equals(op)) {
+            toSkip = Integer.MAX_VALUE;
+        } else {
+            toSkip = Integer.parseInt(op);
+        }
+        return toSkip;
+
+    }
+
+    private int getExpectedColumnsCount() {
+        int count = 0;
+        for (int i = 0; i < csvFields.length; i++) {
+            String field = csvFields[i];
+
+            if (!field.startsWith(IGNORE_FIELD)) {
+                count++;
+            }
+        }
+        return count;
+    }
 
     public void setContentHandler(ContentHandler contentHandler) {
         this.contentHandler = contentHandler;
