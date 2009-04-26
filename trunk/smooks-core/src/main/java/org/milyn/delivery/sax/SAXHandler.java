@@ -100,7 +100,11 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     public void cleanup() {
-        cleanupList.cleanup();
+        try {
+            cleanupList.cleanup();
+        } finally {
+            VisitorConfigMap.execCleanables(deliveryConfig.getExecCleanables(), execContext);
+        }
     }    
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
@@ -271,9 +275,6 @@ public class SAXHandler extends DefaultHandler2 {
                     ContentHandlerConfigMap<SAXVisitBefore> mapping = visitBeforeMappings.get(i);
                     try {
                         if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                            if(mapping.isLifecycleCleanable()) {
-                                cleanupList.add((ExecutionLifecycleCleanable) mapping.getContentHandler());
-                            }
                             mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                             // Register the targeting event.  No need to register this event again on the visitAfter...
                             if(eventListener != null) {
@@ -361,9 +362,6 @@ public class SAXHandler extends DefaultHandler2 {
 
         try {
             if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                if(afterMapping.isLifecycleCleanable()) {
-                    cleanupList.add((ExecutionLifecycleCleanable) afterMapping.getContentHandler());
-                }
                 afterMapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
                 if(eventListener != null) {
                     eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, afterMapping, VisitSequence.AFTER));
