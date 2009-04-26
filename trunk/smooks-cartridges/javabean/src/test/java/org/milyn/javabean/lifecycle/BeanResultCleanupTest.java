@@ -17,6 +17,8 @@ package org.milyn.javabean.lifecycle;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.FilterSettings;
+import org.milyn.StreamFilterType;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
 import org.xml.sax.SAXException;
@@ -29,9 +31,15 @@ import java.io.IOException;
 public class BeanResultCleanupTest extends TestCase {
 
     public void test() throws IOException, SAXException {
+        test(StreamFilterType.DOM);
+        test(StreamFilterType.SAX);
+    }
+
+    private void test(StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config_01.xml"));
         JavaResult result = new JavaResult();
 
+        smooks.setFilterSettings(new FilterSettings(filterType));
         smooks.filter(new StringSource("<root><a><b>1</b></a></root>"), result);
         assertNotNull(result.getBean("root"));
         assertNull(result.getBean("a"));
