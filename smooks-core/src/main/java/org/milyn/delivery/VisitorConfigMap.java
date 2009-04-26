@@ -30,7 +30,10 @@ import org.milyn.cdr.annotation.Configurator;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.container.ApplicationContext;
+import org.milyn.container.ExecutionContext;
 import org.milyn.assertion.AssertArgument;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -45,6 +48,10 @@ import java.util.ArrayList;
  */
 public class VisitorConfigMap {
 
+    /**
+     * Logger.
+     */
+    private static Log logger = LogFactory.getLog(VisitorConfigMap.class);
     /**
      * App context.
      */
@@ -82,6 +89,10 @@ public class VisitorConfigMap {
      * Visit lifecycle Cleanable visitors.
      */
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables = new ContentHandlerConfigMapTable<VisitLifecycleCleanable>();
+    /**
+     * Execution lifecycle Cleanable visitors.
+     */
+    private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables = new ContentHandlerConfigMapTable<ExecutionLifecycleCleanable>();
 
     /**
      * Config builder events list.
@@ -161,6 +172,14 @@ public class VisitorConfigMap {
         this.visitCleanables = visitCleanables;
     }
 
+    public ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> getExecCleanables() {
+        return execCleanables;
+    }
+
+    public void setExecCleanables(ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables) {
+        this.execCleanables = execCleanables;
+    }
+
     public void setConfigBuilderEvents(List<ConfigBuilderEvent> configBuilderEvents) {
         this.configBuilderEvents = configBuilderEvents;
     }
@@ -207,7 +226,9 @@ public class VisitorConfigMap {
             applicationContext.getStore().getInitializedObjects().add(visitor);
         }
 
-        visitorCount++;
+        if(isSAXVisitor(visitor) || isDOMVisitor(visitor)) {
+            visitorCount++;
+        }
 
         if(isSAXVisitor(visitor)) {
             saxVisitorCount++;
@@ -262,6 +283,25 @@ public class VisitorConfigMap {
 
         if(visitor instanceof VisitLifecycleCleanable) {
             visitCleanables.addMapping(elementName, resourceConfig, (VisitLifecycleCleanable) visitor);
+        }
+
+        if(visitor instanceof ExecutionLifecycleCleanable) {
+            execCleanables.addMapping(SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, resourceConfig, (ExecutionLifecycleCleanable) visitor);
+        }
+    }
+
+    public static void execCleanables(ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables, ExecutionContext executionContext) {
+        List<ContentHandlerConfigMap<ExecutionLifecycleCleanable>> execCleanableList = execCleanables.getMappings(SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR);
+
+        if(execCleanableList != null) {
+            for(ContentHandlerConfigMap<ExecutionLifecycleCleanable> execCleanable : execCleanableList) {
+                ExecutionLifecycleCleanable lifecycleCleanable = execCleanable.getContentHandler();
+                try {
+                    lifecycleCleanable.executeExecutionLifecycleCleanup(executionContext);
+                } catch(Exception e) {
+                    logger.error("Error while executing lifecycle cleanable '" + lifecycleCleanable.getClass().getName() + "'.", e);
+                }
+            }
         }
     }
 
@@ -318,6 +358,7 @@ public class VisitorConfigMap {
             saxVisitBefores.addAll(visitorConfigMap.getSaxVisitBefores());
             saxVisitAfters.addAll(visitorConfigMap.getSaxVisitAfters());
             visitCleanables.addAll(visitorConfigMap.getVisitCleanables());
+            execCleanables.addAll(visitorConfigMap.getExecCleanables());
 
             visitorCount += visitorConfigMap.getVisitorCount();
             saxVisitorCount += visitorConfigMap.getSaxVisitorCount();

@@ -15,10 +15,7 @@
 */
 package org.milyn.delivery.dom;
 
-import org.milyn.delivery.AbstractContentDeliveryConfig;
-import org.milyn.delivery.ContentHandlerConfigMapTable;
-import org.milyn.delivery.Filter;
-import org.milyn.delivery.VisitLifecycleCleanable;
+import org.milyn.delivery.*;
 import org.milyn.delivery.ordering.Sorter;
 import org.milyn.delivery.dom.serialize.SerializationUnit;
 import org.milyn.container.ExecutionContext;
@@ -40,6 +37,8 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors;
 
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables;
+
+    private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables;
 
     public ContentHandlerConfigMapTable<DOMVisitBefore> getAssemblyVisitBefores() {
         return assemblyVisitBefores;
@@ -87,6 +86,14 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
     public void setVisitCleanables(ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables) {
         this.visitCleanables = visitCleanables;
+    }
+
+    public ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> getExecCleanables() {
+        return execCleanables;
+    }
+
+    public void setExecCleanables(ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables) {
+        this.execCleanables = execCleanables;
     }
 
     public Filter newFilter(ExecutionContext executionContext) {

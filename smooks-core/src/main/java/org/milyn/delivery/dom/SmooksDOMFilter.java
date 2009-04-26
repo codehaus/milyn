@@ -46,7 +46,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Vector;
@@ -263,7 +262,11 @@ public class SmooksDOMFilter extends Filter {
     }
 
     public void cleanup() {
-        cleanupList.cleanup();
+        try {
+            cleanupList.cleanup();
+        } finally {
+            VisitorConfigMap.execCleanables(deliveryConfig.getExecCleanables(), executionContext);
+        }
     }
 
     /**
@@ -458,9 +461,6 @@ public class SmooksDOMFilter extends Filter {
                 if (logger.isDebugEnabled()) {
                     logger.debug("(Assembly) Calling visitBefore on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
                 }
-                if(configMap.isLifecycleCleanable()) {
-                    cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
-                }
                 assemblyUnit.visitBefore(element, executionContext);
                 if (eventListener != null) {
                     eventListener.onEvent(new ElementVisitEvent(element, configMap, VisitSequence.BEFORE));
@@ -498,9 +498,6 @@ public class SmooksDOMFilter extends Filter {
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("(Assembly) Calling visitAfter on element [" + DomUtils.getXPath(element) + "]. Config [" + config + "]");
-            }
-            if(configMap.isLifecycleCleanable()) {
-                cleanupList.add((ExecutionLifecycleCleanable) configMap.getContentHandler());
             }
             visitAfter.visitAfter(element, executionContext);
             if (eventListener != null) {

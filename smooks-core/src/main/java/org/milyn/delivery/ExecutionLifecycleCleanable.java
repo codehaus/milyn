@@ -22,7 +22,7 @@ import org.milyn.container.ExecutionContext;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface ExecutionLifecycleCleanable {
+public interface ExecutionLifecycleCleanable extends Visitor {
 
     /**
      * Cleanup the resources allocated by this resource for the specified ExecutionContext.

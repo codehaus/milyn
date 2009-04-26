@@ -223,7 +223,22 @@ public class BeanRepository {
 		return old;
 	}
 
-	public void clear() {
+    /**
+     * Removes a bean and all its associated lifecycle beans from the bean map
+     *
+     * @param beanId The beanId to remove the beans from.
+     */
+    public Object removeBean(String beanId) {
+        BeanId beanIDObj = getBeanId(beanId);
+
+        if(beanIDObj != null) {
+            return removeBean(beanIDObj);
+        }
+
+        return null;
+    }
+
+    public void clear() {
 
 		for(RepositoryEntry entry : repositoryEntries) {
 			entry.setValue(null);
