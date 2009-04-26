@@ -458,9 +458,18 @@ public class BeanRepository {
      */
     @Override
     public String toString() {
-    	return new ToStringBuilder(this)
-    			.append("beanMap", beanMap, true)
-    			.toString();
+        ToStringBuilder toStringBuilder = new ToStringBuilder(this);
+        Set<Entry<String, Object>> beans = beanMap.entrySet();
+
+        for(Entry<String, Object> bean : beans) {
+            try {
+                toStringBuilder.append(bean.getKey(), bean.getValue(), true);
+            } catch (Exception e) {
+                toStringBuilder.append("Exception serialializing bean context bean '" + bean.getKey() + "': " + e.getMessage());
+            }
+        }
+
+        return toStringBuilder.toString();
     }
 
     /**
