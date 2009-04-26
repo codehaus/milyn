@@ -40,7 +40,7 @@
                 <pre><@htmlEscape>${execInfoNode.resourceXML}</@htmlEscape></pre>
                 <p/>
                 <b><u>Execution Context State:</u></b> (After Visitor Execution)
-                <pre>${execInfoNode.contextState}</pre></div>
+                <pre><@htmlEscape>${execInfoNode.contextState}</@htmlEscape></pre></div>
             </#list>
         </#if>
     </#list>
