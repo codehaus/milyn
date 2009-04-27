@@ -19,7 +19,9 @@ package org.milyn.csv;
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
 public class Person {
-    private String firstname, lastname, country;
+    private String firstname;
+    private String lastname;
+    private String country;
     private Gender gender;
     private int age;
 

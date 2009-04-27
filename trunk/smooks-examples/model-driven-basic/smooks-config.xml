@@ -2,13 +2,10 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
                       xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd"
                       xmlns:ftl="http://www.milyn.org/xsd/smooks/freemarker-1.1.xsd">
-
     <!--
-    Use a FreeMarker template to perform the model driven transformation.  You can also inline the template here.
+    This configuration binds data from the message into the Shipping object model,
+    and then uses that binding data in a FreeMarker template to generate the result...
     -->
-    <ftl:freemarker applyOnElement="$document">
-        <ftl:template>/example/templates/HistoryTrans.ftl</ftl:template>
-    </ftl:freemarker>
 
     <!--
     Configure the History bean creation and population. Wires in the "warehouse" bean.
@@ -34,5 +31,12 @@
             <jb:decodeParam name="3">Cork</jb:decodeParam>
         </jb:value>
     </jb:bindings>
+
+    <!--
+    Use a FreeMarker template to perform the model driven transformation.  You can also inline the template here.
+    -->
+    <ftl:freemarker applyOnElement="$document">
+        <ftl:template>/example/templates/HistoryTrans.ftl</ftl:template>
+    </ftl:freemarker>
 
 </smooks-resource-list>
