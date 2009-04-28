@@ -15,12 +15,15 @@
 
 package org.milyn.validation;
 
+import org.milyn.SmooksException;
+import org.milyn.rules.RuleEvalResult;
+
 /**
  * Exception that carries information about a validation failure.
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */
-public class ValidationException extends Exception
+public class ValidationException extends SmooksException
 {
     /**
      * Serial version unique identifier.
@@ -28,9 +31,14 @@ public class ValidationException extends Exception
     private static final long serialVersionUID = 1L;
 
     /**
-     * The string that could not be validated
+     * The string that could not be validated.
      */
     private String text;
+
+    /**
+     * The result of the evalutation.
+     */
+    private RuleEvalResult result;
 
     /**
      * Sole constructor.
@@ -38,10 +46,11 @@ public class ValidationException extends Exception
      * @param message The exception message.
      * @param text The String that could not be matched against the pattern.
      */
-    public ValidationException(final String message, final String text)
+    public ValidationException(final String message, final String text, final RuleEvalResult result)
     {
         super(message);
         this.text = text;
+        this.result = result;
     }
 
     /**
@@ -51,4 +60,10 @@ public class ValidationException extends Exception
     {
         return text;
     }
+
+    public RuleEvalResult getResult()
+    {
+        return result;
+    }
+
 }

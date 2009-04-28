@@ -20,16 +20,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
-import org.milyn.container.MockApplicationContext;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
-import org.milyn.rules.RulesProviderFactoryTest.MockProvider;
 import org.milyn.rules.regex.RegexRuleResult;
 import org.xml.sax.SAXException;
 
@@ -42,7 +39,7 @@ import org.xml.sax.SAXException;
 public class RulesProviderFactoryTest
 {
     @Test
-    public void test() throws IOException, SAXException
+    public void extendedConfig() throws IOException, SAXException
     {
         Smooks smooks = new Smooks("/smooks-configs/extended/1.0/smooks-rules-config.xml");
         StringSource source = new StringSource("<order></order>");
@@ -56,57 +53,31 @@ public class RulesProviderFactoryTest
         RuleProvider provider = new RulesProviderFactory().createProvider(MockProvider.class);
         assertNotNull(provider);
         assertTrue(provider instanceof MockProvider);
-        assertEquals("MockProvider", provider.getRuleName());
+        assertEquals("MockProvider", provider.getName());
     }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void addProviderNullProvider()
-    {
-        MockApplicationContext appContext = new MockApplicationContext();
-        new RulesProviderFactory().addProvider(appContext, null);
-    }
-
-    @Test (expected = IllegalArgumentException.class)
-    public void addProviderNullAppContext()
-    {
-        new RulesProviderFactory().addProvider(null, new MockProvider());
-    }
-
-    @Test
-    public void addProvider()
-    {
-        MockApplicationContext appContext = new MockApplicationContext();
-        MockProvider provider = new MockProvider();
-        new RulesProviderFactory().addProvider(appContext, provider);
-
-        Map<String, RuleProvider> providers = (Map<String, RuleProvider>) appContext.getAttribute(RuleProvider.class);
-        assertNotNull(providers);
-    }
-
 
     public static class MockProvider implements RuleProvider
     {
-        public RuleEvalResult evaluate(String ruleName, ExecutionContext context) throws SmooksException
-        {
-            return new RegexRuleResult(true, ruleName, "MockProvider");
-        }
-
-        public String getRuleName()
+        public String getName()
         {
             return getClass().getSimpleName();
         }
 
         public String getSrc()
         {
-
             return null;
         }
 
-        public void setRuleName(String ruleName)
+        public void setSrc(String src)
         {
         }
 
-        public void setSrc(String src)
+        public RuleEvalResult evaluate(String ruleName, CharSequence selectedData, ExecutionContext context) throws SmooksException
+        {
+            return new RegexRuleResult(true, ruleName, "MockProvider", null);
+        }
+
+        public void setName(String name)
         {
         }
 

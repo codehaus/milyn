@@ -1,12 +1,23 @@
-package org.milyn.rules;
+/*
+ * Milyn - Copyright (C) 2006
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License (version 2.1) as published
+ * by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *
+ * See the GNU Lesser General Public License for more details:
+ * http://www.gnu.org/licenses/lgpl.txt
+ */
 
-import java.util.HashMap;
-import java.util.Map;
+package org.milyn.rules;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -15,7 +26,14 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.annotation.Initialize;
 
-public class RulesProviderFactory implements ContentHandler
+/**
+ * RulesProviderFactory is responsible for creating {@link RuleProvider}s
+ * and installing those providers in the Smooks {@link ApplicationContext}.
+ * <p/>
+ *
+ * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
+ */
+public final class RulesProviderFactory implements ContentHandler<RuleProvider>
 {
     /**
      * Logger.
@@ -46,7 +64,11 @@ public class RulesProviderFactory implements ContentHandler
     @ConfigParam(use = Use.OPTIONAL)
     private String src;
 
-
+    /**
+     * Creates and installs the configured rule provider.
+     *
+     * @throws SmooksConfigurationException
+     */
     @Initialize
     public void installRuleProvider() throws SmooksConfigurationException
     {
@@ -54,35 +76,15 @@ public class RulesProviderFactory implements ContentHandler
         if(RuleProvider.class.isAssignableFrom(provider))
         {
             final RuleProvider providerImpl = createProvider(provider);
-            providerImpl.setRuleName(name);
+            providerImpl.setName(name);
             providerImpl.setSrc(src);
 
-            addProvider(applicationContext, providerImpl);
+            RuleProviderAccessor.add(applicationContext, providerImpl);
         }
         else
         {
             throw new SmooksConfigurationException("Invalid rule provider");
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    ApplicationContext addProvider(final ApplicationContext appContext, final RuleProvider provider)
-    {
-        AssertArgument.isNotNull(appContext, "appContext");
-        AssertArgument.isNotNull(provider, "provider");
-
-        Map<String, RuleProvider> providers = (Map<String, RuleProvider>) appContext.getAttribute(RuleProvider.class);
-        if (providers == null)
-        {
-            providers = new HashMap<String, RuleProvider>();
-            // Set the providers in the ApplicationContext.
-            appContext.setAttribute(RuleProvider.class, providers);
-        }
-
-        // Add to the provider, overwriting any previous provider with the same name. We ignore the result from this method.
-        providers.put(provider.getRuleName(), provider);
-
-        return appContext;
     }
 
     RuleProvider createProvider(final Class<? extends RuleProvider> providerClass) throws SmooksException
@@ -106,6 +108,5 @@ public class RulesProviderFactory implements ContentHandler
     {
         return String.format("%s [name=%s, src=%s, provider=%s]", getClass().getSimpleName(), name, src, provider);
     }
-
 
 }

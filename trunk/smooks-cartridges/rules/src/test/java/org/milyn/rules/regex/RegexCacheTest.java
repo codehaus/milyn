@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.validation.regex;
+package org.milyn.rules.regex;
 
 import static org.junit.Assert.*;
 
@@ -48,7 +48,7 @@ public class RegexCacheTest
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void addAliasesFromFile() throws InterruptedException
+    public void addAliasesFromFile()
     {
         instance.addAliasesFromFile(null);
     }

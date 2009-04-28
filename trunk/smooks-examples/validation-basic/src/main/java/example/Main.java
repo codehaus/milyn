@@ -29,8 +29,9 @@ import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
+import org.milyn.rules.RuleEvalResult;
 import org.milyn.validation.ValidationException;
-import org.milyn.validation.ValidationFailures;
+import org.milyn.validation.ValidationResults;
 import org.xml.sax.SAXException;
 
 /**
@@ -47,24 +48,24 @@ public class Main
         System.out.println(new String(messageIn));
         System.out.println("======================================");
 
-        final List<ValidationException> failures = Main.runSmooksTransform(messageIn);
+        final List<RuleEvalResult> results = Main.runSmooksTransform(messageIn);
 
         System.out.println("\n==============Validation Result=======");
-        if (failures.isEmpty())
+        if (results.isEmpty())
         {
             System.out.println("Message was valid");
         }
         else
         {
-            for (ValidationException regexException : failures)
+            for (RuleEvalResult result : results)
             {
-                System.out.println(regexException);
+                System.out.println(result);
             }
         }
         System.out.println("======================================\n");
     }
 
-    protected static List<ValidationException> runSmooksTransform(final byte[] messageIn) throws IOException, SAXException, SmooksException
+    protected static List<RuleEvalResult> runSmooksTransform(final byte[] messageIn) throws IOException, SAXException, SmooksException
     {
         // Instantiate Smooks with the config...
         final Smooks smooks = new Smooks("smooks-config.xml");
@@ -81,7 +82,7 @@ public class Main
             // Filter the input message to the outputWriter, using the execution context...
             smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
 
-            return ValidationFailures.getAll(executionContext);
+            return ValidationResults.getWarnings(executionContext);
         } finally {
             smooks.close();
         }

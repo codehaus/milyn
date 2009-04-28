@@ -13,7 +13,7 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.validation.regex;
+package org.milyn.rules.regex;
 
 import java.io.IOException;
 import java.io.InputStream;
