@@ -31,12 +31,13 @@ public interface RuleProvider
      * Gets this providers name.
      * @return String This providers name.
      */
-    String getRuleName();
+    String getName();
 
     /**
-     * @param ruleName The rules name.
+     * The name of this rule provider.
+     * @param name The rule providers name.
      */
-    void setRuleName(final String ruleName);
+    void setName(final String name);
 
     /**
      * Gets the source for this rule provider
@@ -54,11 +55,12 @@ public interface RuleProvider
      * Evalutate the rule.
      *
      * @param ruleName The ruleName to be used in this evaluation.
+     * @param selectedData The data that this evalute method will evaluate upon.
      * @param context The Smooks Excecution context.
      * @return {@code RuleEvalResult} Object representing an evaluation result.
      *
      * @throws SmooksException
      */
-    RuleEvalResult evaluate(final String ruleName, final ExecutionContext context) throws SmooksException;
+    RuleEvalResult evaluate(final String ruleName, final CharSequence selectedData, final ExecutionContext context) throws SmooksException;
 
 }

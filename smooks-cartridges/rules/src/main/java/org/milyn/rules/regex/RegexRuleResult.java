@@ -15,6 +15,8 @@
 
 package org.milyn.rules.regex;
 
+import java.util.regex.Pattern;
+
 import org.milyn.rules.RuleEvalResult;
 
 /**
@@ -39,16 +41,22 @@ public class RegexRuleResult implements RuleEvalResult
     /**
      * The name of the provider that produced this result.
      */
-    final String provider;
+    final String providerName;
+
+    /**
+     * The regex pattern.
+     */
+    final Pattern pattern;
 
     /**
      * Creates a RuleEvalResult that indicates a successfully executed rule.
      */
-    public RegexRuleResult(final boolean matched, final String ruleName, final String ruleProvider)
+    public RegexRuleResult(final boolean matched, final String ruleName, final String providerName, final Pattern pattern)
     {
         this.matched = matched;
         this.ruleName = ruleName;
-        this.provider = ruleProvider;
+        this.providerName = providerName;
+        this.pattern = pattern;
     }
 
     public boolean matched()
@@ -61,15 +69,20 @@ public class RegexRuleResult implements RuleEvalResult
         return ruleName;
     }
 
-    public String getRuleProvider()
+    public String getRuleProviderName()
     {
-        return provider;
+        return providerName;
+    }
+
+    public Pattern getPattern()
+    {
+        return pattern;
     }
 
     @Override
     public String toString()
     {
-        return String.format("%s, ruleName=%s, matched=%b, provider=%s", getClass().getSimpleName(), matched, ruleName, provider);
+        return String.format("%s, matched=%b, providerName=%s, ruleName=%s, pattern=%s", getClass().getSimpleName(), matched, providerName, ruleName, pattern);
     }
 
 }

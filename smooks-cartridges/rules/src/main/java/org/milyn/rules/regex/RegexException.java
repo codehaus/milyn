@@ -13,11 +13,9 @@
  * http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.validation.regex;
+package org.milyn.rules.regex;
 
 import java.util.regex.Pattern;
-
-import org.milyn.validation.ValidationException;
 
 /**
  * Exception that carries information about a regular expression pattern
@@ -25,7 +23,7 @@ import org.milyn.validation.ValidationException;
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */
-public class RegexException extends ValidationException
+public class RegexException extends Exception
 {
     /**
      * Serial version unique identifier.
@@ -38,6 +36,11 @@ public class RegexException extends ValidationException
     private Pattern pattern;
 
     /**
+     * The text the regular expression was evaluated against.
+     */
+    private String text;
+
+    /**
      * Sole constructor.
      *
      * @param message The exception message.
@@ -46,8 +49,9 @@ public class RegexException extends ValidationException
      */
     public RegexException(final String message, final Pattern pattern, final String text)
     {
-        super(message, text);
+        super(message);
         this.pattern = pattern;
+        this.text = text;
     }
 
     /**
@@ -56,6 +60,11 @@ public class RegexException extends ValidationException
     public Pattern getPattern()
     {
         return pattern;
+    }
+
+    public String getText()
+    {
+        return text;
     }
 
 }

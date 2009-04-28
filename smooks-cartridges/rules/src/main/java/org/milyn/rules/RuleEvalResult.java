@@ -16,11 +16,16 @@
 package org.milyn.rules;
 
 /**
- * RuleEvalResult is the returned result from a {@link RuleProvider#evaluate(String, org.milyn.container.ExecutionContext)}
+ * RuleEvalResult is the returned result from a {@link RuleProvider#evaluate(String, CharSequence, org.milyn.container.ExecutionContext)}
  * invocation.
  * <p/>
+ *
  * Concrete RuleProviders may implement their own custom result that are more specific to the technology
  * used.
+ * </p>
+ *
+ * Please not that implementation are expected to override toString and return a description of the result
+ * that can be used for logging/reporting.
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  *
@@ -36,14 +41,16 @@ public interface RuleEvalResult
 
     /**
      * Gets the name of the Rule that this class is a result of.
+     *
      * @return String The name of the rule that created this result.
      */
     String getRuleName();
 
     /**
      * The name of the provider that produced this rule result.
+     *
      * @return String The name of the Rule provider that produced this result.
      */
-    String getRuleProvider();
+    String getRuleProviderName();
 
 }
