@@ -75,6 +75,7 @@
         <module>routing</module>
 		<module>calc</module>
 		<module>persistence</module>
+		<module>rules</module>
 		<module>validation</module>
     </modules>
 
