@@ -30,7 +30,7 @@ import org.milyn.rules.RuleProviderAccessor;
 import org.milyn.rules.regex.RegexProvider;
 
 /**
- * Unit test for {@link Validator}
+ * Unit test for {@link Visitor}
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */

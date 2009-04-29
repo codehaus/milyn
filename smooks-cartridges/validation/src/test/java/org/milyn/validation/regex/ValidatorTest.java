@@ -32,7 +32,7 @@ import org.milyn.validation.ValidationResults;
 import org.xml.sax.SAXException;
 
 /**
- * Test for {@link Validator}.
+ * Test for {@link Visitor}.
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */

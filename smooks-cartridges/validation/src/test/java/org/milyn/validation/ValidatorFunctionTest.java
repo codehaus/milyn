@@ -29,7 +29,7 @@ import org.milyn.rules.RuleEvalResult;
 import org.xml.sax.SAXException;
 
 /**
- * Function test for {@link Validator}
+ * Function test for {@link Visitor}
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */

@@ -44,13 +44,13 @@ public class ValidationResultsTest
     @Test
     public void addFailure()
     {
-        ValidationResults.addFailure(result, context);
-        List<RuleEvalResult> failures = ValidationResults.getFailures(context);
+        ValidationResults.addFatal(result, context);
+        List<RuleEvalResult> failures = ValidationResults.getFatals(context);
         assertFalse(failures.isEmpty());
         assertEquals(1, failures.size());
 
         ValidationResults.addWarning(result, context);
-        failures = ValidationResults.getFailures(context);
+        failures = ValidationResults.getFatals(context);
         assertEquals(1, failures.size());
     }
 

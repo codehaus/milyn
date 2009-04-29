@@ -100,26 +100,26 @@ public class ValidationResults
     }
 
     /**
-     * Add {@link RuleEvalResult} with {@link OnFail#FAIL} level.
+     * Add {@link RuleEvalResult} with {@link OnFail#FATAL} level.
      *
      * @param result The {@link RuleEvalResult}. Cannot be null.
      * @param context The Smooks {@link ExecutionContext}. Cannot be null.
      */
-    public static void addFailure(final RuleEvalResult result, final ExecutionContext context)
+    public static void addFatal(final RuleEvalResult result, final ExecutionContext context)
     {
-        addResult(result, OnFail.FAIL, context);
+        addResult(result, OnFail.FATAL, context);
     }
 
     /**
-     * Gets all the {@link RuleEvalResult}s that were reported at the {@link OnFail#FAIL}
+     * Gets all the {@link RuleEvalResult}s that were reported at the {@link OnFail#FATAL}
      * level.
      *
      * @param context The Smooks {@link ExecutionContext}. Cannot be null;
-     * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#FAIL}.
+     * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#FATAL}.
      */
-    public static List<RuleEvalResult> getFailures(final ExecutionContext context)
+    public static List<RuleEvalResult> getFatals(final ExecutionContext context)
     {
-        return Collections.unmodifiableList(getResultList(OnFail.FAIL, context));
+        return Collections.unmodifiableList(getResultList(OnFail.FATAL, context));
     }
 
     /**

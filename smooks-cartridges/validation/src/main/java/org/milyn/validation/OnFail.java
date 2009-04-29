@@ -5,5 +5,5 @@ public enum OnFail
     OK,
     WARN,
     ERROR,
-    FAIL;
+    FATAL;
 }
