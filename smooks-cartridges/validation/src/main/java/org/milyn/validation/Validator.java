@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
-import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.VisitAfterIf;
@@ -75,14 +74,37 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
 {
     private static Log logger = LogFactory.getLog(Validator.class);
 
-    @ConfigParam(use = Use.REQUIRED)
+    /**
+     * The name of the rule that will be used by this validator.
+     */
     private String rule;
 
-    @ConfigParam (defaultVal = "FAIL")
+    /**
+     * The validation failure level.
+     */
     private OnFail onFail;
 
+    /**
+     * The Smooks {@link ApplicationContext}.
+     */
     @AppContext
     private ApplicationContext appContext;
+
+    /**
+     * No-args constructor required by Smooks.
+     */
+    public Validator() { }
+
+    /**
+     * @param rule The name of the rule that will be used by this validator.
+     * @param onFail The failure level.
+     */
+    public Validator(final String rule, final OnFail onFail, final ApplicationContext appContext)
+    {
+        this.rule = rule;
+        this.onFail = onFail;
+        this.appContext = appContext;
+    }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException
     {
@@ -136,9 +158,21 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
         return String.format("%s [rule=%s, onFail=%s]", getClass().getSimpleName(), rule, onFail);
     }
 
+    @ConfigParam
+    public void setRule(final String rule)
+    {
+        this.rule = rule;
+    }
+
     public String getRule()
     {
         return rule;
+    }
+
+    @ConfigParam
+    public void setOnFail(final OnFail onFail)
+    {
+        this.onFail = onFail;
     }
 
     public OnFail getOnFail()
