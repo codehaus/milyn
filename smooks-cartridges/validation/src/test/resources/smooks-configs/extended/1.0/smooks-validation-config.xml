@@ -7,6 +7,6 @@
         <rules:ruleBase name="test" src="/org/milyn/validation/regex.properties" provider="org.milyn.smooks.rules.RegexProvider" />
     </rules:ruleBases>
     
-    <validation:field on="order/firstName" rule="test.custom" onFail="WARN"/>
+    <validation:rule executeOn="order/firstName" name="test.custom" onFail="WARN"/>
 
 </smooks-resource-list>

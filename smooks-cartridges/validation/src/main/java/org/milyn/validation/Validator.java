@@ -49,7 +49,7 @@ import org.w3c.dom.Element;
  *    <rules:ruleBase name="addressing" src="usa_address.properties" provider="org.milyn.smooks.validation.RegexProvider" />
  * </rules:ruleBases>
  *
- * <validation:field on="order/header/email" rule="addressing.email" />
+ * <validation:field on="order/header/email" rule="addressing.email" onFail="WARN" />
  *
  * }</pre>
  * Options:
@@ -62,6 +62,11 @@ import org.w3c.dom.Element;
  *  So taking the above example addressing is the ruleProviderName and email is the rule name. In this case email
  *  identifies a regular expression but if you were to change the provider that might change and a differnet technology
  *  could be used to validate an email address.</li>
+ *
+ *  <li><b><i>onFail</b></i>
+ *  The onFail attribute in the validation configuration specified what action should be taken when a rule matches.
+ *  This is all about reporting back valdiation failures.
+ *  </li>
  *
  * </lu>
  *
@@ -77,12 +82,12 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
     /**
      * The name of the rule that will be used by this validator.
      */
-    private String rule;
+    private String compositRuleName;
 
     /**
-     * The validation failure level.
+     * The validation failure level. Default is OnFail.ERROR.
      */
-    private OnFail onFail;
+    private OnFail onFail = OnFail.ERROR;
 
     /**
      * The Smooks {@link ApplicationContext}.
@@ -101,7 +106,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
      */
     public Validator(final String rule, final OnFail onFail, final ApplicationContext appContext)
     {
-        this.rule = rule;
+        this.compositRuleName = rule;
         this.onFail = onFail;
         this.appContext = appContext;
     }
@@ -135,41 +140,42 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
      *
      * @throws ValidationException
      */
-    void validate(final String text, final ExecutionContext executionContext) throws SmooksException, ValidationException
+    void validate(final String text, final ExecutionContext executionContext) throws ValidationException
     {
-        final String ruleProviderName = RuleProviderAccessor.parseRuleProviderName(rule);
-        final String ruleName = RuleProviderAccessor.parseRuleName(rule);
+        final String ruleProviderName = RuleProviderAccessor.parseRuleProviderName(compositRuleName);
+        final String ruleName = RuleProviderAccessor.parseRuleName(compositRuleName);
 
         final RuleProvider ruleProvider = RuleProviderAccessor.get(appContext, ruleProviderName);
 
-        RuleEvalResult result = ruleProvider.evaluate(ruleName, text, executionContext);
+        final RuleEvalResult result = ruleProvider.evaluate(ruleName, text, executionContext);
         logger.info(result);
-        System.out.println(result);
 
-        if (onFail != OnFail.OK)
+        if (onFail == OnFail.FATAL)
         {
-            ValidationResults.addResult(result, onFail, executionContext);
+            throw new ValidationException("Rule Validation failed : " + result, text, result);
         }
+
+        ValidationResults.addResult(result, onFail, executionContext);
     }
 
     @Override
     public String toString()
     {
-        return String.format("%s [rule=%s, onFail=%s]", getClass().getSimpleName(), rule, onFail);
+        return String.format("%s [rule=%s, onFail=%s]", getClass().getSimpleName(), compositRuleName, onFail);
     }
 
-    @ConfigParam
-    public void setRule(final String rule)
+    @ConfigParam (name="compositRuleName")
+    public void setCompositRuleName(final String name)
     {
-        this.rule = rule;
+        this.compositRuleName = name;
     }
 
-    public String getRule()
+    public String getCompositRuleName()
     {
-        return rule;
+        return compositRuleName;
     }
 
-    @ConfigParam
+    @ConfigParam (defaultVal = "ERROR")
     public void setOnFail(final OnFail onFail)
     {
         this.onFail = onFail;

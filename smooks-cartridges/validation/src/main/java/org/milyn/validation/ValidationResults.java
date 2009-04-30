@@ -31,7 +31,7 @@ import org.milyn.rules.RuleEvalResult;
  * <p>
  * Users can specify the following different levels of reporting:
  * <lu>
- *   <li>OnFail.OK</li> Ignored and cannot be accessed.
+ *   <li>OnFail.OK</li> addOK, getOks
  *   <li>OnFail.WARN</li> addWarning, getWarnings
  *   <li>OnFail.ERROR</li> addError, getErrors
  *   <li>OnFail.FAIL</li> addFailure, getFailures
@@ -51,6 +51,29 @@ public class ValidationResults
      */
     private ValidationResults()
     {
+    }
+
+    /**
+     * Add {@link RuleEvalResult} with {@link OnFail#OK} level.
+     *
+     * @param result The {@link RuleEvalResult}. Cannot be null.
+     * @param context The Smooks {@link ExecutionContext}. Cannot be null.
+     */
+    public static void addOK(final RuleEvalResult result, final ExecutionContext context)
+    {
+        addResult(result, OnFail.OK, context);
+    }
+
+    /**
+     * Gets all the {@link RuleEvalResult}s that were reported at the {@link OnFail#OK}
+     * level.
+     *
+     * @param context The Smooks {@link ExecutionContext}. Cannot be null;
+     * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#OK}.
+     */
+    public static List<RuleEvalResult> getOKs(final ExecutionContext context)
+    {
+        return Collections.unmodifiableList(getResultList(OnFail.WARN, context));
     }
 
     /**

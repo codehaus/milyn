@@ -5,24 +5,32 @@
         Bean Instance Creator Resource...
     -->
 
-    <resource-config selector="field">
+    <resource-config selector="rule">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
         <param name="resource">org.milyn.smooks.validation.Validator</param>
     </resource-config>
-
-    <resource-config selector="field">
+    
+    <resource-config selector="rule">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">on</param>
+        <param name="attribute">executeOn</param>
+        <param name="mapTo">selector</param>
+    </resource-config>
+  
+    <resource-config selector="rule">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">executeOnNS</param>
+        <param name="mapTo">selector-namespace</param>
     </resource-config>
     
-    <resource-config selector="field">
+    <resource-config selector="rule">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">name</param>
+    </resource-config>
+
+    <resource-config selector="rule">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">onFail</param>
     </resource-config>
         
-    <resource-config selector="field">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">rule</param>
-    </resource-config>
 
 </smooks-resource-list>

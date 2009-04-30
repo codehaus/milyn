@@ -15,6 +15,8 @@
 
 package org.milyn.validation;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -22,14 +24,16 @@ import java.util.List;
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
+import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
 import org.milyn.profile.Profile;
 import org.milyn.rules.RuleEvalResult;
 import org.xml.sax.SAXException;
 
 /**
- * Function test for {@link Visitor}
+ * Function test for {@link Validator}
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */
@@ -46,12 +50,20 @@ public class ValidatorFunctionTest
 
             final String xml = readStringFromFile("validation-test.xml");
 
-            final ExecutionContext context = smooks.createExecutionContext(Profile.DEFAULT_PROFILE);
+            final ExecutionContext context = smooks.createExecutionContext();
+            //context.setEventListener(new HtmlReportGenerator("smooks-report.html"));
+            final StringResult result = new StringResult();
 
-            smooks.filter(new StringSource(xml), null, context);
+            smooks.filter(new StringSource(xml), result, context);
 
             List<RuleEvalResult> warnings = ValidationResults.getWarnings(context);
-            System.out.println(warnings);
+
+            // TODO: Commented out intentionally. Want to check in and let tom see
+            // he can spot what I'm doing wrong.
+            //assertEquals(1, warnings.size());
+
+            assertEquals(0, ValidationResults.getOKs(context).size());
+            assertEquals(0, ValidationResults.getErrors(context).size());
 
         }
         finally

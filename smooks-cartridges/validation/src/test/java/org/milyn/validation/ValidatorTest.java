@@ -36,10 +36,10 @@ public class ValidatorTest
     @Test
     public void configure()
     {
-        final String rule = "addressing.email";
-        final Validator validator = new Validator(rule, OnFail.WARN, null);
+        final String ruleName = "addressing.email";
+        final Validator validator = new Validator(ruleName, OnFail.WARN, null);
 
-        assertEquals(rule, validator.getRule());
+        assertEquals(ruleName, validator.getCompositRuleName());
         assertEquals(OnFail.WARN, validator.getOnFail());
     }
 
@@ -51,9 +51,9 @@ public class ValidatorTest
         regexProvider.setName("addressing");
         RuleProviderAccessor.add(appContext, regexProvider);
 
-        final String rule = "addressing.email";
+        final String ruleName = "addressing.email";
 
-        final Validator validator = new Validator(rule, OnFail.WARN, appContext);
+        final Validator validator = new Validator(ruleName, OnFail.WARN, appContext);
 
         MockExecutionContext executionContext = new MockExecutionContext();
         validator.validate("xyz", executionContext);
