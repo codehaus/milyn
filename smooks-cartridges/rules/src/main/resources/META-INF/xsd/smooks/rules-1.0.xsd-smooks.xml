@@ -7,12 +7,6 @@
     </resource-config>
     
     <resource-config selector="ruleBases/ruleBase">
-        <resource>org.milyn.cdr.extension.SetOnResourceConfig</resource>
-        <param name="setOn">selector</param>
-        <param name="value">ruleBase</param>
-    </resource-config>
-    
-    <resource-config selector="ruleBases/ruleBase">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">name</param>
         <param name="mapTo">name</param>
