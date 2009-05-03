@@ -17,12 +17,10 @@ package org.milyn.validation;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
 
 import org.junit.Test;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.rules.RuleEvalResult;
 import org.milyn.rules.RuleProviderAccessor;
 import org.milyn.rules.regex.RegexProvider;
 
@@ -60,8 +58,9 @@ public class ValidatorTest
         validator.validate("xyz", executionContext);
         validator.validate("xyz", executionContext);
 
-        List<RuleEvalResult> all = ValidationResults.getWarnings(executionContext);
-        assertEquals(3, all.size());
+        assertEquals(0, ValidationResults.getOKs(executionContext).size());
+        assertEquals(3, ValidationResults.getWarnings(executionContext).size());
+        assertEquals(0, ValidationResults.getErrors(executionContext).size());
     }
 
 }

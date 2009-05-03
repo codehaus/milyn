@@ -51,15 +51,13 @@ public class ValidatorFunctionTest
             final String xml = readStringFromFile("validation-test.xml");
 
             final ExecutionContext context = smooks.createExecutionContext();
-            //context.setEventListener(new HtmlReportGenerator("smooks-report.html"));
             final StringResult result = new StringResult();
 
             smooks.filter(new StringSource(xml), result, context);
 
-            List<RuleEvalResult> warnings = ValidationResults.getWarnings(context);
+            final List<RuleEvalResult> warnings = ValidationResults.getWarnings(context);
 
-            //assertEquals(1, warnings.size());
-
+            assertEquals(1, warnings.size());
             assertEquals(0, ValidationResults.getOKs(context).size());
             assertEquals(0, ValidationResults.getErrors(context).size());
 
