@@ -2,7 +2,7 @@
 <smooks-resource-list  xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"  xmlns:rules="http://www.milyn.org/xsd/smooks/rules-1.0.xsd">
 
     <rules:ruleBases>
-        <rules:ruleBase name="addressing" src="usa_address.properties" provider="org.milyn.rules.regex.RegexProvider" />
+        <rules:ruleBase name="addressing" src="usa_address.properties" provider="org.milyn.rules.regex.RegexProvider"/>
     </rules:ruleBases>
 
 </smooks-resource-list>
