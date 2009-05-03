@@ -98,7 +98,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
     /**
      * No-args constructor required by Smooks.
      */
-    public Validator() { }
+    public Validator() {}
 
     /**
      * @param rule The name of the rule that will be used by this validator.
@@ -150,12 +150,15 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
         final RuleEvalResult result = ruleProvider.evaluate(ruleName, text, executionContext);
         logger.info(result);
 
-        if (onFail == OnFail.FATAL)
+        if (!result.matched())
         {
-            throw new ValidationException("Rule Validation failed : " + result, text, result);
-        }
+            if (onFail == OnFail.FATAL)
+            {
+                throw new ValidationException("Rule Validation failed : " + result, text, result);
+            }
 
-        ValidationResults.addResult(result, onFail, executionContext);
+            ValidationResults.addResult(result, onFail, executionContext);
+        }
     }
 
     @Override
@@ -164,7 +167,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
         return String.format("%s [rule=%s, onFail=%s]", getClass().getSimpleName(), compositRuleName, onFail);
     }
 
-    @ConfigParam (name="compositRuleName")
+    @ConfigParam (name="name")
     public void setCompositRuleName(final String name)
     {
         this.compositRuleName = name;

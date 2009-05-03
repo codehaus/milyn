@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" default-selector-namespace="http://www.milyn.org/xsd/smooks/validation-1.0.xsd">
 
-    <!--
-        Bean Instance Creator Resource...
-    -->
-
     <resource-config selector="rule">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
-        <param name="resource">org.milyn.smooks.validation.Validator</param>
+        <param name="resource">org.milyn.validation.Validator</param>
     </resource-config>
     
     <resource-config selector="rule">

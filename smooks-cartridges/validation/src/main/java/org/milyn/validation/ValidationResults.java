@@ -73,7 +73,7 @@ public class ValidationResults
      */
     public static List<RuleEvalResult> getOKs(final ExecutionContext context)
     {
-        return Collections.unmodifiableList(getResultList(OnFail.WARN, context));
+        return Collections.unmodifiableList(getResultList(OnFail.OK, context));
     }
 
     /**
