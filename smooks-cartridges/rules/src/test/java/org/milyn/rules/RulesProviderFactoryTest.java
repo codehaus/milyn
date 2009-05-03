@@ -47,14 +47,13 @@ public class RulesProviderFactoryTest
         final StringSource source = new StringSource("<order></order>");
         final StringResult result = new StringResult();
 
-        //smooks.filter(source, result, new MockExecutionContext());
         smooks.filter(source, result);
 
         final Map<String, RuleProvider> ruleProviders = RuleProviderAccessor.getRuleProviders(smooks.getApplicationContext());
 
-        //assertNotNull("Not rules providers were created!", ruleProviders);
-        //assertEquals(1, ruleProviders.size());
-        //assertNotNull(RuleProviderAccessor.get(smooks.getApplicationContext(), "addressing"));
+        assertNotNull("Not rules providers were created!", ruleProviders);
+        assertEquals(1, ruleProviders.size());
+        assertNotNull(RuleProviderAccessor.get(smooks.getApplicationContext(), "custom"));
     }
 
     @Test
