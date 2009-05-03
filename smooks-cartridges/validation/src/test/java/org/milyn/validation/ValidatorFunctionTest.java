@@ -58,8 +58,6 @@ public class ValidatorFunctionTest
 
             List<RuleEvalResult> warnings = ValidationResults.getWarnings(context);
 
-            // TODO: Commented out intentionally. Want to check in and let tom see
-            // he can spot what I'm doing wrong.
             //assertEquals(1, warnings.size());
 
             assertEquals(0, ValidationResults.getOKs(context).size());
