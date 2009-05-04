@@ -112,14 +112,14 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
     public Validator() {}
 
     /**
-     * @param rule The name of the rule that will be used by this validator.
+     * Public constructor.
+     * @param compositRuleName The name of the rule that will be used by this validator.
      * @param onFail The failure level.
      */
-    public Validator(final String rule, final OnFail onFail, final ApplicationContext appContext)
+    public Validator(final String compositRuleName, final OnFail onFail)
     {
-        setCompositRuleName(rule);
+        setCompositRuleName(compositRuleName);
         this.onFail = onFail;
-        this.appContext = appContext;
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException
@@ -181,9 +181,9 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
     }
 
     @ConfigParam (name="name")
-    public void setCompositRuleName(final String name)
+    public void setCompositRuleName(final String compositRuleName)
     {
-        this.compositRuleName = name;
+        this.compositRuleName = compositRuleName;
         this.ruleProviderName = RuleProviderAccessor.parseRuleProviderName(compositRuleName);
         this.ruleName = RuleProviderAccessor.parseRuleName(compositRuleName);
     }
@@ -204,4 +204,8 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
         return onFail;
     }
 
+    public Validator setAppContext(ApplicationContext appContext) {
+        this.appContext = appContext;
+        return this;
+    }
 }

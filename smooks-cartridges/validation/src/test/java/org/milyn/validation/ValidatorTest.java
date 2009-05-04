@@ -47,7 +47,7 @@ public class ValidatorTest
     public void configure()
     {
         final String ruleName = "addressing.email";
-        final Validator validator = new Validator(ruleName, OnFail.WARN, null);
+        final Validator validator = new Validator(ruleName, OnFail.WARN);
 
         assertEquals(ruleName, validator.getCompositRuleName());
         assertEquals(OnFail.WARN, validator.getOnFail());
@@ -60,7 +60,7 @@ public class ValidatorTest
         RuleProviderAccessor.add(appContext, regexProvider);
 
         final String ruleName = "addressing.email";
-        final Validator validator = new Validator(ruleName, OnFail.WARN, appContext);
+        final Validator validator = new Validator(ruleName, OnFail.WARN).setAppContext(appContext);
 
         MockExecutionContext executionContext = new MockExecutionContext();
         validator.validate("xyz", executionContext);
@@ -79,7 +79,7 @@ public class ValidatorTest
         RuleProviderAccessor.add(appContext, regexProvider);
 
         final String ruleName = "addressing.email";
-        final Validator validator = new Validator(ruleName, OnFail.OK, appContext);
+        final Validator validator = new Validator(ruleName, OnFail.OK).setAppContext(appContext);
 
         MockExecutionContext executionContext = new MockExecutionContext();
         validator.validate("xyz", executionContext);
@@ -98,7 +98,7 @@ public class ValidatorTest
         RuleProviderAccessor.add(appContext, regexProvider);
 
         final String ruleName = "addressing.email";
-        final Validator validator = new Validator(ruleName, OnFail.ERROR, appContext);
+        final Validator validator = new Validator(ruleName, OnFail.ERROR).setAppContext(appContext);
 
         MockExecutionContext executionContext = new MockExecutionContext();
         validator.validate("xyz", executionContext);
@@ -118,7 +118,7 @@ public class ValidatorTest
 
         final String ruleName = "addressing.email";
         final String data = "xyz";
-        final Validator validator = new Validator(ruleName, OnFail.FATAL, appContext);
+        final Validator validator = new Validator(ruleName, OnFail.FATAL).setAppContext(appContext);
 
         MockExecutionContext executionContext = new MockExecutionContext();
         try
