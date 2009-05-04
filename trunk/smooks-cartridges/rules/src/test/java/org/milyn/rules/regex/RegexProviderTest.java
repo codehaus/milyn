@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.rules.RuleEvalResult;
 
 /**
  * Unit test for RegexProviderTest.
