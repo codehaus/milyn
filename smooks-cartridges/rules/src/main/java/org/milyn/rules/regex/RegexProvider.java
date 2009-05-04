@@ -16,12 +16,21 @@
 package org.milyn.rules.regex;
 
 import java.util.regex.Pattern;
+import java.util.Properties;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.milyn.SmooksException;
+import org.milyn.resource.URIResourceLocator;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.rules.RuleEvalResult;
 import org.milyn.rules.RuleProvider;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -30,6 +39,11 @@ import org.milyn.rules.RuleProvider;
  */
 public class RegexProvider implements RuleProvider
 {
+    /**
+     * Logger.
+     */
+    private static Log logger = LogFactory.getLog(RegexProvider.class);
+
     /**
      * Option string identifying a file that contains regex mappings.
      */
@@ -41,6 +55,17 @@ public class RegexProvider implements RuleProvider
     private String providerName;
 
     /**
+     * The rules.
+     */
+    private Map<String, Pattern> rules = new HashMap<String, Pattern>();
+
+    public RegexProvider() {
+        // Load the default rules.
+        // TODO: Not sure this is a good idea Dan i.e. having "default" rules. I know we talked about it before, but seeing it now, I'm not sure. 
+        loadRules("/regex-default.properties");
+    }
+
+    /**
      *
      */
     public RuleEvalResult evaluate(final String ruleName, final CharSequence selectedData, final ExecutionContext context) throws SmooksException
@@ -48,16 +73,15 @@ public class RegexProvider implements RuleProvider
         AssertArgument.isNotNullAndNotEmpty(ruleName, "ruleName");
         AssertArgument.isNotNull(selectedData, "selectedData");
 
-        final Pattern pattern = getPattern(ruleName);
+        final Pattern pattern = rules.get(ruleName);
+
+        if(pattern == null) {
+            throw new SmooksException("Unknown rule name '" + ruleName + "' on Regex RuleProvider '" + providerName + "'.");
+        }
+
         final boolean matched = pattern.matcher(selectedData).matches();
 
         return new RegexRuleResult(matched, ruleName, providerName, pattern);
-    }
-
-    private Pattern getPattern(String ruleName)
-    {
-        final String regex = RegexCache.getInstance().getRegexForAlias(ruleName);
-        return getRegexPattern(regex);
     }
 
     public String getName()
@@ -78,36 +102,51 @@ public class RegexProvider implements RuleProvider
     public void setSrc(String src)
     {
         this.src = src;
-        addUserDefinedAliases(src);
+        loadRules(src);
     }
 
     /**
-     * Compiles the passed-in regular expression into a {@link Pattern}.
+     * Load the regex rule from the specified rule file.
      *
-     * @param regex The regular expression.
+     * @param ruleFile The rule file path.
      */
-    private Pattern getRegexPattern(final String regex)
+    protected void loadRules(final String ruleFile)
     {
-        try
-        {
-            return RegexCache.getInstance().get(regex);
+        if (ruleFile == null) {
+            throw new SmooksException("ruleFile not specified.");
         }
-        catch (final InterruptedException e)
-        {
-            throw new SmooksException("Caught InterruptedException while trying to compile regex '" + regex +"'", e);
-        }
-    }
 
-    /**
-     * Adds all the alias in the properties file to the regex cache.
-     *
-     * @param aliasFile The file containing alias to regex mappings.
-     */
-    private void addUserDefinedAliases(final String aliasFile)
-    {
-        if (aliasFile != null)
-        {
-            RegexCache.getInstance().addAliasesFromFile(aliasFile);
+        InputStream ruleStream;
+
+        // Get the input stream...
+        try {
+            ruleStream = new URIResourceLocator().getResource(ruleFile);
+        } catch (IOException e) {
+            throw new SmooksException("Failed to open rule file '" + ruleFile + "'.", e);
+        }
+
+        Properties rawRuleTable = new Properties();
+
+        // Load the rawRuleTable into a Properties instance...
+        try {
+            rawRuleTable.load(ruleStream);
+        } catch (IOException e) {
+            throw new SmooksException("Error reading InputStream to rule file '" + ruleFile + "'.", e);
+        } finally {
+            try {
+                ruleStream.close();
+            } catch (IOException e) {
+                logger.error("Error closing InputStream to Regex Rule file '" + ruleFile + "'.", e);
+            }
+        }
+
+        // Generate rules Map (Map<String, Pattern>) from the raw rule table...
+        Set<Map.Entry<Object, Object>> ruleEntrySet = rawRuleTable.entrySet();
+        for(Map.Entry<Object, Object> rule : ruleEntrySet) {
+            String ruleName = (String) rule.getKey();
+            String rulePattern = (String) rule.getValue();
+
+            rules.put(ruleName, Pattern.compile(rulePattern));
         }
     }
 

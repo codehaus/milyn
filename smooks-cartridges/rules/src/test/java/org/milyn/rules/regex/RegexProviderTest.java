@@ -202,4 +202,18 @@ public class RegexProviderTest
         assertFalse(provider.evaluate(ruleName, "00:00:00 AM", null).matched());
     }
 
+    @Test
+    public void test_Multiple_Providers() {
+        RegexProvider ordersProvider = new RegexProvider();
+        RegexProvider productsProvider = new RegexProvider();
+
+        productsProvider.setSrc("/org/milyn/rules/regex/rules-products.properties");
+        ordersProvider.setSrc("/org/milyn/rules/regex/rules-orders.properties");
+
+        assertTrue(ordersProvider.evaluate("id", "Z0123456789", null).matched());
+        assertFalse(ordersProvider.evaluate("id", "YZ012345678901234", null).matched());
+
+        assertFalse(productsProvider.evaluate("id", "Z0123456789", null).matched());
+        assertTrue(productsProvider.evaluate("id", "YZ012345678901234", null).matched());
+    }
 }
