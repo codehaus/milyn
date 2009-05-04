@@ -42,7 +42,7 @@ public class ValidatorTest
     }
 
     @Test
-    public void validate()
+    public void validateWarn()
     {
         final MockApplicationContext appContext = new MockApplicationContext();
         final RegexProvider regexProvider = new RegexProvider();

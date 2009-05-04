@@ -83,7 +83,7 @@ public final class RulesProviderFactory implements ContentHandler<RuleProvider>
         }
         else
         {
-            throw new SmooksConfigurationException("Invalid rule provider");
+            throw new SmooksConfigurationException("Invalid rule provider configuration :'" + this + "'");
         }
     }
 
