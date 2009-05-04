@@ -25,6 +25,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
@@ -83,12 +84,22 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
      * The name of the rule that will be used by this validator.
      */
     private String compositRuleName;
-
+    /**
+     * Rule provider name.
+     */
+    private String ruleProviderName;
+    /**
+     * Rule name.
+     */
+    private String ruleName;
+    /**
+     * Rule provider for this validator.
+     */
+    private RuleProvider ruleProvider;
     /**
      * The validation failure level. Default is OnFail.ERROR.
      */
     private OnFail onFail = OnFail.ERROR;
-
     /**
      * The Smooks {@link ApplicationContext}.
      */
@@ -106,7 +117,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
      */
     public Validator(final String rule, final OnFail onFail, final ApplicationContext appContext)
     {
-        this.compositRuleName = rule;
+        setCompositRuleName(rule);
         this.onFail = onFail;
         this.appContext = appContext;
     }
@@ -142,10 +153,12 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
      */
     void validate(final String text, final ExecutionContext executionContext) throws ValidationException
     {
-        final String ruleProviderName = RuleProviderAccessor.parseRuleProviderName(compositRuleName);
-        final String ruleName = RuleProviderAccessor.parseRuleName(compositRuleName);
-
-        final RuleProvider ruleProvider = RuleProviderAccessor.get(appContext, ruleProviderName);
+        if(ruleProvider == null) {
+            ruleProvider = RuleProviderAccessor.get(appContext, ruleProviderName);
+            if(ruleProvider == null) {
+                throw new SmooksException("Unknown rule provider '" + ruleProviderName + "'.");
+            }
+        }
 
         final RuleEvalResult result = ruleProvider.evaluate(ruleName, text, executionContext);
         logger.info(result);
@@ -171,6 +184,8 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
     public void setCompositRuleName(final String name)
     {
         this.compositRuleName = name;
+        this.ruleProviderName = RuleProviderAccessor.parseRuleProviderName(compositRuleName);
+        this.ruleName = RuleProviderAccessor.parseRuleName(compositRuleName);
     }
 
     public String getCompositRuleName()
