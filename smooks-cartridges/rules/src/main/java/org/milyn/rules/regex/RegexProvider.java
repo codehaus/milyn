@@ -61,7 +61,7 @@ public class RegexProvider implements RuleProvider
 
     public RegexProvider() {
         // Load the default rules.
-        // TODO: Not sure this is a good idea Dan i.e. having "default" rules. I know we talked about it before, but seeing it now, I'm not sure. 
+        // TODO: Not sure this is a good idea Dan i.e. having "default" rules. I know we talked about it before, but seeing it now, I'm not sure.
         loadRules("/regex-default.properties");
     }
 
@@ -75,7 +75,7 @@ public class RegexProvider implements RuleProvider
 
         final Pattern pattern = rules.get(ruleName);
 
-        if(pattern == null) {
+        if (pattern == null) {
             throw new SmooksException("Unknown rule name '" + ruleName + "' on Regex RuleProvider '" + providerName + "'.");
         }
 
