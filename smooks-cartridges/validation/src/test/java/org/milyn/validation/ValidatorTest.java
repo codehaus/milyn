@@ -39,7 +39,7 @@ public class ValidatorTest
     public void setup()
     {
         appContext = new MockApplicationContext();
-        regexProvider = new RegexProvider();
+        regexProvider = new RegexProvider("/smooks-regex.properties");
     }
 
     @Test
