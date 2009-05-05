@@ -44,14 +44,6 @@ public class RouteToOutputStreamResourceTest extends TestCase {
         test_2(StreamFilterType.DOM);
     }
 
-    public void test_sax_1() throws IOException, SAXException {
-        test_1(StreamFilterType.SAX);
-    }
-
-    public void test_sax_2() throws IOException, SAXException {
-        test_2(StreamFilterType.SAX);
-    }
-
     public void test_1(StreamFilterType filterType) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("route-to-stream-01.cdrl"));
 
