@@ -59,10 +59,20 @@ public class RegexProvider implements RuleProvider
      */
     private Map<String, Pattern> rules = new HashMap<String, Pattern>();
 
-    public RegexProvider() {
-        // Load the default rules.
-        // TODO: Not sure this is a good idea Dan i.e. having "default" rules. I know we talked about it before, but seeing it now, I'm not sure.
-        loadRules("/regex-default.properties");
+    /**
+     * No-args constructor required by Smooks.
+     */
+    public RegexProvider()
+    {
+    }
+
+    /**
+     * Constructor which accepts a source regex file.
+     * @param src The name/path of the properties file containing the reqular expressions.
+     */
+    public RegexProvider(final String src)
+    {
+        setSrc(src);
     }
 
     /**
@@ -119,30 +129,42 @@ public class RegexProvider implements RuleProvider
         InputStream ruleStream;
 
         // Get the input stream...
-        try {
+        try
+        {
             ruleStream = new URIResourceLocator().getResource(ruleFile);
-        } catch (IOException e) {
+        }
+        catch (final IOException e)
+        {
             throw new SmooksException("Failed to open rule file '" + ruleFile + "'.", e);
         }
 
         Properties rawRuleTable = new Properties();
 
         // Load the rawRuleTable into a Properties instance...
-        try {
+        try
+        {
             rawRuleTable.load(ruleStream);
-        } catch (IOException e) {
+        }
+        catch (final IOException e)
+        {
             throw new SmooksException("Error reading InputStream to rule file '" + ruleFile + "'.", e);
-        } finally {
-            try {
+        }
+        finally
+        {
+            try
+            {
                 ruleStream.close();
-            } catch (IOException e) {
+            }
+            catch (final IOException e)
+            {
                 logger.error("Error closing InputStream to Regex Rule file '" + ruleFile + "'.", e);
             }
         }
 
         // Generate rules Map (Map<String, Pattern>) from the raw rule table...
         Set<Map.Entry<Object, Object>> ruleEntrySet = rawRuleTable.entrySet();
-        for(Map.Entry<Object, Object> rule : ruleEntrySet) {
+        for(Map.Entry<Object, Object> rule : ruleEntrySet)
+        {
             String ruleName = (String) rule.getKey();
             String rulePattern = (String) rule.getValue();
 

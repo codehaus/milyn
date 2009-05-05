@@ -29,12 +29,12 @@ import org.milyn.container.MockExecutionContext;
  */
 public class RegexProviderTest
 {
-    private RegexProvider provider = new RegexProvider();
+    private RegexProvider provider;
 
     @Before
     public void createProvider()
     {
-        provider = new RegexProvider();
+        provider = new RegexProvider("/smooks-regex.properties");
         provider.setName(RegexProvider.class.getSimpleName());
     }
 
