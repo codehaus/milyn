@@ -216,9 +216,9 @@ public class ContentDeliveryConfigBuilder {
             logger.debug("SAX/DOM support characteristics of the Resource Configuration map:\n" + getResourceFilterCharacteristics());
         }
 
+        String filterTypeParam = ParameterAccessor.getStringParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
+
         if(visitorConfig.getSaxVisitorCount() == visitorConfig.getVisitorCount() && visitorConfig.getDomVisitorCount() == visitorConfig.getVisitorCount()) {
-            // All element handlers support SAX and DOM... must select one then...
-            String filterTypeParam = ParameterAccessor.getStringParameter(Filter.STREAM_FILTER_TYPE, resourceConfigTable);
 
             if(filterTypeParam == null) {
                 filterType = StreamFilterType.DOM;
@@ -242,6 +242,13 @@ public class ContentDeliveryConfigBuilder {
             filterType = StreamFilterType.SAX;
         } else {
             throw new SmooksException("Ambiguous Resource Configuration set.  All Element Content Handlers must support processing on the SAX and/or DOM Filter:\n" + getResourceFilterCharacteristics());
+        }
+
+        // If the filter type has been configured, we make sure the selected filter matches...
+        if(filterTypeParam != null) {
+            if(!filterTypeParam.equalsIgnoreCase(filterType.name())) {
+                throw new SmooksException("The configured Filter ('" + filterTypeParam + "') cannot be used with the specified set of Smooks visitors.  The '" + filterType + "' Filter is the only filter that can be used for this set of Visitors.  Turn on Debug logging for more information.");
+            }
         }
         
         return filterType;
