@@ -42,19 +42,6 @@ public class ValidationResultsTest
     }
 
     @Test
-    public void addFailure()
-    {
-        ValidationResults.addFatal(result, context);
-        List<RuleEvalResult> failures = ValidationResults.getFatals(context);
-        assertFalse(failures.isEmpty());
-        assertEquals(1, failures.size());
-
-        ValidationResults.addWarning(result, context);
-        failures = ValidationResults.getFatals(context);
-        assertEquals(1, failures.size());
-    }
-
-    @Test
     public void addWarn()
     {
         ValidationResults.addWarning(result, context);
@@ -109,7 +96,11 @@ public class ValidationResultsTest
             return matched;
         }
 
+        @Override
+        public String toString()
+        {
+            return "MockResult";
+        }
     }
-
 
 }

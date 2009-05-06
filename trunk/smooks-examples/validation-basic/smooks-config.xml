@@ -1,23 +1,13 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list  xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"  xmlns:rules="http://www.milyn.org/xsd/smooks/rules-1.0.xsd" xmlns:validation="http://www.milyn.org/xsd/smooks/validation-1.0.xsd">
 
-    <resource-config selector="email">
-        <resource>org.milyn.validation.regex.Validator</resource>
-        <param name="alias">email</param>
-        <param name="failFast">false</param>
-    </resource-config>
+    <rules:ruleBases>
+        <rules:ruleBase name="default" src="/smooks-regex.properties" provider="org.milyn.rules.regex.RegexProvider"/>
+        <rules:ruleBase name="my" src="/my-regexes.properties" provider="org.milyn.rules.regex.RegexProvider"/>
+    </rules:ruleBases>
     
-    <resource-config selector="username">
-        <resource>org.milyn.validation.regex.Validator</resource>
-        <param name="regex">[a-zA-z]*</param>
-        <param name="failFast">false</param>
-    </resource-config>
+    <validation:rule executeOn="email" name="default.email" onFail="WARN"/>
     
-    <resource-config selector="product-id">
-        <resource>org.milyn.validation.regex.Validator</resource>
-        <param name="alias">productId</param>
-        <param name="aliasFile">/my-regexes.properties</param>
-        <param name="failFast">false</param>
-    </resource-config>
+    <validation:rule executeOn="product-id" name="my.productId" onFail="WARN"/>
 
 </smooks-resource-list>

@@ -6,19 +6,18 @@ About This Example:
     What this example illustrates is:
         1.  A validation of an xml representing an order format.
         2.  How the different options for validation are used:
-                1. Directly specifying a regular expression in the configuration.
-                2. Using a alias for the regular expression that exist in regex-default.properties.
-                3. Using a alias for the regular expression that exist in user defined properties file my-regex.properties.
-        4.  How errors can be reported:
-                1. Immedietely by setting 'failFast' to true and exception will be thrown.
-                2. After all resources have be evaluated but without an exception being thrown. This is done be setting 
-                   'failFast' to false and retrieving the errors using ValidationFailures.getAll(executionContext). See Main for an example.
+                1. Using the Smooks regular expressions file.
+                1. Using the a custom regulare expressions file.
+        3.  How errors can be reported:
+            Please refer to the options available for the onFail attribute:
+            http://www.smooks.org/mediawiki/index.php?title=V1.2:Smooks_v1.2_User_Guide#onFail
 
     See:
         1.  The "Main" class in src/main/java/example/Main.java.
         2.  The input message in input-message.xml.
         3.  The code in the src/main/java folder tree (.java).
         4.  smooks-config.xml.
+        5.  The src/main/resources/my-regexes.properites file.
 
 How to Run?
 ===========

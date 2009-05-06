@@ -28,6 +28,7 @@ import org.milyn.resource.URIResourceLocator;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.rules.RuleEvalResult;
+import org.milyn.rules.RuleEvalResultImpl;
 import org.milyn.rules.RuleProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,7 +92,7 @@ public class RegexProvider implements RuleProvider
 
         final boolean matched = pattern.matcher(selectedData).matches();
 
-        return new RegexRuleResult(matched, ruleName, providerName, pattern);
+        return new RuleEvalResultImpl(matched, ruleName, providerName, pattern, selectedData.toString());
     }
 
     public String getName()
