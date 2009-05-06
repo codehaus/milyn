@@ -29,7 +29,6 @@ import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
-import org.milyn.rules.regex.RegexRuleResult;
 import org.xml.sax.SAXException;
 
 /**
@@ -84,7 +83,7 @@ public class RulesProviderFactoryTest
 
         public RuleEvalResult evaluate(String ruleName, CharSequence selectedData, ExecutionContext context) throws SmooksException
         {
-            return new RegexRuleResult(true, ruleName, "MockProvider", null);
+            return new RuleEvalResultImpl(true, ruleName, "MockProvider", null, selectedData.toString());
         }
 
         public void setName(String name)

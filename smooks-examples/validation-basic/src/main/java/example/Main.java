@@ -30,7 +30,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.rules.RuleEvalResult;
-import org.milyn.validation.ValidationException;
 import org.milyn.validation.ValidationResults;
 import org.xml.sax.SAXException;
 
@@ -83,7 +82,9 @@ public class Main
             smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), executionContext);
 
             return ValidationResults.getWarnings(executionContext);
-        } finally {
+        }
+        finally
+        {
             smooks.close();
         }
     }

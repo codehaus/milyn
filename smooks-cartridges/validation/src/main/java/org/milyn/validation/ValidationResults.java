@@ -71,7 +71,7 @@ public class ValidationResults
      * @param context The Smooks {@link ExecutionContext}. Cannot be null;
      * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#OK}.
      */
-    public static List<RuleEvalResult> getOKs(final ExecutionContext context)
+    public static List<? extends RuleEvalResult> getOKs(final ExecutionContext context)
     {
         return Collections.unmodifiableList(getResultList(OnFail.OK, context));
     }
