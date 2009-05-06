@@ -219,7 +219,10 @@ public abstract class Filter {
                 if(streamSource.getReader() != null) {
                     streamSource.getReader().close();
                 } else if(streamSource.getInputStream() != null) {
-                    streamSource.getInputStream().close();
+                    InputStream inputStream = streamSource.getInputStream();
+                    if(inputStream != System.in) {
+                        inputStream.close();
+                    }
                 }
             } catch (Throwable throwable) {
                 logger.warn("Failed to close input stream/reader.", throwable);
@@ -244,7 +247,10 @@ public abstract class Filter {
                     try {
                         stream.flush();
                     } finally {
-                        stream.close();
+                        // Close the stream as long as it's not sysout or syserr...
+                        if(stream != System.out && stream != System.err) {
+                            stream.close();
+                        }
                     }
                 }
             } catch (Throwable throwable) {
