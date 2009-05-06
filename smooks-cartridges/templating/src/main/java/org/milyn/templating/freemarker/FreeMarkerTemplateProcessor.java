@@ -98,27 +98,30 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
 	protected void loadTemplate(SmooksResourceConfiguration config) throws IOException {
         this.config = config;
 
+        Configuration configuration = new Configuration();
+
+        configuration.setSharedVariable("serialize", new NodeModelSerializer());
+
         if (config.isInline()) {
             byte[] templateBytes = config.getBytes();
             String[] templates = (new String(templateBytes)).split(AbstractTemplateProcessor.TEMPLATE_SPLIT_PI);
 
             if(templates.length == 1) {
                 if(applyTemplateBefore()) {
-                    defaultTemplate = new Template("free-marker-template", new StringReader(templates[0]), new Configuration());
+                    defaultTemplate = new Template("free-marker-template", new StringReader(templates[0]), configuration);
                 } else {
-                    defaultTemplate = new Template("free-marker-template", new StringReader(templates[0]), new Configuration());
+                    defaultTemplate = new Template("free-marker-template", new StringReader(templates[0]), configuration);
                 }
             } else if(templates.length == 2) {
                 if(getAction() != Action.REPLACE) {
                     throw new UnsupportedOperationException("Split templates only supported on the REPLACE action.");
                 }
-                templateBefore = new Template("free-marker-template-before", new StringReader(templates[0]), new Configuration());
-                templateAfter = new Template("free-marker-template-after", new StringReader(templates[1]), new Configuration());
+                templateBefore = new Template("free-marker-template-before", new StringReader(templates[0]), configuration);
+                templateAfter = new Template("free-marker-template-after", new StringReader(templates[1]), configuration);
             } else {
                 throw new IOException("Invalid FreeMarker template config.  Zero split tokens.");
             }
         } else {
-            Configuration configuration = new Configuration();
             TemplateLoader[] loaders = new TemplateLoader[]{new FileTemplateLoader(), new ContextClassLoaderTemplateLoader()};
             MultiTemplateLoader multiLoader = new MultiTemplateLoader(loaders);
 
