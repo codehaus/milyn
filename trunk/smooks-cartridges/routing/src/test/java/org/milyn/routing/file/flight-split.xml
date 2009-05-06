@@ -17,11 +17,7 @@
         <resource>org.milyn.delivery.DomModelCreator</resource>
     </resource-config>
 
-    <!-- Capture all the flight identification info into a Map - used to name the split files (below) -->
-    <jb:bindings beanId="flightIdent" class="java.util.HashMap" createOnElement="Identification">
-        <jb:value data="Identification/*" />
-    </jb:bindings>
-
+    <!-- Apply a template to each "Flight" NodeModel (captured above), outputting to the file stream (below) -->
     <ftl:freemarker applyOnElement="Flight">
         <ftl:template><!--<?xml version="1.0" encoding="utf-8"?>
 <COMP_FIDS xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.comp.aero/fids">
@@ -32,12 +28,18 @@
         </ftl:use>
     </ftl:freemarker>
 
-    <!-- Create/open a file output stream.  This is writen to by the freemarker template (above).. -->
+    <!-- Capture all the flight identification info into a Map - used to name the split files (below) -->
+    <jb:bindings beanId="flightIdent" class="java.util.HashMap" createOnElement="Identification">
+        <jb:value data="Identification/*" />
+    </jb:bindings>
+
+    <!-- Open a file output stream for each Flight.  This is writen to by the freemarker template (above).. -->
     <file:outputStream resourceName="flightSplitStream" openOnElement="Flight">
+        <!-- Name the files using the "flightIdent" info captured above -->
         <file:fileNamePattern>${flightIdent.AirlineCode}-${flightIdent.FlightNumber}.xml</file:fileNamePattern>
         <file:destinationDirectoryPattern>target/flights</file:destinationDirectoryPattern>
 
-        <!-- Throttle file generation -->
+        <!-- Throttle file generation so as not to flood the output directory -->
         <file:highWaterMark mark="10"/>
     </file:outputStream>
 
