@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -333,7 +335,35 @@ public class ClassUtil {
 		return indexOffFirstAssignableClass(toFind, classes) != -1;
 	}
 
-	/**
+    public static <U> void setField(Field field, U instance, Object value) throws IllegalAccessException {
+        boolean isAccessible = field.isAccessible();
+
+        if(!isAccessible) {
+            field.setAccessible(true);
+        }
+
+        try {
+            field.set(instance, value);
+        } finally {
+            field.setAccessible(isAccessible);
+        }
+    }
+
+    public static <U> Object getField(Field field, U instance) throws IllegalAccessException {
+        boolean isAccessible = field.isAccessible();
+
+        if(!isAccessible) {
+            field.setAccessible(true);
+        }
+
+        try {
+            return field.get(instance);
+        } finally {
+            field.setAccessible(isAccessible);
+        }
+    }
+
+    /**
 	 *
 	 * @param toFind
 	 * @param classes
@@ -351,4 +381,38 @@ public class ClassUtil {
 		}
 		return -1;
 	}
+
+    public static String toSetterName(String property) {
+        StringBuffer setterName = new StringBuffer();
+
+        // Add the property string to the buffer...
+        setterName.append(property);
+        // Uppercase the first character...
+        setterName.setCharAt(0, Character.toUpperCase(property.charAt(0)));
+        // Prefix with "set"...
+        setterName.insert(0, "set");
+
+        return setterName.toString();
+    }
+
+    public static Method getSetterMethod(String setterName, Object bean, Class<?> setterParamType) {
+        return getSetterMethod(setterName, bean.getClass(), setterParamType);
+    }
+
+    public static Method getSetterMethod(String setterName, Class beanclass, Class<?> setterParamType) {
+        Method[] methods = beanclass.getMethods();
+        Method beanSetterMethod = null;
+
+        for(Method method : methods) {
+            if(method.getName().equals(setterName)) {
+                Class<?>[] params = method.getParameterTypes();
+                if(params != null && params.length == 1 && params[0].isAssignableFrom(setterParamType)) {
+                    beanSetterMethod = method;
+                    break;
+                }
+            }
+        }
+
+        return beanSetterMethod;
+    }
 }

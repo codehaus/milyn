@@ -16,6 +16,7 @@
 package org.milyn.javabean;
 
 import org.milyn.Smooks;
+import org.milyn.util.ClassUtil;
 import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.delivery.VisitorAppender;
 import org.milyn.assertion.AssertArgument;
@@ -444,7 +445,7 @@ public class Bean implements VisitorAppender {
 
         // Check is the bindingMember defined by a property name.  If so, there should be a
         // bean setter method for that property...
-        String asPropertySetterMethod = BeanUtils.toSetterName(bindingMember);
+        String asPropertySetterMethod = ClassUtil.toSetterName(bindingMember);
         for (Method method : methods) {
             if (method.getName().equals(asPropertySetterMethod) && method.getParameterTypes().length == 1) {
                 return method;

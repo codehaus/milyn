@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.util.CollectionsUtil;
+import org.milyn.util.ClassUtil;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.AnnotationConstants;
 import org.milyn.cdr.annotation.AppContext;
@@ -502,13 +503,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
             	if(setterMethod != null) {
                     throw new SmooksConfigurationException("Bean [" + beanIdName + "] configuration invalid.  Bean setter method [" + setterMethod + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
                 } else if(property != null) {
-                    throw new SmooksConfigurationException("Bean [" + beanIdName + "] configuration invalid.  Bean setter method [" + BeanUtils.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
+                    throw new SmooksConfigurationException("Bean [" + beanIdName + "] configuration invalid.  Bean setter method [" + ClassUtil.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
                 }
             }
         } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
+            throw new SmooksConfigurationException("Error invoking bean setter method [" + ClassUtil.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
         } catch (InvocationTargetException e) {
-            throw new SmooksConfigurationException("Error invoking bean setter method [" + BeanUtils.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
+            throw new SmooksConfigurationException("Error invoking bean setter method [" + ClassUtil.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);
         }
     }
 
@@ -519,7 +520,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         	if(setterMethod != null && !setterMethod.trim().equals("")) {
         		methodName = setterMethod;
             } else if(property != null && !property.trim().equals("")) {
-            	methodName = BeanUtils.toSetterName(property);
+            	methodName = ClassUtil.toSetterName(property);
             }
 
         	if(methodName != null) {
