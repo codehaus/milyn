@@ -21,6 +21,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.util.ClassUtil;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -44,14 +45,14 @@ public abstract class BeanUtils {
      * @return The bean setter method.
      */
     public static Method createSetterMethod(String setterName, Object bean, Class<?> setterParamType) {
-        Method beanSetterMethod = getMethod(setterName, bean, setterParamType);
+        Method beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, setterParamType);
 
         // Try it as a list...
         if (beanSetterMethod == null && List.class.isAssignableFrom(setterParamType)) {
             String setterNamePlural = setterName + "s";
 
             // Try it as a List using the plural name...
-            beanSetterMethod = getMethod(setterNamePlural, bean, setterParamType);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterNamePlural, bean, setterParamType);
             if(beanSetterMethod == null) {
                 // Try it as an array using the non-plural name...
             }
@@ -59,61 +60,31 @@ public abstract class BeanUtils {
 
         // Try it as a primitive...
         if(beanSetterMethod == null && Integer.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Integer.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Integer.TYPE);
         }
         if(beanSetterMethod == null && Long.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Long.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Long.TYPE);
         }
         if(beanSetterMethod == null && Float.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Float.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Float.TYPE);
         }
         if(beanSetterMethod == null && Double.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Double.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Double.TYPE);
         }
         if(beanSetterMethod == null && Character.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Character.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Character.TYPE);
         }
         if(beanSetterMethod == null && Short.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Short.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Short.TYPE);
         }
         if(beanSetterMethod == null && Byte.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Byte.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Byte.TYPE);
         }
         if(beanSetterMethod == null && Boolean.class.isAssignableFrom(setterParamType)) {
-            beanSetterMethod = getMethod(setterName, bean, Boolean.TYPE);
+            beanSetterMethod = ClassUtil.getSetterMethod(setterName, bean, Boolean.TYPE);
         }
 
         return beanSetterMethod;
-    }
-
-    private static Method getMethod(String setterName, Object bean, Class<?> setterParamType) {
-        Method[] methods = bean.getClass().getMethods();
-        Method beanSetterMethod = null;
-
-        for(Method method : methods) {
-            if(method.getName().equals(setterName)) {
-                Class<?>[] params = method.getParameterTypes();
-                if(params != null && params.length == 1 && params[0].isAssignableFrom(setterParamType)) {
-                    beanSetterMethod = method;
-                    break;
-                }
-            }
-        }
-
-        return beanSetterMethod;
-    }
-
-    public static String toSetterName(String property) {
-        StringBuffer setterName = new StringBuffer();
-
-        // Add the property string to the buffer...
-        setterName.append(property);
-        // Uppercase the first character...
-        setterName.setCharAt(0, Character.toUpperCase(property.charAt(0)));
-        // Prefix with "set"...
-        setterName.insert(0, "set");
-
-        return setterName.toString();
     }
 
     /**
