@@ -50,14 +50,15 @@ public class ValidatorFunctionTest
 
             final ExecutionContext context = smooks.createExecutionContext();
             final StringResult result = new StringResult();
+            final ValidationResult validationResult = new ValidationResult();
 
-            smooks.filter(context, new StringSource(xml), result);
+            smooks.filter(context, new StringSource(xml), result, validationResult);
 
-            final List<RuleEvalResult> warnings = ValidationResults.getWarnings(context);
+            final List<RuleEvalResult> warnings = validationResult.getWarnings();
 
             assertEquals(1, warnings.size());
-            assertEquals(0, ValidationResults.getOKs(context).size());
-            assertEquals(0, ValidationResults.getErrors(context).size());
+            assertEquals(0, validationResult.getOKs().size());
+            assertEquals(0, validationResult.getErrors().size());
 
         }
         finally

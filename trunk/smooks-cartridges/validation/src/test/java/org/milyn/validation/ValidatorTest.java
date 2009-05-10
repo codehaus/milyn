@@ -24,6 +24,7 @@ import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.rules.RuleProviderAccessor;
 import org.milyn.rules.regex.RegexProvider;
+import org.milyn.payload.FilterResult;
 
 /**
  * Unit test for {@link Validator}
@@ -60,15 +61,17 @@ public class ValidatorTest
 
         final String ruleName = "addressing.email";
         final Validator validator = new Validator(ruleName, OnFail.WARN).setAppContext(appContext);
+        final ValidationResult result = new ValidationResult();
 
         MockExecutionContext executionContext = new MockExecutionContext();
+        FilterResult.setResults(executionContext, result);
         validator.validate("xyz", executionContext);
         validator.validate("xyz", executionContext);
         validator.validate("xyz", executionContext);
 
-        assertEquals(0, ValidationResults.getOKs(executionContext).size());
-        assertEquals(3, ValidationResults.getWarnings(executionContext).size());
-        assertEquals(0, ValidationResults.getErrors(executionContext).size());
+        assertEquals(0, result.getOKs().size());
+        assertEquals(3, result.getWarnings().size());
+        assertEquals(0, result.getErrors().size());
     }
 
     @Test
@@ -79,15 +82,17 @@ public class ValidatorTest
 
         final String ruleName = "addressing.email";
         final Validator validator = new Validator(ruleName, OnFail.OK).setAppContext(appContext);
+        final ValidationResult result = new ValidationResult();
 
         MockExecutionContext executionContext = new MockExecutionContext();
+        FilterResult.setResults(executionContext, result);
         validator.validate("xyz", executionContext);
         validator.validate("xyz", executionContext);
         validator.validate("xyz", executionContext);
 
-        assertEquals(3, ValidationResults.getOKs(executionContext).size());
-        assertEquals(0, ValidationResults.getWarnings(executionContext).size());
-        assertEquals(0, ValidationResults.getErrors(executionContext).size());
+        assertEquals(3, result.getOKs().size());
+        assertEquals(0, result.getWarnings().size());
+        assertEquals(0, result.getErrors().size());
     }
 
     @Test
@@ -98,15 +103,17 @@ public class ValidatorTest
 
         final String ruleName = "addressing.email";
         final Validator validator = new Validator(ruleName, OnFail.ERROR).setAppContext(appContext);
+        final ValidationResult result = new ValidationResult();
 
         MockExecutionContext executionContext = new MockExecutionContext();
+        FilterResult.setResults(executionContext, result);
         validator.validate("xyz", executionContext);
         validator.validate("xyz", executionContext);
         validator.validate("xyz", executionContext);
 
-        assertEquals(0, ValidationResults.getOKs(executionContext).size());
-        assertEquals(0, ValidationResults.getWarnings(executionContext).size());
-        assertEquals(3, ValidationResults.getErrors(executionContext).size());
+        assertEquals(0, result.getOKs().size());
+        assertEquals(0, result.getWarnings().size());
+        assertEquals(3, result.getErrors().size());
     }
 
     @Test

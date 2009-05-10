@@ -25,7 +25,7 @@ import org.milyn.container.MockExecutionContext;
 import org.milyn.rules.RuleEvalResult;
 
 /**
- * Test for {@link ValidationResults}.
+ * Test for {@link ValidationResult}.
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */
@@ -44,13 +44,15 @@ public class ValidationResultsTest
     @Test
     public void addWarn()
     {
-        ValidationResults.addWarning(result, context);
-        List<RuleEvalResult> warnings = ValidationResults.getWarnings(context);
+        ValidationResult validationResult = new ValidationResult();
+
+        validationResult.addResult(result, OnFail.WARN);
+        List<RuleEvalResult> warnings = validationResult.getWarnings();
         assertFalse(warnings.isEmpty());
         assertEquals(1, warnings.size());
 
-        ValidationResults.addWarning(result, context);
-        warnings = ValidationResults.getWarnings(context);
+        validationResult.addResult(result, OnFail.WARN);
+        warnings = validationResult.getWarnings();
         assertEquals(2, warnings.size());
     }
 
