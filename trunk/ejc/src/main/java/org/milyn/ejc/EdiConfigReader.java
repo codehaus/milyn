@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.milyn.ejc.classes.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * org.milyn.ejc.EdiConfigReader parses a Edimap and generates events while parsing.
@@ -29,6 +31,8 @@ import org.milyn.ejc.classes.*;
  * @author bardl
  */
 public class EdiConfigReader {
+
+    private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
 
     private ClassModel model;
 
@@ -41,7 +45,12 @@ public class EdiConfigReader {
         model.addClass(rootClass);
         model.setRoot(rootClass);
 
+        LOG.debug("Added root class [" + rootClass + "] to ClassModel.");
+
         parseSegmentGroups(segmentGroup.getSegments(), rootClass);
+
+        LOG.debug("Finished parsing edi-configuration. All segments are added to ClassModel.");
+        LOG.debug("ClassModel contains " + model.getCreatedClasses().size() + " classes.");
 
         return model;
     }
@@ -57,6 +66,7 @@ public class EdiConfigReader {
     }
 
     private void parseSegmentGroup(SegmentGroup segmentGroup, JClass parent) throws IllegalNameException {
+        LOG.debug("Parsing SegmentGroup " + segmentGroup.getXmltag());
         JClass child = createChildAndConnectWithParent(parent, segmentGroup, segmentGroup.getMaxOccurs());
 
         if (segmentGroup instanceof Segment) {
@@ -77,6 +87,7 @@ public class EdiConfigReader {
     private void parseFields(List<Field> fields, JClass parent) throws IllegalNameException {
         JClass child;
         for (Field field : fields) {
+            LOG.debug("Parsing field " + field.getXmltag());
             if (field.getComponent() != null && field.getComponent().size() > 0) {
                 //Add class type.
                 child = createChildAndConnectWithParent(parent, field, 1);
@@ -133,10 +144,14 @@ public class EdiConfigReader {
         JClass child = new JClass(parent.getPackage(), EJCUtils.encodeClassName(mappingNode.getXmltag()));
         child.setXmlElementName(mappingNode.getXmltag());
         child = wrapIntoGenericCollection(child, maxOccurs, parent.getXmlElementName());
+
+        LOG.debug("Created class " + child.getFullName() + ".");
+
         JAttribute attribute = new JAttribute(child, EJCUtils.encodeAttributeName(child, mappingNode.getXmltag()));
         attribute.setXmlElementName(mappingNode.getXmltag());
         addAttributeAndCreateMethods(parent, attribute);
         if (child.getGenericType() != null) {
+            LOG.debug("Created class has generic type " + child.getGenericType() + ".");
             model.addClass((JClass)child.getGenericType());
         } else {
             model.addClass(child);
@@ -148,6 +163,7 @@ public class EdiConfigReader {
         if (parent.getGenericType() != null && parent.getGenericType() instanceof JClass) {
             addAttributeAndCreateMethods(((JClass)parent.getGenericType()), attribute);
         } else {
+            LOG.debug("Adding import and methods for attribute " + attribute);
             parent.getAttributes().add(attribute);
             applyImport(parent, attribute);
             addMethods(parent, attribute);
@@ -159,14 +175,17 @@ public class EdiConfigReader {
         List<JStatement> statements = new ArrayList<JStatement>();
         addInstantiationOfCollection(statements, attribute);
         statements.add(new JStatement("return this." + attribute.getName() + JStatement.STATEMENT_SUFFIX));
-        JMethod method = new JMethod(JVisibility.PUBLIC, attribute.getType(), JMethod.GET_PREFIX + methodSuffix, null, statements);
-        parent.getMethods().add(method);
+        JMethod getMethod = new JMethod(JVisibility.PUBLIC, attribute.getType(), JMethod.GET_PREFIX + methodSuffix, null, statements);
+        parent.getMethods().add(getMethod);
+        //LOG.debug("Added method " + getMethod + " to class " + parent + ".");
 
         List<JParameter> parameters = new ArrayList<JParameter>();
         parameters.add(new JParameter(attribute.getType(), attribute.getName()));
         statements = new ArrayList<JStatement>();
         statements.add(new JStatement("this." + attribute.getName() + " = " + attribute.getName() + JStatement.STATEMENT_SUFFIX));
-        parent.getMethods().add(new JMethod(JVisibility.PUBLIC, JSimpleType.VOID, JMethod.SET_PREFIX + methodSuffix, parameters, statements));
+        JMethod setMethod = new JMethod(JVisibility.PUBLIC, JSimpleType.VOID, JMethod.SET_PREFIX + methodSuffix, parameters, statements);
+        parent.getMethods().add(setMethod);
+        //LOG.debug("Added method " + setMethod + " to class " + parent + ".");
     }
 
     private void addInstantiationOfCollection(List<JStatement> statements, JAttribute attribute) {
@@ -199,6 +218,7 @@ public class EdiConfigReader {
     private void addImport(JClass parent, JImport newImport) {
         if ( newImport.getType().getPackage() != null && !newImport.getType().getPackage().equals(parent.getPackage())) {
             parent.getImports().add(newImport);
+            LOG.debug("Added " + newImport + " to class " + parent + ".");
         }
     }
 }
