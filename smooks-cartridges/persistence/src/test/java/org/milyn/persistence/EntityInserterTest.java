@@ -70,7 +70,7 @@ public class EntityInserterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toInsert1", toInsert1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).insert(same(toInsert1));
         } finally {
@@ -96,7 +96,7 @@ public class EntityInserterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toInsert1", toInsert1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).insert(same(toInsert1));
         } finally {
@@ -123,7 +123,7 @@ public class EntityInserterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toInsert1", toInsert1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             assertSame(inserted1, result.getBean("inserted1"));
         } finally {
@@ -146,7 +146,7 @@ public class EntityInserterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toInsert1", toInsert1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(mappedDao).insert(eq("insert1"), same(toInsert1));
         } finally {
@@ -169,7 +169,7 @@ public class EntityInserterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toInsert1", toInsert1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).insert(same(toInsert1));
         } finally {
@@ -190,7 +190,7 @@ public class EntityInserterTest extends BaseTestCase {
             enableReporting(executionContext, "report_test_entity_insert_producer_consumer.html");
 
             JavaResult result = new JavaResult();
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).insert(same((String)result.getBean("toInsert")));
         } finally {

@@ -81,7 +81,7 @@ public abstract class SmooksUtil {
      * Utility method to filter the content in the specified {@link InputStream} for the specified {@link org.milyn.container.ExecutionContext}.
      * <p/>
      * Useful for testing purposes.  In a real scenario, use
-     * {@link Smooks#filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
+     * {@link Smooks#filter(org.milyn.container.ExecutionContext,javax.xml.transform.Source,javax.xml.transform.Result)}.
      * <p/>
      * The content of the returned String is totally dependent on the configured
      * {@link org.milyn.delivery.dom.DOMElementVisitor} and {@link org.milyn.delivery.dom.serialize.SerializationUnit}
@@ -98,7 +98,7 @@ public abstract class SmooksUtil {
         String responseBuf = null;
         CharArrayWriter writer = new CharArrayWriter();
         try {
-            smooks.filter(new StreamSource(stream), new StreamResult(writer), executionContext);
+            smooks.filter(executionContext, new StreamSource(stream), new StreamResult(writer));
             responseBuf = writer.toString();
         } finally {
             if (stream != null) {

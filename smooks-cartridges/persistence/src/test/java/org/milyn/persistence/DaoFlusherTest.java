@@ -62,7 +62,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
             enableReporting(executionContext, "report_test_dao_flush.html");
 
-            smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), null);
 
             verify(dao).flush();
         } finally {
@@ -84,7 +84,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
             enableReporting(executionContext, "report_test_dao_flush_with_named_dao.html");
 
-            smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), null);
 
             verify(dao).flush();
         } finally {
@@ -107,7 +107,7 @@ public class DaoFlusherTest  extends BaseTestCase   {
 
             enableReporting(executionContext, "report_test_dao_flush_with_flushBefore.html");
 
-            smooks.filter(new StringSource(SIMPLE_XML), null, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), null);
 
             verify(dao).flush();
         } finally {

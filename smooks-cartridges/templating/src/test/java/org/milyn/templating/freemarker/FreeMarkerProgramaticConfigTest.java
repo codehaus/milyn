@@ -104,13 +104,13 @@ public class FreeMarkerProgramaticConfigTest extends TestCase {
 
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
 
         assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc1' />");
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
         assertEquals("<mybean>xvalueonc1</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
@@ -218,7 +218,7 @@ public class FreeMarkerProgramaticConfigTest extends TestCase {
         ExecutionContext context = smooks.createExecutionContext();
 
         MockOutStreamResource.outputStream = new ByteArrayOutputStream();
-        smooks.filter(new StringSource("<a/>"), null, context);
+        smooks.filter(context, new StringSource("<a/>"), null);
 
         assertEquals("data to outstream", MockOutStreamResource.outputStream.toString());
     }
@@ -231,7 +231,7 @@ public class FreeMarkerProgramaticConfigTest extends TestCase {
     private void test_ftl(Smooks smooks, ExecutionContext context, String input, String expected) {
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource(input), result, context);
+        smooks.filter(context, new StringSource(input), result);
 
         assertEquals(expected, result.getResult());
     }

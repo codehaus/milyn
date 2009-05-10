@@ -77,7 +77,7 @@ public class ExecutionEventListenerTest extends TestCase {
         StreamSource source = new StreamSource(getClass().getResourceAsStream(sourceFile));
 
         execContext.setEventListener(eventListener);
-        smooks.filter(source, new StreamResult(new NullWriter()), execContext);
+        smooks.filter(execContext, source, new StreamResult(new NullWriter()));
     }
 
 

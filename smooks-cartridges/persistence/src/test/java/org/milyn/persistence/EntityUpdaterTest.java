@@ -70,7 +70,7 @@ public class EntityUpdaterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toUpdate1", toUpdate1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).update(same(toUpdate1));
         } finally {
@@ -96,7 +96,7 @@ public class EntityUpdaterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toUpdate1", toUpdate1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).update(same(toUpdate1));
         } finally {
@@ -123,7 +123,7 @@ public class EntityUpdaterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toUpdate1", toUpdate1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             assertSame(updated1, result.getBean("updated1"));
         } finally {
@@ -146,7 +146,7 @@ public class EntityUpdaterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toUpdate1", toUpdate1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(mappedDao).update(eq("update1"), same(toUpdate1));
         } finally {
@@ -169,7 +169,7 @@ public class EntityUpdaterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toUpdate1", toUpdate1);
 
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).update(same(toUpdate1));
         } finally {
@@ -190,7 +190,7 @@ public class EntityUpdaterTest extends BaseTestCase {
             enableReporting(executionContext, "report_test_entity_update_producer_consumer.html");
 
             JavaResult result = new JavaResult();
-            smooks.filter(new StringSource(SIMPLE_XML), result, executionContext);
+            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).update(same((String)result.getBean("toUpdate")));
         } finally {

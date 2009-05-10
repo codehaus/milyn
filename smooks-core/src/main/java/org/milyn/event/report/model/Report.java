@@ -27,7 +27,7 @@ public class Report {
 
     private List<ReportInfoNode> configurations = new ArrayList<ReportInfoNode>();
     private List<MessageNode> processings = new ArrayList<MessageNode>();
-    private ResultNode result;
+    private List<ResultNode> results;
 
     public List<ReportInfoNode> getConfigurations() {
         return configurations;
@@ -37,11 +37,11 @@ public class Report {
         return processings;
     }
 
-    public void setResult(ResultNode result) {
-        this.result = result;
+    public void setResults(List<ResultNode> results) {
+        this.results = results;
     }
 
-    public ResultNode getResult() {
-        return result;
+    public List<ResultNode> getResults() {
+        return results;
     }
 }

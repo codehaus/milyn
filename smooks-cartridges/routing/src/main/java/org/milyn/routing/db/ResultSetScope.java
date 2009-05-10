@@ -28,13 +28,13 @@ import org.milyn.Smooks;
 public enum ResultSetScope {
     /**
      * The Resultset is scoped around the Smooks {@link ExecutionContext}, and so only
-     * lives for the duration of the {@link Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.ExecutionContext)}
+     * lives for the duration of the {@link Smooks#filter(org.milyn.container.ExecutionContext,javax.xml.transform.Source,javax.xml.transform.Result)}
      * call.
      */
     EXECUTION,
     /**
      * The Resultset is scoped around the Smooks {@link ApplicationContext}. In this case,
-     * the ResultSet can outlive the lifetime of the {@link Smooks#filter(javax.xml.transform.Source, javax.xml.transform.Result, org.milyn.container.ExecutionContext)}
+     * the ResultSet can outlive the lifetime of the {@link Smooks#filter(org.milyn.container.ExecutionContext,javax.xml.transform.Source,javax.xml.transform.Result)}
      * that created it.  It's expiry is governed by the .
      */
     APPLICATION;

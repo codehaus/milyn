@@ -36,7 +36,7 @@ public class DefaultSerializationTest extends TestCase {
         StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
         StringResult stringResult = new StringResult();
 
-        smooks.filter(stringSource, stringResult, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), stringSource, stringResult);
 
         // The "default.serialization.on" global param is set to "false" in the config, so
         // nothing should get writen to the result because there are no configured
@@ -52,7 +52,7 @@ public class DefaultSerializationTest extends TestCase {
         StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
         StringResult stringResult = new StringResult();
 
-        smooks.filter(stringSource, stringResult, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), stringSource, stringResult);
 
         // The "default.serialization.on" global param is set to "false" in the config.
         // There's just a single result writing visitor configured on the "b" element...

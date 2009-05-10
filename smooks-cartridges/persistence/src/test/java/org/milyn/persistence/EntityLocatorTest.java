@@ -21,7 +21,6 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
@@ -76,7 +75,7 @@ public class EntityLocatorTest extends BaseTestCase {
             enableReporting(executionContext, "test_entity_locate.html");
 
             Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
-            smooks.filter(source, null, executionContext);
+            smooks.filter(executionContext, source, null);
 
             assertSame(result, BeanRepository.getInstance(executionContext).getBean("entity"));
         } finally {

@@ -209,12 +209,12 @@ public class XMLServletResponseWrapper extends ServletResponseWrapper {
                 Result result = new StreamResult(writer);
 
                 // Attach the source and result to the context...
-                FilterSource.setSource(source, getContainerRequest());
-                FilterResult.setResult(result, getContainerRequest());
+                FilterSource.setSource(getContainerRequest(), source);
+                FilterResult.setResults(getContainerRequest(), result);
 
                 Filter.setCurrentExecutionContext(getContainerRequest());
                 try {
-                    smooksFilter.doFilter(source, result);
+                    smooksFilter.doFilter();
                 } finally {
                     Filter.removeCurrentExecutionContext();
                 }

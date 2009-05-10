@@ -48,7 +48,7 @@ public class Main
             ExecutionContext execContext = smooks.createExecutionContext();
 
             execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-            smooks.filter(new ByteSource(messageIn), null, execContext);
+            smooks.filter(execContext, new ByteSource(messageIn), null);
         } finally {
             smooks.close();
         }

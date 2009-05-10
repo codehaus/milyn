@@ -19,7 +19,6 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.StreamFilterType;
 import org.milyn.FilterSettings;
-import org.milyn.delivery.Filter;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
@@ -153,7 +152,7 @@ public class ToFileRoutingTest extends TestCase {
                 //execCtx.setEventListener(new HtmlReportGenerator("/zap/x.html"));
                 smooks.setFilterSettings(new FilterSettings(filterType));
                 running = true;
-                smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), null, execCtx);
+                smooks.filter(execCtx, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
             } finally {
                 smooks.close();
             }

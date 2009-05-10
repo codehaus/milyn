@@ -87,7 +87,7 @@ public class Main {
             // Configure the execution context to generate a report...
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), null, executionContext);
+            smooks.filter(executionContext, new StreamSource(new ByteArrayInputStream(messageIn)), null);
 
             Locale.setDefault(defaultLocale);
         } finally {

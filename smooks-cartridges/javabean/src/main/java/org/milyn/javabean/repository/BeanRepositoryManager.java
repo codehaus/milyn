@@ -131,11 +131,11 @@ public class BeanRepositoryManager {
 	 * @return
 	 */
 	private Map<String, Object> createBeanMap(ExecutionContext executionContext) {
-		Result result = FilterResult.getResult(executionContext);
+		Result result = FilterResult.getResult(executionContext, JavaResult.class);
 		Source source = FilterSource.getSource(executionContext);
 		Map<String, Object> beanMap = null;
 
-		if(result instanceof JavaResult) {
+		if(result != null) {
 		    JavaResult javaResult = (JavaResult) result;
 		    beanMap = javaResult.getResultMap();
 		}

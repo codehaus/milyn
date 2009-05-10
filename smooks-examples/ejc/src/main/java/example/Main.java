@@ -257,7 +257,7 @@ public class Main {
                 JavaResult result = new JavaResult();
                 inputStream = new FileInputStream(folder + "../../" + "input-message.edi");
                 StreamSource source = new StreamSource(inputStream);
-                smooks.filter(source, result, context);
+                smooks.filter(context, source, result);
 
                 com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream();
 

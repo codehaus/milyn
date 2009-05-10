@@ -202,7 +202,7 @@ public class ProgrammaticConfigTest extends TestCase {
         ExecutionContext execContext = smooks.createExecutionContext();
 
         //execContext.setEventListener(new ExecListener());
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+        smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
 
         Order order = (Order) result.getBean("order");
         int identity = System.identityHashCode(order);

@@ -18,7 +18,6 @@ package org.milyn.javabean.extendedconfig11;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.B;
 import org.milyn.javabean.Header;
@@ -43,7 +42,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         ExecutionContext execContext = smooks.createExecutionContext();
 
         //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+        smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
 
         ExtendedOrder order = (ExtendedOrder) result.getBean("order");
         assertOrderOK(order, true);
@@ -140,7 +139,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
          ExecutionContext execContext = smooks.createExecutionContext();
 
          //execContext.setEventListener(new HtmlReportGenerator("/target/report.html"));
-         smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+         smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
 
          ExtendedOrder order = (ExtendedOrder) result.getBean("order");
 
@@ -171,7 +170,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext();
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filter(new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result, execContext);
+		smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result);
 
 		assertFlatResult(result);
 	}
@@ -184,7 +183,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext();
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filter(new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result, execContext);
+		smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result);
 
 		assertFlatResult(result);
 	}
@@ -209,7 +208,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext("A");
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+		smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
 
 		ExtendedOrder order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(2d, order.getTotal());
@@ -217,7 +216,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		execContext = smooks.createExecutionContext("B");
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+		smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
 
 		order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(4d, order.getTotal());
@@ -232,7 +231,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext();
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filter(new StreamSource(getClass().getResourceAsStream("order-01.xml")), result, execContext);
+		smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
 
 		ExtendedOrder order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(2d, order.getTotal());

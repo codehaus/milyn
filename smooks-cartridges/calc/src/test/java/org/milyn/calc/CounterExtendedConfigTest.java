@@ -44,7 +44,7 @@ public class CounterExtendedConfigTest {
 
 		JavaResult result = new JavaResult();
 
-		smooks.filter(new StreamSource(getClass().getResourceAsStream("test.xml")), result, executionContext);
+		smooks.filter(executionContext, new StreamSource(getClass().getResourceAsStream("test.xml")), result);
 
 		Long a = (Long) result.getBean("a");
 

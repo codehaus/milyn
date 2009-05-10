@@ -19,9 +19,7 @@ import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.StreamFilterType;
 import org.milyn.FilterSettings;
-import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.Filter;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.payload.JavaSource;
 import org.milyn.payload.StringResult;
@@ -117,7 +115,7 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
 
         // Create the output writer for the transform and run it...
         StringWriter myTransformResult = new StringWriter();
-        smooks.filter(source, new StreamResult(myTransformResult), smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), source, new StreamResult(myTransformResult));
 
         // Check it...
         assertEquals("<mybean>xxxxxxx</mybean>", myTransformResult.toString());
@@ -134,13 +132,13 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
 
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
 
         assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc1' />");
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
         assertEquals("<mybean>xvalueonc1</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
@@ -249,7 +247,7 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
     private void test_ftl(Smooks smooks, ExecutionContext context, String input, String expected) {
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource(input), result, context);
+        smooks.filter(context, new StringSource(input), result);
 
         assertEquals(expected, result.getResult());
     }

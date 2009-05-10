@@ -51,7 +51,7 @@ public class Main {
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
             // Filter the message to the result writer, using the execution context...
-            smooks.filter(new JavaSource(inputJavaObject), new StreamResult(writer), executionContext);
+            smooks.filter(executionContext, new JavaSource(inputJavaObject), new StreamResult(writer));
 
             return writer.toString();
         } finally {

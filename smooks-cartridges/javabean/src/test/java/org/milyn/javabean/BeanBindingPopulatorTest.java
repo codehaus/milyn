@@ -78,7 +78,7 @@ public class BeanBindingPopulatorTest extends TestCase {
     	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
     	JavaResult result = new JavaResult();
 
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        smooks.filter(executionContext, new StreamSource(new StringReader(resource)), result);
 
         @SuppressWarnings("unchecked")
         ArrayList<A> as = (ArrayList<A>) result.getBean("root");
@@ -120,7 +120,7 @@ public class BeanBindingPopulatorTest extends TestCase {
     	String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream(dataFile)));
     	JavaResult result = new JavaResult();
 
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        smooks.filter(executionContext, new StreamSource(new StringReader(resource)), result);
 
         @SuppressWarnings("unchecked")
         A[] as = (A[]) result.getBean("root");

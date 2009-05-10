@@ -49,14 +49,16 @@
 		</div>
 		
         <div class="tabbertab" title="Result">
+            <#foreach  result in report.results>
             <div id="result-summary">
-                ${report.result.summary}
+                ${result.summary}
             </div>
             <div id="result-detail">
-                <pre><@htmlEscape>${report.result.detail}</@htmlEscape></pre>
+                <pre><@htmlEscape>${result.detail}</@htmlEscape></pre>
             </div>
+            </#foreach>
         </div>
-	</div>
+    </div>
 	
 	</body>
 </html>
