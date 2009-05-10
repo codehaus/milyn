@@ -33,7 +33,7 @@ public abstract class FilterSource implements Source {
         return (Source) executionContext.getAttribute(CONTEXT_KEY);
     }
 
-    public static void setSource(Source source, ExecutionContext executionContext) {
+    public static void setSource(ExecutionContext executionContext, Source source) {
         if(source != null) {
             executionContext.setAttribute(CONTEXT_KEY, source);
         } else {

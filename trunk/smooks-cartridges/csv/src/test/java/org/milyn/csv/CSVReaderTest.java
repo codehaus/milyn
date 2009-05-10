@@ -71,13 +71,13 @@ public class CSVReaderTest extends TestCase {
 
 		csvMessage = "Tom Fennelly,Ireland";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        smooks.filter(new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult, context);
+        smooks.filter(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
         assertEquals("Tom Fennelly", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
 		assertEquals("Ireland", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
 
 		csvMessage = "Tom Fennelly,Ireland\nJoe Bloggs,England";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        smooks.filter(new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult, context);
+        smooks.filter(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
 		assertEquals("Tom Fennelly", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
 		assertEquals("Ireland", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
 		assertEquals("Joe Bloggs", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[2]/name/text()"));
@@ -85,7 +85,7 @@ public class CSVReaderTest extends TestCase {
 
 		csvMessage = "Tom Fennelly\nJoe Bloggs,England";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        smooks.filter(new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult, context);
+        smooks.filter(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
 		assertEquals("Joe Bloggs", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
 		assertEquals("England", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
 	}

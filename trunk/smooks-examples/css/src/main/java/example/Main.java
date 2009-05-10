@@ -86,7 +86,7 @@ public class Main {
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
             // Filter the input html through Smooks... we're only analysing...
-            smooks.filter(new StreamSource(new ByteArrayInputStream(htmlIn)), new DOMResult(), executionContext);
+            smooks.filter(executionContext, new StreamSource(new ByteArrayInputStream(htmlIn)), new DOMResult());
 
             return executionContext;
         } finally {

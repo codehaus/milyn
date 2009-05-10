@@ -61,7 +61,7 @@ public class Main {
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
             // Filter the input message to the outputWriter, using the execution context...
-            smooks.filter(new StreamSource(new ByteArrayInputStream(messageIn)), domResult, executionContext);
+            smooks.filter(executionContext, new StreamSource(new ByteArrayInputStream(messageIn)), domResult);
 
             Locale.setDefault(defaultLocale);
 

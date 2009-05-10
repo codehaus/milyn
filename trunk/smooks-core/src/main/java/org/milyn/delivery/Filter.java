@@ -20,6 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
 import org.milyn.StreamFilterType;
+import org.milyn.payload.FilterSource;
+import org.milyn.payload.FilterResult;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.NullReader;
@@ -79,14 +81,13 @@ public abstract class Filter {
     /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
      * to the supplied {@link javax.xml.transform.Result} instance.
+     * <p/>
+     * Implementations use static methods on the {@link FilterSource} and {@link FilterResult} classes
+     * to access the {@link Source} and {@link Result Results} objects.
      *
-     * @param source           The content Source.
-     * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
-     *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
      * @throws SmooksException Failed to filter.
      */
-    public abstract void doFilter(Source source, Result result) throws SmooksException;
-
+    public abstract void doFilter() throws SmooksException;
 
     /**
      * Cleanup the Filter.

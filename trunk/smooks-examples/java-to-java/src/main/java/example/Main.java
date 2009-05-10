@@ -50,7 +50,7 @@ public class Main {
             // Configure the execution context to generate a report...
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-            smooks.filter(source, result, executionContext);
+            smooks.filter(executionContext, source, result);
 
             return (LineOrder) result.getBean("lineOrder");
         } finally {

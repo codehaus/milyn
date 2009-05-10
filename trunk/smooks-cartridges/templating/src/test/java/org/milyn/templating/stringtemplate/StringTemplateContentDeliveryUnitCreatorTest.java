@@ -60,13 +60,13 @@ public class StringTemplateContentDeliveryUnitCreatorTest extends TestCase {
 
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
         
         assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc2' />");
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
         assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 }

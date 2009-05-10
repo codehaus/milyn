@@ -312,7 +312,7 @@ public class Smooks {
      * The created context is profile agnostic and should be used where profile based targeting is not in use.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
+     * {@link #filter(ExecutionContext, Source, Result[])}.
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
@@ -331,7 +331,7 @@ public class Smooks {
      * the transfromation/analysis resources must be configured with profile targeting information.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
+     * {@link #filter(ExecutionContext, Source, Result[])}.
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
@@ -358,7 +358,7 @@ public class Smooks {
     }
 
     /**
-     * Filter the content in the supplied {@link javax.xml.transform.Source} instance.
+     * Filter the content in the supplied {@link Source} instance.
      * <p/>
      * Not producing a {@link Result}.
      *
@@ -366,34 +366,47 @@ public class Smooks {
      * @throws SmooksException Failed to filter.
      */
     public void filter(Source source) throws SmooksException {
-        filter(source, null, createExecutionContext());
+        filter(createExecutionContext(), source, null);
     }
 
     /**
-     * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
-     * to the supplied {@link javax.xml.transform.Result} instance.
+     * Filter the content in the supplied {@link Source} instance, outputing data
+     * to the supplied {@link Result} instances.
      *
-     * @param source           The content Source.
-     * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
-     *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
+     * @param source           The filter Source.
+     * @param results          The filter Results.
      * @throws SmooksException Failed to filter.
      */
-    public void filter(Source source, Result result) throws SmooksException {
-        filter(source, result, createExecutionContext());
+    public void filter(Source source, Result... results) throws SmooksException {
+        filter(createExecutionContext(), source, results);
     }
-
+    
     /**
-     * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result
-     * to the supplied {@link javax.xml.transform.Result} instance.
+     * Filter the content in the supplied {@link Source} instance, outputing data to
+     * the supplied {@link Result} instances.
      *
-     * @param source           The content Source.
-     * @param result           The content Result.  To serialize the result, supply a {@link javax.xml.transform.stream.StreamResult}.
-     *                         To have the result returned as a DOM, supply a {@link javax.xml.transform.dom.DOMResult}.
+     * @param source           The filter Source.
+     * @param result          The filter Result.
      * @param executionContext The {@link ExecutionContext} for this filter operation. See
      *                         {@link #createExecutionContext(String)}.
      * @throws SmooksException Failed to filter.
+     * @deprecated Use {@link #filter(ExecutionContext, Source, Result[])}.
      */
     public void filter(Source source, Result result, ExecutionContext executionContext) throws SmooksException {
+        filter(executionContext, source, result);
+    }
+
+    /**
+     * Filter the content in the supplied {@link Source} instance, outputing data
+     * to the supplied {@link Result} instances.
+     *
+     * @param executionContext The {@link ExecutionContext} for this filter operation. See
+     *                         {@link #createExecutionContext(String)}.
+     * @param source           The filter Source.
+     * @param results          The filter Results.
+     * @throws SmooksException Failed to filter.
+     */
+    public void filter(ExecutionContext executionContext, Source source, Result... results) throws SmooksException {
         AssertArgument.isNotNull(source, "source");
         AssertArgument.isNotNull(executionContext, "executionContext");
 
@@ -401,16 +414,16 @@ public class Smooks {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             try {
-                _filter(source, result, executionContext);
+                _filter(executionContext, source, results);
             } finally {
                 Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
-            _filter(source, result, executionContext);
+            _filter(executionContext, source, results);
         }
     }
 
-    private void _filter(Source source, Result result, ExecutionContext executionContext) {
+    private void _filter(ExecutionContext executionContext, Source source, Result... results) {
         ExecutionEventListener eventListener = executionContext.getEventListener();
 
         try {
@@ -424,11 +437,11 @@ public class Smooks {
 
                 Filter.setFilter(messageFilter);
                 try {
-                    // Attach the source and result to the context...
-                    FilterSource.setSource(source, executionContext);
-                    FilterResult.setResult(result, executionContext);
+                    // Attach the source and results to the context...
+                    FilterSource.setSource(executionContext, source);
+                    FilterResult.setResults(executionContext, results);
 
-                    messageFilter.doFilter(source, result);
+                    messageFilter.doFilter();
                 } catch(SmooksException e) {
                     executionContext.setTerminationError(e);
                     throw e;

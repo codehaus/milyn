@@ -63,13 +63,13 @@ public class VisitorExceptionTest extends TestCase {
 
         if(expectException) {
             try {
-                smooks.filter(new StreamSource(new StringReader("<doc/>")), null, smooks.createExecutionContext());
+                smooks.filter(smooks.createExecutionContext(), new StreamSource(new StringReader("<doc/>")), null);
                 fail("Expected SmooksException");
             } catch(SmooksException e) {
                 assertEquals("Terminate Exception", e.getCause().getMessage());
             }
         } else {
-            smooks.filter(new StreamSource(new StringReader("<doc/>")), null, smooks.createExecutionContext());
+            smooks.filter(smooks.createExecutionContext(), new StreamSource(new StringReader("<doc/>")), null);
         }
     }
 }

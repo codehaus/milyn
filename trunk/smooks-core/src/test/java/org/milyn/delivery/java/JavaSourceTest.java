@@ -115,7 +115,7 @@ public class JavaSourceTest extends TestCase {
         JavaSource source = new JavaSource(sourceObjects);
         StringWriter result = new StringWriter();
 
-        smooks.filter(source, new StreamResult(result), execContext);
+        smooks.filter(execContext, source, new StreamResult(result));
         assertEquals(expected, result.toString());
     }
 

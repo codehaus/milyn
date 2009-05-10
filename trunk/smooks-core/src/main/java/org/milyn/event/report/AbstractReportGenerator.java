@@ -172,21 +172,23 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
             mapMessageNodeVists(report.getProcessings());
         }
 
-        ResultNode resultNode = new ResultNode();
-        Result result = FilterResult.getResult(executionContext);
-        report.setResult(resultNode);
-        if(result != null) {
-            if(result instanceof JavaResult) {
-                resultNode.setSummary("This Smooks Filtering operation produced a JavaResult.  The following is an XML serialization of the JavaResult bean Map entries.");
-            } else if(result instanceof StringResult) {
-                resultNode.setSummary("This Smooks Filtering operation produced the following StreamResult.");
-            } else {
-                resultNode.setSummary("Cannot show Smooks Filtering Result.  Modify the code and use a '" + StringResult.class.getName() + "' Result in the call to the Smooks.filter() method.");
+        List<ResultNode> resultNodes = new ArrayList<ResultNode>();
+        Result[] results = FilterResult.getResults(executionContext);
+        report.setResults(resultNodes);
+        if(results != null) {
+            for(int i = 0; i < results.length; i++) {
+                ResultNode resultNode = new ResultNode();
+
+                resultNodes.add(resultNode);
+                if(results[i] instanceof JavaResult) {
+                    resultNode.setSummary("This Smooks Filtering operation produced a JavaResult.  The following is an XML serialization of the JavaResult bean Map entries.");
+                } else if(results[i]instanceof StringResult) {
+                    resultNode.setSummary("This Smooks Filtering operation produced the following StreamResult.");
+                } else {
+                    resultNode.setSummary("Cannot show Smooks Filtering Result.  Modify the code and use a '" + StringResult.class.getName() + "' Result in the call to the Smooks.filter() method.");
+                }
+                resultNode.setDetail(results[i].toString());
             }
-            resultNode.setDetail(result.toString());
-        } else {
-            resultNode.setSummary("No Result.");
-            resultNode.setDetail("");
         }
 
         try {

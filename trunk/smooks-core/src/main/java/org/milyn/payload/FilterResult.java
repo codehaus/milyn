@@ -29,16 +29,31 @@ public abstract class FilterResult implements Result {
     private static final String CONTEXT_KEY = FilterResult.class.getName() + "#CONTEXT_KEY";
     private String systemId;
 
-    public static Result getResult(ExecutionContext executionContext) {
-        return (Result) executionContext.getAttribute(CONTEXT_KEY);
-    }
-
-    public static void setResult(Result result, ExecutionContext executionContext) {
-        if(result != null) {
-            executionContext.setAttribute(CONTEXT_KEY, result);
+    public static void setResults(ExecutionContext executionContext, Result... results) {
+        if(results != null) {
+            executionContext.setAttribute(CONTEXT_KEY, results);
         } else {
             executionContext.removeAttribute(CONTEXT_KEY);
         }
+    }
+
+    public static Result[] getResults(ExecutionContext executionContext) {
+        return (Result[]) executionContext.getAttribute(CONTEXT_KEY);
+    }
+
+    public static Result getResult(ExecutionContext executionContext, Class<? extends Result> resultType) {
+        Result[] results = getResults(executionContext);
+
+        if(results != null) {
+            for(int i = 0; i < results.length; i++) {
+                // Needs to be an exact type match...
+                if(results[i] != null && resultType.isAssignableFrom(results[i].getClass())) {
+                    return results[i];
+                }
+            }
+        }
+
+        return null;
     }
 
     public void setSystemId(String systemId) {

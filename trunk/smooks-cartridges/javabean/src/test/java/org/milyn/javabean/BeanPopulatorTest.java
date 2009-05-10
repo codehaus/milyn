@@ -106,7 +106,7 @@ public class BeanPopulatorTest extends TestCase {
         ExecutionContext executionContext = smooks.createExecutionContext();
         JavaResult result = new JavaResult(true);
 
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result, executionContext);
+        smooks.filter(executionContext, new StreamSource(getClass().getResourceAsStream("type-pop-check-bean-data.xml")), result);
 
         TypePopCheckBean bean = (TypePopCheckBean) result.getBean("data");
         assertEquals("1, 2, true, 3.0, 4.0, a, 5, 1163616328000, 6, 7, 8, [9, 10, 11], [12, 13, 14], {integerVal1=15, integerVal2=16, integerVal3=17, integerVal4=18, integerVal5=19, integerVal6=20, integerVal=21, mixedMap={intVal=1, longVal=2, boolVal=true, floatVal=3.0, doubleVal=4.0, charVal=a, integerVal=5, mixedIntValArray=[6, 7, 8]}},", bean.toString().trim());
@@ -142,7 +142,7 @@ public class BeanPopulatorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream(configName));
         ExecutionContext executionContext = smooks.createExecutionContext();
 
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult(), executionContext);
+        smooks.filter(executionContext, new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult());
 
         MyGoodBean bean = (MyGoodBean)BeanRepositoryManager.getBeanRepository(executionContext).getBean("userBean");
         assertNotNull("Null bean", bean);
@@ -166,7 +166,7 @@ public class BeanPopulatorTest extends TestCase {
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
         JavaResult result = new JavaResult();
 
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        smooks.filter(executionContext, new StreamSource(new StringReader(resource)), result);
 
         Order order = (Order) result.getBean("order");
 
@@ -198,7 +198,7 @@ public class BeanPopulatorTest extends TestCase {
 
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("order-01.xml")));
 
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        smooks.filter(executionContext, new StreamSource(new StringReader(resource)), result);
 
         Order order = (Order) result.getBean("order");
 
@@ -275,7 +275,7 @@ public class BeanPopulatorTest extends TestCase {
         JavaResult result = new JavaResult();
 
         String resource = StreamUtils.readStream(new InputStreamReader(getClass().getResourceAsStream("employee-01.xml")));
-        smooks.filter(new StreamSource(new StringReader(resource)), result, executionContext);
+        smooks.filter(executionContext, new StreamSource(new StringReader(resource)), result);
 
         Employee employee = (Employee) result.getBean("employee");
 

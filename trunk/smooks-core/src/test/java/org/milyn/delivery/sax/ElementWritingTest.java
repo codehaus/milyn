@@ -33,7 +33,7 @@ public class ElementWritingTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("OnWriterPerElementTest.xml"));
 
         try {
-            smooks.filter(new StringSource("<a/>"), null, smooks.createExecutionContext());
+            smooks.filter(smooks.createExecutionContext(), new StringSource("<a/>"), null);
             fail("Expected SAXWriterAccessException");
         } catch(SmooksException e) {
             assertEquals("Illegal access to the element writer for element 'a' by SAX visitor 'org.milyn.delivery.sax.SAXVisitorWriter02'.  Writer already acquired by SAX visitor 'org.milyn.delivery.sax.SAXVisitorWriter01'.  See SAXElement javadocs (http://milyn.codehaus.org/Smooks).  Change Smooks visitor resource configuration.", e.getCause().getMessage());
@@ -46,7 +46,7 @@ public class ElementWritingTest extends TestCase {
         StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
         StringResult stringResult = new StringResult();
 
-        smooks.filter(stringSource, stringResult, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), stringSource, stringResult);
         
         assertEquals(stringSource.getSource(), stringResult.getResult());
         assertTrue(SAXVisitBeforeVisitor.visited);
@@ -62,7 +62,7 @@ public class ElementWritingTest extends TestCase {
         StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
         StringResult stringResult = new StringResult();
 
-        smooks.filter(stringSource, stringResult, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), stringSource, stringResult);
 
         // The "default.serialization.on" global param is set to "false" in the config, so
         // nothing should get writen to the result because there are no configured
@@ -79,7 +79,7 @@ public class ElementWritingTest extends TestCase {
         StringSource stringSource = new StringSource("<a>aa<b>bbb<c />bbb</b>aaa</a>");
         StringResult stringResult = new StringResult();
 
-        smooks.filter(stringSource, stringResult, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), stringSource, stringResult);
 
         // The "default.serialization.on" global param is set to "false" in the config.
         // There's just a single result writing visitor configured on the "c" element...

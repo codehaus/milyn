@@ -24,11 +24,8 @@ import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 /**
@@ -50,7 +47,7 @@ public class Main {
             // Configure the execution context to generate a report...
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-            smooks.filter(new StringSource(messageIn), result, executionContext);
+            smooks.filter(executionContext, new StringSource(messageIn), result);
 
             return (List) result.getBean("customerList");
         } finally {

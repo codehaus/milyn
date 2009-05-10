@@ -46,7 +46,7 @@ public class FilterCloseTest extends TestCase {
         TestInputStream inStream = new TestInputStream("<x/>".getBytes(), expectedCloseCallCount + 1);
         TestOutputStream outStream = new TestOutputStream(expectedCloseCallCount);
         execContext = smooks.createExecutionContext(profile);
-        smooks.filter(new StreamSource(inStream), new StreamResult(outStream), execContext);
+        smooks.filter(execContext, new StreamSource(inStream), new StreamResult(outStream));
 
         // Test io reader/writer close...
         // We need to +1 this because Xerces always closes input streams/readers and there's no 
@@ -54,7 +54,7 @@ public class FilterCloseTest extends TestCase {
         TestReader reader = new TestReader("<x/>", expectedCloseCallCount + 1);
         TestWriter writer = new TestWriter(expectedCloseCallCount);
         execContext = smooks.createExecutionContext(profile);
-        smooks.filter(new StreamSource(reader), new StreamResult(writer), execContext);
+        smooks.filter(execContext, new StreamSource(reader), new StreamResult(writer));
     }
 
     private class TestInputStream extends ByteArrayInputStream {

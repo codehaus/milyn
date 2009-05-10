@@ -101,13 +101,13 @@ public class XslContentHandlerFactoryTest extends TestCase {
 
         input = new StringReader("<a><b><c/></b></a>");
         context = smooks.createExecutionContext();
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
 
         assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         input = new StringReader("<c/>");
         context = smooks.createExecutionContext();
-        smooks.filter(new StreamSource(input), null, context);
+        smooks.filter(context, new StreamSource(input), null);
         assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
@@ -147,7 +147,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("bad-xsl-config.xml"));
 
         try {
-            smooks.filter(new StreamSource(new StringReader("<doc/>")), null, smooks.createExecutionContext());
+            smooks.filter(smooks.createExecutionContext(), new StreamSource(new StringReader("<doc/>")), null);
             fail("Expected SmooksConfigurationException.");
         } catch(SmooksConfigurationException e) {
             assertEquals("Error loading Templating resource: Target Profile: [[org.milyn.profile.profile#default_profile]], Selector: [$document], Selector Namespace URI: [null], Resource: [/org/milyn/templating/xslt/bad-stylesheet.xsl], Num Params: [0]", e.getCause().getMessage());

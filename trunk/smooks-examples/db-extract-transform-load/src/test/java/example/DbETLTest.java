@@ -17,7 +17,6 @@ package example;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
-import org.milyn.event.report.FlatReportGenerator;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -69,7 +68,7 @@ public class DbETLTest extends TestCase {
 
             try {
                 long start = System.currentTimeMillis();
-                smooks.filter(new StreamSource(reader), null, smooks.createExecutionContext());
+                smooks.filter(smooks.createExecutionContext(), new StreamSource(reader), null);
                 System.out.println("Took: " + (System.currentTimeMillis() - start));
             } finally {
                 reader.close();

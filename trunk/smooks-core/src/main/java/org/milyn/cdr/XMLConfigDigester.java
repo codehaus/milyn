@@ -476,7 +476,7 @@ public final class XMLConfigDigester {
         ExtensionContext.setExtensionContext(extentionContext, executionContext);
 
         // Filter the extension element through Smooks...
-        configDigester.filter(new DOMSource(configElement), null, executionContext);
+        configDigester.filter(executionContext, new DOMSource(configElement), null);
 
         // Copy the created resources from the ExtensionContext and onto the SmooksResourceConfigurationList...
         List<SmooksResourceConfiguration> resources = extentionContext.getResources();

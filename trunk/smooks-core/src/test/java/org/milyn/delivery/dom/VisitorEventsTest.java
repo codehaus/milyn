@@ -35,15 +35,15 @@ public class VisitorEventsTest extends TestCase {
     public void test() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config3.xml"));
 
-        smooks.filter(new StreamSource(new StringReader("<x/>")), null, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), new StreamSource(new StringReader("<x/>")), null);
         assertFalse(VisitBeforeDOMVisitor.visited);
         assertFalse(VisitAfterDOMVisitor.visited);
         reset();
-        smooks.filter(new StreamSource(new StringReader("<a/>")), null, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), new StreamSource(new StringReader("<a/>")), null);
         assertTrue(VisitBeforeDOMVisitor.visited);
         assertFalse(VisitAfterDOMVisitor.visited);
         reset();
-        smooks.filter(new StreamSource(new StringReader("<a><b/></a>")), null, smooks.createExecutionContext());
+        smooks.filter(smooks.createExecutionContext(), new StreamSource(new StringReader("<a><b/></a>")), null);
         assertTrue(VisitBeforeDOMVisitor.visited);
         assertTrue(VisitAfterDOMVisitor.visited);
         assertEquals("Hi There!", VisitAfterDOMVisitor.staticInjectedParam);

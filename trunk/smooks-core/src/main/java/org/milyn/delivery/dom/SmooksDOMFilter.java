@@ -27,6 +27,7 @@ import org.milyn.delivery.*;
 import org.milyn.delivery.dom.serialize.Serializer;
 import org.milyn.payload.JavaSource;
 import org.milyn.payload.FilterResult;
+import org.milyn.payload.FilterSource;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.DOMFilterLifecycleEvent;
@@ -209,8 +210,20 @@ public class SmooksDOMFilter extends Filter {
         cleanupList = new ExecutionLifecycleCleanableList(executionContext);
     }
 
-    public void doFilter(Source source, Result result) throws SmooksException {
+    public void doFilter() throws SmooksException {
+        Source source = FilterSource.getSource(executionContext);
+        Result result;
 
+        result = FilterResult.getResult(executionContext, StreamResult.class);
+        if(result == null) {
+            // Maybe there's a DOMResult...
+            result = FilterResult.getResult(executionContext, DOMResult.class);
+        }
+
+        doFilter(source, result);
+    }
+
+    protected void doFilter(Source source, Result result) {
         if (!(source instanceof StreamSource) && !(source instanceof DOMSource) && !(source instanceof JavaSource)) {
             throw new IllegalArgumentException(source.getClass().getName() + " Source types not yet supported by the DOM Filter.");
         }

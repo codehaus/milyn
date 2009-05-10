@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.util.List;
 
 import javax.xml.transform.stream.StreamResult;
@@ -27,7 +26,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.routing.file.FileListAccessor;
 import org.xml.sax.SAXException;
@@ -57,7 +55,7 @@ public class Main
             //executionContext.setEventListener(new HtmlReportGenerator("target/report.html"));
 
             //	perform the transform
-            smooks.filter( source, result, executionContext );
+            smooks.filter(executionContext, source, result);
 
             //	display the output from the transform
             System.out.println( LINE_SEP );

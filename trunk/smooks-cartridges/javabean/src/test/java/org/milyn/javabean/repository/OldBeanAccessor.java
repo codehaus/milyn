@@ -211,7 +211,6 @@ public class OldBeanAccessor {
      * @param executionContext The execution context within which the beans are located.
      * @param parentBean The bean that controlles the lifecycle of its childs
      * @param childBean The bean that will be associated to the parent
-     * @param addToList Is the child added to a bean list.
      *
      */
     public static void associateLifecycles(ExecutionContext executionContext, String parentBean, String childBean) {
@@ -295,11 +294,11 @@ public class OldBeanAccessor {
     	OldBeanAccessor accessor = (OldBeanAccessor) executionContext.getAttribute(CONTEXT_KEY);
 
         if(accessor == null) {
-            Result result = FilterResult.getResult(executionContext);
+            Result result = FilterResult.getResult(executionContext, JavaResult.class);
             Source source = FilterSource.getSource(executionContext);
             Map<String, Object> beanMap = null;
 
-            if(result instanceof JavaResult) {
+            if(result != null) {
                 JavaResult javaResult = (JavaResult) result;
                 beanMap = javaResult.getResultMap();
             }

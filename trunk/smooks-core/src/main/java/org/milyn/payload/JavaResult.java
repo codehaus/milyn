@@ -31,7 +31,7 @@ import java.util.Set;
  * <p/>
  * Used to extract a Java "{@link Result result}" Map from the transformation.
  * Simply set an instance of this class as the {@link Result} arg in the call
- * to {@link org.milyn.Smooks#filter(javax.xml.transform.Source,javax.xml.transform.Result,org.milyn.container.ExecutionContext)}.
+ * to {@link org.milyn.Smooks#filter(org.milyn.container.ExecutionContext, javax.xml.transform.Source, javax.xml.transform.Result[])}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
