@@ -17,23 +17,55 @@
 			<groupId>org.milyn</groupId>
 			<artifactId>milyn-smooks-javabean</artifactId>
 			<version>${milyn.smooks.core.version}</version>
-			<!--<version>1.2-SNAPSHOT</version>-->
 		</dependency>
 
         <dependency>
 			<groupId>org.milyn</groupId>
 			<artifactId>milyn-smooks-edi</artifactId>
 			<version>${milyn.smooks.core.version}</version>
-			<!--<version>1.2-SNAPSHOT</version>-->
 		</dependency>
 
-        <!--<dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <scope>test</scope>
-        </dependency>-->
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-edisax-parser</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.milyn.ejc.EJC</mainClass>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <excludeTransitive>true</excludeTransitive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <!--<build>
         <plugins>

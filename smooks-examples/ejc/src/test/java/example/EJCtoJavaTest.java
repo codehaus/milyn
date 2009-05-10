@@ -30,15 +30,15 @@ import java.io.*;
 public class EJCtoJavaTest extends TestCase {
 
     public void test() throws EDIConfigurationException, IOException, IllegalNameException, InterruptedException, SAXException {
-//        String expected = org.milyn.io.StreamUtils.readStreamAsString(getClass().getResourceAsStream("expected.xml"));
-//
-//        Main main = new Main();
-//        String orderXml = main.runEJCTest();
-//        orderXml = orderXml.replaceFirst("<date>.*</date>", "<date/>");
-//
-//        boolean matchesExpected = org.milyn.io.StreamUtils.compareCharStreams(new java.io.StringReader(expected), new java.io.StringReader(orderXml));
-//        if(!matchesExpected) {
-//            assertEquals("Actual does not match expected.", expected, orderXml);
-//        }
+        String expected = org.milyn.io.StreamUtils.readStreamAsString(getClass().getResourceAsStream("expected.xml"));
+
+        Main main = new Main();
+        String orderXml = main.runEJCTest();
+        orderXml = orderXml.replaceFirst("<date>.*</date>", "<date/>");
+
+        boolean matchesExpected = org.milyn.io.StreamUtils.compareCharStreams(new java.io.StringReader(expected), new java.io.StringReader(orderXml));
+        if(!matchesExpected) {
+            assertEquals("Actual does not match expected.", expected, orderXml);
+        }
     }
 }

@@ -16,6 +16,8 @@
 package org.milyn.ejc;
 
 import org.milyn.ejc.classes.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.util.Map;
@@ -25,6 +27,8 @@ import java.util.Map;
  * @author bardl
  */
 public class BindingWriter {
+
+    private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
 
     private static final String CONFIG_START = "<?xml version=\"1.0\"?>\n<smooks-resource-list xmlns=\"http://www.milyn.org/xsd/smooks-1.1.xsd\" xmlns:jb=\"http://www.milyn.org/xsd/smooks/javabean-1.1.xsd\">";
     private static final String CONFIG_END = "</smooks-resource-list>";
@@ -56,7 +60,6 @@ public class BindingWriter {
         try {
             writer = new OutputStreamWriter(new FileOutputStream(bindingFile));
             writer.write(CONFIG_START);
-            //writer.write(CONFIG_EDI_READER);
             parseClass(root, writer);
             writer.write(CONFIG_END);
         } finally {
@@ -67,6 +70,8 @@ public class BindingWriter {
     }
 
     private static void parseClass(JClass clazz, Writer writer) throws IOException, IllegalNameException {
+        LOG.debug("Creating binding for class " + clazz.getFullName());
+
         createStartElement(writer, BINDINGS_ELEMENT);
         addAttribute(writer, BEAN_ID_ATTRIBUTE, getBeanId(clazz));
         addAttribute(writer, CLASS_ATTRIBUTE, clazz.getFullName());
@@ -84,7 +89,7 @@ public class BindingWriter {
                     addAttribute(writer, DECODER_ATTRIBUTE, attribute.getType().getName());
                     if ( simpleType.getParameters() != null ) {
                         endStartElement(writer, true, true);
-                        //<jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
+                        
                         for (Map.Entry<String, String> entry : simpleType.getParameters()) {
                             createStartElement(writer, DECODE_PARAM_ELEMENT);
                             addAttribute(writer, NAME_ATTRIBUTE, entry.getKey());

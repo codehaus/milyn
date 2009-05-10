@@ -20,6 +20,8 @@ import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.SAXException;
+import org.apache.commons.logging.Log;
+import static org.milyn.ejc.EJCLogFactory.Level;
 
 import java.io.*;
 
@@ -36,6 +38,8 @@ import java.io.*;
  * @author bardl  
  */
 public class EJC {
+
+    private static Log LOG = EJCLogFactory.getLog(EJC.class);
 
     private static final String VERISON = "0.1";
 
@@ -67,15 +71,25 @@ public class EJC {
      */
     public void compile(InputStream configFile, String beanPackage, String beanFolder, String bindingFile) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
 
-            //Read edifact configuration
-            Edimap edimap = readEDIConfig(configFile);
+        //Read edifact configuration
+        Edimap edimap = readEDIConfig(configFile);
 
-            EdiConfigReader ediConfigReader = new EdiConfigReader();
-            ClassModel model = ediConfigReader.parse(edimap, beanPackage);
+        LOG.info("Reading the edi-configuration...");
+        EdiConfigReader ediConfigReader = new EdiConfigReader();
+        ClassModel model = ediConfigReader.parse(edimap, beanPackage);
 
-            BeanWriter.writeBeans(model, beanFolder);
+        LOG.info("Writing java beans to " + beanFolder + "...");
+        BeanWriter.writeBeans(model, beanFolder);
 
-            BindingWriter.parse(model, bindingFile );
+        LOG.info("Creating bindingfile...");
+        BindingWriter.parse(model, bindingFile );
+
+        LOG.info("-----------------------------------------------------------------------");
+        LOG.info(" Compiltation complete.");
+        LOG.info("-----------------------------------------------------------------------");
+        LOG.info(" Files are located in folder ");
+        LOG.info(" " + beanFolder);
+        LOG.info("-----------------------------------------------------------------------");
 
     }
 
@@ -96,6 +110,10 @@ public class EJC {
     /**
      * The main method parsing in-parameters and invoking the compile method.
      * @param args the arguments
+     * @throws org.milyn.edisax.EDIConfigurationException when error occurs while reading ediConfiguration.
+     * @throws IllegalNameException when xmltag in edi-configuration has a conconflict with reserved java keywords.
+     * @throws java.io.IOException when error ocurcurs when reading or writing files.
+     * @throws org.xml.sax.SAXException when error occurs while reading ediConfiguration. 
      */
     public static void main(String[] args) throws IOException, EDIConfigurationException, IllegalNameException, SAXException {
         EJC ejc = new EJC();
@@ -104,6 +122,33 @@ public class EJC {
         String beanPackage = getParameter(PARAMETER_BEAN_PACKAGE, args);
         String beanFolder = getParameter(PARAMETER_BEAN_FOLDER, args);
         String bindingFile = getParameter(PARAMETER_BINDING_FILE, args);
+        boolean isVerbose = containsParameter(PARAMETER_VERBOSE, args);
+        boolean isQuiet = containsParameter(PARAMETER_QUIET, args);
+
+        if (containsParameter(PARAMETER_HELP, args)) {
+            System.out.println(writeAboutText());
+            System.out.println(writeUsageText());
+
+            if (args.length == 1) {
+                return;
+            }
+        }
+
+        if (containsParameter(PARAMETER_VERSION, args)) {
+            System.out.println(writeVersionText());
+
+            if (args.length == 1) {
+                return;
+            }
+        }
+
+        if (isVerbose && isQuiet) {
+            LOG.error("Both 'quiet' and 'verbose' is activated. Only one of these can be active at once.");
+            return;
+        }
+
+        // Set log-level depending on argument VERBOSE or QUIET.        
+        ((EJCLog)LOG).setLevel(isVerbose ? Level.DEBUG : (isQuiet ? Level.ERROR : Level.INFO));
 
         InputStream configInputStream = null;
         try {
@@ -114,15 +159,6 @@ public class EJC {
             if (configInputStream != null) {
                 configInputStream.close();
             }
-        }
-
-        if (containsParameter(PARAMETER_HELP, args)) {
-            System.out.println(writeAboutText());
-            System.out.println(writeUsageText());
-        }
-
-        if (containsParameter(PARAMETER_VERSION, args)) {
-            System.out.println(writeVersionText());
         }
     }
 

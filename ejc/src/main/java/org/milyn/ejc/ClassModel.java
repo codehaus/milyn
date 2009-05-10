@@ -16,6 +16,8 @@
 package org.milyn.ejc;
 
 import org.milyn.ejc.classes.JClass;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -30,6 +32,8 @@ import java.util.HashMap;
  * @author bardl
  */
 public class ClassModel {
+
+    private static Log LOG = EJCLogFactory.getLog(ClassModel.class);
 
     private JClass root;
     private Map<String, JClass> createdClasses;
@@ -51,6 +55,6 @@ public class ClassModel {
 
     public void addClass(JClass aClass) {
         getCreatedClasses().put(aClass.toString(), aClass);
-        System.out.println("Added class " + aClass + " to model.");        
+        LOG.info("Added class " + aClass + " to model.");        
     }
 }

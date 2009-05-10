@@ -16,6 +16,8 @@
 package org.milyn.ejc;
 
 import org.milyn.ejc.classes.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 
@@ -24,6 +26,9 @@ import java.io.*;
  * @author bardl
  */
 public class BeanWriter {
+
+    private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
+
     private static final String NEW_LINE = "\n";
     private static final String KEYWORD_CLASS = " class ";
     private static final String TAB = "\t";
@@ -68,6 +73,8 @@ public class BeanWriter {
      * @return the implementation as a String.
      */
     public static String writeBean(JClass jClass) {
+        LOG.debug("Creating implementation class " + jClass.getFullName() + ".");
+
         StringBuilder result = new StringBuilder();
 
         // Implement packagename
