@@ -19,13 +19,13 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.payload.FilterResult;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
-import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
@@ -170,7 +170,10 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
                 throw new ValidationException("Rule Validation failed : " + result, text, result);
             }
 
-            ValidationResults.addResult(result, onFail, executionContext);
+            ValidationResult validationResult = (ValidationResult) FilterResult.getResult(executionContext, ValidationResult.class);
+            if(validationResult != null) {
+                validationResult.addResult(result, onFail);
+            }
         }
     }
 
