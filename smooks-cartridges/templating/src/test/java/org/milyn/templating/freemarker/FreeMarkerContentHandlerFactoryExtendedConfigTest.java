@@ -112,7 +112,7 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
 
         // Create the output writer for the transform and run it...
         StringWriter myTransformResult = new StringWriter();
-        smooks.filter(smooks.createExecutionContext(), source, new StreamResult(myTransformResult));
+        smooks.filterSource(smooks.createExecutionContext(), source, new StreamResult(myTransformResult));
 
         // Check it...
         assertEquals("<mybean>xxxxxxx</mybean>", myTransformResult.toString());
@@ -125,13 +125,13 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
 
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
-        smooks.filter(context, new StreamSource(input), null);
+        smooks.filterSource(context, new StreamSource(input), null);
 
         assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc1' />");
-        smooks.filter(context, new StreamSource(input), null);
+        smooks.filterSource(context, new StreamSource(input), null);
         assertEquals("<mybean>xvalueonc1</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
@@ -213,7 +213,7 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
         ExecutionContext context = smooks.createExecutionContext();
 
         MockOutStreamResource.outputStream = new ByteArrayOutputStream();
-        smooks.filter(context, new StringSource("<a/>"), null);
+        smooks.filterSource(context, new StringSource("<a/>"), null);
 
         assertEquals("data to outstream", MockOutStreamResource.outputStream.toString());
     }
@@ -226,7 +226,7 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
     private void test_ftl(Smooks smooks, ExecutionContext context, String input, String expected) {
         StringResult result = new StringResult();
 
-        smooks.filter(context, new StringSource(input), result);
+        smooks.filterSource(context, new StringSource(input), result);
 
         assertEquals(expected, result.getResult());
     }

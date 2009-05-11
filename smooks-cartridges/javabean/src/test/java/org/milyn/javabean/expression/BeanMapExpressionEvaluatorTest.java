@@ -40,13 +40,13 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
         DOMVisitor.visited = false;
         smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
         execContext = smooks.createExecutionContext();
-        smooks.filter(execContext, new StreamSource(new StringReader("<a>hello</a>")), null);
+        smooks.filterSource(execContext, new StreamSource(new StringReader("<a>hello</a>")), null);
         assertTrue(DOMVisitor.visited);
 
         DOMVisitor.visited = false;
         smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
         execContext = smooks.createExecutionContext();
-        smooks.filter(execContext, new StreamSource(new StringReader("<a>goodbye</a>")), null);
+        smooks.filterSource(execContext, new StreamSource(new StringReader("<a>goodbye</a>")), null);
         //assertFalse(DOMVisitor.visited);
     }
 

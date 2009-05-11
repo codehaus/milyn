@@ -40,7 +40,7 @@ public class MILYN_140_Test extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<x/>"), result);
+        smooks.filterSource(new StringSource("<x/>"), result);
         assertEquals("Hi there!", result.getResult());
     }
 }

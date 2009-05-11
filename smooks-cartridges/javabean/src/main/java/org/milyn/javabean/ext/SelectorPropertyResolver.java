@@ -44,7 +44,7 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
 
     public static void resolveSelectorTokens(SmooksResourceConfiguration populatorConfig) {
         String[] selectorTokens = populatorConfig.getContextualSelector();
-        String valueAttributeName = getAttributeNameProperty(selectorTokens);
+        String valueAttributeName = SmooksResourceConfiguration.extractTargetAttribute(selectorTokens);
 
         if(valueAttributeName != null && !valueAttributeName.trim().equals("")) {
             populatorConfig.setSelector(getSelectorProperty(selectorTokens));
@@ -64,15 +64,4 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
         return selectorProp.toString().trim();
     }
 
-    public static String getAttributeNameProperty(String[] selectorTokens) {
-        StringBuffer selectorProp = new StringBuffer();
-
-        for (String selectorToken : selectorTokens) {
-            if (selectorToken.trim().startsWith("@")) {
-                selectorProp.append(selectorToken.substring(1));
-            }
-        }
-
-        return selectorProp.toString();
-    }
 }

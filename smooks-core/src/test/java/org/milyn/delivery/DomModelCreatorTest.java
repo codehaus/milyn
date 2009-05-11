@@ -41,7 +41,7 @@ public class DomModelCreatorTest extends TestCase {
         smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
 
         ExecutionContext executionContext = smooks.createExecutionContext();
-        smooks.filter(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
+        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
 
         DOMModel nodeModel = DOMModel.getModel(executionContext);
 
@@ -91,7 +91,7 @@ public class DomModelCreatorTest extends TestCase {
         smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
 
         ExecutionContext executionContext = smooks.createExecutionContext();
-        smooks.filter(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
+        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
 
         DOMModel nodeModel = DOMModel.getModel(executionContext);
 
@@ -149,7 +149,7 @@ public class DomModelCreatorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("node-model-01.xml"));
         ExecutionContext executionContext = smooks.createExecutionContext();
 
-        smooks.filter(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
+        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
 
         DOMModel nodeModel = DOMModel.getModel(executionContext);
         

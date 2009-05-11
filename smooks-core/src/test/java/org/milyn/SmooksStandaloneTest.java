@@ -104,7 +104,7 @@ public class SmooksStandaloneTest extends TestCase {
 
         ExecutionContext context = smooks.createExecutionContext("message-target1");
         CharArrayWriter writer = new CharArrayWriter();
-        smooks.filter(context, new StreamSource(new ByteArrayInputStream(message.getBytes())), new StreamResult(writer));
+        smooks.filterSource(context, new StreamSource(new ByteArrayInputStream(message.getBytes())), new StreamResult(writer));
 
         assertEquals("Unexpected transformation result", "<zzz><bbb>888</bbb><xxx>999</xxx></zzz>", writer.toString());
     }

@@ -52,7 +52,7 @@ public class Main {
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
             // Filter the input message to extract, using the execution context...
-            smooks.filter(executionContext, new StreamSource(new ByteArrayInputStream(messageIn)), result);
+            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageIn)), result);
 
             return (Order) result.getBean("order");
         } finally {

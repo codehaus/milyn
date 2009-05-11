@@ -20,7 +20,6 @@ import org.milyn.Smooks;
 import org.milyn.StreamFilterType;
 import org.milyn.FilterSettings;
 import org.milyn.payload.StringSource;
-import org.milyn.delivery.Filter;
 import org.milyn.templating.MockOutStreamResource;
 import org.xml.sax.SAXException;
 
@@ -48,7 +47,7 @@ public class RouteToOutputStreamResourceTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("route-to-stream-01.cdrl"));
 
         smooks.setFilterSettings(new FilterSettings(filterType));
-        smooks.filter(new StringSource("<a><c x='cx' /><d><e x='ex' /></d></a>"), null);
+        smooks.filterSource(new StringSource("<a><c x='cx' /><d><e x='ex' /></d></a>"), null);
         assertEquals("<mybean>ex</mybean><mybean>cx</mybean>", new String(MockOutStreamResource.outputStream.toByteArray()));
     }
 
@@ -56,7 +55,7 @@ public class RouteToOutputStreamResourceTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("route-to-stream-02.cdrl"));
 
         smooks.setFilterSettings(new FilterSettings(filterType));
-        smooks.filter(new StringSource("<a><c x='cx' /><d><e x='ex' /></d></a>"), null);
+        smooks.filterSource(new StringSource("<a><c x='cx' /><d><e x='ex' /></d></a>"), null);
         assertEquals("<mybean>cx</mybean><mybean>ex</mybean>", new String(MockOutStreamResource.outputStream.toByteArray()));
     }
 }

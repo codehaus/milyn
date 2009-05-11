@@ -16,6 +16,7 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.assertion.AssertArgument;
+import org.milyn.SmooksException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,8 +25,9 @@ import org.xml.sax.helpers.AttributesImpl;
 
 import javax.xml.namespace.QName;
 import java.io.Writer;
-import java.util.Map;
-import java.util.HashMap;
+import java.io.StringWriter;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Element details as described by the SAX even model API.
@@ -33,17 +35,7 @@ import java.util.HashMap;
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations will be passed
  * an instance of this class for each of the event methods of
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations.
- * <p/>
- * <h3 id="element_cache_object">Element Cache Object</h3>
- * This class supports the concept of a "cache" object which can be get and set through
- * the {@link #getCache(SAXVisitor)} and {@link #setCache(SAXVisitor, Object)} methods.  The cache object can be used by
- * {@link org.milyn.delivery.sax.SAXVisitor} implementations to store information
- * between calls to the {@link org.milyn.delivery.sax.SAXVisitor} event methods.
- * <p/>
- * Obviously we could have implemented this cache as a straightforward {@link java.util.Map},
- * but that forces you to do silly things in situations where you wish to (for example)
- * store a {@link java.util.List}, or a single Object reference of some other type.
- * <p/>
+ * 
  * <h3 id="element-writing">Element Writing/Serialization</h3>
  * Each SAXElement instance has a {@link Writer writer} set on it.
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations can take care of
@@ -75,6 +67,9 @@ public class SAXElement {
     private Attributes attributes;
     private SAXElement parent;
     private Writer writer;
+    private List<SAXText> text;
+    private StringWriter textAccumulator;
+    private String accumulatedText;
 
     /**
      * We use a "level 1" cache so as to avoid creating the HashMap
@@ -177,6 +172,76 @@ public class SAXElement {
 
     private static void thowInvalidNameException(String namespaceURI, String localName, String qName) {
         throw new IllegalArgumentException("Invalid SAXELement name paramaters: namespaceURI='" + namespaceURI + "', localName='" + localName + "', qName='" + qName + "'.");
+    }
+
+    /**
+     * Turn on {@link SAXText text} accumulation for this {@link SAXElement}.
+     * <p/>
+     * For performance reasons, {@link SAXText Text} accumulation is not on by default. 
+     */
+    public void accumulateText() {
+        if(text == null) {
+            text = new ArrayList<SAXText>() {
+                public boolean add(SAXText saxText) {
+                    if(textAccumulator != null) {
+                        // Clear the accumulatedText object so as any subsequent calls to the
+                        // getTextAsString method will recreate the buffer from scratch...
+                        accumulatedText = null;
+                    }
+                    return super.add((SAXText) saxText.clone());
+                }
+            };
+        }
+    }
+
+    /**
+     * Get the child {@link SAXText text} list associated with this {@link SAXElement}.
+     * @return The child {@link SAXText text} list associated with this {@link SAXElement},
+     * or null if this {@link SAXElement} is not {@link #accumulateText() accumulating text}.
+     * @see #accumulateText() 
+     */
+    public List<SAXText> getText() {
+        return text;
+    }
+
+    /**
+     * Get the {@link SAXText} objects associated with this {@link SAXElement},
+     * as an {@link #accumulateText() accumulated} String.
+     * <p/>
+     * This method will produce a string containing all {@link TextType} {@link SAXText}
+     * objects associated with this {@link SAXElement}.  If you need to filter out specific
+     * {@link TextType} {@link SAXText} objects, use the {@link #getText()} method and manually
+     * produce a String.
+     *
+     * @return The {@link SAXText} objects associated with this {@link SAXElement},
+     * as an {@link #accumulateText() accumulated} String.
+     * @throws SmooksException This {@link SAXElement} instance does not have
+     * {@link #accumulateText() text accumulation} turned on.
+     * @see #accumulateText() 
+     */
+    public String getTextAsString() throws SmooksException {
+        if(text == null) {
+            throw new SmooksException("Illegal call to getTextAsString().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText().");
+        }
+
+        if(textAccumulator == null) {
+            textAccumulator = new StringWriter();
+        }
+
+        if(accumulatedText == null) {
+            textAccumulator.getBuffer().setLength(0);
+            for(SAXText textObj : text) {
+                try {
+                    textObj.toWriter(textAccumulator);
+                } catch (IOException e) {
+                    throw new RuntimeException("Unexpected IOException.", e);
+                }
+            }
+
+            accumulatedText = textAccumulator.toString();
+        }
+
+        return accumulatedText;
     }
 
     /**

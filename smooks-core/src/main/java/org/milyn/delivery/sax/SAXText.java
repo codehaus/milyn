@@ -46,6 +46,10 @@ public class SAXText {
     protected SAXText() {
     }
 
+    protected SAXText(String text, TextType type) {
+        setText(text.toCharArray(), 0, text.length(), type);
+    }
+
     public SAXText(char[] characters, int offset, int length, TextType type) {
         setText(characters, offset, length, type);
     }
@@ -122,5 +126,20 @@ public class SAXText {
                 writer.write(';');
             }
         }
+    }
+
+    /**
+     * Clone this SAXText object.
+     * @return A cloned copy of this SAXText object.
+     */
+    protected Object clone() {
+        SAXText clone = new SAXText();
+
+        clone.characters = characters;
+        clone.offset = offset;
+        clone.length = length;
+        clone.type = type;
+
+        return clone;
     }
 }

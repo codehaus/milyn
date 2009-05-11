@@ -56,7 +56,7 @@ public class Main {
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
             JavaResult javaResult = new JavaResult();
-            smooks.filter(executionContext, new StringSource(messageIn), javaResult);
+            smooks.filterSource(executionContext, new StringSource(messageIn), javaResult);
 
             return (List) javaResult.getBean("customerList");
         } finally {

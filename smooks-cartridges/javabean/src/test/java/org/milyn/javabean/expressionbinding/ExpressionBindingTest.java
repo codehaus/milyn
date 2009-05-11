@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
@@ -44,7 +43,7 @@ public class ExpressionBindingTest extends TestCase {
         ExecutionContext executionContext = smooks.createExecutionContext();
         JavaResult result = new JavaResult();
 
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("01_message.xml")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("01_message.xml")), result);
 
         Message message1 = (Message) result.getBean("message1");
         assertEquals(946143900000L, message1.getDate().getTime());

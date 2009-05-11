@@ -98,7 +98,7 @@ public abstract class SmooksUtil {
         String responseBuf = null;
         CharArrayWriter writer = new CharArrayWriter();
         try {
-            smooks.filter(executionContext, new StreamSource(stream), new StreamResult(writer));
+            smooks.filterSource(executionContext, new StreamSource(stream), new StreamResult(writer));
             responseBuf = writer.toString();
         } finally {
             if (stream != null) {

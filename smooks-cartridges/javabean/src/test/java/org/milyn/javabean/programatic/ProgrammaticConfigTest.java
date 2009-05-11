@@ -119,7 +119,7 @@ public class ProgrammaticConfigTest extends TestCase {
 
     private void execute_01_test(Smooks smooks) {
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
 
         Order order = (Order) result.getBean("order");
         int identity = System.identityHashCode(order);
@@ -150,7 +150,7 @@ public class ProgrammaticConfigTest extends TestCase {
         smooks.addVisitor(orderBean);
 
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
 
         Map order = (Map) result.getBean("order");
 
@@ -202,7 +202,7 @@ public class ProgrammaticConfigTest extends TestCase {
         ExecutionContext execContext = smooks.createExecutionContext();
 
         //execContext.setEventListener(new ExecListener());
-        smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+        smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
 
         Order order = (Order) result.getBean("order");
         int identity = System.identityHashCode(order);

@@ -50,6 +50,6 @@ public class ImportTest extends TestCase {
 
     private void testConfig(String config) throws IOException, SAXException {
         Smooks smooks = new Smooks("/org/milyn/cdr/xsd11/importtests/" + config);
-        smooks.filter(new StringSource("<a/>"), null);
+        smooks.filterSource(new StringSource("<a/>"), null);
     }
 }

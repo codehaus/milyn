@@ -28,6 +28,7 @@ import java.io.IOException;
 public class DefaultSAXElementSerializer implements SAXElementVisitor {
 
     private SAXVisitor writerOwner = this;
+    private Object START_WRITTEN_KEY = new Object();
 
     public void setWriterOwner(SAXVisitor writerOwner) {
         this.writerOwner = writerOwner;

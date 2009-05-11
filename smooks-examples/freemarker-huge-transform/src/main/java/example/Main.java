@@ -39,7 +39,7 @@ public class Main
 
         Smooks smooks = new Smooks("smooks-config.xml");
         try {
-            smooks.filter(new StreamSource(new FileInputStream("input-message.xml")), new StreamResult(System.out));
+            smooks.filterSource(new StreamSource(new FileInputStream("input-message.xml")), new StreamResult(System.out));
         } finally {
             smooks.close();
         }

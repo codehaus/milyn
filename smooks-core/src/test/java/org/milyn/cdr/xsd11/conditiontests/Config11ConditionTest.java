@@ -94,7 +94,7 @@ public class Config11ConditionTest extends TestCase {
     private void testConfig(String config, String expected) throws IOException, SAXException {
         Smooks smooks = new Smooks("/org/milyn/cdr/xsd11/conditiontests/" + config);
 
-        smooks.filter(new StringSource("<a/>"), null);
+        smooks.filterSource(new StringSource("<a/>"), null);
         assertEquals(expected, ConditionTestVisitor.messagesUsed.toString());
         ConditionTestVisitor.messagesUsed.clear();
     }

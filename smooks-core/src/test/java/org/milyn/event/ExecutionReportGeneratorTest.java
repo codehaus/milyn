@@ -64,7 +64,7 @@ public class ExecutionReportGeneratorTest extends TestCase {
         StringWriter reportWriter = new StringWriter();
 
         execContext.setEventListener(new FlatReportGenerator(new ReportConfiguration(reportWriter)));
-        smooks.filter(execContext, new StreamSource(getClass().getResourceAsStream("test-data-01.xml")), new StreamResult(new StringWriter()));
+        smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("test-data-01.xml")), new StreamResult(new StringWriter()));
         log.debug(reportWriter);
         return reportWriter.toString();
     }

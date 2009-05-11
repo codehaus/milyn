@@ -20,7 +20,6 @@ import junit.framework.TestCase;
 import org.custommonkey.xmlunit.Diff;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.delivery.dom.DOMParser;
 import org.milyn.edisax.model.EdifactModel;
@@ -34,7 +33,6 @@ import javax.xml.transform.dom.DOMResult;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Hashtable;
 
 /**
@@ -172,7 +170,7 @@ public class SmooksEDIParserTest extends TestCase {
 
         // Create and initialise the Smooks config for the parser...
         smooks.setReaderConfig(new EDIReaderConfigurator(mapping));
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("edi-input.txt")), domResult);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("edi-input.txt")), domResult);
 
 
 		Diff diff = new Diff(expected, XmlUtil.serialize(domResult.getNode().getChildNodes()));

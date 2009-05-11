@@ -18,7 +18,6 @@ package org.milyn.cdr.xsd11.extensiontests;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.delivery.ContentDeliveryConfig;
-import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -52,7 +51,7 @@ public class XSD11ExtendTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config_01.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b/><c/><d/></a>"), result);
+        smooks.filterSource(new StringSource("<a><b/><c/><d/></a>"), result);
         assertEquals("<a><c></c><c></c><d></d></a>", result.getResult());
     }
 
@@ -60,7 +59,7 @@ public class XSD11ExtendTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config_02.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b/><c/></a>"), result);
+        smooks.filterSource(new StringSource("<a><b/><c/></a>"), result);
         assertEquals("<a><c></c><b></b></a>", result.getResult());
     }
 

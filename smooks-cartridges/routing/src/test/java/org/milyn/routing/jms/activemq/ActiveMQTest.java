@@ -102,7 +102,7 @@ public class ActiveMQTest {
         try {
             smooks.setFilterSettings(filterSettings);
             listener.getMessages().clear();
-            smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+            smooks.filterSource(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
 
             // wait to make sure all messages get delivered...
             Thread.sleep(500);

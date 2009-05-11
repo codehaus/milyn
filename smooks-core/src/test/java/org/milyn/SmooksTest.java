@@ -103,7 +103,7 @@ public class SmooksTest extends TestCase {
         assertTrue(contextClassLoader == Thread.currentThread().getContextClassLoader());
 
         classLoader.requests.clear();
-        smooks.filter(execCtx, new StringSource("<a/>"), result);
+        smooks.filterSource(execCtx, new StringSource("<a/>"), result);
         assertEquals("<b></b>", result.getResult());
         //assertTrue(classLoader.requests.contains(XIncludeParserConfiguration.class.getName()));
         assertTrue(contextClassLoader == Thread.currentThread().getContextClassLoader());
@@ -117,7 +117,7 @@ public class SmooksTest extends TestCase {
         smooks.addVisitor(visitor1, "c/xxx");
         smooks.addVisitor(visitor2, "c");
 
-        smooks.filter(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
+        smooks.filterSource(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
 
         assertEquals(2, visitor1.callCount);
         assertEquals(1, visitor2.callCount);
@@ -131,7 +131,7 @@ public class SmooksTest extends TestCase {
         smooks.addVisitor(visitor1, "c/xxx");
         smooks.addVisitor(visitor2, "c");
 
-        smooks.filter(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
+        smooks.filterSource(new StringSource("<a><xxx/><xxx/><c><xxx/><xxx/></c></a>"));
 
         assertEquals(2, visitor1.callCount);
         assertEquals(1, visitor2.callCount);

@@ -109,7 +109,7 @@ public class PayloadProcessor {
         }
 
         // Filter it through Smooks...
-        smooks.filter(executionContext, source, result);
+        smooks.filterSource(executionContext, source, result);
 
         // Extract the result...
         if (result instanceof JavaResult) {

@@ -70,7 +70,7 @@ public class EntityDeleterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toDelete1", toDelete1);
 
-            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
+            smooks.filterSource(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).delete(same(toDelete1));
         } finally {
@@ -96,7 +96,7 @@ public class EntityDeleterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toDelete1", toDelete1);
 
-            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
+            smooks.filterSource(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).delete(same(toDelete1));
         } finally {
@@ -123,7 +123,7 @@ public class EntityDeleterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toDelete1", toDelete1);
 
-            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
+            smooks.filterSource(executionContext, new StringSource(SIMPLE_XML), result);
 
             assertSame(deleted1, result.getBean("deleted1"));
         } finally {
@@ -146,7 +146,7 @@ public class EntityDeleterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toDelete1", toDelete1);
 
-            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
+            smooks.filterSource(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(mappedDao).delete(eq("delete1"), same(toDelete1));
         } finally {
@@ -169,7 +169,7 @@ public class EntityDeleterTest extends BaseTestCase {
             JavaResult result = new JavaResult();
             result.getResultMap().put("toDelete1", toDelete1);
 
-            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
+            smooks.filterSource(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).delete(same(toDelete1));
         } finally {
@@ -190,7 +190,7 @@ public class EntityDeleterTest extends BaseTestCase {
             enableReporting(executionContext, "report_test_entity_delete_producer_consumer.html");
 
             JavaResult result = new JavaResult();
-            smooks.filter(executionContext, new StringSource(SIMPLE_XML), result);
+            smooks.filterSource(executionContext, new StringSource(SIMPLE_XML), result);
 
             verify(dao).delete(same((String)result.getBean("toDelete")));
         } finally {

@@ -383,6 +383,9 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     private void _characters(char[] ch, int start, int length) {
+
+        textWrapper.setText(ch, start, length, currentTextType);
+
         if(currentProcessor != null && !currentProcessor.isNullProcessor) {
             if(currentProcessor.elementVisitorConfig != null) {
                 List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
@@ -394,7 +397,6 @@ public class SAXHandler extends DefaultHandler2 {
                         ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
                         try {
                             if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                                textWrapper.setText(ch, start, length, currentTextType);
                                 mapping.getContentHandler().onChildText(currentProcessor.element, textWrapper, execContext);
                             }
                         } catch(Throwable t) {
@@ -407,7 +409,6 @@ public class SAXHandler extends DefaultHandler2 {
 
             if(defaultSerializationOn && applyDefaultSerialization()) {
                 try {
-                    textWrapper.setText(ch, start, length, currentTextType);
                     defaultSerializer.onChildText(currentProcessor.element, textWrapper, execContext);
                 } catch (IOException e) {
                     throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
@@ -420,13 +421,18 @@ public class SAXHandler extends DefaultHandler2 {
         if(!dynamicChildVisitors.isEmpty()) {
             for (SAXVisitChildren dynamicChildVisitor : dynamicChildVisitors) {
                 try {
-                    textWrapper.setText(ch, start, length, currentTextType);
                     dynamicChildVisitor.onChildText(currentProcessor.element, textWrapper, execContext);
                 } catch(Throwable t) {
                     String errorMsg = "Error in '" + dynamicChildVisitor.getClass().getName() + "' while processing the onChildText event.";
                     processVisitorException(t, errorMsg);
                 }
             }
+        }
+
+        // Accumulate the text...
+        List<SAXText> saxTextObjects = currentProcessor.element.getText();
+        if(saxTextObjects != null) {
+            saxTextObjects.add(textWrapper);
         }
     }
 

@@ -85,6 +85,28 @@ public class SmooksResourceConfigurationTest extends TestCase {
         assertTrue(!rc7.isTargetedAtElementContext(e));
     }
 
+    public void test_isTargetedAtElement_DOM_with_Attribute() {
+        Document doc = DomUtil.parse("<a><b><c><d><e/></d></c></b></a>");
+        Element e = (Element) XmlUtil.getNode(doc, "a/b/c/d/e");
+
+        // Check with an attribute on the selector....
+        SmooksResourceConfiguration rc8 = new SmooksResourceConfiguration("e/@attrib1", "blah");
+        SmooksResourceConfiguration rc9 = new SmooksResourceConfiguration("a/b/c/d/e/@attrib1", "blah");
+        SmooksResourceConfiguration rc10 = new SmooksResourceConfiguration("/c/d/e/@attrib1", "blah");
+
+        assertEquals("e", rc8.getTargetElement());
+        assertEquals("attrib1", rc8.getTargetAttribute());
+        assertTrue(rc8.isTargetedAtElementContext(e));
+
+        assertEquals("e", rc9.getTargetElement());
+        assertEquals("attrib1", rc9.getTargetAttribute());
+        assertTrue(rc9.isTargetedAtElementContext(e));
+
+        assertEquals("e", rc10.getTargetElement());
+        assertEquals("attrib1", rc10.getTargetAttribute());
+        assertTrue(!rc10.isTargetedAtElementContext(e));
+    }
+
     public void test_isTargetedAtElement_DOM_wildcards() {
         Document doc = DomUtil.parse("<a><b><c><d><e/></d></c></b></a>");
         Element e = (Element) XmlUtil.getNode(doc, "a/b/c/d/e");
@@ -262,6 +284,27 @@ public class SmooksResourceConfigurationTest extends TestCase {
         assertTrue(rc3.isTargetedAtElementContext(e));
         assertTrue(rc4.isTargetedAtElementContext(e));
         assertTrue(!rc5.isTargetedAtElementContext(e));
+    }
+
+    public void test_isTargetedAtElement_SAX_with_Attribute() {
+        SAXElement e = buildE_rooted();
+
+        // Check with an attribute on the selector....
+        SmooksResourceConfiguration rc8 = new SmooksResourceConfiguration("e/@attrib1", "blah");
+        SmooksResourceConfiguration rc9 = new SmooksResourceConfiguration("a/b/c/a/d/e/@attrib1", "blah");
+        SmooksResourceConfiguration rc10 = new SmooksResourceConfiguration("/a/d/e/@attrib1", "blah");
+
+        assertEquals("e", rc8.getTargetElement());
+        assertEquals("attrib1", rc8.getTargetAttribute());
+        assertTrue(rc8.isTargetedAtElementContext(e));
+
+        assertEquals("e", rc9.getTargetElement());
+        assertEquals("attrib1", rc9.getTargetAttribute());
+        assertTrue(rc9.isTargetedAtElementContext(e));
+
+        assertEquals("e", rc10.getTargetElement());
+        assertEquals("attrib1", rc10.getTargetAttribute());
+        assertTrue(!rc10.isTargetedAtElementContext(e));
     }
 
     private SAXElement buildE() {

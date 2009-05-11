@@ -52,7 +52,7 @@ public class ValidatorFunctionTest
             final StringResult result = new StringResult();
             final ValidationResult validationResult = new ValidationResult();
 
-            smooks.filter(context, new StringSource(xml), result, validationResult);
+            smooks.filterSource(context, new StringSource(xml), result, validationResult);
 
             final List<RuleEvalResult> warnings = validationResult.getWarnings();
 

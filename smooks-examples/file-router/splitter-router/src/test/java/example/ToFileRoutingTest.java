@@ -152,7 +152,7 @@ public class ToFileRoutingTest extends TestCase {
                 //execCtx.setEventListener(new HtmlReportGenerator("/zap/x.html"));
                 smooks.setFilterSettings(new FilterSettings(filterType));
                 running = true;
-                smooks.filter(execCtx, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
+                smooks.filterSource(execCtx, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
             } finally {
                 smooks.close();
             }
