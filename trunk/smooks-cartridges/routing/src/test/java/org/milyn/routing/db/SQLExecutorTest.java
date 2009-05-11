@@ -127,11 +127,11 @@ public class SQLExecutorTest
         ExecutionContext execContext = smooks.createExecutionContext();
         BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
-        smooks.filter(execContext, new StringSource("<doc/>"), null);
+        smooks.filterSource(execContext, new StringSource("<doc/>"), null);
         List orders11 = (List) beanRepository.getBean("orders1");
         List orders12 = (List) beanRepository.getBean("orders2");
 
-        smooks.filter(execContext, new StringSource("<doc/>"), null);
+        smooks.filterSource(execContext, new StringSource("<doc/>"), null);
         List orders21 = (List) beanRepository.getBean("orders1");
         List orders22 = (List) beanRepository.getBean("orders2");
 
@@ -141,14 +141,14 @@ public class SQLExecutorTest
         // timeout the cached resultset...
         Thread.sleep(2050);
 
-        smooks.filter(execContext, new StringSource("<doc/>"), null);
+        smooks.filterSource(execContext, new StringSource("<doc/>"), null);
         List orders31 = (List) beanRepository.getBean("orders1");
         List orders32 = (List) beanRepository.getBean("orders2");
 
         assertTrue(orders11 != orders31);
         assertTrue(orders12 != orders32); // order12 shouldn't come from the app context cache - timed out ala TTL
 
-        smooks.filter(execContext, new StringSource("<doc/>"), null);
+        smooks.filterSource(execContext, new StringSource("<doc/>"), null);
         List orders41 = (List) beanRepository.getBean("orders1");
         List orders42 = (List) beanRepository.getBean("orders2");
 
@@ -165,7 +165,7 @@ public class SQLExecutorTest
             ExecutionContext execContext = smooks.createExecutionContext();
             BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
-            smooks.filter(execContext, new StringSource("<doc/>"), null);
+            smooks.filterSource(execContext, new StringSource("<doc/>"), null);
             Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
 
             assertEquals("{ORDERNUMBER=2, CUSTOMERNUMBER=2, PRODUCTCODE=456}", myOrder.toString());
@@ -184,7 +184,7 @@ public class SQLExecutorTest
             ExecutionContext execContext = smooks.createExecutionContext();
             BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
-            smooks.filter(execContext, new StringSource("<doc/>"), null);
+            smooks.filterSource(execContext, new StringSource("<doc/>"), null);
             Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
 
             assertEquals(null, myOrder);
@@ -206,7 +206,7 @@ public class SQLExecutorTest
 
             beanRepository.addBean(requiredOrderNumId, 9999);
             try {
-                smooks.filter(execContext, new StringSource("<doc/>"), null);
+                smooks.filterSource(execContext, new StringSource("<doc/>"), null);
                 fail("Expected DataSelectionException");
             } catch(SmooksException e) {
                 assertEquals("Order with ORDERNUMBER=9999 not found in Database", e.getCause().getMessage());

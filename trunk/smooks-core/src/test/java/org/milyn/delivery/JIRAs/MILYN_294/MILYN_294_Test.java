@@ -40,7 +40,7 @@ public class MILYN_294_Test extends TestCase {
         smooks.addVisitor(new ProcessorVisitor1(), "a");
 
         try {
-            smooks.filter(new StringSource("<a/>"));
+            smooks.filterSource(new StringSource("<a/>"));
             fail("Expected SmooksException.");
         } catch (SmooksException e) {
             assertEquals("The configured Filter ('SAX') cannot be used with the specified set of Smooks visitors.  The 'DOM' Filter is the only filter that can be used for this set of Visitors.  Turn on Debug logging for more information.", e.getMessage());
@@ -57,7 +57,7 @@ public class MILYN_294_Test extends TestCase {
         smooks.addVisitor(new SAXVisitor01(), "a");
 
         try {
-            smooks.filter(new StringSource("<a/>"));
+            smooks.filterSource(new StringSource("<a/>"));
             fail("Expected SmooksException.");
         } catch (SmooksException e) {
             assertEquals("The configured Filter ('DOM') cannot be used with the specified set of Smooks visitors.  The 'SAX' Filter is the only filter that can be used for this set of Visitors.  Turn on Debug logging for more information.", e.getMessage());

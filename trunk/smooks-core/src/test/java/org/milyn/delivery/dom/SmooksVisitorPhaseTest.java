@@ -82,7 +82,7 @@ public class SmooksVisitorPhaseTest extends TestCase {
 
         // Filter the input message to the outputWriter, using the execution context...
         executionContext.setEventListener(eventListener);
-        smooks.filter(executionContext, new StreamSource(getClass().getResourceAsStream("testxml1.xml")), new StreamResult(outputWriter));
+        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("testxml1.xml")), new StreamResult(outputWriter));
 
         log.debug(outputWriter.toString());
         byte[] expected = StreamUtils.readStream(getClass().getResourceAsStream("testxml1-expected.xml"));

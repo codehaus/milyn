@@ -38,7 +38,7 @@ public class StaticVariableBinderTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("staticvar-config.xml"));
         ExecutionContext execContext = smooks.createExecutionContext();
 
-        smooks.filter(execContext, new StreamSource(new StringReader("<x/>")), null);
+        smooks.filterSource(execContext, new StreamSource(new StringReader("<x/>")), null);
 
         Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(execContext).getBeanMap();
 

@@ -39,7 +39,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-01.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
     }
 
@@ -47,7 +47,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-01.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
     }
 
@@ -56,7 +56,7 @@ public class ScriptedVisitorTest extends TestCase {
         StringResult result = new StringResult();
 
         try {
-            smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+            smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
             fail("Expected SmooksException.");
         } catch(SmooksException e) {
             assertEquals("Unable to filter InputStream for target profile [org.milyn.profile.Profile#default_profile].", e.getMessage());
@@ -68,7 +68,7 @@ public class ScriptedVisitorTest extends TestCase {
         StringResult result = new StringResult();
 
         try {
-            smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+            smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
             fail("Expected SmooksException.");
         } catch(SmooksException e) {
             assertEquals("Unable to filter InputStream for target profile [org.milyn.profile.Profile#default_profile].", e.getMessage());
@@ -79,7 +79,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-03.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
     }
 
@@ -87,7 +87,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-03.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><xxx newElementAttribute=\"1234\"></xxx></b></a>", result.getResult());
     }
 
@@ -95,7 +95,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-04.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><c><car make=\"Holden\" name=\"HSV Maloo\" year=\"2006\"><country>Australia</country><record type=\"speed\">Production Pickup Truck with speed of 271kph</record></car><car make=\"Peel\" name=\"P50\" year=\"1962\"><country>Isle of Man</country><record type=\"size\">Smallest Street-Legal Car at 99cm wide and 59 kg in weight</record></car><car make=\"Bugatti\" name=\"Royale\" year=\"1931\"><country>France</country><record type=\"price\">Most Valuable Car at $15 million</record></car></c></b></a>", result.getResult());
     }
 
@@ -103,7 +103,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-04.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><c><car make=\"Holden\" name=\"HSV Maloo\" year=\"2006\"><country>Australia</country><record type=\"speed\">Production Pickup Truck with speed of 271kph</record></car><car make=\"Peel\" name=\"P50\" year=\"1962\"><country>Isle of Man</country><record type=\"size\">Smallest Street-Legal Car at 99cm wide and 59 kg in weight</record></car><car make=\"Bugatti\" name=\"Royale\" year=\"1931\"><country>France</country><record type=\"price\">Most Valuable Car at $15 million</record></car></c></b></a>", result.getResult());
     }
 
@@ -111,7 +111,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-05.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource(shoppingList), result);
+        smooks.filterSource(new StringSource(shoppingList), result);
         assertEquals(
                 "<shopping>\n" +
                 "    <category type=\"groceries\">\n" +
@@ -133,7 +133,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-05.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource(shoppingList), result);
+        smooks.filterSource(new StringSource(shoppingList), result);
         assertEquals(
                 "<shopping>\n" +
                 "    <category type=\"groceries\">\n" +
@@ -155,7 +155,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-06.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><newElX newElementAttribute=\"1234\"></newElX></b></a>", result.getResult());
     }
 
@@ -163,14 +163,14 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-07.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
     }
 
     public void test_templated_ext_08() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-08.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a><b><c/></b></a>"), result);
+        smooks.filterSource(new StringSource("<a><b><c/></b></a>"), result);
         assertEquals("<a><b><xxx/></b></a>", result.getResult());
     }
 
@@ -178,7 +178,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-09.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource(shoppingList), result);
+        smooks.filterSource(new StringSource(shoppingList), result);
         assertTrue(StreamUtils.compareCharStreams(
                 "<shopping>\n" +
                 "    <category type=\"groceries\">\n" +
@@ -201,7 +201,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-10.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource(shoppingList), result);
+        smooks.filterSource(new StringSource(shoppingList), result);
         assertTrue(StreamUtils.compareCharStreams(
                 "<shopping>\n" +
                 "    <category type=\"groceries\"><item>Chocolate</item><item>Coffee</item></category>\n" +
@@ -215,7 +215,7 @@ public class ScriptedVisitorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("scripted-ext-11.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource(shoppingList), result);
+        smooks.filterSource(new StringSource(shoppingList), result);
         assertEquals("<category type=\"supplies\"><item>Paper</item><item quantity=\"6\">Pens</item></category>", result.getResult());
     }
 
@@ -234,7 +234,7 @@ public class ScriptedVisitorTest extends TestCase {
         JavaResult result = new JavaResult();
 
         smooks.setFilterSettings(new FilterSettings(filterType));
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order-message.xml")), result);
         Map orderItems = (Map) result.getBean("orderItems");
         Map orderItem;
 

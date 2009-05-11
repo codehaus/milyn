@@ -40,7 +40,7 @@ public class BeanResultCleanupTest extends TestCase {
         JavaResult result = new JavaResult();
 
         smooks.setFilterSettings(new FilterSettings(filterType));
-        smooks.filter(new StringSource("<root><a><b>1</b></a></root>"), result);
+        smooks.filterSource(new StringSource("<root><a><b>1</b></a></root>"), result);
         assertNotNull(result.getBean("root"));
         assertNull(result.getBean("a"));
         assertNull(result.getBean("b"));

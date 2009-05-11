@@ -35,7 +35,7 @@ public class ListOfListsTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("list-of-lists-config.xml"));
         JavaResult javaResult = new JavaResult();
 
-        smooks.filter(smooks.createExecutionContext(), new StreamSource(getClass().getResourceAsStream("list-of-lists-message.xml")), javaResult);
+        smooks.filterSource(smooks.createExecutionContext(), new StreamSource(getClass().getResourceAsStream("list-of-lists-message.xml")), javaResult);
         assertEquals(getExpectedOrderArray(), javaResult.getBean("order"));
     }
     

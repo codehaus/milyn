@@ -55,7 +55,7 @@ public class Main
             //executionContext.setEventListener(new HtmlReportGenerator("target/report.html"));
 
             //	perform the transform
-            smooks.filter(executionContext, source, result);
+            smooks.filterSource(executionContext, source, result);
 
             //	display the output from the transform
             System.out.println( LINE_SEP );

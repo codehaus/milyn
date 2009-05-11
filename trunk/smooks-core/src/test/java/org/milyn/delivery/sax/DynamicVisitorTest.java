@@ -31,7 +31,7 @@ public class DynamicVisitorTest extends TestCase {
         StringSource source = new StringSource("<a><b><c>c1</c><d>c2</d><e>c3</e></b></a>");
 
         SmooksUtil.registerResource(new SmooksResourceConfiguration("b", DynamicVisitorLoader.class.getName()), smooks);
-        smooks.filter(source);
+        smooks.filterSource(source);
 
         assertEquals("<b><c>c1</c><d>c2</d><e>c3</e></b>", DynamicVisitorLoader.visitor.stuff.toString());
     }

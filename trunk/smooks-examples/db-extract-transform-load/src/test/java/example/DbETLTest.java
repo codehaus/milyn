@@ -68,7 +68,7 @@ public class DbETLTest extends TestCase {
 
             try {
                 long start = System.currentTimeMillis();
-                smooks.filter(smooks.createExecutionContext(), new StreamSource(reader), null);
+                smooks.filterSource(smooks.createExecutionContext(), new StreamSource(reader), null);
                 System.out.println("Took: " + (System.currentTimeMillis() - start));
             } finally {
                 reader.close();

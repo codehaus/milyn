@@ -101,13 +101,13 @@ public class XslContentHandlerFactoryTest extends TestCase {
 
         input = new StringReader("<a><b><c/></b></a>");
         context = smooks.createExecutionContext();
-        smooks.filter(context, new StreamSource(input), null);
+        smooks.filterSource(context, new StreamSource(input), null);
 
         assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         input = new StringReader("<c/>");
         context = smooks.createExecutionContext();
-        smooks.filter(context, new StreamSource(input), null);
+        smooks.filterSource(context, new StreamSource(input), null);
         assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
@@ -115,7 +115,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-01.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a/>"), result);
+        smooks.filterSource(new StringSource("<a/>"), result);
         assertEquals("<xxxxxx></xxxxxx>", result.getResult());
     }
 
@@ -123,7 +123,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-xsl.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a name='kalle'/>"), result);
+        smooks.filterSource(new StringSource("<a name='kalle'/>"), result);
         assertEquals("<x>kalle</x>", result.getResult());
     }
 
@@ -131,7 +131,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-02.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a/>"), result);
+        smooks.filterSource(new StringSource("<a/>"), result);
         assertEquals("Hi there!", result.getResult());
     }
 
@@ -139,7 +139,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("inline-03.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StringSource("<a/>"), result);
+        smooks.filterSource(new StringSource("<a/>"), result);
         assertEquals("<xxxxxx></xxxxxx>", result.getResult());
     }
 
@@ -147,7 +147,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("bad-xsl-config.xml"));
 
         try {
-            smooks.filter(smooks.createExecutionContext(), new StreamSource(new StringReader("<doc/>")), null);
+            smooks.filterSource(smooks.createExecutionContext(), new StreamSource(new StringReader("<doc/>")), null);
             fail("Expected SmooksConfigurationException.");
         } catch(SmooksConfigurationException e) {
             assertEquals("Error loading Templating resource: Target Profile: [[org.milyn.profile.profile#default_profile]], Selector: [$document], Selector Namespace URI: [null], Resource: [/org/milyn/templating/xslt/bad-stylesheet.xsl], Num Params: [0]", e.getCause().getMessage());

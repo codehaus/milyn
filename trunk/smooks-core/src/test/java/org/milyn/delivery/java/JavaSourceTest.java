@@ -70,7 +70,7 @@ public class JavaSourceTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-eventstream-off.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new JavaSource(new MyBean1()), result);
+        smooks.filterSource(new JavaSource(new MyBean1()), result);
         assertEquals("<nullsource-document></nullsource-document>", result.getResult());
     }
 
@@ -82,7 +82,7 @@ public class JavaSourceTest extends TestCase {
         // Turn streaming off via the JavaSource...
         javaSource.setEventStreamRequired(false);
 
-        smooks.filter(javaSource, result);
+        smooks.filterSource(javaSource, result);
         assertEquals("<nullsource-document></nullsource-document>", result.getResult());
     }
 
@@ -90,7 +90,7 @@ public class JavaSourceTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-eventstream-on.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new JavaSource(new MyBean1()));
+        smooks.filterSource(new JavaSource(new MyBean1()));
         assertNotSame("<nullsource-document></nullsource-document>", result.getResult());
     }
 
@@ -103,7 +103,7 @@ public class JavaSourceTest extends TestCase {
         javaSource.setEventStreamRequired(false);
 
         try {
-            smooks.filter(javaSource);
+            smooks.filterSource(javaSource);
         } catch(SmooksException e) {
             assertEquals("Invalid Smooks configuration.  Feature '" + JavaSource.FEATURE_GENERATE_EVENT_STREAM + "' is explicitly configured 'on' in the Smooks configuration, while the supplied JavaSource has explicitly configured event streaming to be off (through a call to JavaSource.setEventStreamRequired).", e.getCause().getMessage());
         }
@@ -115,7 +115,7 @@ public class JavaSourceTest extends TestCase {
         JavaSource source = new JavaSource(sourceObjects);
         StringWriter result = new StringWriter();
 
-        smooks.filter(execContext, source, new StreamResult(result));
+        smooks.filterSource(execContext, source, new StreamResult(result));
         assertEquals(expected, result.toString());
     }
 

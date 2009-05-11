@@ -187,6 +187,14 @@ public class SmooksResourceConfiguration {
     private String[] contextualSelector;
     private boolean isContextualSelector;
     /**
+     * The name of the target element specified on the selector.
+     */
+    private String targetElement;
+    /**
+     * The name of an attribute, if one is specified on the selector.
+     */                                                              
+    private String targetAttribute;
+    /**
      * Target profile.
      */
     private String targetProfile;
@@ -309,6 +317,8 @@ public class SmooksResourceConfiguration {
 
         clone.selector = selector;
         clone.contextualSelector = contextualSelector;
+        clone.targetElement = targetElement;
+        clone.targetAttribute = targetAttribute;
         clone.isContextualSelector = isContextualSelector;
         clone.targetProfile = targetProfile;
         clone.defaultResource = defaultResource;
@@ -367,6 +377,8 @@ public class SmooksResourceConfiguration {
         }
         isXmlDef = selector.startsWith(XML_DEF_PREFIX);
         contextualSelector = parseSelector(selector);
+        targetElement = extractTargetElement(contextualSelector);
+        targetAttribute = extractTargetAttribute(contextualSelector);
         isContextualSelector = (contextualSelector.length > 1);
     }
 
@@ -512,11 +524,16 @@ public class SmooksResourceConfiguration {
      * @return The target XML element name.
      */
     public String getTargetElement() {
-        if (contextualSelector != null) {
-            return contextualSelector[contextualSelector.length - 1];
-        } else {
-            return null;
-        }
+        return targetElement;
+    }
+
+    /**
+     * Get the name of the attribute specified on the selector, if one was
+     * specified.
+     * @return An attribute name, if one was specified on the selector, otherwise null.
+     */
+    public String getTargetAttribute() {
+        return targetAttribute;
     }
 
     /**
@@ -1052,6 +1069,9 @@ public class SmooksResourceConfiguration {
         }
 
         index.i = contextualSelector.length - 1;
+        if(contextualSelector[index.i].charAt(0) == '@') {
+            index.i = contextualSelector.length - 2;
+        }
 
         // Check the element name(s).
         while (index.i >= 0) {
@@ -1101,6 +1121,9 @@ public class SmooksResourceConfiguration {
         }
 
         index.i = contextualSelector.length - 1;
+        if(contextualSelector[index.i].charAt(0) == '@') {
+            index.i = contextualSelector.length - 2;
+        }
 
         // Check the element name(s).
         while (index.i >= 0) {
@@ -1320,6 +1343,32 @@ public class SmooksResourceConfiguration {
         }
 
         return properties;
+    }
+
+    private String extractTargetElement(String[] contextualSelector) {
+        if (contextualSelector != null) {
+            String token = contextualSelector[contextualSelector.length - 1];
+            if(token.startsWith("@")) {
+                if(contextualSelector.length > 1) {
+                    token = contextualSelector[contextualSelector.length - 2];
+                }
+            }
+            return token;
+        } else {
+            return null;
+        }
+    }
+
+    public static String extractTargetAttribute(String[] selectorTokens) {
+        StringBuffer selectorProp = new StringBuffer();
+
+        for (String selectorToken : selectorTokens) {
+            if (selectorToken.trim().startsWith("@")) {
+                selectorProp.append(selectorToken.substring(1));
+            }
+        }
+
+        return selectorProp.toString();
     }
 
     private class Index {

@@ -33,7 +33,7 @@ public class MILYN285Test extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
         StringResult result = new StringResult();
 
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("message.xml")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("message.xml")), result);
         XMLUnit.compareXML("<root>\n" +
                 "\t<abc>def</abc>\n" +
                 "\t<bla>\n" +

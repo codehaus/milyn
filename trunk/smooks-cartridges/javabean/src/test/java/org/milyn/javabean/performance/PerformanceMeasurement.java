@@ -90,7 +90,7 @@ public class PerformanceMeasurement {
 
 		beginTime = System.currentTimeMillis();
 
-		smooks.filter(executionContext, new StreamSource(new InputStreamReader(new FileInputStream(warmupFile))), result);
+		smooks.filterSource(executionContext, new StreamSource(new InputStreamReader(new FileInputStream(warmupFile))), result);
 
 		endTime = System.currentTimeMillis();
 
@@ -98,7 +98,7 @@ public class PerformanceMeasurement {
 
 		beginTime = System.currentTimeMillis();
 
-		smooks.filter(executionContext, new StreamSource(new InputStreamReader(new FileInputStream(inFile))), result);
+		smooks.filterSource(executionContext, new StreamSource(new InputStreamReader(new FileInputStream(inFile))), result);
 
 		endTime = System.currentTimeMillis();
 

@@ -46,7 +46,7 @@ public class RulesProviderFactoryTest
         final StringSource source = new StringSource("<order></order>");
         final StringResult result = new StringResult();
 
-        smooks.filter(source, result);
+        smooks.filterSource(source, result);
 
         final Map<String, RuleProvider> ruleProviders = RuleProviderAccessor.getRuleProviders(smooks.getApplicationContext());
 

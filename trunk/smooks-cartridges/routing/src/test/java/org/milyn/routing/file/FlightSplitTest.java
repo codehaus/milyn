@@ -40,7 +40,7 @@ public class FlightSplitTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("flight-split.xml"));
 
         try {
-            smooks.filter(new StreamSource(getClass().getResourceAsStream("flight.xml")));
+            smooks.filterSource(new StreamSource(getClass().getResourceAsStream("flight.xml")));
         } finally {
             smooks.close();
         }

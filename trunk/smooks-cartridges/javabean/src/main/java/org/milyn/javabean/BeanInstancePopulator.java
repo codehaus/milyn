@@ -65,7 +65,7 @@ import java.util.*;
 @VisitAfterReport(condition = "!parameters.containsKey('wireBeanIdName')",
         summary = "Populating <b>${resource.parameters.beanId}</b> with a value from this element.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
-public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisitor, Producer, Consumer {
+public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer, Consumer {
 
     private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);
 
@@ -250,23 +250,18 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     	checkBeanExists(executionContext);
 
+        if (!isAttribute) {
+            // It's not an attribute binding i.e. it's the element's text.
+            // Turn on Text Accumulation...
+            element.accumulateText();
+        }
+
         if(beanWiring) {
         	bindBeanValue(executionContext);
-        } else if(!beanWiring && !isAttribute) {
-            element.setCache(this, new TrackedStringWriter());
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
         }
-    }
-
-    public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-        if(!beanWiring && !isAttribute) {
-            childText.toWriter((Writer) element.getCache(this));
-        }
-    }
-
-    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -322,7 +317,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXElementVisit
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            dataString = element.getCache(this).toString();
+            dataString = element.getTextAsString();
         }
 
         String mapPropertyName;

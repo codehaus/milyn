@@ -76,7 +76,7 @@ import org.w3c.dom.Element;
 		summary = "<#if resource.parameters.wireBeanId??>Removing bean lifecycle observer for the bean under the beanId '${resource.parameters.wireBeanId}'." +
 		"<#else>Populating <#if resource.parameters.name??>the '${resource.parameters.name}'</#if> parameter " +
 		"from <#if resource.parameters.expression??>an expression<#else>this element.</#if></#if>.")
-public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElementVisitor, Consumer, Producer  {
+public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Consumer, Producer  {
 
 	private static Log logger = LogFactory.getLog(EntityLocatorParameterVisitor.class);
 
@@ -188,23 +188,19 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+
+        if (!isAttribute) {
+            // It's not an attribute binding i.e. it's the element's text.
+            // Turn on Text Accumulation...
+            element.accumulateText();
+        }
+
         if(beanWiring) {
         	bindBeanValue(executionContext);
-        } else if(!beanWiring && !isAttribute) {
-            element.setCache(this, new TrackedStringWriter());
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
         }
-    }
-
-    public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-        if(!beanWiring && !isAttribute) {
-            childText.toWriter((Writer) element.getCache(this));
-        }
-    }
-
-    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -226,7 +222,6 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
             dataString = DomUtils.getAllText(element, false);
         }
 
-
         if(expression != null) {
             bindExpressionValue(executionContext);
         } else {
@@ -240,7 +235,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXElem
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            dataString = element.getCache(this).toString();
+            dataString = element.getTextAsString();
         }
 
 

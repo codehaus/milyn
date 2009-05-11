@@ -108,7 +108,7 @@ public class FileOutputStreamResourceTest
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config-01.xml"));
 
         try {
-            smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+            smooks.filterSource(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
 
             assertEquals("1", getFileContents(file1));
             assertEquals("2", getFileContents(file2));
@@ -129,7 +129,7 @@ public class FileOutputStreamResourceTest
             smooks.addVisitor(new FreeMarkerTemplateProcessor(new TemplatingConfiguration("${object.a}").setUsage(OutputTo.stream("fileOS"))), "a");
             smooks.addVisitor(new FileOutputStreamResource().setFileNamePattern("${object.a}.xml").setDestinationDirectoryPattern("target/config-01-test/${object.a}").setResourceName("fileOS"), "a");
 
-            smooks.filter(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
+            smooks.filterSource(new StringSource("<root><a>1</a><a>2</a><a>3</a></root>"));
 
             assertEquals("1", getFileContents(file1));
             assertEquals("2", getFileContents(file2));

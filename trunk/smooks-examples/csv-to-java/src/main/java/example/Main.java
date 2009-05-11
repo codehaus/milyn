@@ -47,7 +47,7 @@ public class Main {
             // Configure the execution context to generate a report...
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-            smooks.filter(executionContext, new StringSource(messageIn), result);
+            smooks.filterSource(executionContext, new StringSource(messageIn), result);
 
             return (List) result.getBean("customerList");
         } finally {

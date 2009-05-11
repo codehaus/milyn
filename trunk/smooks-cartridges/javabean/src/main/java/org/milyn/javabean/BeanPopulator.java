@@ -147,6 +147,7 @@ import java.util.*;
  *
  * @author tfennelly
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @deprecated Use the XSD based configuration.
  */
 public class BeanPopulator implements ConfigurationExpander {
 
@@ -289,7 +290,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
         // Extract the binding config properties from the selector and property values...
         String[] selectorTokens = SmooksResourceConfiguration.parseSelector(selector);
-        String attributeNameProperty = SelectorPropertyResolver.getAttributeNameProperty(selectorTokens);
+        String attributeNameProperty = SmooksResourceConfiguration.extractTargetAttribute(selectorTokens);
         String selectorProperty = SelectorPropertyResolver.getSelectorProperty(selectorTokens);
 
         // Construct the configuraton...

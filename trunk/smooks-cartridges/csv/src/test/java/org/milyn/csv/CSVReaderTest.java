@@ -71,13 +71,13 @@ public class CSVReaderTest extends TestCase {
 
 		csvMessage = "Tom Fennelly,Ireland";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        smooks.filter(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
+        smooks.filterSource(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
         assertEquals("Tom Fennelly", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
 		assertEquals("Ireland", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
 
 		csvMessage = "Tom Fennelly,Ireland\nJoe Bloggs,England";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        smooks.filter(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
+        smooks.filterSource(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
 		assertEquals("Tom Fennelly", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
 		assertEquals("Ireland", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
 		assertEquals("Joe Bloggs", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[2]/name/text()"));
@@ -85,7 +85,7 @@ public class CSVReaderTest extends TestCase {
 
 		csvMessage = "Tom Fennelly\nJoe Bloggs,England";
         context = smooks.createExecutionContext("Order-List-Acme-AcmePartner1");
-        smooks.filter(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
+        smooks.filterSource(context, new StreamSource(new ByteArrayInputStream(csvMessage.getBytes("UTF-8"))), domResult);
 		assertEquals("Joe Bloggs", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/name/text()"));
 		assertEquals("England", XmlUtil.getString(domResult.getNode(), "/csv-set/csv-record[1]/address/text()"));
 	}
@@ -147,7 +147,7 @@ public class CSVReaderTest extends TestCase {
         smooks.setReaderConfig(new CSVReaderConfigurator("firstname,lastname,gender,age,country"));
 
         StringResult result = new StringResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-01.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-01.csv")), result);
 
         assertEquals("<csv-set><csv-record><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record><csv-record><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record></csv-set>", result.getResult());
     }
@@ -163,7 +163,7 @@ public class CSVReaderTest extends TestCase {
                 .setRecordElementName("customer"));
 
         StringResult result = new StringResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-03.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-03.csv")), result);
 
         assertEquals("<customers><customer><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></customer><customer><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></customer></customers>", result.getResult());
     }
@@ -172,7 +172,7 @@ public class CSVReaderTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-07.xml"));
 
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         Person person = (Person) result.getBean("person");
         assertEquals("(Linda, Coughlan, Ireland, Female, 22)", person.toString());
@@ -182,7 +182,7 @@ public class CSVReaderTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-08.xml"));
 
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         List<Person> people = (List<Person>) result.getBean("people");
         assertEquals("[(Tom, Fennelly, Ireland, Male, 4), (Mike, Fennelly, Ireland, Male, 2), (Linda, Coughlan, Ireland, Female, 22)]", people.toString());
@@ -195,7 +195,7 @@ public class CSVReaderTest extends TestCase {
                 .setBinding(new CSVBinding("people", Person.class, CSVBindingType.LIST)));
 
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         List<Person> people = (List<Person>) result.getBean("people");
         assertEquals("[(Tom, Fennelly, Ireland, Male, 4), (Mike, Fennelly, Ireland, Male, 2), (Linda, Coughlan, Ireland, Female, 22)]", people.toString());
@@ -208,7 +208,7 @@ public class CSVReaderTest extends TestCase {
                 .setBinding(new CSVBinding("person", Person.class, CSVBindingType.SINGLE)));
 
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         Person person = (Person) result.getBean("person");
         assertEquals("(Linda, Coughlan, Ireland, Female, 22)", person.toString());
@@ -221,7 +221,7 @@ public class CSVReaderTest extends TestCase {
                 .setBinding(new CSVBinding("people", HashMap.class, CSVBindingType.LIST)));
 
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         List<Map> people = (List<Map>) result.getBean("people");
         Map person;
@@ -284,7 +284,7 @@ public class CSVReaderTest extends TestCase {
 
     private void test_13(Smooks smooks) {
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         Map<Integer, Person> people = (Map<Integer, Person>) result.getBean("people");
         Person person;
@@ -331,7 +331,7 @@ public class CSVReaderTest extends TestCase {
 
     private void test_14(Smooks smooks) {
         JavaResult result = new JavaResult();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
 
         Map<String, Map> people = (Map<String, Map>) result.getBean("people");
         Map person;
@@ -363,7 +363,7 @@ public class CSVReaderTest extends TestCase {
 
         JavaResult result = new JavaResult();
         try {
-            smooks.filter(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+            smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
             fail("Expected SmooksConfigurationException");
         } catch(SmooksConfigurationException e) {
             assertEquals("Invalid field name 'xxxx'.  Valid names: [firstname, lastname, $ignore$, gender, age, country].", e.getMessage());

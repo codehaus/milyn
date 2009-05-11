@@ -147,7 +147,7 @@ public class Main {
             EntityTransaction tx = em.getTransaction();
             tx.begin();
 
-            smooks.filter(executionContext, new StreamSource(new ByteArrayInputStream(messageInDao)), null);
+            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageInDao)), null);
 
             tx.commit();
         } finally {
@@ -171,7 +171,7 @@ public class Main {
 
             tx.begin();
 
-            smooks.filter(executionContext, new StreamSource(new ByteArrayInputStream(messageInJpa)), null);
+            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageInJpa)), null);
 
             tx.commit();
         } finally {

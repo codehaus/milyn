@@ -75,7 +75,7 @@ public class EntityLocatorTest extends BaseTestCase {
             enableReporting(executionContext, "test_entity_locate.html");
 
             Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
-            smooks.filter(executionContext, source, null);
+            smooks.filterSource(executionContext, source, null);
 
             assertSame(result, BeanRepository.getInstance(executionContext).getBean("entity"));
         } finally {
