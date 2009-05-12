@@ -19,15 +19,16 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.payload.FilterResult;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.Config;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.annotation.VisitAfterIf;
-import org.milyn.delivery.annotation.VisitBeforeIf;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMVisitAfter;
-import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -74,9 +75,8 @@ import org.w3c.dom.Element;
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-@VisitBeforeIf(condition = "parameters.containsKey('executeBefore') && parameters.executeBefore.value == 'true'")
-@VisitAfterIf(condition = "!parameters.containsKey('executeBefore') || parameters.executeBefore.value != 'true'")
-public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, DOMVisitAfter
+@VisitBeforeReport(condition = "false")
+public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitAfter
 {
     private static Log logger = LogFactory.getLog(Validator.class);
 
@@ -105,11 +105,25 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
      */
     @AppContext
     private ApplicationContext appContext;
+    /**
+     * Config.
+     */
+    @Config
+    private SmooksResourceConfiguration config;
+    private String targetAttribute;
 
     /**
      * No-args constructor required by Smooks.
      */
     public Validator() {}
+
+    /**
+     * Initialize the visitor instance.
+     */
+    @Initialize
+    public void initialize() {
+        targetAttribute = config.getTargetAttribute();
+    }
 
     /**
      * Public constructor.
@@ -122,24 +136,30 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitB
         this.onFail = onFail;
     }
 
-    public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException
-    {
-        validate(element.toString(), executionContext);
+    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        if(targetAttribute == null) {
+            // The selected text is not an attribute, which means it's the element text,
+            // which means we need to turn on text accumulation for SAX...
+            element.accumulateText();
+        }
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException
     {
-        validate(element.toString(), executionContext);
-    }
-
-    public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException
-    {
-        validate(element.getTextContent(), executionContext);
+        if(targetAttribute != null) {
+            validate(element.getAttribute(targetAttribute), executionContext);
+        } else {
+            validate(element.getTextContent(), executionContext);
+        }
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException
     {
-        validate(element.getTextContent(), executionContext);
+        if(targetAttribute != null) {
+            validate(element.getAttribute(targetAttribute), executionContext);
+        } else {
+            validate(element.getTextContent(), executionContext);            
+        }
     }
 
     /**

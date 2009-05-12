@@ -219,7 +219,7 @@ public class SAXElement {
      * {@link #accumulateText() text accumulation} turned on.
      * @see #accumulateText() 
      */
-    public String getTextAsString() throws SmooksException {
+    public String getTextContent() throws SmooksException {
         if(text == null) {
             throw new SmooksException("Illegal call to getTextAsString().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText().");
         }
@@ -326,6 +326,25 @@ public class SAXElement {
     public void setAttributes(Attributes attributes) {
         AssertArgument.isNotNull(attributes, "attributes");
         this.attributes = attributes;
+    }
+
+    /**
+     * Get the named attribute from this element.
+     * @param attribute The attribute name.
+     * @return The attribute value, or an empty string if the attribute is not specified.
+     */
+    public String getAttribute(String attribute) {
+        return SAXUtil.getAttribute(attribute, attributes);
+    }
+
+    /**
+     * Get the named attribute from this element.
+     * @param namespaceURI The namespace URI of the required attribute.
+     * @param attribute The attribute name.
+     * @return The attribute value, or an empty string if the attribute is not specified.
+     */
+    public String getAttribute(String namespaceURI, String attribute) {
+        return SAXUtil.getAttribute(namespaceURI, attribute, attributes, "");
     }
 
     /**
@@ -453,7 +472,7 @@ public class SAXElement {
                 element.setAttributeNode(attribute);
             }
         }
-        
+
         return element;
     }
 }

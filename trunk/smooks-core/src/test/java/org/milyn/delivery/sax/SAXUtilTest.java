@@ -16,7 +16,7 @@
 package org.milyn.delivery.sax;
 
 import junit.framework.TestCase;
-import org.xml.sax.ext.Attributes2Impl;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -24,9 +24,21 @@ import org.xml.sax.ext.Attributes2Impl;
 public class SAXUtilTest extends TestCase {
 
     public void test_getXPath() {
-        SAXElement a = new SAXElement("http://x", "a", "a", new Attributes2Impl(), null);
-        SAXElement b = new SAXElement("http://x", "b", "b", new Attributes2Impl(), a);
-        SAXElement c = new SAXElement("http://x", "c", "c", new Attributes2Impl(), b);
+        SAXElement a = new SAXElement("http://x", "a", "a", new AttributesImpl(), null);
+        SAXElement b = new SAXElement("http://x", "b", "b", new AttributesImpl(), a);
+        SAXElement c = new SAXElement("http://x", "c", "c", new AttributesImpl(), b);
         assertEquals("a/b/c", SAXUtil.getXPath(c));
+    }
+
+    public void test_getAttribute() {
+        AttributesImpl attributes = new AttributesImpl();
+
+        attributes.addAttribute("", "a", "", "", "1");
+        attributes.addAttribute("http://a", "a", "", "", "a");
+        attributes.addAttribute("http://b", "a", "", "", "b");
+
+        assertEquals("1", SAXUtil.getAttribute("a", attributes));
+        assertEquals("a", SAXUtil.getAttribute("http://a", "a", attributes, ""));
+        assertEquals("b", SAXUtil.getAttribute("http://b", "a", attributes, ""));
     }
 }

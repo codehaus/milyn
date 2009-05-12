@@ -28,15 +28,15 @@ import org.milyn.resource.URIResourceLocator;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.rules.RuleEvalResult;
-import org.milyn.rules.RuleEvalResultImpl;
+import org.milyn.rules.regex.RegexRuleEvalResult;
 import org.milyn.rules.RuleProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * Regex Rule Provider.
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
- *
  */
 public class RegexProvider implements RuleProvider
 {
@@ -92,7 +92,7 @@ public class RegexProvider implements RuleProvider
 
         final boolean matched = pattern.matcher(selectedData).matches();
 
-        return new RuleEvalResultImpl(matched, ruleName, providerName, pattern, selectedData.toString());
+        return new RegexRuleEvalResult(matched, ruleName, providerName, pattern, selectedData.toString());
     }
 
     public String getName()

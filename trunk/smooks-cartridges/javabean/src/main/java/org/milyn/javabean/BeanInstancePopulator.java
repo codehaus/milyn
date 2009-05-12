@@ -46,7 +46,6 @@ import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -317,7 +316,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            dataString = element.getTextAsString();
+            dataString = element.getTextContent();
         }
 
         String mapPropertyName;

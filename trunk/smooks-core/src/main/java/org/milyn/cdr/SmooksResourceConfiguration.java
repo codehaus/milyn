@@ -1368,6 +1368,10 @@ public class SmooksResourceConfiguration {
             }
         }
 
+        if(selectorProp.length() == 0) {
+            return null;
+        }
+
         return selectorProp.toString();
     }
 

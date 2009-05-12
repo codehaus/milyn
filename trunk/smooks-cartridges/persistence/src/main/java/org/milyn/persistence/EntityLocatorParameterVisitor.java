@@ -16,8 +16,6 @@
 package org.milyn.persistence;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,9 +51,7 @@ import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.parameter.NamedParameterIndex;
 import org.milyn.persistence.parameter.Parameter;
 import org.milyn.persistence.parameter.ParameterContainer;
-import org.milyn.persistence.parameter.ParameterIndex;
 import org.milyn.persistence.parameter.ParameterManager;
-import org.milyn.persistence.parameter.ParameterProductUtil;
 import org.milyn.persistence.parameter.PositionalParameterIndex;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.xml.DomUtils;
@@ -235,7 +231,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
         if (isAttribute) {
             dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
         } else {
-            dataString = element.getTextAsString();
+            dataString = element.getTextContent();
         }
 
 
