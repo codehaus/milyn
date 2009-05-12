@@ -95,8 +95,11 @@ public class BeanPopulatorTest extends TestCase {
         }
     }
 
-    public void test_TypePopCheckBean() throws ParseException, IOException, SAXException {
+    public void test_TypePopCheckBean_dom() throws ParseException, IOException, SAXException {
         test_TypePopCheckBean("type-pop-check-bean-smooks-config.xml");
+    }
+
+    public void test_TypePopCheckBean_sax() throws ParseException, IOException, SAXException {
         test_TypePopCheckBean("type-pop-check-bean-smooks-config-sax.xml");
     }
 
