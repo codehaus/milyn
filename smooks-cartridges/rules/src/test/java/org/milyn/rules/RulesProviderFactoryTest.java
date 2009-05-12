@@ -26,6 +26,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.rules.regex.RegexRuleEvalResult;
 import org.milyn.container.ExecutionContext;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
@@ -83,7 +84,7 @@ public class RulesProviderFactoryTest
 
         public RuleEvalResult evaluate(String ruleName, CharSequence selectedData, ExecutionContext context) throws SmooksException
         {
-            return new RuleEvalResultImpl(true, ruleName, "MockProvider", null, selectedData.toString());
+            return new RegexRuleEvalResult(true, ruleName, "MockProvider", null, selectedData.toString());
         }
 
         public void setName(String name)

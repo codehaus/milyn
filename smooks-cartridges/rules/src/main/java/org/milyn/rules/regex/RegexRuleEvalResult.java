@@ -1,8 +1,30 @@
-package org.milyn.rules;
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
+package org.milyn.rules.regex;
+
+import org.milyn.rules.RuleEvalResult;
 
 import java.util.regex.Pattern;
 
-public class RuleEvalResultImpl implements RuleEvalResult
+/**
+ * Regex RuleEvalResult.
+ * 
+ * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
+ */
+public class RegexRuleEvalResult implements RuleEvalResult
 {
     /**
      * The result for a rule evaluation
@@ -32,7 +54,7 @@ public class RuleEvalResultImpl implements RuleEvalResult
     /**
      * Creates a RuleEvalResult that indicates a successfully executed rule.
      */
-    public RuleEvalResultImpl(final boolean matched, final String ruleName, final String providerName, final Pattern pattern, final String text)
+    public RegexRuleEvalResult(final boolean matched, final String ruleName, final String providerName, final Pattern pattern, final String text)
     {
         this.matched = matched;
         this.ruleName = ruleName;

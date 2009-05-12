@@ -289,6 +289,9 @@ public class SmooksResourceConfigurationTest extends TestCase {
     public void test_isTargetedAtElement_SAX_with_Attribute() {
         SAXElement e = buildE_rooted();
 
+        SmooksResourceConfiguration noAtt = new SmooksResourceConfiguration("e", "blah");
+        assertEquals(null, noAtt.getTargetAttribute());
+
         // Check with an attribute on the selector....
         SmooksResourceConfiguration rc8 = new SmooksResourceConfiguration("e/@attrib1", "blah");
         SmooksResourceConfiguration rc9 = new SmooksResourceConfiguration("a/b/c/a/d/e/@attrib1", "blah");

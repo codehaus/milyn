@@ -23,8 +23,16 @@ import org.junit.Test;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.rules.RuleProviderAccessor;
+import org.milyn.rules.RuleEvalResult;
 import org.milyn.rules.regex.RegexProvider;
 import org.milyn.payload.FilterResult;
+import org.milyn.payload.StringSource;
+import org.milyn.Smooks;
+import org.milyn.FilterSettings;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Unit test for {@link Validator}
@@ -136,5 +144,29 @@ public class ValidatorTest
             assertTrue(e instanceof ValidationException);
             assertEquals(data, ((ValidationException)e).getText());
         }
+    }
+
+    @Test
+    public void test_xml_config_01_dom() throws IOException, SAXException {
+        test_xml_config_01(FilterSettings.DEFAULT_DOM);
+    }
+
+    @Test
+    public void test_xml_config_01_sax() throws IOException, SAXException {
+        test_xml_config_01(FilterSettings.DEFAULT_SAX);
+    }
+
+    private void test_xml_config_01(FilterSettings filterSettings) throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config-01.xml"));
+        ValidationResult result = new ValidationResult();
+
+        smooks.setFilterSettings(filterSettings);
+
+        smooks.filterSource(new StringSource("<a><b x='Xx'>11</b><b x='C'>Aaa</b></a>"), result);
+
+        List<RuleEvalResult> warnings = result.getWarnings();
+        assertEquals(2, warnings.size());
+        assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=11, pattern=[A-Z]([a-z])+", warnings.get(0).toString());
+        assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=C, pattern=[A-Z]([a-z])+", warnings.get(1).toString());
     }
 }

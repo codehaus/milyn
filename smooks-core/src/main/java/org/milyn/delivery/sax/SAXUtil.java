@@ -42,12 +42,26 @@ public abstract class SAXUtil {
      * @return The attribute value, or an empty string if not available (as with DOM).
      */
     public static String getAttribute(String attributeName, Attributes attributes, String defaultVal) {
+        return getAttribute("", attributeName, attributes, defaultVal);
+    }
+
+    /**
+     * Get the value of the named attribute.
+     * @param attributeNamespace The attribute namespace.
+     * @param attributeName The attribute name.
+     * @param attributes The attribute list.
+     * @param defaultVal The default value, if the attribute is not set.
+     * @return The attribute value, or an empty string if not available (as with DOM).
+     */
+    public static String getAttribute(String attributeNamespace, String attributeName, Attributes attributes, String defaultVal) {
         int attribCount = attributes.getLength();
 
         for(int i = 0; i < attribCount; i++) {
             String attribName = attributes.getLocalName(i);
             if(attribName.equalsIgnoreCase(attributeName)) {
-                return attributes.getValue(i);
+                if(attributes.getURI(i).equals(attributeNamespace)) {
+                    return attributes.getValue(i);
+                }
             }
         }
 
