@@ -552,7 +552,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             decoder = getDecoder(executionContext);
         }
 
-        return decoder.decode(dataString);
+        try {
+            return decoder.decode(dataString);
+        } catch(DataDecodeException e) {
+            throw new DataDecodeException("Failed to decode binding value '" + dataString + "' for property '" + property + "' on bean '" + beanId.getName() +"'.", e);
+        }
     }
 
 
