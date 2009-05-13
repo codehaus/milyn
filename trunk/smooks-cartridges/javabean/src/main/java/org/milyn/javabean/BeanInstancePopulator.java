@@ -249,17 +249,15 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     	checkBeanExists(executionContext);
 
-        if (!isAttribute) {
-            // It's not an attribute binding i.e. it's the element's text.
-            // Turn on Text Accumulation...
-            element.accumulateText();
-        }
-
         if(beanWiring) {
         	bindBeanValue(executionContext);
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
+        } else if(expression == null) {
+            // It's not a wiring, attribute or expression binding => it's the element's text.
+            // Turn on Text Accumulation...
+            element.accumulateText();
         }
     }
 
