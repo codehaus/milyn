@@ -386,6 +386,12 @@ public class SAXHandler extends DefaultHandler2 {
 
         textWrapper.setText(ch, start, length, currentTextType);
 
+        // Accumulate the text...
+        List<SAXText> saxTextObjects = currentProcessor.element.getText();
+        if(saxTextObjects != null) {
+            saxTextObjects.add(textWrapper);
+        }
+
         if(currentProcessor != null && !currentProcessor.isNullProcessor) {
             if(currentProcessor.elementVisitorConfig != null) {
                 List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
@@ -427,12 +433,6 @@ public class SAXHandler extends DefaultHandler2 {
                     processVisitorException(t, errorMsg);
                 }
             }
-        }
-
-        // Accumulate the text...
-        List<SAXText> saxTextObjects = currentProcessor.element.getText();
-        if(saxTextObjects != null) {
-            saxTextObjects.add(textWrapper);
         }
     }
 

@@ -135,8 +135,9 @@ public class SAXText {
     protected Object clone() {
         SAXText clone = new SAXText();
 
-        clone.characters = characters;
-        clone.offset = offset;
+        clone.characters = new char[length];
+        System.arraycopy(characters, offset, clone.characters, 0, length);
+        clone.offset = 0;
         clone.length = length;
         clone.type = type;
 
