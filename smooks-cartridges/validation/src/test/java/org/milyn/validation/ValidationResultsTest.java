@@ -90,6 +90,10 @@ public class ValidationResultsTest
             return name;
         }
 
+        public Throwable getEvalException() {
+            return null;
+        }
+
         public void setMatched(final boolean matched)
         {
             this.matched = matched;

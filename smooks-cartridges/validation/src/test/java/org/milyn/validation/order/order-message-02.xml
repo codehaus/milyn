@@ -1,5 +1,6 @@
 <order>
     <header>
+        <orderId>12129</orderId>
         <date>Wed Nov 15 13:45:28 EST 2006</date>
         <customer number="123123">Joe</customer>
     </header>
@@ -10,7 +11,7 @@
             <price>8.90</price>
         </order-item>
         <order-item>
-            <product>222</product>
+            <product>333</product>
             <quantity>7</quantity>
             <price>5.20</price>
         </order-item>

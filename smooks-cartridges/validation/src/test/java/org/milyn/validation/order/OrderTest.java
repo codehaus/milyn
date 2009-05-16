@@ -38,16 +38,17 @@ public class OrderTest extends TestCase {
         try {
             smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order-message-01.xml")), result);
 
-            assertEquals(3, result.getNumFailures());
+            assertEquals(4, result.getNumFailures());
 
             List<OnFailResult> errors = result.getErrors();
             List<OnFailResult> warnings = result.getWarnings();
 
-            assertEquals(2, errors.size());
+            assertEquals(3, errors.size());
             assertEquals(1, warnings.size());
 
             assertEquals("Invalid customer number '123123' at '/order/header/customer/@number'.  Customer number must match pattern '[A-Z]-[0-9]{5}'.", errors.get(0).getMessage());
             assertEquals("Invalid product ID '222' at '/order/order-items/order-item[2]/product'.  Product ID must match pattern '[0-9]{6}'.", errors.get(1).getMessage());
+            assertEquals("Order 12129 (Customer 123123) contains an order item for product 222 which contains an invalid quantity of 7. This quantity exceeds the maximum permited quantity for this product (5).", errors.get(2).getMessage());
             assertEquals("Invalid customer name 'Joe' at '/order/header/customer'.  Customer name must match pattern '[A-Z][a-z]*, [A-Z][a-z]*'.", warnings.get(0).getMessage());
         } finally {
             smooks.close();

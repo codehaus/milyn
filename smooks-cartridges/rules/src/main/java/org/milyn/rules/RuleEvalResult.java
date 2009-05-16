@@ -55,4 +55,11 @@ public interface RuleEvalResult
      */
     String getRuleProviderName();
 
+    /**
+     * Get any provider level exceptions that may have
+     * occured during the rule evaluation.
+     * @return A provider level exception that occured during
+     * rule evaluation, or null if no evaluation exception occured.
+     */
+    Throwable getEvalException();
 }

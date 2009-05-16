@@ -78,6 +78,10 @@ public class RegexRuleEvalResult implements RuleEvalResult
         return providerName;
     }
 
+    public Throwable getEvalException() {
+        return null;
+    }
+
     public Pattern getPattern()
     {
         return pattern;
