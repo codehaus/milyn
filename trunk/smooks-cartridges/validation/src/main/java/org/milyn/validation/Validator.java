@@ -388,21 +388,25 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
         }
 
         public String getMessage(Locale locale) {
-            ResourceBundle bundle = getMessageBundle(locale);
+            if(ruleResult.getEvalException() != null) {
+                return ruleResult.getEvalException().getMessage();
+            } else {
+                ResourceBundle bundle = getMessageBundle(locale);
 
-            String message = bundle.getString(ruleName);
-            if (message != null && message.startsWith("ftl:")) {
-                // TODO: Is there a way to optimize this e.g. attach the compiled template
-                // to the bundle as an object and then get back using ResourceBundle.getObject??
-                // I timed it and it was able to create and apply 10000 templates in about 2500 ms
-                // on an "average" spec machine, so it's not toooooo bad, and it's only done on demand :)
-                FreeMarkerTemplate template = new FreeMarkerTemplate(message.substring("ftl:".length()));
-                beanContext.put("ruleResult", ruleResult);
-                beanContext.put("path", failFragmentPath);
-                message = template.apply(beanContext);
+                String message = bundle.getString(ruleName);
+                if (message != null && message.startsWith("ftl:")) {
+                    // TODO: Is there a way to optimize this e.g. attach the compiled template
+                    // to the bundle as an object and then get back using ResourceBundle.getObject??
+                    // I timed it and it was able to create and apply 10000 templates in about 2500 ms
+                    // on an "average" spec machine, so it's not toooooo bad, and it's only done on demand :)
+                    FreeMarkerTemplate template = new FreeMarkerTemplate(message.substring("ftl:".length()));
+                    beanContext.put("ruleResult", ruleResult);
+                    beanContext.put("path", failFragmentPath);
+                    message = template.apply(beanContext);
+                }
+
+                return message;
             }
-
-            return message;
         }
 
         private ResourceBundle getMessageBundle(Locale locale) {

@@ -12,6 +12,19 @@
     <artifactId>milyn-smooks-rules</artifactId>
     <version>${milyn.smooks.rules.version}</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>${opencsv.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-javabean</artifactId>
+            <version>${milyn.smooks.javabean.version}</version>
+        </dependency>
+    </dependencies>
+
     <repositories>
         <repository>
             <id>codehaus.m2.snapshots</id>
