@@ -15,16 +15,22 @@
 package org.milyn.validation;
 
 import java.io.IOException;
+import java.io.File;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.util.FreeMarkerTemplate;
+import org.milyn.xml.DomUtils;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.payload.FilterResult;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
@@ -32,6 +38,7 @@ import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.rules.RuleEvalResult;
 import org.milyn.rules.RuleProvider;
 import org.milyn.rules.RuleProviderAccessor;
@@ -110,7 +117,19 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
      */
     @Config
     private SmooksResourceConfiguration config;
+    /**
+     * Attribute name if the validation target is an attribute, otherwise null.
+     */
     private String targetAttribute;
+
+    /**
+     * Message bundle name for the ruleset.
+     */
+    private String messageBundleBaseName;
+    /**
+     * The maximum number of failures permitted per {@link ValidationResult} instance..
+     */
+    private int maxFails;
 
     /**
      * No-args constructor required by Smooks.
@@ -123,6 +142,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
     @Initialize
     public void initialize() {
         targetAttribute = config.getTargetAttribute();
+
     }
 
     /**
@@ -147,18 +167,45 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException
     {
         if(targetAttribute != null) {
-            validate(element.getAttribute(targetAttribute), executionContext);
+            OnFailResultImpl result = _validate(element.getAttribute(targetAttribute), executionContext);
+            if(result != null) {
+                result.setFailFragmentPath(SAXUtil.getXPath(element) + "/@" + targetAttribute);
+                assertValidationException(result, executionContext);
+            }
         } else {
-            validate(element.getTextContent(), executionContext);
+            OnFailResultImpl result = _validate(element.getTextContent(), executionContext);
+            if(result != null) {
+                result.setFailFragmentPath(SAXUtil.getXPath(element));
+                assertValidationException(result, executionContext);
+            }
         }
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException
     {
         if(targetAttribute != null) {
-            validate(element.getAttribute(targetAttribute), executionContext);
+            OnFailResultImpl result = _validate(element.getAttribute(targetAttribute), executionContext);
+            if(result != null) {
+                result.setFailFragmentPath(DomUtils.getXPath(element) + "/@" + targetAttribute);
+                assertValidationException(result, executionContext);
+            }
         } else {
-            validate(element.getTextContent(), executionContext);            
+            OnFailResultImpl result = _validate(element.getTextContent(), executionContext);
+            if(result != null) {
+                result.setFailFragmentPath(DomUtils.getXPath(element));
+                assertValidationException(result, executionContext);
+            }
+        }
+    }
+
+    private void assertValidationException(OnFailResultImpl result, ExecutionContext executionContext) {
+        if (onFail == OnFail.FATAL) {
+            throw new ValidationException("A FATAL validation failure has occured: " + result);
+        }
+
+        ValidationResult validationResult = getValidationResult(executionContext);
+        if(validationResult != null && validationResult.getNumFailures() > maxFails) {
+            throw new ValidationException("The maximum number of allowed validation failures (" + maxFails + ") has been exceeded.");
         }
     }
 
@@ -167,17 +214,33 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
      * rule specfied by the composite rule name.
      *
      * @param text The selected data to perform the evaluation on.
-     * @param executionContext The Smooks {@link ExecutionContext}.
+     * @param executionContext The Smooks {@link org.milyn.container.ExecutionContext}.
      *
-     * @throws ValidationException
+     * @throws ValidationException A FATAL Validation failure has occured, or the maximum number of
+     * allowed failures has been exceeded.
      */
     void validate(final String text, final ExecutionContext executionContext) throws ValidationException
     {
+        OnFailResultImpl result = _validate(text, executionContext);
+        if(result != null) {
+            assertValidationException(result, executionContext);
+        }
+    }
+
+    /**
+     * Validate will lookup the configured RuleProvider and validate the text against the
+     * rule specfied by the composite rule name.
+     *
+     * @param text The selected data to perform the evaluation on.
+     * @param executionContext The Smooks {@link org.milyn.container.ExecutionContext}.
+     *
+     * @throws ValidationException A FATAL Validation failure has occured, or the maximum number of
+     * allowed failures has been exceeded.
+     */
+    private OnFailResultImpl _validate(final String text, final ExecutionContext executionContext) throws ValidationException
+    {
         if(ruleProvider == null) {
-            ruleProvider = RuleProviderAccessor.get(appContext, ruleProviderName);
-            if(ruleProvider == null) {
-                throw new SmooksException("Unknown rule provider '" + ruleProviderName + "'.");
-            }
+            setRuleProvider(executionContext);
         }
 
         final RuleEvalResult result = ruleProvider.evaluate(ruleName, text, executionContext);
@@ -185,15 +248,73 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
 
         if (!result.matched())
         {
-            if (onFail == OnFail.FATAL)
-            {
-                throw new ValidationException("Rule Validation failed : " + result, text, result);
+            OnFailResultImpl onFailResult = null;
+
+            ValidationResult validationResult = getValidationResult(executionContext);
+            if(validationResult != null) {
+                onFailResult = new OnFailResultImpl();
+                onFailResult.setRuleResult(result);
+                onFailResult.setBeanContext(BeanRepository.getInstance(executionContext).getBeanMap());
+                validationResult.addResult(onFailResult, onFail);
             }
 
-            ValidationResult validationResult = (ValidationResult) FilterResult.getResult(executionContext, ValidationResult.class);
-            if(validationResult != null) {
-                validationResult.addResult(result, onFail);
+            return onFailResult;
+        }
+
+        return null;
+    }
+
+    private ValidationResult getValidationResult(ExecutionContext executionContext) {
+        ValidationResult validationResult = (ValidationResult) FilterResult.getResult(executionContext, ValidationResult.class);
+        return validationResult;
+    }
+
+    private synchronized void setRuleProvider(ExecutionContext executionContext) {
+        if(ruleProvider != null) {
+            return;
+        }
+
+        ruleProvider = RuleProviderAccessor.get(appContext, ruleProviderName);
+        if(ruleProvider == null) {
+            throw new SmooksException("Unknown rule provider '" + ruleProviderName + "'.");
+        }
+
+        // Configure the base bundle name for validation failure messages...
+        setMessageBundleBaseName();
+
+        // Configure the maxFails per ValidationResult instance...
+        String maxFailsConfig = executionContext.getConfigParameter(OnFailResult.MAX_FAILS);
+        if(maxFailsConfig != null) {
+            try {
+                maxFails = Integer.parseInt(maxFailsConfig.trim());
+            } catch(NumberFormatException e) {
+                throw new SmooksConfigurationException("Invalid config value '" + maxFailsConfig.trim() + "' for global parameter '" + OnFailResult.MAX_FAILS + "'.  Must be a valid Integer value.");
             }
+        } else {
+            maxFails = Integer.MAX_VALUE;
+        }
+    }
+
+    private void setMessageBundleBaseName() {
+        String ruleSource = ruleProvider.getSrc();
+        File srcFile = new File(ruleSource);
+        String srcFileName = srcFile.getName();
+        int indexOfExt = srcFileName.lastIndexOf('.');
+
+        if(indexOfExt != -1) {
+            messageBundleBaseName = srcFileName.substring(0, indexOfExt);
+            if(srcFile.getParentFile() != null) {
+                messageBundleBaseName = srcFile.getParentFile().getPath() + "/" + messageBundleBaseName;
+            }
+        } else {
+            messageBundleBaseName = ruleSource;
+        }
+
+        messageBundleBaseName = messageBundleBaseName.replace('\\', '/');
+        messageBundleBaseName += "_messages";
+
+        if(messageBundleBaseName.charAt(0) == '/') {
+            messageBundleBaseName = messageBundleBaseName.substring(1);
         }
     }
 
@@ -230,5 +351,73 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
     public Validator setAppContext(ApplicationContext appContext) {
         this.appContext = appContext;
         return this;
+    }
+
+    private class OnFailResultImpl implements OnFailResult {
+
+        private String failFragmentPath;
+        private RuleEvalResult ruleResult;
+        public Map<String, Object> beanContext;
+
+        public void setFailFragmentPath(String failFragmentPath) {
+            this.failFragmentPath = failFragmentPath;
+        }
+
+        public String getFailFragmentPath() {
+            return failFragmentPath;
+        }
+
+        public void setRuleResult(RuleEvalResult ruleResult) {
+            this.ruleResult = ruleResult;
+        }
+
+        public RuleEvalResult getFailRuleResult() {
+            return ruleResult;
+        }
+
+        public void setBeanContext(Map<String, Object> beanContext) {
+            // Need to create a shallow copy as the context data may change.
+            // Even this is not foolproof, as internal bean data can also be
+            // overwritten by the bean context!!
+            this.beanContext = new HashMap();
+            this.beanContext.putAll(beanContext);
+        }
+
+        public String getMessage() {
+            return getMessage(Locale.getDefault());
+        }
+
+        public String getMessage(Locale locale) {
+            ResourceBundle bundle = getMessageBundle(locale);
+
+            String message = bundle.getString(ruleName);
+            if (message != null && message.startsWith("ftl:")) {
+                // TODO: Is there a way to optimize this e.g. attach the compiled template
+                // to the bundle as an object and then get back using ResourceBundle.getObject??
+                // I timed it and it was able to create and apply 10000 templates in about 2500 ms
+                // on an "average" spec machine, so it's not toooooo bad, and it's only done on demand :)
+                FreeMarkerTemplate template = new FreeMarkerTemplate(message.substring("ftl:".length()));
+                beanContext.put("ruleResult", ruleResult);
+                beanContext.put("path", failFragmentPath);
+                message = template.apply(beanContext);
+            }
+
+            return message;
+        }
+
+        private ResourceBundle getMessageBundle(Locale locale) {
+            ResourceBundle bundle;
+            try {
+                bundle = ResourceBundle.getBundle(messageBundleBaseName, locale);
+            } catch (MissingResourceException e) {
+                throw new SmooksConfigurationException("Failed to load Validation rule message bundle '" + messageBundleBaseName + "'.  This resource must be on the classpath!", e);
+            }
+
+            return bundle;
+        }
+
+        public String toString() {
+            return "[" + failFragmentPath + "] " + ruleResult.toString();
+        }
     }
 }

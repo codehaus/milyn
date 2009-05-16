@@ -58,7 +58,7 @@
             <xs:enumeration value="OK"></xs:enumeration>
             <xs:enumeration value="WARN"></xs:enumeration>
             <xs:enumeration value="ERROR"></xs:enumeration>
-            <xs:enumeration value="FAIL"></xs:enumeration>
+            <xs:enumeration value="FATAL"></xs:enumeration>
         </xs:restriction>
     </xs:simpleType>
 

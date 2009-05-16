@@ -29,10 +29,14 @@ import org.milyn.payload.FilterResult;
 import org.milyn.payload.StringSource;
 import org.milyn.Smooks;
 import org.milyn.FilterSettings;
+import org.milyn.util.FreeMarkerTemplate;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Unit test for {@link Validator}
@@ -141,8 +145,7 @@ public class ValidatorTest
         }
         catch (final Exception e)
         {
-            assertTrue(e instanceof ValidationException);
-            assertEquals(data, ((ValidationException)e).getText());
+            assertEquals("A FATAL validation failure has occured: RegexRuleEvalResult, matched=false, providerName=addressing, ruleName=email, text=xyz, pattern=\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*([,;]\\s*\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*)*", e.getMessage());
         }
     }
 
@@ -164,9 +167,9 @@ public class ValidatorTest
 
         smooks.filterSource(new StringSource("<a><b x='Xx'>11</b><b x='C'>Aaa</b></a>"), result);
 
-        List<RuleEvalResult> warnings = result.getWarnings();
+        List<OnFailResult> warnings = result.getWarnings();
         assertEquals(2, warnings.size());
-        assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=11, pattern=[A-Z]([a-z])+", warnings.get(0).toString());
-        assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=C, pattern=[A-Z]([a-z])+", warnings.get(1).toString());
+        assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=11, pattern=[A-Z]([a-z])+", warnings.get(0).getFailRuleResult().toString());
+        assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=C, pattern=[A-Z]([a-z])+", warnings.get(1).getFailRuleResult().toString());
     }
 }

@@ -29,8 +29,8 @@ import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
-import org.milyn.rules.RuleEvalResult;
 import org.milyn.validation.ValidationResult;
+import org.milyn.validation.OnFailResult;
 import org.xml.sax.SAXException;
 
 /**
@@ -47,7 +47,7 @@ public class Main
         System.out.println(new String(messageIn));
         System.out.println("======================================");
 
-        final List<RuleEvalResult> results = Main.runSmooksTransform(messageIn);
+        final List<OnFailResult> results = Main.runSmooksTransform(messageIn);
 
         System.out.println("\n==============Validation Result=======");
         if (results.isEmpty())
@@ -56,7 +56,7 @@ public class Main
         }
         else
         {
-            for (RuleEvalResult result : results)
+            for (OnFailResult result : results)
             {
                 System.out.println(result);
             }
@@ -64,7 +64,7 @@ public class Main
         System.out.println("======================================\n");
     }
 
-    protected static List<RuleEvalResult> runSmooksTransform(final byte[] messageIn) throws IOException, SAXException, SmooksException
+    protected static List<OnFailResult> runSmooksTransform(final byte[] messageIn) throws IOException, SAXException, SmooksException
     {
         // Instantiate Smooks with the config...
         final Smooks smooks = new Smooks("smooks-config.xml");

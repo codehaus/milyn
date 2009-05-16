@@ -18,6 +18,8 @@ package org.milyn.validation;
 import static org.junit.Assert.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,12 +48,12 @@ public class ValidationResultsTest
     {
         ValidationResult validationResult = new ValidationResult();
 
-        validationResult.addResult(result, OnFail.WARN);
-        List<RuleEvalResult> warnings = validationResult.getWarnings();
+        validationResult.addResult(new MockOnFailResult(result), OnFail.WARN);
+        List<OnFailResult> warnings = validationResult.getWarnings();
         assertFalse(warnings.isEmpty());
         assertEquals(1, warnings.size());
 
-        validationResult.addResult(result, OnFail.WARN);
+        validationResult.addResult(new MockOnFailResult(result), OnFail.WARN);
         warnings = validationResult.getWarnings();
         assertEquals(2, warnings.size());
     }
@@ -105,4 +107,27 @@ public class ValidationResultsTest
         }
     }
 
+    private class MockOnFailResult implements OnFailResult {
+        private RuleEvalResult ruleResult;
+
+        public MockOnFailResult(RuleEvalResult ruleResult) {
+            this.ruleResult = ruleResult;
+        }
+
+        public String getFailFragmentPath() {
+            return "x";
+        }
+
+        public RuleEvalResult getFailRuleResult() {
+            return ruleResult;
+        }
+
+        public String getMessage() {
+            return "x";
+        }
+
+        public String getMessage(Locale locale) {
+            return "x";
+        }
+    }
 }

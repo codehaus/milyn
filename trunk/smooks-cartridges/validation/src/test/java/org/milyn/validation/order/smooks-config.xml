@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+    xmlns:rules="http://www.milyn.org/xsd/smooks/rules-1.0.xsd"
+    xmlns:validation="http://www.milyn.org/xsd/smooks/validation-1.0.xsd">
+
+    <params>
+        <param name="validation.maxFails">5</param>
+    </params>
+
+    <rules:ruleBases>
+        <rules:ruleBase name="customer" src="/org/milyn/validation/order/rules/customer.properties" provider="org.milyn.rules.regex.RegexProvider" />
+        <rules:ruleBase name="product" src="/org/milyn/validation/order/rules/product.properties" provider="org.milyn.rules.regex.RegexProvider" />
+    </rules:ruleBases>
+
+    <validation:rule executeOn="customer/@number" name="customer.customerId" onFail="ERROR" />
+    <validation:rule executeOn="customer" name="customer.customerName" onFail="WARN" />
+
+    <validation:rule executeOn="order-item/product" name="product.productId" onFail="ERROR" />
+    <validation:rule executeOn="order-item/fail" name="product.failProduct" onFail="FATAL" />
+
+</smooks-resource-list>

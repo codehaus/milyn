@@ -15,6 +15,8 @@
 
 package org.milyn.rules;
 
+import java.util.Map;
+
 /**
  * RuleEvalResult is the returned result from a {@link RuleProvider#evaluate(String, CharSequence, org.milyn.container.ExecutionContext)}
  * invocation.

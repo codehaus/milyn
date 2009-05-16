@@ -54,7 +54,7 @@ public class ValidatorFunctionTest
 
             smooks.filterSource(context, new StringSource(xml), result, validationResult);
 
-            final List<RuleEvalResult> warnings = validationResult.getWarnings();
+            final List<OnFailResult> warnings = validationResult.getWarnings();
 
             assertEquals(1, warnings.size());
             assertEquals(0, validationResult.getOKs().size());
