@@ -83,6 +83,10 @@ public class RegexRuleEvalResult implements RuleEvalResult
         return pattern;
     }
 
+    public String getText() {
+        return text;
+    }
+
     @Override
     public String toString()
     {

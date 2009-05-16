@@ -41,29 +41,12 @@ public class ValidationException extends SmooksException
     private RuleEvalResult result;
 
     /**
-     * Sole constructor.
+     * Public constructor.
      *
      * @param message The exception message.
-     * @param text The String that could not be matched against the pattern.
      */
-    public ValidationException(final String message, final String text, final RuleEvalResult result)
+    public ValidationException(final String message)
     {
         super(message);
-        this.text = text;
-        this.result = result;
     }
-
-    /**
-     * @return {@code String} The String that could not be matched against the pattern.
-     */
-    public String getText()
-    {
-        return text;
-    }
-
-    public RuleEvalResult getResult()
-    {
-        return result;
-    }
-
 }

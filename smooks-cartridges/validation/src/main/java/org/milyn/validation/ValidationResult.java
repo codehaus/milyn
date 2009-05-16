@@ -15,10 +15,7 @@
 
 package org.milyn.validation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.milyn.assertion.AssertArgument;
@@ -45,74 +42,103 @@ public class ValidationResult extends FilterResult
     /**
      * The validation result Map, keyed by OnFail Type.
      */
-    private Map<OnFail, List<RuleEvalResult>> results = new ConcurrentHashMap<OnFail, List<RuleEvalResult>>();
+    private Map<OnFail, List<OnFailResult>> results = new HashMap<OnFail, List<OnFailResult>>();
+
+    /**
+     * Fatal failure result.
+     */
+    private OnFailResult fatal; 
 
     /**
      * Public default constructor.
      */
     public ValidationResult()
     {
-        results.put(OnFail.OK, new ArrayList<RuleEvalResult>());
-        results.put(OnFail.WARN, new ArrayList<RuleEvalResult>());
-        results.put(OnFail.ERROR, new ArrayList<RuleEvalResult>());
-        results.put(OnFail.WARN, new ArrayList<RuleEvalResult>());
+        results.put(OnFail.OK, new ArrayList<OnFailResult>());
+        results.put(OnFail.WARN, new ArrayList<OnFailResult>());
+        results.put(OnFail.ERROR, new ArrayList<OnFailResult>());
     }
 
     /**
-     * Gets all the {@link RuleEvalResult}s that were reported at the {@link OnFail#OK}
+     * Gets all the {@link OnFailResult}s that were reported at the {@link OnFail#OK}
      * level.
      *
-     * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#OK}.
+     * @return List {@link OnFailResult} reported at {@link OnFail#OK}.
      */
-    public List<? extends RuleEvalResult> getOKs()
+    public List<OnFailResult> getOKs()
     {
         return Collections.unmodifiableList(results.get(OnFail.OK));
     }
 
     /**
-     * Gets all the {@link RuleEvalResult}s that were reported at the {@link OnFail#WARN}
+     * Gets all the {@link OnFailResult}s that were reported at the {@link OnFail#WARN}
      * level.
      *
-     * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#WARN}.
+     * @return List of {@link OnFailResult} reported at {@link OnFail#WARN}.
      */
-    public List<RuleEvalResult> getWarnings()
+    public List<OnFailResult> getWarnings()
     {
         return Collections.unmodifiableList(results.get(OnFail.WARN));
     }
 
     /**
-     * Gets all the {@link RuleEvalResult}s that were reported at the {@link OnFail#ERROR}
+     * Gets all the {@link OnFailResult}s that were reported at the {@link OnFail#ERROR}
      * level.
      *
-     * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#ERROR}.
+     * @return List of {@link OnFailResult} reported at {@link OnFail#ERROR}.
      */
-    public List<RuleEvalResult> getErrors()
+    public List<OnFailResult> getErrors()
     {
         return Collections.unmodifiableList(results.get(OnFail.ERROR));
     }
 
     /**
-     * Gets all the {@link RuleEvalResult}s that were reported at the {@link OnFail#FATAL}
-     * level.
+     * Gets the {@link OnFailResult} that was reported as a {@link OnFail#FATAL}.
+     * <p/>
+     * Can only be one {@link OnFail#FATAL}.
      *
-     * @return List<RuleEvalResult> Containing all the {@link RuleEvalResult} reported at {@link OnFail#FATAL}.
+     * @return {@link OnFail#FATAL} {@link OnFailResult} if one occured, otherwise null.
      */
-    public List<RuleEvalResult> getFatals()
+    public OnFailResult getFatal()
     {
-        return Collections.unmodifiableList(results.get(OnFail.FATAL));
+        return fatal;
     }
 
     /**
-     * Adds the {@link RuleEvalResult} with {@link OnFail} level passed in.
+     * Get the total number of failures on this {@link org.milyn.validation.ValidationResult} instance.
+     * @return The total number of failures on this {@link org.milyn.validation.ValidationResult} instance.
+     */
+    public int getNumFailures() {
+        int numFailures = 0;
+        Collection<List<OnFailResult>> values = results.values();
+
+        for(List<OnFailResult> value : values) {
+            numFailures += value.size();
+        }
+
+        if(fatal != null) {
+            numFailures++;
+        }
+
+        return numFailures;
+    }
+
+    /**
+     * Adds the {@link OnFailResult} with {@link OnFail} level passed in.
      *
-     * @param result The {@link RuleEvalResult}. Cannot be null.
+     * @param result The {@link OnFailResult}. Cannot be null.
      * @param onFail The {@link OnFail} level for which this rule should be reported.
      */
-    protected void addResult(final RuleEvalResult result, final OnFail onFail)
+    protected void addResult(final OnFailResult result, final OnFail onFail)
     {
         AssertArgument.isNotNull(result, "result");
+        AssertArgument.isNotNull(onFail, "onFail");
 
-        // Add the RuleEvalResult to the specific list.
-        results.get(onFail).add(result);
+        if(onFail == OnFail.FATAL) {
+            fatal = result;
+        } else {
+            // Add the OnFailResult to the specific list.
+            results.get(onFail).add(result);
+        }
     }
 }
