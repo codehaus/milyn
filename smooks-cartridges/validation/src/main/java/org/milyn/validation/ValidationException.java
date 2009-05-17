@@ -31,16 +31,6 @@ public class ValidationException extends SmooksException
     private static final long serialVersionUID = 1L;
 
     /**
-     * The string that could not be validated.
-     */
-    private String text;
-
-    /**
-     * The result of the evalutation.
-     */
-    private RuleEvalResult result;
-
-    /**
      * Public constructor.
      *
      * @param message The exception message.
