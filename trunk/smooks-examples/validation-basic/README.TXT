@@ -4,20 +4,17 @@ About This Example:
     used to validate xml message fragments. 
 
     What this example illustrates is:
-        1.  A validation of an xml representing an order format.
-        2.  How the different options for validation are used:
-                1. Using the Smooks regular expressions file.
-                1. Using the a custom regulare expressions file.
-        3.  How errors can be reported:
-            Please refer to the options available for the onFail attribute:
-            http://www.smooks.org/mediawiki/index.php?title=V1.2:Smooks_v1.2_User_Guide#onFail
+        1.  How to create a set of Regex and MVEL "ruleBases" (in the "rules" folder).
+        2.  How to define localized messages for the rules defined in your ruleBases.
+        3.  How to config your ruleBases in your Smooks configuration.
+        4.  How to target validation rules at specfic message fragments.
 
     See:
         1.  The "Main" class in src/main/java/example/Main.java.
         2.  The input message in input-message.xml.
         3.  The code in the src/main/java folder tree (.java).
         4.  smooks-config.xml.
-        5.  The src/main/resources/my-regexes.properites file.
+        5.  The rules in rule message bundles in the "rules" folder.
 
 How to Run?
 ===========
