@@ -16,11 +16,13 @@ package org.milyn.validation;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.InputStream;
 import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.resource.URIResourceLocator;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.util.FreeMarkerTemplate;
 import org.milyn.xml.DomUtils;
@@ -312,10 +314,6 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
 
         messageBundleBaseName = messageBundleBaseName.replace('\\', '/');
         messageBundleBaseName += "_messages";
-
-        if(messageBundleBaseName.charAt(0) == '/') {
-            messageBundleBaseName = messageBundleBaseName.substring(1);
-        }
     }
 
     @Override
@@ -412,7 +410,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
         private ResourceBundle getMessageBundle(Locale locale) {
             ResourceBundle bundle;
             try {
-                bundle = ResourceBundle.getBundle(messageBundleBaseName, locale);
+                bundle = ResourceBundle.getBundle(messageBundleBaseName, locale, new ResourceBundleClassLoader());
             } catch (MissingResourceException e) {
                 throw new SmooksConfigurationException("Failed to load Validation rule message bundle '" + messageBundleBaseName + "'.  This resource must be on the classpath!", e);
             }
@@ -422,6 +420,16 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
 
         public String toString() {
             return "[" + failFragmentPath + "] " + ruleResult.toString();
+        }
+    }
+
+    private class ResourceBundleClassLoader extends ClassLoader {
+        public InputStream getResourceAsStream(String name) {
+            try {
+                return new URIResourceLocator().getResource(name);
+            } catch (IOException e) {
+                return null;
+            }
         }
     }
 }

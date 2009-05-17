@@ -29,14 +29,14 @@ import org.milyn.payload.FilterResult;
 import org.milyn.payload.StringSource;
 import org.milyn.Smooks;
 import org.milyn.FilterSettings;
+import org.milyn.resource.URIResourceLocator;
 import org.milyn.util.FreeMarkerTemplate;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Map;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.util.*;
+import java.net.URL;
 
 /**
  * Unit test for {@link Validator}
@@ -172,4 +172,5 @@ public class ValidatorTest
         assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=11, pattern=[A-Z]([a-z])+", warnings.get(0).getFailRuleResult().toString());
         assertEquals("RegexRuleEvalResult, matched=false, providerName=regex, ruleName=custom, text=C, pattern=[A-Z]([a-z])+", warnings.get(1).getFailRuleResult().toString());
     }
+
 }
