@@ -15,17 +15,12 @@
 */
 package example;
 
-import java.io.ByteArrayInputStream;
-import java.io.CharArrayWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
-
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.payload.StringSource;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
@@ -38,67 +33,57 @@ import org.xml.sax.SAXException;
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  */
-public class Main
-{
-    public static void main(final String... args) throws IOException, SAXException, SmooksException
-    {
-        final byte[] messageIn = readInputMessage();
+public class Main {
+    public static void main(final String... args) throws IOException, SAXException, SmooksException {
+        final String messageIn = readInputMessage();
+
         System.out.println("\n\n==============Message In==============");
         System.out.println(new String(messageIn));
         System.out.println("======================================");
 
-        final List<OnFailResult> results = Main.runSmooksTransform(messageIn);
+        final ValidationResult results = Main.runSmooks(messageIn);
 
         System.out.println("\n==============Validation Result=======");
-        if (results.isEmpty())
-        {
-            System.out.println("Message was valid");
+        System.out.println("Errors:");
+        for (OnFailResult result : results.getErrors()) {
+            System.out.println("\t" + result.getMessage());
         }
-        else
-        {
-            for (OnFailResult result : results)
-            {
-                System.out.println(result);
-            }
+
+        System.out.println("Warnings:");
+        for (OnFailResult result : results.getWarnings()) {
+            System.out.println("\t" + result.getMessage());
         }
+
         System.out.println("======================================\n");
     }
 
-    protected static List<OnFailResult> runSmooksTransform(final byte[] messageIn) throws IOException, SAXException, SmooksException
-    {
+    protected static ValidationResult runSmooks(final String messageIn) throws IOException, SAXException, SmooksException {
         // Instantiate Smooks with the config...
         final Smooks smooks = new Smooks("smooks-config.xml");
 
         try {
-             // Create an exec context - no profiles....
+            // Create an exec context - no profiles....
             final ExecutionContext executionContext = smooks.createExecutionContext();
-            final CharArrayWriter outputWriter = new CharArrayWriter();
             final ValidationResult validationResult = new ValidationResult();
 
             // Configure the execution context to generate a report...
             executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
 
-            // Filter the input message to the outputWriter, using the execution context...
-            smooks.filterSource(executionContext, new StreamSource(new ByteArrayInputStream(messageIn)), new StreamResult(outputWriter), validationResult);
+            // Filter the input message...
+            smooks.filterSource(executionContext, new StringSource(messageIn), validationResult);
 
-            return validationResult.getWarnings();
+            return validationResult;
         }
-        finally
-        {
+        finally {
             smooks.close();
         }
     }
 
-    private static byte[] readInputMessage()
-    {
-        try
-        {
-            return StreamUtils.readStream(new FileInputStream("input-message.xml"));
-        }
-        catch (final IOException e)
-        {
-            e.printStackTrace();
-            return "<no-message/>".getBytes();
+    protected static String readInputMessage() {
+        try {
+            return StreamUtils.readStreamAsString(new FileInputStream("input-message.xml"));
+        } catch (final IOException e) {
+            throw new RuntimeException("Error reading input message.", e);
         }
     }
 }
