@@ -72,7 +72,7 @@ public final class RulesProviderFactory implements ContentHandler<RuleProvider>
     @Initialize
     public void installRuleProvider() throws SmooksConfigurationException
     {
-        logger.info(this);
+        logger.debug(this);
         if(RuleProvider.class.isAssignableFrom(provider))
         {
             final RuleProvider providerImpl = createProvider(provider);
