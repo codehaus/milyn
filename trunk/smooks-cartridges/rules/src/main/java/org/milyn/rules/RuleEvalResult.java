@@ -24,10 +24,6 @@ import java.util.Map;
  *
  * Concrete RuleProviders may implement their own custom result that are more specific to the technology
  * used.
- * </p>
- *
- * Please not that implementation are expected to override toString and return a description of the result
- * that can be used for logging/reporting.
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  *
