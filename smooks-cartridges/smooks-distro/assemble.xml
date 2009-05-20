@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="assemble" name="Assembly">
 
-    <property name="version" value="1.1.1"/>
+    <property name="version.base" value="1.2"/>
+    <property name="version" value="${version.base}.BETA1"/>
+    <property name="mvn.version" value="1.2-SNAPSHOT"/>
 
     <property name="mainDistroName" value="smooks-${version}"/>
     <property name="mainTargetdir" value="target/${mainDistroName}"/>
@@ -31,12 +33,14 @@
     </target>
 
     <target name="run-assemble">
-        <exec dir="../../" executable="${mvnexec}">
-            <arg line="clean install"/>
-        </exec>
+        <ant dir="utils" antfile="getsmooks-build.xml">
+            <property name="smooks.version" value="${mvn.version}" />
+            <property name="todir" value="../target/lib" />
+            <property name="user.home" value="../target" /> <!-- needed for downloading the ant-maven plugin -->
+        </ant>
 
         <exec dir="../../" executable="${mvnexec}">
-            <arg line="javadoc:javadoc"/>
+            <arg line="javadoc:javadoc -P noexamples"/>
         </exec>
 
         <exec dir="../../" executable="${mvnexec}">
@@ -45,9 +49,9 @@
         <exec dir="../../smooks-examples" executable="${mvnexec}">
             <arg line="clean"/>
         </exec>
-        <!-- exec dir="./" executable="${mvnexec}">
+        <exec dir="./" executable="${mvnexec}">
             <arg line="project-info-reports:dependencies"/>
-        </exec -->
+        </exec>
 
         <antcall target="buildMainDistro"/>
         <antcall target="buildExamplesDistro"/>
@@ -121,8 +125,16 @@
             <param name="target" value="${javadocdir}/smooks-cartridges/misc"/>
         </antcall>
         <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/persistence"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/persistence"/>
+        </antcall>
+        <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/routing"/>
             <param name="target" value="${javadocdir}/smooks-cartridges/routing"/>
+        </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/rules"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/rules"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/scripting"/>
@@ -136,10 +148,14 @@
             <param name="source" value="../../smooks-cartridges/templating"/>
             <param name="target" value="${javadocdir}/smooks-cartridges/templating"/>
         </antcall>
+        <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/validation"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/validation"/>
+        </antcall>
 
         <!-- Download the distro docs... -->
         <java classname="org.milyn.distro.html.Downloader" fork="true" failonerror="true" maxmemory="128m">
-            <arg value="http://docs.google.com/View?docID=dfp8fxm6_1fv2nj3hn&amp;revision=_latest&amp;hgd=1"/>
+            <arg value="http://www.smooks.org/mediawiki/index.php?title=V${version.base}:Smooks_v${version.base}_User_Guide&amp;printable=yes"/>
             <arg value="${docsdir}/SmooksUserGuide_v${version}.html"/>
             <classpath>
                 <pathelement location="target/classes" />

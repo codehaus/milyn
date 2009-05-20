@@ -12,60 +12,12 @@
 	<version>${milyn.smooks.core.version}</version>
 
     <dependencies>
-    	<dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-calc</artifactId>
-            <version>${milyn.smooks.calc.version}</version>
-        </dependency>
+
+        <!-- Required for transforming the User Guide - rewriting URLs etc -->
         <dependency>
             <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-css</artifactId>
-            <version>${milyn.smooks.css.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-csv</artifactId>
-            <version>${milyn.smooks.csv.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-edi</artifactId>
-            <version>${milyn.smooks.edi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-javabean</artifactId>
-            <version>${milyn.smooks.javabean.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-json</artifactId>
-            <version>${milyn.smooks.json.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-misc</artifactId>
-            <version>${milyn.smooks.misc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-scripting</artifactId>
-            <version>${milyn.smooks.scripting.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-servlet</artifactId>
-            <version>${milyn.smooks.servlet.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-templating</artifactId>
-            <version>${milyn.smooks.templating.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-routing</artifactId>
-            <version>${milyn.smooks.routing.version}</version>
+            <artifactId>milyn-smooks-core</artifactId>
+            <version>${milyn.smooks.core.version}</version>
         </dependency>
 
         <dependency>
@@ -78,26 +30,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <excludeTransitive>false</excludeTransitive>
-                            <excludeArtifactIds>junit,log4j,hsqldb,servlet-api,xalan,jbossall-client,jboss-j2ee,jdom,cglib-full,cglib-nodep,struts,mockejb,commons-beanutils,commons-digester,commons-fileupload,commons-validator,oro,xmlunit</excludeArtifactIds>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.1</version>

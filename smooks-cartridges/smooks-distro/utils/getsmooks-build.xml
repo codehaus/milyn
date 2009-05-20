@@ -1,6 +1,6 @@
 <project name="Get-Smooks" default="main" basedir="." xmlns:artifact="urn:maven-artifact-ant">
 
-    <property name="smooks.version" value="1.1"/>
+    <property name="smooks.version" value="1.2-SNAPSHOT"/>
 
     <description>
         Script for pulling the current Smooks v${smooks.version} jars from the maven repo. 
@@ -43,10 +43,17 @@
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-javabean"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-json"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-misc"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-persistence"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-routing"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-rules"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-scripting"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-servlet"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-templating"/>
-            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-routing"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-validation"/>
+
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-scribe-hibernate"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-scribe-ibatis"/>
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-scribe-jpa"/>
 
             <remoteRepository refid="codehaus.m2.snapshots" />            
         </artifact:dependencies>
@@ -62,7 +69,7 @@
             <mapper type="flatten"/>
         </copy>
         <delete>
-            <fileset dir="./${todir}" includes="junit*,log4j*,hsqldb*,servlet-api*,xalan*,jbossall-client*,jboss-j2ee*,jdom*,cglib-full*,cglib-nodep*,struts*,mockejb*,mockrunner*,commons-beanutils*,commons-digester*,commons-fileupload*,commons-validator*,oro*,xmlunit*" />
+            <fileset dir="./${todir}" includes="junit*,log4j*,hsqldb*,servlet-api*,xalan*,jbossall-client*,jboss-j2ee*,jdom*,cglib-full*,cglib-nodep*,struts*,mockejb*,mockrunner*,commons-beanutils*,commons-digester*,commons-fileupload*,commons-validator*,oro*,xmlunit*,hibernate-core-*,ibatis-sqlmap-*,dom4j-*,ant-*" />
         </delete>
     </target>
 
