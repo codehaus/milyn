@@ -42,6 +42,7 @@ import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -562,7 +563,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 		List decoders = executionContext.getDeliveryConfig().getObjects("decoder:" + typeAlias);
 
         if (decoders == null || decoders.isEmpty()) {
-            decoder = DataDecoder.Factory.create(typeAlias);
+            if(typeAlias != null) {
+                decoder = DataDecoder.Factory.create(typeAlias);
+            } else {
+                decoder = resolveDecoderReflectively();
+            }
         } else if (!(decoders.get(0) instanceof DataDecoder)) {
             throw new DataDecodeException("Configured decoder '" + typeAlias + ":" + decoders.get(0).getClass().getName() + "' is not an instance of " + DataDecoder.class.getName());
         } else {
@@ -572,8 +577,26 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         return decoder;
     }
 
+    private DataDecoder resolveDecoderReflectively() throws DataDecodeException {
+        String bindingMember = (setterMethod != null? setterMethod : property);
 
-	private BeanRuntimeInfo getWiredBeanRuntimeInfo() {
+        if(bindingMember != null && beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION) {
+            Method bindingMethod = Bean.getBindingMethod(bindingMember, beanRuntimeInfo.getPopulateType());
+            if(bindingMethod != null) {
+                Class<?> bindType = bindingMethod.getParameterTypes()[0];
+                DataDecoder resolvedDecoder = DataDecoder.Factory.create(bindType);
+
+                if(resolvedDecoder != null) {
+                    return resolvedDecoder;
+                }
+            }
+        }
+
+        return new StringDecoder();
+    }
+
+
+    private BeanRuntimeInfo getWiredBeanRuntimeInfo() {
 		if(wiredBeanRuntimeInfo == null) {
             // Don't need to synchronize this.  Worse thing that can happen is we initialize it
             // more than once... no biggie...

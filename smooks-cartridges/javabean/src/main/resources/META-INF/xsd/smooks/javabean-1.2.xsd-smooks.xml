@@ -82,7 +82,6 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">decoder</param>
         <param name="mapTo">type</param>
-        <param name="defaultValue">String</param>
     </resource-config>
 
     <resource-config selector="bindings/value">
