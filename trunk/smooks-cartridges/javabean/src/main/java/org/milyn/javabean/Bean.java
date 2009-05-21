@@ -261,7 +261,7 @@ public class Bean implements VisitorAppender {
         beanInstancePopulator.setBeanId(getBeanId());
         beanInstancePopulator.setValueAttributeName(populatorConfig.getStringParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME));
 
-        Method bindingMethod = getBindingMethod(bindingMember);
+        Method bindingMethod = getBindingMethod(bindingMember, beanClass);
         if (bindingMethod != null) {
             if (dataDecoder == null) {
                 Class dataType = bindingMethod.getParameterTypes()[0];                
@@ -305,7 +305,7 @@ public class Bean implements VisitorAppender {
         // Configure the populator visitor...
         beanInstancePopulator.setBeanId(getBeanId());
         beanInstancePopulator.setWireBeanId(bean.getBeanId());
-        Method bindingMethod = getBindingMethod(bindingMember);
+        Method bindingMethod = getBindingMethod(bindingMember, beanClass);
 
         if (bindingMethod != null) {
             if (bindingMethod.getName().equals(bindingMember)) {
@@ -433,7 +433,7 @@ public class Bean implements VisitorAppender {
      * @param bindingMember Binding member name.
      * @return The binding member, or null if not found.
      */
-    private Method getBindingMethod(String bindingMember) {
+    public static Method getBindingMethod(String bindingMember, Class beanClass) {
         Method[] methods = beanClass.getMethods();
 
         // Check is the bindingMember an actual fully qualified method name...
