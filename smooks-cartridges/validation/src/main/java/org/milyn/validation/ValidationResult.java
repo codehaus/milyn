@@ -24,16 +24,8 @@ import org.milyn.rules.RuleEvalResult;
 import org.milyn.payload.FilterResult;
 
 /**
- * ValidationResult's job is to handle the reporting of validation failures
+ * ValidationResult object for capturing validation failures
  * at different levels.
- * <p>
- * Users can specify the following different levels of reporting:
- * <lu>
- *   <li>OnFail.OK</li> addOK, getOks
- *   <li>OnFail.WARN</li> addWarning, getWarnings
- *   <li>OnFail.ERROR</li> addError, getErrors
- *   <li>OnFail.FAIL</li> addFailure, getFailures
- * </lu>
  *
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */
