@@ -682,6 +682,6 @@ public class EDIParser implements XMLReader {
     }
     private void initializeFeatures() {
         features = new HashMap<String,Boolean>();
-        features.put(VALIDATE, true);
+        features.put(VALIDATE, false);
     }
 }

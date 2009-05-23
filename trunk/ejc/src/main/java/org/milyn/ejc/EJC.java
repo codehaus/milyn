@@ -61,6 +61,7 @@ public class EJC {
      * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
      * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
      * @param configFile the edi-mapping-configuration.
+     * @param configName the name of the edi-mapping-config.
      * @param beanPackage the package name of generated java classes.
      * @param beanFolder the folder to place the generated java classes.
      * @param bindingFile the path and name to place the generated binding-file.
@@ -69,7 +70,7 @@ public class EJC {
      * @throws SAXException When edi-mapping-configuration is badly formatted.
      * @throws IllegalNameException when name of java-classes is illegal.
      */
-    public void compile(InputStream configFile, String beanPackage, String beanFolder, String bindingFile) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
+    public void compile(InputStream configFile, String configName, String beanPackage, String beanFolder, String bindingFile) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
 
         //Read edifact configuration
         Edimap edimap = readEDIConfig(configFile);
@@ -79,10 +80,10 @@ public class EJC {
         ClassModel model = ediConfigReader.parse(edimap, beanPackage);
 
         LOG.info("Writing java beans to " + beanFolder + "...");
-        BeanWriter.writeBeans(model, beanFolder);
+        BeanWriter.writeBeans(model, beanFolder, bindingFile);
 
         LOG.info("Creating bindingfile...");
-        BindingWriter.parse(model, bindingFile );
+        BindingWriter.parse(model, bindingFile, configName );
 
         LOG.info("-----------------------------------------------------------------------");
         LOG.info(" Compiltation complete.");
@@ -153,7 +154,7 @@ public class EJC {
         InputStream configInputStream = null;
         try {
             configInputStream = new ByteArrayInputStream(StreamUtils.readStream(new FileInputStream(configFile)));
-            ejc.compile(configInputStream, beanPackage, beanFolder, bindingFile);
+            ejc.compile(configInputStream, configFile, beanPackage, beanFolder, bindingFile);
 
         } finally {
             if (configInputStream != null) {

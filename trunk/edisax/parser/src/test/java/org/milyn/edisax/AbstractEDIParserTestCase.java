@@ -43,6 +43,7 @@ public abstract class AbstractEDIParserTestCase extends TestCase {
 
 			parser.setContentHandler(contentHandler);
 			parser.setMappingModel(EDIParser.parseMappingModel(mapping));
+            parser.setFeature(EDIParser.VALIDATE, true);
 			parser.parse(new InputSource(input));
 
 			mappingResult = contentHandler.xmlMapping.toString().trim();

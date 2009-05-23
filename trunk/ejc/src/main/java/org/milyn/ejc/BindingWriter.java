@@ -30,8 +30,9 @@ public class BindingWriter {
 
     private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
 
-    private static final String CONFIG_START = "<?xml version=\"1.0\"?>\n<smooks-resource-list xmlns=\"http://www.milyn.org/xsd/smooks-1.1.xsd\" xmlns:jb=\"http://www.milyn.org/xsd/smooks/javabean-1.1.xsd\">";
+    private static final String CONFIG_START = "<?xml version=\"1.0\"?>\n<smooks-resource-list xmlns=\"http://www.milyn.org/xsd/smooks-1.1.xsd\" xmlns:edi=\"http://www.milyn.org/xsd/smooks/edi-1.1.xsd\" xmlns:jb=\"http://www.milyn.org/xsd/smooks/javabean-1.1.xsd\">";
     private static final String CONFIG_END = "</smooks-resource-list>";
+    private static final String EDI_READER = "<edi:reader mappingModel=\"%1$s\" />";
 
     private static final String WIRING_ELEMENT = "jb:wiring";
 
@@ -53,13 +54,14 @@ public class BindingWriter {
     private static final String DECODE_PARAM_ELEMENT = "jb:decodeParam";
     private static final String NAME_ATTRIBUTE = "name";
 
-    public static void parse(ClassModel model, String bindingFile) throws IOException, IllegalNameException {
+    public static void parse(ClassModel model, String bindingFile, String ediConfigFile) throws IOException, IllegalNameException {
 
         JClass root = model.getRoot();
         OutputStreamWriter writer = null;
         try {
             writer = new OutputStreamWriter(new FileOutputStream(bindingFile));
             writer.write(CONFIG_START);
+            addEdiReaderConfig(writer, ediConfigFile);
             parseClass(root, writer);
             writer.write(CONFIG_END);
         } finally {
@@ -67,6 +69,10 @@ public class BindingWriter {
                 writer.close();
             }
         }
+    }
+
+    private static void addEdiReaderConfig(Writer writer, String ediConfigFile) throws IOException {
+        writer.write (String.format(EDI_READER, ediConfigFile));        
     }
 
     private static void parseClass(JClass clazz, Writer writer) throws IOException, IllegalNameException {
