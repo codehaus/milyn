@@ -228,7 +228,7 @@ public class Main {
             EJC ejc = new EJC();
 
             InputStream configFile = new ByteArrayInputStream(getResource("edi-to-xml-order-mapping.xml"));
-            ejc.compile(configFile, packageName, folder, folder + "binding-config.xml");
+            ejc.compile(configFile, "edi-to-xml-order-mapping.xml", packageName, folder, folder + "binding-config.xml");
 
         } finally {
             if (inputStream != null) {
@@ -243,14 +243,13 @@ public class Main {
             EJC ejc = new EJC();
 
             InputStream configFile = new ByteArrayInputStream(getResource("edi-to-xml-order-mapping.xml"));
-            ejc.compile(configFile, packageName, folder, folder + "binding-config.xml");
+            ejc.compile(configFile, "edi-to-xml-order-mapping.xml", packageName, folder, folder + "binding-config.xml");
 
             compileSourceFile(folder,  packageName, "Order");
 
             Smooks smooks = new Smooks();
 
             try {
-                smooks.addConfigurations(new ByteArrayInputStream(getResource("edi-config.xml")));
                 smooks.addConfigurations(new FileInputStream(folder + "binding-config.xml"));
                 ExecutionContext context = smooks.createExecutionContext();
 

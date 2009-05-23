@@ -15,6 +15,12 @@
 
         <dependency>
             <groupId>org.milyn</groupId>
+            <artifactId>milyn-commons</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-edi</artifactId>
             <version>${milyn.smooks.edi.version}</version>
         </dependency>

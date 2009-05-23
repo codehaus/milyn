@@ -15,11 +15,13 @@
 */
 package org.milyn.ejc;
 
-import org.milyn.ejc.classes.*;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.milyn.ejc.classes.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
  * BeanWriter writes all classes found in ClassModel to filesystem.
@@ -42,29 +44,21 @@ public class BeanWriter {
      * implementation and saves the new class to filesystem.
      * @param model the {@link org.milyn.ejc.ClassModel}.
      * @param folder the output folder for generated classes.
-     * @throws IOException when error ocurrs while saving the implemented class to filesystem.   
+     * @param bindingFile the name of the smooks configuration.
+     * @throws IOException when error ocurrs while saving the implemented class to filesystem.
+     * @throws IllegalNameException when class is a keyword in java.
      */
-    public static void writeBeans(ClassModel model, String folder) throws IOException {
+    public static void writeBeans(ClassModel model, String folder, String bindingFile) throws IOException, IllegalNameException {
         folder = new File(folder).getCanonicalPath();
-        File file;
-        FileOutputStream fileOutputStream;
-        OutputStreamWriter outputStreamWriter;
+
         for ( JClass bean : model.getCreatedClasses().values() ) {
             if (bean instanceof JJavaClass) {
                 continue;
             }
-            file = new File(folder + "/" + bean.getPackage().getName().replace(".", "/"));
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-
-            fileOutputStream = new FileOutputStream(file.getCanonicalPath()+ "/" + bean.getName() + ".java");
-            outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-            outputStreamWriter.write( writeBean(bean) );
-            outputStreamWriter.close();
-            fileOutputStream.close();
+            writeToFile(folder, bean.getPackage().getName(), bean.getName(), writeBean(bean));
         }
 
+        writeFactoryClass(folder, model.getRoot(), bindingFile);
     }
 
     /**
@@ -238,5 +232,105 @@ public class BeanWriter {
             result.append(parameter.getType().getName());
         }
         return result.toString();
+    }
+
+    /**
+     * Creates a Factory for root-class in ClassModel. The Factory wraps
+     * the logic for filtering the edi-input in Smooks.
+     * @param folder the folder to store the Factory.     
+     * @param rootClass the root class in {@link org.milyn.ejc.ClassModel}.
+     * @param bindingfile the name of the smooks configuration.
+     * @throws IllegalNameException when class is a keyword in java.
+     * @throws IOException when error occurs when saving to filesystem.
+     */
+    private static void writeFactoryClass(String folder, JClass rootClass, String bindingfile  ) throws IllegalNameException, IOException {
+        String packageName = rootClass.getPackage().getName();
+        String className = rootClass.getName();
+        String classId = EJCUtils.encodeAttributeName(rootClass.getType(), rootClass.getName());
+        String factoryClass = getFactorySkeleton();
+        factoryClass = factoryClass.replaceAll("\\$\\{package\\}", packageName);
+        factoryClass = factoryClass.replaceAll("\\$\\{className\\}", className);
+        factoryClass = factoryClass.replaceAll("\\$\\{classId\\}", classId);
+        factoryClass = factoryClass.replaceAll("\\$\\{bindingFile\\}", bindingfile);
+
+        writeToFile(folder, packageName, className+"Factory", factoryClass);
+    }
+
+    /**
+     * Saves beanAsString to filesystem.
+     * @param folder the folder to store the Factory.
+     * @param packageName the java package.
+     * @param beanName the name of the Class.
+     * @param beanAsString a String-representation of the Class.
+     * @throws IOException when error occurs when saving to filesystem.
+     */
+    private static void writeToFile(String folder, String packageName, String beanName, String beanAsString) throws IOException {
+        File file;
+        file = new File(folder + "/" + packageName.replace(".", "/"));
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        FileOutputStream fileOutputStream = null;
+        OutputStreamWriter outputStreamWriter = null;
+        try {
+            fileOutputStream = new FileOutputStream(file.getCanonicalPath()+ "/" + beanName + ".java");
+            outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+            outputStreamWriter.write( beanAsString );
+        } finally {
+            if (outputStreamWriter != null) {
+                outputStreamWriter.close();
+            }
+            if (fileOutputStream != null) {
+                fileOutputStream.close();
+            }
+        }
+    }
+
+    /**
+     * Returns the code for the Factory with keywords to substitute
+     * with specific information found in root-class in {@link org.milyn.ejc.ClassModel}.
+     * @return the Factory class implementation.
+     */
+    private static String getFactorySkeleton() {
+        return "package ${package};\n" +
+                "\n" +
+                "import org.milyn.Smooks;\n" +
+                "import org.milyn.payload.JavaResult;\n" +
+                "import org.xml.sax.SAXException;\n" +
+                "\n" +
+                "import javax.xml.transform.stream.StreamSource;\n" +
+                "import java.io.Reader;\n" +
+                "import java.io.InputStreamReader;\n" +
+                "import java.io.InputStream;\n" +
+                "import java.io.IOException;\n" +
+                "\n" +
+                "public class ${className}Factory {\n" +
+                "\n" +
+                "    private static ${className}Factory instance;\n" +
+                "    private Smooks smooks;\n" +
+                "\n" +
+                "    public static ${className}Factory getInstance() throws IOException, SAXException {\n" +
+                "        if (instance == null) {\n" +
+                "            instance = new ${className}Factory();\n" +
+                "        }\n" +
+                "        return instance;\n" +
+                "    }\n" +
+                "\n" +
+                "    public ${className} parse(InputStream ediStream) {\n" +
+                "        return parse(new InputStreamReader(ediStream));\n" +
+                "    }\n" +
+                "\n" +
+                "    public ${className} parse(Reader ediStream) {\n" +
+                "        JavaResult result = new JavaResult();\n" +
+                "        smooks.filterSource(new StreamSource(ediStream), result);\n" +
+                "        return (${className}) result.getBean(\"${classId}\");\n" +
+                "    }\n" +
+                "\n" +
+                "    private ${className}Factory() throws IOException, SAXException {\n" +
+                "        smooks = new Smooks(${className}Factory.class.getResourceAsStream(\"${bindingFile}\"));\n" +
+                "    }\n" +
+                "\n" +
+                "}";
     }
 }
