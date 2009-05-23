@@ -17,6 +17,7 @@ package example;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Locale;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
@@ -37,6 +38,9 @@ public class Main {
     public static void main(final String... args) throws IOException, SAXException, SmooksException {
         final String messageIn = readInputMessage();
 
+        // Uncomment to enable a Swedish locale.
+        //Locale.setDefault(new Locale("sv", "SE"));
+
         System.out.println("\n\n==============Message In==============");
         System.out.println(new String(messageIn));
         System.out.println("======================================");
@@ -47,11 +51,15 @@ public class Main {
         System.out.println("Errors:");
         for (OnFailResult result : results.getErrors()) {
             System.out.println("\t" + result.getMessage());
+            System.out.println("\tSwedish:");
+            System.out.println("\t" + result.getMessage(new Locale("sv", "SE")));
         }
 
         System.out.println("Warnings:");
         for (OnFailResult result : results.getWarnings()) {
             System.out.println("\t" + result.getMessage());
+            System.out.println("\tSwedish:");
+            System.out.println("\t" + result.getMessage(new Locale("sv", "SE")));
         }
 
         System.out.println("======================================\n");
