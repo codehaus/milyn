@@ -40,7 +40,8 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
     private String rootElementName = "csv-set";
     private String recordElementName = "csv-record";
     private CSVBinding binding;
-    private String targetProfile;    
+    private String targetProfile;
+    private boolean indent = false;
 
     public CSVReaderConfigurator(String csvFields) {
         AssertArgument.isNotNullAndNotEmpty(csvFields, "csvFields");
@@ -83,6 +84,11 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
+    public CSVReaderConfigurator setIndent(boolean indent) {
+        this.indent = indent;
+        return this;
+    }
+
     public CSVReaderConfigurator setBinding(CSVBinding binding) {
         this.binding = binding;
         return this;
@@ -104,6 +110,7 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         configurator.getParameters().setProperty("encoding", encoding.name());
         configurator.getParameters().setProperty("rootElementName", rootElementName);
         configurator.getParameters().setProperty("recordElementName", recordElementName);
+        configurator.getParameters().setProperty("indent", Boolean.toString(indent));
 
         if(binding != null) {
             configurator.getParameters().setProperty("bindBeanId", binding.getBeanId());

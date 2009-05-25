@@ -141,6 +141,10 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
     private static final String IGNORE_FIELD = "$ignore$";
 
+    private static char[] INDENT_LF = new char[] {'\n'};
+    private static char[] INDENT_1  = new char[] {'\t'};
+    private static char[] INDENT_2  = new char[] {'\t', '\t'};
+
     private ContentHandler contentHandler;
 	private ExecutionContext request;
 
@@ -164,6 +168,9 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
     @ConfigParam(defaultVal="csv-record")
     private String recordElementName;
+
+    @ConfigParam(defaultVal="false")
+    private boolean indent;
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String bindBeanId;
@@ -272,6 +279,11 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         		continue;
         	}
 
+            if(indent) {
+                contentHandler.characters(INDENT_LF, 0, 1);
+                contentHandler.characters(INDENT_1, 0, 1);
+            }
+
             contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", EMPTY_ATTRIBS);
         	int recordIt = 0;
             for(int fieldIt = 0; fieldIt < csvFields.length; fieldIt++) {
@@ -285,12 +297,32 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
                 	recordIt += toSkip;
                 	continue;
                 }                
+
+                if(indent) {
+                    contentHandler.characters(INDENT_LF, 0, 1);
+                    contentHandler.characters(INDENT_2, 0, 2);
+                }
+
                 contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", EMPTY_ATTRIBS);
                 contentHandler.characters(csvRecord[recordIt].toCharArray(), 0, csvRecord[recordIt].length());
                 contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
+
+                if(indent) {
+                }
+
                 recordIt++;
             }
+
+            if(indent) {
+                contentHandler.characters(INDENT_LF, 0, 1);
+                contentHandler.characters(INDENT_1, 0, 1);
+            }
+
             contentHandler.endElement(null, recordElementName, "");
+        }
+
+        if(indent) {
+            contentHandler.characters(INDENT_LF, 0, 1);
         }
 
         // Close out the "csv-set" root element and end the document..
