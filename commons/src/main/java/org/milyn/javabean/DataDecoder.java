@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
 /**
  * Data decoder.
@@ -128,6 +129,17 @@ public interface DataDecoder {
                     }
                 }
             }
+        }
+
+        /**
+         * Get the full set of installed decoders, keyed by the decode type.
+         * @return The set of installed decoders, keyed by the decode type.
+         */
+        public static Map<Class, Class<? extends DataDecoder>> getInstalledDecoders() {
+            if(installedDecoders == null) {
+                loadInstalledDecoders();
+            }
+            return Collections.unmodifiableMap(installedDecoders);
         }
 
         /**
