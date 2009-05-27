@@ -251,7 +251,7 @@ public class BeanWriter {
         factoryClass = factoryClass.replaceAll("\\$\\{package\\}", packageName);
         factoryClass = factoryClass.replaceAll("\\$\\{className\\}", className);
         factoryClass = factoryClass.replaceAll("\\$\\{classId\\}", classId);
-        factoryClass = factoryClass.replaceAll("\\$\\{bindingFile\\}", bindingfile);
+        factoryClass = factoryClass.replaceAll("\\$\\{bindingFile\\}", new File(bindingfile).getName());
 
         writeToFile(folder, packageName, className+"Factory", factoryClass);
     }

@@ -46,6 +46,7 @@ public class EJC {
     private static final String PARAMETER_BEAN_FOLDER = "-d";
     private static final String PARAMETER_BEAN_PACKAGE = "-p";
     private static final String PARAMETER_BINDING_FILE = "-b";
+    //private static final String PARAMETER_JAR_PATH = "-jar";
 
     private static final String PARAMETER_VERBOSE = "-version";
     private static final String PARAMETER_QUIET = "-quiet";
@@ -85,6 +86,11 @@ public class EJC {
         LOG.info("Creating bindingfile...");
         BindingWriter.parse(model, bindingFile, configName );
 
+//        if (jar != null) {
+//            LOG.info("Creating jarfile [" + jar + "].");
+//            GenerateJar.generateJar(beanFolder, beanPackage, model.getRoot().getName(), bindingFile, jar);
+//        }
+
         LOG.info("-----------------------------------------------------------------------");
         LOG.info(" Compiltation complete.");
         LOG.info("-----------------------------------------------------------------------");
@@ -123,6 +129,7 @@ public class EJC {
         String beanPackage = getParameter(PARAMETER_BEAN_PACKAGE, args);
         String beanFolder = getParameter(PARAMETER_BEAN_FOLDER, args);
         String bindingFile = getParameter(PARAMETER_BINDING_FILE, args);
+        //String jarPath = getParameter(PARAMETER_JAR_PATH, args);
         boolean isVerbose = containsParameter(PARAMETER_VERBOSE, args);
         boolean isQuiet = containsParameter(PARAMETER_QUIET, args);
 
@@ -186,6 +193,7 @@ public class EJC {
                 "  -d <dir>           :  generated files will go into this directory\n" +
                 "  -p <pkg>           :  specifies the target package\n" +
                 "  -b <bindingfile>   :  generated bindingfile will go inte this directory\n" +
+                //"  -jar               :  path to generated jar holding both generated classes and bindingfile\n" +
                 "\n" +
                 "  -verbose           :  be extra verbose\n" +
                 "  -quiet             :  suppress compiler output\n" +

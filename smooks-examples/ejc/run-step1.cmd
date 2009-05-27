@@ -1,0 +1,1 @@
+java -jar target/dependencies/milyn-smooks-ejc-1.2-SNAPSHOT.jar -b "bindingfile.xml" -p test.packageName -d ""  "edi-to-xml-order-mapping.xml"

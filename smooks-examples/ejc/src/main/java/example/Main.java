@@ -29,6 +29,9 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.net.URLDecoder;
 
+import test.packageName.OrderFactory;
+import test.packageName.Order;
+
 /**
  * Simple example of how to use EJC.
  *
@@ -75,15 +78,15 @@ public class Main {
 
         Main main = new Main ();
 
-        introToPart1();
+//        introToPart1();
 
-        writeEdiConfiguration(main.getFolder());
-
-        writeEJCCompilation();
-
-        main.performEJCCompilation();
-
-        writeSummaryToPart1(main.getFolder());
+//        writeEdiConfiguration(main.getFolder());
+//
+//        writeEJCCompilation();
+//
+//        main.performEJCCompilation();
+//
+//        writeSummaryToPart1(main.getFolder());
 
         introToPart2();
 
@@ -238,37 +241,51 @@ public class Main {
     }
 
     protected String runEJCTest() throws EDIConfigurationException, IllegalNameException, IOException, SAXException, InterruptedException {
+
         InputStream inputStream = null;
         try {
-            EJC ejc = new EJC();
 
-            InputStream configFile = new ByteArrayInputStream(getResource("edi-to-xml-order-mapping.xml"));
-            ejc.compile(configFile, "edi-to-xml-order-mapping.xml", packageName, folder, folder + "binding-config.xml");
+            inputStream = new FileInputStream(folder + "../../" + "input-message.edi");
+            OrderFactory orderFactory = OrderFactory.getInstance();
+            Order order = orderFactory.parse(inputStream);
 
-            compileSourceFile(folder,  packageName, "Order");
-
-            Smooks smooks = new Smooks();
-
-            try {
-                smooks.addConfigurations(new FileInputStream(folder + "binding-config.xml"));
-                ExecutionContext context = smooks.createExecutionContext();
-
-                JavaResult result = new JavaResult();
-                inputStream = new FileInputStream(folder + "../../" + "input-message.edi");
-                StreamSource source = new StreamSource(inputStream);
-                smooks.filterSource(context, source, result);
-
-                com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream();
-
-                return xstream.toXML(result.getBean("order"));
-            } finally {
-                smooks.close();
-            }
+            com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream();
+            return xstream.toXML(order);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         } finally {
             if (inputStream != null) {
                 inputStream.close();
             }
         }
+//        InputStream inputStream = null;
+//        try {
+//
+//            compileSourceFile(folder,  packageName, "OrderFactory");
+//
+//            Smooks smooks = new Smooks();
+//
+//            try {
+//                smooks.addConfigurations(new FileInputStream(folder + "binding-config.xml"));
+//                ExecutionContext context = smooks.createExecutionContext();
+//
+//                JavaResult result = new JavaResult();
+//                inputStream = new FileInputStream(folder + "../../" + "input-message.edi");
+//                StreamSource source = new StreamSource(inputStream);
+//                smooks.filterSource(context, source, result);
+//
+//                com.thoughtworks.xstream.XStream xstream = new com.thoughtworks.xstream.XStream();
+//
+//                return xstream.toXML(result.getBean("order"));
+//            } finally {
+//                smooks.close();
+//            }
+//        } finally {
+//            if (inputStream != null) {
+//                inputStream.close();
+//            }
+//        }
     }
 
     private static byte[] getEDIConfiguration(String folder) throws IOException {
@@ -286,40 +303,42 @@ public class Main {
     }
 
     private static byte[] getResource(String resourceName) throws IOException {
-        return StreamUtils.readStream(new FileInputStream(resourceName));
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+        byte[] b = new byte[in.available()];
+        in.read(b);
+        in.close();
+        return b;
+        //return StreamUtils.readStream(new FileInputStream(resourceName));
     }
 
     private static void compileSourceFile(String path, String packageName, String className) throws InterruptedException, IOException {
-        try {
-            Runtime _runtime = Runtime.getRuntime();
-            String[] _cmd = getCommand( path, packageName, className );
-            final Process _proc = _runtime.exec(_cmd);
-            int _exitVal = _proc.waitFor();
-            if (_exitVal != 0) {
-                StringBuilder msg = new StringBuilder();
-                msg.append("Failed to compile java sourcefiles. Command [");
-                for (String s : _cmd) {
-                    msg.append("_cmd[i] = ").append(s);
-                }
-                msg.append("].");
-            }
+        String classFile = path + packageName.replace('.', '/') + "/" + className + ".java";
+        String[] parameters = {"-classpath", getClassPath(path), classFile};
 
-        } catch (InterruptedException e) {
-            assert false : e;
-        } catch (IOException e) {
-            assert false : e;
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        try {
+            com.sun.tools.javac.Main.compile(parameters, pw);
+        } catch (Exception e) {
+            assert false : sw.toString();
+        } finally {
+            pw.close();
+            sw.close();
         }
     }
 
-    private static String[] getCommand(String path, String packageName, String className) {
-        String classFile = path + packageName.replace('.', '/') + "/" + className + ".java";
-        String _osName = System.getProperty("os.name");
-        if (_osName.equals("Windows 95") || _osName.equals("Windows 98")) {
-            return new String[] {"command.com", "/C", "start /wait /min javac -classpath " + "\"" + path + "\" " + "\"" + classFile + "\""};
-        } else if (_osName.startsWith("Windows")) {
-            return new String[] {"cmd.exe", "/C", "start /wait /min javac -classpath " + "\"" + path + "\" " + "\"" + classFile + "\""};
-        } else {
-            return new String[] { "javac", "-classpath " + "\"" + path + "\" " + "\"" + classFile + "\""};
+    private static String getClassPath(String path) throws IOException {
+        StringBuilder result  = new StringBuilder();
+        result.append(path);
+
+        String currentDir = Thread.currentThread().getContextClassLoader().getResource("").getFile();
+        File dependencyDir = new File(currentDir + "../dependencies");
+        for (File file : dependencyDir.listFiles()) {
+            if (file.getName().startsWith("milyn-smooks-core-") || file.getName().startsWith("milyn-commons-")) {
+                result.append(";");
+                result.append(file.getCanonicalPath());
+            }
         }
+        return result.toString();
     }
 }
