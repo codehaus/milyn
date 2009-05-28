@@ -27,8 +27,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
 import org.milyn.SmooksUtil;
+import org.milyn.payload.StringResult;
 import org.milyn.container.ExecutionContext;
 import org.milyn.io.StreamUtils;
+import org.xml.sax.SAXException;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.Diff;
+
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * @author <a href="mailto:maurice@zeijen.net">maurice@zeijen.net</a>
@@ -87,6 +93,15 @@ public class JSONReaderExtendedConfigTest extends TestCase {
                 .setRootName("root")
                 .setArrayElementName("e"));
         test_config_file("configured_different_node_names", smooks);
+    }
+
+    public void test_indent() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("indent-config.xml"));
+        StringResult result = new StringResult();
+
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message.jsn")), result);
+
+        assertTrue(XMLUnit.compareXML(StreamUtils.readStreamAsString(getClass().getResourceAsStream("indent-expected.xml")), result.toString()).identical());
     }
 
     private void test_config_file(String testName) throws Exception {
