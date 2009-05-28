@@ -20,12 +20,12 @@
     </rules:ruleBases>
 
     <!-- Capture some order-item data into the bean context - required by the business rule validations... -->
-    <jb:bindings beanId="orderDetails" class="java.util.HashMap" createOnElement="header">
+    <jb:bean beanId="orderDetails" class="java.util.HashMap" createOnElement="header">
         <jb:value data="header/*"/>
-    </jb:bindings>
-    <jb:bindings beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
+    </jb:bean>
+    <jb:bean beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
         <jb:value data="order-item/*"/>
-    </jb:bindings>
+    </jb:bean>
 
     <!-- Target validation rules... -->
     <validation:rule executeOn="header/username" name="customer.customerId" onFail="ERROR"/>

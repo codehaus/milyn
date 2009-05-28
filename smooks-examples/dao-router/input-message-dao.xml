@@ -1,5 +1,5 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd" xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
+	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.2.xsd" xmlns:dao="http://www.milyn.org/xsd/smooks/persistence-1.2.xsd">
 
 	<!--
 		The inserter calls (via Scribe) the SessionDaoAdapter#insert() method
@@ -13,26 +13,26 @@
 		This is a normal Javabean binding. It creates the order bean and binds
 		data into it.
 	-->
-	<jb:bindings beanId="order" class="example.entity.Order"
+	<jb:bean beanId="order" class="example.entity.Order"
 		createOnElement="order">
-		
+
 		<jb:value property="ordernumber" data="ordernumber" />
 		<jb:value property="customerId" data="customer" />
 		<jb:wiring setterMethod="addOrderLine" beanIdRef="orderLine" />
-	</jb:bindings>
+	</jb:bean>
 
 	<!--
 		This is a normal Javabean binding. Notice that we have a wiring on
 		'product'. The Product entity will not be created, but looked up by a
 		locator.
 	-->
-	<jb:bindings beanId="orderLine" class="example.entity.OrderLine"
+	<jb:bean beanId="orderLine" class="example.entity.OrderLine"
 		createOnElement="order-item">
-		
+
 		<jb:value property="quantity" data="quantity" decoder="Integer" />
 		<jb:wiring property="order" beanIdRef="order" />
 		<jb:wiring property="product" beanIdRef="product" />
-	</jb:bindings>
+	</jb:bean>
 
 	<!--
 		This locator calls (via Scribe) the SessionDaoAdapter#lookupByQuery()
@@ -41,7 +41,7 @@
 	-->
 	<dao:locator beanId="product" lookupOnElement="order-item"
 		onNoResult="EXCEPTION" uniqueResult="true">
-		
+
 		<dao:query>from Product p where p.id = :id</dao:query>
 		<dao:params>
 			<dao:value name="id" data="product" decoder="Integer" />

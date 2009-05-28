@@ -3,16 +3,16 @@
 
     <jb:result retainBeans="root" />
 
-    <jb:bindings beanId="root" class="java.util.HashMap" createOnElement="root">
+    <jb:bean beanId="root" class="java.util.HashMap" createOnElement="root">
         <jb:wiring beanIdRef="a"/>
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="a" class="java.util.ArrayList" createOnElement="a">
+    <jb:bean beanId="a" class="java.util.ArrayList" createOnElement="a">
     	<jb:wiring beanIdRef="b"/>
-	</jb:bindings>
+	</jb:bean>
 
-	<jb:bindings beanId="b" class="java.util.HashMap" createOnElement="b">
+	<jb:bean beanId="b" class="java.util.HashMap" createOnElement="b">
 		<jb:value property="value" data="b" />
-	</jb:bindings>
+	</jb:bean>
 
 </smooks-resource-list>

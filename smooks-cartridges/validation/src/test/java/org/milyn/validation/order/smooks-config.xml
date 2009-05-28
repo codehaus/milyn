@@ -14,14 +14,14 @@
         <rules:ruleBase name="product" src="/org/milyn/validation/order/rules/product.properties" provider="org.milyn.rules.regex.RegexProvider"/>
     </rules:ruleBases>
 
-    <jb:bindings beanId="order" class="java.util.HashMap" createOnElement="order">
+    <jb:bean beanId="order" class="java.util.HashMap" createOnElement="order">
         <jb:value property="customerId" data="customer/@number" />
         <jb:value data="header/*" />
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
+    <jb:bean beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
         <jb:value data="order-item/*" />
-    </jb:bindings>
+    </jb:bean>
 
     <validation:rule executeOn="customer/@number" name="customer.customerId" onFail="ERROR"/>
     <validation:rule executeOn="customer" name="customer.customerName" onFail="WARN"/>

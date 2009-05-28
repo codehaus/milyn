@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.2.xsd">
 
     <!-- TODO:
             THIS IS A CONFIGURATION TEMPLATE!!  It is not the finished article.
@@ -17,7 +17,7 @@
             4. Double-check the binding config elements (<jb:value> and <jb:wiring>), making sure all Java properties
                have been covered in the generated configuration.
 
-            Determining appropriate values for the <jb:bindings createOnElement> and <jb:value data> attributes can
+            Determining appropriate values for the <jb:bean createOnElement> and <jb:value data> attributes can
             sometimes be difficult, especially for non XML Sources (Java etc).  The Html Reporting tool can be a great
             help here because it helps you visualise the input message model (against which the selectors will be
             applied) as seen by Smooks.  So, first off, generate a report using your Source data, but with an empty
@@ -28,40 +28,40 @@
     -->
 
 
-    <jb:bindings beanId="order" class="org.milyn.javabean.Order" createOnElement="$TODO$">
+    <jb:bean beanId="order" class="org.milyn.javabean.Order" createOnElement="$TODO$">
         <jb:wiring property="header" beanIdRef="header" />
         <jb:wiring property="orderItems" beanIdRef="orderItems" />
         <jb:wiring property="orderItemsArray" beanIdRef="orderItemsArray" />
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="header" class="org.milyn.javabean.Header" createOnElement="$TODO$">
+    <jb:bean beanId="header" class="org.milyn.javabean.Header" createOnElement="$TODO$">
         <jb:value property="date" decoder="$TODO$" data="$TODO$" />
         <jb:value property="customerNumber" decoder="Long" data="$TODO$" />
         <jb:value property="customerName" decoder="String" data="$TODO$" />
         <jb:value property="privatePerson" decoder="Boolean" data="$TODO$" />
         <jb:wiring property="order" beanIdRef="order" />
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="orderItems" class="java.util.ArrayList" createOnElement="$TODO$">
+    <jb:bean beanId="orderItems" class="java.util.ArrayList" createOnElement="$TODO$">
         <jb:wiring beanIdRef="orderItems_entry" />
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="orderItems_entry" class="org.milyn.javabean.OrderItem" createOnElement="$TODO$">
+    <jb:bean beanId="orderItems_entry" class="org.milyn.javabean.OrderItem" createOnElement="$TODO$">
         <jb:value property="productId" decoder="Long" data="$TODO$" />
         <jb:value property="quantity" decoder="Integer" data="$TODO$" />
         <jb:value property="price" decoder="Double" data="$TODO$" />
         <jb:wiring property="order" beanIdRef="order" />
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="orderItemsArray" class="org.milyn.javabean.OrderItem[]" createOnElement="$TODO$">
+    <jb:bean beanId="orderItemsArray" class="org.milyn.javabean.OrderItem[]" createOnElement="$TODO$">
         <jb:wiring beanIdRef="orderItemsArray_entry" />
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="orderItemsArray_entry" class="org.milyn.javabean.OrderItem" createOnElement="$TODO$">
+    <jb:bean beanId="orderItemsArray_entry" class="org.milyn.javabean.OrderItem" createOnElement="$TODO$">
         <jb:value property="productId" decoder="Long" data="$TODO$" />
         <jb:value property="quantity" decoder="Integer" data="$TODO$" />
         <jb:value property="price" decoder="Double" data="$TODO$" />
         <jb:wiring property="order" beanIdRef="order" />
-    </jb:bindings>
+    </jb:bean>
 
 </smooks-resource-list>

@@ -20,7 +20,6 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMVisitBefore;
-import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**

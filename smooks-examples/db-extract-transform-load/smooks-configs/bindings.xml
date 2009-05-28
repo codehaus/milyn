@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <smooks-resource-list 
 	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" 
-	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.1.xsd">
+	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.2.xsd">
 
     <!--
         Virtual Model Binding Configurations for the order message elements...
@@ -17,24 +17,24 @@
         ORDERITEMS (ORDERNUMBER INTEGER, QUANTITY INTEGER, PRODUCT INTEGER, TITLE VARCHAR(50), PRICE DOUBLE)
     -->
 
-    <jb:bindings beanId="message" class="java.util.HashMap" createOnElement="message-header">
+    <jb:bean beanId="message" class="java.util.HashMap" createOnElement="message-header">
         <jb:value property="date" data="message-header/date" decoder="Date">
             <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
         </jb:value>
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="order" class="java.util.HashMap" createOnElement="order">
+    <jb:bean beanId="order" class="java.util.HashMap" createOnElement="order">
         <jb:value property="orderNum"      data="order/order-id"     decoder="Integer" />
         <jb:value property="customerUname" data="order/customer-details/username" />
         <jb:value property="status"        data="order/status-code"  decoder="Integer" />
         <jb:value property="net"           data="order/net-amount"   decoder="BigDecimal" />
         <jb:value property="total"         data="order/total-amount" decoder="BigDecimal" />
-    </jb:bindings>
+    </jb:bean>
 
-    <jb:bindings beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
+    <jb:bean beanId="orderItem" class="java.util.HashMap" createOnElement="order-item">
         <!-- Just bind in all elements of the orderItem into the orderItem map.  Property name is
              taken from the element name... -->
         <jb:value data="order-item/*" />
-    </jb:bindings>
+    </jb:bean>
 
 </smooks-resource-list>
