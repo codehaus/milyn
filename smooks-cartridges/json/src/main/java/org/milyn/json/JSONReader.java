@@ -188,6 +188,8 @@ public class JSONReader implements SmooksXMLReader {
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
+    @ConfigParam(defaultVal = "false")
+    private boolean indent;
 
     private boolean doKeyReplacement = false;
 
@@ -257,7 +259,7 @@ public class JSONReader implements SmooksXMLReader {
 
 	        // Start the document and add the root "csv-set" element...
 	        contentHandler.startDocument();
-	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootName, "", EMPTY_ATTRIBS);
+	        startElement(rootName, 0);
 
 	        if(logger.isTraceEnabled()) {
 	        	logger.trace("Starting JSON parsing");
@@ -279,7 +281,7 @@ public class JSONReader implements SmooksXMLReader {
 	        	case START_ARRAY:
 	        		if(!first) {
 		        		if(!typeStack.empty() && typeStack.peek() == Type.ARRAY) {
-		        			contentHandler.startElement(XMLConstants.NULL_NS_URI, arrayElementName, "", EMPTY_ATTRIBS);
+		        			startElement(arrayElementName, typeStack.size());
 		        		}
 	        		}
 	        		typeStack.push(t == JsonToken.START_ARRAY ? Type.ARRAY : Type.OBJECT);
@@ -293,12 +295,12 @@ public class JSONReader implements SmooksXMLReader {
 	        		boolean typeStackPeekIsArray = !typeStack.empty() && typeStack.peek() == Type.ARRAY;
 
 	        		if(!elementStack.empty() && !typeStackPeekIsArray) {
-	        			contentHandler.endElement(XMLConstants.NULL_NS_URI, elementStack.pop(), "");
+	        			endElement(elementStack.pop(), typeStack.size());
 	        		}
 
 
 	        		if(typeStackPeekIsArray) {
-	        			contentHandler.endElement(XMLConstants.NULL_NS_URI, arrayElementName, "");
+	        			endElement(arrayElementName, typeStack.size());
 	        		}
 	        		break;
 
@@ -312,7 +314,7 @@ public class JSONReader implements SmooksXMLReader {
 
 	        		String name = getElementName(text);
 
-        			contentHandler.startElement(XMLConstants.NULL_NS_URI, name, "", EMPTY_ATTRIBS);
+        			startElement(name, typeStack.size());
         			elementStack.add(name);
 
 
@@ -330,18 +332,18 @@ public class JSONReader implements SmooksXMLReader {
 
 	        		if(typeStack.peek() == Type.ARRAY) {
 
-	        			contentHandler.startElement(XMLConstants.NULL_NS_URI, arrayElementName, "", EMPTY_ATTRIBS);
+	        			startElement(arrayElementName, typeStack.size());
 	        		}
 
 	        		contentHandler.characters(value.toCharArray(), 0, value.length());
 
 	        		if(typeStack.peek() == Type.ARRAY) {
 
-	        			contentHandler.endElement(XMLConstants.NULL_NS_URI, arrayElementName, "");
+	        			endElement(arrayElementName);
 
 	        		} else {
 
-		        		contentHandler.endElement(XMLConstants.NULL_NS_URI, elementStack.pop(), "");
+		        		endElement(elementStack.pop());
 
 	        		}
 
@@ -352,7 +354,7 @@ public class JSONReader implements SmooksXMLReader {
 
 	        	first = false;
 	        }
-	        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootName, "");
+	        endElement(rootName, 0);
 	        contentHandler.endDocument();
         } finally {
 
@@ -364,6 +366,32 @@ public class JSONReader implements SmooksXMLReader {
 
         }
 	}
+
+    private static char[] INDENT = new String("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t").toCharArray();
+
+    private void startElement(String name, int indent) throws SAXException {
+        indent(indent);
+        contentHandler.startElement(XMLConstants.NULL_NS_URI, name, "", EMPTY_ATTRIBS);        
+    }
+
+    private void endElement(String name, int indent) throws SAXException {
+        indent(indent);
+        endElement(name);
+    }
+
+    private void endElement(String name) throws SAXException {
+        contentHandler.endElement(XMLConstants.NULL_NS_URI, name, "");
+    }
+
+    private void indent(int indentAmount) throws SAXException {
+        if(indent) {
+            if(indentAmount > 0) {
+                contentHandler.characters(INDENT, 0, indentAmount + 1);
+            } else {
+                contentHandler.characters(INDENT, 0, 1);
+            }
+        }
+    }
 
     /**
 	 * @param text
@@ -561,6 +589,9 @@ public class JSONReader implements SmooksXMLReader {
 		this.encoding = encoding;
 	}
 
+    public void setIndent(boolean indent) {
+        this.indent = indent;
+    }
 
 	/****************************************************************************
      *
