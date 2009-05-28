@@ -17,7 +17,6 @@ package org.milyn.ejc;
 
 import org.milyn.ejc.classes.*;
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class BindingWriter {
 
     private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
 
-    private static final String CONFIG_START = "<?xml version=\"1.0\"?>\n<smooks-resource-list xmlns=\"http://www.milyn.org/xsd/smooks-1.1.xsd\" xmlns:edi=\"http://www.milyn.org/xsd/smooks/edi-1.1.xsd\" xmlns:jb=\"http://www.milyn.org/xsd/smooks/javabean-1.1.xsd\">";
+    private static final String CONFIG_START = "<?xml version=\"1.0\"?>\n<smooks-resource-list xmlns=\"http://www.milyn.org/xsd/smooks-1.1.xsd\" xmlns:edi=\"http://www.milyn.org/xsd/smooks/edi-1.1.xsd\" xmlns:jb=\"http://www.milyn.org/xsd/smooks/javabean-1.2.xsd\">";
     private static final String CONFIG_END = "</smooks-resource-list>";
     private static final String EDI_READER = "<edi:reader mappingModel=\"%1$s\" />";
 
@@ -42,7 +41,7 @@ public class BindingWriter {
     private static final String DECODER_ATTRIBUTE = "decoder";
     private static final String VALUE_ELEMENT = "jb:value";
     private static final String BEAN_ID_ATTRIBUTE = "beanId";
-    private static final String BINDINGS_ELEMENT = "jb:bindings";
+    private static final String BINDINGS_ELEMENT = "jb:bean";
     private static final String CLASS_ATTRIBUTE = "class";
     private static final String CREATE_ON_ELEMENT_ATTRIBUTE = "createOnElement";
 
