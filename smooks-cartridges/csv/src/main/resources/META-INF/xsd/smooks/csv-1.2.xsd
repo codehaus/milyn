@@ -85,7 +85,9 @@
                 <xs:attribute name="indent" type="xs:boolean" use="optional" default="false">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
-                            Add indentation character data to the generated event stream. 
+                            Add indentation character data to the generated event stream.  This simply makes
+                            the generated event stream easier to read in its serialized form.  Useful for
+                            testing etc.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
