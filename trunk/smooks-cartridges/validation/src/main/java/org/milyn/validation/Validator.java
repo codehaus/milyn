@@ -27,6 +27,7 @@ import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.util.FreeMarkerTemplate;
 import org.milyn.xml.DomUtils;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.payload.FilterResult;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -85,6 +86,7 @@ import org.w3c.dom.Element;
  *
  */
 @VisitBeforeReport(condition = "false")
+@VisitAfterReport(summary = "Applied validation rule '${resource.parameters.name}'.")
 public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitAfter
 {
     private static Log logger = LogFactory.getLog(Validator.class);
