@@ -18,6 +18,7 @@ package org.milyn.javabean.extendedconfig11;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.B;
 import org.milyn.javabean.Header;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -235,6 +237,19 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
 		ExtendedOrder order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(2d, order.getTotal());
-
 	}
+
+    public void test_expression_initVal() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_12.xml"));
+
+        JavaResult result = new JavaResult();
+
+        ExecutionContext execContext = smooks.createExecutionContext();
+
+        //execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
+        smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+
+        Map order =  (Map) result.getBean("orderItem");
+        assertEquals(154.2d, order.get("total"));
+    }
 }

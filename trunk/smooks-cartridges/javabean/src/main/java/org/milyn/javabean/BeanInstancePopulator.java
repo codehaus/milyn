@@ -34,6 +34,7 @@ import org.milyn.delivery.ordering.Consumer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
@@ -91,6 +92,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String valueAttributeName;
 
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String initVal;
+    private MVELExpressionEvaluator initValIsdefTest;
+    private MVELExpressionEvaluator initValExpression;
+
     @ConfigParam(name="type", defaultVal = AnnotationConstants.NULL_STRING)
     private String typeAlias;
 
@@ -135,6 +141,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     public void setProperty(String property) {
         this.property = property;
+    }
+
+    public void setInitVal(String initVal) {
+        this.initVal = initVal;
     }
 
     public void setSetterMethod(String setterMethod) {
@@ -195,6 +205,14 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             if(property.length() > 1 && property.charAt(0) == '@') {
                 mapKeyAttribute = property.substring(1);
             }
+        }
+
+        if(initVal != null) {
+            initValIsdefTest = new MVELExpressionEvaluator();
+            initValIsdefTest.setExpression("bean." + property);
+
+            initValExpression = new MVELExpressionEvaluator();
+            initValExpression.setExpression(initVal);
         }
 
         if(logger.isDebugEnabled()) {
@@ -305,7 +323,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         if(expression != null) {
             bindExpressionValue(mapPropertyName, executionContext);
         } else {
-            populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+            setPropertyValue(mapPropertyName, decodeDataString(dataString, executionContext), executionContext);
         }
     }
 
@@ -333,7 +351,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         if(expression != null) {
             bindExpressionValue(mapPropertyName, executionContext);
         } else {
-            populateAndSetPropertyValue(mapPropertyName, dataString, executionContext);
+            setPropertyValue(mapPropertyName, decodeDataString(dataString, executionContext), executionContext);
         }
     }
 
@@ -393,13 +411,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             beanRepository.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
                 public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
 
-                    populateAndSetPropertyValue(property, event.getBean(), executionContext);
+                    setPropertyValue(property, event.getBean(), executionContext);
 
                 }
             });
 
         } else {
-            populateAndSetPropertyValue(property, bean, executionContext);
+            setPropertyValue(property, bean, executionContext);
         }
     }
 
@@ -448,26 +466,39 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
         Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
-        Object dataObject = expression.getValue(beanMap);
 
-        if(dataObject instanceof String) {
-            populateAndSetPropertyValue(mapPropertyName, (String) dataObject, executionContext);
-        } else {
-            populateAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
+        if(initVal != null) {
+            // Initialize the expression target if it's not already defined.  This makes it easier
+            // to write expressions that include reference to the target property e.g.
+            // calculating a running incremental total on a collection.
+
+            Object bean = BeanRepositoryManager.getBeanRepository(executionContext).getBean(beanId);
+            try {
+                Map testMap = new HashMap();
+                testMap.put("bean", bean);
+                initValIsdefTest.getValue(testMap);
+            } catch (ExpressionEvaluationException e) {
+                // Don't like doing this by exception, but the isdef MVEL operator doesn't seem to work :(
+                Object initValObj = initValExpression.getValue(beanMap);
+                decodeAndSetPropertyValue(mapPropertyName, initValObj, executionContext);
+            }
         }
-    }
 
-
-    private void populateAndSetPropertyValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {
-
-        Object dataObject = decodeDataString(dataString, executionContext);
-
-        populateAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
-
+        Object dataObject = expression.getValue(beanMap);
+        decodeAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
     }
 
     @SuppressWarnings("unchecked")
-	private void populateAndSetPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
+	private void decodeAndSetPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
+        if(dataObject instanceof String) {
+            setPropertyValue(mapPropertyName, decodeDataString((String) dataObject, executionContext), executionContext);
+        } else {
+            setPropertyValue(mapPropertyName, dataObject, executionContext);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+	private void setPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
     	if ( dataObject == null )
     	{
     		return;
