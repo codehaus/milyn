@@ -354,6 +354,11 @@
                             </xs:documentation>
                         </xs:annotation>
                     </xs:attribute>
+                    <xs:attribute name="initVal" type="xs:string">
+                        <xs:annotation>
+                            <xs:documentation xml:lang="en">Initial value for the property.</xs:documentation>
+                        </xs:annotation>
+                    </xs:attribute>
                 </xs:extension>
             </xs:simpleContent>
         </xs:complexType>
