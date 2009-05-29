@@ -47,7 +47,7 @@ import java.util.HashMap;
  * Smooks must generate at least 1 event to which configured resources can be targeted (e.g. a templating
  * resource).  When event stream generation is turned off, Smooks simply generates what we call a "Null Source"
  * document event.  In XML, it could be represented as "&lt;nullsource-document/&gt;".  So when event stream
- * generation is turned off, simply target resources at "<b>nullsource-document</b>" or "<b>$document</b>". 
+ * generation is turned off, simply target resources at "<b>nullsource-document</b>" or "<b>#document</b>". 
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */

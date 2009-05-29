@@ -44,7 +44,7 @@ import java.nio.charset.Charset;
  * <p/>
  * Example configuration:
  * <pre>
- * &lt;resource-config selector="$document"&gt;
+ * &lt;resource-config selector="#document"&gt;
  *    &lt;resource&gt;org.milyn.io.ConcreateImpl&lt;/resource&gt;
  *    &lt;param name="resourceName"&gt;resourceName&lt;/param&gt;
  *    &lt;param name="writerEncoding"&gt;UTF-8&lt;/param&gt; &lt;!-- Optional --&gt;

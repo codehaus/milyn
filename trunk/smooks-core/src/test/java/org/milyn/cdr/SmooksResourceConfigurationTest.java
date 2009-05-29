@@ -176,10 +176,10 @@ public class SmooksResourceConfigurationTest extends TestCase {
         SmooksResourceConfiguration rc5 = new SmooksResourceConfiguration("/a/b/*/d/e", "blah");
 
         try {
-            new SmooksResourceConfiguration("xx/$document/a/b/c/a/d/e", "blah");
+            new SmooksResourceConfiguration("xx/#document/a/b/c/a/d/e", "blah");
             fail("Expected SmooksConfigurationException.");
         } catch (SmooksConfigurationException ex) {
-            assertEquals("Invalid selector 'xx/$document/a/b/c/a/d/e'.  '$document' token can only exist at the start of the selector.", ex.getMessage());
+            assertEquals("Invalid selector 'xx/#document/a/b/c/a/d/e'.  '#document' token can only exist at the start of the selector.", ex.getMessage());
         }
 
         assertTrue(rc1.isTargetedAtElementContext(e));

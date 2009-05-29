@@ -291,7 +291,7 @@ public class Serializer {
         }
         
         if(isRoot) {
-            // The document as a whole (root node) can also be targeted through the "$document" selector.
+            // The document as a whole (root node) can also be targeted through the "#document" selector.
             elementSUs = serializationUnits.getMappings(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
         } else {
             elementSUs = serializationUnits.getMappings(elementName);

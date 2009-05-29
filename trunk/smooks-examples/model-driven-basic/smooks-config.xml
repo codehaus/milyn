@@ -35,7 +35,7 @@
     <!--
     Use a FreeMarker template to perform the model driven transformation.  You can also inline the template here.
     -->
-    <ftl:freemarker applyOnElement="$document">
+    <ftl:freemarker applyOnElement="#document">
         <ftl:template>/example/templates/HistoryTrans.ftl</ftl:template>
     </ftl:freemarker>
 

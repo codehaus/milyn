@@ -421,7 +421,7 @@ public class SmooksDOMFilter extends Filter {
         List<ContentHandlerConfigMap<DOMVisitBefore>> elementVisitBefores;
         List<ContentHandlerConfigMap<DOMVisitAfter>> elementVisitAfters;
         if (isRoot) {
-            // The document as a whole (root node) can also be targeted through the "$document" selector.
+            // The document as a whole (root node) can also be targeted through the "#document" selector.
             elementVisitBefores = visitBeforeTable.getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
             elementVisitAfters = visitAfterTable.getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
         } else {
@@ -543,7 +543,7 @@ public class SmooksDOMFilter extends Filter {
 
         elementName = DomUtils.getName(element);
         if (isRoot) {
-            // The document as a whole (root node) can also be targeted through the "$document" selector.
+            // The document as a whole (root node) can also be targeted through the "#document" selector.
             processingBefores = deliveryConfig.getProcessingVisitBefores().getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
             processingAfters = deliveryConfig.getProcessingVisitAfters().getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
             processingCleanables = deliveryConfig.getVisitCleanables().getMappings(new String[]{SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
