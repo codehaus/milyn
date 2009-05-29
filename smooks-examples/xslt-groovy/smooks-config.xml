@@ -21,7 +21,7 @@
     Transform the document (as a whole) using XSLT.  The complex date field has already been preprocessed into
     separate fields using Groovy (see above config) - XSLT can handle it easily now :-)
     -->
-    <xsl:xsl applyOnElement="$document">
+    <xsl:xsl applyOnElement="#document">
         <xsl:template>/example/order.xsl</xsl:template>
     </xsl:xsl>
 

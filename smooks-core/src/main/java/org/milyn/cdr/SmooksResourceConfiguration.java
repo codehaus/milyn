@@ -118,7 +118,7 @@ import java.util.*;
  * an "x" fragment.  Also supports CSS style selectors e.g. "td ol li".  See sample configurations above.
  * Also supports wildcard based fragment selection ("*").
  * </li>
- * <li>"$document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
+ * <li>"#document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
  * or document root node fragment.</li>
  * <li>Targeting a specific {@link org.milyn.xml.SmooksXMLReader} at a specific profile.</li>
  * </ol>
@@ -169,7 +169,8 @@ public class SmooksResourceConfiguration {
     /**
      * A special selector for resource targeted at the document as a whole (the roor element).
      */
-    public static final String DOCUMENT_FRAGMENT_SELECTOR = "$document";
+    public static final String DOCUMENT_FRAGMENT_SELECTOR = "#document";
+    public static final String LEGACY_DOCUMENT_FRAGMENT_SELECTOR = "$document";
     /**
      * A special selector for resource targeted at the document as a whole (the roor element).
      */
@@ -363,9 +364,12 @@ public class SmooksResourceConfiguration {
         if (selector == null || selector.trim().equals("")) {
             throw new IllegalArgumentException("null or empty 'selector' arg in constructor call.");
         }
+        if(selector.equals(LEGACY_DOCUMENT_FRAGMENT_SELECTOR)) {
+            selector = DOCUMENT_FRAGMENT_SELECTOR;
+        }
         this.selector = selector.toLowerCase().intern();
 
-        // If there's a "$document" token in the selector, but it's not at the very start,
+        // If there's a "#document" token in the selector, but it's not at the very start,
         // then we have an invalid selector...
         int docSelectorIndex = selector.trim().indexOf(DOCUMENT_FRAGMENT_SELECTOR);
         if(docSelectorIndex != -1 && docSelectorIndex > 0) {
@@ -403,6 +407,9 @@ public class SmooksResourceConfiguration {
 
             if (!splitToken.startsWith("@")) {
                 splitTokens[i] = splitToken.toLowerCase();
+            }
+            if (splitToken.equals(LEGACY_DOCUMENT_FRAGMENT_SELECTOR)) {
+                splitTokens[i] = DOCUMENT_FRAGMENT_SELECTOR;
             }
         }
 

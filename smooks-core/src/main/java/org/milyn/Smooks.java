@@ -181,12 +181,12 @@ public class Smooks {
     /**
      * Add a visitor instance to <code>this</code> Smooks instance.
      * <p/>
-     * This Visitor will be targeted at the root ($document) fragment.
+     * This Visitor will be targeted at the root (#document) fragment.
      *
      * @param visitor The visitor implementation.
      */
     public SmooksResourceConfiguration addVisitor(Visitor visitor) {
-        return addVisitor(visitor, "$document", null);
+        return addVisitor(visitor, SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, null);
     }
 
     /**

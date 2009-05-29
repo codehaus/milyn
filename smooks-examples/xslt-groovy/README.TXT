@@ -6,7 +6,7 @@ About This Example:
     In this example, Smooks applies a piece of Groovy script to a message "date"
     fragment.  This script parses the date, re-adding it to the message as a
     set of nodes containing the date's consituent parts.  The main transformation
-    is then carried out on the whole document ("$document") using XSLT.
+    is then carried out on the whole document ("#document") using XSLT.
 
     What this illustrates is how easy it is to combine the powers of different
     technologies under a single Smooks transform.  We use Groovy to pre-process
