@@ -3,6 +3,7 @@ package org.milyn.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hsqldb.Server;
+import org.hsqldb.ServerConstants;
 import org.hsqldb.jdbcDriver;
 import org.milyn.io.StreamUtils;
 
@@ -36,6 +37,7 @@ public class HsqlServer {
         url = "jdbc:hsqldb:hsql://localhost:" + port + "/" + databaseName;
         logger.info("Starting Hypersonic Database '" + url + "'.");
         new Thread() {
+            @Override
             public void run() {
                 Server server = new Server();
                 Log targetLogger = LogFactory.getLog("org.hsqldb");
@@ -62,6 +64,9 @@ public class HsqlServer {
             connection.close();
         } finally {
             hsqlServer.shutdown();
+            while( hsqlServer.getState() != ServerConstants.SERVER_STATE_SHUTDOWN) {
+                Thread.sleep(100L);
+            }
         }
     }
 
