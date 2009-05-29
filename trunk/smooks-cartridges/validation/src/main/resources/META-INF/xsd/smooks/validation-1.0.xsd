@@ -42,10 +42,9 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-                <xs:attribute name="onFail" type="smooks-validation:onFail">
+                <xs:attribute name="onFail" type="smooks-validation:onFail" use="required">
                     <xs:annotation>
-                        <xs:documentation xml:lang="en">
-                        </xs:documentation>
+                        <xs:documentation xml:lang="en">Validation failure categorization.</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
                 </xs:extension>

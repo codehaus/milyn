@@ -64,7 +64,7 @@ import org.w3c.dom.Element;
  *
  * }</pre>
  * Options:
- * <lu>
+ * <ul>
  *  <li><b><i>on</b></i>
  *  The fragement that the validation will be performed upon. </li>
  *
@@ -79,7 +79,7 @@ import org.w3c.dom.Element;
  *  This is all about reporting back valdiation failures.
  *  </li>
  *
- * </lu>
+ * </ul>
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  *
@@ -302,18 +302,21 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
         File srcFile = new File(ruleSource);
         String srcFileName = srcFile.getName();
         int indexOfExt = srcFileName.lastIndexOf('.');
+        File parentFolder = srcFile.getParentFile();
 
         if(indexOfExt != -1) {
             messageBundleBaseName = srcFileName.substring(0, indexOfExt);
-            if(srcFile.getParentFile() != null) {
-                messageBundleBaseName = srcFile.getParentFile().getPath() + "/" + messageBundleBaseName;
-            }
         } else {
             messageBundleBaseName = ruleSource;
         }
 
+        if(parentFolder != null) {
+            messageBundleBaseName = parentFolder.getPath() + "/i18n/" + messageBundleBaseName;
+        } else {
+            messageBundleBaseName = "i18n/" + messageBundleBaseName;
+        }
+
         messageBundleBaseName = messageBundleBaseName.replace('\\', '/');
-        messageBundleBaseName += "_messages";
     }
 
     @Override

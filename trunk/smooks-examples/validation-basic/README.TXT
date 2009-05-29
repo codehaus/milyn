@@ -14,7 +14,7 @@ About This Example:
         2.  The input message in input-message.xml.
         3.  The code in the src/main/java folder tree (.java).
         4.  smooks-config.xml.
-        5.  The rules in rule message bundles in the "rules" folder.
+        5.  The rules in rule message bundles in the "rules/i18n" folder.
 
 How to Run?
 ===========

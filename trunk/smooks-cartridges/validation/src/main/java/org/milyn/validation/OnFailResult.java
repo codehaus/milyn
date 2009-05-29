@@ -28,13 +28,13 @@ import java.util.ResourceBundle;
  * Contains details of a validation rule failure.
  *
  * <h3 id="localized-messages">Localized Messages</h3>
- * Every rule source file (no mater what the provider type) can have an associated
- * Validation message file ({@link ResourceBundle}).
+ * Every rule source file (no mater what the provider type) can have associated
+ * Validation message files ({@link ResourceBundle ResourceBundles}).
  * <p/>
  * The base bundle name is derived from the rules src.  The Validation message base bundle name for
- * a rules source "/a/b/c/rulesX.xml" would be "a/b/c/rulesX_messages", which means that localized
- * {@link ResourceBundle} files would need to be supplied on the classpath/filesystem as "/a/b/c/rulesX_messages.properties",
- * "/a/b/c/rulesX_messages_en.properties", "/a/b/c/rulesX_messages_de.properties" etc.  The message property
+ * a rules source "/a/b/c/rulesX.xml" would be "a/b/c/i18n/rulesX", which means that localized
+ * {@link ResourceBundle} files would need to be supplied on the classpath/filesystem as "/a/b/c/i18n/rulesX.properties",
+ * "/a/b/c/i18n/rulesX_en.properties", "/a/b/c/i18n/rulesX_de.properties" etc.  The message property
  * names are based on the rule property names e.g. the message bundle property name for rule "orderId"
  * would also need to be "orderId".
  * <p/>
