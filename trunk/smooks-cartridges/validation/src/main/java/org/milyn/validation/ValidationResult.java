@@ -133,4 +133,33 @@ public class ValidationResult extends FilterResult
             results.get(onFail).add(result);
         }
     }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("OK Failures:\n");
+        addResultMessages(getOKs(), stringBuilder);
+        stringBuilder.append("WARN Failures:\n");
+        addResultMessages(getWarnings(), stringBuilder);
+        stringBuilder.append("ERROR Failures:\n");
+        addResultMessages(getErrors(), stringBuilder);
+        stringBuilder.append("FATAL Failure:\n");
+        if(fatal != null) {
+            stringBuilder.append("\t" + fatal.getMessage() + "\n");
+        } else {
+            stringBuilder.append("\t(none)\n");
+        }
+
+        return stringBuilder.toString();
+    }
+
+    private void addResultMessages(List<OnFailResult> results, StringBuilder stringBuilder) {
+        if(results.isEmpty()) {
+            stringBuilder.append("\t(none)\n");
+        } else {
+            for(OnFailResult result : results) {
+                stringBuilder.append("\t- " + result.getMessage() + "\n");
+            }
+        }
+    }
 }

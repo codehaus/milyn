@@ -246,7 +246,10 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
         }
 
         final RuleEvalResult result = ruleProvider.evaluate(ruleName, text, executionContext);
-        logger.info(result);
+
+        if(logger.isDebugEnabled()) {
+            logger.debug(result);
+        }
 
         if (!result.matched())
         {
