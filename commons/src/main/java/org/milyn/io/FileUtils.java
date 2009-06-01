@@ -63,6 +63,7 @@ public abstract class FileUtils {
         FileOutputStream stream = new FileOutputStream(file);
         try {
             stream.write(bytes);
+            stream.flush();
         } finally {
             stream.close();
         }
