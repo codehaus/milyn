@@ -19,6 +19,7 @@ import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.io.StreamUtils;
+import org.milyn.io.FileUtils;
 import org.xml.sax.SAXException;
 import org.apache.commons.logging.Log;
 import static org.milyn.ejc.EJCLogFactory.Level;
@@ -28,12 +29,14 @@ import java.io.*;
 /**
  * EJC is the main class parsing parameters and starting the compilation of the edi-mapping-config.
  * The compilation consists of the following steps:
- * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
- * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
- * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
+ * <ol>
+ * <li>{@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.</li>
+ * <li>{@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.</li>
+ * <li>{@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.</li>
+ * </ol>
  *
- * Example of how to use the EJC:
- * EJC -b "pacth/to/binding-config" -p package.name -d "place/classes/in/directory/"  "path/to/edi-mapping-config"
+ * <b>Example of how to execute the EJC:</b><br/>
+ * EJC -p "package.name" -d "place/classes/in/directory/"  "path/to/edi-mapping-config"
  *
  * @author bardl  
  */
@@ -45,7 +48,6 @@ public class EJC {
 
     private static final String PARAMETER_BEAN_FOLDER = "-d";
     private static final String PARAMETER_BEAN_PACKAGE = "-p";
-    private static final String PARAMETER_BINDING_FILE = "-b";
     //private static final String PARAMETER_JAR_PATH = "-jar";
 
     private static final String PARAMETER_VERBOSE = "-version";
@@ -84,7 +86,9 @@ public class EJC {
         BeanWriter.writeBeans(model, beanFolder, bindingFile);
 
         LOG.info("Creating bindingfile...");
-        BindingWriter.parse(model, bindingFile, configName );
+        String bundleConfigPath = "/" + beanPackage.replace('.', '/') + "/edimappingconfig.xml";
+        FileUtils.copyFile(configName, beanFolder + bundleConfigPath);
+        BindingWriter.parse(model, bindingFile, bundleConfigPath);
 
 //        if (jar != null) {
 //            LOG.info("Creating jarfile [" + jar + "].");
@@ -125,10 +129,18 @@ public class EJC {
     public static void main(String[] args) throws IOException, EDIConfigurationException, IllegalNameException, SAXException {
         EJC ejc = new EJC();
 
+        // Should be an odd number of commandline args...
+        if(args.length % 2 == 0) {
+            System.out.println(writeUsageText());
+            return;
+        }
+
         String configFile = args[args.length-1];
         String beanPackage = getParameter(PARAMETER_BEAN_PACKAGE, args);
         String beanFolder = getParameter(PARAMETER_BEAN_FOLDER, args);
-        String bindingFile = getParameter(PARAMETER_BINDING_FILE, args);
+
+        String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
+
         //String jarPath = getParameter(PARAMETER_JAR_PATH, args);
         boolean isVerbose = containsParameter(PARAMETER_VERBOSE, args);
         boolean isQuiet = containsParameter(PARAMETER_QUIET, args);
@@ -187,12 +199,11 @@ public class EJC {
      * @return the usage info.
      */
     private static String writeUsageText() {
-        return "Usage: ejc [-options ...] <edi file/URL/dir>\n" +
+        return "Usage: " + EJC.class.getName() + " [-options ...] <edi file/URL/dir>\n" +
                 "Options:\n" +
                 "\n" +
                 "  -d <dir>           :  generated files will go into this directory\n" +
                 "  -p <pkg>           :  specifies the target package\n" +
-                "  -b <bindingfile>   :  generated bindingfile will go inte this directory\n" +
                 //"  -jar               :  path to generated jar holding both generated classes and bindingfile\n" +
                 "\n" +
                 "  -verbose           :  be extra verbose\n" +
@@ -221,7 +232,8 @@ public class EJC {
                 return args[i+1];
             }
         }
-        return null;
+
+        throw new RuntimeException("Mandatory command line parameter '' not specified.\n\n" + writeUsageText());
     }
 
     /**

@@ -7,6 +7,7 @@ org.milyn.javabean.decoders.ClassDecoder
 org.milyn.javabean.decoders.CharacterDecoder
 org.milyn.javabean.decoders.CharsetDecoder
 org.milyn.javabean.decoders.CSVDecoder
+org.milyn.javabean.decoders.CustomDecoder
 org.milyn.javabean.decoders.DateDecoder
 org.milyn.javabean.decoders.DoubleDecoder
 org.milyn.javabean.decoders.EnumDecoder

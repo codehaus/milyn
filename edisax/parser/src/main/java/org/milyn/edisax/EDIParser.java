@@ -577,8 +577,7 @@ public class EDIParser implements XMLReader {
 
         // Validate type.
         if (valueNode.getType() != null && !valueNode.getType().equals("")) {
-            EDITypeEnum ediType = EDITypeEnum.valueOf(valueNode.getType());
-            if (!ediType.validateType(value, valueNode.getParameters())) {
+            if (!valueNode.isValidForType(value)) {
                 throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
             }
         }

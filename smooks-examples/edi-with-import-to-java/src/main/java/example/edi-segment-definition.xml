@@ -10,8 +10,8 @@
 		<medi:segment segcode="HDR" xmltag="header">
 			<medi:field xmltag="order-id" />
 			<medi:field xmltag="status-code" />
-			<medi:field xmltag="net-amount" type="Decimal"/>
-			<medi:field xmltag="total-amount" type="Decimal"/>
+			<medi:field xmltag="net-amount" type="Double"/>
+			<medi:field xmltag="total-amount" type="Double"/>
 			<medi:field xmltag="tax" />
 			<medi:field xmltag="date" type="Date" parameters="format=yyyyHHmm"/>
 		</medi:segment>
@@ -27,10 +27,10 @@
 
 		<medi:segment segcode="ORD" xmltag="order-item" maxOccurs="-1">
 			<medi:field xmltag="position" />
-			<medi:field xmltag="quantity" type="Decimal" />
+			<medi:field xmltag="quantity" type="Double" />
 			<medi:field xmltag="product-id" />
 			<medi:field xmltag="title" />
-			<medi:field xmltag="price" type="Decimal" />
+			<medi:field xmltag="price" type="Double" />
 		</medi:segment>
 
 	</medi:segments>

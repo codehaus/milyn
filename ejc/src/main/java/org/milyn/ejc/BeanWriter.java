@@ -307,14 +307,10 @@ public class BeanWriter {
                 "\n" +
                 "public class ${className}Factory {\n" +
                 "\n" +
-                "    private static ${className}Factory instance;\n" +
                 "    private Smooks smooks;\n" +
                 "\n" +
                 "    public static ${className}Factory getInstance() throws IOException, SAXException {\n" +
-                "        if (instance == null) {\n" +
-                "            instance = new ${className}Factory();\n" +
-                "        }\n" +
-                "        return instance;\n" +
+                "        return new ${className}Factory();\n" +
                 "    }\n" +
                 "\n" +
                 "    public ${className} parse(InputStream ediStream) {\n" +

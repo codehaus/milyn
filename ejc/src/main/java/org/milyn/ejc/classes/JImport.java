@@ -32,12 +32,13 @@ public class JImport {
     }
 
     public int hashCode() {
-        return type.hashCode();
+        return toString().hashCode();
     }
 
     public boolean equals(Object obj) {
         if (obj instanceof JImport) {
-            return ((JImport)obj).getType().equals(getType());
+//            return ((JImport)obj).getType().equals(getType());
+            return toString().equals(obj.toString());
         }
         return false;
     }

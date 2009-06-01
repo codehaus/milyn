@@ -16,8 +16,14 @@
 
 package org.milyn.edisax.model.internal;
 
+import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DecodeType;
+import org.milyn.javabean.DataDecodeException;
+import org.milyn.config.Configurable;
+
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * ValueNode.
@@ -25,10 +31,14 @@ import java.util.Map;
  * @author bardl
  */
 public class ValueNode extends MappingNode {
+
     private String type;
     private List<Map.Entry<String,String>> parameters;
     private Integer minLength;
     private Integer maxLength;
+    private DataDecoder decoder;
+    private Class typeClass;
+    private Properties decodeParams;
 
     public String getType() {
         return type;
@@ -36,6 +46,22 @@ public class ValueNode extends MappingNode {
 
     public void setType(String type) {
         this.type = type;
+        if(type != null) {
+            decoder = DataDecoder.Factory.create(type);
+
+            DecodeType decodeType = decoder.getClass().getAnnotation(DecodeType.class);
+            if(decodeType != null) {
+                typeClass = decodeType.value()[0];
+            }
+        }
+    }
+
+    public DataDecoder getDecoder() {
+        return decoder;
+    }
+
+    public Class getTypeClass() {
+        return typeClass;
     }
 
     public List<Map.Entry<String,String>> getParameters() {
@@ -44,6 +70,18 @@ public class ValueNode extends MappingNode {
 
     public void setParameters(List<Map.Entry<String,String>> parameters) {
         this.parameters = parameters;
+
+        if(decoder instanceof Configurable) {
+            if(decoder == null) {
+                throw new IllegalStateException("Illegal call to set parameters before 'type' has been configured on the " + getClass().getName());
+            }
+
+            decodeParams = new Properties();
+            for (Map.Entry<String,String> entry : parameters) {
+                decodeParams.setProperty(entry.getKey(), entry.getValue());
+            }
+            ((Configurable)decoder).setConfiguration(decodeParams);
+        }
     }
 
     public Integer getMinLength() {
@@ -60,5 +98,16 @@ public class ValueNode extends MappingNode {
 
     public void setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
+    }
+
+    public boolean isValidForType(String value) {
+        if(decoder != null) {
+            try {
+                decoder.decode(value);
+            } catch (DataDecodeException e) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -31,6 +31,7 @@ public class BindingWriter {
 
     private static final String CONFIG_START = "<?xml version=\"1.0\"?>\n<smooks-resource-list xmlns=\"http://www.milyn.org/xsd/smooks-1.1.xsd\" xmlns:edi=\"http://www.milyn.org/xsd/smooks/edi-1.1.xsd\" xmlns:jb=\"http://www.milyn.org/xsd/smooks/javabean-1.2.xsd\">";
     private static final String CONFIG_END = "</smooks-resource-list>";
+    private static final String FILTER_PARAM = "<params><param name=\"stream.filter.type\">SAX</param></params>";
     private static final String EDI_READER = "<edi:reader mappingModel=\"%1$s\" />";
 
     private static final String WIRING_ELEMENT = "jb:wiring";
@@ -71,7 +72,8 @@ public class BindingWriter {
     }
 
     private static void addEdiReaderConfig(Writer writer, String ediConfigFile) throws IOException {
-        writer.write (String.format(EDI_READER, ediConfigFile));        
+        writer.write ("\n" + FILTER_PARAM + "\n");        
+        writer.write (String.format(EDI_READER, ediConfigFile));
     }
 
     private static void parseClass(JClass clazz, Writer writer) throws IOException, IllegalNameException {
