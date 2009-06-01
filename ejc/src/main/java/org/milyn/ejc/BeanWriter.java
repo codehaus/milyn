@@ -304,6 +304,7 @@ public class BeanWriter {
                 "import java.io.InputStreamReader;\n" +
                 "import java.io.InputStream;\n" +
                 "import java.io.IOException;\n" +
+                "import javax.xml.transform.Result;\n" +
                 "\n" +
                 "public class ${className}Factory {\n" +
                 "\n" +
@@ -313,14 +314,32 @@ public class BeanWriter {
                 "        return new ${className}Factory();\n" +
                 "    }\n" +
                 "\n" +
-                "    public ${className} parse(InputStream ediStream) {\n" +
-                "        return parse(new InputStreamReader(ediStream));\n" +
+                "    public void addConfigurations(InputStream resourceConfigStream) throws SAXException, IOException {\n" +
+                "        smooks.addConfigurations(resourceConfigStream);\n" +
+                "    }\n" +
+                "\n" +
+                "    public ${className} parse(InputStream ediStream, Result... additionalResults) {\n" +
+                "        return parse(new InputStreamReader(ediStream), additionalResults);\n" +
                 "    }\n" +
                 "\n" +
                 "    public ${className} parse(Reader ediStream) {\n" +
                 "        JavaResult result = new JavaResult();\n" +
                 "        smooks.filterSource(new StreamSource(ediStream), result);\n" +
                 "        return (${className}) result.getBean(\"${classId}\");\n" +
+                "    }\n" +
+                "\n" +
+                "    public ${className} parse(Reader ediStream, Result... additionalResults) {\n" +
+                "        JavaResult javaResult = new JavaResult();\n" +
+                "        int numAdditionalRes = (additionalResults != null? additionalResults.length : 0);\n" +
+                "        Result[] results = new Result[numAdditionalRes + 1];\n" +
+                "        \n" +
+                "        results[0] = javaResult;\n" +
+                "        if(additionalResults != null) {\n" +
+                "            System.arraycopy(additionalResults, 0, results, 1, numAdditionalRes);\n" +
+                "        }\n" +
+                "        \n" +
+                "        smooks.filterSource(new StreamSource(ediStream), results);\n" +
+                "        return (${className}) javaResult.getBean(\"${classId}\");\n" +
                 "    }\n" +
                 "\n" +
                 "    private ${className}Factory() throws IOException, SAXException {\n" +
