@@ -40,6 +40,7 @@
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-css" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-csv" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-edi" />
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-ejc" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-javabean"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-json"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-misc"/>

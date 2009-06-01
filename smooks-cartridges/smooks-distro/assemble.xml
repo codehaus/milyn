@@ -2,7 +2,7 @@
 <project default="assemble" name="Assembly">
 
     <property name="version.base" value="1.2"/>
-    <property name="version" value="${version.base}.BETA1"/>
+    <property name="version" value="${version.base}.BETA2"/>
     <property name="mvn.version" value="1.2-SNAPSHOT"/>
 
     <property name="mainDistroName" value="smooks-${version}"/>

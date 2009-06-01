@@ -67,13 +67,13 @@ public class EJC {
      * @param configName the name of the edi-mapping-config.
      * @param beanPackage the package name of generated java classes.
      * @param beanFolder the folder to place the generated java classes.
-     * @param bindingFile the path and name to place the generated binding-file.
      * @throws EDIConfigurationException When edi-mapping-configuration is badly formatted.
      * @throws IOException When unable to read edi-mapping-configuration.
      * @throws SAXException When edi-mapping-configuration is badly formatted.
      * @throws IllegalNameException when name of java-classes is illegal.
      */
-    public void compile(InputStream configFile, String configName, String beanPackage, String beanFolder, String bindingFile) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
+    public void compile(InputStream configFile, String configName, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
+        String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
 
         //Read edifact configuration
         Edimap edimap = readEDIConfig(configFile);
@@ -139,8 +139,6 @@ public class EJC {
         String beanPackage = getParameter(PARAMETER_BEAN_PACKAGE, args);
         String beanFolder = getParameter(PARAMETER_BEAN_FOLDER, args);
 
-        String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
-
         //String jarPath = getParameter(PARAMETER_JAR_PATH, args);
         boolean isVerbose = containsParameter(PARAMETER_VERBOSE, args);
         boolean isQuiet = containsParameter(PARAMETER_QUIET, args);
@@ -173,7 +171,7 @@ public class EJC {
         InputStream configInputStream = null;
         try {
             configInputStream = new ByteArrayInputStream(StreamUtils.readStream(new FileInputStream(configFile)));
-            ejc.compile(configInputStream, configFile, beanPackage, beanFolder, bindingFile);
+            ejc.compile(configInputStream, configFile, beanPackage, beanFolder);
 
         } finally {
             if (configInputStream != null) {
