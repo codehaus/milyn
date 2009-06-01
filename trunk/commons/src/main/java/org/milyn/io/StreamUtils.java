@@ -65,15 +65,15 @@ public abstract class StreamUtils {
         return new String(readStream(stream));
     }
 
+    /**
+     * Read the contents of the specified file.
+     * @param file The file to read.
+     * @return The file contents.
+     * @throws IOException Error readiong file.
+     * @deprecated Use {@link org.milyn.io.FileUtils#readFile(java.io.File)}.
+     */
     public static byte[] readFile(File file) throws IOException {
-        AssertArgument.isNotNull(file, "file");
-
-        InputStream stream = new FileInputStream(file);
-        try {
-            return readStream(stream);
-        } finally {
-            stream.close();
-        }
+        return FileUtils.readFile(file);
     }
 
     public static void writeFile(File file, byte[] data) throws IOException {

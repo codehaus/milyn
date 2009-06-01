@@ -22,6 +22,7 @@ import org.milyn.io.StreamUtils;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDITypeEnum;
 import org.milyn.edisax.model.internal.*;
+import org.milyn.javabean.decoders.CustomDecoder;
 import org.xml.sax.SAXException;
 import org.w3c.dom.*;
 
@@ -381,7 +382,7 @@ public class EDIConfigDigester {
                 if (entry.length == 1) {
                     if (i == 0) {
                         customClass = entry[0];
-                        result.add(new ParamEntry<String, String>(EDITypeEnum.Custom.name(), entry[0]));
+                        result.add(new ParamEntry<String, String>(CustomDecoder.CLASS_PROPERTY_NAME, entry[0]));
                     } else {
                         throw new EDIConfigurationException("Invalid use of paramaters in ValueNode. A parameter-entry should consist of a key-value-pair separated with the '='-character. Example: [parameters=\"key1=value1;key2=value2\"]"); 
                     }

@@ -21,6 +21,8 @@ import junit.framework.TestCase;
 import org.milyn.edisax.model.EDIConfigDigester;
 import org.milyn.edisax.model.internal.*;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.javabean.decoders.DateDecoder;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.xml.sax.SAXException;
 
 import java.io.InputStream;
@@ -52,7 +54,7 @@ public class EDIConfigDigesterTest extends TestCase {
 
         // Assert field is read correctly.
         // <medi:field xmltag="aTime" type="Time" format="HHmm" minLength="0" maxLength="4"/>
-        assertEquals("Failed to digest type-attribute for Field", fields.get(0).getType(), "Time");
+        assertEquals("Failed to digest type-attribute for Field", fields.get(0).getType(), "Date");
         assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getParameters().get(0).getKey(), "format");
         assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getParameters().get(0).getValue(), "HHmm");
         assertEquals("Failed to digest minLength-attribute for Field", fields.get(0).getMinLength(), new Integer(0));
@@ -69,7 +71,7 @@ public class EDIConfigDigesterTest extends TestCase {
         // Assert SubComponent is read correctly.
         // <medi:sub-component xmltag="aNumeric" type="Numeric" format="#0.00" minLength="1" maxLength="4"/>
         SubComponent subcomponent = fields.get(1).getComponent().get(1).getSubComponent().get(0);
-        assertEquals("Failed to digest type-attribute for SubComponent", subcomponent.getType(), "Numeric");
+        assertEquals("Failed to digest type-attribute for SubComponent", subcomponent.getType(), "Double");
         assertEquals("Failed to digest parameters-attribute for SubComponent", subcomponent.getParameters().get(0).getKey(), "format");
         assertEquals("Failed to digest format-attribute for SubComponent", subcomponent.getParameters().get(0).getValue(), "#0.00");
         assertEquals("Failed to digest minLength-attribute for SubComponent", subcomponent.getMinLength(), new Integer(1));
@@ -155,7 +157,7 @@ public class EDIConfigDigesterTest extends TestCase {
 
         String expected = "CustomClass";
         String value = field.getParameters().get(0).getValue();
-        assertEquals("Value in parameters [" + value + "] doesn't match expected value [" + expected + "].", value, expected);
+        assertEquals("Value in parameters [" + value + "] doesn't match expected value [" + expected + "].", DateDecoder.class.getName(), value);
 
         expected = "param1";
         value = field.getParameters().get(1).getKey();
@@ -167,15 +169,14 @@ public class EDIConfigDigesterTest extends TestCase {
 
     }
 
-    public void testIncorrectParametersCustomType_NoClassName() throws IOException, SAXException {
+    public void testIncorrectParametersCustomType_NoClassName() throws IOException, SAXException, EDIConfigurationException {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-incorrect-custom-parameter.xml")));
 
         try {
             EDIConfigDigester.digestConfig(input);
-            assertTrue("EDIConfigDigester should fail for test configuration.", false);
-        } catch (EDIConfigurationException e) {
-            String expected = "When using the Custom type in ValueNode the custom class type must exist as the first element in parameters";
-            assertEquals("Message in exception [" + e.getMessage() + "] doesn't match expected value [" + expected + "].", e.getMessage(), expected);
+            fail("Expected SmooksConfigurationException");
+        } catch (SmooksConfigurationException e) {
+            assertEquals("Mandatory property 'decoderClass' not specified.", e.getMessage());
         }
     }
 }

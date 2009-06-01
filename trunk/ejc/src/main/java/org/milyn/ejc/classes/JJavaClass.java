@@ -49,6 +49,6 @@ public class JJavaClass extends JClass {
         if (javaClass == null) {
             return null;
         }
-        return new JPackage(classes.get(javaClass.getSimpleName()));
+        return new JPackage(javaClass.getPackage().getName());
     }
 }

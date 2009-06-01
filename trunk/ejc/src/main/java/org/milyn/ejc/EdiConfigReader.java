@@ -105,7 +105,7 @@ public class EdiConfigReader {
             if (valueNode.getType().equals(EDITypeEnum.CUSTOM_NAME)) {
                 type = new JSimpleType(valueNode.getParameters().get(0).getValue(), valueNode.getParameters(), null);
             } else {
-                type = new JSimpleType(valueNode.getType(), valueNode.getParameters(),JJavaClass.getPackageForClass(EDITypeEnum.valueOf(valueNode.getType()).getJavaClass()));
+                type = new JSimpleType(valueNode.getType(), valueNode.getParameters(), JJavaClass.getPackageForClass(valueNode.getTypeClass()));
             }
         } else {
             type = new JSimpleType(JSimpleType.DEFAULT_TYPE, null, null);
