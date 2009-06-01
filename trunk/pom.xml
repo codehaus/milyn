@@ -40,6 +40,8 @@
         <dtdparser.version>1.21</dtdparser.version>
         <freemarker.version>2.3.11</freemarker.version>
         <opencsv.version>1.8</opencsv.version>
+        <ant.version>1.7.0</ant.version>
+
     </properties>
 
     <profiles>
