@@ -1,0 +1,17 @@
+package org.milyn.rules.drools
+
+import org.milyn.rules.drools.TestPojo;
+
+rule "Rule1"
+    when
+        $test : TestPojo()
+    then
+        System.out.println("Test pojo existed...");
+end
+
+rule "Rule2"
+    when
+        $test : TestPojo()
+    then
+        System.out.println("Test2 pojo existed...");
+end

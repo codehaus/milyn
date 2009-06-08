@@ -23,6 +23,28 @@
             <artifactId>milyn-smooks-javabean</artifactId>
             <version>${milyn.smooks.javabean.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>5.0.1</version>
+        </dependency>
+        <dependency>  
+            <groupId>org.drools</groupId>  
+            <artifactId>drools-core</artifactId>  
+            <version>5.0.1</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>org.drools</groupId>  
+            <artifactId>drools-api</artifactId>  
+            <version>5.0.1</version>  
+            <type>jar</type>  
+        </dependency>  
+        <dependency>  
+            <groupId>org.drools</groupId>  
+            <artifactId>drools-compiler</artifactId>  
+            <version>5.0.1</version>  
+            <type>jar</type>  
+        </dependency>  
     </dependencies>
 
     <repositories>
