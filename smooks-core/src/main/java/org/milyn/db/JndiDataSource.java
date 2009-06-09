@@ -41,12 +41,17 @@ public class JndiDataSource extends AbstractDataSource {
 
     private DataSource datasource;
 
+    public JndiDataSource()
+    {
+    }
+
     public JndiDataSource(String name, boolean autoCommit) {
         AssertArgument.isNotNullAndNotEmpty(name, "name");
         this.name = name;
         this.autoCommit = autoCommit;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -71,10 +76,12 @@ public class JndiDataSource extends AbstractDataSource {
         }
     }
 
+    @Override
     public Connection getConnection() throws SQLException {
         return datasource.getConnection();
     }
 
+    @Override
     public boolean isAutoCommit() {
         return autoCommit;
     }
