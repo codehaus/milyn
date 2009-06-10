@@ -6,6 +6,7 @@ amp 38
 lt 60
 gt 62
 nbsp 160
+apos 39
 #
 # Character entity references for ISO 8859-1 characters
 #
