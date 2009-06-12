@@ -72,7 +72,7 @@ public class ActiveMQProvider {
         brokerService = new BrokerService();
 
         // configure the brokerService
-        brokerService.setDataDirectory(new File("./target/activeMQData"));
+        brokerService.setDataDirectoryFile(new File("./target/activeMQData"));
         brokerService.setPersistent(false);
         brokerService.setUseJmx(false);
         brokerService.addConnector(providerUrl);
@@ -82,7 +82,7 @@ public class ActiveMQProvider {
 
     public final void stop() throws Exception {
         assertStarted();
-        
+
         if (brokerService != null) {
             for(MessageConsumer consumer : consumers) {
                 try {

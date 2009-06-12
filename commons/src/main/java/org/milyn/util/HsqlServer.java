@@ -47,10 +47,21 @@ public class HsqlServer {
                 server.setNoSystemExit( true );
                 server.setSilent( true );
                 server.setPort(port);
-                server.start();
+                int start = server.start();
+                while(server.getState() != ServerConstants.SERVER_STATE_ONLINE) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (final InterruptedException e) {
+                        e.printStackTrace();
+                        Thread.interrupted();
+                    }
+                }
+
+
                 hsqlServer = server;
             }
         }.start();
+
         while(hsqlServer == null) {
             Thread.sleep(50);
         }
@@ -61,9 +72,10 @@ public class HsqlServer {
 
     public void stop() throws Exception {
         try {
-            connection.close();
+            hsqlServer.signalCloseAllServerConnections();
+            //connection.close();
         } finally {
-            hsqlServer.shutdown();
+            hsqlServer.stop();
             while( hsqlServer.getState() != ServerConstants.SERVER_STATE_SHUTDOWN) {
                 Thread.sleep(100L);
             }
@@ -99,5 +111,12 @@ public class HsqlServer {
 
     public String getPassword() {
         return password;
+    }
+
+    public int getState() {
+        if (hsqlServer == null) {
+            throw new IllegalStateException("hsqlServer was null. Perhaps there was an error upon startup?");
+        }
+        return hsqlServer.getState();
     }
 }
