@@ -47,15 +47,7 @@ public class HsqlServer {
                 server.setNoSystemExit( true );
                 server.setSilent( true );
                 server.setPort(port);
-                int start = server.start();
-                while(server.getState() != ServerConstants.SERVER_STATE_ONLINE) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (final InterruptedException e) {
-                        e.printStackTrace();
-                        Thread.interrupted();
-                    }
-                }
+                server.start();
 
 
                 hsqlServer = server;
