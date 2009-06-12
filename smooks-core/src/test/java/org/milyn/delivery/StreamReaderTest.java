@@ -19,8 +19,8 @@ package org.milyn.delivery;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import javax.xml.transform.stream.StreamSource;
@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.milyn.Smooks;
+import org.milyn.io.StreamUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.xml.SmooksXMLReader;
@@ -72,16 +73,9 @@ public class StreamReaderTest
 
         public void parse(final InputSource inputSource) throws IOException, SAXException
         {
-            final ByteArrayInputStream bin = (ByteArrayInputStream) inputSource.getByteStream();
-            final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            int read;
-            while ((read = bin.read()) != -1)
-            {
-                bout.write(read);
-            }
+            final InputStream bin = inputSource.getByteStream();
 
-            MockReader.readBytes = bout.toByteArray();
-
+            MockReader.readBytes = StreamUtils.readStream(bin);
             handler.startDocument();
             handler.endDocument();
         }

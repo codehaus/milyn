@@ -148,9 +148,13 @@ public class AbstractParser {
     protected InputStream getInputStream(Source source) {
         if (source instanceof StreamSource) {
             StreamSource streamSource = (StreamSource) source;
-            return streamSource.getInputStream();
+            InputStream inputStream = streamSource.getInputStream();
+            if(inputStream == null) {
+                throw new SmooksException("Invalid Source instance.  Must contain an InputStream instance.");
+            }
+            return inputStream;
         } else {
-            throw new SmooksException("Invalid Source class instance");
+            throw new SmooksException("Invalid Source instance.  Expecteding a StreamSource.");
         }
 
 
