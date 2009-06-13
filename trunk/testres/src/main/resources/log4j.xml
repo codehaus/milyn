@@ -48,6 +48,10 @@
         <priority value="INFO"/>
     </category>
 
+    <category name="org.hsqldb">
+        <priority value="ERROR"/>
+    </category>
+
     <!-- ======================= -->
     <!-- Setup the Root category -->
     <!-- ======================= -->
