@@ -18,6 +18,17 @@
             <version>${milyn.smooks.core.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>${freemarker.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>javassist</groupId>
+          <artifactId>javassist</artifactId>
+          <version>${javassist.version}</version>
+        </dependency>
+
 		<dependency>
 			<groupId>mockobjects</groupId>
 			<artifactId>mockobjects-jdk1.4</artifactId>
