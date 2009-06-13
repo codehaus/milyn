@@ -49,7 +49,7 @@
     </category>
 
     <category name="org.hsqldb">
-        <priority value="ERROR"/>
+        <priority value="DEBUG"/>
     </category>
 
     <!-- ======================= -->
