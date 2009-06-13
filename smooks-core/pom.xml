@@ -45,11 +45,6 @@
 			<version>${dtdparser.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>${freemarker.version}</version>
-        </dependency>
 
 		<!--
 			###################################################################################################################

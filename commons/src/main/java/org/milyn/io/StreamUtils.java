@@ -197,4 +197,15 @@ public abstract class StreamUtils {
     public static StringBuffer trimLines(InputStream charStream) throws IOException {
         return trimLines(new InputStreamReader(charStream, "UTF-8"));
     }
+
+    /**
+     * Read the lines lines of characters from the stream and trim each line
+     * i.e. remove all leading and trailing whitespace.
+     * @param charStream Character stream.
+     * @return String containing the line trimmed stream.
+     * @throws IOException
+     */
+    public static String trimLines(String charStream) throws IOException {
+        return trimLines(new StringReader(charStream)).toString();
+    }
 }

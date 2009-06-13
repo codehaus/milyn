@@ -41,6 +41,7 @@
         <freemarker.version>2.3.11</freemarker.version>
         <opencsv.version>1.8</opencsv.version>
         <ant.version>1.7.0</ant.version>
+        <javassist.version>3.4.GA</javassist.version>
 
     </properties>
 
