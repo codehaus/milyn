@@ -27,17 +27,17 @@ import java.util.Set;
  * @author bardl
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class JavaType {
+public class JType {
 
     private Class type;
     private Class genericType;
 
-    public JavaType(Class type) {
+    public JType(Class type) {
         AssertArgument.isNotNull(type, "type");
         this.type = type;
     }
 
-    public JavaType(Class type, Class genericType) {
+    public JType(Class type, Class genericType) {
         AssertArgument.isNotNull(type, "type");
         AssertArgument.isNotNull(genericType, "genericType");
         this.type = type;

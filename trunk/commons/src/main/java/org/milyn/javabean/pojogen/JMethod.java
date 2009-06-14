@@ -25,27 +25,27 @@ import java.util.ArrayList;
  * @author bardl
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class JavaMethod {
+public class JMethod {
 
-    private JavaType returnType;
+    private JType returnType;
     private String methodName;
-    private List<JavaNamedType> parameters = new ArrayList<JavaNamedType>();
+    private List<JNamedType> parameters = new ArrayList<JNamedType>();
     private String body;
 
-    public JavaMethod(String methodName) {
+    public JMethod(String methodName) {
         AssertArgument.isNotNull(methodName, "methodName");
-        this.returnType = new JavaType(void.class);
+        this.returnType = new JType(void.class);
         this.methodName = methodName;
     }
 
-    public JavaMethod(JavaType returnType, String methodName) {
+    public JMethod(JType returnType, String methodName) {
         AssertArgument.isNotNull(returnType, "returnType");
         AssertArgument.isNotNull(methodName, "methodName");
         this.returnType = returnType;
         this.methodName = methodName;
     }
 
-    public JavaType getReturnType() {
+    public JType getReturnType() {
         return returnType;
     }
 
@@ -53,16 +53,16 @@ public class JavaMethod {
         return methodName;
     }
 
-    public JavaMethod addParameter(JavaType type, String parameterName) {
-        return addParameter(new JavaNamedType(type, parameterName));
+    public JMethod addParameter(JType type, String parameterName) {
+        return addParameter(new JNamedType(type, parameterName));
     }
 
-    public JavaMethod addParameter(JavaNamedType parameter) {
+    public JMethod addParameter(JNamedType parameter) {
         parameters.add(parameter);
         return this;
     }
 
-    public List<JavaNamedType> getParameters() {
+    public List<JNamedType> getParameters() {
         return parameters;
     }
 

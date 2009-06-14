@@ -32,25 +32,25 @@ import javassist.CannotCompileException;
  * @author bardl
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class JavaClass {
+public class JClass {
 
     private String packageName;
     private String className;
     private Class skeletonClass;
-    private List<JavaNamedType> properties = new ArrayList<JavaNamedType>();
-    private List<JavaMethod> methods = new ArrayList<JavaMethod>();
+    private List<JNamedType> properties = new ArrayList<JNamedType>();
+    private List<JMethod> methods = new ArrayList<JMethod>();
 
     private static FreeMarkerTemplate template;
 
     static {
         try {
-            template = new FreeMarkerTemplate(StreamUtils.readStreamAsString(JavaClass.class.getResourceAsStream("JavaClass.ftl")));
+            template = new FreeMarkerTemplate(StreamUtils.readStreamAsString(JClass.class.getResourceAsStream("JavaClass.ftl")));
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load JavaClass.ftl FreeMarker template.", e);
         }
     }
 
-    public JavaClass(String packageName, String className) {
+    public JClass(String packageName, String className) {
         AssertArgument.isNotNull(packageName, "packageName");
         AssertArgument.isNotNull(className, "className");
         this.packageName = packageName;
@@ -80,7 +80,7 @@ public class JavaClass {
         return skeletonClass;
     }
 
-    public JavaClass addProperty(JavaNamedType property) {
+    public JClass addProperty(JNamedType property) {
         AssertArgument.isNotNull(property, "property");
         assertPropertyUndefined(property);
 
@@ -90,12 +90,12 @@ public class JavaClass {
         String capitalizedPropertyName = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 
         // Add property getter method...
-        JavaMethod getterMethod = new JavaMethod(property.getType(), "get" + capitalizedPropertyName);
+        JMethod getterMethod = new JMethod(property.getType(), "get" + capitalizedPropertyName);
         getterMethod.setBody("return " + property.getName() + ";");
         methods.add(getterMethod);
 
         // Add property setter method...
-        JavaMethod setterMethod = new JavaMethod("set" + capitalizedPropertyName);
+        JMethod setterMethod = new JMethod("set" + capitalizedPropertyName);
         setterMethod.addParameter(property);
         setterMethod.setBody("return " + property.getName() + ";");
         setterMethod.setBody("this." + property.getName() + " = " + property.getName() + ";");
@@ -104,18 +104,18 @@ public class JavaClass {
         return this;
     }
 
-    public List<JavaNamedType> getProperties() {
+    public List<JNamedType> getProperties() {
         return properties;
     }
 
-    public List<JavaMethod> getMethods() {
+    public List<JMethod> getMethods() {
         return methods;
     }
 
     public Set<Class> getImports() {
         Set<Class> importSet = new LinkedHashSet<Class>();
 
-        for(JavaNamedType property : properties) {
+        for(JNamedType property : properties) {
             if(!property.getType().getType().isPrimitive()) {
                 property.getType().addImports(importSet);
             }
@@ -131,8 +131,8 @@ public class JavaClass {
         writer.write(template.apply(contextObj));
     }
 
-    private void assertPropertyUndefined(JavaNamedType property) {
-        for(JavaNamedType definedProperty : properties) {
+    private void assertPropertyUndefined(JNamedType property) {
+        for(JNamedType definedProperty : properties) {
             if(property.getName().equals(definedProperty.getName())) {
                 throw new IllegalArgumentException("Property '" + property.getName() + "' already defined.");
             }
