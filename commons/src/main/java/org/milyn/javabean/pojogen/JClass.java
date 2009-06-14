@@ -36,7 +36,7 @@ public class JClass {
 
     private String packageName;
     private String className;
-    private Class skeletonClass;
+    private Class<?> skeletonClass;
     private List<JNamedType> properties = new ArrayList<JNamedType>();
     private List<JMethod> methods = new ArrayList<JMethod>();
 
@@ -65,7 +65,7 @@ public class JClass {
         return className;
     }
 
-    public Class getSkeletonClass() {
+    public Class<?> getSkeletonClass() {
         if(skeletonClass == null) {
             String skeletonClassName = packageName + "." + className;
             ClassPool pool = ClassPool.getDefault();
@@ -112,8 +112,8 @@ public class JClass {
         return methods;
     }
 
-    public Set<Class> getImports() {
-        Set<Class> importSet = new LinkedHashSet<Class>();
+    public Set<Class<?>> getImports() {
+        Set<Class<?>> importSet = new LinkedHashSet<Class<?>>();
 
         for(JNamedType property : properties) {
             if(!property.getType().getType().isPrimitive()) {
@@ -125,7 +125,7 @@ public class JClass {
     }
 
     public void writeClass(Writer writer) throws IOException {
-        Map contextObj = new HashMap();
+        Map<String, JClass> contextObj = new HashMap<String, JClass>();
 
         contextObj.put("class", this);
         writer.write(template.apply(contextObj));

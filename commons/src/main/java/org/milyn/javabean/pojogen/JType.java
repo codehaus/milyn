@@ -29,30 +29,30 @@ import java.util.Set;
  */
 public class JType {
 
-    private Class type;
-    private Class genericType;
+    private Class<?> type;
+    private Class<?> genericType;
 
-    public JType(Class type) {
+    public JType(Class<?> type) {
         AssertArgument.isNotNull(type, "type");
         this.type = type;
     }
 
-    public JType(Class type, Class genericType) {
+    public JType(Class<?> type, Class<?> genericType) {
         AssertArgument.isNotNull(type, "type");
         AssertArgument.isNotNull(genericType, "genericType");
         this.type = type;
         this.genericType = genericType;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
-    public Class getGenericType() {
+    public Class<?> getGenericType() {
         return genericType;
     }
 
-    public void addImports(Set<Class> importSet) {
+    public void addImports(Set<Class<?>> importSet) {
         AssertArgument.isNotNull(importSet, "importSet");
         importSet.add(type);
         if(genericType != null) {
@@ -60,11 +60,12 @@ public class JType {
         }
     }
 
+    @Override
     public String toString() {
         if(genericType != null) {
             return type.getSimpleName() + "<" + genericType.getSimpleName() + ">";
-        } else {
-            return type.getSimpleName();
         }
+
+        return type.getSimpleName();
     }
 }

@@ -41,6 +41,7 @@ public class JNamedType {
         return name;
     }
 
+    @Override
     public String toString() {
         return type.toString() + " " + name;
     }
