@@ -29,17 +29,17 @@ import org.milyn.io.StreamUtils;
 public class PojoGenTest extends TestCase {
 
     public void test_01() throws IOException {
-        JavaClass aClass = new JavaClass("com.acme", "AClass");
-        JavaClass bClass = new JavaClass("com.acme", "BClass");
+        JClass aClass = new JClass("com.acme", "AClass");
+        JClass bClass = new JClass("com.acme", "BClass");
 
-        aClass.addProperty(new JavaNamedType(new JavaType(int.class), "primVar"));
-        aClass.addProperty(new JavaNamedType(new JavaType(Double.class), "doubleVar"));
-        aClass.addProperty(new JavaNamedType(new JavaType(BBBClass.class), "objVar"));
-        aClass.addProperty(new JavaNamedType(new JavaType(List.class, BBBClass.class), "genericVar"));
+        aClass.addProperty(new JNamedType(new JType(int.class), "primVar"));
+        aClass.addProperty(new JNamedType(new JType(Double.class), "doubleVar"));
+        aClass.addProperty(new JNamedType(new JType(BBBClass.class), "objVar"));
+        aClass.addProperty(new JNamedType(new JType(List.class, BBBClass.class), "genericVar"));
 
         // Wire AClass into BClass...
-        bClass.addProperty(new JavaNamedType(new JavaType(BBBClass.class), "bbbVar"));
-        bClass.addProperty(new JavaNamedType(new JavaType(aClass.getSkeletonClass()), "aClassVar"));
+        bClass.addProperty(new JNamedType(new JType(BBBClass.class), "bbbVar"));
+        bClass.addProperty(new JNamedType(new JType(aClass.getSkeletonClass()), "aClassVar"));
 
         StringWriter aWriter = new StringWriter();
         StringWriter bWriter = new StringWriter();
@@ -53,6 +53,18 @@ public class PojoGenTest extends TestCase {
         String bS = bWriter.toString();
 //        System.out.println(bS);
         assertEquals(StreamUtils.trimLines(BClass_Expected), StreamUtils.trimLines(bS));
+    }
+
+    public void test_duplicateProperty() {
+        JClass aClass = new JClass("com.acme", "AClass");
+
+        aClass.addProperty(new JNamedType(new JType(Double.class), "xVar"));
+        try {
+            aClass.addProperty(new JNamedType(new JType(Integer.class), "xVar"));
+            fail("Exected IllegalArgumentException.");
+        } catch(IllegalArgumentException e) {
+            assertEquals("Property 'xVar' already defined.", e.getMessage());
+        }
     }
 
     private static String AClass_Expected = "/**\n" +

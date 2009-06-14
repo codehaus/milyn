@@ -22,18 +22,18 @@ import org.milyn.assertion.AssertArgument;
  * @author bardl
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class JavaNamedType {
-    private JavaType type;
+public class JNamedType {
+    private JType type;
     private String name;
 
-    public JavaNamedType(JavaType type, String name) {
+    public JNamedType(JType type, String name) {
         AssertArgument.isNotNull(type, "type");
         AssertArgument.isNotNull(name, "name");
         this.type = type;
         this.name = name;
     }
 
-    public JavaType getType() {
+    public JType getType() {
         return type;
     }
 
