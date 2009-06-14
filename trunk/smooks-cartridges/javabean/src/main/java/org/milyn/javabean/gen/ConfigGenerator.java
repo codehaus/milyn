@@ -43,10 +43,10 @@ import java.util.*;
  * <p/>
  * The optional "-p" properties file parameter allows specification of additional config parameters:
  * <ul>
- *  <li><b>packages.included</b>: Semi-colon seperated list of packages scoping classes to be included in the binding generation.</li>
- *  <li><b>packages.excluded</b>: Semi-colon seperated list of packages scoping classes to be excluded in the binding generation.</li>
+ *  <li><b>packages.included</b>: Semi-colon separated list of packages. Any fields in the class matching these packages will be included in the binding configuration generated.</li>
+ *  <li><b>packages.excluded</b>: Semi-colon separated list of packages. Any fields in the class matching these packages will be excluded from the binding configuration generated.</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class ConfigGenerator {
@@ -56,10 +56,10 @@ public class ConfigGenerator {
     public static final String PACKAGES_EXCLUDED = "packages.excluded";
 
     private Writer outputWriter;
-    private Class rootBeanClass;
+    private Class<?> rootBeanClass;
     private List<String> packagesIncluded;
     private List<String> packagesExcluded;
-    private Stack classStack = new Stack();
+    private Stack<Class<?>> classStack = new Stack<Class<?>>();
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
         String rootBeanClassName = getArgument("-c", "Root Bean Class Name", true, args);
@@ -93,7 +93,7 @@ public class ConfigGenerator {
     }
 
     public void generate() throws IOException {
-        Map templatingContextObject = new HashMap();
+        Map<String, List<ClassConfig>> templatingContextObject = new HashMap<String, List<ClassConfig>>();
         List<ClassConfig> classConfigs = new ArrayList<ClassConfig>();
         FreeMarkerTemplate template;
 
@@ -104,7 +104,7 @@ public class ConfigGenerator {
         outputWriter.write(template.apply(templatingContextObject));
     }
 
-    private ClassConfig addClassConfig(List<ClassConfig> classConfigs, Class beanClass, String beanId) {
+    private ClassConfig addClassConfig(List<ClassConfig> classConfigs, Class<?> beanClass, String beanId) {
         if(classStack.contains(beanClass)) {
             // Don't go into an endless loop... stack overflow etc...
             return null;
@@ -120,7 +120,7 @@ public class ConfigGenerator {
             classConfigs.add(classConfig);
 
             for(Field field : fields) {
-                Class type = field.getType();
+                Class<?> type = field.getType();
                 Class<? extends DataDecoder> decoder = DataDecoder.Factory.getInstance(type);
 
                 if(decoder != null) {
@@ -150,8 +150,8 @@ public class ConfigGenerator {
     }
 
     private void addArrayConfig(List<ClassConfig> classConfigs, List<BindingConfig> bindings, String rootPackage, Field field) {
-        Class type = field.getType();
-        Class arrayType = type.getComponentType();
+        Class<?> type = field.getType();
+        Class<?> arrayType = type.getComponentType();
         String wireBeanId = field.getName() + "_entry";
         String typePackage = arrayType.getPackage().getName();
 
@@ -176,7 +176,7 @@ public class ConfigGenerator {
         if(types.length == 0) {
             // No generics info.  Can't infer anything...
         } else {
-            Class type = (Class) types[0];
+            Class<?> type = (Class<?>) types[0];
             String wireBeanId = field.getName() + "_entry";
             String typePackage = type.getPackage().getName();
 
@@ -282,8 +282,8 @@ public class ConfigGenerator {
 
         if(mandatory) {
             throw new IllegalArgumentException("Binding configuration error.  Missing value for commandline arg '" + argAlias + "' (" + argName + ")'.");
-        } else {
-            return null;
         }
+
+        return null;
     }
 }
