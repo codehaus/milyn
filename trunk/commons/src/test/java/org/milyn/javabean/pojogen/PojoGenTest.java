@@ -72,7 +72,6 @@ public class PojoGenTest extends TestCase {
             " */\n" +
             "package com.acme;\n" +
             "\n" +
-            "import java.lang.Double;    \n" +
             "import org.milyn.javabean.pojogen.BBBClass;    \n" +
             "import java.util.List;    \n" +
             "\n" +
@@ -122,7 +121,6 @@ public class PojoGenTest extends TestCase {
             "package com.acme;\n" +
             "\n" +
             "import org.milyn.javabean.pojogen.BBBClass;    \n" +
-            "import com.acme.AClass;    \n" +
             "\n" +
             "public class BClass {\n" +
             "\n" +

@@ -70,6 +70,7 @@ public class JClass {
             String skeletonClassName = packageName + "." + className;
             ClassPool pool = ClassPool.getDefault();
 
+            
             CtClass cc = pool.makeClass(skeletonClassName);
             try {
                 skeletonClass = cc.toClass();
@@ -116,9 +117,7 @@ public class JClass {
         Set<Class<?>> importSet = new LinkedHashSet<Class<?>>();
 
         for(JNamedType property : properties) {
-            if(!property.getType().getType().isPrimitive()) {
-                property.getType().addImports(importSet);
-            }
+            property.getType().addImports(importSet, new String[] {"java.lang", packageName});
         }
 
         return importSet;

@@ -16,6 +16,7 @@
 package org.milyn.javabean.pojogen;
 
 import org.milyn.assertion.AssertArgument;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.util.Set;
 
@@ -52,12 +53,27 @@ public class JType {
         return genericType;
     }
 
-    public void addImports(Set<Class<?>> importSet) {
+    public void addImports(Set<Class<?>> importSet, String[] excludePackages) {
         AssertArgument.isNotNull(importSet, "importSet");
-        importSet.add(type);
-        if(genericType != null) {
-            importSet.add(genericType);
+        if(!type.isPrimitive()) {
+            if(!ArrayUtils.contains(excludePackages, getPackageName(type))) {
+                importSet.add(type);
+            }
         }
+        if(genericType != null && !genericType.isPrimitive()) {
+            if(!ArrayUtils.contains(excludePackages, getPackageName(genericType))) {
+                importSet.add(genericType);
+            }
+        }
+    }
+
+    private String getPackageName(Class clazz) {
+        // We can't use Class.getPackage for some reason because Javassist is not returning anything??
+
+        String name = clazz.getName();
+        int lastDot = name.lastIndexOf('.');
+
+        return name.substring(0, lastDot);
     }
 
     @Override
