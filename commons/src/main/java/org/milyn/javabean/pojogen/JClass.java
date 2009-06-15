@@ -26,6 +26,7 @@ import java.io.IOException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CannotCompileException;
+import javassist.NotFoundException;
 
 /**
  * Java POJO model.
@@ -39,6 +40,7 @@ public class JClass {
     private Class<?> skeletonClass;
     private List<JNamedType> properties = new ArrayList<JNamedType>();
     private List<JMethod> methods = new ArrayList<JMethod>();
+    private boolean fluentSetters = true;
 
     private static FreeMarkerTemplate template;
 
@@ -65,19 +67,28 @@ public class JClass {
         return className;
     }
 
+    public void setFluentSetters(boolean fluentSetters) {
+        this.fluentSetters = fluentSetters;
+    }
+
     public Class<?> getSkeletonClass() {
         if(skeletonClass == null) {
             String skeletonClassName = packageName + "." + className;
-            ClassPool pool = ClassPool.getDefault();
 
-            
-            CtClass cc = pool.makeClass(skeletonClassName);
             try {
-                skeletonClass = cc.toClass();
-            } catch (CannotCompileException e) {
-                throw new IllegalStateException("Unable to create runtime skeleton class for class '" + skeletonClassName + "'.", e);
+                skeletonClass = Thread.currentThread().getContextClassLoader().loadClass(skeletonClassName);
+            } catch (ClassNotFoundException e) {
+                ClassPool pool = ClassPool.getDefault();
+                CtClass cc = pool.makeClass(skeletonClassName);
+
+                try {
+                    skeletonClass = cc.toClass();
+                } catch (CannotCompileException ee) {
+                    throw new IllegalStateException("Unable to create runtime skeleton class for class '" + skeletonClassName + "'.", ee);
+                }
             }
         }
+        
         return skeletonClass;
     }
 
@@ -96,10 +107,17 @@ public class JClass {
         methods.add(getterMethod);
 
         // Add property setter method...
-        JMethod setterMethod = new JMethod("set" + capitalizedPropertyName);
-        setterMethod.addParameter(property);
-        setterMethod.setBody("this." + property.getName() + " = " + property.getName() + ";");
-        methods.add(setterMethod);
+        if(fluentSetters) {
+            JMethod setterMethod = new JMethod(new JType(getSkeletonClass()), "set" + capitalizedPropertyName);
+            setterMethod.addParameter(property);
+            setterMethod.setBody("this." + property.getName() + " = " + property.getName() + ";  return this;");
+            methods.add(setterMethod);
+        } else {
+            JMethod setterMethod = new JMethod("set" + capitalizedPropertyName);
+            setterMethod.addParameter(property);
+            setterMethod.setBody("this." + property.getName() + " = " + property.getName() + ";");
+            methods.add(setterMethod);
+        }
 
         return this;
     }

@@ -32,6 +32,9 @@ public class PojoGenTest extends TestCase {
         JClass aClass = new JClass("com.acme", "AClass");
         JClass bClass = new JClass("com.acme", "BClass");
 
+        aClass.setFluentSetters(true);
+        bClass.setFluentSetters(false);
+
         aClass.addProperty(new JNamedType(new JType(int.class), "primVar"));
         aClass.addProperty(new JNamedType(new JType(Double.class), "doubleVar"));
         aClass.addProperty(new JNamedType(new JType(BBBClass.class), "objVar"));
@@ -86,32 +89,32 @@ public class PojoGenTest extends TestCase {
             "        return primVar;\n" +
             "    }\n" +
             "\n" +
-            "    public void setPrimVar(int primVar) {\n" +
-            "        this.primVar = primVar;\n" +
+            "    public AClass setPrimVar(int primVar) {\n" +
+            "        this.primVar = primVar;  return this;\n" +
             "    }\n" +
             "\n" +
             "    public Double getDoubleVar() {\n" +
             "        return doubleVar;\n" +
             "    }\n" +
             "\n" +
-            "    public void setDoubleVar(Double doubleVar) {\n" +
-            "        this.doubleVar = doubleVar;\n" +
+            "    public AClass setDoubleVar(Double doubleVar) {\n" +
+            "        this.doubleVar = doubleVar;  return this;\n" +
             "    }\n" +
             "\n" +
             "    public BBBClass getObjVar() {\n" +
             "        return objVar;\n" +
             "    }\n" +
             "\n" +
-            "    public void setObjVar(BBBClass objVar) {\n" +
-            "        this.objVar = objVar;\n" +
+            "    public AClass setObjVar(BBBClass objVar) {\n" +
+            "        this.objVar = objVar;  return this;\n" +
             "    }\n" +
             "\n" +
             "    public List<BBBClass> getGenericVar() {\n" +
             "        return genericVar;\n" +
             "    }\n" +
             "\n" +
-            "    public void setGenericVar(List<BBBClass> genericVar) {\n" +
-            "        this.genericVar = genericVar;\n" +
+            "    public AClass setGenericVar(List<BBBClass> genericVar) {\n" +
+            "        this.genericVar = genericVar;  return this;\n" +
             "    }\n" +
             "}";
 
