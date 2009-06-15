@@ -98,7 +98,6 @@ public class JClass {
         // Add property setter method...
         JMethod setterMethod = new JMethod("set" + capitalizedPropertyName);
         setterMethod.addParameter(property);
-        setterMethod.setBody("return " + property.getName() + ";");
         setterMethod.setBody("this." + property.getName() + " = " + property.getName() + ";");
         methods.add(setterMethod);
 
