@@ -55,8 +55,8 @@ public class EDIConfigDigesterTest extends TestCase {
         // Assert field is read correctly.
         // <medi:field xmltag="aTime" type="Time" format="HHmm" minLength="0" maxLength="4"/>
         assertEquals("Failed to digest type-attribute for Field", fields.get(0).getType(), "Date");
-        assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getParameters().get(0).getKey(), "format");
-        assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getParameters().get(0).getValue(), "HHmm");
+        assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getTypeParameters().get(0).getKey(), "format");
+        assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getTypeParameters().get(0).getValue(), "HHmm");
         assertEquals("Failed to digest minLength-attribute for Field", fields.get(0).getMinLength(), new Integer(0));
         assertEquals("Failed to digest maxLength-attribute for Field", fields.get(0).getMaxLength(), new Integer(4));
 
@@ -64,7 +64,7 @@ public class EDIConfigDigesterTest extends TestCase {
         // <medi:component xmltag="aBinary" required="true" type="Binary" minLength="0" maxLength="8"/>
         Component component = fields.get(1).getComponent().get(0);
         assertEquals("Failed to digest type-attribute for Component", component.getType(), "Binary");
-        assertNull("Parameters-attribute should be null in Component", component.getParameters());
+        assertNull("Parameters-attribute should be null in Component", component.getTypeParameters());
         assertEquals("Failed to digest minLength-attribute for Component", component.getMinLength(), new Integer(0));
         assertEquals("Failed to digest maxLength-attribute for Component", component.getMaxLength(), new Integer(8));
 
@@ -72,8 +72,8 @@ public class EDIConfigDigesterTest extends TestCase {
         // <medi:sub-component xmltag="aNumeric" type="Numeric" format="#0.00" minLength="1" maxLength="4"/>
         SubComponent subcomponent = fields.get(1).getComponent().get(1).getSubComponent().get(0);
         assertEquals("Failed to digest type-attribute for SubComponent", subcomponent.getType(), "Double");
-        assertEquals("Failed to digest parameters-attribute for SubComponent", subcomponent.getParameters().get(0).getKey(), "format");
-        assertEquals("Failed to digest format-attribute for SubComponent", subcomponent.getParameters().get(0).getValue(), "#0.00");
+        assertEquals("Failed to digest parameters-attribute for SubComponent", subcomponent.getTypeParameters().get(0).getKey(), "format");
+        assertEquals("Failed to digest format-attribute for SubComponent", subcomponent.getTypeParameters().get(0).getValue(), "#0.00");
         assertEquals("Failed to digest minLength-attribute for SubComponent", subcomponent.getMinLength(), new Integer(1));
         assertEquals("Failed to digest maxLength-attribute for SubComponent", subcomponent.getMaxLength(), new Integer(4));
     }
@@ -101,22 +101,22 @@ public class EDIConfigDigesterTest extends TestCase {
         Segment segment = (Segment)edimap.getSegments().getSegments().get(0);
         Field field = segment.getFields().get(0);
 
-        assertEquals("Number of parameters in list [" + field.getParameters().size() + "] doesn't match expected value [2].", field.getParameters().size(), 2);
+        assertEquals("Number of parameters in list [" + field.getTypeParameters().size() + "] doesn't match expected value [2].", field.getTypeParameters().size(), 2);
 
         String expected = "format";
-        String value = field.getParameters().get(0).getKey();
+        String value = field.getTypeParameters().get(0).getKey();
         assertEquals("Key in parameters [" + value + "] doesn't match expected value [" + expected + "].", value, expected);
 
         expected = "yyyyMMdd";
-        value = field.getParameters().get(0).getValue();
+        value = field.getTypeParameters().get(0).getValue();
         assertEquals("Value in parameters [" + value + "] doesn't match expected value [" + expected + "].", value, expected);
 
         expected = "param2";
-        value = field.getParameters().get(1).getKey();
+        value = field.getTypeParameters().get(1).getKey();
         assertEquals("Key in parameters [" + value + "] doesn't match expected value [" + expected + "].", value, expected);
 
         expected = "value2";
-        value = field.getParameters().get(1).getValue(); 
+        value = field.getTypeParameters().get(1).getValue(); 
         assertEquals("Value in parameters [" + value + "] doesn't match expected value [" + expected + "].", value, expected);
 
     }
@@ -153,18 +153,18 @@ public class EDIConfigDigesterTest extends TestCase {
         Segment segment = (Segment)edimap.getSegments().getSegments().get(0);
         Field field = segment.getFields().get(0);
 
-        assertEquals("Number of parameters in list [" + field.getParameters().size() + "] doesn't match expected value [2].", field.getParameters().size(), 2);
+        assertEquals("Number of parameters in list [" + field.getTypeParameters().size() + "] doesn't match expected value [2].", field.getTypeParameters().size(), 2);
 
         String expected = "CustomClass";
-        String value = field.getParameters().get(0).getValue();
+        String value = field.getTypeParameters().get(0).getValue();
         assertEquals("Value in parameters [" + value + "] doesn't match expected value [" + expected + "].", DateDecoder.class.getName(), value);
 
         expected = "param1";
-        value = field.getParameters().get(1).getKey();
+        value = field.getTypeParameters().get(1).getKey();
         assertEquals("Key in parameters [" + value + "] doesn't match expected value [" + expected + "].", value, expected);
 
         expected = "value1";
-        value = field.getParameters().get(1).getValue();
+        value = field.getTypeParameters().get(1).getValue();
         assertEquals("Value in parameters [" + value + "] doesn't match expected value [" + expected + "].", value, expected);
 
     }

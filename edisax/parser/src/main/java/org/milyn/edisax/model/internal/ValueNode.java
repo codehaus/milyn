@@ -37,7 +37,7 @@ public class ValueNode extends MappingNode {
     private Integer minLength;
     private Integer maxLength;
     private DataDecoder decoder;
-    private Class typeClass;
+    private Class<?> typeClass;
     private Properties decodeParams;
 
     public String getType() {
@@ -60,15 +60,15 @@ public class ValueNode extends MappingNode {
         return decoder;
     }
 
-    public Class getTypeClass() {
+    public Class<?> getTypeClass() {
         return typeClass;
     }
 
-    public List<Map.Entry<String,String>> getParameters() {
+    public List<Map.Entry<String,String>> getTypeParameters() {
         return parameters;
     }
 
-    public void setParameters(List<Map.Entry<String,String>> parameters) {
+    public void setTypeParameters(List<Map.Entry<String,String>> parameters) {
         this.parameters = parameters;
 
         if(decoder instanceof Configurable) {

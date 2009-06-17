@@ -13,7 +13,7 @@
 			<medi:field xmltag="net-amount" type="Double"/>
 			<medi:field xmltag="total-amount" type="Double"/>
 			<medi:field xmltag="tax" />
-			<medi:field xmltag="date" type="Date" parameters="format=yyyyHHmm"/>
+			<medi:field xmltag="date" type="Date" typeParameters="format=yyyyHHmm"/>
 		</medi:segment>
 
 		<medi:segment segcode="CUS" xmltag="customer-details">

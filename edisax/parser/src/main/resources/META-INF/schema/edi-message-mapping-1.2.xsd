@@ -109,7 +109,7 @@ The escape attribute specifies a character that can be used before a delimiter t
 						<xs:documentation>Specifies the type of the value existing in value-node. The standard types are connected to standard DataDecoders in Smooks.</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="parameters" type="xs:string" use="optional">
+				<xs:attribute name="typeParameters" type="xs:string" use="optional">
 					<xs:annotation>
 						<xs:documentation>Parameters used to validate the type of the value-node. Parameters are listed in the form: param1=value1;param2=value2 etc.</xs:documentation>
 					</xs:annotation>
