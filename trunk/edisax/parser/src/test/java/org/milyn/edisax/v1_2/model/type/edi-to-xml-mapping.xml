@@ -8,14 +8,14 @@
     <medi:segments xmltag="un-edifact">
 
         <medi:segment segcode="SEG" xmltag="SEG">
-            <medi:field xmltag="aTime" type="Date" parameters="format=HHmm" minLength="0" maxLength="4"/>
+            <medi:field xmltag="aTime" type="Date" typeParameters="format=HHmm" minLength="0" maxLength="4"/>
             <medi:field xmltag="fieldParent" required="true">
                 <medi:component xmltag="aBinary" required="true" type="Binary" minLength="0" maxLength="8"/>
                 <medi:component xmltag="componentParent" required="true">
-                    <medi:sub-component xmltag="aNumeric" type="Double" parameters="format=#0.00" minLength="1" maxLength="4"/>
+                    <medi:sub-component xmltag="aNumeric" type="Double" typeParameters="format=#0.00" minLength="1" maxLength="4"/>
                 </medi:component>
                 <medi:component xmltag="aString" required="true" type="String" minLength="10" maxLength="20"/>
-                <medi:component xmltag="aDate" type="Date" parameters="format=yyyyMMdd" minLength="8" maxLength="8"/>
+                <medi:component xmltag="aDate" type="Date" typeParameters="format=yyyyMMdd" minLength="8" maxLength="8"/>
             </medi:field>
         </medi:segment>
 

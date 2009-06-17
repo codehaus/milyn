@@ -51,7 +51,7 @@ public class EDIConfigDigester {
      * @return the {@link org.milyn.edisax.model.internal.Edimap}.
      * @throws IOException Error parsing the XML stream.
      * @throws SAXException Error parsing the XML stream.
-     * @throws EDIConfigurationException Multiple or no namespaces in edi-message-mapping. 
+     * @throws EDIConfigurationException Multiple or no namespaces in edi-message-mapping.
      */
     public static Edimap digestConfig(InputStream stream) throws IOException, SAXException, EDIConfigurationException {
         Document configDoc;
@@ -226,7 +226,7 @@ public class EDIConfigDigester {
     }
 
     private static boolean digestSegmentGroup(Node currentNode, List<SegmentGroup> segmentGroupList, String namespacePrefix) throws EDIConfigurationException {
-        
+
         if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "segmentGroup")) {
             SegmentGroup segment = new SegmentGroup();
             segmentGroupList.add(segment);
@@ -358,14 +358,14 @@ public class EDIConfigDigester {
         valueNode.setType(getNodeValue(node, "type"));
         valueNode.setMinLength(getNodeValueAsInteger(node, "minLength"));
         valueNode.setMaxLength(getNodeValueAsInteger(node, "maxLength"));
-        digestParameters(valueNode, getNodeValue(node, "parameters"));
+        digestParameters(valueNode, getNodeValue(node, "typeParameters"));
     }
 
     /**
      * Digests parameters from parameters attribute and insertsthe parameters into
      * the valueNode. If first parameter is not a key-value-pair the parameter is
      * considered to be a custom class name.
-     * @param valueNode the valueNode to populate. 
+     * @param valueNode the valueNode to populate.
      * @param value the parameters as a string value.
      * @throws EDIConfigurationException is thrown when parameters are used incorrectly.
      */
@@ -384,7 +384,7 @@ public class EDIConfigDigester {
                         customClass = entry[0];
                         result.add(new ParamEntry<String, String>(CustomDecoder.CLASS_PROPERTY_NAME, entry[0]));
                     } else {
-                        throw new EDIConfigurationException("Invalid use of paramaters in ValueNode. A parameter-entry should consist of a key-value-pair separated with the '='-character. Example: [parameters=\"key1=value1;key2=value2\"]"); 
+                        throw new EDIConfigurationException("Invalid use of paramaters in ValueNode. A parameter-entry should consist of a key-value-pair separated with the '='-character. Example: [parameters=\"key1=value1;key2=value2\"]");
                     }
                 } else if (entry.length == 2) {
                     result.add(new ParamEntry<String, String>(entry[0], entry[1]));
@@ -392,7 +392,7 @@ public class EDIConfigDigester {
                     throw new EDIConfigurationException("Invalid use of paramaters in ValueNode. A parameter-entry should consist of a key-value-pair separated with the '='-character. Example: [parameters=\"key1=value1;key2=value2\"]");
                 }
             }
-            valueNode.setParameters(result);
+            valueNode.setTypeParameters(result);
 
             if ( valueNode.getType().equals(EDITypeEnum.CUSTOM_NAME) && customClass == null) {
                 throw new EDIConfigurationException("When using the Custom type in ValueNode the custom class type must exist as the first element in parameters");
