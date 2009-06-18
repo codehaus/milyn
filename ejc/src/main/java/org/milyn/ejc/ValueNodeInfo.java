@@ -13,22 +13,32 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.ejc.classes;
+package org.milyn.ejc;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * XmlElement holds information about which element-name the edi-mapping-file will have.
- * @see org.milyn.ejc.classes.JClass
- * @see org.milyn.ejc.classes.JAttribute
- * @see org.milyn.ejc.classes.JJavaClass
+ * ValueNodeInfo contains information about values from a ValueNode. The values contained here are xmltag and
+ * typeParameters.
+ * 
+ * @author bardl.
  */
-public class XmlElement {
+public class ValueNodeInfo {
     private String xmlElementName;
+    private List<Map.Entry<String,String>> decoderConfigs;
+
+    public ValueNodeInfo(String xmlElementName, List<Map.Entry<String,String>> decoderConfigs) {
+        this.xmlElementName = xmlElementName;
+        this.decoderConfigs = decoderConfigs;
+    }
 
     public String getXmlElementName() {
         return xmlElementName;
     }
 
-    public void setXmlElementName(String xmlElementName) {
-        this.xmlElementName = xmlElementName;
+    public List<Map.Entry<String,String>> getDecoderConfigs() {
+        return decoderConfigs;
     }
+
 }

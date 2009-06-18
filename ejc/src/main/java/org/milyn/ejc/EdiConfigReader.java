@@ -15,15 +15,13 @@
 */
 package org.milyn.ejc;
 
+import org.apache.commons.logging.Log;
 import org.milyn.edisax.model.internal.*;
-import org.milyn.edisax.EDITypeEnum;
+import org.milyn.javabean.pojogen.JClass;
+import org.milyn.javabean.pojogen.JNamedType;
+import org.milyn.javabean.pojogen.JType;
 
 import java.util.List;
-import java.util.ArrayList;
-
-import org.milyn.ejc.classes.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * org.milyn.ejc.EdiConfigReader parses a Edimap and generates events while parsing.
@@ -40,9 +38,11 @@ public class EdiConfigReader {
         model = new ClassModel();
 
         SegmentGroup segmentGroup = edimap.getSegments();
-        JClass rootClass = new JClass(new JPackage(classPackage), EJCUtils.encodeClassName(segmentGroup.getXmltag()));
-        rootClass.setXmlElementName(segmentGroup.getXmltag());
+        JClass rootClass = new JClass(classPackage, EJCUtils.encodeClassName(segmentGroup.getXmltag()));
+
+        //Insert root class into classModel and its' corresponding xmltag-value.
         model.addClass(rootClass);
+        model.addClassValueNodeConfig(rootClass, new ValueNodeInfo(segmentGroup.getXmltag(), null));
         model.setRoot(rootClass);
 
         LOG.debug("Added root class [" + rootClass + "] to ClassModel.");
@@ -58,13 +58,26 @@ public class EdiConfigReader {
     /**********************************************************************************************************
      * Private Parser Methods
      **********************************************************************************************************/
-    
+
+    /**
+     * Parse all SegmentGroups in List and insert parsed info into the {@link org.milyn.ejc.ClassModel}.
+     * @param segmentGroups the SegmentsGroups to parse.
+     * @param parent the JClass 'owning' the SegmentGroups.
+     * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword. 
+     */
     private void parseSegmentGroups(List<SegmentGroup> segmentGroups, JClass parent) throws IllegalNameException {
         for (SegmentGroup segmentGroup : segmentGroups) {
             parseSegmentGroup(segmentGroup, parent);
         }
     }
 
+    /**
+     *
+     * Parse the {@link org.milyn.edisax.model.internal.SegmentGroup} in List and insert parsed info into the {@link org.milyn.ejc.ClassModel}.
+     * @param segmentGroup the {@link org.milyn.edisax.model.internal.SegmentGroup} to parse.
+     * @param parent the JClass 'owning' the {@link org.milyn.edisax.model.internal.SegmentGroup}.
+     * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
+     */
     private void parseSegmentGroup(SegmentGroup segmentGroup, JClass parent) throws IllegalNameException {
         LOG.debug("Parsing SegmentGroup " + segmentGroup.getXmltag());
         JClass child = createChildAndConnectWithParent(parent, segmentGroup, segmentGroup.getMaxOccurs());
@@ -75,15 +88,12 @@ public class EdiConfigReader {
         parseSegmentGroups(segmentGroup.getSegments(), child);
     }
 
-    private JClass wrapIntoGenericCollection(JClass clazz, int maxOccurs, String createOnElementName) {
-        JClass result = clazz;
-        if (maxOccurs > 1 || maxOccurs == -1) {
-            result = new JJavaClass(JJavaClass.ARRAY_LIST.getPackage(), JJavaClass.ARRAY_LIST.getName(), clazz, JJavaClass.LIST);
-            result.setXmlElementName(createOnElementName);
-        }
-        return result;
-    }
-
+    /**
+     * Parse all {@link org.milyn.edisax.model.internal.Field} in List and insert parsed info into the {@link org.milyn.ejc.ClassModel}.
+     * @param fields the {@link org.milyn.edisax.model.internal.Field} to parse.
+     * @param parent the JClass 'owning' the {@link org.milyn.edisax.model.internal.Field}.
+     * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
+     */
     private void parseFields(List<Field> fields, JClass parent) throws IllegalNameException {
         JClass child;
         for (Field field : fields) {
@@ -99,22 +109,34 @@ public class EdiConfigReader {
         }
     }
 
+    /**
+     * Creates a {@link org.milyn.javabean.pojogen.JNamedType} given a {@link org.milyn.edisax.model.internal.ValueNode}.
+     * When {@link org.milyn.edisax.model.internal.ValueNode} contains no type information String-type is used as default.
+     * The new {@link org.milyn.javabean.pojogen.JNamedType} is inserted into parent and the xmltag- and
+     * typeParameters-value is inserted into classModel. 
+     * @param valueNode the {@link org.milyn.edisax.model.internal.ValueNode} to parse.
+     * @param parent the {@link org.milyn.javabean.pojogen.JClass} 'owning' the valueNode.
+     * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
+     */
     private void createAndAddSimpleType(ValueNode valueNode, JClass parent) throws IllegalNameException {
-        JSimpleType type;
+        JType jtype;
         if (valueNode.getType() != null && !valueNode.getType().equals("")) {
-            if (valueNode.getType().equals(EDITypeEnum.CUSTOM_NAME)) {
-                type = new JSimpleType(valueNode.getTypeParameters().get(0).getValue(), valueNode.getTypeParameters(), null);
-            } else {
-                type = new JSimpleType(valueNode.getType(), valueNode.getTypeParameters(), JJavaClass.getPackageForClass(valueNode.getTypeClass()));
-            }
+            jtype = new JType(valueNode.getTypeClass());
         } else {
-            type = new JSimpleType(JSimpleType.DEFAULT_TYPE, null, null);
+            // Default type when no specific type is given.
+            jtype = new JType(String.class);
         }
-        JAttribute attribute = new JAttribute(type, EJCUtils.encodeAttributeName(type, valueNode.getXmltag()));
-        attribute.setXmlElementName(valueNode.getXmltag());
-        addAttributeAndCreateMethods( parent, attribute );
+        String propertyName = EJCUtils.encodeAttributeName(jtype, valueNode.getXmltag());
+        parent.addProperty(new JNamedType(jtype, propertyName));
+        model.addPropertyValueNodeConfig(parent.getClassName(), propertyName, new ValueNodeInfo(valueNode.getXmltag(), valueNode.getParameters()));
     }
 
+    /**
+     * Parse all {@link org.milyn.edisax.model.internal.Component} in List and insert parsed info into the {@link org.milyn.ejc.ClassModel}.
+     * @param components the {@link org.milyn.edisax.model.internal.Component} to parse.
+     * @param parent the JClass 'owning' the {@link org.milyn.edisax.model.internal.Component}.
+     * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
+     */
     private void parseComponents(List<Component> components, JClass parent) throws IllegalNameException {
         JClass child;
         for (Component component : components) {
@@ -129,6 +151,12 @@ public class EdiConfigReader {
         }
     }
 
+    /**
+     * Parse all {@link org.milyn.edisax.model.internal.SubComponent} in List and insert parsed info into the {@link org.milyn.ejc.ClassModel}.
+     * @param subComponents the {@link org.milyn.edisax.model.internal.SubComponent} to parse.
+     * @param parent the JClass 'owning' the {@link org.milyn.edisax.model.internal.SubComponent}.
+     * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
+     */
     private void parseSubComponents(List<SubComponent> subComponents, JClass parent) throws IllegalNameException {
         for (SubComponent subComponent : subComponents) {
             //Add primitive type.
@@ -139,86 +167,35 @@ public class EdiConfigReader {
     /**********************************************************************************************************
      * Private Helper Methods
      **********************************************************************************************************/
-      
+
+    /**
+     * Creates a new {@link org.milyn.javabean.pojogen.JClass} C and inserts the class as a property in parent.
+     * If C occurs several times, i.e. maxOccurs > 1, then C exists in a {@link java.util.List} in parent.
+     * The new {@link org.milyn.javabean.pojogen.JClass} is inserted into classModel along with xmltag-value
+     * found in the {@link org.milyn.edisax.model.internal.MappingNode}.
+     * @param parent the {@link org.milyn.javabean.pojogen.JClass} 'owning' the {@link org.milyn.edisax.model.internal.MappingNode}.
+     * @param mappingNode the {@link org.milyn.edisax.model.internal.MappingNode} to parse.
+     * @param maxOccurs the number of times {@link org.milyn.edisax.model.internal.MappingNode} can occur.
+     * @return the created {@link org.milyn.javabean.pojogen.JClass}
+     * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
+     */
     private JClass createChildAndConnectWithParent(JClass parent, MappingNode mappingNode, int maxOccurs) throws IllegalNameException {
-        JClass child = new JClass(parent.getPackage(), EJCUtils.encodeClassName(mappingNode.getXmltag()));
-        child.setXmlElementName(mappingNode.getXmltag());
-        child = wrapIntoGenericCollection(child, maxOccurs, parent.getXmlElementName());
+        JClass child = new JClass(parent.getPackageName(), EJCUtils.encodeClassName(mappingNode.getXmltag()));
 
-        LOG.debug("Created class " + child.getFullName() + ".");
+        LOG.debug("Created class " + child.getClassName() + ".");
 
-        JAttribute attribute = new JAttribute(child, EJCUtils.encodeAttributeName(child, mappingNode.getXmltag()));
-        attribute.setXmlElementName(mappingNode.getXmltag());
-        addAttributeAndCreateMethods(parent, attribute);
-        if (child.getGenericType() != null) {
-            LOG.debug("Created class has generic type " + child.getGenericType() + ".");
-            model.addClass((JClass)child.getGenericType());
+        JType jtype;
+        if (maxOccurs > 1 || maxOccurs == -1) {
+            jtype = new JType(List.class, child.getSkeletonClass());
         } else {
-            model.addClass(child);
+            jtype = new JType(child.getSkeletonClass());
         }
+        String propertyName = EJCUtils.encodeAttributeName(jtype, mappingNode.getXmltag());
+        parent.addProperty(new JNamedType(jtype, propertyName));
+        model.addClass(child);
+        model.addClassValueNodeConfig(child, new ValueNodeInfo(mappingNode.getXmltag(), null));
+        model.addPropertyValueNodeConfig(child.getClassName(), propertyName, new ValueNodeInfo(mappingNode.getXmltag(), null));
+
         return child;
-    }
-
-    private void addAttributeAndCreateMethods(JClass parent, JAttribute attribute) {
-        if (parent.getGenericType() != null && parent.getGenericType() instanceof JClass) {
-            addAttributeAndCreateMethods(((JClass)parent.getGenericType()), attribute);
-        } else {
-            LOG.debug("Adding import and methods for attribute " + attribute);
-            parent.getAttributes().add(attribute);
-            applyImport(parent, attribute);
-            addMethods(parent, attribute);
-        }
-    }
-
-    private void addMethods(JClass parent, JAttribute attribute) {
-        String methodSuffix = attribute.getName().substring(0,1).toUpperCase() + attribute.getName().substring(1, attribute.getName().length());
-        List<JStatement> statements = new ArrayList<JStatement>();
-        addInstantiationOfCollection(statements, attribute);
-        statements.add(new JStatement("return this." + attribute.getName() + JStatement.STATEMENT_SUFFIX));
-        JMethod getMethod = new JMethod(JVisibility.PUBLIC, attribute.getType(), JMethod.GET_PREFIX + methodSuffix, null, statements);
-        parent.getMethods().add(getMethod);
-        //LOG.debug("Added method " + getMethod + " to class " + parent + ".");
-
-        List<JParameter> parameters = new ArrayList<JParameter>();
-        parameters.add(new JParameter(attribute.getType(), attribute.getName()));
-        statements = new ArrayList<JStatement>();
-        statements.add(new JStatement("this." + attribute.getName() + " = " + attribute.getName() + JStatement.STATEMENT_SUFFIX));
-        JMethod setMethod = new JMethod(JVisibility.PUBLIC, JSimpleType.VOID, JMethod.SET_PREFIX + methodSuffix, parameters, statements);
-        parent.getMethods().add(setMethod);
-        //LOG.debug("Added method " + setMethod + " to class " + parent + ".");
-    }
-
-    private void addInstantiationOfCollection(List<JStatement> statements, JAttribute attribute) {
-        if (attribute.getType() instanceof JClass) {
-            JClass clazz = (JClass)attribute.getType();
-            if (clazz.getInterfaceOf() != null && clazz.getInterfaceOf().getName().equals("List")) {
-                statements.add(new JStatement("if (" + attribute.getName() + " == null) {"));
-                statements.add(new JStatement("\tthis." + attribute.getName() + " = new " + clazz.getName() + (clazz.getGenericType() != null ? "<" + clazz.getGenericType().getName() + ">" : "") + "()" + JStatement.STATEMENT_SUFFIX));
-                statements.add(new JStatement("}"));
-            }
-        }
-    }
-
-    private void applyImport(JClass parent, JAttribute attribute) {
-        JImport newImport = new JImport(attribute.getType());
-        addImport(parent, newImport);
-        if (attribute.getType() instanceof JClass) {
-            JClass clazz = (JClass)attribute.getType();
-            if (clazz.getInterfaceOf() != null ) {
-                newImport = new JImport(clazz.getInterfaceOf());
-                addImport(parent, newImport);
-            }
-            if (clazz.getGenericType() != null ) {
-                newImport = new JImport(clazz.getGenericType());
-                addImport(parent, newImport);
-            }
-        }
-    }
-
-    private void addImport(JClass parent, JImport newImport) {
-        if ( newImport.getType().getPackage() != null && !newImport.getType().getPackage().equals(parent.getPackage())) {
-            parent.getImports().add(newImport);
-            LOG.debug("Added " + newImport + " to class " + parent + ".");
-        }
     }
 }

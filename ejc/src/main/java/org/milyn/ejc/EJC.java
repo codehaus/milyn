@@ -23,6 +23,7 @@ import org.milyn.io.FileUtils;
 import org.xml.sax.SAXException;
 import org.apache.commons.logging.Log;
 import static org.milyn.ejc.EJCLogFactory.Level;
+import org.milyn.javabean.gen.ConfigGenerator;
 
 import java.io.*;
 
@@ -71,8 +72,9 @@ public class EJC {
      * @throws IOException When unable to read edi-mapping-configuration.
      * @throws SAXException When edi-mapping-configuration is badly formatted.
      * @throws IllegalNameException when name of java-classes is illegal.
+     * @throws ClassNotFoundException when error occurs while creating bindingfile.
      */
-    public void compile(InputStream configFile, String configName, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
+    public void compile(InputStream configFile, String configName, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
         String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
 
         //Read edifact configuration
@@ -88,12 +90,9 @@ public class EJC {
         LOG.info("Creating bindingfile...");
         String bundleConfigPath = "/" + beanPackage.replace('.', '/') + "/edimappingconfig.xml";
         FileUtils.copyFile(configName, beanFolder + bundleConfigPath);
-        BindingWriter.parse(model, bindingFile, bundleConfigPath);
 
-//        if (jar != null) {
-//            LOG.info("Creating jarfile [" + jar + "].");
-//            GenerateJar.generateJar(beanFolder, beanPackage, model.getRoot().getName(), bindingFile, jar);
-//        }
+        BindingWriter bindingWriter = new BindingWriter(model);
+        bindingWriter.generate(bindingFile);
 
         LOG.info("-----------------------------------------------------------------------");
         LOG.info(" Compiltation complete.");
@@ -126,7 +125,7 @@ public class EJC {
      * @throws java.io.IOException when error ocurcurs when reading or writing files.
      * @throws org.xml.sax.SAXException when error occurs while reading ediConfiguration. 
      */
-    public static void main(String[] args) throws IOException, EDIConfigurationException, IllegalNameException, SAXException {
+    public static void main(String[] args) throws IOException, EDIConfigurationException, IllegalNameException, SAXException, ClassNotFoundException {
         EJC ejc = new EJC();
 
         // Should be an odd number of commandline args...

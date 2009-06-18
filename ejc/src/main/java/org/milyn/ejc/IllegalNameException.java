@@ -1,9 +1,22 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
 package org.milyn.ejc;
 
 /**
- * IllegalNameException is used when a {@link org.milyn.ejc.classes.JClass} or
- * {@link org.milyn.ejc.classes.JAttribute} is given a name matching a reserved
- * keyword in java.
+ * IllegalNameException is used when a JClass or JField is given a name matching a reserved keyword in java.
  *
  * @author bardl
  */

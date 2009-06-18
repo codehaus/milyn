@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.2.xsd">    
+    <#list classConfigs as classConfig>
+
+    <jb:bean beanId="${classConfig.beanId}" class="${classConfig.beanClass.name}<#if classConfig.array>[]</#if>" createOnElement="${classConfig.elementName}">
+    <#list classConfig.bindings as binding>
+        <#if binding.wiring>
+        <jb:wiring <#if binding.boundToProperty>property="${binding.property.name}" </#if>beanIdRef="${binding.wireBeanId}" />
+        <#else>
+        <#if binding.decoderConfigs?exists>
+        <jb:value <#if binding.boundToProperty>property="${binding.property.name}" </#if><#if !binding.wiring>decoder="${binding.type}" </#if>data="${binding.selector}">
+        <#list binding.decoderConfigs as config>
+            <jb:decodeParam name="${config.key}">${config.value}</jb:decodeParam>
+        </#list>
+        </jb:value>
+        <#else>
+        <jb:value <#if binding.boundToProperty>property="${binding.property.name}" </#if><#if !binding.wiring>decoder="${binding.type}" </#if>data="${binding.selector}"/>
+        </#if>
+        </#if>
+    </#list>
+    </jb:bean>
+    </#list>
+
+</smooks-resource-list>
