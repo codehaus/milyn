@@ -58,7 +58,7 @@ public class ExpandableContentDeliveryUnitTest extends TestCase {
         assertEquals(2, processingVisitAfters.getCount());
         assertTrue(processingVisitAfters.getMappings("b").get(0).getContentHandler() instanceof Processing1);
 
-        assertEquals(3, serializationUnits.getCount());
+        assertEquals(4, serializationUnits.getCount());
         assertTrue(serializationUnits.getMappings("c").get(0).getContentHandler() instanceof DefaultSerializationUnit);
         assertTrue(serializationUnits.getMappings("context-object").get(0).getContentHandler() instanceof ContextObjectSerializationUnit);
     }

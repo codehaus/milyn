@@ -235,6 +235,10 @@ public class SmooksResourceConfiguration {
     private LinkedHashMap<String, Object> parameters = new LinkedHashMap<String, Object>();
     private int parameterCount;
     /**
+     * Global Parameters object.
+     */
+    private SmooksResourceConfiguration globalParams;
+    /**
      * The XML namespace of the tag to which this config
      * should only be applied.
      */
@@ -337,6 +341,24 @@ public class SmooksResourceConfiguration {
         clone.expressionEvaluator = expressionEvaluator;
 
         return clone;
+    }
+
+    public void attachGlobalParameters(ApplicationContext appContext) {
+        if(globalParams == null) {
+            globalParams = appContext.getStore().getGlobalParams();
+        }
+    }
+
+    public SmooksResourceConfiguration merge(SmooksResourceConfiguration config) {
+        SmooksResourceConfiguration clone = (SmooksResourceConfiguration) clone();
+        clone.parameters.clear();
+        clone.parameters.putAll(config.parameters);
+        clone.parameters.putAll(this.parameters);
+        return clone;
+    }
+
+    public void addParmeters(SmooksResourceConfiguration config) {
+        parameters.putAll(config.parameters);
     }
 
     /**
@@ -767,6 +789,10 @@ public class SmooksResourceConfiguration {
             return (Parameter) ((List) parameter).get(0);
         } else if (parameter instanceof Parameter) {
             return (Parameter) parameter;
+        }
+
+        if(globalParams != null) {
+            return globalParams.getParameter(name);
         }
 
         return null;

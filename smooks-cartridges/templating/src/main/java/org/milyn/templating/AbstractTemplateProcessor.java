@@ -29,6 +29,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.dom.serialize.TextSerializationUnit;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.io.AbstractOutputStreamResource;
@@ -289,6 +290,8 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
         } else if(node.getNodeType() == Node.ELEMENT_NODE && ContextObjectSerializationUnit.isContextObjectElement((Element) node)) {
             String contextKey = ContextObjectSerializationUnit.getContextKey((Element) node);
             return (String) executionContext.getAttribute(contextKey);
+        } else if(node.getNodeType() == Node.ELEMENT_NODE && TextSerializationUnit.isTextElement((Element) node)) {
+            return TextSerializationUnit.getText((Element) node);
         } else {
             throw new SmooksException("Unsupported 'bindTo' or toOutStream templating action.  The bind data must be attached to a DOM Text node, or already bound to a <context-object> element.");
         }

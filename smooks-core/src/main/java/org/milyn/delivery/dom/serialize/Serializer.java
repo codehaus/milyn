@@ -111,7 +111,12 @@ public class Serializer {
                 SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
                 resourceConfig.setDefaultResource(true);
                 defaultSUs = new Vector();
-                defaultSUs.add(new ContentHandlerConfigMap(Configurator.configure(new DefaultSerializationUnit(), resourceConfig), resourceConfig));
+
+                DefaultSerializationUnit defaultSerializationUnit = new DefaultSerializationUnit();
+                boolean rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, executionContext.getDeliveryConfig());
+
+                defaultSerializationUnit.setRewriteEntities(rewriteEntities);
+                defaultSUs.add(new ContentHandlerConfigMap(defaultSerializationUnit, resourceConfig));
             }
         }
         terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());

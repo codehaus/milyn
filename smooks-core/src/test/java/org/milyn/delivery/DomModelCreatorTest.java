@@ -50,7 +50,7 @@ public class DomModelCreatorTest extends TestCase {
                 "<order>\n" +
                 "    <header>\n" +
                 "        <date>Wed Nov 15 13:45:28 EST 2006</date>\n" +
-                "        <customer number=\"123123\">Joe</customer>\n" +
+                "        <customer number=\"123123\">Joe &gt; the man</customer>\n" +
                 "    </header>\n" +
                 "    <order-items/>\n" +
                 "</order>",
@@ -100,7 +100,7 @@ public class DomModelCreatorTest extends TestCase {
                 "<order>\n" +
                 "    <header>\n" +
                 "        <date>Wed Nov 15 13:45:28 EST 2006</date>\n" +
-                "        <customer number=\"123123\">Joe</customer>\n" +
+                "        <customer number=\"123123\">Joe &gt; the man</customer>\n" +
                 "    </header>\n" +
                 "    <order-items/>\n" +
                 "</order>",
@@ -149,16 +149,16 @@ public class DomModelCreatorTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("node-model-01.xml"));
         ExecutionContext executionContext = smooks.createExecutionContext();
 
-        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")), null);
+        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("order-message.xml")));
 
         DOMModel nodeModel = DOMModel.getModel(executionContext);
-        
+
         assertTrue(
                 StreamUtils.compareCharStreams(
                 "<order>\n" +
                 "    <header>\n" +
                 "        <date>Wed Nov 15 13:45:28 EST 2006</date>\n" +
-                "        <customer number=\"123123\">Joe</customer>\n" +
+                "        <customer number=\"123123\">Joe &gt; the man</customer>\n" +
                 "    </header>\n" +
                 "    <order-items>\n" +
                 "        <order-item>\n" +

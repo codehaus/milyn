@@ -90,8 +90,18 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
         test_ftl(smooks, "<a><b javabind='javaval'><c>cvalue1</c><c>cvalue2</c><c>cvalue3</c></b></a>", "'cvalue1''cvalue2''cvalue3' javaVal=javaval");
     }
 
-    public void testFreeMarkerTrans_02() throws SAXException, IOException {
+    public void testFreeMarkerTrans_02_DOM() throws SAXException, IOException {
+        testFreeMarkerTrans_02(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void testFreeMarkerTrans_02_SAX() throws SAXException, IOException {
+        testFreeMarkerTrans_02(FilterSettings.DEFAULT_SAX);
+    }
+
+    public void testFreeMarkerTrans_02(FilterSettings filterSettings) throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-ext-02.cdrl"));
+
+        smooks.setFilterSettings(filterSettings);
 
         test_ftl(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
         // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
@@ -118,14 +128,24 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
         assertEquals("<mybean>xxxxxxx</mybean>", myTransformResult.toString());
     }
 
-    public void testFreeMarkerTrans_bind() throws SAXException, IOException {
+    public void testFreeMarkerTrans_bind_DOM() throws SAXException, IOException {
+        testFreeMarkerTrans_bind(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void testFreeMarkerTrans_bind_SAX() throws SAXException, IOException {
+        testFreeMarkerTrans_bind(FilterSettings.DEFAULT_SAX);
+    }
+
+    public void testFreeMarkerTrans_bind(FilterSettings filterSettings) throws SAXException, IOException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test-configs-ext-04.cdrl"));
         StringReader input;
         ExecutionContext context;
 
+        smooks.setFilterSettings(filterSettings);
+
         context = smooks.createExecutionContext();
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
-        smooks.filterSource(context, new StreamSource(input), null);
+        smooks.filterSource(context, new StreamSource(input));
 
         assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 

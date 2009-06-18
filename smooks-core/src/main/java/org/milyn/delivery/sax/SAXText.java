@@ -16,6 +16,7 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.xml.HTMLEntityLookup;
+import org.milyn.xml.XmlUtil;
 import org.milyn.SmooksException;
 
 import java.io.IOException;
@@ -101,6 +102,38 @@ public class SAXText {
     }
 
     /**
+     * Get the underlying character buffer.
+     * @return The underlying character buffer.
+     * @see #getOffset()
+     * @see #getLength()
+     */
+    public char[] getCharacters() {
+        return characters;
+    }
+
+    /**
+     * Get the character offset (in the {@link #getCharacters() character buffer}) of the text a
+     * associated with this SAXText instance.
+     * @return The character offset.
+     * @see #getCharacters()
+     * @see #getLength()
+     */
+    public int getOffset() {
+        return offset;
+    }
+
+    /**
+     * Get the character buffer length (in the {@link #getCharacters() character buffer}) of the text a
+     * associated with this SAXText instance.
+     * @return The character buffer length.
+     * @see #getCharacters() 
+     * @see #getOffset()
+     */
+    public int getLength() {
+        return length;
+    }
+
+    /**
      * Write the text to the supplied writer.
      * <p/>
      * It wraps the text based on its {@link #getType() type}.
@@ -109,9 +142,26 @@ public class SAXText {
      * @throws IOException Write exception.
      */
     public void toWriter(Writer writer) throws IOException {
+        toWriter(writer, true);
+    }
+
+    /**
+     * Write the text to the supplied writer.
+     * <p/>
+     * It wraps the text based on its {@link #getType() type}.
+     *
+     * @param writer The writer.
+     * @param encodeSpecialChars Encode special XML characters.
+     * @throws IOException Write exception.
+     */
+    public void toWriter(Writer writer, boolean encodeSpecialChars) throws IOException {
         if(writer != null) {
             if(type == TextType.TEXT) {
-                writer.write(characters, offset, length);
+                if(encodeSpecialChars) {
+                    XmlUtil.encodeTextValue(characters, offset, length, writer);
+                } else {
+                    writer.write(characters, offset, length);
+                }
             } else if(type == TextType.COMMENT) {
                 writer.write("<!--");
                 writer.write(characters, offset, length);

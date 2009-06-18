@@ -31,6 +31,7 @@ import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.dom.serialize.TextSerializationUnit;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.repository.BeanRepository;
@@ -147,19 +148,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
             thisTransTemplate.setAttributes(beans);
             templatingResult = thisTransTemplate.toString();
 
-            if(getAction() != Action.ADDTO && element == element.getOwnerDocument().getDocumentElement()) {
-                // We can't replace the root node with a text node (or insert before/after), so we need
-                // to replace the root node with a <context-object key="xxx" /> element and bind the result to the
-                // execution context under the specified key. The ContextObjectSerializationUnit will take
-                // care of the rest.
-
-                String key = "StringTemplateObject:" + DomUtils.getXPath(element);
-                executionContext.setAttribute(key, templatingResult);
-                resultNode = ContextObjectSerializationUnit.createElement(element.getOwnerDocument(), key);
-            } else {
-                // Create the replacement DOM text node containing the applied template...
-                resultNode = element.getOwnerDocument().createTextNode(templatingResult);
-            }
+            resultNode = TextSerializationUnit.createTextElement(element, templatingResult);
 
             // Process the templating action, supplying the templating result...
             processTemplateAction(element, resultNode, executionContext);

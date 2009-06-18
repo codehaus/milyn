@@ -55,9 +55,10 @@ public class SAXHandler extends DefaultHandler2 {
     private SAXContentDeliveryConfig deliveryConfig;
     private Map<String, SAXElementVisitorMap> visitorConfigMap;
     private SAXElementVisitorMap globalVisitorConfig;
+    private boolean rewriteEntities = true;
     private boolean defaultSerializationOn;
     private boolean maintainElementStack;
-    private SAXElementVisitor defaultSerializer = new DefaultSAXElementSerializer();
+    private DefaultSAXElementSerializer defaultSerializer = new DefaultSAXElementSerializer();
     private ContentHandlerConfigMap defaultSerializerMapping;
     private ExecutionEventListener eventListener;
     private boolean reverseVisitOrderOnVisitAfter;
@@ -79,6 +80,9 @@ public class SAXHandler extends DefaultHandler2 {
         SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementSerializer.class.getName());
         resource.setDefaultResource(true);
 
+        rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, execContext.getDeliveryConfig());
+        defaultSerializer.setRewriteEntities(rewriteEntities);
+        
         defaultSerializationOn = executionContext.isDefaultSerializationOn();
         if(defaultSerializationOn) {
             // If it's not explicitly configured off, we auto turn it off if the NullWriter is configured...
@@ -382,9 +386,20 @@ public class SAXHandler extends DefaultHandler2 {
         }
     }
 
+    private StringBuilder entityBuilder = new StringBuilder(10);
     private void _characters(char[] ch, int start, int length) {
 
-        textWrapper.setText(ch, start, length, currentTextType);
+        if(!rewriteEntities && currentTextType == TextType.ENTITY) {
+            entityBuilder.setLength(0);
+
+            entityBuilder.append("&#").append((int)ch[start]).append(';');
+            char[] newBuf = new char[entityBuilder.length()];
+            entityBuilder.getChars(0, newBuf.length, newBuf, 0);
+
+            textWrapper.setText(newBuf, 0, newBuf.length, TextType.TEXT);
+        } else {
+            textWrapper.setText(ch, start, length, currentTextType);
+        }
 
         // Accumulate the text...
         List<SAXText> saxTextObjects = currentProcessor.element.getText();

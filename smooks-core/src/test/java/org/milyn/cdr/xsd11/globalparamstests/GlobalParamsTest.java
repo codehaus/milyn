@@ -17,6 +17,7 @@ package org.milyn.cdr.xsd11.globalparamstests;
 
 import junit.framework.TestCase;
 import org.milyn.Smooks;
+import org.milyn.payload.StringSource;
 import org.milyn.container.ExecutionContext;
 import org.xml.sax.SAXException;
 
@@ -33,5 +34,21 @@ public class GlobalParamsTest extends TestCase {
 
         assertEquals("SAX", execContext.getConfigParameter("stream.filter.type"));
         assertEquals("zzzzval", execContext.getConfigParameter("zzzz"));
+    }
+
+    public void test_globalAnnotatedConfig_01() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config_02.xml"));
+
+        smooks.filterSource(new StringSource("<a/>"));
+        assertEquals("blah", MyZapVisitor.configuredXP);
+        assertEquals(1, MyZapVisitor.configuredZapCount);
+    }
+
+    public void test_globalAnnotatedConfig_02() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config_03.xml"));
+
+        smooks.filterSource(new StringSource("<a/>"));
+        assertEquals("blah", MyZapVisitor.configuredXP);
+        assertEquals(2, MyZapVisitor.configuredZapCount);
     }
 }

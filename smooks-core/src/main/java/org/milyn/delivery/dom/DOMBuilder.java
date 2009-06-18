@@ -20,6 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.xml.DocType;
+import org.milyn.cdr.ParameterAccessor;
+import org.milyn.delivery.Filter;
 import org.w3c.dom.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -50,6 +52,7 @@ public class DOMBuilder extends DefaultHandler2 {
     private boolean inEntity = false;
     private HashSet emptyElements = new HashSet();
     private StringBuilder cdataNodeBuilder = new StringBuilder();
+    private boolean rewriteEntities = true;
 
     static {
     	try {
@@ -64,6 +67,7 @@ public class DOMBuilder extends DefaultHandler2 {
     public DOMBuilder(ExecutionContext execContext) {
         this.execContext = execContext;
         initialiseEmptyElements();
+        rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, execContext.getDeliveryConfig());
     }
 
     private void initialiseEmptyElements() {
@@ -213,8 +217,8 @@ public class DOMBuilder extends DefaultHandler2 {
 
             switch (currentNode.getNodeType()) {
             case Node.ELEMENT_NODE:
-                if(inEntity) {
-                    currentNode.appendChild(ownerDocument.createTextNode("&#"+ (int)ch[0] + ";"));
+                if(inEntity && !rewriteEntities) {
+                    currentNode.appendChild(ownerDocument.createTextNode("&#"+ (int)ch[start] + ";"));
                 } else {
                     currentNode.appendChild(ownerDocument.createTextNode(new String(ch, start, length)));
                 }

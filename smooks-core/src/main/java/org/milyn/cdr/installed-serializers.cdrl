@@ -10,4 +10,9 @@
         <resource>org.milyn.delivery.dom.serialize.GhostElementSerializationUnit</resource>
     </resource-config>
 
+    <resource-config selector="text" selector-namespace="http://milyn.codehaus.org/smooks">
+        <resource>org.milyn.delivery.dom.serialize.TextSerializationUnit</resource>
+        <param name="entities.rewrite">false</param>
+    </resource-config>
+
 </smooks-resource-list>
