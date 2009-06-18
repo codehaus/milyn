@@ -128,7 +128,7 @@ public class EdiConfigReader {
         }
         String propertyName = EJCUtils.encodeAttributeName(jtype, valueNode.getXmltag());
         parent.addProperty(new JNamedType(jtype, propertyName));
-        model.addPropertyValueNodeConfig(parent.getClassName(), propertyName, new ValueNodeInfo(valueNode.getXmltag(), valueNode.getParameters()));
+        model.addPropertyValueNodeConfig(parent.getClassName(), propertyName, new ValueNodeInfo(valueNode.getXmltag(), valueNode.getTypeParameters()));
     }
 
     /**
