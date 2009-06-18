@@ -15,10 +15,11 @@
 */
 package org.milyn.ejc;
 
-import org.milyn.ejc.classes.JType;
-import org.milyn.ejc.classes.JJavaClass;
+//import org.milyn.ejc.classes.JType;
+import org.milyn.javabean.pojogen.JType;
 
 import java.util.HashSet;
+import java.util.Collection;
 
 /**
  * Utility class used when creating {@link org.milyn.ejc.ClassModel} and Binding file.
@@ -70,7 +71,7 @@ public class EJCUtils {
         result = EJCUtils.deleteWithPascalNotation(result, '-');
         result = EJCUtils.deleteWithPascalNotation(result, ' ');
 
-        if (type.equals(JJavaClass.ARRAY_LIST)) {
+        if(type != null && Collection.class.isAssignableFrom(type.getClass())) {
             result += "s";
         }
 
