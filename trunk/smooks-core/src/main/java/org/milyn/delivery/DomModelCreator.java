@@ -29,6 +29,7 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.xml.DomUtils;
+import org.milyn.xml.HTMLEntityLookup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -224,7 +225,7 @@ public class DomModelCreator implements DOMVisitBefore, SAXVisitBefore, SAXVisit
                     currentNode.appendChild(document.createComment(childText.getText()));
                     break;
                 case ENTITY:
-                    currentNode.appendChild(document.createEntityReference(childText.getText()));
+                    currentNode.appendChild(document.createTextNode(childText.getText()));
                     break;
             }
         }

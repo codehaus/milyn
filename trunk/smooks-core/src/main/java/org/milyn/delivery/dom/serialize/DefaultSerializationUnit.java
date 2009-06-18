@@ -18,6 +18,8 @@ package org.milyn.delivery.dom.serialize;
 
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Filter;
+import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Attr;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
@@ -38,11 +40,21 @@ import java.io.Writer;
  */
 public class DefaultSerializationUnit implements SerializationUnit {
 
-    @ConfigParam(use = ConfigParam.Use.OPTIONAL, defaultVal = "false")
     private boolean closeEmptyElements = false;
+    private boolean rewriteEntities;
 
+    @ConfigParam(defaultVal = "false")
     public void setCloseEmptyElements(boolean closeEmptyElements) {
         this.closeEmptyElements = closeEmptyElements;
+    }
+
+    @ConfigParam(name = Filter.ENTITIES_REWRITE, defaultVal = "true")
+    public void setRewriteEntities(boolean rewriteEntities) {
+        this.rewriteEntities = rewriteEntities;
+    }
+
+    public boolean isRewriteEntities() {
+        return rewriteEntities;
     }
 
     /* (non-Javadoc)
@@ -79,17 +91,24 @@ public class DefaultSerializationUnit implements SerializationUnit {
 			Attr attribute = (Attr)attributes.item(i);
 			String attribValue = attribute.getValue();
 			int enclosingChar = (int)'"';
-			
-			writer.write((int)' ');
+
+            writer.write((int)' ');
             writer.write(attribute.getName());
-			writer.write((int)'=');
-			if(attribValue.indexOf((int)'"') != -1) {
-				enclosingChar = (int)'\'';
-			}
-			writer.write(enclosingChar);
-			writer.write(attribValue);
-			writer.write(enclosingChar);
-		}
+            writer.write((int)'=');
+
+            if(rewriteEntities) {
+                writer.write('\"');
+                XmlUtil.encodeAttributeValue(attribValue.toCharArray(), 0, attribValue.length(), writer);
+                writer.write('\"');
+            } else {
+                if(attribValue.indexOf((int)'"') != -1) {
+                    enclosingChar = (int)'\'';
+                }
+                writer.write(enclosingChar);
+                writer.write(attribValue);
+                writer.write(enclosingChar);
+            }
+        }
 	}
 
     /* (non-Javadoc)
@@ -116,8 +135,13 @@ public class DefaultSerializationUnit implements SerializationUnit {
 	 * @see org.milyn.serialize.SerializationUnit#writeElementText(org.w3c.dom.Text, java.io.Writer)
 	 */
 	public void writeElementText(Text text, Writer writer, ExecutionContext executionContext) throws IOException {
-		writer.write(text.getData());
-	}
+        if(rewriteEntities) {
+            String textString = text.getData();
+            XmlUtil.encodeTextValue(textString.toCharArray(), 0, textString.length(), writer);
+        } else {
+            writer.write(text.getData());
+        }
+    }
 
 	/* (non-Javadoc)
 	 * @see org.milyn.serialize.SerializationUnit#writeElementComment(org.w3c.dom.Comment, java.io.Writer)

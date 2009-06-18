@@ -70,6 +70,8 @@ public abstract class Filter {
 
     public static final String CLOSE_RESULT = "close.result";
 
+    public static final String ENTITIES_REWRITE = "entities.rewrite";
+
     public static final String DEFAULT_SERIALIZATION_ON = "default.serialization.on";
 
     public static final String MAINTAIN_ELEMENT_STACK = "maintain.element.stack";

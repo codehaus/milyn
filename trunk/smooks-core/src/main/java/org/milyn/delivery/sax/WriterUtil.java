@@ -16,6 +16,7 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.xml.HTMLEntityLookup;
+import org.milyn.xml.XmlUtil;
 import org.xml.sax.Attributes;
 
 import javax.xml.XMLConstants;
@@ -30,16 +31,16 @@ import java.io.Writer;
  */
 public class WriterUtil {
 
-    public static void writeEmptyElement(SAXElement element, Writer writer) throws IOException {
+    public static void writeEmptyElement(SAXElement element, Writer writer, boolean encodeSpecialChars) throws IOException {
         if(writer != null) {
-            writeUnclosedElement(element, writer);
+            writeUnclosedElement(element, writer, encodeSpecialChars);
             writer.write(" />");
         }
     }
 
-    public static void writeStartElement(SAXElement element, Writer writer) throws IOException {
+    public static void writeStartElement(SAXElement element, Writer writer, boolean encodeSpecialChars) throws IOException {
         if(writer != null) {
-            writeUnclosedElement(element, writer);
+            writeUnclosedElement(element, writer, encodeSpecialChars);
             writer.write(">");
         }
     }
@@ -84,7 +85,7 @@ public class WriterUtil {
         }
     }
 
-    private static void writeUnclosedElement(SAXElement element, Writer writer) throws IOException {
+    private static void writeUnclosedElement(SAXElement element, Writer writer, boolean encodeSpecialChars) throws IOException {
         QName name = element.getName();
         String prefix = name.getPrefix();
 
@@ -94,10 +95,10 @@ public class WriterUtil {
             writer.write(':');
         }
         writer.write(name.getLocalPart());
-        writeAttributes(element.getAttributes(), writer);
+        writeAttributes(element.getAttributes(), writer, encodeSpecialChars);
     }
 
-    private static void writeAttributes(Attributes attributes, Writer writer) throws IOException {
+    private static void writeAttributes(Attributes attributes, Writer writer, boolean encodeSpecialChars) throws IOException {
         if(attributes != null) {
             int attribCount = attributes.getLength();
 
@@ -111,14 +112,20 @@ public class WriterUtil {
                 } else {
                     writer.write(attributes.getLocalName(i));
                 }
-                if(attValue.indexOf('"') != -1) {
-                    writer.write("=\'");
-                    writer.write(attValue);
-                    writer.write("\'");
-                } else {
+                if(encodeSpecialChars) {
                     writer.write("=\"");
-                    writer.write(attValue);
+                    XmlUtil.encodeAttributeValue(attValue.toCharArray(), 0, attValue.length(), writer);
                     writer.write('\"');
+                } else {
+                    if(attValue.indexOf('"') != -1) {
+                        writer.write("=\'");
+                        writer.write(attValue);
+                        writer.write('\'');
+                    } else {
+                        writer.write("=\"");
+                        writer.write(attValue);
+                        writer.write('\"');
+                    }
                 }
             }
         }

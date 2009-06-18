@@ -26,14 +26,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
+import org.milyn.delivery.dom.serialize.TextSerializationUnit;
 import org.milyn.delivery.sax.DefaultSAXElementSerializer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.Filter;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.io.AbstractOutputStreamResource;
@@ -42,8 +45,10 @@ import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.templating.TemplatingConfiguration;
 import org.milyn.xml.DomUtils;
+import org.milyn.xml.Namespace;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -72,6 +77,9 @@ import java.util.Map;
 public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor implements SAXElementVisitor, Consumer {
 
     private static Log logger = LogFactory.getLog(FreeMarkerTemplateProcessor.class);
+
+    @ConfigParam(name = Filter.ENTITIES_REWRITE, defaultVal = "true")
+    private boolean rewriteEntities;
 
     private Template defaultTemplate;
     private Template templateBefore;
@@ -137,6 +145,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         // where the action is not "replace" or "bindto".
         targetWriter = new DefaultSAXElementSerializer();
         targetWriter.setWriterOwner(this);
+        targetWriter.setRewriteEntities(rewriteEntities);
     }
 
     public boolean consumes(Object object) {
@@ -202,19 +211,8 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
             throw new SmooksException("Failed to apply FreeMarker template to fragment '" + DomUtils.getXPath(element) + "'.  Resource: " + config, e);
         }
 
-        Node resultNode;
-        if (getAction() != Action.ADDTO && element == element.getOwnerDocument().getDocumentElement()) {
-            // We can't replace the root node with a text node (or insert before/after), so we need
-            // to replace the root node with a <context-object key="xxx" /> element and bind the result to the
-            // execution context under the specified key. The ContextObjectSerializationUnit will take
-            // care of the rest.
-            String key = "FreeMarkerObject:" + DomUtils.getXPath(element);
-            executionContext.setAttribute(key, templatingResult);
-            resultNode = ContextObjectSerializationUnit.createElement(element.getOwnerDocument(), key);
-        } else {
-            // Create the replacement DOM text node containing the applied template...
-            resultNode = element.getOwnerDocument().createTextNode(templatingResult);
-        }
+        // Create the replacement DOM text node containing the applied template...
+        Node resultNode = TextSerializationUnit.createTextElement(element, templatingResult);
 
         // Process the templating action, supplying the templating result...
         processTemplateAction(element, resultNode, executionContext);

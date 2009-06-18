@@ -29,6 +29,7 @@ public class FilterSettings {
     public static final FilterSettings DEFAULT_SAX = new FilterSettings(StreamFilterType.SAX);
 
     private StreamFilterType filterType = StreamFilterType.DOM;
+    private boolean rewriteEntities = true;
     private boolean defaultSerializationOn = true;
     private boolean terminateOnException = true;
     private boolean maintainElementStack = true;
@@ -44,6 +45,11 @@ public class FilterSettings {
 
     public FilterSettings setFilterType(StreamFilterType filterType) {
         this.filterType = filterType;
+        return this;
+    }
+
+    public FilterSettings setRewriteEntities(boolean rewriteEntities) {
+        this.rewriteEntities = rewriteEntities;
         return this;
     }
 
@@ -74,6 +80,7 @@ public class FilterSettings {
 
     protected void applySettings(Smooks smooks) {
         ParameterAccessor.setParameter(Filter.STREAM_FILTER_TYPE, filterType.toString(), smooks);        
+        ParameterAccessor.setParameter(Filter.ENTITIES_REWRITE, Boolean.toString(rewriteEntities), smooks);
         ParameterAccessor.setParameter(Filter.DEFAULT_SERIALIZATION_ON, Boolean.toString(defaultSerializationOn), smooks);
         ParameterAccessor.setParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, Boolean.toString(terminateOnException), smooks);
         ParameterAccessor.setParameter(Filter.MAINTAIN_ELEMENT_STACK, Boolean.toString(maintainElementStack), smooks);

@@ -83,6 +83,12 @@ public class XmlUtil {
 
     private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
+    public static final char[] LT = new char[] {'&', 'l', 't', ';'};
+    public static final char[] GT = new char[] {'&', 'g', 't', ';'};
+    public static final char[] AMP = new char[] {'&', 'a', 'm', 'p', ';'};
+    public static final char[] QUOT = new char[] {'&', 'q', 'u', 'o', 't', ';'};
+    public static final char[] APOS = new char[] {'&', 'a', 'p', 'o', 's', ';'};
+
     /**
      * Remove all entities from the supplied <code>Reader</code> stream
      * replacing them with their actual character values. <p/> Both the read and
@@ -614,6 +620,50 @@ public class XmlUtil {
 
         return nodeType == Node.CDATA_SECTION_NODE
                 || nodeType == Node.TEXT_NODE;
+    }
+
+    public static void encodeTextValue(char[] characters, int offset, int length, Writer writer) throws IOException {
+        for(int i = offset; i < offset + length; i++) {
+            char c = characters[i];
+            switch(c) {
+                case '<' :
+                    writer.write(LT, 0, LT.length);
+                    break;
+                case '>' :
+                    writer.write(GT, 0, GT.length);
+                    break;
+                case '&' :
+                    writer.write(AMP, 0, AMP.length);
+                    break;
+                default:
+                    writer.write(c);
+            }
+        }
+    }
+
+    public static void encodeAttributeValue(char[] characters, int offset, int length, Writer writer) throws IOException {
+        for(int i = offset; i < offset + length; i++) {
+            char c = characters[i];
+            switch(c) {
+                case '<' :
+                    writer.write(LT, 0, LT.length);
+                    break;
+                case '>' :
+                    writer.write(GT, 0, GT.length);
+                    break;
+                case '&' :
+                    writer.write(AMP, 0, AMP.length);
+                    break;
+                case '\'' :
+                    writer.write(APOS, 0, APOS.length);
+                    break;
+                case '\"' :
+                    writer.write(QUOT, 0, QUOT.length);
+                    break;
+                default:
+                    writer.write(c);
+            }
+        }
     }
 
     /**

@@ -55,6 +55,9 @@ public class Configurator {
         // process the field annotations (@AppContext)...
         processFieldContextAnnotation(instance, appContext);
 
+        // Attach global parameters...
+        config.attachGlobalParameters(appContext);
+
         // TODO: Add by-setter-method injection support for the app context
 
         return configure(instance, config);
@@ -116,29 +119,44 @@ public class Configurator {
 
     public static <U> void processFieldConfigAnnotations(U instance, SmooksResourceConfiguration config, boolean includeConfigParams) {
         Class contentHandlerClass = instance.getClass();
-        processFieldConfigAnnotations(contentHandlerClass, instance, config, includeConfigParams);
+        if(includeConfigParams) {
+            processFieldConfigParamAnnotations(contentHandlerClass, instance, config);
+        }
+        processFieldConfigAnnotations(contentHandlerClass, instance, config);
     }
 
-    private static <U> void processFieldConfigAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config, boolean includeConfigParams) {
+    private static <U> void processFieldConfigParamAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config) {
         Field[] fields = contentHandlerClass.getDeclaredFields();
 
         // Work back up the Inheritance tree first...
         Class superClass = contentHandlerClass.getSuperclass();
         if(superClass != null) {
-            processFieldConfigAnnotations(superClass, instance, config, includeConfigParams);
+            processFieldConfigParamAnnotations(superClass, instance, config);
         }
 
         for (Field field : fields) {
             ConfigParam configParamAnnotation = null;
             
-            if(includeConfigParams) {
-                configParamAnnotation = field.getAnnotation(ConfigParam.class);
-                if(configParamAnnotation != null) {
-                    applyConfigParam(configParamAnnotation, field, field.getType(), instance, config);
-                }
+            configParamAnnotation = field.getAnnotation(ConfigParam.class);
+            if(configParamAnnotation != null) {
+                applyConfigParam(configParamAnnotation, field, field.getType(), instance, config);
             }
+        }
+    }
 
+    private static <U> void processFieldConfigAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config) {
+        Field[] fields = contentHandlerClass.getDeclaredFields();
+
+        // Work back up the Inheritance tree first...
+        Class superClass = contentHandlerClass.getSuperclass();
+        if(superClass != null) {
+            processFieldConfigAnnotations(superClass, instance, config);
+        }
+
+        for (Field field : fields) {
+            ConfigParam configParamAnnotation = field.getAnnotation(ConfigParam.class);
             Config configAnnotation = field.getAnnotation(Config.class);
+            
             if(configAnnotation != null) {
                 if(configParamAnnotation != null) {
                     throw new SmooksConfigurationException("Invalid Smooks configuration annotations on Field '" + getLongMemberName(field) + "'.  Field should not specify both @ConfigParam and @Config annotations.");

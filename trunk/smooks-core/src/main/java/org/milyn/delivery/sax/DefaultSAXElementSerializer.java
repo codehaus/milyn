@@ -17,6 +17,8 @@ package org.milyn.delivery.sax;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
+import org.milyn.delivery.Filter;
+import org.milyn.cdr.annotation.ConfigParam;
 
 import java.io.IOException;
 
@@ -28,10 +30,15 @@ import java.io.IOException;
 public class DefaultSAXElementSerializer implements SAXElementVisitor {
 
     private SAXVisitor writerOwner = this;
-    private Object START_WRITTEN_KEY = new Object();
+    private boolean rewriteEntities = true;
 
     public void setWriterOwner(SAXVisitor writerOwner) {
         this.writerOwner = writerOwner;
+    }
+
+    @ConfigParam(name = Filter.ENTITIES_REWRITE, defaultVal = "true")
+    public void setRewriteEntities(boolean rewriteEntities) {
+        this.rewriteEntities = rewriteEntities;
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -43,7 +50,7 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
     public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
         writeStartElement(element);
         if(element.isWriterOwner(writerOwner)) {
-            text.toWriter(element.getWriter(writerOwner));
+            text.toWriter(element.getWriter(writerOwner), rewriteEntities);
         }
     }
 
@@ -61,7 +68,7 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
         if(element.isWriterOwner(writerOwner)) {
             if(!isStartWritten(element)) {
                 element.setCache(this, true);
-                WriterUtil.writeStartElement(element, element.getWriter(writerOwner));
+                WriterUtil.writeStartElement(element, element.getWriter(writerOwner), rewriteEntities);
             }
         }
     }
@@ -70,7 +77,7 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
         if(element.isWriterOwner(writerOwner)) {
             if(!isStartWritten(element)) {
                 // It's an empty element...
-                WriterUtil.writeEmptyElement(element, element.getWriter(writerOwner));
+                WriterUtil.writeEmptyElement(element, element.getWriter(writerOwner), rewriteEntities);
             } else {
                 WriterUtil.writeEndElement(element, element.getWriter(writerOwner));
             }

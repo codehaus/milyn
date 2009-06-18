@@ -342,6 +342,22 @@ public class SmooksResourceConfigurationStore {
         return initializedObjects;
     }
 
+    public SmooksResourceConfiguration getGlobalParams() {
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration();
+
+        for(int i = 0; i < configLists.size(); i++) {
+            SmooksResourceConfigurationList list = configLists.get(i);
+            for(int ii = 0; ii < list.size(); ii++) {
+                SmooksResourceConfiguration nextConfig = list.get(ii);
+                if(ParameterAccessor.GLOBAL_PARAMETERS.equals(nextConfig.getSelector())) {
+                    config.addParmeters(nextConfig);
+                }
+            }
+        }
+
+        return config;
+    }
+
     /**
      * Get the {@link org.milyn.delivery.ContentHandlerFactory} for a resource based on the
      * supplied resource type.
