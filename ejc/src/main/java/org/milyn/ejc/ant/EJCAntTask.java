@@ -22,6 +22,8 @@ package org.milyn.ejc.ant;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.milyn.ejc.EJC;
+import org.milyn.ejc.EJCExecutor;
+import org.milyn.ejc.EJCException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,63 +34,13 @@ import java.io.IOException;
  * {@link org.milyn.ejc.EJC} Ant task.
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class EJCAntTask extends Task {
-
-    private File ediMappingModel;
-    private File destDir;
-    private String packageName;
+public class EJCAntTask extends EJCExecutor {
 
     public void execute() throws BuildException {
-        assertMandatoryProperty(ediMappingModel, "ediMappingModel");
-        assertMandatoryProperty(destDir, "destDir");
-        assertMandatoryProperty(packageName, "packageName");
-
-        if(!ediMappingModel.exists()) {
-            throw new BuildException("Specified EDI Mapping Model file '" + ediMappingModel.getAbsoluteFile() + "' does not exist.");
-        }
-        if(ediMappingModel.exists() && ediMappingModel.isDirectory()) {
-            throw new BuildException("Specified EDI Mapping Model file '" + ediMappingModel.getAbsoluteFile() + "' exists, but is a directory.  Must be an EDI Mapping Model file.");
-        }
-        if(destDir.exists() && !destDir.isDirectory()) {
-            throw new BuildException("Specified EJC destination directory '" + destDir.getAbsoluteFile() + "' exists, but is not a directory.");
-        }
-
-        EJC ejc = new EJC();
-        FileInputStream configInputStream;
         try {
-            configInputStream = new FileInputStream(ediMappingModel);
-        } catch (FileNotFoundException e) {
-            throw new BuildException("Error opening EDI Mapping Model InputStream '" + ediMappingModel.getAbsoluteFile() + "'.", e);
-        }
-
-        try {
-            ejc.compile(configInputStream, ediMappingModel.getAbsolutePath(), packageName, destDir.getAbsolutePath());
-        } catch (Exception e) {
-            throw new BuildException("Error compiling EDI Mapping Model '" + ediMappingModel.getAbsoluteFile() + "'.", e);
-        } finally {
-            try {
-                configInputStream.close();
-            } catch (IOException e) {
-                throw new BuildException("Error closing EDI Mapping Model '" + ediMappingModel.getAbsoluteFile() + "'.", e);
-            }
-        }
-    }
-
-    public void setEdiMappingModel(File ediMappingModel) {
-        this.ediMappingModel = ediMappingModel;
-    }
-
-    public void setDestDir(File destDir) {
-        this.destDir = destDir;
-    }
-
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
-    private void assertMandatoryProperty(Object obj, String name) {
-        if(obj == null) {
-            throw new BuildException("Mandatory EJC property '" + name + "' + not specified in ant task.");
+            super.execute();
+        } catch (EJCException e) {
+            throw new BuildException("Error Executing EJC Ant Task.  See chained cause.", e);
         }
     }
 }

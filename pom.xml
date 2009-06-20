@@ -54,6 +54,7 @@
                 <module>edisax</module>
                 <module>scribe</module>
                 <module>ejc</module>
+                <module>ejc/maven-ejc-plugin</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
@@ -72,6 +73,7 @@
                 <module>edisax</module>
                 <module>scribe</module>
                 <module>ejc</module>
+                <module>ejc/maven-ejc-plugin</module>
                 <module>smooks-cartridges</module>
             </modules>
         </profile>
@@ -257,6 +259,10 @@
         <repository>
             <id>codehaus</id>
             <url>http://repository.codehaus.org/</url>
+        </repository>
+        <repository>
+            <id>jfrog</id>
+            <url>http://www.jfrog.org/artifactory/plugins-releases</url>
         </repository>
         <repository>
             <id>test</id>

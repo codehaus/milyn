@@ -36,6 +36,7 @@ public class BindingWriter {
     private List<String> packagesIncluded;
     private List<String> packagesExcluded;
     private Stack<JClass> classStack = new Stack<JClass>();
+    private FreeMarkerTemplate template = new FreeMarkerTemplate("templates/bindingConfig.ftl.xml", BindingWriter.class);
 
     public BindingWriter(ClassModel classModel) throws ClassNotFoundException {
         AssertArgument.isNotNull(classModel, "classModel");
@@ -47,18 +48,17 @@ public class BindingWriter {
 
 
     public void generate(String bindingfile) throws IOException {
-        Map<String, List<ClassConfig>> templatingContextObject = new HashMap<String, List<ClassConfig>>();
+        Map<String, Object> templatingContextObject = new HashMap<String, Object>();
         List<ClassConfig> classConfigs = new ArrayList<ClassConfig>();
-        FreeMarkerTemplate template;
 
         OutputStreamWriter writer = null;
         try {
             writer = new OutputStreamWriter(new FileOutputStream(bindingfile));
 
             addClassConfig(classConfigs, classModel.getRoot(), null);
-            template = new FreeMarkerTemplate("templates/bindingConfig.ftl.xml", getClass());
 
             templatingContextObject.put("classConfigs", classConfigs);
+            templatingContextObject.put("classPackage", classModel.getRoot().getPackageName().replace('.', '/'));
             writer.write(template.apply(templatingContextObject));
         } finally {
             if (writer != null) {
