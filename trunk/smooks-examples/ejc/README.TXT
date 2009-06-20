@@ -1,20 +1,23 @@
 About This Example:
 ===================
-    This example illustrates the use of the Edifact Java Compiler (EJC). At first the EJC
-    is used to compile an edi-configuration and create a bindingfile and the corresponding
-    javaclasses. Next, the example compiles the generated javaclasses. At last, the example
-    tests the generated bindning-file and the compiled javaclasses in Smooks.
+    This example illustrates the use of the Edifact Java Compiler (EJC). EJC generates
+        1. A Java Object model for from an EDI Mapping Model.
+        2. A Smooks Java Binding config to populate the Java Object model from an
+           instance of the EDI message described by the Mapping Model.
+        3. A Factory class that makes using of EJC very easy.
 
-    If you haven't already looked at the "javabean-populator" and "edi-to-xml" example, 
-    you may be interested in looking at that before looking at this example.
+    The example is split into 2 modules.
+        1. The "ejc-gen" module demonstrates how to execute EJC on an EDI Mapping
+           Model (for asn Order message) using the EJC Maven Plugin, which generates
+           the artifacts listed above and then jars them up and installs in the
+           local Maven Repository.
+        2. The "ejc-use" module demonstrates how to use the EJC Generated artifacts
+           via the OrderFactory class.
 
     See:
-        1. The "Main" class in src/main/java/example/Main.java.
-        2. The input message in input-message.edi.
-        3. edi-config.xml.
-        4. The EdiSax parser configuration edi-to-xml-order-mapping.xml
-        5. http://milyn.codehaus.org/EdiSax
-        6. The generated Javabean classes in src/main/java/example/beans.
+        1. The Maven POM in "ejc-gen".  This demos how to use the EJC Maven Plugin.
+        2. The Main class in "ejc-use".  This demos how to use the EJC generated artifacts.
+        3. User Guide: http://www.smooks.org/mediawiki/index.php?title=V1.2:Smooks_v1.2_User_Guide#Processing_EDI
 
 How to Run?
 ===========
@@ -23,5 +26,6 @@ How to Run?
         2. Maven 2.x (http://maven.apache.org/download.html)
 
     Running:
-        1. "mvn clean install"
-        2. "mvn exec:java"
+        1. In "ejc-gen", run "mvn clean install"
+        2. In "ejc-use", run "mvn clean install"
+        3. In "ejc-use", run "mvn exec:java"

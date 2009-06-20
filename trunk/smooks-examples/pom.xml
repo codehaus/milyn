@@ -37,7 +37,8 @@
         <module>sj-testimonial</module>
 		<module>dao-router</module>
         <module>validation-basic</module>
-        <!--<module>ejc</module>-->
+        <module>ejc/ejc-gen</module>
+        <module>ejc/ejc-use</module>
         <module>edi-with-import-to-java</module>
     </modules>
 

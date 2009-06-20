@@ -12,7 +12,10 @@ import java.io.IOException;
 import javax.xml.transform.Result;
 
 public class ${className}Factory {
-    private Smooks smooks;public static ${className}Factory getInstance() throws IOException, SAXException {
+
+    private Smooks smooks;
+
+    public static ${className}Factory getInstance() throws IOException, SAXException {
         return new ${className}Factory();
     }
 
@@ -20,17 +23,11 @@ public class ${className}Factory {
         smooks.addConfigurations(resourceConfigStream);
     }
 
-    public ${className} parse(InputStream ediStream, Result... additionalResults) {
-        return parse(new InputStreamReader(ediStream), additionalResults);
+    public ${className} fromEDI(InputStream ediStream, Result... additionalResults) {
+        return fromEDI(new InputStreamReader(ediStream), additionalResults);
     }
 
-    public ${className} parse(Reader ediStream) {
-        JavaResult result = new JavaResult();
-        smooks.filterSource(new StreamSource(ediStream), result);
-        return (${className}) result.getBean("${classId}");
-    }
-
-    public ${className} parse(Reader ediStream, Result... additionalResults) {
+    public ${className} fromEDI(Reader ediStream, Result... additionalResults) {
         JavaResult javaResult = new JavaResult();
         int numAdditionalRes = (additionalResults != null? additionalResults.length : 0);
         Result[] results = new Result[numAdditionalRes + 1];

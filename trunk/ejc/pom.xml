@@ -10,7 +10,7 @@
 	<groupId>org.milyn</groupId>
 	<artifactId>milyn-smooks-ejc</artifactId>
     <packaging>jar</packaging>
-    <version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>${milyn.smooks.core.version}</version>
 	    
 	<dependencies>
         <dependency>
