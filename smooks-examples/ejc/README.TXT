@@ -1,10 +1,13 @@
 About This Example:
 ===================
-    This example illustrates the use of the Edifact Java Compiler (EJC). EJC generates
-        1. A Java Object model for from an EDI Mapping Model.
+    This example illustrates the use of the Edifact Java Compiler (EJC).
+
+    EJC generates:
+        1. A Java Object model for a given EDI Mapping Model.
         2. A Smooks Java Binding config to populate the Java Object model from an
-           instance of the EDI message described by the Mapping Model.
-        3. A Factory class that makes using of EJC very easy.
+           instance of the EDI message described by the EDI Mapping Model (see #1 above).
+        3. A Factory class that makes it very east to use EJC to bind EDI data
+           to Java Object Model.
 
     The example is split into 2 modules.
         1. The "ejc-gen" module demonstrates how to execute EJC on an EDI Mapping
