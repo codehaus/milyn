@@ -18,10 +18,8 @@ package example;
 import com.acme.order.model.*;
 
 import java.io.IOException;
-import java.io.FileInputStream;
 import java.io.File;
 import java.io.StringReader;
-import java.util.Date;
 import java.util.List;
 
 import org.xml.sax.SAXException;
