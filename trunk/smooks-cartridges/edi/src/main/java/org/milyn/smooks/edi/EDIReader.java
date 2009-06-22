@@ -54,15 +54,7 @@ import java.util.List;
  *
  * <h3>Configuration</h3>
  * <pre>
- * &lt;smooks-resource useragent="<i>&lt;profile&gt;</i>" selector="org.xml.sax.driver" path="org.milyn.smooks.edi.SmooksEDIReader" &gt;
- *
- *  &lt;!--
- *      (Mandatory) {@link org.milyn.edisax.EDIParser Mapping Model}.  Can be a URI specifiying the location of the model (see {@link org.milyn.resource.URIResourceLocator}),
- *      or can be the model itself (inlined).
- *  --&gt;
- *  &lt;param name="<b>mapping-model</b>"&gt;[{@link java.net.URI} | <i>inlined model</i>]&lt;/param&gt;
- *
- * &lt;/smooks-resource&gt;
+ * &lt;edi:reader mappingModel="edi-to-xml-order-mapping.xml" validate="false"/&gt;
  * </pre>
  * 
  * @author tfennelly

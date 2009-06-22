@@ -18,8 +18,8 @@ package org.milyn.smooks.edi;
 /**
  * Smooks EDI Parser.
  *
- * @deprecated Use {@link org.milyn.smooks.edi.SmooksEDIReader}.
+ * @deprecated Use {@link org.milyn.smooks.edi.EDIReader}.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SmooksEDIParser extends SmooksEDIReader {
+public class SmooksEDIParser extends EDIReader {
 }

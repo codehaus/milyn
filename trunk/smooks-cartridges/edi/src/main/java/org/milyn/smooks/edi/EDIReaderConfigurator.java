@@ -23,7 +23,7 @@ import org.milyn.assertion.AssertArgument;
 /**
  * EDI Reader configurator.
  * <p/>
- * Supports programmatic {@link SmooksEDIReader} configuration on a {@link org.milyn.Smooks#setReaderConfig(org.milyn.ReaderConfigurator) Smooks} instance.
+ * Supports programmatic {@link EDIReader} configuration on a {@link org.milyn.Smooks#setReaderConfig(org.milyn.ReaderConfigurator) Smooks} instance.
  *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
@@ -44,9 +44,9 @@ public class EDIReaderConfigurator implements ReaderConfigurator {
     }
 
     public SmooksResourceConfiguration toConfig() {
-        GenericReaderConfigurator configurator = new GenericReaderConfigurator(SmooksEDIReader.class);
+        GenericReaderConfigurator configurator = new GenericReaderConfigurator(EDIReader.class);
 
-        configurator.getParameters().setProperty(SmooksEDIReader.MODEL_CONFIG_KEY, mappingModel);
+        configurator.getParameters().setProperty(EDIReader.MODEL_CONFIG_KEY, mappingModel);
         configurator.setTargetProfile(targetProfile);
 
         return configurator.toConfig();
