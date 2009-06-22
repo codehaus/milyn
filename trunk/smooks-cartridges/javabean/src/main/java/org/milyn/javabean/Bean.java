@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * a Java Bindings on a specific class.  To populate a graph, you simply create a graph of
  * Bean instances by binding Beans onto Beans.
  * <p/>
- * This class uses a Fluid API (all methods return the Bean instance), making it easy to
+ * This class uses a Fluent API (all methods return the Bean instance), making it easy to
  * string configurations together to build up a graph of Bean configuration.
  * <p/>
  * <h3>Example</h3>
@@ -107,7 +107,7 @@ import java.util.ArrayList;
  * <pre>
  * JavaResult result = new JavaResult();
  * 
- * smooks.filter(new StreamSource(orderMessageStream), result);
+ * smooks.filterSource(new StreamSource(orderMessageStream), result);
  * Order order = (Order) result.getBean("order");
  * </pre>
  *
