@@ -93,9 +93,9 @@ public class SmooksEDIParserTest extends TestCase {
 
 		// Create and initialise the Smooks config for the parser...
 		config = new SmooksResourceConfiguration();
-        config.setResource(SmooksEDIReader.class.getName());
+        config.setResource(EDIReader.class.getName());
 		// Set the mapping config on the resource config...
-        config.setParameter(SmooksEDIReader.MODEL_CONFIG_KEY, TEST_XML_MAPPING_XML_URI);
+        config.setParameter(EDIReader.MODEL_CONFIG_KEY, TEST_XML_MAPPING_XML_URI);
 
 		DOMParser parser;
 
@@ -104,7 +104,7 @@ public class SmooksEDIParserTest extends TestCase {
 		parser.parse(new StreamSource(new ByteArrayInputStream(input)));
 
 		// Check make sure the parsed and validated model was cached...
-		Hashtable mappingTable = SmooksEDIReader.getMappingTable(smooks.getApplicationContext());
+		Hashtable mappingTable = EDIReader.getMappingTable(smooks.getApplicationContext());
 		assertNotNull("No mapping table in context!", mappingTable);
 
         EdifactModel mappingModel_request1 = (EdifactModel) mappingTable.get(config);
@@ -126,10 +126,10 @@ public class SmooksEDIParserTest extends TestCase {
 
 		// Create and initialise the Smooks config for the parser...
         config = new SmooksResourceConfiguration();
-        config.setResource(SmooksEDIReader.class.getName());
+        config.setResource(EDIReader.class.getName());
 		// Set the mapping config on the resource config...
 		if(mapping != null) {
-			config.setParameter(SmooksEDIReader.MODEL_CONFIG_KEY, mapping);
+			config.setParameter(EDIReader.MODEL_CONFIG_KEY, mapping);
 		}
 
 		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
@@ -147,10 +147,10 @@ public class SmooksEDIParserTest extends TestCase {
 
 		// Create and initialise the Smooks config for the parser...
         config = new SmooksResourceConfiguration();
-        config.setResource(SmooksEDIReader.class.getName());
+        config.setResource(EDIReader.class.getName());
 		// Set the mapping config on the resource config...
 		if(mapping != null) {
-			config.setParameter(SmooksEDIReader.MODEL_CONFIG_KEY, mapping);
+			config.setParameter(EDIReader.MODEL_CONFIG_KEY, mapping);
 		}
 
 		DOMParser parser = new DOMParser(smooks.createExecutionContext(), config);
