@@ -60,15 +60,14 @@ public class SaxDomCompTest extends TestCase {
         runTransform(smooks, writer);
 
         long start = System.currentTimeMillis();
-        for(int i = 0; i < 1; i++) {
+        for(int i = 0; i < 100; i++) {
             runTransform(smooks, writer);
         }
         System.out.println(config + " took: " + (System.currentTimeMillis() - start) + "ms");
     }
 
     private void runTransform(Smooks smooks, Writer writer) throws InterruptedException {
-        ExecutionContext executionContext = smooks.createExecutionContext();
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), new StreamResult(writer), executionContext);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order-message.xml")), new StreamResult(writer));
         Thread.sleep(20);
     }
 }

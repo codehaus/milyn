@@ -402,12 +402,14 @@ public class SAXHandler extends DefaultHandler2 {
         }
 
         // Accumulate the text...
-        List<SAXText> saxTextObjects = currentProcessor.element.getText();
-        if(saxTextObjects != null) {
-            saxTextObjects.add(textWrapper);
+        if(currentProcessor.element != null) {
+            List<SAXText> saxTextObjects = currentProcessor.element.getText();
+            if(saxTextObjects != null) {
+                saxTextObjects.add(textWrapper);
+            }
         }
 
-        if(currentProcessor != null && !currentProcessor.isNullProcessor) {
+        if(!currentProcessor.isNullProcessor) {
             if(currentProcessor.elementVisitorConfig != null) {
                 List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
 

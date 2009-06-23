@@ -39,9 +39,9 @@ import com.thoughtworks.xstream.io.xml.XppDriver;
  */
 public class SmooksOverheadTest extends TestCase {
 
-    private static final int NUM_WARMUPS = 10;
+    private static final int NUM_WARMUPS = 100;
     //private static final int NUM_ITERATIONS = 10000000;
-    private static final int NUM_ITERATIONS = 100;
+    private static final int NUM_ITERATIONS = 5000;
 
     public void test_saxonly_timings() throws SAXException, IOException {
         for(int i = 0; i < NUM_WARMUPS; i++) {
@@ -57,6 +57,14 @@ public class SmooksOverheadTest extends TestCase {
 
     public void test_smookssax_timings_novis() throws IOException, SAXException {
         runSmooks("smooks-sax-empty.xml");
+    }
+
+    public void test_smookssax_java3() throws IOException, SAXException {
+        runSmooks("smooks-sax-java3.xml");
+    }
+
+    public void test_smookssax_java3_object() throws IOException, SAXException {
+        runSmooks("smooks-sax-java3-object.xml");
     }
 
     public void test_smookssax_timings_1vis() throws IOException, SAXException {
@@ -75,10 +83,6 @@ public class SmooksOverheadTest extends TestCase {
         runSmooks("smooks-sax-java2.xml");
     }
 
-    public void test_smookssax_java3() throws IOException, SAXException {
-        runSmooks("smooks-sax-java3.xml");
-    }
-
     public void test_smookssax_java4() throws IOException, SAXException {
         runSmooks("smooks-sax-java4.xml");
     }
@@ -88,14 +92,14 @@ public class SmooksOverheadTest extends TestCase {
 
         for(int i = 0; i < NUM_WARMUPS; i++) {
             JavaResult javaResult = new JavaResult();
-            smooks.filter(new StreamSource(getMessageReader()), javaResult);
+            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
         }
 
         long start = System.currentTimeMillis();
         JavaResult javaResult = null;
         for(int i = 0; i < NUM_ITERATIONS; i++) {
             javaResult = new JavaResult();
-            smooks.filter(new StreamSource(getMessageReader()), javaResult);
+            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
         }
         System.out.println(config + " took: " + (System.currentTimeMillis() - start));
         List orderItems = (List) javaResult.getBean("orderItemList");
@@ -137,6 +141,6 @@ public class SmooksOverheadTest extends TestCase {
 
     private InputStreamReader getMessageReader() {
         //return new InputStreamReader(getClass().getResourceAsStream("order-message.xml"));
-        return new InputStreamReader(getClass().getResourceAsStream("big_global.xml"));
+        return new InputStreamReader(getClass().getResourceAsStream("10K-order-message.xml"));
     }
 }
