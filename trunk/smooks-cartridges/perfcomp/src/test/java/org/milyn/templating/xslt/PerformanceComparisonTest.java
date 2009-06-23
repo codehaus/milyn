@@ -69,7 +69,7 @@ public class PerformanceComparisonTest extends TestCase {
 
     protected void setUp() throws Exception {
         // Initialise the transformers...
-        System.setProperty(XslContentDeliveryUnitCreator.ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED, Boolean.toString(isSynchronized));
+        System.setProperty(XslContentHandlerFactory.ORG_MILYN_TEMPLATING_XSLT_SYNCHRONIZED, Boolean.toString(isSynchronized));
         initialiseXsltTransformer();
         smooksTransformer_xsltonly = initialiseSmooksTransformer("xsl_only");
         smooksTransformer_xsltjava = initialiseSmooksTransformer(SMOOKS_TRANSFORM_XSL_JAVA_CONFIG);

@@ -41,13 +41,13 @@ import java.io.StringReader;
 public class FreeMarkerProgramaticConfigTest extends TestCase {
 
     public void testFreeMarkerTrans_01() throws SAXException, IOException {
-        Smooks smooks = new Smooks();
+Smooks smooks = new Smooks();
 
-        smooks.addVisitor(new Bean(MyBean.class, "myBeanData", "c").bindTo("x", "c/@x"));
-        smooks.addVisitor(
-                new FreeMarkerTemplateProcessor(new TemplatingConfiguration("/org/milyn/templating/freemarker/test-template.ftl")),
-                "c"
-        );
+smooks.addVisitor(new Bean(MyBean.class, "myBeanData", "c").bindTo("x", "c/@x"));
+smooks.addVisitor(
+        new FreeMarkerTemplateProcessor(new TemplatingConfiguration("/org/milyn/templating/freemarker/test-template.ftl")),
+        "c"
+);
 
         test_ftl(smooks, "<a><b><c x='xvalueonc1' /><c x='xvalueonc2' /></b></a>", "<a><b><mybean>xvalueonc1</mybean><mybean>xvalueonc2</mybean></b></a>");
         // Test transformation via the <context-object /> by transforming the root element using StringTemplate.
