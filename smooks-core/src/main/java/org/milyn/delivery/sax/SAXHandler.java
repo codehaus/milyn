@@ -402,12 +402,11 @@ public class SAXHandler extends DefaultHandler2 {
             if(writerOwner == null) {
                 writerOwner = visitor;
                 super.setWriter(writer, visitor);
-            }
-            if(visitor == writerOwner) {
+            } else if(visitor == writerOwner) {
                 super.setWriter(writer, visitor);
+            } else {
+                throwSAXWriterAccessException(visitor);
             }
-
-            throwSAXWriterAccessException(visitor);
         }
 
         private Writer getWriter() {
