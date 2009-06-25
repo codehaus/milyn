@@ -4,24 +4,13 @@
 	<parent>
 		<groupId>org.milyn</groupId>
 		<artifactId>milyn-scribe</artifactId>
-        <version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+        <version>1.2</version> <!-- base pom version - do not remove this comment -->
 	</parent>
 	<packaging>pom</packaging>
     <name>Milyn Scribe Adapter</name>
 	<groupId>org.milyn</groupId>
 	<artifactId>milyn-scribe-adapter</artifactId>
-	<version>1.2-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
-
-	<properties>
-        <milyn.scribe.jpa.version.base>${milyn.scribe.core.version.base}</milyn.scribe.jpa.version.base>
-        <milyn.scribe.jpa.version>${milyn.scribe.jpa.version.base}-SNAPSHOT</milyn.scribe.jpa.version>
-
-        <milyn.scribe.hibernate.version.base>${milyn.scribe.core.version.base}</milyn.scribe.hibernate.version.base>
-        <milyn.scribe.hibernate.version>${milyn.scribe.hibernate.version.base}-SNAPSHOT</milyn.scribe.hibernate.version>
-
-        <milyn.scribe.ibatis.version.base>${milyn.scribe.core.version.base}</milyn.scribe.ibatis.version.base>
-        <milyn.scribe.ibatis.version>${milyn.scribe.ibatis.version.base}-SNAPSHOT</milyn.scribe.ibatis.version>
-    </properties>
+	<version>1.2</version> <!-- base pom version - do not remove this comment -->
 
     <modules>
     	<module>jpa</module>
