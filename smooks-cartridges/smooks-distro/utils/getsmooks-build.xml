@@ -70,7 +70,7 @@
             <mapper type="flatten"/>
         </copy>
         <delete>
-            <fileset dir="./${todir}" includes="junit*,log4j*,hsqldb*,servlet-api*,xalan*,jbossall-client*,jboss-j2ee*,jdom*,cglib-full*,cglib-nodep*,struts*,mockejb*,mockrunner*,commons-beanutils*,commons-digester*,commons-fileupload*,commons-validator*,oro*,xmlunit*,hibernate-core-*,ibatis-sqlmap-*,dom4j-*,ant-*" />
+            <fileset dir="./${todir}" includes="junit*,log4j*,hsqldb*,servlet-api*,xalan*,jbossall-client*,jboss-j2ee*,jdom*,cglib-full*,cglib-nodep*,struts*,mockejb*,mockrunner*,commons-beanutils*,commons-digester*,commons-fileupload*,commons-validator*,oro*,xmlunit*,hibernate-core-*,ibatis-sqlmap-*,dom4j-*,ant-*,javassist-3.10.0.GA.jar" />
         </delete>
     </target>
 
