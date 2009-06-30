@@ -1,35 +1,37 @@
 package org.milyn.general;
 
+import java.math.BigDecimal;
+
 /**
  * @author
  */
 public class OrderItem {
-    private String position;
-    private String quantity;
-    private String price;
+    private int position;
+    private Long quantity;
+    private BigDecimal price;
     private String title;
 
-    public String getPosition() {
+    public int getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(int position) {
         this.position = position;
     }
 
-    public String getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(Long quantity) {
         this.quantity = quantity;
     }
 
-    public String getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

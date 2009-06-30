@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd">
 
     <!-- Use the Nekohtml parser so we can handle poorly formed HTML...-->
-    <resource-config selector="org.xml.sax.driver">
-	    <resource>org.cyberneko.html.parsers.SAXParser</resource>
-        <param name="feature-on">http://cyberneko.org/html/features/scanner/notify-builtin-refs</param>
-    </resource-config>
+    <reader class="org.cyberneko.html.parsers.SAXParser">
+        <features>
+            <setOff feature="http://cyberneko.org/html/features/scanner/notify-builtin-refs" />
+        </features>
+    </reader>
 
     <!-- The transformations... -->
     <import file="visitors/url-rewriting.xml" />

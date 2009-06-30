@@ -1,30 +1,20 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.0.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.2.xsd">
 
-    <resource-config selector="global-parameters">
+    <params>
         <param name="stream.filter.type">SAX</param>
         <param name="maintain.element.stack">false</param>
-    </resource-config>
+    </params>
 
-    <resource-config selector="$document">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">orderItemList</param>
-        <param name="beanClass">java.util.ArrayList</param>
-        <param name="bindings">
-            <binding selector="${orderItem}" />
-		</param>
-    </resource-config>
+    <jb:bean beanId="orderItemList" class="java.util.ArrayList" createOnElement="#document">
+        <jb:wiring beanIdRef="orderItem" />
+    </jb:bean>
 
-    <resource-config selector="org.milyn.general.OrderItem">
-        <resource>org.milyn.javabean.BeanPopulator</resource>
-        <param name="beanId">orderItem</param>
-        <param name="beanClass">org.milyn.general.OrderItem</param>
-        <param name="bindings">
-            <binding property="position" selector="position" />
-            <binding property="quantity" selector="quantity" />
-            <binding property="title" selector="title" />
-            <binding property="price" selector="price" />
-		</param>
-    </resource-config>
+    <jb:bean beanId="orderItem" class="org.milyn.general.OrderItem" createOnElement="org.milyn.general.OrderItem">
+        <jb:value property="position" data="position" />
+        <jb:value property="quantity" data="quantity" />
+        <jb:value property="title" data="title" />
+        <jb:value property="price" data="price" />
+    </jb:bean>
 
 </smooks-resource-list>

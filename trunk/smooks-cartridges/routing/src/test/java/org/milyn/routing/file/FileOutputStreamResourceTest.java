@@ -15,8 +15,6 @@
 
 package org.milyn.routing.file;
 
-import static org.testng.AssertJUnit.*;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,17 +35,16 @@ import org.milyn.templating.TemplatingConfiguration;
 import org.milyn.templating.OutputTo;
 import org.milyn.javabean.Bean;
 import org.milyn.payload.StringSource;
-import org.testng.annotations.*;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import junit.framework.TestCase;
 
 /**
  * Unit test for {@link FileOutputStreamResource}
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">Daniel Bevenius</a>
  */
-@Test ( groups = "unit" )
-public class FileOutputStreamResourceTest
+public class FileOutputStreamResourceTest extends TestCase
 {
 	private String resourceName = "testResourceName";
 	private String fileNamePattern = "testFileName";
@@ -56,16 +53,14 @@ public class FileOutputStreamResourceTest
 	private FileOutputStreamResource resource = new FileOutputStreamResource();
 	private SmooksResourceConfiguration config;
 	
-	@Test
-	public void configure()
+	public void test_configure()
 	{
         Configurator.configure( resource, config, new MockApplicationContext() );
         
         assertEquals( resourceName, resource.getResourceName() );
 	}
 	
-	@Test
-	public void visit() throws IOException
+	public void test_visit() throws IOException
 	{
         Configurator.configure( resource, config, new MockApplicationContext() );
         
@@ -103,7 +98,6 @@ public class FileOutputStreamResourceTest
     File file2 = new File("target/config-01-test/2/2.xml");
     File file3 = new File("target/config-01-test/3/3.xml");
     
-    @Test
     public void test_config_01() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("config-01.xml"));
 
@@ -118,7 +112,6 @@ public class FileOutputStreamResourceTest
         }
     }
 
-    @Test
     public void test_config_01_programmatic() throws IOException, SAXException {
         Smooks smooks = new Smooks();
 
@@ -143,14 +136,15 @@ public class FileOutputStreamResourceTest
         return new String(StreamUtils.readFile(file));
     }
 
-    @BeforeClass
-	public void setup()
-	{
-    	config = createConfig( resourceName, fileNamePattern, destinationDirectory, listFileName);
+    protected void setUp() throws Exception {
+        config = createConfig( resourceName, fileNamePattern, destinationDirectory, listFileName);
+        deleteFiles();
     }
 
-    @BeforeMethod
-    @AfterMethod
+    protected void tearDown() throws Exception {
+        deleteFiles();
+    }
+
     public void deleteFiles() {
         file1.delete();
         file2.delete();
