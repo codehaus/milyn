@@ -129,6 +129,19 @@
 			<scope>test</scope>
 			<classifier>jdk15</classifier>
 		</dependency>
+
+        <!--
+            ###################################################################################################################
+                Note that xercesImpl is included only until the SAX bug (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6770436)
+                with Java6 has been fixed. This can then be removed. Daniel Bevenius 2008-11-12.
+            ###################################################################################################################
+        -->
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xerces.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <repositories>

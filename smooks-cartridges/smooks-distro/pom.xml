@@ -11,23 +11,6 @@
 	<artifactId>milyn-smooks-distro</artifactId>
 	<version>${milyn.smooks.core.version}</version>
 
-    <dependencies>
-
-        <!-- Required for transforming the User Guide - rewriting URLs etc -->
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-core</artifactId>
-            <version>${milyn.smooks.core.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>nekohtml</groupId>
-            <artifactId>nekohtml</artifactId>
-            <version>0.9.5</version>
-        </dependency>
-
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>

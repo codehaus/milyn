@@ -30,12 +30,6 @@
 			<version>2.7.7</version>
 		</dependency>
 
-        <dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>${xalan.version}</version>
-        </dependency>
-
 		<dependency>
 			<groupId>ognl</groupId>
 			<artifactId>ognl</artifactId>
@@ -45,6 +39,12 @@
 		<!--
 			Testing dependencies.
 		-->
+        <dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>${xalan.version}</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.milyn</groupId>
 			<artifactId>milyn-smooks-misc</artifactId>

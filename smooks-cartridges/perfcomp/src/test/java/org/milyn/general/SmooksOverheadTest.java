@@ -33,6 +33,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.XppDriver;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -121,8 +122,8 @@ public class SmooksOverheadTest extends TestCase {
     }
 
     public void test_xstream() {
-        //XStream xstream = new XStream(new StaxDriver());
-        XStream xstream = new XStream(new XppDriver());
+        XStream xstream = new XStream(new StaxDriver());
+        //XStream xstream = new XStream(new XppDriver());
         xstream.fromXML(getMessageReader());
 
         for(int i = 0; i < NUM_WARMUPS; i++) {
@@ -141,6 +142,6 @@ public class SmooksOverheadTest extends TestCase {
 
     private InputStreamReader getMessageReader() {
         //return new InputStreamReader(getClass().getResourceAsStream("order-message.xml"));
-        return new InputStreamReader(getClass().getResourceAsStream("10K-order-message.xml"));
+        return new InputStreamReader(getClass().getResourceAsStream("orderItem-list-04.xml"));
     }
 }
