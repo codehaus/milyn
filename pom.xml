@@ -5,13 +5,13 @@
     <groupId>org.milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.3-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.2</version> <!-- base pom version - do not remove this comment -->
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
     <properties>
-        <milyn.smooks.core.version.base>1.3</milyn.smooks.core.version.base>
-        <milyn.smooks.core.version>${milyn.smooks.core.version.base}-SNAPSHOT</milyn.smooks.core.version>
+        <milyn.smooks.core.version.base>1.2</milyn.smooks.core.version.base>
+        <milyn.smooks.core.version>${milyn.smooks.core.version.base}</milyn.smooks.core.version>
 
         <milyn.commons.version.base>${milyn.smooks.core.version.base}</milyn.commons.version.base>
         <milyn.commons.version>${milyn.smooks.core.version}</milyn.commons.version>
@@ -38,7 +38,7 @@
         <milyn.scribe.ibatis.version>${milyn.smooks.core.version}</milyn.scribe.ibatis.version>
 
         <xerces.version>2.7.1</xerces.version>
-        <xalan.version>2.7.1</xalan.version>
+        <xalan.version>2.7.0</xalan.version>
         <xml_apis.version>1.3.02</xml_apis.version>
         <xstream.version>1.2.2</xstream.version>
         <commons_lang.version>2.1</commons_lang.version>
