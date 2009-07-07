@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE device-ident PUBLIC "-//MILYN//DTD TINAK 1.0//EN" "http://www.milyn.org/dtd/device-ident-1.0.dtd">
+
+<device-ident>
+    <device name="IPAQ">
+        <http-req-param name="User-Agent" value="IPAQ" />
+    </device>
+    <device name="MSIE6">
+        <http-req-header name="User-Agent" value=".*MSIE 6.*" />
+    </device>
+    <device name="MSIE5">
+        <http-req-header name="User-Agent" value=".*MSIE 5.*" />
+    </device>
+    <device name="Nokia3350">
+        <http-req-header name="User-Agent" value="Nokia3350.*" />
+    </device>
+    <device name="Nokia9210" match="*">
+        <http-req-header name="User-Agent" value="Nokia9210.*" />
+        <http-req-header name="User-Agent" value="Nokia 9210.*" />
+    </device>
+    <device name="EricssonA2618">
+        <http-req-header name="User-Agent" value="EricssonA2618.*" />
+    </device>
+    <device name="4thpass-KBrowser">
+        <http-req-header name="User-Agent" value="4thpass.*KBrowser.*" />
+    </device>
+    <device name="UPBrowser">
+        <http-req-header name="User-Agent" value=".*UP\.Browser.*" />
+    </device>
+    <device name="Unknown-HTML4">
+        <http-req-header name="User-Agent" value="Mozilla\/4.*" />
+    </device>
+    <device name="Unknown-HTML" match="*">
+        <http-req-header name="Accept" value=".*text\/html.*" />
+        <http-req-header name="Accept" value=".*\*\/\*.*" />
+    </device>
+    <device name="Unknown-WML">
+        <http-req-header name="Accept" value=".*text\/vnd.wap.wml.*" />
+    </device>
+    <device name="text">
+        <http-req-header name="Accept" value=".*text\/plain.*" />
+    </device>
+</device-ident>
+
+
+
+
+
