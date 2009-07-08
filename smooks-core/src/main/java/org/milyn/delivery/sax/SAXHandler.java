@@ -401,53 +401,55 @@ public class SAXHandler extends DefaultHandler2 {
             textWrapper.setText(ch, start, length, currentTextType);
         }
 
-        // Accumulate the text...
-        if(currentProcessor.element != null) {
-            List<SAXText> saxTextObjects = currentProcessor.element.getText();
-            if(saxTextObjects != null) {
-                saxTextObjects.add(textWrapper);
+        if(currentProcessor != null) {
+            // Accumulate the text...
+            if(currentProcessor.element != null) {
+                List<SAXText> saxTextObjects = currentProcessor.element.getText();
+                if(saxTextObjects != null) {
+                    saxTextObjects.add(textWrapper);
+                }
             }
-        }
 
-        if(!currentProcessor.isNullProcessor) {
-            if(currentProcessor.elementVisitorConfig != null) {
-                List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
+            if(!currentProcessor.isNullProcessor) {
+                if(currentProcessor.elementVisitorConfig != null) {
+                    List<ContentHandlerConfigMap<SAXVisitChildren>> visitChildMappings = currentProcessor.elementVisitorConfig.getChildVisitors();
 
-                if(visitChildMappings != null) {
-                    int mappingCount = visitChildMappings.size();
+                    if(visitChildMappings != null) {
+                        int mappingCount = visitChildMappings.size();
 
-                    for(int i = 0; i < mappingCount; i++) {
-                        ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
-                        try {
-                            if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
-                                mapping.getContentHandler().onChildText(currentProcessor.element, textWrapper, execContext);
+                        for(int i = 0; i < mappingCount; i++) {
+                            ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
+                            try {
+                                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                                    mapping.getContentHandler().onChildText(currentProcessor.element, textWrapper, execContext);
+                                }
+                            } catch(Throwable t) {
+                                String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildText event.";
+                                processVisitorException(currentProcessor.element, t, mapping, VisitSequence.AFTER, errorMsg);
                             }
-                        } catch(Throwable t) {
-                            String errorMsg = "Error in '" + mapping.getContentHandler().getClass().getName() + "' while processing the onChildText event.";
-                            processVisitorException(currentProcessor.element, t, mapping, VisitSequence.AFTER, errorMsg);
                         }
+                    }
+                }
+
+                if(defaultSerializationOn && applyDefaultSerialization()) {
+                    try {
+                        defaultSerializer.onChildText(currentProcessor.element, textWrapper, execContext);
+                    } catch (IOException e) {
+                        throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
                     }
                 }
             }
 
-            if(defaultSerializationOn && applyDefaultSerialization()) {
-                try {
-                    defaultSerializer.onChildText(currentProcessor.element, textWrapper, execContext);
-                } catch (IOException e) {
-                    throw new SmooksException("Unexpected exception applying defaultSerializer.", e);
-                }
-            }
-        }
-
-        // Apply the dynamic visitors...
-        List<SAXVisitChildren> dynamicChildVisitors = dynamicVisitorList.getChildVisitors();
-        if(!dynamicChildVisitors.isEmpty()) {
-            for (SAXVisitChildren dynamicChildVisitor : dynamicChildVisitors) {
-                try {
-                    dynamicChildVisitor.onChildText(currentProcessor.element, textWrapper, execContext);
-                } catch(Throwable t) {
-                    String errorMsg = "Error in '" + dynamicChildVisitor.getClass().getName() + "' while processing the onChildText event.";
-                    processVisitorException(t, errorMsg);
+            // Apply the dynamic visitors...
+            List<SAXVisitChildren> dynamicChildVisitors = dynamicVisitorList.getChildVisitors();
+            if(!dynamicChildVisitors.isEmpty()) {
+                for (SAXVisitChildren dynamicChildVisitor : dynamicChildVisitors) {
+                    try {
+                        dynamicChildVisitor.onChildText(currentProcessor.element, textWrapper, execContext);
+                    } catch(Throwable t) {
+                        String errorMsg = "Error in '" + dynamicChildVisitor.getClass().getName() + "' while processing the onChildText event.";
+                        processVisitorException(t, errorMsg);
+                    }
                 }
             }
         }
