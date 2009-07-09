@@ -39,6 +39,7 @@ public class FreeMarkerTemplate {
 
     public FreeMarkerTemplate(String templateText) {
         AssertArgument.isNotNullAndNotEmpty(templateText, "templateText");
+        this.templateText = templateText;
         Reader templateReader = new StringReader(templateText);
 
         try {

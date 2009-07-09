@@ -4,12 +4,29 @@
 	<parent>
 		<groupId>org.milyn</groupId>
 		<artifactId>smooks-cartridge-base-pom</artifactId>
-		<version>1.3-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+		<version>1.2.1</version> <!-- base pom version - do not remove this comment -->
 	</parent>
     <name>Milyn Smooks Full Distribution</name>
 	<groupId>org.milyn</groupId>
 	<artifactId>milyn-smooks-distro</artifactId>
 	<version>${milyn.smooks.core.version}</version>
+
+    <dependencies>
+
+        <!-- Required for transforming the User Guide - rewriting URLs etc -->
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-core</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>
