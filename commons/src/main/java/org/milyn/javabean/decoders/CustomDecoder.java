@@ -42,6 +42,11 @@ public class CustomDecoder implements DataDecoder, Configurable {
         }
 
         delegateDecoder = DataDecoder.Factory.create(className);
+
+        //Set configuration in delegateDecoder.
+        if (delegateDecoder instanceof Configurable) {
+            ((Configurable)delegateDecoder).setConfiguration(config);
+        }
     }
 
     public Object decode(String data) throws DataDecodeException {
