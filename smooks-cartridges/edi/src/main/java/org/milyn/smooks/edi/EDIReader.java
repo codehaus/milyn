@@ -93,7 +93,7 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
-    @ConfigParam(defaultVal = "true")
+    @ConfigParam(defaultVal = "false")
     private Boolean validate;
 
     public void setExecutionContext(ExecutionContext executionContext) {
