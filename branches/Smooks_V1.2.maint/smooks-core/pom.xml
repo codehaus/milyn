@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.milyn</groupId>
 		<artifactId>milyn</artifactId>
-        <version>1.2.1</version> <!-- base pom version - do not remove this comment -->
+        <version>1.2.2</version> <!-- base pom version - do not remove this comment -->
 	</parent>
     <name>Milyn Smooks Core</name>
     <groupId>org.milyn</groupId>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.mvel</groupId>
             <artifactId>mvel2</artifactId>
-            <version>2.0.9</version>
+            <version>2.0.12</version>
         </dependency>
 		<dependency>
 			<groupId>dtdparser</groupId>
