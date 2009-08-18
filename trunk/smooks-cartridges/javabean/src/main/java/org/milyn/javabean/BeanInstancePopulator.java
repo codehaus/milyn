@@ -328,30 +328,30 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     private void bindSaxDataValue(SAXElement element, ExecutionContext executionContext) {
-        String dataString;
+        String propertyName;
 
-        if (isAttribute) {
-            dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
-        } else {
-            dataString = element.getTextContent();
-        }
-
-        String mapPropertyName;
         if(mapKeyAttribute != null) {
-            mapPropertyName = SAXUtil.getAttribute(mapKeyAttribute, element.getAttributes(), null);
-            if(mapPropertyName == null) {
-                mapPropertyName = element.getName().getLocalPart();
+            propertyName = SAXUtil.getAttribute(mapKeyAttribute, element.getAttributes(), null);
+            if(propertyName == null) {
+                propertyName = element.getName().getLocalPart();
             }
         } else if(property != null) {
-            mapPropertyName = property;
+            propertyName = property;
         } else {
-            mapPropertyName = element.getName().getLocalPart();
+            propertyName = element.getName().getLocalPart();
         }
 
         if(expression != null) {
-            bindExpressionValue(mapPropertyName, executionContext);
+            bindExpressionValue(propertyName, executionContext);
         } else {
-            setPropertyValue(mapPropertyName, decodeDataString(dataString, executionContext), executionContext);
+            String dataString;
+
+            if (isAttribute) {
+                dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
+            } else {
+                dataString = element.getTextContent();
+            }
+            setPropertyValue(propertyName, decodeDataString(dataString, executionContext), executionContext);
         }
     }
 
