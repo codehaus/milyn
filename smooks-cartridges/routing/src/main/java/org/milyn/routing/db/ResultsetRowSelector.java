@@ -145,6 +145,10 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
     public boolean consumes(Object object) {
         if(object.equals(resultSetName)) {
             return true;
+        } else if(whereEvaluator != null && whereEvaluator.getExpression().indexOf(object.toString()) != -1) {
+            return true;
+        } else if(failedSelectError != null && failedSelectError.getTemplateText().indexOf(object.toString()) != -1) {
+            return true;
         }
 
         return false;
