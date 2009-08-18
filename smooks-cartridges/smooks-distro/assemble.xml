@@ -2,8 +2,8 @@
 <project default="assemble" name="Assembly">
 
     <property name="version.base" value="1.2"/>
-    <property name="version" value="${version.base}"/>
-    <property name="mvn.version" value="1.2"/>
+    <property name="mvn.version" value="1.2.2"/>
+    <property name="version" value="${version.base}.2"/>
 
     <property name="mainDistroName" value="smooks-${version}"/>
     <property name="mainTargetdir" value="target/${mainDistroName}"/>
@@ -153,7 +153,15 @@
             <param name="target" value="${javadocdir}/smooks-cartridges/validation"/>
         </antcall>
 
-        <antcall target="download_user_guide" />
+        <!-- Download the distro docs... -->
+        <java classname="org.milyn.distro.html.Downloader" fork="true" failonerror="true" maxmemory="128m">
+            <arg value="http://www.smooks.org/mediawiki/index.php?title=V${version.base}:Smooks_v${version.base}_User_Guide&amp;printable=yes"/>
+            <arg value="${docsdir}/SmooksUserGuide_v${version}.html"/>
+            <classpath>
+                <pathelement location="target/classes" />
+                <fileset dir="target/lib" />
+            </classpath>
+        </java>
 
         <!-- Zip up the main distro... -->
         <zip destfile="target/${mainDistroName}.zip" basedir="target" includes="${mainDistroName}/**"/>
@@ -176,25 +184,6 @@
         <move todir="${target}">
             <fileset dir="${source}/target/site/apidocs"/>
         </move>
-    </target>
-
-    <target name="download_user_guide">
-        <ant dir="utils" antfile="getsmooks-build.xml" target="get-nekohtml">
-            <property name="todir" value="../target/nekohtml" />
-            <property name="user.home" value="../target" /> <!-- needed for downloading the ant-maven plugin -->
-        </ant>
-
-        <!-- Download the distro docs... -->
-        <java classname="org.milyn.distro.html.Downloader" fork="true" failonerror="true" maxmemory="128m">
-            <arg value="http://www.smooks.org/mediawiki/index.php?title=V${version.base}:Smooks_v${version.base}_User_Guide&amp;printable=yes"/>
-            <arg value="${docsdir}/SmooksUserGuide_v${version}.html"/>
-            <classpath>
-                <pathelement location="target/classes" />
-                <fileset dir="target/lib" />
-                <fileset dir="target/nekohtml"/>
-            </classpath>
-        </java>
-
     </target>
 
 </project>
