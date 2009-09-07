@@ -81,7 +81,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private String wireBeanIdName;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private MVELExpressionEvaluator expression;
+    private String expression;
+    private MVELExpressionEvaluator expressionEvaluator;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -91,11 +92,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String valueAttributeName;
-
-    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private String initVal;
-    private MVELExpressionEvaluator initValIsdefTest;
-    private MVELExpressionEvaluator initValExpression;
 
     @ConfigParam(name="type", defaultVal = AnnotationConstants.NULL_STRING)
     private String typeAlias;
@@ -136,15 +132,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     public void setExpression(MVELExpressionEvaluator expression) {
-        this.expression = expression;
+        this.expressionEvaluator = expression;
     }
 
     public void setProperty(String property) {
         this.property = property;
-    }
-
-    public void setInitVal(String initVal) {
-        this.initVal = initVal;
     }
 
     public void setSetterMethod(String setterMethod) {
@@ -206,13 +198,19 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
                 mapKeyAttribute = property.substring(1);
             }
         }
-
-        if(initVal != null) {
-            initValIsdefTest = new MVELExpressionEvaluator();
-            initValIsdefTest.setExpression("bean." + property);
-
-            initValExpression = new MVELExpressionEvaluator();
-            initValExpression.setExpression(initVal);
+        
+        if(expression != null) {
+        	expression = expression.trim();        	
+        	expression = expression.replace("this.", beanIdName + ".");
+        	if(expression.startsWith("+=")) {
+        		expression = beanIdName + "." + property + " +" + expression.substring(2); 
+        	}
+        	if(expression.startsWith("-=")) {
+        		expression = beanIdName + "." + property + " -" + expression.substring(2); 
+        	}
+        	
+        	expressionEvaluator = new MVELExpressionEvaluator();
+        	expressionEvaluator.setExpression(expression);
         }
 
         if(logger.isDebugEnabled()) {
@@ -273,7 +271,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
-        } else if(expression == null) {
+        } else if(expressionEvaluator == null) {
             // It's not a wiring, attribute or expression binding => it's the element's text.
             // Turn on Text Accumulation...
             element.accumulateText();
@@ -320,7 +318,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             mapPropertyName = DomUtils.getName(element);
         }
 
-        if(expression != null) {
+        if(expressionEvaluator != null) {
             bindExpressionValue(mapPropertyName, executionContext);
         } else {
             setPropertyValue(mapPropertyName, decodeDataString(dataString, executionContext), executionContext);
@@ -341,7 +339,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             propertyName = element.getName().getLocalPart();
         }
 
-        if(expression != null) {
+        if(expressionEvaluator != null) {
             bindExpressionValue(propertyName, executionContext);
         } else {
             String dataString;
@@ -467,24 +465,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
         Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
 
-        if(initVal != null) {
-            // Initialize the expression target if it's not already defined.  This makes it easier
-            // to write expressions that include reference to the target property e.g.
-            // calculating a running incremental total on a collection.
-
-            Object bean = BeanRepositoryManager.getBeanRepository(executionContext).getBean(beanId);
-            try {
-                Map testMap = new HashMap();
-                testMap.put("bean", bean);
-                initValIsdefTest.getValue(testMap);
-            } catch (ExpressionEvaluationException e) {
-                // Don't like doing this by exception, but the isdef MVEL operator doesn't seem to work :(
-                Object initValObj = initValExpression.getValue(beanMap);
-                decodeAndSetPropertyValue(mapPropertyName, initValObj, executionContext);
-            }
-        }
-
-        Object dataObject = expression.getValue(beanMap);
+        Object dataObject = expressionEvaluator.getValue(beanMap);
         decodeAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
     }
 
@@ -649,7 +630,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             return true;
         } else if(wireBeanIdName != null && object.equals(wireBeanIdName)) {
             return true;
-        } else if(expression != null && expression.getExpression().indexOf(object.toString()) != -1) {
+        } else if(expressionEvaluator != null && expressionEvaluator.getExpression().indexOf(object.toString()) != -1) {
             return true;
         }
 

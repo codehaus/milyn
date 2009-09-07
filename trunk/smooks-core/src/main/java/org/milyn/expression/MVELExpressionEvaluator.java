@@ -56,7 +56,7 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
     }
 
     @SuppressWarnings("unchecked")
-	public Object getValue(final Object contextObject) throws ExpressionEvaluationException {
+	public Object exec(final Object contextObject) throws ExpressionEvaluationException {
         try {
 
         	if(containsVariablesVariable && contextObject instanceof Map) {
@@ -87,6 +87,10 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
             throw new ExpressionEvaluationException(msg, e);
         }
     }
-
-
+    
+    @SuppressWarnings("unchecked")
+    @Deprecated
+	public Object getValue(final Object contextObject) throws ExpressionEvaluationException {
+    	return exec(contextObject);
+    }
 }
