@@ -145,6 +145,41 @@ public class DomModelCreatorTest extends TestCase {
                 XmlUtil.serialize(ModelCatcher.elements.get(3), true)));
     }
 
+    public void test_sax_03() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("node-model-02.xml"));
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+
+        ExecutionContext executionContext = smooks.createExecutionContext();
+        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("order-message-with-ns.xml")), null);
+
+        DOMModel nodeModel = DOMModel.getModel(executionContext);
+
+        assertTrue(
+                StreamUtils.compareCharStreams(
+                "<order>\n" +
+                "    <header>\n" +
+                "        <date>Wed Nov 15 13:45:28 EST 2006</date>\n" +
+                "        <customer number=\"123123\">Joe &gt; the man</customer>\n" +
+                "    </header>\n" +
+                "    <order-items/>\n" +
+                "</order>",
+                XmlUtil.serialize(nodeModel.getModels().get("order"), true)));
+
+        assertTrue(
+                StreamUtils.compareCharStreams(
+                "        <ordi:order-item xmlns:ordi=\"http://ordi\">\n" +
+                "            <ordi:quantity>7</ordi:quantity>\n" +
+                "            <ordi:price>5.20</ordi:price>\n" +
+                "        </ordi:order-item>",
+                XmlUtil.serialize(nodeModel.getModels().get("order-item"), true)));
+
+        assertTrue(
+                StreamUtils.compareCharStreams(
+                "<ordi:product xmlns:ordi=\"http://ordi\">222</ordi:product>",
+                XmlUtil.serialize(nodeModel.getModels().get("product"), true)));
+    }
+
     public void test_dom() throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("node-model-01.xml"));
         ExecutionContext executionContext = smooks.createExecutionContext();
