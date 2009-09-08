@@ -74,7 +74,15 @@ public class SAXHandler extends DefaultHandler2 {
 
         deliveryConfig = ((SAXContentDeliveryConfig)executionContext.getDeliveryConfig());
         visitorConfigMap = deliveryConfig.getOptimizedVisitorConfig();
-        globalVisitorConfig = visitorConfigMap.get("*");
+        
+        SAXElementVisitorMap starVisitorConfigs = visitorConfigMap.get("*");
+        SAXElementVisitorMap starStarVisitorConfigs = visitorConfigMap.get("**");
+        
+        if(starVisitorConfigs != null) {
+        	globalVisitorConfig = starVisitorConfigs.merge(starStarVisitorConfigs);
+        } else {
+        	globalVisitorConfig = starStarVisitorConfigs;
+        }
 
         // Configure the default handler mapping...
         SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementSerializer.class.getName());

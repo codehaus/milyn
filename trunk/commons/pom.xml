@@ -47,6 +47,12 @@
 			<version>0.07</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		    <groupId>xmlunit</groupId>
+		    <artifactId>xmlunit</artifactId>
+		    <version>1.1</version>
+            <scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
