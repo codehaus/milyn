@@ -330,7 +330,9 @@ public class BeanPopulator implements ConfigurationExpander {
         defaultVal = DomUtils.getAttributeValue(bindingConfig, "default");
         if(wireBeanId == null ) {
         	// Set the data type...
-        	resourceConfig.setParameter("type", (type != null?type:"String"));
+        	if(type != null) {
+        		resourceConfig.setParameter("type", type);
+        	}
 
             if(defaultVal != null) {
                 resourceConfig.setParameter("default", defaultVal);

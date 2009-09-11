@@ -34,7 +34,6 @@ import org.milyn.delivery.ordering.Consumer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
-import org.milyn.expression.ExpressionEvaluationException;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
@@ -207,6 +206,19 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         	}
         	if(expression.startsWith("-=")) {
         		expression = beanIdName + "." + property + " -" + expression.substring(2); 
+        	}
+        	
+        	// If we can determine the target binding type, add type info to the expression 
+        	// by assigning the result to a statically declared variable (same name as the property)
+        	// and then returning that variable.  This tells MVEL the exact type we want to get back.
+        	// If there's a decoder (a typeAlias), we define a String var instead and leave decoding 
+        	// to the decoder...
+        	Class<?> bindingType = resolveBindTypeReflectively();
+        	if(bindingType != null) {
+            	if(typeAlias != null) {
+    	        	bindingType = String.class;
+            	}
+        		expression = bindingType.getName() + " " + property + " = " + expression + ";\n" + property + ";";
         	}
         	
         	expressionEvaluator = new MVELExpressionEvaluator();
@@ -590,23 +602,31 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     private DataDecoder resolveDecoderReflectively() throws DataDecodeException {
-        String bindingMember = (setterMethod != null? setterMethod : property);
+    	Class<?> bindType = resolveBindTypeReflectively();
+        
+    	if(bindType != null) {
+            DataDecoder resolvedDecoder = DataDecoder.Factory.create(bindType);
 
-        if(bindingMember != null && beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION) {
-            Method bindingMethod = Bean.getBindingMethod(bindingMember, beanRuntimeInfo.getPopulateType());
-            if(bindingMethod != null) {
-                Class<?> bindType = bindingMethod.getParameterTypes()[0];
-                DataDecoder resolvedDecoder = DataDecoder.Factory.create(bindType);
-
-                if(resolvedDecoder != null) {
-                    return resolvedDecoder;
-                }
+            if(resolvedDecoder != null) {
+                return resolvedDecoder;
             }
         }
 
         return new StringDecoder();
     }
 
+    private Class<?> resolveBindTypeReflectively() throws DataDecodeException {
+        String bindingMember = (setterMethod != null? setterMethod : property);
+
+        if(bindingMember != null && beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION) {
+            Method bindingMethod = Bean.getBindingMethod(bindingMember, beanRuntimeInfo.getPopulateType());
+            if(bindingMethod != null) {
+                return bindingMethod.getParameterTypes()[0];
+            }
+        }
+
+        return null;
+    }
 
     private BeanRuntimeInfo getWiredBeanRuntimeInfo() {
 		if(wiredBeanRuntimeInfo == null) {
