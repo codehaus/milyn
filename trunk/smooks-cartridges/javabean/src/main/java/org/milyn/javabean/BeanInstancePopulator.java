@@ -208,9 +208,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         		expression = beanIdName + "." + property + " -" + expression.substring(2); 
         	}
         	
-        	// If we can determine the target binding type, add type info to the expression 
-        	// by assigning the result to a statically declared variable (same name as the property)
-        	// and then returning that variable.  This tells MVEL the exact type we want to get back.
+        	expressionEvaluator = new MVELExpressionEvaluator();
+        	expressionEvaluator.setExpression(expression);
+        	
+        	// If we can determine the target binding type, tell MVEL.
         	// If there's a decoder (a typeAlias), we define a String var instead and leave decoding 
         	// to the decoder...
         	Class<?> bindingType = resolveBindTypeReflectively();
@@ -218,11 +219,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             	if(typeAlias != null) {
     	        	bindingType = String.class;
             	}
-        		expression = bindingType.getName() + " " + property + " = " + expression + ";\n" + property + ";";
+            	expressionEvaluator.setToType(bindingType);
         	}
-        	
-        	expressionEvaluator = new MVELExpressionEvaluator();
-        	expressionEvaluator.setExpression(expression);
         }
 
         if(logger.isDebugEnabled()) {

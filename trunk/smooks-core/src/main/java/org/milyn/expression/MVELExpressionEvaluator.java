@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.milyn.cdr.SmooksConfigurationException;
+import org.mvel2.DataConversion;
 import org.mvel2.MVEL;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
 
@@ -37,6 +38,8 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
     private Serializable compiled;
 
     private boolean containsVariablesVariable;
+    
+    private Class<?> toType;
 
     public ExpressionEvaluator setExpression(String expression) throws SmooksConfigurationException {
         this.expression = expression.trim();
@@ -50,9 +53,13 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
     public String getExpression() {
         return expression;
     }
+    
+	public void setToType(Class<?> toType) {
+		this.toType = toType;
+	}
 
-    public boolean eval(Object contextObject) throws ExpressionEvaluationException {
-        return (Boolean) getValue(contextObject);
+	public boolean eval(Object contextObject) throws ExpressionEvaluationException {
+        return (Boolean) exec(contextObject);
     }
 
     @SuppressWarnings("unchecked")
@@ -72,9 +79,17 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
 	        	// do look in the variables of the resolver factory
 	        	variableResolverFactory.createVariable(MVEL_VARIABLES_VARIABLE_NAME, new MVELVariables(variableResolverFactory));
 
-	        	return  MVEL.executeExpression(compiled, variableResolverFactory);
+	        	if(toType != null) {
+	        		return  DataConversion.convert(MVEL.executeExpression(compiled, variableResolverFactory), toType);
+	        	} else {
+	        		return  MVEL.executeExpression(compiled, variableResolverFactory);
+	        	}
         	} else {
-        		return MVEL.executeExpression(compiled, contextObject, new MapVariableResolverFactory(new HashMap<String, Object>()));
+	        	if(toType != null) {	        		
+	        		return DataConversion.convert(MVEL.executeExpression(compiled, contextObject, new MapVariableResolverFactory(new HashMap<String, Object>())), toType);
+	        	} else {
+	        		return MVEL.executeExpression(compiled, contextObject, new MapVariableResolverFactory(new HashMap<String, Object>()));
+	        	}
         	}
 
         } catch(Exception e) {
