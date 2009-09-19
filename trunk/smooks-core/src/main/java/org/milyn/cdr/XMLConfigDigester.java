@@ -680,7 +680,7 @@ public final class XMLConfigDigester {
         SmooksConfig currentConfig = configStack.pop();
 
         // Make sure we don't have a v1.1 imported from config within a v1.0...
-        if(currentConfig.defaultNS.equals(XSD_V11) && !configStack.isEmpty()) {
+        if(XSD_V11.equals(currentConfig.defaultNS) && !configStack.isEmpty()) {
             SmooksConfig parentConfig = configStack.peek();
 
             if(parentConfig.defaultNS.equals(XSD_V10)) {
