@@ -144,11 +144,13 @@ public class URIResourceLocator implements ContainerResourceLocator {
 
         if (uri.charAt(0) == '\\' || uri.charAt(0) == '/') {
             uri = uri.substring(1);
-        }
-        uriObj = URI.create(uri);
-        if (!uriObj.isAbsolute()) {
-            // Resolve the supplied URI against the baseURI...
-            uriObj = baseURI.resolve(uriObj);
+            return URI.create(uri);
+        } else {
+	        uriObj = URI.create(uri);
+	        if (!uriObj.isAbsolute()) {
+	            // Resolve the supplied URI against the baseURI...
+	            uriObj = baseURI.resolve(uriObj);
+	        }
         }
 
         return uriObj;
