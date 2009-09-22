@@ -40,6 +40,7 @@ import org.drools.runtime.StatelessKnowledgeSession;
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.ExecutionLifecycleCleanable;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.rules.BasicRuleEvalResult;
@@ -54,7 +55,7 @@ import org.milyn.rules.RuleProvider;
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  *
  */
-public class DroolsProvider implements RuleProvider
+public class DroolsProvider implements RuleProvider, ExecutionLifecycleCleanable
 {
     /**
      * Logger.
@@ -256,5 +257,10 @@ public class DroolsProvider implements RuleProvider
     public String toString()
     {
         return String.format("%s providerName=%s, src=%s, packageName=%s, ", getClass().getSimpleName(), providerName, src, packageName);
+    }
+
+    public void executeExecutionLifecycleCleanup(ExecutionContext executionContext)
+    {
+        System.out.println("clean up...");
     }
 }

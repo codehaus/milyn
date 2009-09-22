@@ -16,11 +16,13 @@
 package org.milyn.rules.drools;
 
 import static org.junit.Assert.*;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.milyn.Smooks;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.payload.StringSource;
 import org.milyn.rules.RuleEvalResult;
 
 /**
@@ -54,6 +56,28 @@ public class DroolsProviderTest
 
         final RuleEvalResult result = provider.evaluate("Rule1", "dummyData", execContext);
         assertFalse(result.matched());
+    }
+
+    @Test public void evaluateUsingFramwork()
+    {
+        final Smooks smooks = new Smooks();
+        final SmooksResourceConfiguration config = createConfig("testResource", "rule1" );
+        smooks.addConfiguration(config);
+
+        final String xml = "<element><data>dummyData</data></element>";
+        StringSource source = new StringSource(xml);
+        smooks.filterSource(source);
+    }
+
+    private SmooksResourceConfiguration createConfig(
+            final String resourceName,
+            final String ruleName)
+
+    {
+        SmooksResourceConfiguration config = new SmooksResourceConfiguration( "element", DroolsProvider.class.getName() );
+        config.setParameter( "resourceName", resourceName );
+        config.setParameter( "ruleName", ruleName );
+        return config;
     }
 
 }
