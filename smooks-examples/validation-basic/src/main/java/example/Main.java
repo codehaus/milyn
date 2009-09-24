@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.payload.StringSource;
+import org.milyn.rules.RuleEvalResult;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
@@ -50,7 +51,8 @@ public class Main {
         System.out.println("\n==============Validation Result=======");
         System.out.println("Errors:");
         for (OnFailResult result : results.getErrors()) {
-            System.out.println("\t" + result.getMessage());
+        	RuleEvalResult rule = result.getFailRuleResult();
+            System.out.println("\t" + rule.getRuleName() + ": " + result.getMessage());
             System.out.println("\tSwedish:");
             System.out.println("\t" + result.getMessage(new Locale("sv", "SE")));
         }
