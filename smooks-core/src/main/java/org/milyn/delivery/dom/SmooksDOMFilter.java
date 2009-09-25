@@ -334,6 +334,8 @@ public class SmooksDOMFilter extends Filter {
         return deliveryNode;
     }
 
+    private static String[] GLOBAL_SELECTORS = new String[] {"*", "**"};
+    
     /**
      * Filter the supplied W3C Element.
      * <p/>
@@ -345,8 +347,8 @@ public class SmooksDOMFilter extends Filter {
     public Node filter(Element element) {
         ContentHandlerConfigMapTable<DOMVisitBefore> visitBefores = deliveryConfig.getAssemblyVisitBefores();
         ContentHandlerConfigMapTable<DOMVisitAfter> visitAfters = deliveryConfig.getAssemblyVisitAfters();
-        globalAssemblyBefores = deliveryConfig.getAssemblyVisitBefores().getMappings("*");
-        globalAssemblyAfters = deliveryConfig.getAssemblyVisitAfters().getMappings("*");
+        globalAssemblyBefores = visitBefores.getMappings(GLOBAL_SELECTORS);
+        globalAssemblyAfters = visitAfters.getMappings(GLOBAL_SELECTORS);
 
         // Register the DOM phase events...
         if (eventListener != null) {
@@ -376,8 +378,8 @@ public class SmooksDOMFilter extends Filter {
             logger.debug("Starting processing phase [" + executionContext.getTargetProfiles().getBaseProfile() + "]");
         }
 
-        globalProcessingBefores = deliveryConfig.getProcessingVisitBefores().getMappings("*");
-        globalProcessingAfters = deliveryConfig.getProcessingVisitAfters().getMappings("*");
+        globalProcessingBefores = deliveryConfig.getProcessingVisitBefores().getMappings(GLOBAL_SELECTORS);
+        globalProcessingAfters = deliveryConfig.getProcessingVisitAfters().getMappings(GLOBAL_SELECTORS);
 
         int transListLength;
         Vector transList = new Vector();
@@ -392,7 +394,17 @@ public class SmooksDOMFilter extends Filter {
         return (Node) executionContext.getAttribute(DELIVERY_NODE_REQUEST_KEY);
     }
 
-    private boolean applyAssembly(ContentHandlerConfigMapTable<DOMVisitBefore> visitBefores, ContentHandlerConfigMapTable<DOMVisitAfter> visitAfters) {
+    /**
+     * Get the global mappings from the supplied handler table.
+	 * @param map The handler table.
+	 * @return A handler config map list containing the merged
+	 */
+	private List<ContentHandlerConfigMap<? extends ContentHandler>> getGlobalConfigs(ContentHandlerConfigMapTable<? extends ContentHandler> assemblyVisitBefores) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private boolean applyAssembly(ContentHandlerConfigMapTable<DOMVisitBefore> visitBefores, ContentHandlerConfigMapTable<DOMVisitAfter> visitAfters) {
         return !visitBefores.isEmpty() || !visitAfters.isEmpty() ||
                 (globalAssemblyBefores != null && !globalAssemblyBefores.isEmpty()) ||
                 (globalAssemblyAfters != null && !globalAssemblyAfters.isEmpty());

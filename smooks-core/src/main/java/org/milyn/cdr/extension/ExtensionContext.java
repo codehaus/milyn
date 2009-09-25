@@ -125,4 +125,16 @@ public class ExtensionContext {
     public ExpressionEvaluator getDefaultConditionEvaluator() {
         return defaultConditionEvaluator;
     }
+
+	public SmooksResourceConfiguration getResourceByName(String name) {
+		for(int i = resourceStack.size() - 1; i >= 0; i--) {
+			SmooksResourceConfiguration config = resourceStack.get(i);
+			String resourceName = config.getResource();
+			if(name.equals(resourceName)) {
+				return config;
+			}
+		}
+		
+		return null;
+	}
 }

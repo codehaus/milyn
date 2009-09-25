@@ -76,9 +76,13 @@ public class Serializer {
      */
     private boolean defaultSerializationOn;
     /**
-	 * Default SerializationUnit.
+     * Default serialization unit.
+     */
+	private DefaultSerializationUnit defaultSerializationUnit;
+    /**
+	 * Global SerializationUnits.
 	 */
-	private List defaultSUs;
+	private List globalSUs;
     /**
      * Event Listener.
      */
@@ -103,21 +107,18 @@ public class Serializer {
 		deliveryConfig = (DOMContentDeliveryConfig) executionContext.getDeliveryConfig();
 		// Initialise the serializationUnits member
 		serializationUnits = deliveryConfig.getSerailizationVisitors();
-		// Set the default SerializationUnit
+
+        globalSUs = serializationUnits.getMappings(new String[] {"*", "**"});
+
+        // Set the default SerializationUnit
         defaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, executionContext.getDeliveryConfig());
         if(defaultSerializationOn) {
-            defaultSUs = serializationUnits.getMappings("*");
-            if(defaultSUs == null) {
-                SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
-                resourceConfig.setDefaultResource(true);
-                defaultSUs = new Vector();
-
-                DefaultSerializationUnit defaultSerializationUnit = new DefaultSerializationUnit();
-                boolean rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, executionContext.getDeliveryConfig());
-
-                defaultSerializationUnit.setRewriteEntities(rewriteEntities);
-                defaultSUs.add(new ContentHandlerConfigMap(defaultSerializationUnit, resourceConfig));
-            }
+            SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
+            
+            resourceConfig.setDefaultResource(true);
+            defaultSerializationUnit = new DefaultSerializationUnit();
+            boolean rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, executionContext.getDeliveryConfig());
+            defaultSerializationUnit.setRewriteEntities(rewriteEntities);
         }
         terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
 	}
@@ -303,7 +304,7 @@ public class Serializer {
         }
         
         if(elementSUs == null || elementSUs.isEmpty()) {
-			elementSUs = defaultSUs;
+			elementSUs = globalSUs;
 		}
 
         if(elementSUs != null) {
@@ -332,7 +333,7 @@ public class Serializer {
             }
         }
         
-        return null;
+        return defaultSerializationUnit;
 	}
 
     private static DefaultSerializationUnit defaultSerializer = new DefaultSerializationUnit();

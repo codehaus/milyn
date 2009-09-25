@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import java.io.Writer;
 import java.io.StringWriter;
@@ -460,16 +461,19 @@ public class SAXElement {
 
             if(namespace != null) {
                 String qName = attributes.getQName(i);
-                Attr attribute = document.createAttributeNS(namespace, qName);
 
-                attribute.setValue(value);
-                element.setAttributeNode(attribute);
+                if(namespace.equals(XMLConstants.NULL_NS_URI)) {
+                    if(qName.startsWith(XMLConstants.XMLNS_ATTRIBUTE)) {
+                    	namespace = XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
+                    } else if(qName.startsWith("xml:")) {
+                    	namespace = XMLConstants.XML_NS_URI;
+                    }
+                }
+                
+                element.setAttributeNS(namespace, qName, value);
             } else {
                 String localName = attributes.getLocalName(i);
-                Attr attribute = document.createAttribute(localName);
-
-                attribute.setValue(value);
-                element.setAttributeNode(attribute);
+                element.setAttribute(localName, value);
             }
         }
 
