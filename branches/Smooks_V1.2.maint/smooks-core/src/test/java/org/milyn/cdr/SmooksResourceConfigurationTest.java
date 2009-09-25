@@ -225,7 +225,9 @@ public class SmooksResourceConfigurationTest extends TestCase {
         SmooksResourceConfiguration rc13 = new SmooksResourceConfiguration("**/e", "blah");
         SmooksResourceConfiguration rc14 = new SmooksResourceConfiguration("a/**/e", "blah");
         SmooksResourceConfiguration rc15 = new SmooksResourceConfiguration("a/b/**", "blah");
+        SmooksResourceConfiguration rc15_1 = new SmooksResourceConfiguration("b/**", "blah");
         SmooksResourceConfiguration rc16 = new SmooksResourceConfiguration("a/b/**/*", "blah");
+        SmooksResourceConfiguration rc16_1 = new SmooksResourceConfiguration("b/**/*", "blah");
         SmooksResourceConfiguration rc17 = new SmooksResourceConfiguration("h/**", "blah");
         SmooksResourceConfiguration rc18 = new SmooksResourceConfiguration("h/**/e", "blah");
         SmooksResourceConfiguration rc19 = new SmooksResourceConfiguration("a/h/**/e", "blah");
@@ -252,6 +254,8 @@ public class SmooksResourceConfigurationTest extends TestCase {
         assertTrue(rc14.isTargetedAtElementContext(e));
         assertTrue(rc15.isTargetedAtElementContext(e));
         assertTrue(rc16.isTargetedAtElementContext(e));
+        assertTrue(rc15_1.isTargetedAtElementContext(e));
+        assertTrue(rc16_1.isTargetedAtElementContext(e));
 
         assertTrue(!rc17.isTargetedAtElementContext(e));
         assertTrue(!rc18.isTargetedAtElementContext(e));

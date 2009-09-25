@@ -20,8 +20,11 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
+import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
@@ -33,6 +36,7 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
@@ -41,7 +45,9 @@ import org.milyn.javabean.repository.BeanRepository;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -60,6 +66,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
+	public static final String INIT_VAL_EXPRESSION = "initValExpression";
+
     private String id;
 
     @ConfigParam(name="beanId")
@@ -67,6 +75,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
     @ConfigParam(name="beanClass")
     private String beanClassName;
+    
+    @Config
+    private SmooksResourceConfiguration config;
 
     @AppContext
     private ApplicationContext appContext;
@@ -77,6 +88,8 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
     private BeanId beanId;
 
+    private MVELExpressionEvaluator initValsExpression;
+    
     /**
      * Public default constructor.
      */
@@ -125,6 +138,19 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
         if(logger.isDebugEnabled()) {
         	logger.debug("BeanInstanceCreator created for [" + beanIdName + "]. BeanRuntimeInfo: " + beanRuntimeInfo);
+        }
+        
+        List<Parameter> initValExpressions = config.getParameters(INIT_VAL_EXPRESSION);
+        if(initValExpressions != null && !initValExpressions.isEmpty()) {
+        	StringBuilder initValsExpressionString = new StringBuilder();
+        	
+        	for(Parameter initValExpression : initValExpressions) {
+        		initValsExpressionString.append(initValExpression.getValue());
+        		initValsExpressionString.append("\n");
+        	}
+        	
+        	initValsExpression = new MVELExpressionEvaluator();
+        	initValsExpression.setExpression(initValsExpressionString.toString());
         }
     }
 
@@ -201,7 +227,11 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
 
         bean = createBeanInstance();
-
+        
+        if(initValsExpression != null) {
+        	initValsExpression.exec(bean);
+        }
+        
         beanRepo.setBeanInContext(beanId, false);
         beanRepo.addBean(beanId, bean);
         beanRepo.setBeanInContext(beanId, true);
