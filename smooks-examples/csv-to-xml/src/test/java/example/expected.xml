@@ -1,16 +1,16 @@
-<people>
-    <person>
+<csv-set>
+    <csv-record>
         <firstname>Tom</firstname>
         <lastname>Fennelly</lastname>
         <gender>Male</gender>
         <age>4</age>
         <country>Ireland</country>
-    </person>
-    <person>
+    </csv-record>
+    <csv-record>
         <firstname>Mike</firstname>
         <lastname>Fennelly</lastname>
         <gender>Male</gender>
         <age>2</age>
         <country>Ireland</country>
-    </person>
-</people>
+    </csv-record>
+</csv-set>

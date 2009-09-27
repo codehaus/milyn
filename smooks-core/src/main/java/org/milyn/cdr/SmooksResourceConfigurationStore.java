@@ -396,9 +396,7 @@ public class SmooksResourceConfigurationStore {
     public void close() {
         if(initializedObjects != null) {
             logger.debug("Uninitializing all ContentHandler instances allocated through this store.");
-            // We uninitialize in reverse order...
-            for(int i = initializedObjects.size() - 1; i >= 0; i--) {
-                Object object = initializedObjects.get(i);
+            for(Object object : initializedObjects) {
                 try {
                     logger.debug("Uninitializing ContentHandler instance: " + object.getClass().getName());
                     Configurator.uninitialise(object);
