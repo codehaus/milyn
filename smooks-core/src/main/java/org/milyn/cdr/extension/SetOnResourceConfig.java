@@ -18,7 +18,6 @@ package org.milyn.cdr.extension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.xml.DomUtils;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;

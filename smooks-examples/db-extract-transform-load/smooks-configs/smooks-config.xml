@@ -1,15 +1,13 @@
 <?xml version="1.0"?>
-<smooks-resource-list
-	xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-	xmlns:db="http://www.milyn.org/xsd/smooks/db-routing-1.1.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+                      xmlns:core="http://www.milyn.org/xsd/smooks/smooks-core-1.3.xsd"
+	                  xmlns:db="http://www.milyn.org/xsd/smooks/db-routing-1.1.xsd">
 
     <!--
     Filter the message using the SAX Filter (i.e. not DOM, so no
     intermediate DOM, so we can process huge messages...
     -->
-    <params>
-        <param name="stream.filter.type">SAX</param>
-    </params>
+    <core:filterSettings type="SAX" />
 
     <!--
     Define the EDI stream parser for the orders message...
