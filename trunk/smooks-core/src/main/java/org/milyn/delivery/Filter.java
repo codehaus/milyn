@@ -19,7 +19,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
 import org.milyn.Smooks;
-import org.milyn.StreamFilterType;
 import org.milyn.payload.FilterSource;
 import org.milyn.payload.FilterResult;
 import org.milyn.cdr.ParameterAccessor;

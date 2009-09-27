@@ -45,6 +45,9 @@ public class MapToResourceConfigFromAttribute implements DOMVisitBefore {
     @ConfigParam(use=Use.OPTIONAL)
     private String mapTo;
 
+    @ConfigParam(use = ConfigParam.Use.OPTIONAL)
+    private String mapToSpecifier;
+
     @ConfigParam
     private String attribute;
 
@@ -57,6 +60,10 @@ public class MapToResourceConfigFromAttribute implements DOMVisitBefore {
 
         String actualMapTo = mapTo;
 
+        if(actualMapTo == null && mapToSpecifier != null) {
+        	actualMapTo = DomUtils.getAttributeValue(element, mapToSpecifier);
+        }
+        
         //If no mapTo is set then the attribute value becomes the mapTo value
         if(actualMapTo == null) {
         	actualMapTo = attribute;
