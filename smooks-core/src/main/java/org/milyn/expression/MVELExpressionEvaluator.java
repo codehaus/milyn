@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.mvel2.DataConversion;
 import org.mvel2.MVEL;
@@ -37,8 +38,8 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
 
     private Serializable compiled;
 
-    private boolean containsVariablesVariable;
-    
+	private boolean containsVariablesVariable;
+
     private Class<?> toType;
 
     public ExpressionEvaluator setExpression(String expression) throws SmooksConfigurationException {
@@ -53,7 +54,7 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
     public String getExpression() {
         return expression;
     }
-    
+
 	public void setToType(Class<?> toType) {
 		this.toType = toType;
 	}
@@ -85,7 +86,7 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
 	        		return  MVEL.executeExpression(compiled, variableResolverFactory);
 	        	}
         	} else {
-	        	if(toType != null) {	        		
+	        	if(toType != null) {
 	        		return DataConversion.convert(MVEL.executeExpression(compiled, contextObject, new MapVariableResolverFactory(new HashMap<String, Object>())), toType);
 	        	} else {
 	        		return MVEL.executeExpression(compiled, contextObject, new MapVariableResolverFactory(new HashMap<String, Object>()));
@@ -102,10 +103,28 @@ public class MVELExpressionEvaluator implements ExpressionEvaluator {
             throw new ExpressionEvaluationException(msg, e);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Deprecated
 	public Object getValue(final Object contextObject) throws ExpressionEvaluationException {
     	return exec(contextObject);
     }
+
+    /**
+	 * @return the compiled
+	 */
+	public Serializable getCompiled() {
+		return compiled;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this)
+					.append("expression", expression)
+					.append("toType", toType)
+					.toString();
+	}
 }
