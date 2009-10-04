@@ -22,6 +22,8 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,12 +76,12 @@ public class BeanPopulatorTest extends TestCase {
     public void testConstructorConfigValidation() {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration("x", BeanPopulator.class.getName());
 
-        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration. 'beanClass' <param> not specified.");
 
         config.setParameter("beanId", "x");
         config.setParameter("beanClass", " ");
 
-        testConstructorConfigValidation(config, "Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
+        testConstructorConfigValidation(config, "Invalid Smooks bean configuration. 'beanClass' <param> not specified.");
     }
 
     private void testConstructorConfigValidation(SmooksResourceConfiguration config, String expected) {
@@ -284,6 +286,25 @@ public class BeanPopulatorTest extends TestCase {
         assertEquals("222", employee.getLastName());
         assertEquals("333", employee.getEmployeeId());
 
+	}
+
+
+	public void test_factory() throws Exception {
+		String packagePath = ClassUtil.toFilePath(getClass().getPackage());
+        Smooks smooks = new Smooks(packagePath + "/factory-01-config.xml");
+        ExecutionContext executionContext = smooks.createExecutionContext();
+        JavaResult result = new JavaResult(true);
+
+        smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("factory-01.xml")), result);
+
+        assertNotNull(result.getBean("arrayList"));
+        assertNotNull(result.getBean("arrayList") instanceof ArrayList);
+
+        assertNotNull(result.getBean("linkedList"));
+        assertNotNull(result.getBean("linkedList") instanceof LinkedList);
+
+        assertNotNull(result.getBean("hashSet"));
+        assertNotNull(result.getBean("hashSet") instanceof HashSet);
 	}
 
 }

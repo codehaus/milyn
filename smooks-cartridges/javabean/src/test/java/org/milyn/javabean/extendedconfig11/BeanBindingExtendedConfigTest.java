@@ -23,11 +23,14 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.B;
 import org.milyn.javabean.Header;
 import org.milyn.javabean.OrderItem;
+import org.milyn.javabean.extendedconfig.ExtendedOrder;
 import org.milyn.payload.JavaResult;
+import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +47,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         ExecutionContext execContext = smooks.createExecutionContext();
 
         //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
-        smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+        smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 
         ExtendedOrder order = (ExtendedOrder) result.getBean("order");
         assertOrderOK(order, true);
@@ -52,6 +55,13 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         Map headerHash = (Map) result.getBean("headerBeanHash");
         assertEquals("{privatePerson=, customer=Joe, date=Wed Nov 15 13:45:28 EST 2006}", headerHash.toString());
     }
+
+	/**
+	 * @return
+	 */
+	private InputStream getInput(String file) {
+		return ClassUtil.getResourceAsStream("/org/milyn/javabean/extendedconfig/" + file, this.getClass());
+	}
 
     private void assertOrderOK(ExtendedOrder order, boolean checkArrays) {
 
@@ -95,7 +105,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
             new Smooks(getClass().getResourceAsStream("test_value_02.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
-            assertEquals("'wiring' binding specifies a 'property' attribute.  This is not valid for a List target.", e.getCause().getMessage());
+            assertEquals("'wiring' binding specifies a 'property' attribute.  This is not valid for a Collection target.", e.getCause().getMessage());
         }
     }
 
@@ -113,7 +123,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
             new Smooks(getClass().getResourceAsStream("test_value_04.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
-            assertEquals("'wiring' binding for bean class 'org.milyn.javabean.extendedconfig11.ExtendedOrder' must specify a 'property' or 'setterMethod' attribute.", e.getCause().getMessage());
+            assertEquals("'wiring' binding for bean class 'org.milyn.javabean.extendedconfig.ExtendedOrder' must specify a 'property' or 'setterMethod' attribute.", e.getCause().getMessage());
         }
     }
 
@@ -141,7 +151,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
          ExecutionContext execContext = smooks.createExecutionContext();
 
          //execContext.setEventListener(new HtmlReportGenerator("/target/report.html"));
-         smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+         smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 
          ExtendedOrder order = (ExtendedOrder) result.getBean("order");
 
@@ -172,7 +182,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext();
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result);
+		smooks.filterSource(execContext, new StreamSource(getInput("flat-01.xml")), result);
 
 		assertFlatResult(result);
 	}
@@ -185,7 +195,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext();
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("flat-01.xml")), result);
+		smooks.filterSource(execContext, new StreamSource(getInput("flat-01.xml")), result);
 
 		assertFlatResult(result);
 	}
@@ -210,7 +220,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext("A");
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+		smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 
 		ExtendedOrder order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(2d, order.getTotal());
@@ -218,7 +228,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		execContext = smooks.createExecutionContext("B");
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+		smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 
 		order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(4d, order.getTotal());
@@ -233,7 +243,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		ExecutionContext execContext = smooks.createExecutionContext();
 
 		//execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-		smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+		smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 
 		ExtendedOrder order =  (ExtendedOrder) result.getBean("order");
 		assertEquals(2d, order.getTotal());
@@ -247,9 +257,10 @@ public class BeanBindingExtendedConfigTest extends TestCase {
         ExecutionContext execContext = smooks.createExecutionContext();
 
         //execContext.setEventListener(new HtmlReportGenerator("target/report.html"));
-        smooks.filterSource(execContext, new StreamSource(getClass().getResourceAsStream("order-01.xml")), result);
+        smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 
         Map order =  (Map) result.getBean("orderItem");
         assertEquals(154.2d, order.get("total"));
     }
+
 }

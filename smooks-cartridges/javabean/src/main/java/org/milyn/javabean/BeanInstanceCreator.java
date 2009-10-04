@@ -15,6 +15,7 @@
 */
 package org.milyn.javabean;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -26,6 +27,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
@@ -38,6 +40,9 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.factory.MVELFactoryDefinitionParser;
+import org.milyn.javabean.factory.Factory;
+import org.milyn.javabean.factory.FactoryDefinitionParser.FactoryDefinitionParserFactory;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
@@ -73,9 +78,12 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     @ConfigParam(name="beanId")
     private String beanIdName;
 
-    @ConfigParam(name="beanClass")
+    @ConfigParam(name="beanClass", use=Use.OPTIONAL)
     private String beanClassName;
-    
+
+    @ConfigParam(name="beanFactory", use=Use.OPTIONAL)
+    private String beanFactoryDefinition;
+
     @Config
     private SmooksResourceConfiguration config;
 
@@ -89,7 +97,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     private BeanId beanId;
 
     private MVELExpressionEvaluator initValsExpression;
-    
+
+    private Factory<?> factory;
+
     /**
      * Public default constructor.
      */
@@ -101,16 +111,22 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
      * @param beanId The beanId under which the bean instance is registered in the bean context.
      * @param beanClass The bean runtime class.
      */
-    public BeanInstanceCreator(String beanId, Class beanClass) {
+    public BeanInstanceCreator(String beanId, Class<?> beanClass) {
+        this(beanId, beanClass, null);
+    }
+
+    /**
+     * Public default constructor.
+     * @param beanId The beanId under which the bean instance is registered in the bean context.
+     * @param beanClass The bean runtime class.
+     */
+    public <T> BeanInstanceCreator(String beanId, Class<T> beanClass, Factory<? extends T> factory) {
         AssertArgument.isNotNull(beanId, "beanId");
         AssertArgument.isNotNull(beanClass, "beanClass");
-        this.beanIdName = beanId;
 
-        if(!beanClass.isArray()){
-            this.beanClassName = beanClass.getName();
-        } else {
-            this.beanClassName = beanClass.getComponentType().getName() + "[]";
-        }
+        this.beanIdName = beanId;
+        this.beanClassName = toClassName(beanClass);
+        this.factory = factory;
     }
 
     /**
@@ -134,25 +150,37 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     	BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
         beanId = beanIdRegister.register(beanIdName);
 
+        if(StringUtils.isNotBlank(beanFactoryDefinition)) {
+    		factory = FactoryDefinitionParserFactory.getInstance(appContext).parse(beanFactoryDefinition);
+    	}
+
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, beanClassName, appContext);
+
+    	if(factory == null) {
+    		checkForDefaultConstructor();
+    	} else if (beanRuntimeInfo.getClassification() == Classification.ARRAY_COLLECTION) {
+    		throw new SmooksConfigurationException("Using a factory with an array is not supported");
+    	}
 
         if(logger.isDebugEnabled()) {
         	logger.debug("BeanInstanceCreator created for [" + beanIdName + "]. BeanRuntimeInfo: " + beanRuntimeInfo);
         }
-        
+
         List<Parameter> initValExpressions = config.getParameters(INIT_VAL_EXPRESSION);
         if(initValExpressions != null && !initValExpressions.isEmpty()) {
         	StringBuilder initValsExpressionString = new StringBuilder();
-        	
+
         	for(Parameter initValExpression : initValExpressions) {
         		initValsExpressionString.append(initValExpression.getValue());
         		initValsExpressionString.append("\n");
         	}
-        	
+
         	initValsExpression = new MVELExpressionEvaluator();
         	initValsExpression.setExpression(initValsExpressionString.toString());
         }
     }
+
+
 
     /**
      * Get the bean runtime information.
@@ -167,7 +195,6 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     	idBuilder.append(BeanInstanceCreator.class.getName());
     	idBuilder.append("#");
     	idBuilder.append(beanIdName);
-
 
     	id = idBuilder.toString();
     }
@@ -226,12 +253,12 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         Object bean;
         BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
 
-        bean = createBeanInstance();
-        
+        bean = createBeanInstance(executionContext);
+
         if(initValsExpression != null) {
         	initValsExpression.exec(bean);
         }
-        
+
         beanRepo.setBeanInContext(beanId, false);
         beanRepo.addBean(beanId, bean);
         beanRepo.setBeanInContext(beanId, true);
@@ -246,15 +273,23 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
      *
      * @return A new bean instance.
      */
-    private Object createBeanInstance() {
+    private Object createBeanInstance(ExecutionContext executionContext) {
         Object bean;
 
-        try {
-            bean = beanRuntimeInfo.getPopulateType().newInstance();
-        } catch (InstantiationException e) {
-            throw new SmooksConfigurationException("Unable to create bean instance [" + beanIdName + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
-        } catch (IllegalAccessException e) {
-            throw new SmooksConfigurationException("Unable to create bean instance [" + beanIdName + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
+        if(factory == null) {
+	        try {
+	            bean = beanRuntimeInfo.getPopulateType().newInstance();
+	        } catch (InstantiationException e) {
+	            throw new SmooksConfigurationException("Unable to create bean instance [" + beanIdName + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
+	        } catch (IllegalAccessException e) {
+	            throw new SmooksConfigurationException("Unable to create bean instance [" + beanIdName + ":" + beanRuntimeInfo.getPopulateType().getName() + "].", e);
+	        }
+        } else {
+        	try {
+				bean = factory.create(executionContext);
+			} catch (RuntimeException e) {
+				throw new SmooksConfigurationException("The factory was unable to create the bean instance [" + beanIdName + "] using the factory '" + factory + "'.", e);
+			}
         }
 
         return bean;
@@ -272,4 +307,24 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     public String toString() {
     	return getId();
     }
+
+    private static String toClassName(Class<?> beanClass) {
+    	if(!beanClass.isArray()){
+            return beanClass.getName();
+        } else {
+        	return beanClass.getComponentType().getName() + "[]";
+        }
+    }
+
+
+	/**
+	 *  Checks if the class has a default constructor
+	 */
+	private void checkForDefaultConstructor() {
+		try {
+			beanRuntimeInfo.getPopulateType().getConstructor();
+		} catch (NoSuchMethodException e) {
+		    throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanRuntimeInfo.getPopulateType().getName() + " doesn't have a public default constructor.");
+		}
+	}
 }

@@ -155,11 +155,18 @@ public class BeanPopulator implements ConfigurationExpander {
 
     public static String GLOBAL_DEFAULT_EXTEND_LIFECYCLE = "binding.extend.lifecycle";
 
+    public static String GLOBAL_DEFAULT_FACTORY_DEFINITION_PARSER_CLASS = "factory.definition.parser.class";
+
+    public static String DEFAULT_FACTORY_DEFINITION_PARSER_CLASS = "org.milyn.javabean.factory.MVELFactoryDefinitionParser";
+
     @ConfigParam(name="beanId", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanIdName;
 
     @ConfigParam(name="beanClass", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanClassName;
+
+    @ConfigParam(name="beanFactory", defaultVal = AnnotationConstants.NULL_STRING)
+    private String beanFactory;
 
     @ConfigParam(defaultVal = "true")
     private boolean create;
@@ -183,27 +190,30 @@ public class BeanPopulator implements ConfigurationExpander {
      */
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-        // One of "beanId" or "beanClass" must be specified...
-        if (beanClassName == null || StringUtils.isBlank(beanClassName)) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'beanClass' <param> not specified.");
+        // One of "beanId" and "beanClass" or "beanFactory" must be specified...
+        if ( StringUtils.isBlank(beanClassName) )  {
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration. 'beanClass' <param> not specified.");
         }
         beanClassName = beanClassName.trim();
+        beanFactory = StringUtils.trim(beanFactory);
 
         // May need to default the "beanId"...
         if (beanIdName == null || beanIdName.trim().length() == 0) {
         	beanIdName = toBeanId(beanClassName);
-            logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'.  Defaulting beanId to '" + beanIdName + "'.");
+            logger.debug("No 'beanId' specified for beanClass '" + beanClassName + "'. Defaulting beanId to '" + beanIdName + "'.");
         }
 
         if (config.getStringParameter("attributeName") != null) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'attributeName' param config no longer supported.  Please use the <bindings> config style.");
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration. 'attributeName' param config no longer supported.  Please use the <bindings> config style.");
         }
 
         if (config.getStringParameter("setterName") != null) {
-            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  'setterName' param config no longer supported.  Please use the <bindings> config style.");
+            throw new SmooksConfigurationException("Invalid Smooks bean configuration. 'setterName' param config no longer supported.  Please use the <bindings> config style.");
         }
 
-        logger.debug("Bean Populator created for [" + beanIdName + ":" + beanClassName + "].");
+        if(logger.isDebugEnabled()) {
+        	logger.debug("Bean Populator created for '" + beanIdName + "'");
+        }
     }
 
     public List<SmooksResourceConfiguration> expandConfigurations() throws SmooksConfigurationException {
@@ -223,6 +233,11 @@ public class BeanPopulator implements ConfigurationExpander {
         resource.setParameter("beanId", beanIdName);
         resource.removeParameter("beanClass");
         resource.setParameter("beanClass", beanClassName);
+
+        if(beanFactory != null) {
+        	resource.removeParameter("beanFactory");
+        	resource.setParameter("beanFactory", beanFactory);
+        }
 
         // Remove the bindings param...
         resource.removeParameter("bindings");

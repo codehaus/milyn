@@ -1,0 +1,5 @@
+<factories>
+	<arrayList />
+	<linkedList />
+	<hashSet />
+</factories>

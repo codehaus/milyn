@@ -22,6 +22,7 @@ import org.milyn.delivery.VisitorAppender;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.ext.SelectorPropertyResolver;
+import org.milyn.javabean.factory.Factory;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -106,7 +107,7 @@ import java.util.ArrayList;
  * And the execution code:
  * <pre>
  * JavaResult result = new JavaResult();
- * 
+ *
  * smooks.filterSource(new StreamSource(orderMessageStream), result);
  * Order order = (Order) result.getBean("order");
  * </pre>
@@ -117,7 +118,7 @@ public class Bean implements VisitorAppender {
 
     private BeanInstanceCreator beanInstanceCreator;
     private String beanId;
-    private Class beanClass;
+    private Class<?> beanClass;
     private String createOnElement;
     private String targetNamespace;
     private List<Binding> bindings = new ArrayList<Binding>();
@@ -132,8 +133,22 @@ public class Bean implements VisitorAppender {
      * @param beanClass        The bean runtime class.
      * @param beanId           The bean ID.
      */
-    public Bean(Class beanClass, String beanId) {
-        this(beanClass, beanId, "$document", null);
+    @SuppressWarnings("unchecked")
+	public Bean(Class<?> beanClass, String beanId) {
+		this(beanClass, beanId, (Factory)null);
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     * <p/>
+     * The bean instance is created on the root/document fragment.
+     *
+     * @param beanClass        The bean runtime class.
+     * @param beanId           The bean ID.
+     * @param factory		   The factory that will create the runtime object
+     */
+    public <T> Bean(Class<T> beanClass, String beanId, Factory<? extends T> factory) {
+    	this(beanClass, beanId, "$document", (String)null, factory);
     }
 
     /**
@@ -143,8 +158,20 @@ public class Bean implements VisitorAppender {
      * @param beanId           The bean ID.
      * @param createOnElement  The element selector used to create the bean instance.
      */
-    public Bean(Class beanClass, String beanId, String createOnElement) {
-        this(beanClass, beanId, createOnElement, null);
+    public Bean(Class<?> beanClass, String beanId, String createOnElement) {
+        this(beanClass, beanId, createOnElement, (String)null);
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     *
+     * @param beanClass        The bean runtime class.
+     * @param beanId           The bean ID.
+     * @param createOnElement  The element selector used to create the bean instance.
+     * @param factory		   The factory that will create the runtime object
+     */
+    public <T> Bean(Class<T> beanClass, String beanId, String createOnElement, Factory<? extends T> factory) {
+        this(beanClass, beanId, createOnElement, (String)null, factory);
     }
 
     /**
@@ -155,7 +182,20 @@ public class Bean implements VisitorAppender {
      * @param createOnElement   The element selector used to create the bean instance.
      * @param createOnElementNS The namespace for the element selector used to create the bean instance.
      */
-    public Bean(Class beanClass, String beanId, String createOnElement, String createOnElementNS) {
+    public Bean(Class<?> beanClass, String beanId, String createOnElement, String createOnElementNS) {
+        this(beanClass, beanId, createOnElement, createOnElementNS, null);
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     *
+     * @param beanClass         The bean runtime class.
+     * @param beanId            The bean ID.
+     * @param createOnElement   The element selector used to create the bean instance.
+     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
+     * @param factory		   	The factory that will create the runtime object
+     */
+    public <T> Bean(Class<T> beanClass, String beanId, String createOnElement, String createOnElementNS, Factory<? extends T> factory) {
         AssertArgument.isNotNull(beanClass, "beanClass");
         AssertArgument.isNotNull(beanId, "beanId");
         AssertArgument.isNotNull(createOnElement, "createOnElement");
@@ -165,7 +205,7 @@ public class Bean implements VisitorAppender {
         this.createOnElement = createOnElement;
         this.targetNamespace = createOnElementNS;
 
-        beanInstanceCreator = new BeanInstanceCreator(beanId, beanClass);
+        beanInstanceCreator = new BeanInstanceCreator(beanId, beanClass, factory);
     }
 
     /**
@@ -185,8 +225,22 @@ public class Bean implements VisitorAppender {
      * @param createOnElement   The element selector used to create the bean instance.
      * @param createOnElementNS The namespace for the element selector used to create the bean instance.
      */
-    public static Bean newBean(Class beanClass, String beanId, String createOnElement, String createOnElementNS) {
+    public static Bean newBean(Class<?> beanClass, String beanId, String createOnElement, String createOnElementNS) {
         return new Bean(beanClass, beanId, createOnElement, createOnElementNS);
+    }
+
+
+    /**
+     * Create a Bean binding configuration.
+     *
+     * @param beanClass         The bean runtime class.
+     * @param beanId            The bean ID.
+     * @param createOnElement   The element selector used to create the bean instance.
+     * @param createOnElementNS The namespace for the element selector used to create the bean instance.
+     * @param factory		    The factory that will create the runtime object
+     */
+    public static <T> Bean  newBean(Class<T> beanClass, String beanId, String createOnElement, String createOnElementNS, Factory<T> factory) {
+        return new Bean(beanClass, beanId, createOnElement, createOnElementNS, factory);
     }
 
     /**
@@ -199,9 +253,25 @@ public class Bean implements VisitorAppender {
      * @param createOnElement The element selector used to create the bean instance.
      * @return <code>this</code> Bean configuration instance.
      */
-    public Bean newBean(Class beanClass, String createOnElement) {
+    public Bean newBean(Class<?> beanClass, String createOnElement) {
         String randomBeanId = UUID.randomUUID().toString();
         return new Bean(beanClass, randomBeanId, createOnElement);
+    }
+
+    /**
+     * Create a Bean binding configuration.
+     * <p/>
+     * This method binds the configuration to the same {@link Smooks} instance
+     * supplied in the constructor.  The beanId is generated.
+     *
+     * @param beanClass       The bean runtime class.
+     * @param createOnElement The element selector used to create the bean instance.
+     * @return <code>this</code> Bean configuration instance.
+     * @param factory		    The factory that will create the runtime object
+     */
+    public <T> Bean newBean(Class<T> beanClass, String createOnElement, Factory<T> factory) {
+        String randomBeanId = UUID.randomUUID().toString();
+        return new Bean(beanClass, randomBeanId, createOnElement, factory);
     }
 
     /**
@@ -215,9 +285,26 @@ public class Bean implements VisitorAppender {
      * @param createOnElement The element selector used to create the bean instance.
      * @return <code>this</code> Bean configuration instance.
      */
-    public Bean newBean(Class beanClass, String beanId, String createOnElement) {
+    public Bean newBean(Class<?> beanClass, String beanId, String createOnElement) {
         return new Bean(beanClass, beanId, createOnElement);
     }
+
+    /**
+     * Create a Bean binding configuration.
+     * <p/>
+     * This method binds the configuration to the same {@link Smooks} instance
+     * supplied in the constructor.
+     *
+     * @param beanClass       The bean runtime class.
+     * @param beanId          The beanId.
+     * @param createOnElement The element selector used to create the bean instance.
+     * @param factory		  The factory that will create the runtime object
+     * @return <code>this</code> Bean configuration instance.
+     */
+    public <T> Bean newBean(Class<T> beanClass, String beanId, String createOnElement, Factory<T> factory) {
+        return new Bean(beanClass, beanId, createOnElement, factory);
+    }
+
 
     /**
      * Create a binding configuration to bind the data, selected from the message by the
@@ -264,7 +351,7 @@ public class Bean implements VisitorAppender {
         Method bindingMethod = getBindingMethod(bindingMember, beanClass);
         if (bindingMethod != null) {
             if (dataDecoder == null) {
-                Class dataType = bindingMethod.getParameterTypes()[0];                
+                Class<?> dataType = bindingMethod.getParameterTypes()[0];
                 dataDecoder = DataDecoder.Factory.create(dataType);
             }
 
@@ -433,7 +520,7 @@ public class Bean implements VisitorAppender {
      * @param bindingMember Binding member name.
      * @return The binding member, or null if not found.
      */
-    public static Method getBindingMethod(String bindingMember, Class beanClass) {
+    public static Method getBindingMethod(String bindingMember, Class<?> beanClass) {
         Method[] methods = beanClass.getMethods();
 
         // Check is the bindingMember an actual fully qualified method name...
