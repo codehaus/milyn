@@ -29,12 +29,15 @@ import org.milyn.javabean.Order;
 import org.milyn.javabean.OrderItem;
 import org.milyn.javabean.decoders.DoubleDecoder;
 import org.milyn.javabean.decoders.IntegerDecoder;
+import org.milyn.javabean.factory.Factory;
+import org.milyn.javabean.factory.MVELFactory;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,6 +59,40 @@ public class ProgrammaticConfigTest extends TestCase {
                 .bindTo("privatePerson", "header/privatePerson")
             ).bindTo("orderItems",
                 orderBean.newBean(ArrayList.class, "/order")
+                    .bindTo(orderBean.newBean(OrderItem.class, "order-item")
+                        .bindTo("productId", "order-item/product")
+                        .bindTo("quantity", "order-item/quantity")
+                        .bindTo("price", "order-item/price"))
+            ).bindTo("orderItems",
+                orderBean.newBean(OrderItem[].class, "/order")
+                    .bindTo(orderBean.newBean(OrderItem.class, "order-item")
+                        .bindTo("productId", "order-item/product")
+                        .bindTo("quantity", "order-item/quantity")
+                        .bindTo("price", "order-item/price")));
+
+        smooks.addVisitor(orderBean);
+
+        execute_01_test(smooks);
+    }
+
+    public void test_01_factory() {
+        Smooks smooks = new Smooks();
+        Bean orderBean = new Bean(Order.class, "order", "/order", new Factory<Order>() {
+
+			public Order create(ExecutionContext executionContext) {
+				return new Order();
+			}
+
+        });
+
+        orderBean.bindTo("header",
+            orderBean.newBean(Header.class, "/order")
+                .bindTo("order", orderBean)
+                .bindTo("customerNumber", "header/customer/@number")
+                .bindTo("customerName", "header/customer")
+                .bindTo("privatePerson", "header/privatePerson")
+            ).bindTo("orderItems",
+                orderBean.newBean(Collection.class, "/order", new MVELFactory<Collection>("new java.util.ArrayList()"))
                     .bindTo(orderBean.newBean(OrderItem.class, "order-item")
                         .bindTo("productId", "order-item/product")
                         .bindTo("quantity", "order-item/quantity")

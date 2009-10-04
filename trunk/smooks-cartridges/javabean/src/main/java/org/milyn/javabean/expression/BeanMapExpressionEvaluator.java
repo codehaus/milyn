@@ -63,7 +63,7 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
     public Object getValue(ExecutionContext context) throws ExpressionEvaluationException {
     	Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(context).getBeanMap();
 
-        Object value = getValue(beans);
+        Object value = exec(beans);
 
         if(logger.isDebugEnabled()) {
             logger.debug("Expression value evaluation:===============================================================");

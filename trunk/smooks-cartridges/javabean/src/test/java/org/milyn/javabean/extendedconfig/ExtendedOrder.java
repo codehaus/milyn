@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean.extendedconfig11;
+package org.milyn.javabean.extendedconfig;
 
 import org.milyn.javabean.Order;
 
