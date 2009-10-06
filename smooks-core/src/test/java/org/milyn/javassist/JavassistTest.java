@@ -17,8 +17,12 @@ package org.milyn.javassist;
 
 import junit.framework.TestCase;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+
+import org.mvel2.MVEL;
 
 import javassist.*;
 
@@ -33,7 +37,7 @@ public class JavassistTest extends TestCase {
         Method setPropMethod = TestPOJO.class.getMethod("setProp", String.class);
         TestPOJO objInst = new TestPOJO();
 
-        for(int i = 0; i < 1000; i++) {
+        for(int i = 0; i < 10000; i++) {
             setPropMethod.invoke(objInst, "hi");
         }
         assertEquals("hi", objInst.getProp());
@@ -44,14 +48,14 @@ public class JavassistTest extends TestCase {
         for(int i = 0; i < INVOKE_COUNT; i++) {
             setPropMethod.invoke(objInst, "hi");
         }
-        System.out.println("Time: " + (System.currentTimeMillis() - start));
+        System.out.println("Reflective Time: " + (System.currentTimeMillis() - start));
     }
 
     public void test_javassist() throws NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException, InterruptedException {
         JavassistSetter setter = buildSetterClass();
         TestPOJO objInst = new TestPOJO();
 
-        for(int i = 0; i < 1000; i++) {
+        for(int i = 0; i < 10000; i++) {
             setter.set(objInst, "hi");
         }
         assertEquals("hi", objInst.getProp());
@@ -62,7 +66,28 @@ public class JavassistTest extends TestCase {
         for(int i = 0; i < INVOKE_COUNT; i++) {
             setter.set(objInst, "hi");
         }
-        System.out.println("Time: " + (System.currentTimeMillis() - start));
+        System.out.println("Javasist Time: " + (System.currentTimeMillis() - start));
+    }
+
+    public void test_mvel() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InterruptedException {
+
+    	Serializable compiled = MVEL.compileExpression("testPOJO.setProp('hi')");
+        TestPOJO objInst = new TestPOJO();
+        HashMap<String, Object> vars = new HashMap<String, Object>();
+        vars.put("testPOJO", objInst);
+
+        for(int i = 0; i < 10000; i++) {
+            MVEL.executeExpression(compiled, vars);
+        }
+        assertEquals("hi", objInst.getProp());
+
+        Thread.sleep(1000);
+
+        long start = System.currentTimeMillis();
+        for(int i = 0; i < INVOKE_COUNT; i++) {
+        	MVEL.executeExpression(compiled, vars);
+        }
+        System.out.println("MVEL Time: " + (System.currentTimeMillis() - start));
     }
 
     private JavassistSetter buildSetterClass() throws CannotCompileException, NotFoundException, InstantiationException, IllegalAccessException {
