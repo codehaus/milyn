@@ -13,39 +13,40 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+package org.milyn.javabean.factory;
 
 /**
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class TestFactory {
+public class InvalidFactoryDefinitionException extends FactoryException {
 
-	public static TestFactory newInstance() {
-		return new TestFactory();
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @param message
+	 */
+	public InvalidFactoryDefinitionException(String message) {
+		super(message);
 	}
 
-
-	public static TestFactory getNull() {
-		return null;
+	/**
+	 * @param cause
+	 */
+	public InvalidFactoryDefinitionException(Throwable cause) {
+		super(cause);
 	}
 
-	public List<?> newLinkedList() {
-		return new LinkedList<Object>();
-	}
-
-	public static ArrayList<?> newArrayList() {
-		return new ArrayList<Object>();
-	}
-
-	public static HashSet<?> newHashSet() {
-		return new HashSet<Object>();
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public InvalidFactoryDefinitionException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

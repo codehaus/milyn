@@ -157,7 +157,7 @@ public class BeanPopulator implements ConfigurationExpander {
 
     public static String GLOBAL_DEFAULT_FACTORY_DEFINITION_PARSER_CLASS = "factory.definition.parser.class";
 
-    public static String DEFAULT_FACTORY_DEFINITION_PARSER_CLASS = "org.milyn.javabean.factory.MVELFactoryDefinitionParser";
+    public static String DEFAULT_FACTORY_DEFINITION_PARSER_CLASS = "org.milyn.javabean.factory.BasicFactoryDefinitionParser";
 
     @ConfigParam(name="beanId", defaultVal = AnnotationConstants.NULL_STRING)
     private String beanIdName;

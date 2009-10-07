@@ -15,9 +15,6 @@
 */
 package org.milyn.javabean.factory;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 /**
  * Creates MVELFactory objects from a factory definition.
  *
@@ -26,24 +23,11 @@ import java.util.concurrent.ConcurrentMap;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class MVELFactoryDefinitionParser implements FactoryDefinitionParser {
+public class MVELFactoryDefinitionParser extends AbstractCachingFactoryDefinitionParser {
 
-	public ConcurrentMap<String, MVELFactory<?>> cache = new ConcurrentHashMap<String, MVELFactory<?>>();
-
-	/* (non-Javadoc)
-	 * @see org.milyn.javabean.factory.FactoryDefinitionParser#parse(java.lang.String)
-	 */
-	public Factory<?> parse(String factoryDefinition) {
-
-		MVELFactory<?> factory = cache.get(factoryDefinition);
-		if(factory == null) {
-
-			factory = new MVELFactory<Object>(factoryDefinition);
-
-			cache.put(factoryDefinition, factory);
-		}
-
-		return factory;
+	@Override
+	protected Factory<?> createFactory(String factoryDefinition) {
+		return new MVELFactory<Object>(factoryDefinition);
 	}
 
 }

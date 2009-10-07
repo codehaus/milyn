@@ -38,6 +38,15 @@ import org.milyn.util.ClassUtil;
 @SuppressWarnings("deprecation")
 public interface FactoryDefinitionParser {
 
+	/**
+	 * Parses the factory definition string and creates a factory object
+	 * that can create the object according to the definition.
+	 *
+	 * @param factoryDefinition The factory definition
+	 * @return The Factory object that creates the target object according to the definition.
+	 * @throws InvalidFactoryDefinitionException If the factoryDefinition is invalid
+	 * @throws FactoryException If something went wrong while creating the factory
+	 */
 	Factory<?> parse(String factoryDefinition);
 
 
