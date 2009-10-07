@@ -13,39 +13,42 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+package org.milyn.javabean.factory;
 
 /**
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class TestFactory {
+public class FactoryException extends RuntimeException {
 
-	public static TestFactory newInstance() {
-		return new TestFactory();
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * @param message
+	 */
+	public FactoryException(String message) {
+		super(message);
+		// TODO Auto-generated constructor stub
 	}
 
-
-	public static TestFactory getNull() {
-		return null;
+	/**
+	 * @param cause
+	 */
+	public FactoryException(Throwable cause) {
+		super(cause);
+		// TODO Auto-generated constructor stub
 	}
 
-	public List<?> newLinkedList() {
-		return new LinkedList<Object>();
-	}
-
-	public static ArrayList<?> newArrayList() {
-		return new ArrayList<Object>();
-	}
-
-	public static HashSet<?> newHashSet() {
-		return new HashSet<Object>();
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public FactoryException(String message, Throwable cause) {
+		super(message, cause);
+		// TODO Auto-generated constructor stub
 	}
 
 }

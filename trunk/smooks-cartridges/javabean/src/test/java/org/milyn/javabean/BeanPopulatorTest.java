@@ -298,13 +298,10 @@ public class BeanPopulatorTest extends TestCase {
         smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("factory-01.xml")), result);
 
         assertNotNull(result.getBean("arrayList"));
-        assertNotNull(result.getBean("arrayList") instanceof ArrayList);
+        assertNotNull(result.getBean("arrayList") instanceof ArrayList<?>);
 
         assertNotNull(result.getBean("linkedList"));
-        assertNotNull(result.getBean("linkedList") instanceof LinkedList);
-
-        assertNotNull(result.getBean("hashSet"));
-        assertNotNull(result.getBean("hashSet") instanceof HashSet);
+        assertNotNull(result.getBean("linkedList") instanceof LinkedList<?>);
 	}
 
 }
