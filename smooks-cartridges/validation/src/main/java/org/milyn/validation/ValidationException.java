@@ -16,7 +16,6 @@
 package org.milyn.validation;
 
 import org.milyn.SmooksException;
-import org.milyn.rules.RuleEvalResult;
 
 /**
  * Exception that carries information about a validation failure.
@@ -31,6 +30,11 @@ public class ValidationException extends SmooksException
     private static final long serialVersionUID = 1L;
 
     /**
+     *
+     */
+    private OnFailResult result;
+
+    /**
      * Public constructor.
      *
      * @param message The exception message.
@@ -38,5 +42,16 @@ public class ValidationException extends SmooksException
     public ValidationException(final String message)
     {
         super(message);
+    }
+
+    public ValidationException(final String message, final OnFailResult result)
+    {
+        super(message);
+        this.result = result;
+    }
+
+    public OnFailResult getOnFailResult()
+    {
+        return result;
     }
 }

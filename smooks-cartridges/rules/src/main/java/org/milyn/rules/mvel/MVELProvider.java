@@ -17,7 +17,6 @@ package org.milyn.rules.mvel;
 
 import org.milyn.rules.RuleProvider;
 import org.milyn.rules.RuleEvalResult;
-import org.milyn.rules.BasicRuleEvalResult;
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
 import org.milyn.javabean.repository.BeanRepository;
@@ -78,9 +77,9 @@ public class MVELProvider implements RuleProvider {
         BeanRepository beanContext = BeanRepository.getInstance(context);
 
         try {
-            return new BasicRuleEvalResult(evaluator.eval(beanContext.getBeanMap()), ruleName, name);
+            return new MVELRuleEvalResult(evaluator.eval(beanContext.getBeanMap()), ruleName, name, selectedData.toString());
         } catch(Throwable t) {
-            return new BasicRuleEvalResult(t, ruleName, name);
+            return new MVELRuleEvalResult(t, ruleName, name, selectedData.toString());
         }
     }
 

@@ -160,7 +160,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
         this.onFail = onFail;
     }
 
-    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+    public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
         if(targetAttribute == null) {
             // The selected text is not an attribute, which means it's the element text,
             // which means we need to turn on text accumulation for SAX...
@@ -204,12 +204,12 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
 
     private void assertValidationException(OnFailResultImpl result, ExecutionContext executionContext) {
         if (onFail == OnFail.FATAL) {
-            throw new ValidationException("A FATAL validation failure has occured: " + result);
+            throw new ValidationException("A FATAL validation failure has occured " + result, result);
         }
 
         ValidationResult validationResult = getValidationResult(executionContext);
         if(validationResult != null && validationResult.getNumFailures() > maxFails) {
-            throw new ValidationException("The maximum number of allowed validation failures (" + maxFails + ") has been exceeded.");
+            throw new ValidationException("The maximum number of allowed validation failures (" + maxFails + ") has been exceeded.", result);
         }
     }
 
@@ -255,15 +255,11 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
 
         if (!result.matched())
         {
-            OnFailResultImpl onFailResult = null;
-
             ValidationResult validationResult = getValidationResult(executionContext);
-            if(validationResult != null) {
-                onFailResult = new OnFailResultImpl();
-                onFailResult.setRuleResult(result);
-                onFailResult.setBeanContext(BeanRepository.getInstance(executionContext).getBeanMap());
-                validationResult.addResult(onFailResult, onFail);
-            }
+            OnFailResultImpl onFailResult = new OnFailResultImpl();
+            onFailResult.setRuleResult(result);
+            onFailResult.setBeanContext(BeanRepository.getInstance(executionContext).getBeanMap());
+            validationResult.addResult(onFailResult, onFail);
 
             return onFailResult;
         }
@@ -273,6 +269,12 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
 
     private ValidationResult getValidationResult(ExecutionContext executionContext) {
         ValidationResult validationResult = (ValidationResult) FilterResult.getResult(executionContext, ValidationResult.class);
+        // Create a new ValidationResult if one was not available in the execution context.
+        // This would be the case for example if one as not specified to Smooks filter method.
+        if (validationResult == null) {
+            validationResult = new ValidationResult();
+        }
+
         return validationResult;
     }
 
@@ -396,6 +398,40 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
         public String getMessage(Locale locale) {
             if(ruleResult.getEvalException() != null) {
                 return ruleResult.getEvalException().getMessage();
+            }
+
+            String message = getMessage(locale, ruleName);
+            // If no ResouceBundle was configured then use this instances toString
+            if (message == null) {
+                return toString();
+            }
+
+            if (message.startsWith("ftl:")) {
+                // TODO: Is there a way to optimize this e.g. attach the compiled template
+                // to the bundle as an object and then get back using ResourceBundle.getObject??
+                // I timed it and it was able to create and apply 10000 templates in about 2500 ms
+                // on an "average" spec machine, so it's not toooooo bad, and it's only done on demand :)
+                FreeMarkerTemplate template = new FreeMarkerTemplate(message.substring("ftl:".length()));
+                beanContext.put("ruleResult", ruleResult);
+                beanContext.put("path", failFragmentPath);
+                message = template.apply(beanContext);
+            }
+
+            return message;
+        }
+
+        private String getMessage(final Locale locale, final String messageName) {
+            final ResourceBundle bundle = getMessageBundle(locale);
+            if (messageName == null || bundle == null)
+                return null;
+
+           return bundle.getString(messageName);
+         }
+
+        /*
+        public String getMessage(Locale locale) {
+            if(ruleResult.getEvalException() != null) {
+                return ruleResult.getEvalException().getMessage();
             } else {
                 ResourceBundle bundle = getMessageBundle(locale);
 
@@ -414,24 +450,30 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
                 return message;
             }
         }
+        */
 
-        private ResourceBundle getMessageBundle(Locale locale) {
-            ResourceBundle bundle;
+        /**
+         * @param The Locale to look up.
+         * @return {@link ResourceBundle} for the Locale and message bundle base name. Or null if no bundle exists.
+         */
+        private ResourceBundle getMessageBundle(final Locale locale) {
             try {
-                bundle = ResourceBundle.getBundle(messageBundleBaseName, locale, new ResourceBundleClassLoader());
-            } catch (MissingResourceException e) {
-                throw new SmooksConfigurationException("Failed to load Validation rule message bundle '" + messageBundleBaseName + "'.  This resource must be on the classpath!", e);
+                return ResourceBundle.getBundle(messageBundleBaseName, locale, new ResourceBundleClassLoader());
+            } catch (final MissingResourceException e) {
+                logger.warn("Failed to load Validation rule message bundle '" + messageBundleBaseName + "'.  This resource must be on the classpath!", e);
             }
 
-            return bundle;
+            return null;
         }
 
+        @Override
         public String toString() {
             return "[" + failFragmentPath + "] " + ruleResult.toString();
         }
     }
 
     private class ResourceBundleClassLoader extends ClassLoader {
+        @Override
         public InputStream getResourceAsStream(String name) {
             try {
                 return new URIResourceLocator().getResource(name);
