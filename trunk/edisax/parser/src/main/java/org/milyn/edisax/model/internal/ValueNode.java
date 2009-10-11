@@ -100,14 +100,7 @@ public class ValueNode extends MappingNode {
         this.maxLength = maxLength;
     }
 
-    public boolean isValidForType(String value) {
-        if(decoder != null) {
-            try {
-                decoder.decode(value);
-            } catch (DataDecodeException e) {
-                return false;
-            }
-        }
-        return true;
-    }
+    public void isValidForType(String value) throws DataDecodeException {
+        decoder.decode(value);
+    }        
 }

@@ -20,6 +20,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.*;
 import org.milyn.io.StreamUtils;
+import org.milyn.javabean.DataDecodeException;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -577,8 +578,10 @@ public class EDIParser implements XMLReader {
 
         // Validate type.
         if (valueNode.getType() != null && !valueNode.getType().equals("")) {
-            if (!valueNode.isValidForType(value)) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+            try {
+                valueNode.isValidForType(value);
+            } catch (DataDecodeException e) {
+                throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", e);
             }
         }
 
