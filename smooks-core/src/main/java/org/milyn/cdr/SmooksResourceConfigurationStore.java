@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} context store.
@@ -62,8 +63,9 @@ public class SmooksResourceConfigurationStore {
 	private List<SmooksResourceConfigurationList> configLists = new ArrayList<SmooksResourceConfigurationList>();
     /**
      * A complete list of all the that have been initialized and added to this store.
+     * This has been transformed into a CopyOnWriteArrayList to fix http://jira.codehaus.org/browse/MILYN-381
      */
-    private List<Object> initializedObjects = new ArrayList<Object>() {
+    private List<Object> initializedObjects = new CopyOnWriteArrayList<Object>() {
         public boolean add(Object object) {
             if(contains(object)) {
                 // Don't add the same object again...
