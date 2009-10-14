@@ -28,34 +28,22 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 
 /**
- * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
+ * @author <a href="mailto:julien.sirocchi@gmail.com">julien.sirocchi@gmail.com</a>
  */
-public class CSVReaderIndentTest extends TestCase {
+public class CSVReaderEnhancementsTest extends TestCase {
 
-    public void test() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-extended-config-12.xml"));
+    public void testInvalidLines() throws IOException, SAXException {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config-invalidlines.xml"));
 
         try {
             StringResult result = new StringResult();
-            smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-01.csv")), result);
-            assertEquals("<csv-set>\n" +
-                    "\t<csv-record number=\"1\">\n" +
-                    "\t\t<firstname>Tom</firstname>\n" +
-                    "\t\t<lastname>Fennelly</lastname>\n" +
-                    "\t\t<gender>Male</gender>\n" +
-                    "\t\t<age>4</age>\n" +
-                    "\t\t<country>Ireland</country>\n" +
-                    "\t</csv-record>\n" +
-                    "\t<csv-record number=\"2\">\n" +
-                    "\t\t<firstname>Mike</firstname>\n" +
-                    "\t\t<lastname>Fennelly</lastname>\n" +
-                    "\t\t<gender>Male</gender>\n" +
-                    "\t\t<age>2</age>\n" +
-                    "\t\t<country>Ireland</country>\n" +
-                    "\t</csv-record>\n" +
-                    "</csv-set>", result.getResult());
+            smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-invalidlines.csv")), result);
+            assertEquals("<csv-set><csv-record number=\"1\"><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></csv-record>" +
+                    "<csv-record number=\"2\"><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></csv-record>" +
+                    "<csv-record number=\"3\" truncated=\"true\"><firstname>Julien</firstname><lastname>Sirocchi</lastname><gender>Male</gender></csv-record></csv-set>", result.getResult());
         } finally {
             smooks.close();
         }
     }
+
 }

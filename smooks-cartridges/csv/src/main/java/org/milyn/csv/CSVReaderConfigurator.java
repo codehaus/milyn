@@ -42,6 +42,7 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
     private CSVBinding binding;
     private String targetProfile;
     private boolean indent = false;
+    private boolean strict = true;
 
     public CSVReaderConfigurator(String csvFields) {
         AssertArgument.isNotNullAndNotEmpty(csvFields, "csvFields");
@@ -89,6 +90,11 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
+    public CSVReaderConfigurator setStrict(boolean strict) {
+        this.strict = strict;
+        return this;
+    }
+
     public CSVReaderConfigurator setBinding(CSVBinding binding) {
         this.binding = binding;
         return this;
@@ -111,6 +117,7 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         configurator.getParameters().setProperty("rootElementName", rootElementName);
         configurator.getParameters().setProperty("recordElementName", recordElementName);
         configurator.getParameters().setProperty("indent", Boolean.toString(indent));
+        configurator.getParameters().setProperty("strict", Boolean.toString(strict));
 
         if(binding != null) {
             configurator.getParameters().setProperty("bindBeanId", binding.getBeanId());
