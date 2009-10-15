@@ -64,6 +64,20 @@ public class ExpressionBindingTest extends TestCase {
         assertEquals(15, message5.get("numberAddition"));
     }
 
+    public void test_data_variable() throws Exception {
+    	Smooks smooks = new Smooks(getClass().getResourceAsStream("02_binding.xml"));
+
+    	JavaResult result = new JavaResult();
+
+    	smooks.filterSource(new StreamSource(getClass().getResourceAsStream("02_number.xml")), result);
+
+    	Total total = (Total) result.getBean("total");
+
+    	assertEquals(20, (int) total.getTotal());
+    	assertEquals("1,2,3,4", total.getCsv());
+
+    }
+
     private void assertDateValue(JavaResult result, String beanId) {
         Map<?, ?> message = (Map<?, ?>) result.getBean(beanId);
         Date messageDate = (Date) message.get("date");

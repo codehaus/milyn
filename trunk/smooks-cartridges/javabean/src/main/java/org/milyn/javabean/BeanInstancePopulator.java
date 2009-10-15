@@ -67,9 +67,13 @@ import java.util.*;
         detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
 public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer, Consumer {
 
-    private static Log logger = LogFactory.getLog(BeanInstancePopulator.class);
+    private static final Log logger = LogFactory.getLog(BeanInstancePopulator.class);
 
-    private static String EC_DEFAULT_EXTEND_LIFECYCLE = BeanInstancePopulator.class + "#" + BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE;
+    private static final String EC_DEFAULT_EXTEND_LIFECYCLE = BeanInstancePopulator.class + "#" + BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE;
+
+    private static final String EXPRESSION_DATA_VARIABLE_NAME = "_DATA";
+
+    public static final String VALUE_ATTRIBUTE_NAME = "valueAttributeName";
 
     private String id;
 
@@ -82,6 +86,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String expression;
     private MVELExpressionEvaluator expressionEvaluator;
+    private boolean expressionHasDataVariable = false;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String property;
@@ -120,7 +125,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private String mapKeyAttribute;
 
     private boolean beanWiring;
-    public static final String VALUE_ATTRIBUTE_NAME = "valueAttributeName";
+
+
+
 
     public void setBeanId(String beanId) {
         this.beanIdName = beanId;
@@ -197,22 +204,25 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
                 mapKeyAttribute = property.substring(1);
             }
         }
-        
+
         if(expression != null) {
-        	expression = expression.trim();        	
+        	expression = expression.trim();
+
+        	expressionHasDataVariable = expression.contains(EXPRESSION_DATA_VARIABLE_NAME);
+
         	expression = expression.replace("this.", beanIdName + ".");
         	if(expression.startsWith("+=")) {
-        		expression = beanIdName + "." + property + " +" + expression.substring(2); 
+        		expression = beanIdName + "." + property + " +" + expression.substring(2);
         	}
         	if(expression.startsWith("-=")) {
-        		expression = beanIdName + "." + property + " -" + expression.substring(2); 
+        		expression = beanIdName + "." + property + " -" + expression.substring(2);
         	}
-        	
+
         	expressionEvaluator = new MVELExpressionEvaluator();
         	expressionEvaluator.setExpression(expression);
-        	
+
         	// If we can determine the target binding type, tell MVEL.
-        	// If there's a decoder (a typeAlias), we define a String var instead and leave decoding 
+        	// If there's a decoder (a typeAlias), we define a String var instead and leave decoding
         	// to the decoder...
         	Class<?> bindingType = resolveBindTypeReflectively();
         	if(bindingType != null) {
@@ -281,7 +291,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
-        } else if(expressionEvaluator == null) {
+        } else if(expressionEvaluator == null || expressionHasDataVariable) {
             // It's not a wiring, attribute or expression binding => it's the element's text.
             // Turn on Text Accumulation...
             element.accumulateText();
@@ -300,7 +310,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     private void checkBeanExists(ExecutionContext executionContext) {
-
     	final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
     	if(beanRepository.getBean(beanId) == null) {
     		throw new SmooksConfigurationException("Can't populate object '"  + beanRuntimeInfo.getPopulateType().getName() + "' with bean id '" + beanId + "' because there is no object in the bean context under that bean id.");
@@ -316,22 +325,22 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             dataString = DomUtils.getAllText(element, false);
         }
 
-        String mapPropertyName;
+        String propertyName;
         if(mapKeyAttribute != null) {
-            mapPropertyName = DomUtils.getAttributeValue(element, mapKeyAttribute);
-            if(mapPropertyName == null) {
-                mapPropertyName = DomUtils.getName(element);
+            propertyName = DomUtils.getAttributeValue(element, mapKeyAttribute);
+            if(propertyName == null) {
+                propertyName = DomUtils.getName(element);
             }
         } else if(property != null) {
-            mapPropertyName = property;
+            propertyName = property;
         } else {
-            mapPropertyName = DomUtils.getName(element);
+            propertyName = DomUtils.getName(element);
         }
 
         if(expressionEvaluator != null) {
-            bindExpressionValue(mapPropertyName, executionContext);
+            bindExpressionValue(propertyName, dataString, executionContext);
         } else {
-            setPropertyValue(mapPropertyName, decodeDataString(dataString, executionContext), executionContext);
+        	decodeAndSetPropertyValue(propertyName, dataString, executionContext);
         }
     }
 
@@ -349,17 +358,19 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             propertyName = element.getName().getLocalPart();
         }
 
-        if(expressionEvaluator != null) {
-            bindExpressionValue(propertyName, executionContext);
-        } else {
-            String dataString;
+        String dataString = null;
+        if(expressionEvaluator == null || expressionHasDataVariable) {
+	        if (isAttribute) {
+	            dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
+	        } else {
+	            dataString = element.getTextContent();
+	        }
+        }
 
-            if (isAttribute) {
-                dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
-            } else {
-                dataString = element.getTextContent();
-            }
-            setPropertyValue(propertyName, decodeDataString(dataString, executionContext), executionContext);
+        if(expressionEvaluator != null) {
+            bindExpressionValue(propertyName, dataString, executionContext);
+        } else {
+            decodeAndSetPropertyValue(propertyName, dataString, executionContext);
         }
     }
 
@@ -472,14 +483,18 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     	return defaultExtendLifecycle;
     }
 
-    private void bindExpressionValue(String mapPropertyName, ExecutionContext executionContext) {
+    private void bindExpressionValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {
         Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
 
-        Object dataObject = expressionEvaluator.getValue(beanMap);
+        if(expressionHasDataVariable) {
+        	beanMap = new HashMap<String, Object>(beanMap);
+        	beanMap.put(EXPRESSION_DATA_VARIABLE_NAME, dataString);
+        }
+
+        Object dataObject = expressionEvaluator.exec(beanMap);
         decodeAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
     }
 
-    @SuppressWarnings("unchecked")
 	private void decodeAndSetPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
         if(dataObject instanceof String) {
             setPropertyValue(mapPropertyName, decodeDataString((String) dataObject, executionContext), executionContext);
@@ -601,7 +616,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     private DataDecoder resolveDecoderReflectively() throws DataDecodeException {
     	Class<?> bindType = resolveBindTypeReflectively();
-        
+
     	if(bindType != null) {
             DataDecoder resolvedDecoder = DataDecoder.Factory.create(bindType);
 
