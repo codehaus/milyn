@@ -53,7 +53,7 @@ public class BeanMapExpressionEvaluator extends MVELExpressionEvaluator implemen
     }
 
     public BeanMapExpressionEvaluator(String expression) throws SmooksConfigurationException {
-        setExpression(expression);
+        super(expression);
     }
 
     public boolean eval(ExecutionContext context) throws ExpressionEvaluationException {

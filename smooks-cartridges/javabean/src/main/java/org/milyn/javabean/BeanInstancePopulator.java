@@ -71,7 +71,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     private static final String EC_DEFAULT_EXTEND_LIFECYCLE = BeanInstancePopulator.class + "#" + BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE;
 
-    private static final String EXPRESSION_DATA_VARIABLE_NAME = "_DATA";
+    private static final String EXPRESSION_VALUE_VARIABLE_NAME = "_VALUE";
 
     public static final String VALUE_ATTRIBUTE_NAME = "valueAttributeName";
 
@@ -208,7 +208,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         if(expression != null) {
         	expression = expression.trim();
 
-        	expressionHasDataVariable = expression.contains(EXPRESSION_DATA_VARIABLE_NAME);
+        	expressionHasDataVariable = expression.contains(EXPRESSION_VALUE_VARIABLE_NAME);
 
         	expression = expression.replace("this.", beanIdName + ".");
         	if(expression.startsWith("+=")) {
@@ -486,12 +486,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private void bindExpressionValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {
         Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
 
+        Map<String, Object> variables = new HashMap<String, Object>();
         if(expressionHasDataVariable) {
-        	beanMap = new HashMap<String, Object>(beanMap);
-        	beanMap.put(EXPRESSION_DATA_VARIABLE_NAME, dataString);
+        	variables.put(EXPRESSION_VALUE_VARIABLE_NAME, dataString);
         }
 
-        Object dataObject = expressionEvaluator.exec(beanMap);
+        Object dataObject = expressionEvaluator.exec(beanMap, variables);
         decodeAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
     }
 
