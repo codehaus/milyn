@@ -58,6 +58,9 @@
 
         <milyn.smooks.validation.version.base>${milyn.smooks.core.version}</milyn.smooks.validation.version.base>
         <milyn.smooks.validation.version>${milyn.smooks.validation.version.base}</milyn.smooks.validation.version>
+   
+		<milyn.smooks.fixed-length.version.base>${milyn.smooks.core.version}</milyn.smooks.fixed-length.version.base>
+        <milyn.smooks.fixed-length.version>${milyn.smooks.fixed-length.version.base}</milyn.smooks.fixed-length.version>
 
     </properties>
 
@@ -77,6 +80,7 @@
 		<module>persistence</module>
 		<module>rules</module>
 		<module>validation</module>
+		<module>fixed-length</module>
     </modules>
 
     <dependencies>
