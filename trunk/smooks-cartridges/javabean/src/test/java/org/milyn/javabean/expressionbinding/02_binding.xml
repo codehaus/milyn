@@ -3,7 +3,7 @@
 
 	<jb:bean beanId="total" class="org.milyn.javabean.expressionbinding.Total" createOnElement="numbers" >
 		<jb:expression property="total" execOnElement="number" initVal="10">
-			+= new Integer(_DATA);
+			+= new Integer(_VALUE);
 		</jb:expression>
 
 		<jb:expression property="csv" execOnElement="number" initVal="''">
@@ -11,7 +11,7 @@
 			if(csv.length() > 0) {
 				csv += ',';
 			}
-			return csv + _DATA;
+			return csv + _VALUE;
 		</jb:expression>
 	</jb:bean>
 
