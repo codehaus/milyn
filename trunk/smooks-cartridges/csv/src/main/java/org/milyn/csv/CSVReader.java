@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.xml.XMLConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.annotation.ConfigParam;
@@ -187,7 +188,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     private String bindBeanId;
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
-    private Class bindBeanClass;
+    private Class<?> bindBeanClass;
 
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private CSVBindingType bindingType;
@@ -214,13 +215,13 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
                 }
 
                 assertValidFieldName(bindMapKeyField);
-                
+
                 Bean mapBean = new Bean(LinkedHashMap.class, bindBeanId, "$document");
                 Bean recordBean = new Bean(bindBeanClass, RECORD_BEAN, recordElementName);
                 MapBindingWiringVisitor wiringVisitor = new MapBindingWiringVisitor(bindMapKeyField, bindBeanId);
-                
+
                 addFieldBindings(recordBean);
-                
+
                 mapBean.addVisitors(visitorMap);
                 recordBean.addVisitors(visitorMap);
                 visitorMap.addVisitor(wiringVisitor, recordElementName, null, false);
@@ -276,12 +277,12 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
         // Start the document and add the root "csv-set" element...
         contentHandler.startDocument();
-        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, "", EMPTY_ATTRIBS);
+        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY, EMPTY_ATTRIBS);
 
         // Output each of the CVS line entries...
         int lineNumber = 0;
         int expectedCount = getExpectedColumnsCount();
-        
+
         while ((csvRecord = csvLineReader.readNext()) != null) {
         	lineNumber++; // First line is line "1"
 
@@ -298,11 +299,11 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
             AttributesImpl attrs = new AttributesImpl();
             // If we reached here it means that this line has to be in the sax stream
             // hence we first add the record number attribute on the csv-record element
-    		attrs.addAttribute(XMLConstants.NULL_NS_URI, "", RECORD_NUMBER_ATTR, "xs:int", Integer.toString(lineNumber));
+    		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_NUMBER_ATTR, "xs:int", Integer.toString(lineNumber));
             // if this line is truncated, we add the truncated attribute onto the csv-record element
             if (csvRecord.length < expectedCount)
-            	attrs.addAttribute(XMLConstants.NULL_NS_URI, "", RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
-            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", attrs);
+            	attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
+            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
         	int recordIt = 0;
             for(int fieldIt = 0; fieldIt < csvFields.length; fieldIt++) {
                 String fieldName = csvFields[fieldIt];
@@ -314,7 +315,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
                 	}
                 	recordIt += toSkip;
                 	continue;
-                }                
+                }
 
                 if(indent) {
                     contentHandler.characters(INDENT_LF, 0, 1);
@@ -323,9 +324,9 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
                 // Don't insert the element if the csv record does not contain it!!
                 if (recordIt < csvRecord.length) {
-                	contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", EMPTY_ATTRIBS);
+                	contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, EMPTY_ATTRIBS);
                 	contentHandler.characters(csvRecord[recordIt].toCharArray(), 0, csvRecord[recordIt].length());
-                	contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
+                	contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
                 }
 
                 if(indent) {
@@ -339,7 +340,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
                 contentHandler.characters(INDENT_1, 0, 1);
             }
 
-            contentHandler.endElement(null, recordElementName, "");
+            contentHandler.endElement(null, recordElementName, StringUtils.EMPTY);
         }
 
         if(indent) {
@@ -347,7 +348,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         }
 
         // Close out the "csv-set" root element and end the document..
-        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
+        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY);
         contentHandler.endDocument();
 	}
 
@@ -462,11 +463,14 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
             wireObject(executionContext);
         }
 
-        private void wireObject(ExecutionContext executionContext) {
+
+		private void wireObject(ExecutionContext executionContext) {
             BeanRepository repository = BeanRepositoryManager.getBeanRepository(executionContext);
             Map<String, Object> beanMap = repository.getBeanMap();
             Object key = keyExtractor.getValue(beanMap);
-            Map map = (Map) repository.getBean(mapBindingKey);
+
+            @SuppressWarnings("unchecked") //TODO: Optimize to use the BeanId object
+            Map<Object, Object> map =  (Map<Object, Object>) repository.getBean(mapBindingKey);
             Object record = repository.getBean(RECORD_BEAN);
 
             map.put(key, record);
