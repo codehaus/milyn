@@ -16,6 +16,7 @@
 
 package org.milyn.fixedlength;
 
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -23,12 +24,17 @@ import java.io.BufferedReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -43,6 +49,10 @@ import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.fixedlength.function.Function;
+import org.milyn.fixedlength.function.LowerCaseFunction;
+import org.milyn.fixedlength.function.TrimFunction;
+import org.milyn.fixedlength.function.UpperCaseFunction;
 import org.milyn.javabean.Bean;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
@@ -138,11 +148,10 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
     @ConfigParam(name = "fields")
     private String[] flFields;
-    private String[] flFieldsNames;
-    private Integer[] flFieldsLength;
+    private Field[] fields;
     private int totalFieldLenght;
 
-    @ConfigParam(name = "sequence", defaultVal = "true")
+    @ConfigParam(defaultVal = "true")
     private boolean sequence;
 
     @ConfigParam(name = "skip-line-count", defaultVal = "0")
@@ -218,8 +227,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     }
 
     private void addFieldBindings(Bean bean) {
-    	for(int i = 0; i < flFieldsNames.length; i++) {
-            String field = flFieldsNames[i];
+    	for(int i = 0; i < fields.length; i++) {
+            String field = fields[i].getName();
 
             if(!field.equals(IGNORE_FIELD)) {
                 bean.bindTo(field, recordElementName + "/" + field);
@@ -287,6 +296,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
         		continue;
         	}
 
+        	char[] recordChars = flRecord.toCharArray();
+
         	if(indent) {
                 contentHandler.characters(INDENT_LF, 0, 1);
                 contentHandler.characters(INDENT_1, 0, 1);
@@ -310,11 +321,13 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
             int fieldLengthTotal = 0;
         	for(int i = 0; i < flFields.length; i++) {
            		// Field name local to the loop
-                String fieldName = flFieldsNames[i];
+                String fieldName = fields[i].getName();
                 // Field length local to the loop
-                int fieldLength = flFieldsLength[i];
+                int fieldLength = fields[i].getLength();
 
-                if(!IGNORE_FIELD.equals(fieldName)) {
+                List<Function> functions = fields[i].getFunctions();
+
+                if(!fields[i].ignore()) {
                 	if(indent) {
                         contentHandler.characters(INDENT_LF, 0, 1);
                         contentHandler.characters(INDENT_2, 0, 2);
@@ -334,7 +347,17 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
                     // If not truncated then set the element data
                     if(!truncated) {
-            			contentHandler.characters(flRecord.toCharArray(), fieldLengthTotal, fieldLength);
+                    	if(functions.size() == 0) {
+                    		contentHandler.characters(recordChars, fieldLengthTotal, fieldLength);
+                    	} else {
+                    		String value = flRecord.substring(fieldLengthTotal, fieldLengthTotal + fieldLength);
+
+                    		for(Function function : functions) {
+                    			value = function.call(value);
+                    		}
+
+                    		contentHandler.characters(value.toCharArray(), 0, value.length());
+                    	}
             		}
 
                     contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
@@ -372,33 +395,60 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     }
 
     private void assertValidFieldName(String field) {
-        for(String flField : flFieldsNames) {
-            if(flField.equals(field)) {
+        for(Field flField : fields) {
+            if(flField.getName().equals(field)) {
                 return;
             }
         }
 
-        throw new SmooksConfigurationException("Invalid field name '" + field + "'.  Valid names: " + Arrays.asList(flFieldsNames) + ".");
+        String fieldNames = "";
+        for(Field flField : fields) {
+        	if(fieldNames.length() > 0) {
+        		fieldNames += ",";
+        	}
+        	fieldNames += flField.getName();
+        }
+
+        throw new SmooksConfigurationException("Invalid field name '" + field + "'.  Valid names: " + fieldNames + ".");
     }
 
 	private void buildFields() {
 		// Parse input fields to extract names and lengths
-        String[] flFieldsNames = new String[this.flFields.length];
-        Integer[] flFieldsLength = new Integer[this.flFields.length];
+        Field[] fields = new Field[this.flFields.length];
         int totalFieldLenght = 0;
     	for(int i = 0; i < this.flFields.length; i++) {
     		// Extract informations about the field
-            String fieldInfos = this.flFields[i];
+            String fieldInfos = this.flFields[i].trim();
             // Extract name of the field (before bracket)
-            flFieldsNames[i] = fieldInfos.trim().substring(0, fieldInfos.lastIndexOf('['));
+            String fieldName = fieldInfos.substring(0, fieldInfos.lastIndexOf('['));
             // Extract length of the field (between brackets)
-            flFieldsLength[i] = Integer.parseInt(fieldInfos.trim().substring(fieldInfos.lastIndexOf('[') + 1, fieldInfos.lastIndexOf(']')));
+            int fieldLength = Integer.parseInt(fieldInfos.substring(fieldInfos.lastIndexOf('[') + 1, fieldInfos.lastIndexOf(']')));
 
-            totalFieldLenght += flFieldsLength[i];
+            String functionPsv = fieldInfos.substring(fieldInfos.lastIndexOf(']')+1);
+
+            List<Function> functions = Collections.emptyList();
+            if(functionPsv.length() != 0) {
+            	functions = new ArrayList<Function>();
+
+            	String[] functionsDef = StringUtils.split(functionPsv, '.');
+
+            	for(String functionDef : functionsDef) {
+	            	if(functionDef.equals("trim")) {
+	            		functions.add(new TrimFunction());
+	            	} else if(functionDef.equals("upper_case")) {
+	            		functions.add(new UpperCaseFunction());
+	            	} else if(functionDef.equals("lower_case")) {
+	            		functions.add(new LowerCaseFunction());
+	            	}
+            	}
+            }
+
+            fields[i] = new Field(fieldName, fieldLength, functions);
+
+            totalFieldLenght += fieldLength;
     	}
 
-    	this.flFieldsNames = flFieldsNames;
-    	this.flFieldsLength = flFieldsLength;
+    	this.fields = fields;
     	this.totalFieldLenght = totalFieldLenght;
 	}
     /****************************************************************************
@@ -448,6 +498,49 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
     public void setProperty(String name, Object value)
             throws SAXNotRecognizedException, SAXNotSupportedException {
+    }
+
+    private class Field {
+
+    	private final String name;
+
+    	private final int length;
+
+    	private final boolean ignore;
+
+    	private final List<Function> functions;
+
+		public Field(String name, int length, List<Function> functions) {
+			this.name = name;
+			this.length = length;
+			this.functions = functions;
+
+			ignore = IGNORE_FIELD.equals(name);
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public int getLength() {
+			return length;
+		}
+
+		public boolean ignore() {
+			return ignore;
+		}
+
+		public List<Function> getFunctions() {
+			return functions;
+		}
+
+		@Override
+		public String toString() {
+			ToStringBuilder builder = new ToStringBuilder(this);
+			builder.append("name", name)
+				   .append("length", length);
+			return builder.toString();
+		}
     }
 
     private class MapBindingWiringVisitor implements DOMVisitAfter, SAXVisitAfter, Consumer {
