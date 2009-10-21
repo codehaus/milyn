@@ -16,30 +16,28 @@
 
 package org.milyn.csv;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.stream.StreamSource;
-
 import junit.framework.TestCase;
-
+import org.milyn.FilterSettings;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.SmooksUtil;
-import org.milyn.FilterSettings;
-import org.milyn.payload.StringResult;
-import org.milyn.payload.JavaResult;
-import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
+import org.milyn.payload.JavaResult;
+import org.milyn.payload.StringResult;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.xml.XmlUtil;
 import org.xml.sax.SAXException;
+
+import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author tfennelly
@@ -366,7 +364,7 @@ public class CSVReaderTest extends TestCase {
             smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
             fail("Expected SmooksConfigurationException");
         } catch(SmooksConfigurationException e) {
-            assertEquals("Invalid field name 'xxxx'.  Valid names: [firstname, lastname, $ignore$, gender, age, country].", e.getMessage());
+            assertEquals("Invalid field name 'xxxx'.  Valid names: [firstname, lastname, gender, age, country].", e.getMessage());
         }
     }
 
@@ -395,4 +393,29 @@ public class CSVReaderTest extends TestCase {
 	        assertNotSame("<main-set><record number=\"1\"><firstname>Tom</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>4</age><country>Ireland</country></record><record number=\"2\"><firstname>Mike</firstname><lastname>Fennelly</lastname><gender>Male</gender><age>2</age><country>Ireland</country></record></main-set>", result);
 
 	}
+
+    public void test_18() throws SmooksException, IOException, SAXException {
+        Smooks smooks = new Smooks();
+
+        smooks.setReaderConfig(new CSVReaderConfigurator("firstname?upper_case,lastname?uncap_first,$ignore$5")
+                .setBinding(new CSVBinding("people", HashMap.class, CSVBindingType.LIST)));
+
+        JavaResult result = new JavaResult();
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-05.csv")), result);
+
+        List<Map> people = (List<Map>) result.getBean("people");
+        Map person;
+
+        person = people.get(0);
+        assertEquals("TOM", person.get("firstname"));
+        assertEquals("fennelly", person.get("lastname"));
+
+        person = people.get(1);
+        assertEquals("MIKE", person.get("firstname"));
+        assertEquals("fennelly", person.get("lastname"));
+
+        person = people.get(2);
+        assertEquals("LINDA", person.get("firstname"));
+        assertEquals("coughlan", person.get("lastname"));
+    }
 }
