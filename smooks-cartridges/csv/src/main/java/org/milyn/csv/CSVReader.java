@@ -16,36 +16,28 @@
 
 package org.milyn.csv;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.XMLConstants;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.SmooksException;
+import org.milyn.function.StringFunctionExecutor;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
-import org.milyn.xml.SmooksXMLReader;
 import org.milyn.delivery.VisitorAppender;
 import org.milyn.delivery.VisitorConfigMap;
-import org.milyn.delivery.ordering.Consumer;
-import org.milyn.delivery.sax.SAXVisitAfter;
-import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMVisitAfter;
-import org.milyn.javabean.Bean;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.SmooksException;
+import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.javabean.Bean;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.xml.SmooksXMLReader;
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -56,7 +48,17 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.helpers.AttributesImpl;
-import org.w3c.dom.Element;
+
+import javax.xml.XMLConstants;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -159,6 +161,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
     @ConfigParam(name = "fields")
     private String[] csvFields;
+    private Field[] fields;
 
     @ConfigParam(defaultVal = ",")
     private char separator;
@@ -196,6 +199,11 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String bindMapKeyField;
     private static final String RECORD_BEAN = "csvRecordBean";
+
+	@Initialize
+	public void initialize() {
+		buildFields();
+	}
 
     public void addVisitors(VisitorConfigMap visitorMap) {
         if(bindBeanId != null && bindBeanClass != null) {
@@ -235,14 +243,35 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     }
 
     private void addFieldBindings(Bean bean) {
-        for(int i = 0; i < csvFields.length; i++) {
-            String field = csvFields[i];
-
-            if(!field.equals(IGNORE_FIELD)) {
-                bean.bindTo(field, recordElementName + "/" + field);
+        for(Field field : fields) {
+            if(!field.ignore()) {
+                bean.bindTo(field.getName(), recordElementName + "/" + field.getName());
             }
         }
     }
+
+	private void buildFields() {
+		// Parse input fields to extract names and lengths
+        Field[] fields = new Field[this.csvFields.length];
+    	for(int i = 0; i < this.csvFields.length; i++) {
+    		// Extract informations about the field
+            String fieldInfos = this.csvFields[i].trim();
+            String fieldName = fieldInfos;
+            StringFunctionExecutor stringFunctionExecutor = null;
+
+            if(fieldInfos.indexOf('?') >= 0) {
+                fieldName = fieldInfos.substring(0, fieldInfos.indexOf('?'));
+                String functionDefinition = fieldInfos.substring(fieldInfos.indexOf('?')+1);
+
+                if(functionDefinition.length() != 0) {
+                    stringFunctionExecutor = StringFunctionExecutor.getInstance(functionDefinition);
+                }
+            }
+            fields[i] = new Field(fieldName, stringFunctionExecutor);
+    	}
+
+    	this.fields = fields;
+	}
 
     /* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
@@ -305,10 +334,10 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
             	attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
             contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
         	int recordIt = 0;
-            for(int fieldIt = 0; fieldIt < csvFields.length; fieldIt++) {
-                String fieldName = csvFields[fieldIt];
+            for(Field field : fields) {
+                String fieldName = field.getName();
 
-                if(fieldName.startsWith(IGNORE_FIELD)) {
+                if(field.ignore()) {
                 	int toSkip = parseIgnoreFieldDirective(fieldName);
                 	if(toSkip == Integer.MAX_VALUE){
                 		break;
@@ -324,9 +353,17 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
                 // Don't insert the element if the csv record does not contain it!!
                 if (recordIt < csvRecord.length) {
-                	contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, EMPTY_ATTRIBS);
-                	contentHandler.characters(csvRecord[recordIt].toCharArray(), 0, csvRecord[recordIt].length());
-                	contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
+                	String value = csvRecord[recordIt];
+
+                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, EMPTY_ATTRIBS);
+
+                    StringFunctionExecutor stringFunctionExecutor = field.getStringFunctionExecutor();
+                    if(stringFunctionExecutor != null) {
+                    	value = stringFunctionExecutor.execute(value);
+                    }
+
+                    contentHandler.characters(value.toCharArray(), 0, value.length());
+                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
                 }
 
                 if(indent) {
@@ -368,10 +405,8 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
     private int getExpectedColumnsCount() {
         int count = 0;
-        for (int i = 0; i < csvFields.length; i++) {
-            String field = csvFields[i];
-
-            if (!field.startsWith(IGNORE_FIELD)) {
+        for (Field field : fields) {
+            if (!field.ignore()) {
                 count++;
             }
         }
@@ -386,14 +421,24 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         return contentHandler;
     }
 
-    private void assertValidFieldName(String field) {
-        for(String csvField : csvFields) {
-            if(csvField.equals(field)) {
+    private void assertValidFieldName(String fieldName) {
+        for(Field field : fields) {
+            if(field.getName().equals(fieldName)) {
                 return;
             }
         }
 
-        throw new SmooksConfigurationException("Invalid field name '" + field + "'.  Valid names: " + Arrays.asList(csvFields) + ".");
+        String fieldNames = "";
+        for(Field field : fields) {
+        	if(!field.ignore()) {
+                if(fieldNames.length() > 0) {
+                    fieldNames += ", ";
+                }
+                fieldNames += field.getName();
+            }
+        }
+
+        throw new SmooksConfigurationException("Invalid field name '" + fieldName + "'.  Valid names: [" + fieldNames + "].");
     }
 
     /****************************************************************************
@@ -444,6 +489,43 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     public void setProperty(String name, Object value)
             throws SAXNotRecognizedException, SAXNotSupportedException {
     }
+
+    private class Field {
+
+    	private final String name;
+
+    	private final boolean ignore;
+
+    	private final StringFunctionExecutor stringFunctionExecutor;
+
+        public Field(String name, StringFunctionExecutor stringFunctionExecutor) {
+			this.name = name;
+			this.stringFunctionExecutor = stringFunctionExecutor;
+
+			ignore = name.startsWith(IGNORE_FIELD);
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public boolean ignore() {
+			return ignore;
+		}
+
+		public StringFunctionExecutor getStringFunctionExecutor() {
+			return stringFunctionExecutor;
+		}
+
+		@Override
+		public String toString() {
+			ToStringBuilder builder = new ToStringBuilder(this);
+			builder.append("name", name)
+				   .append("stringFunctionExecutor", stringFunctionExecutor);
+			return builder.toString();
+		}
+    }
+
 
     private class MapBindingWiringVisitor implements DOMVisitAfter, SAXVisitAfter, Consumer {
 
