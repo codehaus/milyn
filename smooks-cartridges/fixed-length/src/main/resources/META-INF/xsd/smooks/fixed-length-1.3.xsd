@@ -71,11 +71,11 @@
     					</xs:documentation>
     				</xs:annotation>
     			</xs:attribute>
-    			<xs:attribute name="sequence" type="xs:boolean" use="optional" default="true">
+    			<xs:attribute name="lineNumber" type="xs:boolean" use="optional" default="true">
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
-    						 If it should add the sequence number (line number) to each record. This
-    						 sequence number is set in the 'number' attribute of the 'record' element.
+    						 If it should add the line number to each record. This
+    						 line number is set in the 'number' attribute of the 'record' element.
     					</xs:documentation>
     				</xs:annotation>
     			</xs:attribute>
@@ -116,6 +116,20 @@
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
     						Name of record element.
+    					</xs:documentation>
+    				</xs:annotation>
+    			</xs:attribute>
+                <xs:attribute name="lineNumberAttributeName" type="xs:string" use="optional" default="number">
+    				<xs:annotation>
+    					<xs:documentation xml:lang="en">
+    						Name of the line number attribute.
+    					</xs:documentation>
+    				</xs:annotation>
+    			</xs:attribute>
+                <xs:attribute name="truncatedAttributeName" type="xs:string" use="optional" default="truncated">
+    				<xs:annotation>
+    					<xs:documentation xml:lang="en">
+    						Name of the truncated attribute.
     					</xs:documentation>
     				</xs:annotation>
     			</xs:attribute>

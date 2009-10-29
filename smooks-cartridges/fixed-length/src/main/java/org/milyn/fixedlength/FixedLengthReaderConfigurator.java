@@ -15,29 +15,31 @@
 */
 package org.milyn.fixedlength;
 
-import org.milyn.ReaderConfigurator;
 import org.milyn.GenericReaderConfigurator;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.ReaderConfigurator;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
 
 import java.nio.charset.Charset;
 
 /**
- * CSV Reader configurator.
+ * Fixed Length Reader configurator.
  * <p/>
- * Supports programmatic {@link CSVReader} configuration on a {@link org.milyn.Smooks#setReaderConfig(org.milyn.ReaderConfigurator) Smooks} instance.
+ * Supports programmatic {@link FixedLengthReader} configuration on a {@link org.milyn.Smooks#setReaderConfig(org.milyn.ReaderConfigurator) Smooks} instance.
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 public class FixedLengthReaderConfigurator implements ReaderConfigurator {
 
     private String fields;
-    private boolean sequence = false;
-    private int skipLineCount = 0;
+    private boolean lineNumber = false;
+    private int skipLines = 0;
     private Charset encoding = Charset.forName("UTF-8");
     private String rootElementName = "root";
     private String recordElementName = "record";
+   private String lineNumberAttributeName = "number";
+    private String truncatedAttributeName = "truncated";
     private FixedLengthBinding binding;
     private String targetProfile;
     private boolean indent = false;
@@ -48,15 +50,8 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
         this.fields = fields;
     }
 
-    public FixedLengthReaderConfigurator setQuoteChar(boolean sequence) {
-        AssertArgument.isNotNull(sequence, "sequence");
-        this.sequence = sequence;
-        return this;
-    }
-
-    public FixedLengthReaderConfigurator setSkipLineCount(int skipLineCount) {
-        AssertArgument.isNotNull(skipLineCount, "skipLineCount");
-        this.skipLineCount = skipLineCount;
+    public FixedLengthReaderConfigurator setSkipLines(int skipLines) {
+        this.skipLines = skipLines;
         return this;
     }
 
@@ -78,6 +73,18 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
+    public FixedLengthReaderConfigurator setLineNumberAttributeName(String lineNumberAttributeName) {
+        AssertArgument.isNotNullAndNotEmpty(lineNumberAttributeName, "lineNumberAttributeName");
+        this.lineNumberAttributeName = lineNumberAttributeName;
+        return this;
+    }
+
+    public FixedLengthReaderConfigurator setTruncatedAttributeName(String truncatedAttributeName) {
+        AssertArgument.isNotNullAndNotEmpty(truncatedAttributeName, "truncatedAttributeName");
+        this.truncatedAttributeName = truncatedAttributeName;
+        return this;
+    }
+
     public FixedLengthReaderConfigurator setIndent(boolean indent) {
         this.indent = indent;
         return this;
@@ -93,6 +100,11 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
+    public FixedLengthReaderConfigurator setLineNumber(boolean lineNumber) {
+        this.lineNumber = lineNumber;
+        return this;
+    }
+
     public FixedLengthReaderConfigurator setTargetProfile(String targetProfile) {
         AssertArgument.isNotNullAndNotEmpty(targetProfile, "targetProfile");
         this.targetProfile = targetProfile;
@@ -103,11 +115,13 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(FixedLengthReader.class);
 
         configurator.getParameters().setProperty("fields", fields);
-        configurator.getParameters().setProperty("sequence", Boolean.toString(sequence));
-        configurator.getParameters().setProperty("skip-line-count", Integer.toString(skipLineCount));
+        configurator.getParameters().setProperty("lineNumber", Boolean.toString(lineNumber));
+        configurator.getParameters().setProperty("skipLines", Integer.toString(skipLines));
         configurator.getParameters().setProperty("encoding", encoding.name());
         configurator.getParameters().setProperty("rootElementName", rootElementName);
         configurator.getParameters().setProperty("recordElementName", recordElementName);
+        configurator.getParameters().setProperty("lineNumberAttributeName", lineNumberAttributeName);
+        configurator.getParameters().setProperty("truncatedAttributeName", truncatedAttributeName);
         configurator.getParameters().setProperty("indent", Boolean.toString(indent));
         configurator.getParameters().setProperty("strict", Boolean.toString(strict));
 

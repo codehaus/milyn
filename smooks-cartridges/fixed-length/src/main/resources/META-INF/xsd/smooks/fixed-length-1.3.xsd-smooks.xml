@@ -23,13 +23,12 @@
 
     <resource-config selector="reader">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">sequence</param>
+        <param name="attribute">lineNumber</param>
     </resource-config>
 
     <resource-config selector="reader">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">skipLines</param>
-        <param name="mapTo">skip-line-count</param>
     </resource-config>
 
  	<resource-config selector="reader">
@@ -40,6 +39,16 @@
     <resource-config selector="reader">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">recordElementName</param>
+    </resource-config>
+
+    <resource-config selector="reader">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">truncatedAttributeName</param>
+    </resource-config>
+
+    <resource-config selector="reader">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">lineNumberAttributeName</param>
     </resource-config>
 
     <resource-config selector="reader">
