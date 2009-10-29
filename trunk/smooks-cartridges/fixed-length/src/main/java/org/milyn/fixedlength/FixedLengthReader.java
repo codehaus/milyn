@@ -125,6 +125,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
     private static final AttributesImpl EMPTY_ATTRIBS = new AttributesImpl();
     private static final String IGNORE_FIELD = "$ignore$";
+    private static final char FUNCTION_SEPARATOR = '?';
 
     private static char[] INDENT_LF = new char[] {'\n'};
     private static char[] INDENT_1  = new char[] {'\t'};
@@ -416,6 +417,10 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
             int fieldLength = Integer.parseInt(fieldInfos.substring(fieldInfos.lastIndexOf('[') + 1, fieldInfos.lastIndexOf(']')));
 
             String functionDefinition = fieldInfos.substring(fieldInfos.lastIndexOf(']')+1);
+
+            if(functionDefinition.length() != 0 && functionDefinition.charAt(0) == FUNCTION_SEPARATOR) {
+                functionDefinition = functionDefinition.substring(1);
+            }
 
             StringFunctionExecutor stringFunctionExecutor = null;
             if(functionDefinition.length() != 0) {

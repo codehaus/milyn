@@ -58,7 +58,7 @@ public class FixedLenghtReaderTest extends TestCase {
 		Smooks smooks = new Smooks();
 
 		smooks.setReaderConfig(new FixedLengthReaderConfigurator(
-				"firstname[10].right_trim,lastname[10].trim.capitalize,$ignore$[2],gender[1],age[3],country[3]lower_case")
+				"firstname[10]?right_trim,lastname[10].trim.capitalize,$ignore$[2],gender[1],age[3],country[3]lower_case")
 				.setBinding(
 						new FixedLengthBinding("people", HashMap.class, FixedLengthBindingType.MAP)
 								.setKeyField("firstname")));
