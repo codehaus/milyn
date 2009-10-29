@@ -129,8 +129,6 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     private static char[] INDENT_LF = new char[] {'\n'};
     private static char[] INDENT_1  = new char[] {'\t'};
     private static char[] INDENT_2  = new char[] {'\t', '\t'};
-    private static String RECORD_NUMBER_ATTR = "number";
-    private static String RECORD_TRUNCATED_ATTR = "truncated";
 
     private ContentHandler contentHandler;
 	private ExecutionContext request;
@@ -140,10 +138,10 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     private Field[] fields;
     private int totalFieldLenght;
 
-    @ConfigParam(defaultVal = "true")
-    private boolean sequence;
+    @ConfigParam(defaultVal = "false")
+    private boolean lineNumber;
 
-    @ConfigParam(name = "skip-line-count", defaultVal = "0")
+    @ConfigParam(defaultVal = "0")
     private int skipLines;
 
     @ConfigParam(defaultVal = "true")
@@ -157,6 +155,12 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
     @ConfigParam(defaultVal="record")
     private String recordElementName;
+
+    @ConfigParam(defaultVal="number")
+    private String lineNumberAttributeName;
+
+    @ConfigParam(defaultVal="truncated")
+    private String truncatedAttributeName;
 
     @ConfigParam(defaultVal="false")
     private boolean indent;
@@ -252,7 +256,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
         Reader flStreamReader;
 		BufferedReader flLineReader;
         String flRecord;
-        int lineNumber = 1;
+        int lineNumber = 0;
 
 		// Get a reader for the Fixed Length source...
         flStreamReader = flInputSource.getCharacterStream();
@@ -269,7 +273,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
         // Output each of the Fixed Length line entries...
         while ((flRecord = flLineReader.readLine()) != null) {
-        	// Skip a line
+        	lineNumber++; // First line is line "1"
+          
         	if (lineNumber <= this.skipLines) {
         		continue;
         	}
@@ -289,14 +294,14 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
             }
 
             AttributesImpl attrs = EMPTY_ATTRIBS;
-            // Add a sequence ID
-            if (sequence || invalidLength) {
+            // Add a lineNumber ID
+            if (this.lineNumber || invalidLength) {
             	attrs = new AttributesImpl();
-            	if(sequence) {
-            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_NUMBER_ATTR, "xs:int", Integer.toString(lineNumber));
+            	if(this.lineNumber) {
+            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, lineNumberAttributeName, "xs:int", Integer.toString(lineNumber));
             	}
             	if(invalidLength) {
-            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
+            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
             	}
             }
 
@@ -325,7 +330,8 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
                 	//If truncated then set the truncated attribute
                 	if(truncated) {
-                		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
+                		recordAttrs = new AttributesImpl();
+                        recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
                 	}
 
                     contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, recordAttrs);
@@ -356,7 +362,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
             contentHandler.endElement(null, recordElementName, StringUtils.EMPTY);
 
-        	lineNumber++;
+
         }
 
         if(indent) {
