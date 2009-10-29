@@ -32,6 +32,7 @@
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-calc" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-css" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-csv" />
+            <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-fixed-length" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-edi" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-ejc" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-javabean"/>

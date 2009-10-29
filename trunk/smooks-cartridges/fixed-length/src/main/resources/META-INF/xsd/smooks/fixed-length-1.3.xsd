@@ -105,7 +105,7 @@
     					</xs:documentation>
     				</xs:annotation>
     			</xs:attribute>
-    			<xs:attribute name="rootElementName" type="xs:string" use="optional" default="root">
+    			<xs:attribute name="rootElementName" type="xs:string" use="optional" default="set">
     				<xs:annotation>
     					<xs:documentation xml:lang="en">
     						Name of root element.

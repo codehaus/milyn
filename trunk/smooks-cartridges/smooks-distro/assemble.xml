@@ -109,6 +109,10 @@
             <param name="target" value="${javadocdir}/smooks-cartridges/csv"/>
         </antcall>
         <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/fixed-length"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/fixed-length"/>
+        </antcall>
+        <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/edi"/>
             <param name="target" value="${javadocdir}/smooks-cartridges/edi"/>
         </antcall>

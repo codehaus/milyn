@@ -63,57 +63,91 @@ import java.util.Map;
  * Fixed Length Reader.
  * <p/>
  * This Fixed Length Reader can be plugged into the Smooks (for example) in order to convert a
- * Fixed Length based message stream into a stream of SAX events.
+ * Fixed Length record based message stream into a stream of SAX events to be consumed by the DOMBuilder.
  *
- * <h3>.cdrl Configuration</h3>
+ * <h3>Configuration</h3>
+ * To maintain a single binding instance in memory:
  * <pre>
- * &lt;resource-config selector="org.xml.sax.driver"&gt;
- *  &lt;resource&gt;org.milyn.fixedlength.FixedLength&lt;/resource&gt;
- *  &lt;!--
- *      (Mandatory) Comma separated list of records field names, with length of each field in brackets. Example : fieldA[2],fieldB[5],fieldC[30]
- *  --&gt;
- *  &lt;param name="<b>fields</b>"&gt;<i>&lt;record-fields&gt;</i>&lt;/param&gt;
- *  &lt;!--
- *      (Optional) If each line is numbered with an unique sequence ID (true) or not (false).  Default of 'true'.
- *  --&gt;
- *  &lt;param name="<b>sequence-id</b>"&gt;<i>&lt;sequence-id&gt;</i>&lt;/param&gt;
- *  &lt;!--
- *      (Optional) Number of lines to skip before processing starts.  Default of 0.
- *  --&gt;
- *  &lt;param name="<b>skip-line-count</b>"&gt;<i>&lt;skip-line-count&gt;</i>&lt;/param&gt;
- *  &lt;!--
- *      (Optional) If data is read strictly or not. When strict is true then the line which doesn't contain enough characters is skipped
- *      else the fields that don't have enough characters are empty. Default false.
- *  --&gt;
- *  &lt;param name="<b>strict</b>"&gt;<i>&lt;strict&gt;</i>&lt;/param&gt;
+ * &lt;?xml version="1.0"?&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:fl="http://www.milyn.org/xsd/smooks/fixed-length-1.3.xsd"&gt;
  *
- * &lt;/resource-config&gt;
- * </pre>
+ *     &lt;fl:reader fields="" separator="" quote="" skipLines="" lineNumber="" rootElementName="" recordElementName="" lineNumberAttributeName="" truncatedAttributeName=""&gt;
+ *         &lt;fl:singleBinding beanId="" class="" /&gt;
+ *     &lt;/fl:reader&gt;
+ *
+ * &lt;/smooks-resource-list&gt;</pre>
+ *
+ * <p/>
+ * To maintain a {@link java.util.List} of binding instances in memory:
+ * <pre>
+ * &lt;?xml version="1.0"?&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:fl="http://www.milyn.org/xsd/smooks/fixed-length-1.3.xsd"&gt;
+ *
+ *     &lt;fl:reader fields="" separator="" quote="" skipLines="" lineNumber="" rootElementName="" recordElementName="" lineNumberAttributeName="" truncatedAttributeName=""&gt;
+ *         &lt;fl:listBinding beanId="" class="" /&gt;
+ *     &lt;/fl:reader&gt;
+ *
+ * &lt;/smooks-resource-list&gt;</pre>
+ *
+ * <p/>
+ * To maintain a {@link Map} of binding instances in memory:
+ * <pre>
+ * &lt;?xml version="1.0"?&gt;
+ * &lt;smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:fl="http://www.milyn.org/xsd/smooks/fixed-length-1.3.xsd"&gt;
+ *
+ *     &lt;fl:reader fields="" separator="" quote="" skipLines="" lineNumber="" rootElementName="" recordElementName="" lineNumberAttributeName="" truncatedAttributeName=""&gt;
+ *         &lt;fl:mapBinding beanId="" class="" keyField="" /&gt;
+ *     &lt;/fl:reader&gt;
+ *
+ * &lt;/smooks-resource-list&gt;</pre>
+ *
+ * <h3>Field definition</h3>
+ * The field definition is a comma separated list of fieldnames. After each fieldname the length is set between brackets. So a field
+ * definition could look like this: firstname[10],lastname[10],gender[1]
+ *
+ * <h3>Strict parsing</h3>
+ * You can choose if the data is read strictly or not. When strict is to true then the line which doesn't contain enough characters is skipped
+ * else the fields that don't have enough characters are empty and those records and fields have the 'truncated' attribute set to true.
+ * By default strict is set to false.
+ *
+ * <h3>Ignoring Fields</h3>
+ * To ignore a field in a fixed length record set, just insert the string "<b>$ignore$[10]</b>" for that field in the fields attribute. You still
+ * need to set the field length between the brackets
+ *
+ * <h3>String manipulation functions</h3>
+ * String manipulation functions can be defined per field. These functions are executed before that the data is converted into SAX events.
+ * The functions are defined after the field length definition and are optionally separated with a question mark.  So a field
+ * definition with string functions could look like this: firstname[10]?trim,lastname[10]?right_trim,gender[1]?upper_case
+ * Take a look in the Smooks manual for a list of all available functions. 
+ *
+ * <h3>Simple Java Bindings</h3>
+ * A simple java binding can be configured on the reader configuration.  This allows quick binding configuration where the
+ * fixed length records map cleanly to the target bean.  For more complex bindings, use the Java Binging Framework.
  *
  * <h3>Example Usage</h3>
- * So the following configuration could be used to parse a Fixed Length stream into
+ * So the following configuration could be used to parse a fixed length stream into
  * a stream of SAX events:
- * <pre>&lt;resource-config selector="org.xml.sax.driver"&gt;
- *  &lt;resource&gt;org.milyn.csv.FixedLengthReader&lt;/resource&gt;
- *  &lt;param name="fields"&gt;fieldA[2],fieldB[5],fieldC[30]&lt;/param&gt;
- * &lt;/smooks-resource&gt;</pre>
+ * <pre>
+ * &lt;csv:reader fields="name[20]?trim,address[50]?trim,$ignore$[5],item[5],quantity[3].trim" /&gt;</pre>
  * <p/>
  * Within Smooks, the stream of SAX events generated by the "Acme-Order-List" message (and this parser) will generate
- * a DOM equivalent to the following:
- * <pre> &lt;fixedlength-set&gt;
- * 	&lt;fixedlength-record&gt;
- * 		&lt;fieldA&gt;12&lt;/name&gt;
- * 		&lt;fieldB&gt;12345&lt;/address&gt;
- * 		&lt;fieldC&gt;12356789012345678901234567890&lt;/item&gt;
- * 	&lt;fixedlength-record&gt;
- * 	&lt;fixedlength-record&gt;
- * 		&lt;fieldA&gt;34&lt;/name&gt;
- * 		&lt;fieldB&gt;7890&lt;/address&gt;
- * 		&lt;fieldC&gt;098765432109876543210987654321&lt;/item&gt;
- * 	&lt;fixedlength-record&gt;
- * &lt;/fixedlength-set&gt;</pre>
+ * an event stream equivalent to the following:
+ * <pre> &lt;set&gt;
+ * 	&lt;record number="1"&gt;
+ * 		&lt;name&gt;Tom Fennelly&lt;/name&gt;
+ * 		&lt;address&gt;Ireland&lt;/address&gt;
+ * 		&lt;item&gt;V1234&lt;/item&gt;
+ * 		&lt;quantity&gt;3&lt;/quantity&gt;
+ * 	&lt;record&gt;
+ * 	&lt;record number="2"&gt;
+ * 		&lt;name&gt;Joe Bloggs&lt;/name&gt;
+ * 		&lt;address&gt;England&lt;/address&gt;
+ * 		&lt;item&gt;D9123&lt;/item&gt;
+ * 		&lt;quantity&gt;7&lt;/quantity&gt;
+ * 	&lt;record&gt;
+ * &lt;/set&gt;</pre>
  * <p/>
- * Other profile based transformations can then be used to transform the Fixed Length records in accordance with the requirements
+ * Other profile based transformations can then be used to transform the CSV records in accordance with the requirements
  * of the consuming entities.
  *
  * @author Cedric Rathgeb
@@ -151,7 +185,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
-    @ConfigParam(defaultVal="root")
+    @ConfigParam(defaultVal="set")
     private String rootElementName;
 
     @ConfigParam(defaultVal="record")
