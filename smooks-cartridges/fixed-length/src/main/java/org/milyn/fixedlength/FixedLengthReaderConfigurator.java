@@ -36,7 +36,7 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
     private boolean lineNumber = false;
     private int skipLines = 0;
     private Charset encoding = Charset.forName("UTF-8");
-    private String rootElementName = "root";
+    private String rootElementName = "set";
     private String recordElementName = "record";
    private String lineNumberAttributeName = "number";
     private String truncatedAttributeName = "truncated";

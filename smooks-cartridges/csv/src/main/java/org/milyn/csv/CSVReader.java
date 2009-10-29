@@ -21,7 +21,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.function.StringFunctionExecutor;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
@@ -33,6 +32,7 @@ import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.function.StringFunctionExecutor;
 import org.milyn.javabean.Bean;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
@@ -108,6 +108,12 @@ import java.util.Map;
  * (that it where the tokens present in the line is less than the number of tokens expected) would be garbled and a WARN log
  * statement was provided. Now, you can decide if you want those lines to be parsed too, this is accomplished by setting strict="false"
  * on the config.
+ *
+ * <h3>String manipulation functions</h3>
+ * String manipulation functions can be defined per field. These functions are executed before that the data is converted into SAX events.
+ * The functions are defined after the field name, separated with a question mark. So a field definition with string functions
+ * could look like this: firstname?trim,lastname?right_trim,gender?upper_case
+ * Take a look in the Smooks manual for a list of all available functions.
  *
  * <h3>Ignoring Fields</h3>
  * To ignore a field in a CSV record set, just insert the string "<b>$ignore$</b>" for that field in the fields attribute.
