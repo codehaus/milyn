@@ -103,7 +103,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
     		throw new SmooksConfigurationException("Both the lookup name and the query can't be set at the same time");
     	}
 
-    	beanId = appContext.getBeanIdIndex().register(beanIdName);
+    	beanId = appContext.getBeanIdStore().register(beanIdName);
 
     	parameterIndex = ParameterManager.initializeParameterIndex(id, parameterListType, appContext);
 

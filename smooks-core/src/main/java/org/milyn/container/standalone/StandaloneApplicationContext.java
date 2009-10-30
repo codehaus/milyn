@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.context.StandaloneBeanContextFactory;
 import org.milyn.profile.*;
 import org.milyn.resource.ContainerResourceLocator;
@@ -41,7 +41,7 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	private ContainerResourceLocator resourceLocator;
 	private SmooksResourceConfigurationStore resStore;
 	private DefaultProfileStore profileStore = new DefaultProfileStore();
-	private BeanIdIndex beanIdIndex = new BeanIdIndex();
+	private BeanIdStore beanIdStore = new BeanIdStore();
 
     /**
      * Public constructor.
@@ -102,8 +102,8 @@ public class StandaloneApplicationContext implements ApplicationContext {
 		return attributes;
 	}
 
-	public BeanIdIndex getBeanIdIndex() {
-		return beanIdIndex;
+	public BeanIdStore getBeanIdStore() {
+		return beanIdStore;
 	}
 
 

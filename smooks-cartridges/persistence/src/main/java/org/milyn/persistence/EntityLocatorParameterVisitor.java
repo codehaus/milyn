@@ -43,7 +43,7 @@ import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
@@ -110,7 +110,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
 
     private Parameter<?> parameter;
 
-    private BeanIdIndex beanIdIndex;
+    private BeanIdStore beanIdStore;
 
     private BeanRuntimeInfo wiredBeanRuntimeInfo;
 
@@ -136,7 +136,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
         beanWiring = wireBeanIdName != null;
         isAttribute = (valueAttributeName != null);
 
-        beanIdIndex = appContext.getBeanIdIndex();
+        beanIdStore = appContext.getBeanIdStore();
 
         if(parameterListType == ParameterListType.NAMED) {
         	NamedParameterIndex parameterIndex = (NamedParameterIndex) ParameterManager.getParameterIndex(entityLocatorId, appContext);
@@ -246,7 +246,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
 
     private BeanId getWireBeanId() {
 		if(wireBeanId == null) {
-            wireBeanId = beanIdIndex.register(wireBeanIdName);
+            wireBeanId = beanIdStore.register(wireBeanIdName);
         }
 
         return wireBeanId;

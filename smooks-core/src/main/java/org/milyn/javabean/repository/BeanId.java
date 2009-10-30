@@ -16,7 +16,7 @@
 
 package org.milyn.javabean.repository;
 
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 
 
 
@@ -40,14 +40,14 @@ public class BeanId {
 
 	private final String name;
 
-	private final BeanIdIndex beanIdIndex;
+	private final BeanIdStore beanIdStore;
 
 	/**
 	 * @param index
 	 * @param name
 	 */
-	public BeanId(BeanIdIndex beanIdIndex, int index, String beanId) {
-		this.beanIdIndex = beanIdIndex;
+	public BeanId(BeanIdStore beanIdStore, int index, String beanId) {
+		this.beanIdStore = beanIdStore;
 		this.index = index;
 		this.name = beanId;
 	}
@@ -55,12 +55,12 @@ public class BeanId {
 	/**
 	 * @param index
 	 * @param name
-	 * @deprecated Use the constructor with the BeanIdIndex
+	 * @deprecated Use the constructor with the BeanIdStore
 	 */
 	@Deprecated
 	@SuppressWarnings("deprecation")
 	public BeanId(BeanIdRegister beanIdRegister, int index, String beanId) {
-		this.beanIdIndex = beanIdRegister.getBeanIdIndex();
+		this.beanIdStore = beanIdRegister.getBeanIdStore();
 		this.index = index;
 		this.name = beanId;
 	}
@@ -92,7 +92,7 @@ public class BeanId {
 	 */
 	@Deprecated
 	public BeanIdRegister getBeanIdList() {
-		return new BeanIdRegister(beanIdIndex);
+		return new BeanIdRegister(beanIdStore);
 	}
 
 	/* (non-Javadoc)
@@ -116,7 +116,7 @@ public class BeanId {
 			return false;
 		}
 		BeanId rhs = (BeanId) obj;
-		if(this.beanIdIndex != rhs.beanIdIndex) {
+		if(this.beanIdStore != rhs.beanIdStore) {
 			return false;
 		}
 		if(this.name != rhs.name) {

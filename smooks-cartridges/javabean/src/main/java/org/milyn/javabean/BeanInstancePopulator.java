@@ -43,7 +43,7 @@ import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -111,7 +111,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     @AppContext
     private ApplicationContext appContext;
 
-    private BeanIdIndex beanIdIndex;
+    private BeanIdStore beanIdStore;
 
     private BeanId beanId;
 
@@ -183,8 +183,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         beanWiring = wireBeanIdName != null;
         isAttribute = (valueAttributeName != null);
 
-        beanIdIndex = appContext.getBeanIdIndex();
-        beanId = beanIdIndex.getBeanId(beanIdName);
+        beanIdStore = appContext.getBeanIdStore();
+        beanId = beanIdStore.getBeanId(beanIdName);
 
         if (setterMethod == null && property == null ) {
             if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
@@ -374,11 +374,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     private BeanId getWireBeanId() {
     	if(wireBeanId == null) {
-    		wireBeanId = beanIdIndex.getBeanId(wireBeanIdName);
+    		wireBeanId = beanIdStore.getBeanId(wireBeanIdName);
     	}
 
 		if(wireBeanId == null) {
-            wireBeanId = beanIdIndex.register(wireBeanIdName);
+            wireBeanId = beanIdStore.register(wireBeanIdName);
         }
 
         return wireBeanId;

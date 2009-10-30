@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
@@ -140,7 +140,7 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdIndex(), beanId);
+		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
 
 		executionContext.getBeanContext().addBean(beanIdObj, bean);
 
@@ -162,7 +162,7 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdIndex(), beanId);
+		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
 
 		executionContext.getBeanContext().changeBean(beanIdObj, bean);
     }
@@ -185,9 +185,9 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
 		AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
 
-		BeanId parentIdObj = getBeanId(executionContext.getContext().getBeanIdIndex(), parentBean);
+		BeanId parentIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), parentBean);
 
-		BeanId childBeanIdObj =  getBeanId(executionContext.getContext().getBeanIdIndex(), childBean);
+		BeanId childBeanIdObj =  getBeanId(executionContext.getContext().getBeanIdStore(), childBean);
 
 		if (parentIdObj == null) {
 			throw new IllegalStateException(
@@ -216,7 +216,7 @@ public class BeanAccessor {
 		AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
 		AssertArgument.isNotNull(observer, "observer");
 
-		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdIndex(), beanId);
+		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
 
 		BeanContextLifecycleObserver repositoryBeanLifecycleObserver = new BeanContextLifecycleObserver() {
 
@@ -245,7 +245,7 @@ public class BeanAccessor {
 		AssertArgument.isNotNull(lifecycle, "lifecycle");
 		AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
 
-		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdIndex(), beanId);
+		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
 
 		executionContext.getBeanContext().removeBeanLifecycleObserver(beanIdObj, lifecycle, observerId);
 
@@ -255,13 +255,13 @@ public class BeanAccessor {
 	 * @param beanId
 	 * @param beanIdRegister
 	 */
-	private static BeanId getBeanId(BeanIdIndex beanIdIndex, String beanId) {
+	private static BeanId getBeanId(BeanIdStore beanIdStore, String beanId) {
 		warnUsingDeprecatedMethod();
 
-		BeanId beanIdObj = beanIdIndex.getBeanId(beanId);
+		BeanId beanIdObj = beanIdStore.getBeanId(beanId);
 
 		if (beanIdObj == null) {
-			beanIdObj = beanIdIndex.register(beanId);
+			beanIdObj = beanIdStore.register(beanId);
 		}
 
 		return beanIdObj;

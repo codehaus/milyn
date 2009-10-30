@@ -40,7 +40,7 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -89,12 +89,12 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-    	BeanIdIndex beanIdIndex = appContext.getBeanIdIndex();
+    	BeanIdStore beanIdStore = appContext.getBeanIdStore();
 
-    	beanId = beanIdIndex.register(beanIdName);
+    	beanId = beanIdStore.register(beanIdName);
 
     	if(insertedBeanIdName != null) {
-    		insertedBeanId = beanIdIndex.register(insertedBeanIdName);
+    		insertedBeanId = beanIdStore.register(insertedBeanIdName);
     	}
 
     	objectStore = new ApplicationContextObjectStore(appContext);

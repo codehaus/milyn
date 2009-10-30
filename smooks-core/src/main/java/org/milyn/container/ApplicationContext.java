@@ -19,7 +19,7 @@ package org.milyn.container;
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.profile.ProfileStore;
 
 /**
@@ -53,9 +53,9 @@ public interface ApplicationContext extends BoundAttributeStore {
     public ProfileStore getProfileStore();
 
     /**
-     * Get the BeanIdIndex in use within this Context
-     * @return The BeanIdIndex
+     * Get the BeanIdStore in use within this Context
+     * @return The BeanIdStore
      */
-    public BeanIdIndex getBeanIdIndex();
+    public BeanIdStore getBeanIdStore();
 
 }

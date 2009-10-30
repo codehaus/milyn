@@ -13,13 +13,13 @@ import org.milyn.javabean.repository.BeanIdRegister;
  * This class represents a context of bean's and the means to get and
  * set there instances.
  * <p/>
- * This class uses a {@link BeanIdIndex} to optimize the access performance. If
- * all the {@link BeanId} objects are registered with the BeanIdIndex before this object
+ * This class uses a {@link BeanIdStore} to optimize the access performance. If
+ * all the {@link BeanId} objects are registered with the BeanIdStore before this object
  * is created then you get 'direct access' performance.
  * <p/>
  * For performance reasons it is best to register all BeanId objects up front. Because
  * if new BeanId objects are registered after the BeanContext is created then the BeanContext
- * needs to do  synchronize with the BeanIdIndex,
+ * needs to do  synchronize with the BeanIdStore,
  * <p/>
  * It is possible to get the bean by it's bean id String name. However this isn't as
  * fast as using the BeanId objects.

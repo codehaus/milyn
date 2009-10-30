@@ -52,7 +52,7 @@ public class BeanRepositoryManager {
 
 		if(beanRepositoryManager == null) {
 
-			beanRepositoryManager = new BeanRepositoryManager(new BeanIdRegister(applicationContext.getBeanIdIndex()));
+			beanRepositoryManager = new BeanRepositoryManager(new BeanIdRegister(applicationContext.getBeanIdStore()));
 
 			applicationContext.setAttribute(CONTEXT_KEY, beanRepositoryManager);
 

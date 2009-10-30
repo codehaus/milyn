@@ -8,7 +8,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.javabean.repository.BeanId;
 
 /**
- * Bean Id Index
+ * Bean Id Store
  * <p/>
  * Represents a map of BeanId's. Every BeanId has it own unique index. The index
  * is incremental. The index starts with zero.
@@ -19,7 +19,7 @@ import org.milyn.javabean.repository.BeanId;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class BeanIdIndex {
+public class BeanIdStore {
 	private int index = 0;
 
 	private final Map<String, BeanId> beanIdMap = new HashMap<String, BeanId>();

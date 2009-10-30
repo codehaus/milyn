@@ -91,7 +91,7 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
     @Initialize
     public void initialize() throws SmooksConfigurationException {
 
-    	beanId = applicationContext.getBeanIdIndex().getBeanId(beanIdName);
+    	beanId = applicationContext.getBeanIdStore().getBeanId(beanIdName);
 
     }
 

@@ -125,7 +125,7 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 	@Initialize
 	public void initialize() {
 
-		beanId = appContext.getBeanIdIndex().register(beanIdName);
+		beanId = appContext.getBeanIdStore().register(beanIdName);
 
 		countDirection = CountDirection.valueOf(direction);
 

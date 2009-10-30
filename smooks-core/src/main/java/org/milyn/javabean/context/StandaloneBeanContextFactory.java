@@ -16,7 +16,7 @@ import org.milyn.payload.JavaSource;
 /**
  * The Bean Context Manager
  * <p/>
- * Creates {@link StandaloneBeanContext} that share the same {@link BeanIdIndex}.
+ * Creates {@link StandaloneBeanContext} that share the same {@link BeanIdStore}.
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
@@ -31,10 +31,10 @@ public class StandaloneBeanContextFactory  {
 	public static StandaloneBeanContext create(ExecutionContext executionContext) {
 		StandaloneBeanContext beanContext;
 
-		BeanIdIndex beanIdIndex = executionContext.getContext().getBeanIdIndex();
-		Map<String, Object> beanMap = createBeanMap(executionContext, beanIdIndex);
+		BeanIdStore beanIdStore = executionContext.getContext().getBeanIdStore();
+		Map<String, Object> beanMap = createBeanMap(executionContext, beanIdStore);
 
-		beanContext = new StandaloneBeanContext(executionContext, beanIdIndex, beanMap);
+		beanContext = new StandaloneBeanContext(executionContext, beanIdStore, beanMap);
 
 		return beanContext;
 	}
@@ -46,13 +46,13 @@ public class StandaloneBeanContextFactory  {
 	 * those are used in the creation of the Bean map.
 	 *
 	 * Bean's that are already in the JavaResult or JavaSource map are given
-	 * a {@link BeanId} in the {@link BeanIdIndex}.
+	 * a {@link BeanId} in the {@link BeanIdStore}.
 	 *
 	 * @param executionContext
-	 * @param beanIdIndex
+	 * @param beanIdStore
 	 * @return
 	 */
-	private static Map<String, Object> createBeanMap(ExecutionContext executionContext, BeanIdIndex beanIdIndex) {
+	private static Map<String, Object> createBeanMap(ExecutionContext executionContext, BeanIdStore beanIdStore) {
 		Result result = FilterResult.getResult(executionContext, JavaResult.class);
 		Source source = FilterSource.getSource(executionContext);
 		Map<String, Object> beanMap = null;
@@ -81,8 +81,8 @@ public class StandaloneBeanContextFactory  {
 
 			for(String beanId : beanMap.keySet()) {
 
-				if(!beanIdIndex.containsBeanId(beanId)) {
-					beanIdIndex.register(beanId);
+				if(!beanIdStore.containsBeanId(beanId)) {
+					beanIdStore.register(beanId);
 				}
 
 	        }
