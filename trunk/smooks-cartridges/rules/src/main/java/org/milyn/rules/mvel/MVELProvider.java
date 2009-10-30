@@ -74,16 +74,15 @@ public class MVELProvider implements RuleProvider {
             throw new SmooksException("Unknown rule name '" + ruleName + "' on MVEL RuleProvider '" + name + "'.");
         }
 
-        BeanRepository beanContext = BeanRepository.getInstance(context);
-
         try {
-            return new MVELRuleEvalResult(evaluator.eval(beanContext.getBeanMap()), ruleName, name, selectedData.toString());
+            return new MVELRuleEvalResult(evaluator.eval(context.getBeanContext().getBeanMap()), ruleName, name, selectedData.toString());
         } catch(Throwable t) {
             return new MVELRuleEvalResult(t, ruleName, name, selectedData.toString());
         }
     }
 
-    private void loadRules() {
+    @SuppressWarnings("unchecked")
+	private void loadRules() {
         if (src == null) {
             throw new SmooksException("ruleFile not specified.");
         }

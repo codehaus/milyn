@@ -19,9 +19,9 @@ package org.milyn.javabean.context;
 import junit.framework.TestCase;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
@@ -289,7 +289,7 @@ public class BeanContextTest extends TestCase {
         BeanContext.addBeanLifecycleObserver(beanId1, BeanLifecycle.BEGIN, "observer2", false, new MockRepositoryBeanLifecycleObserver() {
 
         	@Override
-			public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+			public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
         		assertEquals(executionContext, event.getExecutionContext());
         		assertEquals(BeanLifecycle.BEGIN, event.getLifecycle());
         		assertEquals(beanId1, event.getBeanId());
@@ -416,7 +416,7 @@ public class BeanContextTest extends TestCase {
 	}
 
 
-    public class MockRepositoryBeanLifecycleObserver implements BeanRepositoryLifecycleObserver {
+    public class MockRepositoryBeanLifecycleObserver implements BeanContextLifecycleObserver {
 
     	private boolean fired = false;
 
@@ -428,7 +428,7 @@ public class BeanContextTest extends TestCase {
     		fired = false;
     	}
 
-		public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+		public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
 			fired = true;
 		}
     }

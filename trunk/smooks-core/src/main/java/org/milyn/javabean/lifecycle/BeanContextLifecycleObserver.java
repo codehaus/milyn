@@ -18,12 +18,13 @@ package org.milyn.javabean.lifecycle;
 
 
 /**
+ * An object that observes for Bean lifecycle events
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
- * @deprecated Use the {@link BeanContextLifecycleObserver}
+ *
  */
-@Deprecated
-public interface BeanRepositoryLifecycleObserver {
+public interface BeanContextLifecycleObserver {
 
-	void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event);
+	void onBeanLifecycleEvent(BeanContextLifecycleEvent event);
 
 }

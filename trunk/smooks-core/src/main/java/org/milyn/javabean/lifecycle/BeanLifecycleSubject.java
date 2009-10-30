@@ -79,7 +79,7 @@ public class BeanLifecycleSubject {
 
     }
 
-    public void addObserver(String observerId, boolean notifyOnce, BeanRepositoryLifecycleObserver observer) {
+    public void addObserver(String observerId, boolean notifyOnce, BeanContextLifecycleObserver observer) {
     	AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
     	AssertArgument.isNotNull(observer, "observer");
 
@@ -119,7 +119,7 @@ public class BeanLifecycleSubject {
 
 				if(observerContext.repositoryBeanLifecycleObserver != null) {
 
-					BeanRepositoryLifecycleEvent beanLifecycleEvent = new BeanRepositoryLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
+					BeanContextLifecycleEvent beanLifecycleEvent = new BeanContextLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
 
 					observerContext.repositoryBeanLifecycleObserver.onBeanLifecycleEvent(beanLifecycleEvent);
 
@@ -176,7 +176,7 @@ public class BeanLifecycleSubject {
     	@Deprecated
     	BeanLifecycleObserver observer;
 
-    	BeanRepositoryLifecycleObserver repositoryBeanLifecycleObserver;
+    	BeanContextLifecycleObserver repositoryBeanLifecycleObserver;
     }
 
     /**

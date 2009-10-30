@@ -8,6 +8,7 @@ import org.milyn.container.ExecutionContext
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.SmooksException;
 import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.context.BeanContext;
 
 import org.milyn.delivery.DomModelCreator
 import org.milyn.delivery.DOMModel
@@ -41,7 +42,7 @@ class ${visitorName} implements DOMVisitBefore, SAXVisitBefore {
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
         def getBean = { beanId ->
-            BeanRepository.getInstance(executionContext).getBean(beanId);
+            executionContext.getBeanContext().getBean(beanId);
         }
 
         ${visitorScript}
@@ -49,9 +50,9 @@ class ${visitorName} implements DOMVisitBefore, SAXVisitBefore {
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
-        
+
         def getBean = { beanId ->
-            BeanRepository.getInstance(executionContext).getBean(beanId);
+            executionContext.getBeanContext().getBean(beanId);
         }
 
         ${visitorScript}
@@ -72,7 +73,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
 		    modelCreator = new DomModelCreator();
 		}
 		format = config.getBoolParameter("format", false);
-		isWritingFragment = config.getBoolParameter("writeFragment", false);		
+		isWritingFragment = config.getBoolParameter("writeFragment", false);
 	}
 
     public void visitAfter(Element element, ExecutionContext executionContext) {
@@ -84,7 +85,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
         Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
         def getBean = { beanId ->
-            BeanRepository.getInstance(executionContext).getBean(beanId);
+            executionContext.getBeanContext().getBean(beanId);
         }
         def writeFragment = { outNode ->
             if(outNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -134,7 +135,7 @@ class ${visitorName} implements DOMVisitAfter, SAXVisitBefore, SAXVisitAfter {
             Map nodeModels = DOMModel.getModel(executionContext).getModels();
 
             def getBean = { beanId ->
-                BeanRepository.getInstance(executionContext).getBean(beanId);
+                executionContext.getBeanContext().getBean(beanId);
             }
 
             ${visitorScript}

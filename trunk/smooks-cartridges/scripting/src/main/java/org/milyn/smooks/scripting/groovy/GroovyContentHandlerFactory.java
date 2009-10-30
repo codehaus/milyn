@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -31,6 +31,7 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Resource;
 import org.milyn.io.StreamUtils;
+import org.milyn.javabean.context.BeanContext;
 import org.milyn.util.FreeMarkerTemplate;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -50,7 +51,7 @@ import java.util.Map;
  *  <li><b>Imports</b>: Imports can be added via the "imports" element.  A number of classes are automatically imported:
  *      <ul>
  *          <li>{@link DomUtils org.milyn.xml.DomUtils}</li>
- *          <li>{@link org.milyn.javabean.repository.BeanRepository}</li>
+ *          <li>{@link BeanContext}</li>
  *          <li>{@link org.w3c.dom org.w3c.dom.*}</li>
  *          <li>groovy.xml.dom.DOMCategory, groovy.xml.dom.DOMUtil, groovy.xml.DOMBuilder</li>
  *      </ul>
@@ -134,15 +135,15 @@ import java.util.Map;
  *             }
  *
  *             // Must explicitly write the fragment to the result stream when
- *             // using the SAX filter. 
- *             writeFragment(category); 
+ *             // using the SAX filter.
+ *             writeFragment(category);
  *             --&gt;
  *         &lt;/g:script&gt;
  *     &lt;/g:groovy&gt;
  *
  * &lt;/smooks-resource-list&gt;
  * </pre>
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Resource(type="groovy")
@@ -203,7 +204,7 @@ public class GroovyContentHandlerFactory implements ContentHandlerFactory {
 
         templateVars.put("imports", cleanImportsConfig(imports));
         templateVars.put("visitorName", createClassName());
-        templateVars.put("elementName", getElementName(configuration));        
+        templateVars.put("elementName", getElementName(configuration));
         templateVars.put("visitBefore", configuration.getBoolParameter("executeBefore", false));
         templateVars.put("visitorScript", groovyScript);
 

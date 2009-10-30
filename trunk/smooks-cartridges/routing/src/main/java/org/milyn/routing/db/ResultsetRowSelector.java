@@ -16,7 +16,11 @@
 package org.milyn.routing.db;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,20 +37,19 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
+import org.milyn.delivery.ordering.Consumer;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.delivery.ordering.Producer;
-import org.milyn.delivery.ordering.Consumer;
-import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluator;
-import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdRegister;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.expression.MVELExpressionEvaluator;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.BeanIdIndex;
 import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
-import org.milyn.util.FreeMarkerTemplate;
+import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.CollectionsUtil;
+import org.milyn.util.FreeMarkerTemplate;
 import org.w3c.dom.Element;
 
 /**
@@ -132,10 +135,10 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 
     @Initialize
     public void intitialize() throws SmooksConfigurationException {
-    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
+    	BeanIdIndex beanIdIndex = appContext.getBeanIdIndex();
 
-    	beanIdObj = beanIdRegister.register(beanId);
-    	resultSetBeanId = beanIdRegister.register(resultSetName);
+    	beanIdObj = beanIdIndex.register(beanId);
+    	resultSetBeanId = beanIdIndex.register(resultSetName);
     }
 
     public Set<? extends Object> getProducts() {
@@ -179,7 +182,7 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 	}
 
     private void selectRow(ExecutionContext executionContext) throws SmooksException {
-    	BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+    	BeanContext beanRepository = executionContext.getBeanContext();
 
     	Map<String, Object> beanMapClone = new HashMap<String, Object>(beanRepository.getBeanMap());
 

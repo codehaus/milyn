@@ -77,7 +77,7 @@ public class EntityLocatorTest extends BaseTestCase {
             Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
             smooks.filterSource(executionContext, source, null);
 
-            assertSame(result, BeanRepository.getInstance(executionContext).getBean("entity"));
+            assertSame(result, executionContext.getBeanContext().getBean("entity"));
         } finally {
             smooks.close();
         }

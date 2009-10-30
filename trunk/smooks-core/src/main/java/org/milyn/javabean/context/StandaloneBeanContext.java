@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
@@ -194,7 +195,7 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#addBeanLifecycleObserver(org.milyn.javabean.repository.BeanId, org.milyn.javabean.lifecycle.BeanLifecycle, java.lang.String, boolean, org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver)
 	 */
-	public void addBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanRepositoryLifecycleObserver observer) {
+	public void addBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanContextLifecycleObserver observer) {
     	AssertArgument.isNotNull(beanId, "beanId");
 
     	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, true);

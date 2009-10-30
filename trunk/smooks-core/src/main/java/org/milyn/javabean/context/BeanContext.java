@@ -2,10 +2,31 @@ package org.milyn.javabean.context;
 
 import java.util.Map;
 
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdRegister;
 
+/**
+ * Bean Context
+ * <p/>
+ * This class represents a context of bean's and the means to get and
+ * set there instances.
+ * <p/>
+ * This class uses a {@link BeanIdIndex} to optimize the access performance. If
+ * all the {@link BeanId} objects are registered with the BeanIdIndex before this object
+ * is created then you get 'direct access' performance.
+ * <p/>
+ * For performance reasons it is best to register all BeanId objects up front. Because
+ * if new BeanId objects are registered after the BeanContext is created then the BeanContext
+ * needs to do  synchronize with the BeanIdIndex,
+ * <p/>
+ * It is possible to get the bean by it's bean id String name. However this isn't as
+ * fast as using the BeanId objects.
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ *
+ */
 public interface BeanContext {
 
 	/**
@@ -76,6 +97,9 @@ public interface BeanContext {
 	 */
 	public abstract Object removeBean(String beanId);
 
+	/**
+	 * Removes all the beans from the bean map
+	 */
 	public abstract void clear();
 
 	/**
@@ -85,8 +109,7 @@ public interface BeanContext {
 	 * @param parentBeanId The {@link BeanId} of the bean that controlles the lifecycle of its childs
 	 * @param childBeanId The {@link BeanId} of the bean that will be associated to the parent
 	 */
-	public abstract void associateLifecycles(BeanId parentBeanId,
-			BeanId childBeanId);
+	public abstract void associateLifecycles(BeanId parentBeanId, BeanId childBeanId);
 
 	/**
 	 * Registers an observer which observers when a bean gets added.
@@ -97,7 +120,7 @@ public interface BeanContext {
 	 */
 	public abstract void addBeanLifecycleObserver(BeanId beanId,
 			BeanLifecycle lifecycle, String observerId, boolean notifyOnce,
-			BeanRepositoryLifecycleObserver observer);
+			BeanContextLifecycleObserver observer);
 
 	/**
 	 * Unregisters a bean observer

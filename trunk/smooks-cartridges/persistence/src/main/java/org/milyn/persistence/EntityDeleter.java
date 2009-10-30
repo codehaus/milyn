@@ -39,6 +39,8 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.BeanIdIndex;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -86,12 +88,13 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
 
-    	beanId = beanIdRegister.register(beanIdName);
+    	BeanIdIndex beanIdIndex = appContext.getBeanIdIndex();
+
+    	beanId = beanIdIndex.register(beanIdName);
 
     	if(deletedBeanIdName != null) {
-    		deletedBeanId = beanIdRegister.register(deletedBeanIdName);
+    		deletedBeanId = beanIdIndex.register(deletedBeanIdName);
     	}
 
     	objectStore = new ApplicationContextObjectStore(appContext);
@@ -144,9 +147,9 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 			logger.debug("Deleting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'");
 		}
 
-		BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+		BeanContext beanContext = executionContext.getBeanContext();
 
-		Object bean = beanRepository.getBean(beanId);
+		Object bean = beanContext.getBean(beanId);
 
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
@@ -178,9 +181,9 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 				if(result == null) {
 					result = bean;
 				}
-				beanRepository.addBean(deletedBeanId, result);
+				beanContext.addBean(deletedBeanId, result);
 			} else if(result != null && bean != result) {
-				beanRepository.changeBean(beanId, bean);
+				beanContext.changeBean(beanId, bean);
 			}
 
 

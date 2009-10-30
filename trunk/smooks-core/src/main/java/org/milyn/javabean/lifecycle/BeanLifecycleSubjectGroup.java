@@ -63,7 +63,7 @@ public class BeanLifecycleSubjectGroup {
 
     }
 
-	public void addObserver(BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanRepositoryLifecycleObserver observer) {
+	public void addObserver(BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanContextLifecycleObserver observer) {
 		getBeanObserverNotifier(lifecycle).addObserver(observerId, notifyOnce, observer);
 
     }

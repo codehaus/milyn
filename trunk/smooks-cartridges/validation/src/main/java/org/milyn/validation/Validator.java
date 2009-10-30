@@ -258,7 +258,7 @@ public final class Validator implements SAXVisitBefore, SAXVisitAfter, DOMVisitA
             ValidationResult validationResult = getValidationResult(executionContext);
             OnFailResultImpl onFailResult = new OnFailResultImpl();
             onFailResult.setRuleResult(result);
-            onFailResult.setBeanContext(BeanRepository.getInstance(executionContext).getBeanMap());
+            onFailResult.setBeanContext(executionContext.getBeanContext().getBeanMap());
             validationResult.addResult(onFailResult, onFail);
 
             return onFailResult;
