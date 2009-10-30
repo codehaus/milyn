@@ -21,8 +21,11 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.context.StandaloneBeanContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 
 import java.util.ArrayList;
@@ -87,11 +90,16 @@ public class BeanRepository {
 		beanContext.addBean(beanId, bean);
 	}
 
-	public void addBeanLifecycleObserver(BeanId beanId,
-			BeanLifecycle lifecycle, String observerId, boolean notifyOnce,
-			BeanRepositoryLifecycleObserver observer) {
-		beanContext.addBeanLifecycleObserver(beanId, lifecycle, observerId,
-				notifyOnce, observer);
+	public void addBeanLifecycleObserver(BeanId beanId,	BeanLifecycle lifecycle, String observerId, boolean notifyOnce,	final BeanRepositoryLifecycleObserver observer) {
+
+		BeanContextLifecycleObserver beanContextLifecycleObserver = new BeanContextLifecycleObserver() {
+
+			public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
+				observer.onBeanLifecycleEvent(new BeanRepositoryLifecycleEvent(event));
+			}
+		};
+
+		beanContext.addBeanLifecycleObserver(beanId, lifecycle, observerId,	notifyOnce, beanContextLifecycleObserver);
 	}
 
 	public void associateLifecycles(BeanId parentBeanId, BeanId childBeanId) {

@@ -19,6 +19,8 @@ package org.milyn.javabean.repository;
 import junit.framework.TestCase;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;

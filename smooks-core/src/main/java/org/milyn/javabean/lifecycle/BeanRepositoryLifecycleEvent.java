@@ -23,53 +23,42 @@ import org.milyn.javabean.repository.BeanId;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
+@Deprecated
 public class BeanRepositoryLifecycleEvent {
 
-	private final ExecutionContext executionContext;
+	private final BeanContextLifecycleEvent event;
 
-	private final BeanLifecycle lifecycle;
-
-	private final BeanId beanId;
-
-	private final Object bean;
-
-
-	/**
-	 * @param executionContext
-	 * @param beanId
-	 * @param lifecycle
-	 * @param bean
-	 */
 	public BeanRepositoryLifecycleEvent(ExecutionContext executionContext,
 			 BeanLifecycle lifecycle, BeanId beanId, Object bean) {
 
-		this.executionContext = executionContext;
-		this.beanId = beanId;
-		this.lifecycle = lifecycle;
-		this.bean = bean;
+		this.event = new BeanContextLifecycleEvent(executionContext, lifecycle, beanId, bean);
 	}
-	/**
-	 * @return the executionContext
-	 */
-	public ExecutionContext getExecutionContext() {
-		return executionContext;
+
+	public BeanRepositoryLifecycleEvent(BeanContextLifecycleEvent event) {
+		super();
+		this.event = event;
 	}
-	/**
-	 * @return the lifecycle
-	 */
-	public BeanLifecycle getLifecycle() {
-		return lifecycle;
+
+	public boolean equals(Object obj) {
+		return event.equals(obj);
 	}
-	/**
-	 * @return the beanId
-	 */
-	public BeanId getBeanId() {
-		return beanId;
-	}
-	/**
-	 * @return the bean
-	 */
+
 	public Object getBean() {
-		return bean;
+		return event.getBean();
 	}
+
+	public BeanId getBeanId() {
+		return event.getBeanId();
+	}
+
+	public ExecutionContext getExecutionContext() {
+		return event.getExecutionContext();
+	}
+
+	public BeanLifecycle getLifecycle() {
+		return event.getLifecycle();
+	}
+
+
+
 }

@@ -35,9 +35,9 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -397,9 +397,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             }
 
             // Register the observer which looks for the creation of the selected bean via its beanIdName...
-        	beanContext.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanRepositoryLifecycleObserver(){
+        	beanContext.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanContextLifecycleObserver(){
 
-                public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
                     Object eventBean = event.getBean();
                     beanContext.associateLifecycles(beanId , targetBeanId);
                     populateAndSetPropertyValue(eventBean, beanContext, targetBeanId, executionContext);
@@ -425,8 +425,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
             // can then set this array
 
-            beanContext.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
-                public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+            beanContext.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanContextLifecycleObserver() {
+                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
 
                     setPropertyValue(property, event.getBean(), executionContext);
 

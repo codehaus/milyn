@@ -17,8 +17,6 @@ package org.milyn.persistence;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.NonUniqueResultException;
@@ -40,16 +38,12 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdRegister;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.parameter.NamedParameterContainer;
-import org.milyn.persistence.parameter.Parameter;
 import org.milyn.persistence.parameter.ParameterContainer;
 import org.milyn.persistence.parameter.ParameterIndex;
 import org.milyn.persistence.parameter.ParameterManager;
-import org.milyn.persistence.parameter.ParameterProductUtil;
 import org.milyn.persistence.parameter.PositionalParameterContainer;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.invoker.DaoInvoker;
@@ -109,8 +103,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
     		throw new SmooksConfigurationException("Both the lookup name and the query can't be set at the same time");
     	}
 
-    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
-    	beanId = beanIdRegister.register(beanIdName);
+    	beanId = appContext.getBeanIdIndex().register(beanIdName);
 
     	parameterIndex = ParameterManager.initializeParameterIndex(id, parameterListType, appContext);
 
@@ -211,12 +204,12 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 				}
 			}
 
-			BeanRepository beanRepository = BeanRepository.getInstance(executionContext);
+			BeanContext beanContext = executionContext.getBeanContext();
 
 			if(result == null) {
-				beanRepository.removeBean(beanId);
+				beanContext.removeBean(beanId);
 			} else {
-				beanRepository.addBean(beanId, result);
+				beanContext.addBean(beanId, result);
 			}
 		} finally {
 			if(dao != null) {

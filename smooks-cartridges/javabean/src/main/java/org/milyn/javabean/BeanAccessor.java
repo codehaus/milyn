@@ -25,10 +25,10 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 
 /**
@@ -218,9 +218,9 @@ public class BeanAccessor {
 
 		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdIndex(), beanId);
 
-		BeanRepositoryLifecycleObserver repositoryBeanLifecycleObserver = new BeanRepositoryLifecycleObserver() {
+		BeanContextLifecycleObserver repositoryBeanLifecycleObserver = new BeanContextLifecycleObserver() {
 
-			public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
+			public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
 				observer.onBeanLifecycleEvent(event.getExecutionContext(), event.getLifecycle(), event.getBeanId().getName(), event.getBean());
 			}
 

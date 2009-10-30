@@ -41,6 +41,7 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -141,10 +142,7 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
         }
 
         if(resultSetName != null) {
-	        BeanRepositoryManager beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
-	        BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
-
-	        resultSetBeanId = beanIdRegister.register(resultSetName);
+	        resultSetBeanId = appContext.getBeanIdIndex().register(resultSetName);
         }
         rsAppContextKey = datasource + ":" + statement;
     }
@@ -185,15 +183,15 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
 
 	private void executeSQL(ExecutionContext executionContext) throws SmooksException {
         Connection connection = AbstractDataSource.getConnection(datasource, executionContext);
-        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+        BeanContext beanContext = executionContext.getBeanContext();
 
-        Map<String, Object> beanMap = beanRepository.getBeanMap();
+        Map<String, Object> beanMap = beanContext.getBeanMap();
 
         try {
             if(!statementExec.isJoin()) {
                 if(statementExec.getStatementType() == StatementType.QUERY) {
                     if(resultSetScope == ResultSetScope.EXECUTION) {
-                        beanRepository.addBean(resultSetBeanId, statementExec.executeUnjoinedQuery(connection));
+                        beanContext.addBean(resultSetBeanId, statementExec.executeUnjoinedQuery(connection));
                     } else {
                         List<Map<String, Object>> resultMap;
                         // Cached in the application context...
@@ -209,7 +207,7 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
                             }
                         }
                         resultMap = rsContextObj.resultSet;
-                        beanRepository.addBean(resultSetBeanId, resultMap);
+                        beanContext.addBean(resultSetBeanId, resultMap);
                     }
                 } else {
                     statementExec.executeUnjoinedUpdate(connection);
@@ -218,12 +216,12 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
                 if(statementExec.getStatementType() == StatementType.QUERY) {
                     List<Map<String, Object>> resultMap = new ArrayList<Map<String, Object>>();
                     statementExec.executeJoinedQuery(connection, beanMap, resultMap);
-                    beanRepository.addBean(resultSetBeanId, resultMap);
+                    beanContext.addBean(resultSetBeanId, resultMap);
                 } else {
                     if(resultSetBeanId == null) {
                         statementExec.executeJoinedUpdate(connection, beanMap);
                     } else {
-                        Object resultSetObj = beanRepository.getBean(resultSetBeanId);
+                        Object resultSetObj = beanContext.getBean(resultSetBeanId);
                         if(resultSetObj != null) {
                             try {
                             	@SuppressWarnings("unchecked")

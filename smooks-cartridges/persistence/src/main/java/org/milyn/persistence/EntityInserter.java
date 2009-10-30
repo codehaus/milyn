@@ -39,6 +39,8 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.BeanIdIndex;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -87,12 +89,12 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 
     @Initialize
     public void initialize() throws SmooksConfigurationException {
-    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
+    	BeanIdIndex beanIdIndex = appContext.getBeanIdIndex();
 
-    	beanId = beanIdRegister.register(beanIdName);
+    	beanId = beanIdIndex.register(beanIdName);
 
     	if(insertedBeanIdName != null) {
-    		insertedBeanId = beanIdRegister.register(insertedBeanIdName);
+    		insertedBeanId = beanIdIndex.register(insertedBeanIdName);
     	}
 
     	objectStore = new ApplicationContextObjectStore(appContext);
@@ -144,7 +146,7 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 			logger.debug("Inserting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'.");
 		}
 
-		BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+		BeanContext beanRepository = executionContext.getBeanContext();
 
 		Object bean = beanRepository.getBean(beanId);
 
