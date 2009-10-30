@@ -24,6 +24,7 @@
         <module>csv-to-xml-2</module>
         <module>csv-to-java</module>
         <module>csv-to-java-programmatic</module>
+        <module>fixed-length-to-java</module>
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
@@ -51,6 +52,7 @@
         <milyn.smooks.javabean.version>${milyn.smooks.core.version}</milyn.smooks.javabean.version>
         <milyn.smooks.templating.version>${milyn.smooks.core.version}</milyn.smooks.templating.version>
         <milyn.smooks.csv.version>${milyn.smooks.core.version}</milyn.smooks.csv.version>
+        <milyn.smooks.fixed-length.version>${milyn.smooks.core.version}</milyn.smooks.fixed-length.version>
         <milyn.smooks.edi.version>${milyn.smooks.core.version}</milyn.smooks.edi.version>
         <milyn.smooks.scripting.version>${milyn.smooks.core.version}</milyn.smooks.scripting.version>
         <milyn.smooks.routing.version>${milyn.smooks.core.version}</milyn.smooks.routing.version>
