@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 
 /**
  * Bean Id List
@@ -33,50 +33,50 @@ import org.milyn.javabean.context.BeanIdIndex;
  *
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
- * @deprecated Use the BeanIdIndex
+ * @deprecated Use the BeanIdStore
  */
 @Deprecated
 public class BeanIdRegister {
 
-	private final BeanIdIndex beanIdIndex;
+	private final BeanIdStore beanIdStore;
 
 	public BeanIdRegister() {
-		beanIdIndex = new BeanIdIndex();
+		beanIdStore = new BeanIdStore();
 	}
 
-	BeanIdRegister(BeanIdIndex beanIdIndex) {
-		this.beanIdIndex = beanIdIndex;
+	BeanIdRegister(BeanIdStore beanIdStore) {
+		this.beanIdStore = beanIdStore;
 	}
 
 	public boolean containsBeanId(String beanId) {
-		return beanIdIndex.containsBeanId(beanId);
+		return beanIdStore.containsBeanId(beanId);
 	}
 
 	public boolean equals(Object obj) {
-		return beanIdIndex.equals(obj);
+		return beanIdStore.equals(obj);
 	}
 
 	public BeanId getBeanId(String beanId) {
-		return beanIdIndex.getBeanId(beanId);
+		return beanIdStore.getBeanId(beanId);
 	}
 
 	public Map<String, BeanId> getBeanIdMap() {
-		return beanIdIndex.getBeanIdMap();
+		return beanIdStore.getBeanIdMap();
 	}
 
 	public int hashCode() {
-		return beanIdIndex.hashCode();
+		return beanIdStore.hashCode();
 	}
 
 	public BeanId register(String beanIdName) {
-		return beanIdIndex.register(beanIdName);
+		return beanIdStore.register(beanIdName);
 	}
 
 	public int size() {
-		return beanIdIndex.size();
+		return beanIdStore.size();
 	}
 
-	BeanIdIndex getBeanIdIndex() {
-		return beanIdIndex;
+	BeanIdStore getBeanIdStore() {
+		return beanIdStore;
 	}
 }

@@ -120,7 +120,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
             } else if(resultUsage instanceof BindTo) {
                 action = Action.BIND_TO;
                 bindId = ((BindTo)resultUsage).getBeanId();
-                bindBeanId = applicationContext.getBeanIdIndex().register(bindId);
+                bindBeanId = applicationContext.getBeanIdStore().register(bindId);
             } else if(resultUsage instanceof OutputTo) {
                 outputStreamResource = ((OutputTo)resultUsage).getOutputStreamResource();
             }
@@ -153,7 +153,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
                 if(bindId == null) {
                     throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
                 } else {
-                    bindBeanId = applicationContext.getBeanIdIndex().register(bindId);
+                    bindBeanId = applicationContext.getBeanIdStore().register(bindId);
                 }
             }
         } else {

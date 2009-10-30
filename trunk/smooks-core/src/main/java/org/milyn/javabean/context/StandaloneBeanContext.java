@@ -25,7 +25,7 @@ public class StandaloneBeanContext implements BeanContext {
 
 	private final ArrayList<ContextEntry> entries;
 
-	private final BeanIdIndex beanIdIndex;
+	private final BeanIdStore beanIdStore;
 
 	private final BeanContextMapAdapter repositoryBeanMapAdapter = new BeanContextMapAdapter();
 
@@ -38,9 +38,9 @@ public class StandaloneBeanContext implements BeanContext {
 	 * the BeanRepository! It is only provided as constructor parameter because in some situations we need to control
 	 * which {@link Map} is used.
 	 */
-	public StandaloneBeanContext(ExecutionContext executionContext, BeanIdIndex beanIdList, Map<String, Object> beanMap) {
+	public StandaloneBeanContext(ExecutionContext executionContext, BeanIdStore beanIdList, Map<String, Object> beanMap) {
 		this.executionContext = executionContext;
-		this.beanIdIndex = beanIdList;
+		this.beanIdStore = beanIdList;
 		this.beanMap = beanMap;
 
 		entries = new ArrayList<ContextEntry>(beanIdList.size());
@@ -82,10 +82,10 @@ public class StandaloneBeanContext implements BeanContext {
 	 */
     public BeanId getBeanId(String beanId) {
         AssertArgument.isNotNull(beanId, "beanId");
-        BeanId beanIdObj = beanIdIndex.getBeanId(beanId);
+        BeanId beanIdObj = beanIdStore.getBeanId(beanId);
 
         if(beanIdObj == null) {
-            beanIdObj = beanIdIndex.register(beanId);
+            beanIdObj = beanIdStore.register(beanId);
         }
 
         return beanIdObj;
@@ -238,7 +238,7 @@ public class StandaloneBeanContext implements BeanContext {
 
 		//We only check if the size is difference because it
 		//is not possible to remove BeanIds from the BeanIdList
-		if(entries.size() != beanIdIndex.size()) {
+		if(entries.size() != beanIdStore.size()) {
 
 			updateBeanMap();
 
@@ -253,7 +253,7 @@ public class StandaloneBeanContext implements BeanContext {
 	 */
 	private void updateBeanMap() {
 
-		for(String beanId : beanIdIndex.getBeanIdMap().keySet()) {
+		for(String beanId : beanIdStore.getBeanIdMap().keySet()) {
 
 			if(!beanMap.containsKey(beanId) ) {
 				beanMap.put(beanId, null);
@@ -270,11 +270,11 @@ public class StandaloneBeanContext implements BeanContext {
 	 * value is possible.
 	 */
 	private void updateRepositoryEntries() {
-		entries.addAll(Collections.nCopies((beanIdIndex.size() - entries.size()), (ContextEntry)null));
+		entries.addAll(Collections.nCopies((beanIdStore.size() - entries.size()), (ContextEntry)null));
 
 		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
 
-			BeanId beanId = beanIdIndex.getBeanId(beanMapEntry.getKey());
+			BeanId beanId = beanIdStore.getBeanId(beanMapEntry.getKey());
 
 			int index = beanId.getIndex();
 			if(entries.get(index) == null) {
@@ -581,11 +581,11 @@ public class StandaloneBeanContext implements BeanContext {
 		public Object put(String key, Object value) {
 			AssertArgument.isNotNull(key, "key");
 
-			BeanId beanId = beanIdIndex.getBeanId(key);
+			BeanId beanId = beanIdStore.getBeanId(key);
 
 			Object old = null;
 			if(beanId == null) {
-				beanId = beanIdIndex.register(key);
+				beanId = beanIdStore.register(key);
 			} else {
 				old = getBean(beanId);
 			}
@@ -617,7 +617,7 @@ public class StandaloneBeanContext implements BeanContext {
 			if(key instanceof String == false) {
 				return null;
 			}
-			BeanId beanId = beanIdIndex.getBeanId((String)key);
+			BeanId beanId = beanIdStore.getBeanId((String)key);
 
 			return beanId == null ? null : removeBean(beanId);
 		}

@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 
 @SuppressWarnings("deprecation")
 public class BeanRepositoryPerformance {
@@ -127,12 +127,12 @@ public class BeanRepositoryPerformance {
 
 		executionContext = new MockExecutionContext();
 
-		BeanIdIndex beanIdIndex = executionContext.getContext().getBeanIdIndex();
+		BeanIdStore beanIdStore = executionContext.getContext().getBeanIdStore();
 
 		ArrayList<BeanId> beanIds = new ArrayList<BeanId>();
 
 		for(int i = 0; i < beans; i++) {
-			beanIds.add(beanIdIndex.register(getBeanId(i)));
+			beanIds.add(beanIdStore.register(getBeanId(i)));
 		}
 
 		Object bean = new Object();

@@ -142,7 +142,7 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
         }
 
         if(resultSetName != null) {
-	        resultSetBeanId = appContext.getBeanIdIndex().register(resultSetName);
+	        resultSetBeanId = appContext.getBeanIdStore().register(resultSetName);
         }
         rsAppContextKey = datasource + ":" + statement;
     }

@@ -187,6 +187,6 @@ public class BeanLifecycleSubject {
 	private static BeanId getBeanId(ExecutionContext executionContext, String beanId) {
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
 
-		return executionContext.getContext().getBeanIdIndex().getBeanId(beanId);
+		return executionContext.getContext().getBeanIdStore().getBeanId(beanId);
 	}
 }

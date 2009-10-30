@@ -145,7 +145,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     public void initialize() throws SmooksConfigurationException {
     	buildId();
 
-        beanId = appContext.getBeanIdIndex().register(beanIdName);
+        beanId = appContext.getBeanIdStore().register(beanIdName);
 
         if(StringUtils.isNotBlank(beanFactoryDefinition)) {
     		factory = FactoryDefinitionParserFactory.getInstance(appContext).parse(beanFactoryDefinition);

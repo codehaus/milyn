@@ -26,7 +26,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.profile.ProfileStore;
 import org.milyn.profile.DefaultProfileStore;
 
@@ -51,7 +51,7 @@ public class ServletApplicationContext implements ApplicationContext {
 
     private DefaultProfileStore profileStore = new DefaultProfileStore();
 
-    private BeanIdIndex beanIdIndex = new BeanIdIndex();
+    private BeanIdStore beanIdStore = new BeanIdStore();
 
 	/**
 	 * Public constructor.
@@ -126,7 +126,7 @@ public class ServletApplicationContext implements ApplicationContext {
 		throw new UnsupportedOperationException( "Method getAttributes is not implemented" );
 	}
 
-	public BeanIdIndex getBeanIdIndex() {
-		return beanIdIndex;
+	public BeanIdStore getBeanIdStore() {
+		return beanIdStore;
 	}
 }

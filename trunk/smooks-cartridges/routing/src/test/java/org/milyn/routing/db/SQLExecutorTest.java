@@ -24,7 +24,7 @@ import org.milyn.SmooksException;
 import org.milyn.db.DirectDataSource;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -186,9 +186,9 @@ public class SQLExecutorTest extends TestCase
         try {
             ExecutionContext execContext = smooks.createExecutionContext();
             BeanContext beanContext = execContext.getBeanContext();
-            BeanIdIndex beanIdIndex =  execContext.getContext().getBeanIdIndex();
+            BeanIdStore beanIdStore =  execContext.getContext().getBeanIdStore();
 
-            BeanId requiredOrderNumId = beanIdIndex.register("requiredOrderNum");
+            BeanId requiredOrderNumId = beanIdStore.register("requiredOrderNum");
 
             beanContext.addBean(requiredOrderNumId, 9999);
             try {

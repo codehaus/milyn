@@ -79,7 +79,7 @@ public class BeanRepository {
 	}
 
 	public BeanRepository(ExecutionContext executionContext, BeanIdRegister beanIdRegister, Map<String, Object> beanMap) {
-		beanContext = new StandaloneBeanContext(executionContext, beanIdRegister.getBeanIdIndex(), beanMap);
+		beanContext = new StandaloneBeanContext(executionContext, beanIdRegister.getBeanIdStore(), beanMap);
 	}
 
 	public void addBean(BeanId beanId, Object bean) {

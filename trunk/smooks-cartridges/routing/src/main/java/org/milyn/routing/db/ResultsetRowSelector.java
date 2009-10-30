@@ -45,7 +45,7 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.CollectionsUtil;
@@ -135,10 +135,10 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 
     @Initialize
     public void intitialize() throws SmooksConfigurationException {
-    	BeanIdIndex beanIdIndex = appContext.getBeanIdIndex();
+    	BeanIdStore beanIdStore = appContext.getBeanIdStore();
 
-    	beanIdObj = beanIdIndex.register(beanId);
-    	resultSetBeanId = beanIdIndex.register(resultSetName);
+    	beanIdObj = beanIdStore.register(beanId);
+    	resultSetBeanId = beanIdStore.register(resultSetName);
     }
 
     public Set<? extends Object> getProducts() {

@@ -43,8 +43,8 @@ public class BeanContextTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
 
-        BeanId beanId1 = getBeanIdIndex().register("bean1");
-        BeanId beanId2 = getBeanIdIndex().register("bean2");
+        BeanId beanId1 = getBeanIdStore().register("bean1");
+        BeanId beanId2 = getBeanIdStore().register("bean2");
 
         BeanContext BeanContext = getBeanContext();
 
@@ -74,7 +74,7 @@ public class BeanContextTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        BeanId beanId1 = getBeanIdIndex().register("bean1");
+        BeanId beanId1 = getBeanIdStore().register("bean1");
 
         BeanContext BeanContext = getBeanContext();
 
@@ -96,8 +96,8 @@ public class BeanContextTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        BeanId beanId1 = getBeanIdIndex().register("bean1");
-        BeanId beanIdNE = getBeanIdIndex().register("notExisting");
+        BeanId beanId1 = getBeanIdStore().register("bean1");
+        BeanId beanIdNE = getBeanIdStore().register("notExisting");
 
 
         BeanContext BeanContext = getBeanContext();
@@ -130,10 +130,10 @@ public class BeanContextTest extends TestCase {
         Object child2 = new MyGoodBean();
         Object childChild = new MyGoodBean();
 
-        BeanId brIdParent = getBeanIdIndex().register("parent");
-        BeanId brIdChild = getBeanIdIndex().register("child");
-        BeanId brIdChild2 = getBeanIdIndex().register("child2");
-        BeanId brIdChildChild = getBeanIdIndex().register("childChild");
+        BeanId brIdParent = getBeanIdStore().register("parent");
+        BeanId brIdChild = getBeanIdStore().register("child");
+        BeanId brIdChild2 = getBeanIdStore().register("child2");
+        BeanId brIdChildChild = getBeanIdStore().register("childChild");
 
         BeanContext BeanContext = getBeanContext();
 
@@ -215,8 +215,8 @@ public class BeanContextTest extends TestCase {
         final Object bean1 = new MyGoodBean();
         final Object bean2 = new MyGoodBean();
 
-        final BeanId beanId1 = getBeanIdIndex().register("bean1");
-        final BeanId beanId2 = getBeanIdIndex().register("bean2");
+        final BeanId beanId1 = getBeanIdStore().register("bean1");
+        final BeanId beanId2 = getBeanIdStore().register("bean2");
 
         BeanContext BeanContext = getBeanContext();
 
@@ -307,7 +307,7 @@ public class BeanContextTest extends TestCase {
 	public void test_bean_lifecycle_change_observers_associates() {
         Object bean = new MyGoodBean();
 
-        BeanId beanId = getBeanIdIndex().register("bean");
+        BeanId beanId = getBeanIdStore().register("bean");
 
         BeanContext BeanContext = getBeanContext();
 
@@ -339,7 +339,7 @@ public class BeanContextTest extends TestCase {
 		Object bean3 = new Object();
 		Object bean4 = new Object();
 
-		BeanId beanId1 = getBeanIdIndex().register("bean1");
+		BeanId beanId1 = getBeanIdStore().register("bean1");
 
 		BeanContext BeanContext = getBeanContext();
 		Map<String, Object> beanMap = BeanContext.getBeanMap();
@@ -404,8 +404,8 @@ public class BeanContextTest extends TestCase {
 	/**
 	 *
 	 */
-	private BeanIdIndex getBeanIdIndex() {
-        return executionContext.getContext().getBeanIdIndex();
+	private BeanIdStore getBeanIdStore() {
+        return executionContext.getContext().getBeanIdStore();
 	}
 
 	/**

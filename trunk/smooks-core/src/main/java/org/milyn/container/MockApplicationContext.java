@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
-import org.milyn.javabean.context.BeanIdIndex;
+import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.profile.ProfileStore;
 import org.milyn.profile.DefaultProfileStore;
 
@@ -33,7 +33,7 @@ public class MockApplicationContext implements ApplicationContext {
 	public MockContainerResourceLocator containerResourceLocator = new MockContainerResourceLocator();
     public ProfileStore profileStore = new DefaultProfileStore();
     private Hashtable<Object, Object> attributes = new Hashtable<Object, Object>();
-    private BeanIdIndex beanIdIndex = new BeanIdIndex();
+    private BeanIdStore beanIdStore = new BeanIdStore();
 
 	/* (non-Javadoc)
 	 * @see org.milyn.container.ApplicationContext#getResourceLocator()
@@ -91,7 +91,7 @@ public class MockApplicationContext implements ApplicationContext {
     	return attributes;
     }
 
-	public BeanIdIndex getBeanIdIndex() {
-		return beanIdIndex;
+	public BeanIdStore getBeanIdStore() {
+		return beanIdStore;
 	}
 }

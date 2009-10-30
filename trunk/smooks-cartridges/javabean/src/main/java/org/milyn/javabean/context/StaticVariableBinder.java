@@ -63,10 +63,10 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     @Initialize
     public void initialize() throws SmooksConfigurationException {
 
-        beanId = appContext.getBeanIdIndex().getBeanId(STATVAR);
+        beanId = appContext.getBeanIdStore().getBeanId(STATVAR);
 
         if(beanId == null) {
-        	beanId = appContext.getBeanIdIndex().register(STATVAR);
+        	beanId = appContext.getBeanIdStore().register(STATVAR);
         }
 
 
