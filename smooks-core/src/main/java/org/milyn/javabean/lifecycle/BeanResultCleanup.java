@@ -19,11 +19,13 @@ import org.milyn.delivery.ExecutionLifecycleCleanable;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.util.CollectionsUtil;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 /**
  * Bean Result Cleanup resource.
@@ -48,13 +50,13 @@ public class BeanResultCleanup implements ExecutionLifecycleCleanable {
      * @param executionContext The execution context.
      */
     public void executeExecutionLifecycleCleanup(ExecutionContext executionContext) {
-        BeanRepository beanRepository = BeanRepository.getInstance(executionContext);
-        Set<Map.Entry<String, Object>> beanSet = beanRepository.getBeanMap().entrySet();
+        BeanContext beanContext = executionContext.getBeanContext();
+        Set<Entry<String, Object>> beanSet = beanContext.getBeanMap().entrySet();
 
-        for(Map.Entry<String, Object> beanEntry : beanSet) {
+        for(Entry<String, Object> beanEntry : beanSet) {
             String beanID = beanEntry.getKey();
             if(!beanIDSet.contains(beanID)) {
-                beanRepository.removeBean(beanID);
+            	beanContext.removeBean(beanID);
             }
         }
     }

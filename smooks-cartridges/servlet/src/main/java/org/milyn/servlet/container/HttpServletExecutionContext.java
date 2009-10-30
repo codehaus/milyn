@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -21,6 +21,9 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.ExecutionEventListener;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.StandaloneBeanContext;
+import org.milyn.javabean.context.StandaloneBeanContextFactory;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.profile.ProfileSet;
@@ -70,6 +73,8 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
     private ExecutionEventListener executionListener;
     private Throwable terminationError;
 
+    private BeanContext beanContext;
+
     /**
 	 * Public Constructor.
 	 * @param servletRequest HttpServletRequest instance.
@@ -82,7 +87,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		}
 		if(containerContext == null) {
 			throw new IllegalArgumentException("null 'applicationContext' arg in constructor call.");
-		}		
+		}
 		this.servletRequest = servletRequest;
 		this.applicationContext = containerContext;
 		uaContext = ServletUAContext.getInstance(servletRequest, servletConfig);
@@ -107,7 +112,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		}
 		return requestURI;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.milyn.useragent.request.HttpRequest#getHeader(java.lang.String)
 	 */
@@ -213,7 +218,7 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	public void removeAttribute(Object key) {
 		servletRequest.removeAttribute(key.toString());
 	}
-	
+
 	/**
 	 * Get the HttpServletRequest instance associated with this ExecutionContext
 	 * implementation.
@@ -222,9 +227,16 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 	public HttpServletRequest getServletRequest() {
 		return servletRequest;
 	}
-	
+
 	public Map getAttributes()
 	{
-		throw new UnsupportedOperationException( "Method getAttributes is not implemented" ); 
+		throw new UnsupportedOperationException( "Method getAttributes is not implemented" );
+	}
+
+	public BeanContext getBeanContext() {
+		if(beanContext == null) {
+			beanContext = StandaloneBeanContextFactory.create(this);
+		}
+		return beanContext;
 	}
 }

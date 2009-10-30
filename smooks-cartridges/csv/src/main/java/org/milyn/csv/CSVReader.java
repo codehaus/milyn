@@ -34,8 +34,7 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.function.StringFunctionExecutor;
 import org.milyn.javabean.Bean;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.context.BeanContext;
 import org.milyn.xml.SmooksXMLReader;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -553,13 +552,13 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 
 
 		private void wireObject(ExecutionContext executionContext) {
-            BeanRepository repository = BeanRepositoryManager.getBeanRepository(executionContext);
-            Map<String, Object> beanMap = repository.getBeanMap();
+            BeanContext beanContext = executionContext.getBeanContext();
+            Map<String, Object> beanMap = beanContext.getBeanMap();
             Object key = keyExtractor.getValue(beanMap);
 
             @SuppressWarnings("unchecked") //TODO: Optimize to use the BeanId object
-            Map<Object, Object> map =  (Map<Object, Object>) repository.getBean(mapBindingKey);
-            Object record = repository.getBean(RECORD_BEAN);
+            Map<Object, Object> map =  (Map<Object, Object>) beanContext.getBean(mapBindingKey);
+            Object record = beanContext.getBean(RECORD_BEAN);
 
             map.put(key, record);
         }

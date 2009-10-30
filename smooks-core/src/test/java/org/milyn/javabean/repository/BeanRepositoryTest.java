@@ -19,7 +19,6 @@ package org.milyn.javabean.repository;
 import junit.framework.TestCase;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.javabean.MyGoodBean;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
@@ -31,6 +30,7 @@ import java.util.Map;
  *
  * @author tfennelly
  */
+@SuppressWarnings("deprecation")
 public class BeanRepositoryTest extends TestCase {
 
 	private ExecutionContext executionContext;

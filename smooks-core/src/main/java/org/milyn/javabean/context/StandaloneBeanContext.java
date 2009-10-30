@@ -1,20 +1,12 @@
-/*
-	Milyn - Copyright (C) 2006
+package org.milyn.javabean.context;
 
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
-	Foundation.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
-	http://www.gnu.org/licenses/lgpl.txt
-*/
-
-package org.milyn.javabean.repository;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.assertion.AssertArgument;
@@ -22,85 +14,42 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdRegister;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-/**
- * Bean Repository
- * <p/>
- * This class represents a repository of bean's and the means to get and
- * set there instances.
- * <p/>
- * This class uses a {@link BeanIdRegister} to optimize the access performance. If
- * all the {@link BeanId} objects are registered with the BeanIdList before this object
- * is created then you get direct access performance. If you regularly register new
- * {@link BeanId} objects with the {@link BeanIdRegister}, after this object is created
- * then the BeanRepository needs to sync up with the {@link BeanIdRegister}. That
- * sync process takes some time, so it is adviced to register all the BeanId's up front.
- * <p/>
- * Only {@link BeanId} objects from the {@link BeanIdRegister}, which is set on
- * this BeanRepository, can be used with almost all of the methods.
- * <p/>
- * For ease of use it is also possible to get the bean by it's beanId name. This has however
- * not the direct access performance because a Map lookup is done. It is advised to use
- * the {@link BeanId} to get the bean from the repository.
- *
- * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
- *
- */
-public class BeanRepository {
-
+public class StandaloneBeanContext implements BeanContext {
 	private final ExecutionContext executionContext;
 
 	private final Map<String, Object> beanMap;
 
-	private final ArrayList<RepositoryEntry> repositoryEntries;
+	private final ArrayList<ContextEntry> entries;
 
-	private final BeanIdRegister beanIdRegister;
+	private final BeanIdIndex beanIdIndex;
 
-	private final RepositoryBeanMapAdapter repositoryBeanMapAdapter = new RepositoryBeanMapAdapter();
+	private final BeanContextMapAdapter repositoryBeanMapAdapter = new BeanContextMapAdapter();
 
 	/**
-	 * Create the BeanRepository
+	 * Create the StandAloneBeanContext
 	 *
 	 * @param executionContext The {@link ExecutionContext} to which this object is bound to.
 	 * @param beanIdList The {@link BeanIdRegister} to which this object is bound to.
 	 * @param beanMap The {@link Map} in which the bean's will be set. It is important not to modify this map outside of
-	 * the BeanRepository! It is only provided as constructor parameter because in some situations we need to controll
+	 * the BeanRepository! It is only provided as constructor parameter because in some situations we need to control
 	 * which {@link Map} is used.
 	 */
-	public BeanRepository(ExecutionContext executionContext, BeanIdRegister beanIdList, Map<String, Object> beanMap) {
+	public StandaloneBeanContext(ExecutionContext executionContext, BeanIdIndex beanIdList, Map<String, Object> beanMap) {
 		this.executionContext = executionContext;
-		this.beanIdRegister = beanIdList;
+		this.beanIdIndex = beanIdList;
 		this.beanMap = beanMap;
 
-		repositoryEntries = new ArrayList<RepositoryEntry>(beanIdList.size());
+		entries = new ArrayList<ContextEntry>(beanIdList.size());
 
 		updateBeanMap();
 	}
 
-    /**
-     * Get the {@link BeanRepository} of the given {@link ExecutionContext}.
-     *
-     * @return the {@link BeanRepository} of the given {@link ExecutionContext}.
-     * @see {@link BeanRepositoryManager#getBeanRepository(org.milyn.container.ExecutionContext)}.
-     */
-    public static BeanRepository getInstance(ExecutionContext executionContext) {
-        return BeanRepositoryManager.getBeanRepository(executionContext);
-    }
-
-	/**
-     * Add a bean instance under the specified {@link BeanId}.
-     *
-     * @param beanId The {@link BeanId} under which the bean is to be stored.
-     * @param bean The bean instance to be stored.
-     */
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#addBean(org.milyn.javabean.repository.BeanId, java.lang.Object)
+	 */
 	public void addBean(BeanId beanId, Object bean) {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
@@ -111,94 +60,73 @@ public class BeanRepository {
 		checkUpdatedBeanIdList();
 
 		int index = beanId.getIndex();
-        RepositoryEntry repoEntry = repositoryEntries.get(index);
+        ContextEntry repoEntry = entries.get(index);
 
         clean(index);
 		repoEntry.setValue(bean);
 		notifyObservers(beanId, BeanLifecycle.BEGIN, bean);
 	}
 
-    /**
-     * Add a bean instance under the specified beanId.
-     * <p/>
-     * If performance is important, you should get (and cache) a {@link BeanId} instance
-     * for the beanId String and then use the {@link #addBean(BeanId, Object)} method.
-     *
-     * @param beanId The beanId under which the bean is to be stored.
-     * @param bean The bean instance to be stored.
-     */
+    /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#addBean(java.lang.String, java.lang.Object)
+	 */
     public void addBean(String beanId, Object bean) {
         AssertArgument.isNotNull(beanId, "beanId");
 
         addBean(getBeanId(beanId), bean);
     }
 
-    /**
-     * Get the {@link BeanId} instance for the specified beanId String.
-     * <p/>
-     * Regsiters the beanId if it's not already registered.
-     *
-     * @param beanId The beanId String.
-     * @return The associated {@link BeanId} instance.
-     */
+    /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#getBeanId(java.lang.String)
+	 */
     public BeanId getBeanId(String beanId) {
         AssertArgument.isNotNull(beanId, "beanId");
-        BeanId beanIdObj = beanIdRegister.getBeanId(beanId);
+        BeanId beanIdObj = beanIdIndex.getBeanId(beanId);
 
         if(beanIdObj == null) {
-            beanIdObj = beanIdRegister.register(beanId);
+            beanIdObj = beanIdIndex.register(beanId);
         }
 
         return beanIdObj;
     }
 
-    /**
-     * Looks if a bean instance is set under the {@link BeanId}
-     *
-     * @param beanId The {@link BeanId} under which is looked.
-     */
+    /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#containsBean(org.milyn.javabean.repository.BeanId)
+	 */
 	public boolean containsBean(BeanId beanId) {
 		AssertArgument.isNotNull(beanId, "beanId");
 
 		int index = beanId.getIndex();
 
-		return repositoryEntries.size() > index && repositoryEntries.get(index).getValue() != null;
+		return entries.size() > index && entries.get(index).getValue() != null;
 	}
 
-	/**
-     * Get the current bean, specified by the supplied {@link BeanId}.
-     * <p/>
-     * @param beanId The {@link BeanId} to get the bean instance from.
-     * @return The bean instance, or null if no such bean instance exists
-     */
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#getBean(org.milyn.javabean.repository.BeanId)
+	 */
 	public Object getBean(BeanId beanId) {
 		AssertArgument.isNotNull(beanId, "beanId");
 
 		int index = beanId.getIndex();
 
-		if(repositoryEntries.size() <= index) {
+		if(entries.size() <= index) {
 			return null;
 		}
 
-		return repositoryEntries.get(index).getValue();
+		return entries.get(index).getValue();
 	}
 
-	/**
-     * Changes a bean instance of the given {@link BeanId}. The difference to {@link #addBean(BeanId, Object)}
-     * is that the bean must exist, the associated beans aren't removed and the observers of the
-     * {@link BeanLifecycle#CHANGE} event are notified.
-     *
-     * @param beanId The {@link BeanId} under which the bean instance is to be stored.
-     * @param bean The bean instance to be stored.
-     */
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#changeBean(org.milyn.javabean.repository.BeanId, java.lang.Object)
+	 */
 	public void changeBean(BeanId beanId, Object bean) {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
 		int index = beanId.getIndex();
 
-		if(repositoryEntries.size() > index && repositoryEntries.get(index).getValue() != null) {
-			repositoryEntries.get(index).setValue(bean);
+		if(entries.size() > index && entries.get(index).getValue() != null) {
+			entries.get(index).setValue(bean);
 
 			notifyObservers(beanId, BeanLifecycle.CHANGE, bean);
     	} else {
@@ -206,15 +134,13 @@ public class BeanRepository {
     	}
 	}
 
-	/**
-	 * Removes a bean and all its associated lifecycle beans from the bean map
-	 *
-	 * @param beanId The beanId to remove the beans from.
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#removeBean(org.milyn.javabean.repository.BeanId)
 	 */
 	public Object removeBean(BeanId beanId) {
 		AssertArgument.isNotNull(beanId, "beanId");
 
-        RepositoryEntry repositoryEntry = repositoryEntries.get(beanId.getIndex());
+        ContextEntry repositoryEntry = entries.get(beanId.getIndex());
 		Object old = repositoryEntry.getValue();
 
         repositoryEntry.clean();
@@ -223,11 +149,9 @@ public class BeanRepository {
 		return old;
 	}
 
-    /**
-     * Removes a bean and all its associated lifecycle beans from the bean map
-     *
-     * @param beanId The beanId to remove the beans from.
-     */
+    /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#removeBean(java.lang.String)
+	 */
     public Object removeBean(String beanId) {
         BeanId beanIDObj = getBeanId(beanId);
 
@@ -238,20 +162,19 @@ public class BeanRepository {
         return null;
     }
 
+    /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#clear()
+	 */
     public void clear() {
 
-		for(RepositoryEntry entry : repositoryEntries) {
+		for(ContextEntry entry : entries) {
 			entry.setValue(null);
 		}
 	}
 
-	/**
-     * Associates the lifeCycle of the childBeanId with the parentBeanId. When the parentBean gets overwritten via the
-     * addBean method then the associated child beans will get removed from the bean map.
-     *
-     * @param parentBeanId The {@link BeanId} of the bean that controlles the lifecycle of its childs
-     * @param childBeanId The {@link BeanId} of the bean that will be associated to the parent
-     */
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#associateLifecycles(org.milyn.javabean.repository.BeanId, org.milyn.javabean.repository.BeanId)
+	 */
 	public void associateLifecycles(BeanId parentBeanId, BeanId childBeanId) {
     	AssertArgument.isNotNull(parentBeanId, "parentBeanId");
     	AssertArgument.isNotNull(childBeanId, "childBeanId");
@@ -261,20 +184,16 @@ public class BeanRepository {
     	int parentId = parentBeanId.getIndex();
     	int childId = childBeanId.getIndex();
 
-    	List<Integer> associations = repositoryEntries.get(parentId).getLifecycleAssociation();
+    	List<Integer> associations = entries.get(parentId).getLifecycleAssociation();
 
         if(!associations.contains(childId)) {
             associations.add(childId);
         }
     }
 
-	/**
-     * Registers an observer which observers when a bean gets added.
-     *
-     * @param beanId The {@link BeanId} for which the observer is registered
-     * @param observerId The id of the observer. This is used to unregister the observer
-     * @param observer The actual BeanObserver instance
-     */
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#addBeanLifecycleObserver(org.milyn.javabean.repository.BeanId, org.milyn.javabean.lifecycle.BeanLifecycle, java.lang.String, boolean, org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver)
+	 */
 	public void addBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanRepositoryLifecycleObserver observer) {
     	AssertArgument.isNotNull(beanId, "beanId");
 
@@ -282,12 +201,9 @@ public class BeanRepository {
     	subjectGroup.addObserver(lifecycle, observerId, notifyOnce, observer);
     }
 
-	/**
-     * Unregisters a bean observer
-     *
-     * @param beanId The {@link BeanId} for which the observer is registered
-     * @param observerId The id of the observer to unregister
-     */
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#removeBeanLifecycleObserver(org.milyn.javabean.repository.BeanId, org.milyn.javabean.lifecycle.BeanLifecycle, java.lang.String)
+	 */
 	public void removeBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle,String observerId) {
     	AssertArgument.isNotNull(beanId, "beanId");
 
@@ -298,32 +214,15 @@ public class BeanRepository {
     	}
     }
 
-	/**
-	 * Returns the bean by it's beanId name.
-	 *
-	 * @return the bean instance or <code>null</code> if it not exists.
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#getBean(java.lang.String)
 	 */
 	public Object getBean(String beanId) {
 		return beanMap.get(beanId);
 	}
 
-	/**
-	 * This returns a map which is backed by this repository. Changes made in the map
-	 * are reflected back into the repository.
-     * There are some important side notes:
-     *
-     * <ul>
-     *   <li> The write performance of the map isn't as good as the write performance of the
-     *     	  BeanRepository because it needs to find or register the BeanId every time.
-     *        The read performance are as good as any normal Map.</li>
-     *   <li> The entrySet() method returns an UnmodifiableSet </li>
-     *   <li> When a bean gets removed from the BeanRepository then only the value of the
-     *        map entry is set to null. This means that null values should be regarded as
-     *        deleted beans. That is also why the size() of the bean map isn't accurate. It
-     *        also counts the null value entries.
-     * </ul>
-     *
-     * Only use the Map if you absolutely needed it else you should use the BeanRepository.
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#getBeanMap()
 	 */
 	public Map<String, Object> getBeanMap() {
 		return repositoryBeanMapAdapter;
@@ -338,7 +237,7 @@ public class BeanRepository {
 
 		//We only check if the size is difference because it
 		//is not possible to remove BeanIds from the BeanIdList
-		if(repositoryEntries.size() != beanIdRegister.size()) {
+		if(entries.size() != beanIdIndex.size()) {
 
 			updateBeanMap();
 
@@ -353,7 +252,7 @@ public class BeanRepository {
 	 */
 	private void updateBeanMap() {
 
-		for(String beanId : beanIdRegister.getBeanIdMap().keySet()) {
+		for(String beanId : beanIdIndex.getBeanIdMap().keySet()) {
 
 			if(!beanMap.containsKey(beanId) ) {
 				beanMap.put(beanId, null);
@@ -370,16 +269,16 @@ public class BeanRepository {
 	 * value is possible.
 	 */
 	private void updateRepositoryEntries() {
-		repositoryEntries.addAll(Collections.nCopies((beanIdRegister.size() - repositoryEntries.size()), (RepositoryEntry)null));
+		entries.addAll(Collections.nCopies((beanIdIndex.size() - entries.size()), (ContextEntry)null));
 
 		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
 
-			BeanId beanId = beanIdRegister.getBeanId(beanMapEntry.getKey());
+			BeanId beanId = beanIdIndex.getBeanId(beanMapEntry.getKey());
 
 			int index = beanId.getIndex();
-			if(repositoryEntries.get(index) == null) {
+			if(entries.get(index) == null) {
 
-				repositoryEntries.set(index, new RepositoryEntry(beanId, beanMapEntry));
+				entries.set(index, new ContextEntry(beanId, beanMapEntry));
 			}
 		}
 	}
@@ -391,20 +290,14 @@ public class BeanRepository {
 	 * @param beanId The index of the parent BeanId.
 	 */
 	private void clean(int beanId) {
-        repositoryEntries.get(beanId).clean();
+        entries.get(beanId).clean();
     }
 
-    /**
-     * Mark the bean as being in context.
-     * <p/>
-     * This is "set" when we enter the fragment around which the bean is created and unset
-     * when we exit.
-     *
-     * @param beanId The bean ID.
-     * @param inContext True if the bean is in context, otherwise false.
-     */
+    /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#setBeanInContext(org.milyn.javabean.repository.BeanId, boolean)
+	 */
     public void setBeanInContext(BeanId beanId, boolean inContext) {
-        RepositoryEntry repositoryEntry = repositoryEntries.get(beanId.getIndex());
+        ContextEntry repositoryEntry = entries.get(beanId.getIndex());
         if(repositoryEntry != null) {
             repositoryEntry.setBeanInContext(inContext);
         }
@@ -438,7 +331,7 @@ public class BeanRepository {
     private BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup(BeanId beanId, boolean createIfNotExist) {
     	checkUpdatedBeanIdList();
 
-    	RepositoryEntry repositoryEntry = repositoryEntries.get(beanId.getIndex());
+    	ContextEntry repositoryEntry = entries.get(beanId.getIndex());
 
     	BeanLifecycleSubjectGroup subjectGroup = repositoryEntry.getBeanLifecycleSubjectGroup();
 
@@ -456,6 +349,9 @@ public class BeanRepository {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#toString()
+	 */
     @Override
     public String toString() {
         ToStringBuilder toStringBuilder = new ToStringBuilder(this);
@@ -481,7 +377,7 @@ public class BeanRepository {
      * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
      *
      */
-    private class RepositoryEntry {
+    private class ContextEntry {
 
     	private final BeanId beanId;
 
@@ -498,7 +394,7 @@ public class BeanRepository {
         /**
 		 * @param entry
 		 */
-		public RepositoryEntry(BeanId beanId, Entry<String, Object> entry) {
+		public ContextEntry(BeanId beanId, Entry<String, Object> entry) {
 			this.beanId = beanId;
 			this.entry = entry;
 		}
@@ -564,7 +460,7 @@ public class BeanRepository {
             try {
                 if(lifecycleAssociation.size() > 0) {
                     for (Integer associationId : lifecycleAssociation) {
-                        RepositoryEntry association = repositoryEntries.get(associationId);
+                        ContextEntry association = entries.get(associationId);
 
                         association.clean(true);
                     }
@@ -603,12 +499,12 @@ public class BeanRepository {
         }
 
         public String toString() {
-            return RepositoryEntry.class.getSimpleName() + ": Idx (" + beanId.getIndex() + "), Name (" + beanId.getName() + "), Num Associations (" + lifecycleAssociation.size() + ").";
+            return ContextEntry.class.getSimpleName() + ": Idx (" + beanId.getIndex() + "), Name (" + beanId.getName() + "), Num Associations (" + lifecycleAssociation.size() + ").";
         }
     }
 
     /**
-     * This Map Adapter enables that the bean repository can be used as a normal map.
+     * This Map Adapter enables that the bean context can be used as a normal map.
      * There are some important side notes:
      *
      * <ul>
@@ -622,18 +518,18 @@ public class BeanRepository {
      *        also counts the null value entries.
      * </ul>
      *
-     * Only use the Map if you absolutely needed it else you should use the BeanRepository.
+     * Only use the Map if you absolutely needed it else you should use the BeanContext.
      *
      * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
      *
      */
-    private class RepositoryBeanMapAdapter implements Map<String, Object> {
+    private class BeanContextMapAdapter implements Map<String, Object> {
 
 		/* (non-Javadoc)
 		 * @see java.util.Map#clear()
 		 */
 		public void clear() {
-			BeanRepository.this.clear();
+			StandaloneBeanContext.this.clear();
 		}
 
 		/* (non-Javadoc)
@@ -684,11 +580,11 @@ public class BeanRepository {
 		public Object put(String key, Object value) {
 			AssertArgument.isNotNull(key, "key");
 
-			BeanId beanId = beanIdRegister.getBeanId(key);
+			BeanId beanId = beanIdIndex.getBeanId(key);
 
 			Object old = null;
 			if(beanId == null) {
-				beanId = beanIdRegister.register(key);
+				beanId = beanIdIndex.register(key);
 			} else {
 				old = getBean(beanId);
 			}
@@ -720,7 +616,7 @@ public class BeanRepository {
 			if(key instanceof String == false) {
 				return null;
 			}
-			BeanId beanId = beanIdRegister.getBeanId((String)key);
+			BeanId beanId = beanIdIndex.getBeanId((String)key);
 
 			return beanId == null ? null : removeBean(beanId);
 		}

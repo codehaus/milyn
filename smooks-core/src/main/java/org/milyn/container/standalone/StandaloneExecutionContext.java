@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -24,6 +24,8 @@ import org.milyn.delivery.ContentDeliveryConfigBuilder;
 import org.milyn.delivery.Filter;
 import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.event.ExecutionEventListener;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.StandaloneBeanContextFactory;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
 
@@ -38,7 +40,7 @@ import java.util.Hashtable;
 public class StandaloneExecutionContext implements ExecutionContext {
 
     private ProfileSet targetProfileSet;
-    private Hashtable attributes = new Hashtable();
+    private Hashtable<Object, Object> attributes = new Hashtable<Object, Object>();
     private ContentDeliveryConfig deliveryConfig;
     private URI docSource;
 	private String contentEncoding;
@@ -46,6 +48,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
     private ExecutionEventListener executionListener;
     private Throwable terminationError;
     private boolean isDefaultSerializationOn;
+    private BeanContext beanContext;
 
     /**
 	 * Public Constructor.
@@ -61,7 +64,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	public StandaloneExecutionContext(String targetProfile, ApplicationContext context, VisitorConfigMap extendedVisitorConfigMap) throws UnknownProfileMemberException {
 		this(targetProfile, context, "UTF-8", extendedVisitorConfigMap);
 	}
-    
+
 	/**
 	 * Public Constructor.
 	 * <p/>
@@ -84,7 +87,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
         }
 		this.context = context;
 		setContentEncoding(contentEncoding);
-        targetProfileSet = context.getProfileStore().getProfileSet(targetProfile);        
+        targetProfileSet = context.getProfileStore().getProfileSet(targetProfile);
         deliveryConfig = ContentDeliveryConfigBuilder.getConfig(targetProfileSet, context, extendedVisitorConfigMap);
         isDefaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, deliveryConfig);
     }
@@ -113,8 +116,8 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	}
 
 	/**
-	 * Set the content encoding to be used when parsing content on this standalone request instance. 
-	 * @param contentEncoding Character encoding to be used when parsing content.  Null 
+	 * Set the content encoding to be used when parsing content on this standalone request instance.
+	 * @param contentEncoding Character encoding to be used when parsing content.  Null
 	 * defaults to "UTF-8".
 	 * @throws IllegalArgumentException Invalid encoding.
 	 */
@@ -132,7 +135,7 @@ public class StandaloneExecutionContext implements ExecutionContext {
 	}
 
 	/**
-	 * Get the content encoding to be used when parsing content on this standalone request instance. 
+	 * Get the content encoding to be used when parsing content on this standalone request instance.
 	 * @return Character encoding to be used when parsing content.  Defaults to "UTF-8".
 	 */
 	public String getContentEncoding() {
@@ -191,9 +194,15 @@ public class StandaloneExecutionContext implements ExecutionContext {
     public String toString() {
         return attributes.toString();
     }
-    
-    public Hashtable getAttributes()
-    {
+
+    public Hashtable<Object, Object> getAttributes() {
     	return attributes;
     }
+
+    public BeanContext getBeanContext() {
+		if(beanContext == null) {
+			beanContext = StandaloneBeanContextFactory.create(this);
+		}
+		return beanContext;
+	}
 }

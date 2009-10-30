@@ -6,7 +6,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.BeanIdIndex;
 
+@SuppressWarnings("deprecation")
 public class BeanRepositoryPerformance {
 
 	private static final Log log = LogFactory.getLog(BeanRepositoryPerformance.class);
@@ -16,8 +19,10 @@ public class BeanRepositoryPerformance {
 	public static void main(String[] args) {
 
 
-		new BeanRepositoryPerformance().test_BeanRepository_performance();
-		//new BeanRepositoryPerformance().test_old_BeanAccessor_performance();
+		//new BeanRepositoryPerformance().test_BeanRepository_performance();
+
+		//new BeanRepositoryPerformance().test_BeanContext_performance();
+		new BeanRepositoryPerformance().test_old_BeanAccessor_performance();
 	}
 
 	public void _test_dummy() {
@@ -40,8 +45,15 @@ public class BeanRepositoryPerformance {
 
 	}
 
+	public void test_BeanContext_performance() {
 
-	@SuppressWarnings("deprecation")
+		test_BeanContext_performance(100, 100, true);
+		test_BeanContext_performance(1, 100000, false);
+		test_BeanContext_performance(10, 100000, false);
+		test_BeanContext_performance(100, 100000, false);
+
+	}
+
 	private void test_old_BeanAccessor_performance(int beans, int loops, boolean warmup) {
 		if(!warmup) {
 			sleep();
@@ -70,7 +82,7 @@ public class BeanRepositoryPerformance {
 		long end  = System.currentTimeMillis();
 
 		if(!warmup) {
-			log.info("Old BeanAccessor performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
+			log.error("Old BeanAccessor performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
 		}
 
 
@@ -106,10 +118,43 @@ public class BeanRepositoryPerformance {
 		long end  = System.currentTimeMillis();
 
 		if(!warmup) {
-			log.info("BeanRepository performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
+			log.error("BeanRepository performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
 		}
 	}
 
+	public void test_BeanContext_performance(int beans, int loops, boolean warmup) {
+		sleep();
+
+		executionContext = new MockExecutionContext();
+
+		BeanIdIndex beanIdIndex = executionContext.getContext().getBeanIdIndex();
+
+		ArrayList<BeanId> beanIds = new ArrayList<BeanId>();
+
+		for(int i = 0; i < beans; i++) {
+			beanIds.add(beanIdIndex.register(getBeanId(i)));
+		}
+
+		Object bean = new Object();
+
+		long begin = System.currentTimeMillis();
+		for(int l = 0; l < loops; l++) {
+
+			for(BeanId id: beanIds) {
+				BeanContext beanContext = executionContext.getBeanContext();
+				beanContext.addBean(id, bean);
+			}
+			for(BeanId id: beanIds) {
+				BeanContext beanContext = executionContext.getBeanContext();
+				beanContext.getBean(id);
+			}
+		}
+		long end  = System.currentTimeMillis();
+
+		if(!warmup) {
+			log.error("BeanRepository performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
+		}
+	}
 
 	private String getBeanId(int i) {
 		return "bean" + i;

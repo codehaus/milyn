@@ -1,29 +1,14 @@
-/*
-	Milyn - Copyright (C) 2006
-
-	This library is free software; you can redistribute it and/or
-	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
-	Foundation.
-
-	This library is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
-	http://www.gnu.org/licenses/lgpl.txt
-*/
-
-package org.milyn.javabean.repository;
+package org.milyn.javabean.context;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.milyn.assertion.AssertArgument;
+import org.milyn.javabean.repository.BeanId;
 
 /**
- * Bean Id List
+ * Bean Id Index
  * <p/>
  * Represents a map of BeanId's. Every BeanId has it own unique index. The index
  * is incremental. The index starts with zero.
@@ -34,8 +19,7 @@ import org.milyn.assertion.AssertArgument;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-public class BeanIdRegister {
-
+public class BeanIdIndex {
 	private int index = 0;
 
 	private final Map<String, BeanId> beanIdMap = new HashMap<String, BeanId>();

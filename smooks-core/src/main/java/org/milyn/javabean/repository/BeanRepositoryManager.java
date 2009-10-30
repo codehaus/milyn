@@ -16,18 +16,9 @@
 
 package org.milyn.javabean.repository;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
-import org.milyn.payload.FilterResult;
-import org.milyn.payload.FilterSource;
-import org.milyn.payload.JavaResult;
-import org.milyn.payload.JavaSource;
+import org.milyn.javabean.context.BeanContext;
 
 /**
  * The Bean Repository Manager
@@ -37,15 +28,16 @@ import org.milyn.payload.JavaSource;
  *
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
- *
+ * @deprecated Use the {@link BeanContext} via the {@link ExecutionContext#getBeanContext()} method
  */
+@Deprecated
 public class BeanRepositoryManager {
 
-	private static final String CONTEXT_KEY = BeanRepositoryManager.class.getName() + "#CONTEXT_KEY";
+	public static final String CONTEXT_KEY = BeanRepositoryManager.class.getName() + "#CONTEXT_KEY";
 
-	private static final String BEAN_REPOSITORY_CONTEXT_KEY = BeanRepository.class.getName() + "#CONTEXT_KEY";
+	public static final String BEAN_REPOSITORY_CONTEXT_KEY = BeanRepository.class.getName() + "#CONTEXT_KEY";
 
-	private final BeanIdRegister beanIdRegister = new BeanIdRegister();
+	private final BeanIdRegister beanIdRegister;
 
 	/**
 	 * Returns the instance of the {@link BeanRepositoryManager}, which is bound to the
@@ -60,7 +52,7 @@ public class BeanRepositoryManager {
 
 		if(beanRepositoryManager == null) {
 
-			beanRepositoryManager = new BeanRepositoryManager();
+			beanRepositoryManager = new BeanRepositoryManager(new BeanIdRegister(applicationContext.getBeanIdIndex()));
 
 			applicationContext.setAttribute(CONTEXT_KEY, beanRepositoryManager);
 
@@ -73,7 +65,8 @@ public class BeanRepositoryManager {
 	/**
 	 * The object can only be instantiated with the {@link #getInstance(ApplicationContext)} method.
 	 */
-	private BeanRepositoryManager() {
+	private BeanRepositoryManager(BeanIdRegister beanIdRegister) {
+		this.beanIdRegister = beanIdRegister;
 	}
 
 
@@ -94,79 +87,12 @@ public class BeanRepositoryManager {
 
 		if(beanRepository == null) {
 
-			beanRepository = getInstance(executionContext.getContext()).createBeanRepository(executionContext);
+			beanRepository = new BeanRepository(executionContext.getBeanContext());
 
 			executionContext.setAttribute(BEAN_REPOSITORY_CONTEXT_KEY, beanRepository);
 		}
 
 		return beanRepository;
-	}
-
-	/**
-	 * Creates the BeanRepository
-	 *
-	 * @param executionContext The {@link ExecutionContext} to which the {@link BeanRepository} is bound
-	 * @return The new BeanRepository
-	 */
-	private BeanRepository createBeanRepository(ExecutionContext executionContext) {
-		BeanRepository beanRepository;
-
-		Map<String, Object> beanMap = createBeanMap(executionContext);
-
-		beanRepository = new BeanRepository(executionContext, beanIdRegister, beanMap);
-
-		return beanRepository;
-	}
-
-
-	/**
-	 * Returns the BeanMap which must be used by the {@link BeanRepository}. If
-	 * a JavaResult or a JavaSource is used with the {@link ExecutionContext} then
-	 * those are used in the creation of the Bean map.
-	 *
-	 * Bean's that are already in the JavaResult or JavaSource map are given
-	 * a {@link BeanId} in the {@link BeanIdRegister}.
-	 *
-	 * @param executionContext
-	 * @return
-	 */
-	private Map<String, Object> createBeanMap(ExecutionContext executionContext) {
-		Result result = FilterResult.getResult(executionContext, JavaResult.class);
-		Source source = FilterSource.getSource(executionContext);
-		Map<String, Object> beanMap = null;
-
-		if(result != null) {
-		    JavaResult javaResult = (JavaResult) result;
-		    beanMap = javaResult.getResultMap();
-		}
-
-		if(source instanceof JavaSource) {
-		    JavaSource javaSource = (JavaSource) source;
-		    Map<String, Object> sourceBeans = javaSource.getBeans();
-
-		    if(sourceBeans != null) {
-		        if(beanMap != null) {
-		            beanMap.putAll(sourceBeans);
-		        } else {
-		            beanMap = sourceBeans;
-		        }
-		    }
-		}
-
-		if(beanMap == null) {
-			beanMap = new HashMap<String, Object>();
-		} else {
-
-			for(String beanId : beanMap.keySet()) {
-
-				if(!beanIdRegister.containsBeanId(beanId)) {
-					beanIdRegister.register(beanId);
-				}
-
-	        }
-
-		}
-		return beanMap;
 	}
 
 }

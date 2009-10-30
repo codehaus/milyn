@@ -177,9 +177,6 @@ public class BeanPopulator implements ConfigurationExpander {
     @Config
     private SmooksResourceConfiguration config;
 
-    @AppContext
-    private ApplicationContext appContext;
-
     /*******************************************************************************************************
      *  Common Methods.
      *******************************************************************************************************/

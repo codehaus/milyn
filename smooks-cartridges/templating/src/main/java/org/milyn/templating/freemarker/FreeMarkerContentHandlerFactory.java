@@ -8,6 +8,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
+import org.milyn.javabean.context.BeanContext;
 
 /**
  * <a href="http://freemarker.org/">FreeMarker</a> templating {@link org.milyn.delivery.Visitor} Creator class.
@@ -27,7 +28,7 @@ import org.milyn.delivery.annotation.Resource;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
- *          5. be bound to ("bindto") a {@link org.milyn.javabean.repository.BeanRepository} variable named by the "bindId" param.
+ *          5. be bound to ("bindto") a {@link BeanContext} variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter</i>&lt;/param&gt;
  *
@@ -78,7 +79,7 @@ public class FreeMarkerContentHandlerFactory implements ContentHandlerFactory {
 
 	@AppContext
 	private ApplicationContext applicationContext;
-	
+
     /**
 	 * Create a FreeMarker based ContentHandler.
      * @param resourceConfig The SmooksResourceConfiguration for the FreeMarker.

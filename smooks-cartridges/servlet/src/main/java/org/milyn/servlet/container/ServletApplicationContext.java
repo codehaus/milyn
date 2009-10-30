@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -26,6 +26,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.ServletResourceLocator;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.javabean.context.BeanIdIndex;
 import org.milyn.profile.ProfileStore;
 import org.milyn.profile.DefaultProfileStore;
 
@@ -47,8 +48,10 @@ public class ServletApplicationContext implements ApplicationContext {
 	 * Store instance for the context.
 	 */
 	private SmooksResourceConfigurationStore resStore;
-    
+
     private DefaultProfileStore profileStore = new DefaultProfileStore();
+
+    private BeanIdIndex beanIdIndex = new BeanIdIndex();
 
 	/**
 	 * Public constructor.
@@ -63,10 +66,10 @@ public class ServletApplicationContext implements ApplicationContext {
 			throw new IllegalArgumentException("null 'servletConfig' arg in constructor call.");
 		}
 		this.servletContext = servletContext;
-		resourceLocator = new ServletResourceLocator(servletConfig, new URIResourceLocator());		
+		resourceLocator = new ServletResourceLocator(servletConfig, new URIResourceLocator());
 		resStore = new SmooksResourceConfigurationStore(this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.milyn.container.ApplicationContext#getResourceLocator()
 	 */
@@ -117,9 +120,13 @@ public class ServletApplicationContext implements ApplicationContext {
 	public ServletContext getServletContext() {
 		return servletContext;
 	}
-	
+
 	public Map getAttributes()
 	{
-		throw new UnsupportedOperationException( "Method getAttributes is not implemented" ); 
+		throw new UnsupportedOperationException( "Method getAttributes is not implemented" );
+	}
+
+	public BeanIdIndex getBeanIdIndex() {
+		return beanIdIndex;
 	}
 }

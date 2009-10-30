@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software 
+	License (version 2.1) as published by the Free Software
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-    
-	See the GNU Lesser General Public License for more details:    
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -21,18 +21,20 @@ import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.resource.ContainerResourceLocator;
+import org.milyn.javabean.context.BeanIdIndex;
 import org.milyn.profile.ProfileStore;
 import org.milyn.profile.DefaultProfileStore;
 
 /**
- * 
+ *
  * @author tfennelly
  */
 public class MockApplicationContext implements ApplicationContext {
 	public MockContainerResourceLocator containerResourceLocator = new MockContainerResourceLocator();
     public ProfileStore profileStore = new DefaultProfileStore();
-    private Hashtable attributes = new Hashtable();
-	
+    private Hashtable<Object, Object> attributes = new Hashtable<Object, Object>();
+    private BeanIdIndex beanIdIndex = new BeanIdIndex();
+
 	/* (non-Javadoc)
 	 * @see org.milyn.container.ApplicationContext#getResourceLocator()
 	 */
@@ -67,12 +69,12 @@ public class MockApplicationContext implements ApplicationContext {
 	 */
 	public SmooksResourceConfigurationStore getStore() {
         SmooksResourceConfigurationStore cdrarStore = (SmooksResourceConfigurationStore)getAttribute(STORE_KEY);
-		
+
 		if(cdrarStore == null) {
 			cdrarStore = new SmooksResourceConfigurationStore(this);
 			setAttribute(STORE_KEY, cdrarStore);
 		}
-		
+
 		return cdrarStore;
 	}
 
@@ -83,9 +85,13 @@ public class MockApplicationContext implements ApplicationContext {
     public void setResourceLocator(ContainerResourceLocator resourceLocator) {
         throw new UnsupportedOperationException("Can't set the locator on the Mock using this method.  Set it through the publicly accessible  property.");
     }
-    
-    public Map getAttributes()
+
+    public Map<Object, Object> getAttributes()
     {
     	return attributes;
     }
+
+	public BeanIdIndex getBeanIdIndex() {
+		return beanIdIndex;
+	}
 }

@@ -16,6 +16,8 @@
 
 package org.milyn.javabean.repository;
 
+import org.milyn.javabean.context.BeanIdIndex;
+
 
 
 /**
@@ -27,8 +29,8 @@ package org.milyn.javabean.repository;
  * The String representation of the BeanId is registered with a {@link BeanIdRegister}
  * and there by coupled to that {@link BeanIdRegister}. The BeanId holds the original
  * {@link String} beanId,also called beanIdName. It also holds the index of
- * the place it has within the {@link BeanIdRegister}. 
- * 
+ * the place it has within the {@link BeanIdRegister}.
+ *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
@@ -38,14 +40,27 @@ public class BeanId {
 
 	private final String name;
 
-	private final BeanIdRegister beanIdList;
+	private final BeanIdIndex beanIdIndex;
 
 	/**
 	 * @param index
 	 * @param name
 	 */
+	public BeanId(BeanIdIndex beanIdIndex, int index, String beanId) {
+		this.beanIdIndex = beanIdIndex;
+		this.index = index;
+		this.name = beanId;
+	}
+
+	/**
+	 * @param index
+	 * @param name
+	 * @deprecated Use the constructor with the BeanIdIndex
+	 */
+	@Deprecated
+	@SuppressWarnings("deprecation")
 	public BeanId(BeanIdRegister beanIdRegister, int index, String beanId) {
-		this.beanIdList = beanIdRegister;
+		this.beanIdIndex = beanIdRegister.getBeanIdIndex();
 		this.index = index;
 		this.name = beanId;
 	}
@@ -53,7 +68,7 @@ public class BeanId {
 	/**
 	 * Returns the index of the place
 	 * it holds in the {@link BeanIdRegister}.
-	 * 
+	 *
 	 * @return the index
 	 */
 	public int getIndex() {
@@ -62,7 +77,7 @@ public class BeanId {
 
 	/**
 	 * Returns the BeanId name.
-	 * 
+	 *
 	 * @return the name
 	 */
 	public String getName() {
@@ -72,11 +87,12 @@ public class BeanId {
 	/**
 	 * Returns the BeanIdList with which
 	 * it is registered.
-	 * 
+	 *
 	 * @return the beanIdList
 	 */
+	@Deprecated
 	public BeanIdRegister getBeanIdList() {
-		return beanIdList;
+		return new BeanIdRegister(beanIdIndex);
 	}
 
 	/* (non-Javadoc)
@@ -100,7 +116,7 @@ public class BeanId {
 			return false;
 		}
 		BeanId rhs = (BeanId) obj;
-		if(this.beanIdList != rhs.beanIdList) {
+		if(this.beanIdIndex != rhs.beanIdIndex) {
 			return false;
 		}
 		if(this.name != rhs.name) {
