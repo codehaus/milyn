@@ -149,7 +149,7 @@ public class BeanPopulatorTest extends TestCase {
 
         smooks.filterSource(executionContext, new StreamSource(getClass().getResourceAsStream("testxml.txt")), new DOMResult());
 
-        MyGoodBean bean = (MyGoodBean)BeanRepositoryManager.getBeanRepository(executionContext).getBean("userBean");
+        MyGoodBean bean = (MyGoodBean)executionContext.getBeanContext().getBean("userBean");
         assertNotNull("Null bean", bean);
         assertEquals("Myself", bean.getName());
         assertEquals("0861070070", bean.getPhoneNumber());

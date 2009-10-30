@@ -40,6 +40,7 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
+import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.factory.MVELFactoryDefinitionParser;
 import org.milyn.javabean.factory.Factory;
 import org.milyn.javabean.factory.FactoryDefinitionParser.FactoryDefinitionParserFactory;
@@ -91,8 +92,6 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     private ApplicationContext appContext;
 
     private BeanRuntimeInfo beanRuntimeInfo;
-
-    private BeanRepositoryManager beanRepositoryManager;
 
     private BeanId beanId;
 
@@ -146,9 +145,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     public void initialize() throws SmooksConfigurationException {
     	buildId();
 
-    	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
-    	BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
-        beanId = beanIdRegister.register(beanIdName);
+        beanId = appContext.getBeanIdIndex().register(beanIdName);
 
         if(StringUtils.isNotBlank(beanFactoryDefinition)) {
     		factory = FactoryDefinitionParserFactory.getInstance(appContext).parse(beanFactoryDefinition);
@@ -223,14 +220,14 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	}
 
 	public void visitAfter(ExecutionContext executionContext) {
-        BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
         Classification thisBeanType = beanRuntimeInfo.getClassification();
         boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 
-        beanRepo.setBeanInContext(beanId, false);
+        BeanContext beanContext = executionContext.getBeanContext();
+        beanContext.setBeanInContext(beanId, false);
 
         if(isBeanTypeArray) {
-            Object bean  = beanRepo.getBean(beanId);
+            Object bean  = beanContext.getBean(beanId);
 
             if(logger.isDebugEnabled()) {
                 logger.debug("Converting bean [" + beanIdName + "] to an array and rebinding to context.");
@@ -244,14 +241,14 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
         bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
 
-        BeanRepositoryManager.getBeanRepository(executionContext).changeBean(beanId, bean);
+        executionContext.getBeanContext().changeBean(beanId, bean);
 
     	return bean;
     }
 
 	private void createAndSetBean(ExecutionContext executionContext) {
         Object bean;
-        BeanRepository beanRepo = BeanRepositoryManager.getBeanRepository(executionContext);
+        BeanContext beanContext = executionContext.getBeanContext();
 
         bean = createBeanInstance(executionContext);
 
@@ -259,9 +256,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         	initValsExpression.exec(bean);
         }
 
-        beanRepo.setBeanInContext(beanId, false);
-        beanRepo.addBean(beanId, bean);
-        beanRepo.setBeanInContext(beanId, true);
+        beanContext.setBeanInContext(beanId, false);
+        beanContext.addBean(beanId, bean);
+        beanContext.setBeanInContext(beanId, true);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Bean [" + beanIdName + "] instance created.");

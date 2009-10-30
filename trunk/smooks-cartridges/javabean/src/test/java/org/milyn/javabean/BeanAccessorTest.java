@@ -20,9 +20,10 @@ import junit.framework.TestCase;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.BeanIdIndex;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanId;
@@ -43,8 +44,8 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
 
-        getBeanIdRegister().register("bean1");
-        getBeanIdRegister().register("bean2");
+        getBeanIdIndex().register("bean1");
+        getBeanIdIndex().register("bean2");
 
         assertNull(BeanAccessor.getBean(executionContext, "bean1"));
         assertNull(BeanAccessor.getBean(executionContext, "bean2"));
@@ -67,7 +68,7 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        getBeanIdRegister().register("bean1");
+        getBeanIdIndex().register("bean1");
 
         assertNull(BeanAccessor.getBean(executionContext, "bean1"));
 
@@ -87,8 +88,8 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        getBeanIdRegister().register("bean1");
-        getBeanIdRegister().register("notExisting");
+        getBeanIdIndex().register("bean1");
+        getBeanIdIndex().register("notExisting");
 
         BeanAccessor.addBean(executionContext, "bean1", bean1);
 
@@ -118,10 +119,10 @@ public class BeanAccessorTest extends TestCase {
         Object child2 = new MyGoodBean();
         Object childChild = new MyGoodBean();
 
-        BeanId parentId = getBeanIdRegister().register("parent");
-        BeanId child1Id = getBeanIdRegister().register("child");
-        BeanId child2Id = getBeanIdRegister().register("child2");
-        BeanId child3Id = getBeanIdRegister().register("childChild");
+        BeanId parentId = getBeanIdIndex().register("parent");
+        BeanId child1Id = getBeanIdIndex().register("child");
+        BeanId child2Id = getBeanIdIndex().register("child2");
+        BeanId child3Id = getBeanIdIndex().register("childChild");
 
         // check single level association
         BeanAccessor.addBean(executionContext, "parent", parent);
@@ -192,8 +193,8 @@ public class BeanAccessorTest extends TestCase {
         final Object bean1 = new MyGoodBean();
         final Object bean2 = new MyGoodBean();
 
-        getBeanIdRegister().register("bean1");
-        getBeanIdRegister().register("bean2");
+        getBeanIdIndex().register("bean1");
+        getBeanIdIndex().register("bean2");
 
         MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
         BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
@@ -281,7 +282,7 @@ public class BeanAccessorTest extends TestCase {
 	public void test_bean_lifecycle_change_observers_associates() {
         Object bean = new MyGoodBean();
 
-        getBeanIdRegister().register("bean");
+        getBeanIdIndex().register("bean");
 
         MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
@@ -312,19 +313,11 @@ public class BeanAccessorTest extends TestCase {
     /**
 	 *
 	 */
-	private BeanIdRegister getBeanIdRegister() {
-		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
-
-        return beanRepositoryManager.getBeanIdRegister();
+	private BeanIdIndex getBeanIdIndex() {
+        return executionContext.getContext().getBeanIdIndex();
 	}
 
 
-    /**
-	 * @return
-	 */
-	private BeanRepositoryManager getRepositoryManager() {
-		return BeanRepositoryManager.getInstance(executionContext.getContext());
-	}
 
     public class MockBeanLifecycleObserver implements BeanLifecycleObserver {
 
@@ -345,11 +338,11 @@ public class BeanAccessorTest extends TestCase {
     }
 
     private void markBeanContextEnd(BeanId parentId, BeanId child1Id, BeanId child2Id, BeanId child3Id) {
-        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
-        beanRepository.setBeanInContext(parentId, false);
-        beanRepository.setBeanInContext(child1Id, false);
-        beanRepository.setBeanInContext(child2Id, false);
-        beanRepository.setBeanInContext(child3Id, false);
+        BeanContext beanContext = executionContext.getBeanContext();
+        beanContext.setBeanInContext(parentId, false);
+        beanContext.setBeanInContext(child1Id, false);
+        beanContext.setBeanInContext(child2Id, false);
+        beanContext.setBeanInContext(child3Id, false);
     }
 
 }

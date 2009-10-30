@@ -62,7 +62,7 @@ import org.w3c.dom.Node;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
- *          5. be bound to ("bindto") a {@link BeanRepository} variable named by the "bindId" param.
+ *          5. be bound to ("bindto") a {@link BeanContext} variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter</i>&lt;/param&gt;
  *
@@ -140,7 +140,7 @@ public class StringTemplateContentHandlerFactory implements ContentHandlerFactor
 		protected void visit(Element element, ExecutionContext executionContext) {
             // First thing we do is clone the template for this transformation...
             StringTemplate thisTransTemplate = template.getInstanceOf();
-            Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
+            Map<String, Object> beans = executionContext.getBeanContext().getBeanMap();
             String templatingResult;
             Node resultNode;
 

@@ -103,12 +103,12 @@ public class XslContentHandlerFactoryTest extends TestCase {
         context = smooks.createExecutionContext();
         smooks.filterSource(context, new StreamSource(input), null);
 
-        assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
+        assertEquals("<bind/>", context.getBeanContext().getBean("mybeanTemplate"));
 
         input = new StringReader("<c/>");
         context = smooks.createExecutionContext();
         smooks.filterSource(context, new StreamSource(input), null);
-        assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
+        assertEquals("<bind/>", context.getBeanContext().getBean("mybeanTemplate"));
     }
 
     public void test_inline_01() throws SAXException, IOException {

@@ -34,6 +34,7 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.function.StringFunctionExecutor;
 import org.milyn.javabean.Bean;
+import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.xml.SmooksXMLReader;
@@ -118,7 +119,7 @@ import java.util.Map;
  * String manipulation functions can be defined per field. These functions are executed before that the data is converted into SAX events.
  * The functions are defined after the field length definition and are optionally separated with a question mark.  So a field
  * definition with string functions could look like this: firstname[10]?trim,lastname[10]?right_trim,gender[1]?upper_case
- * Take a look in the Smooks manual for a list of all available functions. 
+ * Take a look in the Smooks manual for a list of all available functions.
  *
  * <h3>Simple Java Bindings</h3>
  * A simple java binding can be configured on the reader configuration.  This allows quick binding configuration where the
@@ -309,7 +310,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
         // Output each of the Fixed Length line entries...
         while ((flRecord = flLineReader.readLine()) != null) {
         	lineNumber++; // First line is line "1"
-          
+
         	if (lineNumber <= this.skipLines) {
         		continue;
         	}
@@ -582,13 +583,13 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 
 
 		private void wireObject(ExecutionContext executionContext) {
-            BeanRepository repository = BeanRepositoryManager.getBeanRepository(executionContext);
-            Map<String, Object> beanMap = repository.getBeanMap();
+			BeanContext beanContext = executionContext.getBeanContext();
+            Map<String, Object> beanMap = beanContext.getBeanMap();
             Object key = keyExtractor.getValue(beanMap);
 
             @SuppressWarnings("unchecked") //TODO: Optimize to use the BeanId object
-            Map<Object, Object> map =  (Map<Object, Object>) repository.getBean(mapBindingKey);
-            Object record = repository.getBean(RECORD_BEAN);
+            Map<Object, Object> map =  (Map<Object, Object>) beanContext.getBean(mapBindingKey);
+            Object record = beanContext.getBean(RECORD_BEAN);
 
             map.put(key, record);
         }

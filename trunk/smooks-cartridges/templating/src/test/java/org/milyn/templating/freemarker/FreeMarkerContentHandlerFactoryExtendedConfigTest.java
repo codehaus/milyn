@@ -147,12 +147,12 @@ public class FreeMarkerContentHandlerFactoryExtendedConfigTest extends TestCase 
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
         smooks.filterSource(context, new StreamSource(input));
 
-        assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc2</mybean>", context.getBeanContext().getBean("mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc1' />");
         smooks.filterSource(context, new StreamSource(input), null);
-        assertEquals("<mybean>xvalueonc1</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc1</mybean>", context.getBeanContext().getBean("mybeanTemplate"));
     }
 
     public void test_template_include() throws SAXException, IOException {

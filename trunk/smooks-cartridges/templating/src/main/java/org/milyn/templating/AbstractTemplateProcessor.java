@@ -98,7 +98,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
 
     @AppContext
     private ApplicationContext applicationContext;
-    
+
     private BeanId bindBeanId;
 
     @Initialize
@@ -107,7 +107,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
             SmooksResourceConfiguration config = new SmooksResourceConfiguration();
 
             config.setResource(templatingConfiguration.getTemplate());
-            
+
             Usage resultUsage = templatingConfiguration.getUsage();
             if(resultUsage == Inline.ADDTO) {
                 action = Action.ADDTO;
@@ -120,7 +120,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
             } else if(resultUsage instanceof BindTo) {
                 action = Action.BIND_TO;
                 bindId = ((BindTo)resultUsage).getBeanId();
-                bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
+                bindBeanId = applicationContext.getBeanIdIndex().register(bindId);
             } else if(resultUsage instanceof OutputTo) {
                 outputStreamResource = ((OutputTo)resultUsage).getOutputStreamResource();
             }
@@ -153,11 +153,11 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
                 if(bindId == null) {
                     throw new SmooksConfigurationException("'bindto' templating action configurations must also specify a 'bindId' configuration for the Id under which the result is bound to the ExecutionContext");
                 } else {
-                    bindBeanId = BeanRepositoryManager.getInstance(applicationContext).getBeanIdRegister().register(bindId);
+                    bindBeanId = applicationContext.getBeanIdIndex().register(bindId);
                 }
             }
         } else {
-            throw new SmooksConfigurationException(getClass().getSimpleName() + " not configured.");            
+            throw new SmooksConfigurationException(getClass().getSimpleName() + " not configured.");
         }
     }
 
@@ -165,7 +165,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
         AssertArgument.isNotNull(templatingConfiguration, "templatingConfiguration");
         this.templatingConfiguration = templatingConfiguration;
     }
-	
+
     protected abstract void loadTemplate(SmooksResourceConfiguration config) throws IOException, TransformerConfigurationException;
 
     public boolean applyTemplateBefore() {
@@ -232,7 +232,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
 
 	private void processTemplateAction(Element element, NodeList templatingResultNodeList, Action action, ExecutionContext executionContext) {
 		int count = templatingResultNodeList.getLength();
-		
+
 		// Iterate over the NodeList and filter each Node against the action.
 		for(int i = 0; i < count; i++) {
 			// We iterate over the list in this way because the nodes are auto removed from the
@@ -276,8 +276,8 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
                 }
             } else if(action == Action.BIND_TO) {
             	String text = extractTextContent(node, executionContext);
-            	
-            	BeanRepositoryManager.getBeanRepository(executionContext).addBean(bindBeanId, text);
+
+            	executionContext.getBeanContext().addBean(bindBeanId, text);
             } else if(action == Action.REPLACE) {
                 // Don't perform any "replace" actions here!
             }

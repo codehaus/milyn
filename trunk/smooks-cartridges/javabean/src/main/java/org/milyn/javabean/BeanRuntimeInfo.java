@@ -67,7 +67,7 @@ public class BeanRuntimeInfo {
     public BeanRuntimeInfo() {
     }
 
-    public BeanRuntimeInfo(Class clazz) {
+    public BeanRuntimeInfo(Class<?> clazz) {
     	resolveBeanRuntimeInfo(clazz);
     }
 
