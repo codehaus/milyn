@@ -150,6 +150,10 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
     }
 
     private <T extends SAXVisitor> void addIndexCounters(List<ContentHandlerConfigMap<T>> saxVisitorMap) {
+        if(saxVisitorMap == null) {
+            return;
+        }
+
         for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : saxVisitorMap) {
             SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
             SelectorStep[] selectorSteps = resourceConfig.getSelectorSteps();

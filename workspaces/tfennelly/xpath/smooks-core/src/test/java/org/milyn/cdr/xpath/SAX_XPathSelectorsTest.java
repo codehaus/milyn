@@ -137,4 +137,6 @@ public class SAX_XPathSelectorsTest extends TestCase {
         smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
         assertEquals("1", XPathAfterVisitor.saxVisitedAfterElement.getTextContent());
     }
+
+    public void test
 }
