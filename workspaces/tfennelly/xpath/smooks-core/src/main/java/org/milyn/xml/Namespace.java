@@ -15,12 +15,23 @@
 */
 package org.milyn.xml;
 
+import java.util.Properties;
+
 /**
  * XML Namespace URI static definitions.
  * @author tfennelly
  */
 public interface Namespace {
 
-	public static final String SMOOKS_URI = "http://milyn.codehaus.org/smooks".intern();
+    public static final Properties SMOOKS_PREFIX_MAPPINGS = new SmooksNamespaceMappings();
 
+    public static final String SMOOKS_URI = SmooksNamespaceMappings.SMOOKS_URI;
+
+    static class SmooksNamespaceMappings extends Properties {
+        private static final String SMOOKS_URI = "http://milyn.codehaus.org/smooks".intern();
+        private SmooksNamespaceMappings() {
+            setProperty("param-type", SMOOKS_URI + "/param-type");
+            setProperty("decoder", SMOOKS_URI + "/decoder");
+        }
+    }
 }

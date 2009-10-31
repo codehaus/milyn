@@ -77,8 +77,8 @@ public class SAXElementTest extends TestCase {
 
         SAXElement saxElement = new SAXElement("http://x", "a", "x", attributes, null);
         assertEquals("1", saxElement.getAttribute("a"));
-        assertEquals("a", saxElement.getAttribute("http://a", "a"));
-        assertEquals("b", saxElement.getAttribute("http://b", "a"));
+        assertEquals("a", saxElement.getAttributeNS("http://a", "a"));
+        assertEquals("b", saxElement.getAttributeNS("http://b", "a"));
     }
 
     public void test_accumulateText() {

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+                      xmlns:core="http://www.milyn.org/xsd/smooks/smooks-core-1.3.xsd">
+
+    <core:namespaces>
+        <core:namespace uri="a" prefix="http://a"/>
+        <core:namespace uri="b" prefix="http://b"/>
+        <core:namespace uri="c" prefix="http://c"/>
+        <core:namespace uri="d" prefix="http://d"/>
+    </core:namespaces>
+
+    <resource-config selector="c:item[@c:code = '8655']/d:units[text() = 1]">
+        <resource>org.milyn.cdr.xpath.XPathAfterVisitor</resource>
+    </resource-config>
+
+</smooks-resource-list>

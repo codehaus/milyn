@@ -47,7 +47,7 @@ public class SmooksResourceConfigurationList {
     /**
      * {@link org.milyn.cdr.SmooksResourceConfiguration} list.
      */
-    private List<SmooksResourceConfiguration> list = new Vector<SmooksResourceConfiguration>();
+    private List<SmooksResourceConfiguration> list = new ArrayList<SmooksResourceConfiguration>();
     /**
      * List of loaded resource URIs.
      */

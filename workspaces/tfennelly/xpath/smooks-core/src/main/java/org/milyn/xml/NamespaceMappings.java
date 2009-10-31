@@ -23,7 +23,7 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.container.ApplicationContext;
-import org.milyn.delivery.ContentHandler;
+import org.milyn.container.ApplicationContextInitializer;
 import org.milyn.delivery.annotation.Initialize;
 
 /**
@@ -33,7 +33,7 @@ import org.milyn.delivery.annotation.Initialize;
  * 
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class NamespaceMappings<T> implements ContentHandler<T> {
+public class NamespaceMappings implements ApplicationContextInitializer {
 
     /**
      * Logger.
@@ -58,11 +58,20 @@ public class NamespaceMappings<T> implements ContentHandler<T> {
 			logger.debug("Adding namespace prefix-to-uri mappings: " + namespacesToAdd);
 		}
 		namespaces.putAll(namespacesToAdd);
-		
-		appContext.setAttribute(NamespaceMappings.class, namespaces);
-	}
-	
-	/**
+
+        setMappings(namespaces, appContext);
+    }
+
+    /**
+     * Set the namespace prefix-to-uri mappings.
+     * @param namespaces The namespace mappings.
+     * @param appContext The application context.
+     */
+    public static void setMappings(Properties namespaces, ApplicationContext appContext) {
+        appContext.setAttribute(NamespaceMappings.class, namespaces);
+    }
+
+    /**
 	 * Get the prefix-to-namespace mannings from the {@link ApplicationContext}.
 	 * @param appContext The {@link ApplicationContext}.
 	 * @return The prefix-to-namespace mannings.

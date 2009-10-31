@@ -19,6 +19,10 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
 import org.milyn.delivery.ordering.Sorter;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.xpath.SelectorStep;
+import org.milyn.cdr.xpath.evaluators.equality.IndexEvaluator;
+import org.milyn.cdr.xpath.evaluators.equality.ElementCounter;
 
 import java.util.*;
 
@@ -106,7 +110,63 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
             entry.setChildVisitors(childVisitors.getTable().get(elementName));
             entry.setVisitAfters(visitAfters.getTable().get(elementName));
             entry.setVisitCleanables(visitCleanables.getTable().get(elementName));
+
+            entry.initAccumulateText();
+
             optimizedVisitorConfig.put(elementName, entry);
+        }
+    }
+
+    public void assertSelectorsNotAccessingText() {
+        assertSelectorsNotAccessingText(visitBefores);
+        assertSelectorsNotAccessingText(childVisitors);
+    }
+
+    private void assertSelectorsNotAccessingText(ContentHandlerConfigMapTable saxVisitorMap) {
+        Map<String, List<ContentHandlerConfigMap<? extends SAXVisitor>>> table = saxVisitorMap.getTable();
+        Collection<List<ContentHandlerConfigMap<? extends SAXVisitor>>> contentHandlerMaps = table.values();
+
+        for(List<ContentHandlerConfigMap<? extends SAXVisitor>> contentHandlerMapList : contentHandlerMaps) {
+            for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : contentHandlerMapList) {
+                SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
+                SelectorStep selectorStep = resourceConfig.getSelectorStep();
+
+                if(selectorStep.accessesText()) {
+                    throw new SmooksConfigurationException("Unsupported selector '" + selectorStep.getXPathExpression() + "' on resource '" + resourceConfig + "'.  The 'text()' XPath token is only supported on SAX Visitor implementations that implement the " + SAXVisitAfter.class.getName() + " interface only.  Class '" + resourceConfig.getResource() + "' implements other SAX Visitor interfaces.");
+                }
+            }
+        }
+    }
+
+    public void addIndexCounters() {
+        Map<String, SAXElementVisitorMap> optimizedVisitorConfigCopy = new LinkedHashMap(optimizedVisitorConfig);
+        Collection<SAXElementVisitorMap> visitorMaps = optimizedVisitorConfigCopy.values();
+
+        for(SAXElementVisitorMap visitorMap : visitorMaps) {
+            addIndexCounters(visitorMap.getVisitBefores());
+            addIndexCounters(visitorMap.getChildVisitors());
+            addIndexCounters(visitorMap.getVisitAfters());
+        }
+    }
+
+    private <T extends SAXVisitor> void addIndexCounters(List<ContentHandlerConfigMap<T>> saxVisitorMap) {
+        for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : saxVisitorMap) {
+            SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
+            SelectorStep[] selectorSteps = resourceConfig.getSelectorSteps();
+            List<IndexEvaluator> indexEvaluators = new ArrayList<IndexEvaluator>();
+
+            for(SelectorStep selectorStep : selectorSteps) {
+                indexEvaluators.clear();
+                selectorStep.getEvaluators(IndexEvaluator.class, indexEvaluators);
+                for(IndexEvaluator indexEvaluator : indexEvaluators) {
+                    if(indexEvaluator.getCounter() == null) {
+                        ElementCounter counter = new ElementCounter();
+
+                        indexEvaluator.setCounter(counter);
+                        // TODO: target the counter at the element name from the selectorStep instance  
+                    }
+                }
+            }
         }
     }
 
@@ -154,6 +214,8 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         if(combinedConfig.getVisitCleanables().isEmpty()) {
             combinedConfig.setVisitCleanables(null);
         }
+
+        combinedConfig.initAccumulateText();
 
         if(combinedConfig.getVisitBefores() == null && combinedConfig.getChildVisitors() == null && combinedConfig.getVisitAfters() == null ) {
             return null;
