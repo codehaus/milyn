@@ -22,8 +22,10 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.xpath.SelectorStep;
 import org.milyn.cdr.xpath.evaluators.equality.IndexEvaluator;
-import org.milyn.cdr.xpath.evaluators.equality.ElementCounter;
+import org.milyn.cdr.xpath.evaluators.equality.ElementIndexCounter;
 
+import javax.xml.namespace.QName;
+import javax.xml.XMLConstants;
 import java.util.*;
 
 /**
@@ -164,14 +166,42 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
                 selectorStep.getEvaluators(IndexEvaluator.class, indexEvaluators);
                 for(IndexEvaluator indexEvaluator : indexEvaluators) {
                     if(indexEvaluator.getCounter() == null) {
-                        ElementCounter counter = new ElementCounter();
+                        ElementIndexCounter indexCounter = new ElementIndexCounter(selectorStep);
 
-                        indexEvaluator.setCounter(counter);
-                        // TODO: target the counter at the element name from the selectorStep instance  
+                        indexEvaluator.setCounter(indexCounter);
+                        addIndexCounter(indexCounter);
                     }
                 }
             }
         }
+    }
+
+    private void addIndexCounter(ElementIndexCounter indexCounter) {
+        SelectorStep selectorStep = indexCounter.getSelectorStep();
+        QName targetElement = selectorStep.getTargetElement();
+        String targetElementName = targetElement.getLocalPart().toLowerCase();
+        String targetNS = targetElement.getNamespaceURI();
+        SAXElementVisitorMap visitorMap = optimizedVisitorConfig.get(targetElementName);
+
+        if(visitorMap == null) {
+            visitorMap = new SAXElementVisitorMap();
+            optimizedVisitorConfig.put(targetElementName, visitorMap);
+        }
+
+        List<ContentHandlerConfigMap<SAXVisitBefore>> vbs = visitorMap.getVisitBefores();
+
+        if(vbs == null) {
+            vbs = new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>();
+            visitorMap.setVisitBefores(vbs);
+        }
+
+        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetElementName);
+
+        if(targetNS != null && targetNS != XMLConstants.NULL_NS_URI) {
+            resourceConfig.setSelectorNamespaceURI(targetNS);
+        }
+
+        vbs.add(0, new ContentHandlerConfigMap(indexCounter, resourceConfig));
     }
 
     public SAXElementVisitorMap getCombinedOptimizedConfig(String[] elementNames) {

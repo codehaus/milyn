@@ -30,10 +30,21 @@ import java.util.Properties;
  */
 public class SAX_XPathSelectorsTest extends TestCase {
 
+    private Properties namespaces;
+
     protected void setUp() throws Exception {
-        XPathVisitor.saxVisitedBeforeElement = null;
-        XPathVisitor.saxVisitedAfterElement = null;
+        XPathVisitor.saxVisitedBeforeElementStatic = null;
+        XPathVisitor.saxVisitedAfterElementStatic = null;
+        XPathVisitor.domVisitedBeforeElementStatic = null;
+        XPathVisitor.domVisitedAfterElementStatic = null;
         XPathAfterVisitor.saxVisitedAfterElement = null;
+
+        namespaces = new Properties();
+
+        namespaces.put("a", "http://a");
+        namespaces.put("b", "http://b");
+        namespaces.put("c", "http://c");
+        namespaces.put("d", "http://d");
     }
 
     public void test_01() throws IOException, SAXException {
@@ -41,8 +52,8 @@ public class SAX_XPathSelectorsTest extends TestCase {
 
         smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
-        assertEquals("8655", XPathVisitor.saxVisitedBeforeElement.getAttribute("code"));
-        assertEquals("8655", XPathVisitor.saxVisitedAfterElement.getAttribute("code"));
+        assertEquals("8655", XPathVisitor.saxVisitedBeforeElementStatic.getAttribute("code"));
+        assertEquals("8655", XPathVisitor.saxVisitedAfterElementStatic.getAttribute("code"));
     }
 
     public void test_02() throws IOException, SAXException {
@@ -71,8 +82,8 @@ public class SAX_XPathSelectorsTest extends TestCase {
         smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         smooks.addVisitor(new XPathVisitor(), "item[@code = 8655]");
         smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
-        assertEquals("8655", XPathVisitor.saxVisitedBeforeElement.getAttribute("code"));
-        assertEquals("8655", XPathVisitor.saxVisitedAfterElement.getAttribute("code"));
+        assertEquals("8655", XPathVisitor.saxVisitedBeforeElementStatic.getAttribute("code"));
+        assertEquals("8655", XPathVisitor.saxVisitedAfterElementStatic.getAttribute("code"));
     }
 
     public void test_05() throws IOException, SAXException {
@@ -123,12 +134,6 @@ public class SAX_XPathSelectorsTest extends TestCase {
 
     public void test_10() throws IOException, SAXException {
         Smooks smooks = new Smooks();
-        Properties namespaces = new Properties();
-
-        namespaces.put("a", "http://a");
-        namespaces.put("b", "http://b");
-        namespaces.put("c", "http://c");
-        namespaces.put("d", "http://d");
 
         smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
         smooks.setNamespaces(namespaces);
@@ -138,5 +143,189 @@ public class SAX_XPathSelectorsTest extends TestCase {
         assertEquals("1", XPathAfterVisitor.saxVisitedAfterElement.getTextContent());
     }
 
-    public void test
+    public void test_indexevaluator_sax_01() throws Exception {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config-07.xml"));
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+        
+        assertTrue(XPathVisitor.saxVisitedBeforeElementStatic != null);
+        assertTrue(XPathVisitor.saxVisitedAfterElementStatic != null);
+    }
+
+    public void test_indexevaluator_sax_02() {
+        Smooks smooks = new Smooks();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+        smooks.addVisitor(new XPathVisitor(), "items/item[2]/units");
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+
+        assertTrue(XPathVisitor.saxVisitedBeforeElementStatic != null);
+        assertTrue(XPathVisitor.saxVisitedAfterElementStatic != null);
+    }
+
+    public void test_indexevaluator_sax_03() throws Exception {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config-08.xml"));
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+
+        assertTrue(XPathVisitor.saxVisitedBeforeElementStatic == null);
+        assertTrue(XPathVisitor.saxVisitedAfterElementStatic == null);
+    }
+
+    public void test_indexevaluator_sax_04() {
+        Smooks smooks = new Smooks();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+        smooks.addVisitor(new XPathVisitor(), "items/item[3]/units");
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+
+        assertTrue(XPathVisitor.saxVisitedBeforeElementStatic == null);
+        assertTrue(XPathVisitor.saxVisitedAfterElementStatic == null);
+    }
+
+    public void test_indexevaluator_sax_05() {
+        Smooks smooks = new Smooks();
+        XPathVisitor visitor1 = new XPathVisitor();
+        XPathVisitor visitor2 = new XPathVisitor();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+
+        smooks.addVisitor(visitor1, "items[1]/item[2]/units");
+        smooks.addVisitor(visitor2, "items[2]/item[1]/units");
+
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order_02.xml")));
+
+        assertEquals("2", visitor1.getSaxVisitedAfterElement().getAttribute("index"));
+        assertEquals("1", visitor2.getSaxVisitedAfterElement().getAttribute("index"));
+    }
+
+    public void test_indexevaluator_sax_06() {
+        Smooks smooks = new Smooks();
+        XPathVisitor visitor1 = new XPathVisitor();
+        XPathVisitor visitor2 = new XPathVisitor();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+        smooks.setNamespaces(namespaces);
+
+        smooks.addVisitor(visitor1, "items[1]/c:item[2]/units");
+        smooks.addVisitor(visitor2, "items[2]/c:item[1]/units");
+
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order_02.xml")));
+
+        assertEquals("2", visitor1.getSaxVisitedAfterElement().getAttribute("index"));
+        assertEquals("1", visitor2.getSaxVisitedAfterElement().getAttribute("index"));
+    }
+
+
+    public void test_indexevaluator_sax_07() {
+        Smooks smooks = new Smooks();
+        XPathVisitor visitor1 = new XPathVisitor();
+        XPathVisitor visitor2 = new XPathVisitor();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+        smooks.setNamespaces(namespaces);
+
+        smooks.addVisitor(visitor1, "items[1]/d:item[2]/units"); // wrong namespace prefix
+        smooks.addVisitor(visitor2, "items[2]/d:item[1]/units"); // wrong namespace prefix
+
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order_02.xml")));
+
+        assertEquals(null, visitor1.getSaxVisitedAfterElement());
+        assertEquals(null, visitor2.getSaxVisitedAfterElement());
+    }
+
+    public void test_indexevaluator_dom_01() throws Exception {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config-07.xml"));
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+
+        assertTrue(XPathVisitor.domVisitedBeforeElementStatic != null);
+        assertTrue(XPathVisitor.domVisitedAfterElementStatic != null);
+    }
+
+    public void test_indexevaluator_dom_02() {
+        Smooks smooks = new Smooks();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+        smooks.addVisitor(new XPathVisitor(), "items/item[2]/units");
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+
+        assertTrue(XPathVisitor.domVisitedBeforeElementStatic != null);
+        assertTrue(XPathVisitor.domVisitedAfterElementStatic != null);
+    }
+
+    public void test_indexevaluator_dom_03() throws Exception {
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("config-08.xml"));
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+
+        assertTrue(XPathVisitor.domVisitedBeforeElementStatic == null);
+        assertTrue(XPathVisitor.domVisitedAfterElementStatic == null);
+    }
+
+    public void test_indexevaluator_dom_04() {
+        Smooks smooks = new Smooks();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+        smooks.addVisitor(new XPathVisitor(), "items/item[3]/units");
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
+
+        assertTrue(XPathVisitor.domVisitedBeforeElementStatic == null);
+        assertTrue(XPathVisitor.domVisitedAfterElementStatic == null);
+    }
+
+    public void test_indexevaluator_dom_05() {
+        Smooks smooks = new Smooks();
+        XPathVisitor visitor1 = new XPathVisitor();
+        XPathVisitor visitor2 = new XPathVisitor();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+
+        smooks.addVisitor(visitor1, "items[1]/item[2]/units");
+        smooks.addVisitor(visitor2, "items[2]/item[1]/units");
+
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order_02.xml")));
+
+        assertEquals("2", visitor1.getDomVisitedAfterElement().getAttribute("index"));
+        assertEquals("1", visitor2.getDomVisitedAfterElement().getAttribute("index"));
+    }
+
+    public void test_indexevaluator_dom_06() {
+        Smooks smooks = new Smooks();
+        XPathVisitor visitor1 = new XPathVisitor();
+        XPathVisitor visitor2 = new XPathVisitor();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+        smooks.setNamespaces(namespaces);
+
+        smooks.addVisitor(visitor1, "items[1]/c:item[2]/units");
+        smooks.addVisitor(visitor2, "items[2]/c:item[1]/units");
+
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order_02.xml")));
+
+        assertEquals("2", visitor1.getDomVisitedAfterElement().getAttribute("index"));
+        assertEquals("1", visitor2.getDomVisitedAfterElement().getAttribute("index"));
+    }
+
+
+    public void test_indexevaluator_dom_07() {
+        Smooks smooks = new Smooks();
+        XPathVisitor visitor1 = new XPathVisitor();
+        XPathVisitor visitor2 = new XPathVisitor();
+
+        smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+        smooks.setNamespaces(namespaces);
+
+        smooks.addVisitor(visitor1, "items[1]/d:item[2]/units"); // wrong namespace prefix
+        smooks.addVisitor(visitor2, "items[2]/d:item[1]/units"); // wrong namespace prefix
+
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order_02.xml")));
+
+        assertEquals(null, visitor1.getDomVisitedAfterElement());
+        assertEquals(null, visitor2.getDomVisitedAfterElement());
+    }
 }

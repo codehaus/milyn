@@ -16,6 +16,7 @@
 package org.milyn.cdr.xpath.evaluators.logical;
 
 import org.milyn.cdr.xpath.evaluators.XPathExpressionEvaluator;
+import org.milyn.cdr.xpath.SelectorStep;
 import org.jaxen.expr.LogicalExpr;
 import org.jaxen.saxpath.SAXPathException;
 
@@ -32,10 +33,10 @@ public abstract class AbstractLogicalEvaluator extends XPathExpressionEvaluator 
     private String op;
     protected XPathExpressionEvaluator rhs;
 
-    public AbstractLogicalEvaluator(LogicalExpr expr, Properties namespaces) throws SAXPathException {
-        lhs = XPathExpressionEvaluator.getInstance(expr.getLHS(), namespaces);
+    public AbstractLogicalEvaluator(LogicalExpr expr, SelectorStep selectorStep, Properties namespaces) throws SAXPathException {
+        lhs = XPathExpressionEvaluator.getInstance(expr.getLHS(), selectorStep, namespaces);
         op = expr.getOperator();
-        rhs = XPathExpressionEvaluator.getInstance(expr.getRHS(), namespaces);
+        rhs = XPathExpressionEvaluator.getInstance(expr.getRHS(), selectorStep, namespaces);
     }
 
     public XPathExpressionEvaluator getLhs() {

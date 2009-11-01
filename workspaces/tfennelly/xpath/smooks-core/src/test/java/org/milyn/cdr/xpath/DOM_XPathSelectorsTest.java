@@ -18,7 +18,6 @@ package org.milyn.cdr.xpath;
 import junit.framework.TestCase;
 import org.milyn.Smooks;
 import org.milyn.FilterSettings;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -31,8 +30,8 @@ import java.util.Properties;
 public class DOM_XPathSelectorsTest extends TestCase {
 
     protected void setUp() throws Exception {
-        XPathVisitor.domVisitedBeforeElement = null;
-        XPathVisitor.domVisitedAfterElement = null;
+        XPathVisitor.domVisitedBeforeElementStatic = null;
+        XPathVisitor.domVisitedAfterElementStatic = null;
         XPathAfterVisitor.domVisitedAfterElement = null;
     }
 
@@ -41,8 +40,8 @@ public class DOM_XPathSelectorsTest extends TestCase {
 
         smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
         smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
-        assertEquals("8655", XPathVisitor.domVisitedBeforeElement.getAttributeNS("http://c", "code"));
-        assertEquals("8655", XPathVisitor.domVisitedAfterElement.getAttributeNS("http://c", "code"));
+        assertEquals("8655", XPathVisitor.domVisitedBeforeElementStatic.getAttributeNS("http://c", "code"));
+        assertEquals("8655", XPathVisitor.domVisitedAfterElementStatic.getAttributeNS("http://c", "code"));
     }
 
     public void test_03() throws IOException, SAXException {
@@ -59,8 +58,8 @@ public class DOM_XPathSelectorsTest extends TestCase {
         smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
         smooks.addVisitor(new XPathVisitor(), "item[@code = 8655]");
         smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order.xml")));
-        assertEquals("8655", XPathVisitor.domVisitedBeforeElement.getAttributeNS("http://c", "code"));
-        assertEquals("8655", XPathVisitor.domVisitedAfterElement.getAttributeNS("http://c", "code"));
+        assertEquals("8655", XPathVisitor.domVisitedBeforeElementStatic.getAttributeNS("http://c", "code"));
+        assertEquals("8655", XPathVisitor.domVisitedAfterElementStatic.getAttributeNS("http://c", "code"));
     }
 
     public void test_06() throws IOException, SAXException {

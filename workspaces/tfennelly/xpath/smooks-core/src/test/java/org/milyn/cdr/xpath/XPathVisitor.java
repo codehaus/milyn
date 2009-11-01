@@ -30,12 +30,17 @@ import java.io.IOException;
  */
 public class XPathVisitor implements SAXElementVisitor, DOMElementVisitor {
 
-    public static SAXElement saxVisitedBeforeElement;
-    public static SAXElement saxVisitedAfterElement;
-    public static Element domVisitedBeforeElement;
-    public static Element domVisitedAfterElement;
+    public static SAXElement saxVisitedBeforeElementStatic;
+    public static SAXElement saxVisitedAfterElementStatic;
+    public static Element domVisitedBeforeElementStatic;
+    public static Element domVisitedAfterElementStatic;
+    public SAXElement saxVisitedBeforeElement;
+    public SAXElement saxVisitedAfterElement;
+    public Element domVisitedBeforeElement;
+    public Element domVisitedAfterElement;
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        saxVisitedBeforeElementStatic = element;
         saxVisitedBeforeElement = element;
     }
 
@@ -46,14 +51,33 @@ public class XPathVisitor implements SAXElementVisitor, DOMElementVisitor {
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
+        saxVisitedAfterElementStatic = element;
         saxVisitedAfterElement = element;
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
+        domVisitedBeforeElementStatic = element;
         domVisitedBeforeElement = element;
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
+        domVisitedAfterElementStatic = element;
         domVisitedAfterElement = element;
+    }
+
+    public SAXElement getSaxVisitedBeforeElement() {
+        return saxVisitedBeforeElement;
+    }
+
+    public SAXElement getSaxVisitedAfterElement() {
+        return saxVisitedAfterElement;
+    }
+
+    public Element getDomVisitedBeforeElement() {
+        return domVisitedBeforeElement;
+    }
+
+    public Element getDomVisitedAfterElement() {
+        return domVisitedAfterElement;
     }
 }

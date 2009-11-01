@@ -21,6 +21,7 @@ import org.milyn.classpath.*;
 import org.milyn.container.*;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.Visitor;
 import org.milyn.delivery.sax.*;
 import org.milyn.expression.*;
 import org.milyn.io.*;
@@ -47,29 +48,20 @@ import javax.xml.namespace.QName;
 /**
  * Smooks Resource Targeting Configuration.
  * <p/>
- * A <b>Content Delivery Resource</b> is anything that can be used by Smooks in the process of analysing or
+ * A Smooks <b>Resource</b> is anything that can be used by Smooks in the process of analysing or
  * transforming a data stream.  They could be pieces
- * of Java logic ({@link org.milyn.delivery.dom.DOMElementVisitor},
- * {@link org.milyn.delivery.dom.serialize.SerializationUnit}), some text or script resource, or perhaps
+ * of Java logic (SAX or DOM element {@link Visitor} implementations), some text or script resource, or perhaps
  * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).
  * <p/>
  * <h2 id="restargeting">What is Resource Targeting?</h2>
- * Smooks works by "targeting" resources at message transformation/analysis processes.
- * It targets resources at <b>message profiles</b>, and then <b>message fragments</b>
- * (or other aspects of the transformation/analysis process) within that message profile.
- * This typically means targeting a piece of tranformation logic (XSLT, Java, Groovy etc) at a specific
- * type of message ("base profile"), and then at a specific fragment of that message.  The fragment may
+ * Smooks works by "targeting" {@link Visitor} resources at message fragments.
+ * This typically means targeting a piece of tranformation logic (XSLT, Java, Groovy etc)
+ * at a specific fragment of that message.  The fragment may
  * include as much or as little of the document as required.  Smooks also allows you to target multilpe
- * resources at the same fragment (see {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}).
- * <p/>
- * Note you don't have to use message profiling.  You can simply create a set of configurations
- * that are only targeted at message fragments (no profiling info), supply them to a
- * {@link org.milyn.Smooks} instance and then use an {@link org.milyn.container.ExecutionContext}
- * instance that's not based on a profile (see {@link org.milyn.Smooks#createExecutionContext()}).  This is
- * definitely the easiest way to start using Smooks.
+ * resources at the same fragment.
  * <p/>
  * <h2 id="restargeting">Resource Targeting Configurations</h2>
- * Smooks can be manually configured (through code), but the easiest way of working is through XML.  The follwoing
+ * Smooks can be manually/programmatically configured (through code), but the easiest way of working is through XML.  The follwoing
  * are a few sample configurations.  Explanations follow the samples.
  * <p/>
  * <b>A basic sample</b>.  Note that it is not using any profiling.  The <b>resource-config</b> element maps directly to an instance of this class.
@@ -111,22 +103,20 @@ import javax.xml.namespace.QName;
  * <li><b id="useragent">target-profile</b>: A list of 1 or more {@link ProfileTargetingExpression profile targeting expressions}.
  * (supports wildcards "*").
  * </ol>
- * <p/>
  * </li>
  * <li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a resource configuration.
- * This is typically the message fragment name, but as mentioned above, not all resources are
+ * This is typically the message fragment name (partial XPath support), but as mentioned above, not all resources are
  * transformation/analysis resources targeted at a message fragment - this is why we didn't call this attribute
  * "target-fragment". This attribute supports a list of comma separated selectors, allowing you to target a
- * single resource at multiple selector (e.g. fragments).
+ * single resource at multiple selector (e.g. fragments).  Where the resource is a {@link Visitor} implementation, the selector
+ * is treated as an XPath expression (full XPath spec not supported), otherwise the selector value is treated as an opaque value.
  * <p/>
  * <br/>
  * Example selectors:
  * <ol>
- * <li><u>The target fragment name (e.g. for HTML - table, tr, pre etc)</u>.  This type of selector can
- * be contextual e.g. "x/y/z" will target the
- * resource at all "z" fragments nested inside a "y" fragment, which is in turn nested inside
- * an "x" fragment.  Also supports CSS style selectors e.g. "td ol li".  See sample configurations above.
- * Also supports wildcard based fragment selection ("*").
+ * <li>For a {@link Visitor} implementation, use the target fragment name e.g. "order", "address", "address/name", "item[2]/price[text() = 99.99]" etc. 
+ * Also supports wildcard based fragment selection ("*").  See the <a href="www.smooks.org">User Guide</a> for more details on setting selectors for {@link Visitor} type
+ * resources.
  * </li>
  * <li>"#document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
  * or document root node fragment.</li>
@@ -135,9 +125,12 @@ import javax.xml.namespace.QName;
  * <p/>
  * </li>
  * <li><b id="namespace">selector-namespace</b>: The XML namespace of the selector target for this resource.  This is used
- * to target {@link org.milyn.delivery.ContentHandler}s at XML elements from a
+ * to target {@link Visitor} implementations at fragments from a
  * specific XML namespace e.g. "http://www.w3.org/2002/xforms".  If not defined, the resource
  * is targeted at all namespces.
+ * <p/>
+ * Note that since Smooks v1.3, namespace URI-to-prefix mappings can be configured through the "smooks-core" configuration namespace.  Then,
+ * selectors can be configured with namespace prefixes, removing the need to use the "selector-namespace" configuration.
  * </li>
  * </ul>
  * <p/>

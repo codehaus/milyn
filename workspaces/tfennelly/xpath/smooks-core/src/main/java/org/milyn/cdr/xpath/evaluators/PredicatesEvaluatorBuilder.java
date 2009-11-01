@@ -19,6 +19,7 @@ import org.jaxen.expr.*;
 import org.jaxen.saxpath.SAXPathException;
 import org.jaxen.saxpath.Axis;
 import org.milyn.cdr.xpath.evaluators.XPathExpressionEvaluator;
+import org.milyn.cdr.xpath.SelectorStep;
 import org.milyn.xml.Namespace;
 
 import java.util.List;
@@ -35,11 +36,13 @@ public class PredicatesEvaluatorBuilder {
 
     private Step step;
     private Step attributeStep;
+    private SelectorStep selectorStep;
     private Properties namespaces;
 
-    public PredicatesEvaluatorBuilder(Step step, Step attributeStep, Properties namespaces) {
+    public PredicatesEvaluatorBuilder(Step step, Step attributeStep, SelectorStep selectorStep, Properties namespaces) {
         this.step = step;
         this.attributeStep = attributeStep;
+        this.selectorStep = selectorStep;
         this.namespaces = namespaces;
 
         if(attributeStep != null && attributeStep.getAxis() != Axis.ATTRIBUTE) {
@@ -67,7 +70,7 @@ public class PredicatesEvaluatorBuilder {
     private void addEvaluators(Step step, PredicatesEvaluator evaluator) throws SAXPathException {
         List<Predicate> predicates = step.getPredicates();
         for (Predicate predicate : predicates) {
-            XPathExpressionEvaluator predicateEvaluator = XPathExpressionEvaluator.getInstance(predicate.getExpr(), namespaces);
+            XPathExpressionEvaluator predicateEvaluator = XPathExpressionEvaluator.getInstance(predicate.getExpr(), selectorStep, namespaces);
             evaluator.addEvaluator(predicateEvaluator);
         }
     }

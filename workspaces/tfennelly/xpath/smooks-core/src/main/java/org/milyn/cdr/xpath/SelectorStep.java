@@ -190,7 +190,7 @@ public class SelectorStep {
         }
 
         if(step != null) {
-            PredicatesEvaluatorBuilder builder = new PredicatesEvaluatorBuilder(step, attributeStep, namespaces);
+            PredicatesEvaluatorBuilder builder = new PredicatesEvaluatorBuilder(step, attributeStep, this, namespaces);
             try {
                 predicatesEvaluator = builder.build();
             } catch (SAXPathException e) {

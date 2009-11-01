@@ -24,7 +24,7 @@ import org.jaxen.saxpath.SAXPathException;
 import java.util.Properties;
 
 /**
- * Simple "=" (or "!=")  predicate evaluator.
+ * Simple "=" predicate evaluator.
  * <p/>
  * Works for element text or attributes.
  *

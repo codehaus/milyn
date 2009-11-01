@@ -18,29 +18,43 @@ package org.milyn.cdr.xpath.evaluators.equality;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.container.ExecutionContext;
 import org.w3c.dom.Element;
-import org.jaxen.expr.EqualityExpr;
+import org.jaxen.expr.RelationalExpr;
 import org.jaxen.saxpath.SAXPathException;
 
 import java.util.Properties;
 
 /**
- * Simple "!=" predicate evaluator.
+ * Simple ">" predicate evaluator.
  * <p/>
  * Works for element text or attributes.
  *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class NotEqualsEvaluator extends AbstractEqualityEvaluator {
+public class GreaterThanEvaluator extends AbstractEqualityEvaluator {
 
-    public NotEqualsEvaluator(EqualityExpr expr, Properties namespaces) throws SAXPathException {
+    public GreaterThanEvaluator(RelationalExpr expr, Properties namespaces) throws SAXPathException {
         super(expr, namespaces);
     }
 
     public boolean evaluate(SAXElement element, ExecutionContext executionContext) {
-        return !lhs.getValue(element).equals(rhs.getValue(element));
+        Object lhsVal = lhs.getValue(element);
+        Object rhsVal = rhs.getValue(element);
+
+        if(!(lhsVal instanceof Double) || !(rhsVal instanceof Double)) {
+            return false;
+        }
+
+        return ((Double)lhsVal > (Double)rhsVal);
     }
 
     public boolean evaluate(Element element, ExecutionContext executionContext) {
-        return !lhs.getValue(element).equals(rhs.getValue(element));
+        Object lhsVal = lhs.getValue(element);
+        Object rhsVal = rhs.getValue(element);
+
+        if(!(lhsVal instanceof Double) || !(rhsVal instanceof Double)) {
+            return false;
+        }
+
+        return ((Double)lhsVal > (Double)rhsVal);
     }
 }

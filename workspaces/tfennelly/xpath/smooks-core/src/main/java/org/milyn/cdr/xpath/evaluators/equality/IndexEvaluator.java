@@ -16,12 +16,15 @@
 package org.milyn.cdr.xpath.evaluators.equality;
 
 import org.milyn.cdr.xpath.evaluators.XPathExpressionEvaluator;
+import org.milyn.cdr.xpath.SelectorStep;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.container.ExecutionContext;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.xml.XMLConstants;
 
 /**
  * Simple element index predicate evaluator.
@@ -31,28 +34,25 @@ import org.w3c.dom.NodeList;
 public class IndexEvaluator extends XPathExpressionEvaluator {
 
     private int index;
-    private ElementCounter counter;
+    private ElementIndexCounter counter;
     private String elementName;
     private String elementNS;
 
-    public IndexEvaluator(int index) {
+    public IndexEvaluator(int index, SelectorStep selectorStep) {
         this.index = index;
+        elementName = selectorStep.getTargetElement().getLocalPart();
+        elementNS = selectorStep.getTargetElement().getNamespaceURI();
+        if(elementNS == XMLConstants.NULL_NS_URI) {
+            elementNS = null;
+        }
     }
 
-    public ElementCounter getCounter() {
+    public ElementIndexCounter getCounter() {
         return counter;
     }
 
-    public void setCounter(ElementCounter counter) {
-        this.counter = counter;
-    }
-
-    public void setElementName(String elementName) {
-        this.elementName = elementName;
-    }
-
-    public void setElementNS(String elementNS) {
-        this.elementNS = elementNS;
+    public void setCounter(ElementIndexCounter indexCounter) {
+        this.counter = indexCounter;
     }
 
     public boolean evaluate(SAXElement element, ExecutionContext executionContext) {

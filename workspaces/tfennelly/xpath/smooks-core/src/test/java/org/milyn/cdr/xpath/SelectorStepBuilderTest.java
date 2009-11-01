@@ -191,6 +191,40 @@ public class SelectorStepBuilderTest extends TestCase {
         assertTrue(steps[0].getPredicatesEvaluator().evaluate(y, null));
     }
 
+    public void test_3_4() throws SAXPathException {
+        SelectorStep[] steps = SelectorStepBuilder.buildSteps("y[@a:d < 23]", namespaces);
+        assertEquals("y(@{http://a}d < 23.0)", SelectorStepBuilder.toString(steps));
+
+        SAXElement y = new SAXElement(null, "y");
+        y.setAttribute("d", "23");
+        assertFalse(steps[0].getPredicatesEvaluator().evaluate(y, null));
+
+        y = new SAXElement(null, "y");
+        y.setAttributeNS("http://a", "d", "22");
+        assertTrue(steps[0].getPredicatesEvaluator().evaluate(y, null));
+
+        y = new SAXElement(null, "y");
+        y.setAttributeNS("http://a", "d", "23");
+        assertFalse(steps[0].getPredicatesEvaluator().evaluate(y, null));
+    }
+
+    public void test_3_5() throws SAXPathException {
+        SelectorStep[] steps = SelectorStepBuilder.buildSteps("y[@a:d > 23]", namespaces);
+        assertEquals("y(@{http://a}d > 23.0)", SelectorStepBuilder.toString(steps));
+
+        SAXElement y = new SAXElement(null, "y");
+        y.setAttribute("d", "23");
+        assertFalse(steps[0].getPredicatesEvaluator().evaluate(y, null));
+
+        y = new SAXElement(null, "y");
+        y.setAttributeNS("http://a", "d", "24");
+        assertTrue(steps[0].getPredicatesEvaluator().evaluate(y, null));
+
+        y = new SAXElement(null, "y");
+        y.setAttributeNS("http://a", "d", "23");
+        assertFalse(steps[0].getPredicatesEvaluator().evaluate(y, null));
+    }
+
     public void test_4() throws SAXPathException {
         SelectorStep[] steps = SelectorStepBuilder.buildSteps("x/y[@d = text()]", namespaces);
         assertEquals("x/y(@d = text())", SelectorStepBuilder.toString(steps));

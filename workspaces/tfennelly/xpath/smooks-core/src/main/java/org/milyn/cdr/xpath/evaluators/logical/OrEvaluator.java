@@ -17,6 +17,7 @@ package org.milyn.cdr.xpath.evaluators.logical;
 
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.container.ExecutionContext;
+import org.milyn.cdr.xpath.SelectorStep;
 import org.w3c.dom.Element;
 import org.jaxen.expr.LogicalExpr;
 import org.jaxen.saxpath.SAXPathException;
@@ -30,8 +31,8 @@ import java.util.Properties;
  */
 public class OrEvaluator extends AbstractLogicalEvaluator {
 
-    public OrEvaluator(LogicalExpr expr, Properties namespaces) throws SAXPathException {
-        super(expr, namespaces);
+    public OrEvaluator(LogicalExpr expr, SelectorStep selectorStep, Properties namespaces) throws SAXPathException {
+        super(expr, selectorStep, namespaces);
     }
 
     public boolean evaluate(SAXElement element, ExecutionContext executionContext) {

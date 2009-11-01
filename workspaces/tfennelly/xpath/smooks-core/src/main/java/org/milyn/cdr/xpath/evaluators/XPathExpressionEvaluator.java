@@ -20,9 +20,8 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.xpath.evaluators.logical.AndEvaluator;
 import org.milyn.cdr.xpath.evaluators.logical.OrEvaluator;
-import org.milyn.cdr.xpath.evaluators.equality.EqualsEvaluator;
-import org.milyn.cdr.xpath.evaluators.equality.NotEqualsEvaluator;
-import org.milyn.cdr.xpath.evaluators.equality.IndexEvaluator;
+import org.milyn.cdr.xpath.evaluators.equality.*;
+import org.milyn.cdr.xpath.SelectorStep;
 import org.w3c.dom.Element;
 import org.jaxen.expr.*;
 import org.jaxen.saxpath.SAXPathException;
@@ -63,17 +62,19 @@ public abstract class XPathExpressionEvaluator {
     /**
      * {@link XPathExpressionEvaluator} factory method.
      * @param expr Jaxen XPath expression.
+     * @param selectorStep Selector Step.
+     * @param namespaces Namespace set.
      * @return The {@link XPathExpressionEvaluator} for the Jaxen expression.
      */
-    public static XPathExpressionEvaluator getInstance(Expr expr, Properties namespaces) throws SAXPathException {
+    public static XPathExpressionEvaluator getInstance(Expr expr, SelectorStep selectorStep, Properties namespaces) throws SAXPathException {
         AssertArgument.isNotNull(expr, "expr");
 
         if(expr instanceof LogicalExpr) {
             LogicalExpr logicalExpr = (LogicalExpr) expr;
             if(logicalExpr.getOperator().equalsIgnoreCase("and")) {
-                return new AndEvaluator(logicalExpr, namespaces);
+                return new AndEvaluator(logicalExpr, selectorStep, namespaces);
             } else if(logicalExpr.getOperator().equalsIgnoreCase("or")) {
-                return new OrEvaluator(logicalExpr, namespaces);
+                return new OrEvaluator(logicalExpr, selectorStep, namespaces);
             }
         } else if(expr instanceof EqualityExpr) {
             EqualityExpr equalityExpr = (EqualityExpr) expr;
@@ -82,8 +83,15 @@ public abstract class XPathExpressionEvaluator {
             } else if(equalityExpr.getOperator().equalsIgnoreCase("!=")) {
                 return new NotEqualsEvaluator(equalityExpr, namespaces);
             }
+        } else if(expr instanceof RelationalExpr) {
+            RelationalExpr relationalExpr = (RelationalExpr) expr;
+            if(relationalExpr.getOperator().equalsIgnoreCase("<")) {
+                return new LessThanEvaluator(relationalExpr, namespaces);
+            } else if(relationalExpr.getOperator().equalsIgnoreCase(">")) {
+                return new GreaterThanEvaluator(relationalExpr, namespaces);
+            }
         } else if(expr instanceof NumberExpr) {
-            return new IndexEvaluator(((NumberExpr)expr).getNumber().intValue());
+            return new IndexEvaluator(((NumberExpr)expr).getNumber().intValue(), selectorStep);
         }
 
         throw new SAXPathException("Unsupported XPath expr token '" + expr.getText() + "'.");
