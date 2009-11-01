@@ -17,6 +17,7 @@ import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
+import org.milyn.util.MultiLineToStringBuilder;
 
 public class StandaloneBeanContext implements BeanContext {
 	private final ExecutionContext executionContext;
@@ -355,18 +356,7 @@ public class StandaloneBeanContext implements BeanContext {
 	 */
     @Override
     public String toString() {
-        ToStringBuilder toStringBuilder = new ToStringBuilder(this);
-        Set<Entry<String, Object>> beans = beanMap.entrySet();
-
-        for(Entry<String, Object> bean : beans) {
-            try {
-                toStringBuilder.append(bean.getKey(), bean.getValue(), true);
-            } catch (Exception e) {
-                toStringBuilder.append("Exception serialializing bean context bean '" + bean.getKey() + "': " + e.getMessage());
-            }
-        }
-
-        return toStringBuilder.toString();
+        return MultiLineToStringBuilder.toString(getBeanMap());
     }
 
     /**

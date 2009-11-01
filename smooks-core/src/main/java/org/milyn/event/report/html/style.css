@@ -1,4 +1,17 @@
 
+body, p, div, span, h1 {
+	font-family: verdana;
+}
+
+h1 {
+	font-size: 1em;
+	color: #0D6826;
+}
+
+p, div, span {
+	font-size: 0.98em;
+}
+
 /*--------------------------------------------------
   REQUIRED to hide the non-active tab content.
   But do not hide them in the print stylesheet!
@@ -59,14 +72,15 @@ ul.tabbernav li a:hover {
 }
 
 ul.tabbernav li.tabberactive a {
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
+    background-color: #DBD7D7;
+    border-bottom: 1px solid #DBD7D7;
+    color: #000;
 }
 
 ul.tabbernav li.tabberactive a:hover {
     color: #000;
-    background: white;
-    border-bottom: 1px solid white;
+    background: #DBD7D7;
+    border-bottom: 1px solid #DBD7D7;
 }
 
 /*--------------------------------------------------
@@ -106,23 +120,18 @@ you can set a fixed height */
 }
 
 .tabberlive#outertab .tabbertab {
-    overflow: auto;
-}
-
-.tabberlive#outertab .tabbertab {
-    height: 650px;
+    height: 600px;
 }
 
 .tabbertab {
     position: relative;
-    background-color: rgb( 238, 233, 233 );
+    background-color: #DBD7D7;
 }
 
 #left {
     float: left;
-    height: 93%;
-    width: 25%;
-    margin: 1%;
+    height: 99%;
+    width: 28%;
     border-style: groove;
     background-color: white;
     overflow: scroll;
@@ -130,34 +139,27 @@ you can set a fixed height */
 
 #right {
     position: relative;
-    float: right;
-    height: 93%;
-    margin: 1%;
-    width: 65%;
+    float: left;
+    height: 98%;
+    width: 70%;
+    margin-left: 1%;
 }
 
 #righttop {
-    float: top;
-    height: 28%;
-    width: 97%;
+    height: 24%;
+    width: 100%;
     border-style: groove;
     background-color: white;
     overflow: scroll;
-}
-
-#rightmiddle {
-    float: top;
-    height: 6%;
-    width: 97%;
+    margin-bottom: 1%;
 }
 
 #rightbottom {
-    float: bottom;
-    height: 65%;
-    width: 97%;
+    height: 75%;
+    width: 100%;
     border-style: groove;
     background-color: white;
-    overflow: scroll;
+    overflow-x:hidden;overflow-y:auto;
 }
 
 #result-summary {
@@ -166,15 +168,14 @@ you can set a fixed height */
     border-style: groove;
     background-color: white;
     overflow: scroll;
-    margin: 1%;
+    margin-bottom: 1%;
 }
 
 
 #result-detail {
     float: bottom;
-    height: 80%;
+    height: 86%;
     border-style: groove;
     background-color: white;
     overflow: scroll;
-    margin: 1%;
 }
