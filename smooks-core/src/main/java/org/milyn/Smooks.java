@@ -20,7 +20,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.ReaderConfigurator;
+import org.milyn.xml.NamespaceMappings;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
@@ -36,6 +38,7 @@ import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
+import org.jaxen.saxpath.SAXPathException;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -45,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 
 /**
  * Smooks executor class.
@@ -176,6 +180,16 @@ public class Smooks {
         SmooksResourceConfiguration readerConfig = readerConfigurator.toConfig();
         readerConfig.setSelector(AbstractParser.ORG_XML_SAX_DRIVER);
         addConfiguration(readerConfig);
+    }
+
+    /**
+     * Set the namespace prefix-to-uri mappings to be used on this Smooks instance.
+     * @param namespaces The namespace prefix-to-uri mappings.
+     */
+    public void setNamespaces(Properties namespaces) {
+        AssertArgument.isNotNull(namespaces, "namespaces");
+        assertIsConfigurable();
+        NamespaceMappings.setMappings(namespaces, context);
     }
 
     /**
@@ -343,17 +357,35 @@ public class Smooks {
      * @throws UnknownProfileMemberException Unknown target profile.
      */
     public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
-        isConfigurable = false;
         if(classLoader != null) {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             try {
+                if(isConfigurable) {
+                    initializeResourceConfigurations();
+                }
                 return new StandaloneExecutionContext(targetProfile, context, visitorConfigMap);
             } finally {
                 Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
+            if(isConfigurable) {
+                initializeResourceConfigurations();
+            }
             return new StandaloneExecutionContext(targetProfile, context, visitorConfigMap);
+        }
+    }
+
+    private synchronized void initializeResourceConfigurations() {
+        if(!isConfigurable) {
+            return;
+        }
+        isConfigurable = false;
+
+        try {
+            context.getStore().setNamespaces();
+        } catch (SAXPathException e) {
+            throw new SmooksConfigurationException("Error configuring namespaces", e);
         }
     }
 

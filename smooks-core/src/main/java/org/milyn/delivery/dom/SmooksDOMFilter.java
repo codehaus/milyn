@@ -472,7 +472,7 @@ public class SmooksDOMFilter extends Filter {
             SmooksResourceConfiguration config = configMap.getResourceConfig();
 
             // Make sure the assembly unit is targeted at this element...
-            if (!config.isTargetedAtElement(element)) {
+            if (!config.isTargetedAtElement(element, executionContext)) {
                 continue;
             }
 
@@ -515,7 +515,7 @@ public class SmooksDOMFilter extends Filter {
         SmooksResourceConfiguration config = configMap.getResourceConfig();
 
         // Make sure the assembly unit is targeted at this element...
-        if (!config.isTargetedAtElement(element)) {
+        if (!config.isTargetedAtElement(element, executionContext)) {
             return;
         }
 
@@ -741,7 +741,7 @@ public class SmooksDOMFilter extends Filter {
             SmooksResourceConfiguration config = configMap.getResourceConfig();
 
             // Make sure the processing unit is targeted at this element...
-            if (!config.isTargetedAtElement(element)) {
+            if (!config.isTargetedAtElement(element, executionContext)) {
                 return;
             }
 
