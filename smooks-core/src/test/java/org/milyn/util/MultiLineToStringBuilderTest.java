@@ -3,11 +3,14 @@ package org.milyn.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
+import org.milyn.payload.FilterResult;
+import org.milyn.payload.JavaResult;
 
 import junit.framework.TestCase;
 
@@ -18,6 +21,10 @@ public class MultiLineToStringBuilderTest extends TestCase {
 	public void test() {
 
 		ExecutionContext context = new MockExecutionContext();
+
+		JavaResult dummyResult = new JavaResult(true);
+
+		FilterResult.setResults(context, dummyResult);
 
 		context.getBeanContext().addBean("string", "blaat");
 		context.getBeanContext().addBean("emptyMap", Collections.emptyMap());
@@ -40,10 +47,10 @@ public class MultiLineToStringBuilderTest extends TestCase {
 
 		context.getBeanContext().addBean("stringArray", new String[] {"a1", "a2", "a3", null});
 
-		Map<String, Object> objectMap = new HashMap<String, Object>();
+		Map<String, Object> objectMap = new LinkedHashMap<String, Object>();
 		objectMap.put("self", objectMap);
 
-		Map<String, Object> object2Map = new HashMap<String, Object>();
+		Map<String, Object> object2Map = new LinkedHashMap<String, Object>();
 		object2Map.put("parent", objectMap);
 
 		objectMap.put("map", object2Map);
@@ -61,43 +68,45 @@ public class MultiLineToStringBuilderTest extends TestCase {
 
 		String actual = MultiLineToStringBuilder.toString(context);
 
+		System.out.println(actual);
+
 		String expected =
 			"BeanContext : {" + NL +
+			"   \"string\" : \"blaat\"," + NL +
+			"   \"emptyMap\" : {}," + NL +
+			"   \"emptyList\" : []," + NL +
+			"   \"emptyArray\" : []," + NL +
 			"   \"stringMap\" : {" + NL +
 			"      \"v1\" : \"some text\"," + NL +
 			"      \"v3\" : NULL," + NL +
 			"      \"v2\" : \"other text\"" + NL +
 			"   }," + NL +
-			"   \"string\" : \"blaat\"," + NL +
+			"   \"integerList\" : [" + NL +
+			"      1," + NL +
+			"      2," + NL +
+			"      NULL" + NL +
+			"   ]," + NL +
 			"   \"stringArray\" : [" + NL +
 			"      \"a1\"," + NL +
 			"      \"a2\"," + NL +
 			"      \"a3\"," + NL +
 			"      NULL" + NL +
 			"   ]," + NL +
-			"   \"emptyArray\" : []," + NL +
-			"   \"integerList\" : [" + NL +
-			"      1," + NL +
-			"      2," + NL +
-			"      NULL" + NL +
-			"   ]," + NL +
-			"   \"emptyMap\" : {}," + NL +
 			"   \"objectMap\" : {" + NL +
+			"      \"self\" : THIS," + NL +
 			"      \"map\" : {" + NL +
 			"         \"parent\" : PARENT-1," + NL +
 			"         \"list\" : [" + NL +
 			"            THIS," + NL +
 			"            PARENT-2" + NL +
 			"         ]" + NL +
-			"      }," + NL +
-			"      \"self\" : THIS" + NL +
-			"   }," + NL +
-			"   \"emptyList\" : []" + NL +
+			"      }" + NL +
+			"   }" + NL +
 			"}" + NL +
 			NL +
 			"Attributes : {" + NL +
 			"   \"multiline\" : \"hello" + NL +
-			"               world\"" + NL +
+			"               world\"," + NL +
 			"}";
 
 
