@@ -280,13 +280,17 @@ public class SAXHandler extends DefaultHandler2 {
             // And visit it with the targeted visitor...
             List<ContentHandlerConfigMap<SAXVisitBefore>> visitBeforeMappings = currentProcessor.elementVisitorConfig.getVisitBefores();
 
+            if(elementVisitorConfig.accumulateText()) {
+                currentProcessor.element.accumulateText();
+            }
+
             if(visitBeforeMappings != null) {
                 int mappingCount = visitBeforeMappings.size();
 
                 for(int i = 0; i < mappingCount; i++) {
                     ContentHandlerConfigMap<SAXVisitBefore> mapping = visitBeforeMappings.get(i);
                     try {
-                        if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                        if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
                             mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                             // Register the targeting event.  No need to register this event again on the visitAfter...
                             if(eventListener != null) {
@@ -336,7 +340,7 @@ public class SAXHandler extends DefaultHandler2 {
 
                 for(int i = 0; i < mappingCount; i++) {
                     ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
-                    if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                    if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
                         try {
                             mapping.getContentHandler().onChildElement(currentProcessor.element, childElement, execContext);
                         } catch(Throwable t) {
@@ -373,7 +377,7 @@ public class SAXHandler extends DefaultHandler2 {
     private void visitAfter(ContentHandlerConfigMap<SAXVisitAfter> afterMapping) {
 
         try {
-            if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+            if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
                 afterMapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
                 if(eventListener != null) {
                     eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, afterMapping, VisitSequence.AFTER));
@@ -428,7 +432,7 @@ public class SAXHandler extends DefaultHandler2 {
                         for(int i = 0; i < mappingCount; i++) {
                             ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
                             try {
-                                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
+                                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
                                     mapping.getContentHandler().onChildText(currentProcessor.element, textWrapper, execContext);
                                 }
                             } catch(Throwable t) {
