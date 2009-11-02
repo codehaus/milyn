@@ -1,15 +1,24 @@
 
-body, p, div, span, h1 {
+body{
+	font-size:1em;
+}
+
+html{
+	font-size:100%;
+}
+
+p, div, span, h1 {
 	font-family: verdana;
+	font-size: 0.92em
 }
 
 h1 {
-	font-size: 1em;
+	font-size: 1.25em;
 	color: #0D6826;
 }
 
-p, div, span {
-	font-size: 0.98em;
+a, a:link, a:visited, a:hover {
+	color: blue;
 }
 
 /*--------------------------------------------------
@@ -134,48 +143,48 @@ you can set a fixed height */
     width: 28%;
     border-style: groove;
     background-color: white;
-    overflow: scroll;
+    overflow: auto;
 }
 
 #right {
     position: relative;
     float: left;
     height: 98%;
-    width: 70%;
-    margin-left: 1%;
+    width: 71%;
+    margin-left: 0.4%;
 }
 
 #righttop {
-    height: 24%;
+    height: 25%;
     width: 100%;
     border-style: groove;
     background-color: white;
-    overflow: scroll;
-    margin-bottom: 1%;
+    overflow: auto;
+    margin-bottom: 0.4%;
 }
 
 #rightbottom {
-    height: 75%;
+    height: 74%;
     width: 100%;
     border-style: groove;
     background-color: white;
-    overflow-x:hidden;overflow-y:auto;
+    overflow: auto;
 }
 
 #result-summary {
     float: top;
-    height: 10%;
+    height: 12%;
     border-style: groove;
     background-color: white;
-    overflow: scroll;
-    margin-bottom: 1%;
+    overflow: auto;
+    margin-bottom: 0.4%;
 }
 
 
 #result-detail {
     float: bottom;
-    height: 86%;
+    height: 85%;
     border-style: groove;
     background-color: white;
-    overflow: scroll;
+    overflow: auto;
 }

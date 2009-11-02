@@ -14,6 +14,18 @@
 <style type="text/css">
     <!--
     <#include "shThemeEclipse.css" parse=false>
+
+
+	.syntaxhighlighter .lines.no-wrap {
+		overflow-x:visible !important;
+	    overflow-y:visible !important;
+	    overflow: visible !important;
+
+	}
+	.syntaxhighlighter {
+		font-size: 1.1em !important;
+	}
+
     -->
 </style>
 <script type="text/javascript">
@@ -44,6 +56,7 @@
 <script type="text/javascript">
 	SyntaxHighlighter.defaults['light'] = true;
 	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['wrap-lines'] = false;
 
 	SyntaxHighlighter.utils.addEvent(
 		window,
