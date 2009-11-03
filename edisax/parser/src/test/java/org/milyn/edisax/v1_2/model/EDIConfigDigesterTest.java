@@ -49,7 +49,12 @@ public class EDIConfigDigesterTest extends TestCase {
         InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-all-new-elements.xml")));
         Edimap edimap = EDIConfigDigester.digestConfig(input);
 
-        Segment segment = (Segment)edimap.getSegments().getSegments().get(0).getSegments().get(0);
+        //SegmentGroup
+        SegmentGroup segmentGroup = edimap.getSegments().getSegments().get(0);
+        assertEquals("Failed to digest documentation for SegmentGroup", segmentGroup.getDocumentation(), "segmentGroup-documentation");
+
+        Segment segment = (Segment)segmentGroup.getSegments().get(0);
+        assertEquals("Failed to digest documentation for Segment", segment.getDocumentation(), "segment-documentation");
         List<Field> fields = segment.getFields();
 
         // Assert field is read correctly.
@@ -59,6 +64,7 @@ public class EDIConfigDigesterTest extends TestCase {
         assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getTypeParameters().get(0).getValue(), "HHmm");
         assertEquals("Failed to digest minLength-attribute for Field", fields.get(0).getMinLength(), new Integer(0));
         assertEquals("Failed to digest maxLength-attribute for Field", fields.get(0).getMaxLength(), new Integer(4));
+        assertEquals("Failed to digest documentation for Field", fields.get(0).getDocumentation(), "field1-documentation");
 
         // Assert Component is read correctly.
         // <medi:component xmltag="aBinary" required="true" type="Binary" minLength="0" maxLength="8"/>
@@ -67,6 +73,7 @@ public class EDIConfigDigesterTest extends TestCase {
         assertNull("Parameters-attribute should be null in Component", component.getTypeParameters());
         assertEquals("Failed to digest minLength-attribute for Component", component.getMinLength(), new Integer(0));
         assertEquals("Failed to digest maxLength-attribute for Component", component.getMaxLength(), new Integer(8));
+        assertEquals("Failed to digest documentation for Component", component.getDocumentation(), "component-documentation");
 
         // Assert SubComponent is read correctly.
         // <medi:sub-component xmltag="aNumeric" type="Numeric" format="#0.00" minLength="1" maxLength="4"/>
@@ -76,6 +83,7 @@ public class EDIConfigDigesterTest extends TestCase {
         assertEquals("Failed to digest format-attribute for SubComponent", subcomponent.getTypeParameters().get(0).getValue(), "#0.00");
         assertEquals("Failed to digest minLength-attribute for SubComponent", subcomponent.getMinLength(), new Integer(1));
         assertEquals("Failed to digest maxLength-attribute for SubComponent", subcomponent.getMaxLength(), new Integer(4));
+        assertEquals("Failed to digest documentation for SubComponent", subcomponent.getDocumentation(), "subcomponent-documentation");
     }
 
     /**
