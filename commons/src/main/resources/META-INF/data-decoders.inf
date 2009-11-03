@@ -20,5 +20,6 @@ org.milyn.javabean.decoders.ShortDecoder
 org.milyn.javabean.decoders.SqlDateDecoder
 org.milyn.javabean.decoders.SqlTimeDecoder
 org.milyn.javabean.decoders.StringDecoder
+org.milyn.javabean.decoders.TimestampDecoder
 org.milyn.javabean.decoders.URIDecoder
 org.milyn.javabean.decoders.URLDecoder
