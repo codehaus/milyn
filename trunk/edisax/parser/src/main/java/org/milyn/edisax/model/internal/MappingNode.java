@@ -19,6 +19,7 @@ package org.milyn.edisax.model.internal;
 public class MappingNode {
 
     private String xmltag;
+    private String documentation;
 
     public String getXmltag() {
         return xmltag;
@@ -28,4 +29,11 @@ public class MappingNode {
         this.xmltag = value;
     }
 
+    public String getDocumentation() {
+        return documentation;
+    }
+
+    public void setDocumentation(String documentation) {
+        this.documentation = documentation;
+    }
 }

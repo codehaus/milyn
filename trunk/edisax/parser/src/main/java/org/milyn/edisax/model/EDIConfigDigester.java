@@ -43,6 +43,7 @@ public class EDIConfigDigester {
     public static final String XSD_V10 = "http://www.milyn.org/schema/edi-message-mapping-1.0.xsd";
     public static final String XSD_V11 = "http://www.milyn.org/schema/edi-message-mapping-1.1.xsd";
     public static final String XSD_V12 = "http://www.milyn.org/schema/edi-message-mapping-1.2.xsd";
+    public static final String XSD_V13 = "http://www.milyn.org/schema/edi-message-mapping-1.3.xsd";
     private static final String NAMESPACE_SUFFIX = ":";
 
     /**
@@ -93,7 +94,7 @@ public class EDIConfigDigester {
      * @return true if ediNS is valid, false otherwise.
      */
     private static boolean assertValidXSD(String ediNS) {
-        return XSD_V10.equals(ediNS) || XSD_V11.equals(ediNS) || XSD_V12.equals(ediNS);
+        return XSD_V10.equals(ediNS) || XSD_V11.equals(ediNS) || XSD_V12.equals(ediNS) || XSD_V13.equals(ediNS);
     }
 
     /**
@@ -132,11 +133,11 @@ public class EDIConfigDigester {
     private static void digestDelimiters(Node node, Edimap edimap) {
         Delimiters delimiters = new Delimiters();
         edimap.setDelimiters(delimiters);
-        delimiters.setSegment(getNodeValue(node, "segment"));
-        delimiters.setField(getNodeValue(node, "field"));
-        delimiters.setComponent(getNodeValue(node, "component"));
-        delimiters.setSubComponent(getNodeValue(node, "sub-component"));
-        delimiters.setEscape(getNodeValue(node, "escape"));
+        delimiters.setSegment(getAttributeValue(node, "segment"));
+        delimiters.setField(getAttributeValue(node, "field"));
+        delimiters.setComponent(getAttributeValue(node, "component"));
+        delimiters.setSubComponent(getAttributeValue(node, "sub-component"));
+        delimiters.setEscape(getAttributeValue(node, "escape"));
     }
 
     /**
@@ -147,8 +148,8 @@ public class EDIConfigDigester {
     private static void digestDescription(Node node, Edimap edimap) {
         Description description = new Description();
         edimap.setDescription(description);
-        description.setName(getNodeValue(node, "name"));
-        description.setVersion(getNodeValue(node, "version"));
+        description.setName(getAttributeValue(node, "name"));
+        description.setVersion(getAttributeValue(node, "version"));
     }
 
     /**
@@ -159,8 +160,8 @@ public class EDIConfigDigester {
     private static void digestImport(Node node, Edimap edimap) {
         Import edimapImport = new Import();
         edimap.getImport().add(edimapImport);
-        edimapImport.setResource(getNodeValue(node, "resource"));
-        edimapImport.setNamespace(getNodeValue(node, "namespace"));
+        edimapImport.setResource(getAttributeValue(node, "resource"));
+        edimapImport.setNamespace(getAttributeValue(node, "namespace"));
         edimapImport.setTruncatableFields(getNodeValueAsBoolean(node, "truncatableFields"));
         edimapImport.setTruncatableComponents(getNodeValueAsBoolean(node, "truncatableComponents"));
         edimapImport.setTruncatableSegments(getNodeValueAsBoolean(node, "truncatableSegments"));
@@ -175,7 +176,7 @@ public class EDIConfigDigester {
      */
     private static void digestSegments(Node node, Edimap edimap, String namespacePrefix) throws EDIConfigurationException {
         SegmentGroup segments = new SegmentGroup();
-        setValuesForMappingNode(node, segments);
+        setValuesForMappingNode(node, segments, namespacePrefix);
         edimap.setSegments(segments);
 
         NodeList nodes = node.getChildNodes();
@@ -197,7 +198,7 @@ public class EDIConfigDigester {
 
         if(segmentGroup instanceof Segment) {
             Segment segment = (Segment) segmentGroup;
-            setValuesForSegment(segment, node);
+            setValuesForSegment(segment, node, namespacePrefix);
 
             NodeList nodes = node.getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -214,7 +215,7 @@ public class EDIConfigDigester {
         } else {
             segmentGroup.setMaxOccurs(getNodeValueAsInteger(node, "maxOccurs"));
             segmentGroup.setMinOccurs(getNodeValueAsInteger(node, "minOccurs"));
-            setValuesForMappingNode(node, segmentGroup);
+            setValuesForMappingNode(node, segmentGroup, namespacePrefix);
 
             NodeList nodes = node.getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -229,6 +230,7 @@ public class EDIConfigDigester {
 
         if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "segmentGroup")) {
             SegmentGroup segment = new SegmentGroup();
+            segment.setDocumentation(getNodeValue(currentNode, namespacePrefix + "documentation"));
             segmentGroupList.add(segment);
             digestSegment(currentNode, segment, namespacePrefix);
 
@@ -252,7 +254,7 @@ public class EDIConfigDigester {
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
     private static void digestField(Node node, Field field, String namespacePrefix) throws EDIConfigurationException {
-        setValuesForField(field, node);
+        setValuesForField(field, node, namespacePrefix);
 
         NodeList nodes = node.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -274,7 +276,7 @@ public class EDIConfigDigester {
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
     private static void digestComponent(Node node, Component component, String namespacePrefix) throws EDIConfigurationException {
-        setValuesForComponent(component, node);
+        setValuesForComponent(component, node, namespacePrefix);
 
         NodeList nodes = node.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -283,7 +285,7 @@ public class EDIConfigDigester {
             if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "sub-component")) {
                 SubComponent subComponent = new SubComponent();
                 component.getSubComponent().add(subComponent);
-                setValuesForSubComponent(currentNode, subComponent);
+                setValuesForSubComponent(currentNode, subComponent, namespacePrefix);
             }
         }
     }
@@ -293,14 +295,14 @@ public class EDIConfigDigester {
      * @param segment the {@link org.milyn.edisax.model.internal.Segment} to populate.
      * @param node the Segment element.
      */
-    private static void setValuesForSegment(Segment segment, Node node) {
+    private static void setValuesForSegment(Segment segment, Node node, String namespacePrefix) {
         segment.setMaxOccurs(getNodeValueAsInteger(node, "maxOccurs"));
         segment.setMinOccurs(getNodeValueAsInteger(node, "minOccurs"));
-        segment.setSegcode(getNodeValue(node, "segcode"));
-        segment.setSegref(getNodeValue(node, "segref"));
+        segment.setSegcode(getAttributeValue(node, "segcode"));
+        segment.setSegref(getAttributeValue(node, "segref"));
         segment.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
-        segment.setDescription(getNodeValue(node, "description"));
-        setValuesForMappingNode(node, segment);
+        segment.setDescription(getAttributeValue(node, "description"));
+        setValuesForMappingNode(node, segment, namespacePrefix);
     }
 
     /**
@@ -309,10 +311,10 @@ public class EDIConfigDigester {
      * @param node the Field element.
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void setValuesForField(Field field, Node node) throws EDIConfigurationException {
+    private static void setValuesForField(Field field, Node node, String namespacePrefix) throws EDIConfigurationException {
         field.setRequired(getNodeValueAsBoolean(node, "required"));
         field.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
-        setValuesForValueNode(node, field);
+        setValuesForValueNode(node, field, namespacePrefix);
     }
 
     /**
@@ -321,10 +323,10 @@ public class EDIConfigDigester {
      * @param node the Component element.
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void setValuesForComponent(Component component, Node node) throws EDIConfigurationException {
+    private static void setValuesForComponent(Component component, Node node, String namespacePrefix) throws EDIConfigurationException {
         component.setRequired(getNodeValueAsBoolean(node, "required"));
         component.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
-        setValuesForValueNode(node, component);
+        setValuesForValueNode(node, component, namespacePrefix);
     }
 
     /**
@@ -333,9 +335,9 @@ public class EDIConfigDigester {
      * @param subComponent the SubComponent element.
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void setValuesForSubComponent(Node node, SubComponent subComponent) throws EDIConfigurationException {
+    private static void setValuesForSubComponent(Node node, SubComponent subComponent, String namespacePrefix) throws EDIConfigurationException {
         subComponent.setRequired(getNodeValueAsBoolean(node, "required"));
-        setValuesForValueNode(node, subComponent);
+        setValuesForValueNode(node, subComponent, namespacePrefix);
     }
 
     /**
@@ -343,8 +345,9 @@ public class EDIConfigDigester {
      * @param node the {@link org.milyn.edisax.model.internal.MappingNode} to populate.
      * @param mappingNode the MappingNode element.
      */
-    private static void setValuesForMappingNode(Node node, MappingNode mappingNode) {
-        mappingNode.setXmltag(getNodeValue(node, "xmltag"));
+    private static void setValuesForMappingNode(Node node, MappingNode mappingNode, String namespacePrefix) {
+        mappingNode.setXmltag(getAttributeValue(node, "xmltag"));
+        mappingNode.setDocumentation(getNodeValue(node, namespacePrefix + "documentation"));
     }
 
     /**
@@ -353,12 +356,12 @@ public class EDIConfigDigester {
      * @param valueNode the ValueNode element.
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when values are badly formatted.
      */
-    private static void setValuesForValueNode(Node node, ValueNode valueNode) throws EDIConfigurationException {
-        setValuesForMappingNode(node, valueNode);
-        valueNode.setType(getNodeValue(node, "type"));
+    private static void setValuesForValueNode(Node node, ValueNode valueNode, String namespacePrefix) throws EDIConfigurationException {
+        setValuesForMappingNode(node, valueNode, namespacePrefix);
+        valueNode.setType(getAttributeValue(node, "type"));
         valueNode.setMinLength(getNodeValueAsInteger(node, "minLength"));
         valueNode.setMaxLength(getNodeValueAsInteger(node, "maxLength"));
-        digestParameters(valueNode, getNodeValue(node, "typeParameters"));
+        digestParameters(valueNode, getAttributeValue(node, "typeParameters"));
     }
 
     /**
@@ -410,7 +413,7 @@ public class EDIConfigDigester {
      * @return Boolean value if attribute exists in node.
      */
     private static Boolean getNodeValueAsBoolean(Node node, String name) {
-        String value = getNodeValue(node, name);
+        String value = getAttributeValue(node, name);
         if (value == null) {
             return null;
         }
@@ -424,7 +427,7 @@ public class EDIConfigDigester {
      * @return Integer value if attribute exists in node.
      */
     private static Integer getNodeValueAsInteger(Node node, String name) {
-        String value = getNodeValue(node, name);
+        String value = getAttributeValue(node, name);
         if (value == null) {
             return null;
         }
@@ -437,8 +440,30 @@ public class EDIConfigDigester {
      * @param name the name of the attribute.
      * @return String value if attribute exists in node.
      */
-    private static String getNodeValue(Node node, String name) {
+    private static String getAttributeValue(Node node, String name) {
         return node.getAttributes().getNamedItem(name) != null ? node.getAttributes().getNamedItem(name).getNodeValue() : null;
+    }
+
+    /**
+     * Gets attribute value from node if it exists. Otherwise returns null.
+     * @param node the node.
+     * @param name the name of the attribute.
+     * @return String value if attribute exists in node.
+     */
+    private static String getNodeValue(Node node, String name) {
+        NodeList nodes = node.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node n = nodes.item(i);
+            if (n.getNodeName().equals(name)) {
+                return n.getTextContent();
+            } else if (node.hasChildNodes()) {
+                String value = getNodeValue(n, name);
+                if (value != null) {
+                    return value;
+                }
+            }
+        }
+        return null;  //().getNamedItem(name) != null ? node.getAttributes().getNamedItem(name).getNodeValue() : null;
     }
 
     /**
