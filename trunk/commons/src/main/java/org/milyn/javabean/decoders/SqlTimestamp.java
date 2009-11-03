@@ -15,7 +15,7 @@ import org.milyn.javabean.DecodeType;
 * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
 */
 @DecodeType(java.sql.Timestamp.class)
-public class Timestamp extends DateDecoder
+public class SqlTimestamp extends DateDecoder
 {
 	@Override
 	public Object decode(String data) throws DataDecodeException {
