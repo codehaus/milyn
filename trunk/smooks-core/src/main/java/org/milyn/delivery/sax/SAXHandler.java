@@ -23,6 +23,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
+import org.milyn.delivery.sax.terminate.TerminateException;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.ElementPresentEvent;
@@ -552,8 +553,12 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     private void processVisitorException(Throwable error, String errorMsg) {
+    	if(error instanceof TerminateException) {
+            throw (TerminateException) error;
+        }
+    	
         if(terminateOnVisitorException) {
-            if(error instanceof SmooksException) {
+        	if(error instanceof SmooksException) {
                 throw (SmooksException) error;
             } else {
                 throw new SmooksException(errorMsg, error);

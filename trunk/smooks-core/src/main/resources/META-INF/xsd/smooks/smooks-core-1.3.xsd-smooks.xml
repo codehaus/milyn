@@ -57,7 +57,7 @@
     </resource-config>
 
     <!--
-        Filter settings...
+        Namespace settings...
     -->
     <resource-config selector="namespaces">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
@@ -68,6 +68,25 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">prefix</param>
         <param name="mapToSpecifier">uri</param>
+    </resource-config>
+
+    <!--
+        Terminate settings...
+    -->
+    <resource-config selector="terminate">
+        <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
+        <param name="resource">org.milyn.delivery.sax.terminate.TerminateVisitor</param>
+    </resource-config>
+
+    <resource-config selector="terminate">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">onElement</param>
+        <param name="mapTo">selector</param>
+    </resource-config>
+
+    <resource-config selector="terminate">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">terminateBefore</param>
     </resource-config>
 
 </smooks-resource-list>
