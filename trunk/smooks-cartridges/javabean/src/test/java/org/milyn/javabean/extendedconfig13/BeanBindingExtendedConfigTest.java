@@ -42,7 +42,7 @@ import java.util.HashMap;
 public class BeanBindingExtendedConfigTest extends TestCase {
 
     public void test() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_01.xml"));
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_01.xml"));
         JavaResult result = new JavaResult();
         ExecutionContext execContext = smooks.createExecutionContext();
 
@@ -102,7 +102,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
     public void test_error_for_List_property() throws IOException, SAXException {
         try {
-            new Smooks(getClass().getResourceAsStream("test_value_02.xml"));
+            new Smooks(getClass().getResourceAsStream("test_bean_02.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
             assertEquals("'wiring' binding specifies a 'property' attribute.  This is not valid for a Collection target.", e.getCause().getMessage());
@@ -111,7 +111,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
     public void test_error_for_Array_property() throws IOException, SAXException {
         try {
-            new Smooks(getClass().getResourceAsStream("test_value_03.xml"));
+            new Smooks(getClass().getResourceAsStream("test_bean_03.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
             assertEquals("'wiring' binding specifies a 'property' attribute.  This is not valid for an Array target.", e.getCause().getMessage());
@@ -120,7 +120,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
     public void test_error_for_no_property_on_non_list_or_array() throws IOException, SAXException {
         try {
-            new Smooks(getClass().getResourceAsStream("test_value_04.xml"));
+            new Smooks(getClass().getResourceAsStream("test_bean_04.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
             assertEquals("'wiring' binding for bean class 'org.milyn.javabean.extendedconfig.ExtendedOrder' must specify a 'property' or 'setterMethod' attribute.", e.getCause().getMessage());
@@ -129,7 +129,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
     public void test_error_for_property_and_setterMethod() throws IOException, SAXException {
         try {
-            new Smooks(getClass().getResourceAsStream("test_value_10.xml"));
+            new Smooks(getClass().getResourceAsStream("test_bean_10.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
             assertEquals("'wiring' binding specifies a 'property' and a 'setterMethod' attribute.  Only one of both may be set.", e.getCause().getMessage());
@@ -137,7 +137,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
     }
 
     public void test_order_update() throws IOException, SAXException {
-    	 Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_05.xml"));
+    	 Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_05.xml"));
 
     	 ExtendedOrder inExtendedOrder = new ExtendedOrder();
     	 List<OrderItem> inOrderItems = new ArrayList<OrderItem>();
@@ -164,7 +164,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 
     public void test_error_for_no_wireOnElement() throws IOException, SAXException {
         try {
-            new Smooks(getClass().getResourceAsStream("test_value_06.xml"));
+            new Smooks(getClass().getResourceAsStream("test_bean_06.xml"));
             fail("Expected SmooksException");
         } catch(SmooksException e) {
             assertEquals("The bindings attribute 'createOnElement' and wiring attribute 'wireOnElement' are both not set. " +
@@ -175,7 +175,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
     }
 
     public void test_flat_xml_set_in_binding() throws IOException, SAXException {
-		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_07.xml"));
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_07.xml"));
 
 		JavaResult result = new JavaResult();
 
@@ -188,7 +188,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 	}
 
     public void test_flat_xml_set_global() throws IOException, SAXException {
-		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_08.xml"));
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_08.xml"));
 
 		JavaResult result = new JavaResult();
 
@@ -213,7 +213,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
     }
 
 	public void test_profile() throws IOException, SAXException {
-		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_09.xml"));
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_09.xml"));
 
 		JavaResult result = new JavaResult();
 
@@ -236,7 +236,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 	}
 
 	public void test_condition() throws IOException, SAXException {
-		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_11.xml"));
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_11.xml"));
 
 		JavaResult result = new JavaResult();
 
@@ -250,7 +250,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 	}
 
     public void test_expression_initVal() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_12.xml"));
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_12.xml"));
 
         JavaResult result = new JavaResult();
 
@@ -264,7 +264,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
     }
 
     public void test_factory() throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_value_13.xml"));
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_13.xml"));
 
         JavaResult result = new JavaResult();
 
