@@ -1,4 +1,12 @@
+package org.milyn.ect.formats.unedifact;
+
 import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.edisax.model.internal.Import;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.ect.EdimapConfiguration;
+import org.milyn.ect.EdiParseException;
+import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,14 +20,31 @@ import java.util.zip.ZipInputStream;
  */
 public class UnEdifactReader {
     private static final int BUFFER = 2048;
+    private static final String INTERCHANGE_DEFINITION = "un-edifact-interchange-definition.xml";
 
-    public static List<EdimapConfiguration> parse(String version, String message, String outDirectory) throws IOException, EdiParseException {        
+    public static List<EdimapConfiguration> parse(String infile, String message, String outDirectory) throws IOException, EdiParseException {
+
+        File zipfile =  new File(infile);
+        String version = zipfile.getName().substring(0, zipfile.getName().lastIndexOf('.'));
 
         String definitionResource = outDirectory + File.separator + "un-edifact-definition-" + version + ".xml";
-        File decompressedDir = unzpipAll(new File("c:\\" + version + ".zip"));                                                     
+        File decompressedDir = unzpipAll(zipfile);                                                     
         String fileExtension = getFileExtension(decompressedDir + File.separator + "eded");
 
         List<EdimapConfiguration> edimaps = new ArrayList<EdimapConfiguration>();
+
+        //Interchange envelope. Handcoded at the moment.
+        String interchangeDefinitionResource = outDirectory + File.separator + INTERCHANGE_DEFINITION;
+        EdifactModel interchangeEnvelope = new EdifactModel();
+        try {
+            interchangeEnvelope.parseSequence(Thread.currentThread().getContextClassLoader().getResourceAsStream("org/milyn/ect/formats/unedifact/" + INTERCHANGE_DEFINITION));
+        } catch (Exception e) {
+            throw new EdiParseException(e.getMessage(), e);
+        }
+
+        Import interchangeEnvImport = new Import();
+        interchangeEnvImport.setNamespace(UnEdifactMessageReader.INTERCHANGE_NAMESPACE);
+        interchangeEnvImport.setResource(new File(interchangeDefinitionResource).toURI().toString());
 
         // Read Definition Configuration
         Edimap definitionEdimap = parseEDIDefinitionFiles(decompressedDir, fileExtension);
@@ -29,7 +54,7 @@ public class UnEdifactReader {
         for (String fileName : messageDir.list()) {
             if (message.equalsIgnoreCase("ALL") || fileName.toLowerCase().startsWith(message.toLowerCase())) {
                 System.out.println("Parsing message [" + fileName + "]");
-                EdimapConfiguration edimapConfig = parseEDIMessage(messageDir + File.separator + fileName, outDirectory + File.separator + "un-edifact-message-" + fileName + ".xml", definitionResource);
+                EdimapConfiguration edimapConfig = parseEDIMessage(messageDir + File.separator + fileName, outDirectory + File.separator + "un-edifact-message-" + fileName + ".xml", new File(definitionResource).toURI().toString(), interchangeEnvImport);
                 if (edimapConfig.getEdimap() != null) {
                     edimaps.add(edimapConfig);
                 }
@@ -42,10 +67,14 @@ public class UnEdifactReader {
         definitionEdimap.setDelimiters(edimaps.get(0).getEdimap().getDelimiters());
         edimaps.add(new EdimapConfiguration(definitionEdimap, definitionResource));
 
+        edimaps.add(new EdimapConfiguration( interchangeEnvelope.getEdimap(), interchangeDefinitionResource));
+
+
+
         return edimaps;
     }
 
-    private static EdimapConfiguration parseEDIMessage(String fileName, String outFile, String definitionResource) throws IOException {
+    private static EdimapConfiguration parseEDIMessage(String fileName, String outFile, String definitionResource, Import interchangeEnvImport) throws IOException {
 
         Edimap edimap;
         Reader messageISR = null;
@@ -56,6 +85,7 @@ public class UnEdifactReader {
             edimap = UnEdifactMessageReader.readMessage(messageISR);
             if (edimap != null) {
                 edimap.getImport().get(0).setResource(definitionResource);
+                edimap.getImport().add(interchangeEnvImport);
             }
         } finally {
             if (messageFIS != null) {

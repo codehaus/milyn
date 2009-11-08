@@ -9,6 +9,14 @@
 	    
 	<dependencies>
 
+        <!-- TODO : Remove JUnit if extending main smooks pom --> 
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
 			<groupId>org.milyn</groupId>
 			<artifactId>milyn-smooks-edi</artifactId>

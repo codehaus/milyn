@@ -1,4 +1,7 @@
+package org.milyn.ect.formats.unedifact;
+
 import org.milyn.edisax.model.internal.*;
+import org.milyn.ect.EdiParseException;
 
 import java.io.*;
 import java.util.*;

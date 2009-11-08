@@ -1,3 +1,5 @@
+package org.milyn.ect;
+
 /**
  * Created by IntelliJ IDEA.
  * User: bardl

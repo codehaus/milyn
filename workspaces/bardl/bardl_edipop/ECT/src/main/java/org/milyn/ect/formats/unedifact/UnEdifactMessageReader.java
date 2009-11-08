@@ -1,3 +1,4 @@
+package org.milyn.ect.formats.unedifact;
 
 import org.milyn.edisax.model.internal.*;
 
@@ -12,6 +13,11 @@ import java.io.*;
  * @author bardl
  */
 public class UnEdifactMessageReader {
+
+    /**
+     * The namespace used when referencing the interchange envelope definition.
+     */
+    public static final String INTERCHANGE_NAMESPACE = "envelope";
 
     /**
      * Marks the start of the Message Definition section.
@@ -133,7 +139,7 @@ public class UnEdifactMessageReader {
 
             Map<String, String> definitions = parseMessageDefinition(breader);
 
-            parseMessageStructure(breader, rootGroup, definitions);
+            parseMessageStructure(breader, rootGroup, definitions, agency);
 
         } finally {
             if (breader != null) {
@@ -149,7 +155,7 @@ public class UnEdifactMessageReader {
         return line.matches(LEGAL_MESSAGE);
     }
 
-    private static void parseMessageStructure(BufferedReader reader, SegmentGroup group, Map<String, String> definitions) throws IOException {
+    private static void parseMessageStructure(BufferedReader reader, SegmentGroup group, Map<String, String> definitions, String agency) throws IOException {
         String line = reader.readLine();
         while (!line.matches(SEGMENT_TABLE)) {
             line = reader.readLine();
@@ -158,7 +164,7 @@ public class UnEdifactMessageReader {
         while (!line.matches(SEGMENT_TABLE_HEADER)) {
             line = reader.readLine();
         }
-        parseNextSegment(reader, group, definitions);
+        parseNextSegment(reader, group, definitions, agency);
     }
 
     private static Map<String, String> parseMessageDefinition(BufferedReader reader) throws IOException {
@@ -196,13 +202,13 @@ public class UnEdifactMessageReader {
         return definitions;
     }
 
-    private static int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions) throws IOException {
+    private static int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions, String agency) throws IOException {
         String line = reader.readLine();
         while (line != null) {
             if (line.matches(SEGMENT_REGULAR)) {
                 Matcher matcher = Pattern.compile(SEGMENT_REGULAR).matcher(line);
                 matcher.matches();
-                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions);
+                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency);
                 parentGroup.getSegments().add(segment);
             } else if (line.matches(SEGMENT_GROUP_START)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_START).matcher(line);
@@ -210,7 +216,7 @@ public class UnEdifactMessageReader {
                 SegmentGroup group = createGroup(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), definitions);
                 parentGroup.getSegments().add(group);
 
-                int result = parseNextSegment(reader, group, definitions);
+                int result = parseNextSegment(reader, group, definitions, agency);
                 if (result != 0) {
                     return result - 1;
                 }
@@ -218,7 +224,7 @@ public class UnEdifactMessageReader {
             } else if (line.matches(SEGMENT_GROUP_END)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_END).matcher(line);
                 matcher.matches();
-                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions);
+                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency);
                 parentGroup.getSegments().add(segment);
                 return extractPlusCharacter(matcher.group(6)).length() - 1;
             }
@@ -241,9 +247,14 @@ public class UnEdifactMessageReader {
         return group;
     }
 
-    private static Segment createSegment(String id, String segcode, String description, String mandatory, String maxOccurance, Map<String, String> definitions) {
+    private static Segment createSegment(String id, String segcode, String description, String mandatory, String maxOccurance, Map<String, String> definitions, String agency) {
         Segment segment = new Segment();
         segment.setSegcode(segcode);
+        if (!segcode.startsWith("UN")) {
+            segment.setSegref(agency + ":" + segcode);
+        } else {
+            segment.setSegref(INTERCHANGE_NAMESPACE + ":" + segcode);
+        }
         segment.setXmltag(description.trim());
         segment.setDocumentation(definitions.get(id).trim());
         segment.setMinOccurs(mandatory.equals("M") ? 1 : 0);

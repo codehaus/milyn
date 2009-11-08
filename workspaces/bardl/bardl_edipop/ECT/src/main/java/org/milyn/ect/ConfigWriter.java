@@ -1,3 +1,5 @@
+package org.milyn.ect;
+
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.util.FreeMarkerTemplate;
 

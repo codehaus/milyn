@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<#setting locale="en_US"><#setting number_format="0"/><?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-${configuration.version}.xsd">
     <#list edimap.import as import>
     <medi:import <#if import.resource?exists>resource="${import.resource}" </#if><#if import.namespace?exists>namespace="${import.namespace}" </#if><#if import.truncatableSegments?exists>truncatableSegments="${import.truncatableSegments}" </#if><#if import.truncatableFields?exists>truncatableFields="${import.truncatableFields}" </#if><#if import.truncatableComponents?exists>truncatableComponents="${import.truncatableComponents}" </#if>/>
@@ -9,8 +9,6 @@
         <@writeSegmentGroup segmentGroup=edimap.segments indent="\t"/>
     </medi:segments>
 </medi:edimap>
-
-<#setting number_format="0.00"/>
 
 <#macro writeSegmentGroup segmentGroup indent>
 <#list segmentGroup.segments as segment>
