@@ -1190,6 +1190,12 @@ public class SmooksResourceConfiguration {
         if(!selectorSteps[index.i].isStarStar()) {
             index.i = selectorSteps.length - 2;
             currentNode = element.getParentNode();
+        } else {
+        	// The target selector step is "**".  If the parent one is "#document" and we're at
+        	// the root now, then fail...
+        	if(selectorSteps.length == 2 && selectorSteps[0].isRooted() && element.getParentNode() == null) {
+        		return false;
+        	}
         }
 
         if (currentNode == null || currentNode.getNodeType() != Node.ELEMENT_NODE) {
@@ -1245,6 +1251,12 @@ public class SmooksResourceConfiguration {
         if(!selectorSteps[index.i].isStarStar()) {
             index.i = selectorSteps.length - 2;
             currentElement = element.getParent();
+        } else {
+        	// The target selector step is "**".  If the parent one is "#document" and we're at
+        	// the root now, then fail...
+        	if(selectorSteps.length == 2 && selectorSteps[0].isRooted() && element.getParent() == null) {
+        		return false;
+        	}
         }
 
         if (currentElement == null) {
@@ -1285,7 +1297,8 @@ public class SmooksResourceConfiguration {
                     // we're at the root of the document and the only selector left is
                     // the document selector.  Pass..
                     return true;
-                } else if(parentElement == null) {
+                } else 
+                	if(parentElement == null) {
                     // we're at the root of the document, yet there are still
                     // unmatched tokens in the selector.  Fail...
                     return false;
@@ -1348,7 +1361,8 @@ public class SmooksResourceConfiguration {
                     // we're at the root of the document and the only selector left is
                     // the document selector.  Pass..
                     return true;
-                } else if(parentElement == null) {
+                } else 
+                	if(parentElement == null) {
                     // we're at the root of the document, yet there are still
                     // unmatched tokens in the selector.  Fail...
                     return false;
@@ -1637,5 +1651,6 @@ public class SmooksResourceConfiguration {
         public void buildPredicatesEvaluator(Properties namespaces) throws SAXPathException, NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException {
             // Ignore this.
         }
+        
     }
 }

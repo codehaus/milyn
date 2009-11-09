@@ -99,19 +99,72 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         }
 
         extractChildVisitors();
-
+        
+        List<ContentHandlerConfigMap<SAXVisitBefore>> starVBs = new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>();
+        List<ContentHandlerConfigMap<SAXVisitChildren>> starVCs = new ArrayList<ContentHandlerConfigMap<SAXVisitChildren>>();
+        List<ContentHandlerConfigMap<SAXVisitAfter>> starVAs = new ArrayList<ContentHandlerConfigMap<SAXVisitAfter>>();
+        List<ContentHandlerConfigMap<VisitLifecycleCleanable>> starCleanables = new ArrayList<ContentHandlerConfigMap<VisitLifecycleCleanable>>();
+        
+        if(visitBefores.getTable().get("*") != null) {
+        	starVBs.addAll(visitBefores.getTable().get("*"));
+        }
+        if(visitBefores.getTable().get("**") != null) {
+        	starVBs.addAll(visitBefores.getTable().get("**"));
+        }
+        if(childVisitors.getTable().get("*") != null) {
+        	starVCs.addAll(childVisitors.getTable().get("*"));
+        }
+        if(childVisitors.getTable().get("**") != null) {
+        	starVCs.addAll(childVisitors.getTable().get("**"));
+        }
+        if(visitAfters.getTable().get("*") != null) {
+        	starVAs.addAll(visitAfters.getTable().get("*"));
+        }
+        if(visitAfters.getTable().get("**") != null) {
+        	starVAs.addAll(visitAfters.getTable().get("**"));
+        }
+        if(visitCleanables.getTable().get("*") != null) {
+        	starCleanables.addAll(visitCleanables.getTable().get("*"));
+        }
+        if(visitCleanables.getTable().get("**") != null) {
+        	starCleanables.addAll(visitCleanables.getTable().get("**"));
+        }
+        
         // Now extract the before, child and after visitors for all configured elements...
-        Set<String> elementNames = new HashSet();
+        Set<String> elementNames = new HashSet<String>();
         elementNames.addAll(visitBefores.getTable().keySet());
         elementNames.addAll(visitAfters.getTable().keySet());
 
         for (String elementName : elementNames) {
             SAXElementVisitorMap entry = new SAXElementVisitorMap();
+            List<ContentHandlerConfigMap<SAXVisitBefore>> befores = visitBefores.getTable().get(elementName);
+            List<ContentHandlerConfigMap<SAXVisitChildren>> children = childVisitors.getTable().get(elementName);
+            List<ContentHandlerConfigMap<SAXVisitAfter>> afters = visitAfters.getTable().get(elementName);
+            List<ContentHandlerConfigMap<VisitLifecycleCleanable>> cleanables = visitCleanables.getTable().get(elementName);
+        	boolean isStar = (elementName.equals("*") || elementName.equals("**"));
 
-            entry.setVisitBefores(visitBefores.getTable().get(elementName));
-            entry.setChildVisitors(childVisitors.getTable().get(elementName));
-            entry.setVisitAfters(visitAfters.getTable().get(elementName));
-            entry.setVisitCleanables(visitCleanables.getTable().get(elementName));
+        	// So what's going on with the "*" and "**" resources here?  Basically, we are adding
+        	// these resources to all targeted elements, accept for "*" and "**" themselves.
+        	
+            if(befores != null && !isStar) {
+            	befores.addAll(starVBs);
+            }
+            entry.setVisitBefores(befores);
+            
+            if(children != null && !isStar) {
+            	children.addAll(starVCs);
+            }
+            entry.setChildVisitors(children);
+            
+            if(afters != null && !isStar) {
+            	afters.addAll(starVAs);
+            }
+            entry.setVisitAfters(afters);
+            
+            if(cleanables != null && !isStar) {
+            	cleanables.addAll(starCleanables);
+            }
+            entry.setVisitCleanables(cleanables);
 
             entry.initAccumulateText();
 
