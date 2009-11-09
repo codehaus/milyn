@@ -42,10 +42,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Programmatic Binding config test.
+ * Programmatic Binding config test for the Bean class.
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class ProgrammaticConfigTest extends TestCase {
+public class ProgrammaticBeanConfigTest extends TestCase {
 
     public void test_01_fluent() {
         Smooks smooks = new Smooks();
