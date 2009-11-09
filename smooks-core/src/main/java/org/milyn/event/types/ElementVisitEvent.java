@@ -31,6 +31,7 @@ import org.milyn.event.ElementProcessingEvent;
 import org.milyn.event.ResourceBasedEvent;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
+import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.util.MultiLineToStringBuilder;
 import org.milyn.util.FreeMarkerTemplate;
@@ -113,12 +114,12 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
         ContentHandler handler = configMapping.getContentHandler();
         if (getSequence() == VisitSequence.BEFORE) {
             VisitBeforeReport reportAnnotation = handler.getClass().getAnnotation(VisitBeforeReport.class);
-            if (reportAnnotation != null) {
+            if (reportAnnotation != null && evalReportCondition(reportAnnotation.condition())) {
                 applyReportTemplates(reportAnnotation.summary(), reportAnnotation.detailTemplate(), handler.getClass(), executionContext);
             }
         } else {
             VisitAfterReport reportAnnotation = handler.getClass().getAnnotation(VisitAfterReport.class);
-            if (reportAnnotation != null) {
+            if (reportAnnotation != null && evalReportCondition(reportAnnotation.condition())) {
                 applyReportTemplates(reportAnnotation.summary(), reportAnnotation.detailTemplate(), handler.getClass(), executionContext);
             }
         }
@@ -127,6 +128,12 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
             // No template ...
             reportDetail = executionContextState;
         }
+    }
+
+    private boolean evalReportCondition(String condition) {
+        MVELExpressionEvaluator conditionEval = new MVELExpressionEvaluator();
+        conditionEval.setExpression(condition);
+        return conditionEval.eval(configMapping.getResourceConfig());
     }
 
     private void applyReportTemplates(String summary, String detailTemplate, Class handlerClass, ExecutionContext executionContext) {
