@@ -61,10 +61,11 @@ import java.util.*;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
-@VisitBeforeReport(condition = "parameters.containsKey('wireBeanIdName')",
-        summary = "Create bean lifecycle observer for bean <b>${resource.parameters.wireBeanId!'undefined'}</b>.",
+@VisitBeforeReport(condition = "parameters.containsKey('wireBeanId') || parameters.containsKey('valueAttributeName')",
+        summary = "<#if resource.parameters.wireBeanId??>Create bean lifecycle observer for bean <b>${resource.parameters.wireBeanId}</b>." +
+        		  "<#else>Populating <b>${resource.parameters.beanId}</b> with the value from the attribute <b>${resource.parameters.valueAttributeName}</b>.</#if>",
         detailTemplate = "reporting/BeanInstancePopulatorReport_Before.html")
-@VisitAfterReport(condition = "!parameters.containsKey('wireBeanIdName')",
+@VisitAfterReport(condition = "!parameters.containsKey('wireBeanId') && !parameters.containsKey('valueAttributeName')",
         summary = "Populating <b>${resource.parameters.beanId}</b> with a value from this element.",
         detailTemplate = "reporting/BeanInstancePopulatorReport_After.html")
 public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer, Consumer {
@@ -127,9 +128,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private String mapKeyAttribute;
 
     private boolean beanWiring;
-
-
-
 
     public void setBeanId(String beanId) {
         this.beanIdName = beanId;
@@ -572,7 +570,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     private Object decodeDataString(String dataString, ExecutionContext executionContext) throws DataDecodeException {
-        if((dataString == null || dataString.equals("")) && defaultVal != null) {
+        if((dataString == null || dataString.length() == 0) && defaultVal != null) {
         	if(defaultVal.equals("null")) {
         		return null;
         	}
