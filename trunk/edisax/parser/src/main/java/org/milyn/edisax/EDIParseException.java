@@ -18,6 +18,7 @@ package org.milyn.edisax;
 
 import org.xml.sax.SAXException;
 import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.edisax.model.internal.MappingNode;
 
 /**
  * EDI message parsing exception.
@@ -26,6 +27,9 @@ import org.milyn.edisax.model.internal.Edimap;
 public class EDIParseException extends SAXException {
 
 	private static final long serialVersionUID = 1L;
+    private MappingNode errorNode;
+    private int segmentNumber;
+    private String[] segmentline; 
 
     /**
 	 * Public constructor.	 
@@ -55,7 +59,65 @@ public class EDIParseException extends SAXException {
 		super(getMessagePrefix(mappingModel) + "  " + message, cause);
 	}
 
+    /**
+	 * Public constructor.
+	 * @param message Exception message.
+     * @param cause Exception cause
+     * @param mappingNode the Segment, Field or Component where error occured.
+     * @param segmentNumber the segment number where the error occured.
+     * @param segmentLine the segment line where the error occured.
+	 */
+	public EDIParseException(String message, Exception cause, MappingNode mappingNode, int segmentNumber, String[] segmentLine) {
+		super(message, cause);
+        this.errorNode = mappingNode;
+        this.segmentNumber = segmentNumber;
+        this.segmentline = segmentLine;
+	}
+
+    /**
+	 * Public constructor.
+	 * @param mappingModel The mapping model for the message on which the exception was encoutered.
+	 * @param message Exception message.
+     * @param mappingNode the Segment, Field or Component where error occured.
+     * @param segmentNumber the segment number where the error occured.
+     * @param segmentLine the segment line where the error occured.
+	 */
+	public EDIParseException(Edimap mappingModel, String message, MappingNode mappingNode, int segmentNumber, String[] segmentLine) {
+		super(getMessagePrefix(mappingModel) + "  " + message);
+        this.errorNode = mappingNode;
+        this.segmentNumber = segmentNumber;
+        this.segmentline = segmentLine;
+	}
+
+    /**
+	 * Public constructor.
+	 * @param mappingModel The mapping model for the message on which the exception was encoutered.
+	 * @param message Exception message.
+	 * @param cause Exception cause.
+     * @param mappingNode the Segment, Field or Component where error occured.
+     * @param segmentNumber the segment number where the error occured.
+     * @param segmentLine the segment line where the error occured.
+	 */
+	public EDIParseException(Edimap mappingModel, String message, Exception cause, MappingNode mappingNode, int segmentNumber, String[] segmentLine) {
+		super(getMessagePrefix(mappingModel) + "  " + message, cause);
+        this.errorNode = mappingNode;
+        this.segmentNumber = segmentNumber;
+        this.segmentline = segmentLine;
+	}
+
 	private static String getMessagePrefix(Edimap mappingModel) {
 		return "EDI message processing failed [" + mappingModel.getDescription().getName() + "][" + mappingModel.getDescription().getVersion() + "].";
 	}
+
+    public MappingNode getErrorNode() {
+        return errorNode;
+    }
+
+    public int getSegmentNumber() {
+        return segmentNumber;
+    }
+
+    public String[] getSegmentline() {
+        return segmentline;
+    }
 }

@@ -20,6 +20,7 @@ public class MappingNode {
 
     private String xmltag;
     private String documentation;
+    private MappingNode parent;
 
     public String getXmltag() {
         return xmltag;
@@ -35,5 +36,13 @@ public class MappingNode {
 
     public void setDocumentation(String documentation) {
         this.documentation = documentation;
+    }
+
+    public MappingNode getParent() {
+        return parent;
+    }
+
+    public void setParent(MappingNode parent) {
+        this.parent = parent;
     }
 }

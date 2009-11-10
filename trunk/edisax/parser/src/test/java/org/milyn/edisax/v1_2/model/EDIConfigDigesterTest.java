@@ -40,6 +40,39 @@ import java.util.Map;
 public class EDIConfigDigesterTest extends TestCase {
 
     /**
+     * This testcase tests that parent MappingNode is connected to the correct MappingNode.
+     * @throws org.milyn.edisax.EDIConfigurationException is thrown when error occurs during config-digestion.
+     * @throws java.io.IOException is thrown when unable to read edi-config in testcase.
+     * @throws org.xml.sax.SAXException is thrown when error occurs during config-digestion.
+     */
+    public void testParentMappingNodes() throws IOException, EDIConfigurationException, SAXException {
+        InputStream input = new ByteArrayInputStream(readStream(getClass().getResourceAsStream("edi-config-all-new-elements.xml")));
+        Edimap edimap = EDIConfigDigester.digestConfig(input);
+
+        //SegmentGroup
+        SegmentGroup rootSegmentGroup = edimap.getSegments();
+        assertNull("Root segmentGroup should have no parent", rootSegmentGroup.getParent());
+
+        SegmentGroup segmentGroup = edimap.getSegments().getSegments().get(0);
+        assertEquals("SegmentGroup[" + segmentGroup.getXmltag() + "] should have the root SegmentGroup[" + rootSegmentGroup.getXmltag() + "] as parent but had parent[" + segmentGroup.getParent().getXmltag() + "]", segmentGroup.getParent(), rootSegmentGroup);
+
+        //Segment
+        Segment segment = (Segment)segmentGroup.getSegments().get(0);
+        assertEquals("Segment[" + segment.getXmltag() + "] should have the SegmentGroup[" + segmentGroup.getXmltag() + "] as parent", segment.getParent(), segmentGroup);
+
+        //Fields
+        for (Field field : segment.getFields()) {
+            assertEquals("Field[" + field.getXmltag() + "] should have the Segment[" + segment.getXmltag() + "] as parent", field.getParent(), segment);
+            for (Component component : field.getComponent()) {
+                assertEquals("Component[" + component.getXmltag() + "] should have the Field[" + field.getXmltag() + "] as parent", component.getParent(), field);
+                for (SubComponent subComponent : component.getSubComponent()) {
+                    assertEquals("SubComponent[" + subComponent.getXmltag() + "] should have the Component[" + component.getXmltag() + "] as parent", subComponent.getParent(), component);
+                }
+            }
+        }
+    }
+
+    /**
      * This testcase tests that all values are read from ValueNode.
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when error occurs during config-digestion.
      * @throws java.io.IOException is thrown when unable to read edi-config in testcase.

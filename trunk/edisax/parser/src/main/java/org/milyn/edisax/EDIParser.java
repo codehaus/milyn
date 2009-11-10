@@ -287,7 +287,7 @@ public class EDIParser implements XMLReader {
                 if(!matcher.matches()) {
                     // If we haven't read the minimum number of instances of the current "expected" segment, raise an error...
                     if(segmentProcessingCount < minOccurs) {
-                        throw new EDIParseException(edifactModel.getEdimap(), "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                        throw new EDIParseException(edifactModel.getEdimap(), "Must be a minimum of " + minOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedSegmentGroup, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
                     } else {
                         // Otherwise, move to the next "expected" segment and start the loop again...
                         segmentMappingIndex++;
@@ -299,7 +299,7 @@ public class EDIParser implements XMLReader {
 
             // Make sure we haven't encountered a message with too many instances of the current expected segment...
             if(segmentProcessingCount >= maxOccurs) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Maximum of " + maxOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Maximum of " + maxOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedSegmentGroup, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
 
             // The current read message segment appears to match that expected according to the mapping model.
@@ -324,7 +324,7 @@ public class EDIParser implements XMLReader {
             currentSegmentFields = null;
 
             while(segmentProcessingCount < minOccurs && !segmentReader.hasCurrentSegment()) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Reached end of EDI message stream but there must be a minimum of " + minOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "].  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedSegmentGroup, segmentReader.getCurrentSegmentNumber(), null );
             }
         }
 	}
@@ -403,7 +403,7 @@ public class EDIParser implements XMLReader {
 	        endElement(expectedField.getXmltag(), true);
 		} else {
             if(expectedField.isRequired() && fieldMessageVal.length() == 0) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedField, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
 
             contentHandler.characters(fieldMessageVal.toCharArray(), 0, fieldMessageVal.length());
@@ -433,7 +433,7 @@ public class EDIParser implements XMLReader {
 
             for(int i = 0; i < currentComponentSubComponents.length; i++) {
                 if(expectedSubComponents.get(i).isRequired() && currentComponentSubComponents[i].length() == 0) {
-                    throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + "), sub-component " + (i + 1) + " (" + expectedSubComponents.get(i).getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                    throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + "), sub-component " + (i + 1) + " (" + expectedSubComponents.get(i).getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedSubComponents.get(i), segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
                 }
 
 				startElement(expectedSubComponents.get(i).getXmltag(), true);
@@ -443,7 +443,7 @@ public class EDIParser implements XMLReader {
 			endElement(expectedComponent.getXmltag(), true);
 		} else {
             if(expectedComponent.isRequired() && componentMessageVal.length() == 0) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain a value.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedComponent, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
 
 			contentHandler.characters(componentMessageVal.toCharArray(), 0, componentMessageVal.length());
@@ -475,7 +475,7 @@ public class EDIParser implements XMLReader {
             }
 
             if(throwException) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segment.getSegcode() + "] expected to contain " + (numFieldsExpected - 1) + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segment.getSegcode() + "] expected to contain " + (numFieldsExpected - 1) + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", segment, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
         }
 
@@ -513,7 +513,7 @@ public class EDIParser implements XMLReader {
             }
 
             if (throwException) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain " + expectedComponents.size() + " components.  Actually contains " + currentFieldComponents.length + " components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + expectedField.getXmltag() + ") expected to contain " + expectedComponents.size() + " components.  Actually contains " + currentFieldComponents.length + " components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedField, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
         }
 
@@ -551,7 +551,7 @@ public class EDIParser implements XMLReader {
             }
 
             if (throwException) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain " + expectedSubComponents.size() + " sub-components.  Actually contains " + currentComponentSubComponents.length + " sub-components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segmentCode + "], field " + (fieldIndex + 1) + " (" + field + "), component " + (componentIndex + 1) + " (" + expectedComponent.getXmltag() + ") expected to contain " + expectedSubComponents.size() + " sub-components.  Actually contains " + currentComponentSubComponents.length + " sub-components.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedComponent, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
         }
 
@@ -571,9 +571,9 @@ public class EDIParser implements XMLReader {
                 return;
             }
         } catch (SAXNotRecognizedException e) {
-            throw new EDIParseException("Unable to decide whether to validate value-node or not.", e);
+            throw new EDIParseException("Unable to decide whether to validate value-node or not.", e, valueNode, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
         } catch (SAXNotSupportedException e) {
-            throw new EDIParseException("Unable to decide whether to validate value-node or not.", e);
+            throw new EDIParseException("Unable to decide whether to validate value-node or not.", e, valueNode, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
         }
 
         // Validate type.
@@ -581,21 +581,21 @@ public class EDIParser implements XMLReader {
             try {
                 valueNode.isValidForType(value);
             } catch (DataDecodeException e) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", e);
+                throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", e, valueNode, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
         }
 
         //Test minLength.
         if (valueNode.getMinLength() != null) {
             if (value.length() < valueNode.getMinLength()) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Value [" + value + "] should have a length greater than [" + valueNode.getMinLength() + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Value [" + value + "] should have a length greater than [" + valueNode.getMinLength() + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", valueNode, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
         }
 
         //Test maxLength.
         if (valueNode.getMaxLength() != null) {
             if (value.length() > valueNode.getMaxLength()) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Value [" + value + "] exceeds allowed maximum length of [" + valueNode.getMaxLength() + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".");
+                throw new EDIParseException(edifactModel.getEdimap(), "Value [" + value + "] exceeds allowed maximum length of [" + valueNode.getMaxLength() + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", valueNode, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
         }
     }

@@ -65,6 +65,36 @@ public abstract class AbstractEDIParserTestCase extends TestCase {
         }
     }
 
+    protected void testEDIParseException(String testpack, String segmentNodeName, int segmentNumber) throws IOException {
+		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-input.txt")));
+		InputStream mapping = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-to-xml-mapping.xml")));
+
+		MockContentHandler contentHandler = new MockContentHandler();
+
+		try {
+			EDIParser parser = new EDIParser();
+
+			parser.setContentHandler(contentHandler);
+			parser.setMappingModel(EDIParser.parseMappingModel(mapping));
+            parser.setFeature(EDIParser.VALIDATE, true);
+			parser.parse(new InputSource(input));
+
+            assertTrue("Test case should thow an EdiParseException.", false);
+
+		} catch (EDIParseException e) {
+            if (segmentNodeName == null) {
+                assertTrue( "EDIParseException should contain no MappingNode.", e.getErrorNode() == null );
+            } else {
+			    assertEquals( "EDIParseException should contain the MappingNode with xmltag [" + segmentNodeName + "]. Instead it contains [" + e.getErrorNode().getXmltag() + "].",  e.getErrorNode().getXmltag(), segmentNodeName );
+            }
+            assertEquals( "EDIParseException should contain the segmentNumber [" + segmentNumber + "]. Instead it contains [" + e.getSegmentNumber() + "].",  e.getSegmentNumber(), segmentNumber );
+
+		} catch (Exception e) {
+            assert false : e;
+        }
+    }
+
+
     private String removeCRLF(String string) throws IOException {
         return StreamUtils.trimLines(new StringReader(string)).toString();
 	}
