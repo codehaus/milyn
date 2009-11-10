@@ -67,6 +67,7 @@
                 <module>scribe</module>
                 <module>ejc</module>
                 <module>ejc/maven-ejc-plugin</module>
+                <module>ect</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
@@ -86,6 +87,7 @@
                 <module>scribe</module>
                 <module>ejc</module>
                 <module>ejc/maven-ejc-plugin</module>
+                <module>ect</module>
                 <module>smooks-cartridges</module>
             </modules>
         </profile>
