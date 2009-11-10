@@ -1,3 +1,18 @@
+/*
+	Milyn - Copyright (C) 2006
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
 package org.milyn.javabean;
 
 import java.io.IOException;
@@ -28,6 +43,61 @@ import org.milyn.util.CollectionsUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
+/**
+ * Value Binder.
+ * <p/>
+ * This class can be used to configure a Smooks instance for creating value
+ * objects using thee Smooks DataDecoders.
+ * <h3>XML Schema & Namespace</h3>
+ * The Value Binder XML configuration schema is in the following XML Schema Namespace:
+ * <p/>
+ * <a href="http://www.milyn.org/xsd/smooks/javabean-1.3.xsd"><b>http://www.milyn.org/xsd/smooks/javabean-1.3.xsd</b></a>
+ * <p/>
+ * The value binder element is '&lt;value&gt;'. Take a look in the schema for all
+ * the configuration attributes.
+ *
+ * <h3>Programmatic configuration</h3>
+ * The value binder can be programmatic configured using the {@link Value} Object.
+ *
+ * <h3>Example</h3>
+ * Taking the "classic" Order message as an example and getting the order number and
+ * name as Value Objects in the form of an Integer and String.
+ * <h4>The Message</h4>
+ * <pre>
+ * &lt;order xmlns="http://x"&gt;
+ *     &lt;header&gt;
+ *         &lt;y:date xmlns:y="http://y"&gt;Wed Nov 15 13:45:28 EST 2006&lt;/y:date&gt;
+ *         &lt;customer number="123123"&gt;Joe&lt;/customer&gt;
+ *         &lt;privatePerson&gt;&lt;/privatePerson&gt;
+ *     &lt;/header&gt;
+ *     &lt;order-items&gt;
+ *         &lt;!-- .... --!&gt;
+ *     &lt;/order-items&gt;
+ * &lt;/order&gt;
+ * </pre>
+ *
+ * <h4>The Binding Configuration</h4>
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot;?&gt;
+ * &lt;smooks-resource-list xmlns=&quot;http://www.milyn.org/xsd/smooks-1.1.xsd&quot; xmlns:jb=&quot;http://www.milyn.org/xsd/smooks/javabean-1.3.xsd&quot;&gt;
+ *
+ *    &lt;jb:value
+ *       beanId=&quot;customerName&quot;
+ *       data=&quot;customer&quot;
+ *       default=&quot;unknown&quot;
+ *    /&gt;
+ *
+ *    &lt;jb:value
+ *       beanId=&quot;customerNumber&quot;
+ *       data=&quot;customer/@number&quot;
+ *	     decoder=&quot;Integer&quot;
+ *    /&gt;
+ *
+ * &lt;/smooks-resource-list&gt;
+ * </pre>
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ */
 @VisitBeforeReport(condition = "parameters.containsKey('valueAttributeName')",
         summary = "Creating object under bean id <b>${resource.parameters.beanId}</b> with a value from the attribute <b>${resource.parameters.valueAttributeName}</b>.",
         detailTemplate = "reporting/ValueBinderReport_Before.html")
