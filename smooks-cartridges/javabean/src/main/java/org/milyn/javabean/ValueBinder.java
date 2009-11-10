@@ -47,7 +47,7 @@ import org.w3c.dom.Element;
  * Value Binder.
  * <p/>
  * This class can be used to configure a Smooks instance for creating value
- * objects using thee Smooks DataDecoders.
+ * objects using the Smooks DataDecoders.
  * <h3>XML Schema & Namespace</h3>
  * The Value Binder XML configuration schema is in the following XML Schema Namespace:
  * <p/>
@@ -71,7 +71,7 @@ import org.w3c.dom.Element;
  *         &lt;privatePerson&gt;&lt;/privatePerson&gt;
  *     &lt;/header&gt;
  *     &lt;order-items&gt;
- *         &lt;!-- .... --!&gt;
+ *         &lt;!-- .... --&gt;
  *     &lt;/order-items&gt;
  * &lt;/order&gt;
  * </pre>
@@ -232,7 +232,6 @@ public class ValueBinder implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 		if(isAttribute) {
 			bindValue(DomUtils.getAttributeValue(element, valueAttributeName), executionContext);
 		}
-
 	}
 
 	public void visitAfter(Element element, ExecutionContext executionContext)
