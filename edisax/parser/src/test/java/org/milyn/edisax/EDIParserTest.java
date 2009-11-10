@@ -111,4 +111,37 @@ public class EDIParserTest extends AbstractEDIParserTestCase {
         test("test-MILYN-108-11"); // Tests Field and Component Truncation
     }
 
+    public void testCorrectEdiParseException() throws IOException {
+        /**
+         * Test correct EDIParseException when reaching end of Edimap-model but more data exists in inputfile.
+         */
+        testEDIParseException("reached-end-more-segments", null, 0);
+
+        /**
+         * Test correct EDIParseException when reaching end of inputfile but more mandatory segments exists in Edimap-model.
+         */
+        testEDIParseException("reached-end-should-be-more-segments", "message-seg", 1);
+
+        /**
+         * Test error in segment node.
+         */
+        testEDIParseException("error-segment", "message-seg", 2);
+
+        /**
+         * Test error in field node.
+         */
+        testEDIParseException("error-field", "message-seg", 1);
+
+        /**
+         * Test error in component node.
+         */
+        testEDIParseException("error-component", "field-1", 1);
+
+        /**
+         * Test error in sub component node.
+         */
+        testEDIParseException("error-subcomponent", "firstname", 1);
+
+    }
+
 }
