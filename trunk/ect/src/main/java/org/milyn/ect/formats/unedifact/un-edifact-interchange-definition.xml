@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.3.xsd">
+	<medi:description version="ALL" name="UN-EDIFACT"/>
+	<medi:delimiters sub-component=":" segment="&#39;" field="+" component="~"/>
+	<medi:segments xmltag="UN-EDIFACT-INTERCHANGE-DEFINITION">
+		<medi:segment xmltag="SERVICE STRING ADVICE" minOccurs="0" maxOccurs="1" segcode="UNA" truncatable="false" description="To define the characters selected for use as delimiters and indicators in the rest of the interchange that follows.">
+			<medi:field xmltag="COMPONENT_DATA_ELEMENT_SEPARATOR" required="true" truncatable="false"/>
+			<medi:field xmltag="DATA_ELEMENT_SEPARATOR" required="true" truncatable="false" minLength="1" maxLength="1" type="String"/>
+			<medi:field xmltag="DECIMAL_NOTATION" required="true" truncatable="false" minLength="1" maxLength="1" type="String"/>
+			<medi:field xmltag="RELEASE_INDICATOR" required="true" truncatable="false" minLength="1" maxLength="1" type="String"/>
+			<medi:field xmltag="RESERVED" required="true" truncatable="false" minLength="1" maxLength="1" type="String"/>
+			<medi:field xmltag="SEGMENT_TERMINATOR" required="true" truncatable="false" minLength="1" maxLength="1" type="String"/>
+		</medi:segment>
+		
+		<medi:segment xmltag="INTERCHANGE_HEADER" minOccurs="1" maxOccurs="1" segcode="UNB" truncatable="false" description=" To start, identify and specify an interchange.">
+			<medi:field xmltag="SYNTAX_IDENTIFIER" required="true" truncatable="false">
+				<medi:component xmltag="SyntaxIdentifier" required="false" minLength="4" maxLength="4" type="String"/>
+				<medi:component xmltag="SyntaxVersionNumber" required="false" minLength="1" maxLength="1" type="String"/>
+				<medi:component xmltag="ServiceCodeListDirectoryVersionNumber" required="false" minLength="0" maxLength="6" type="String"/>
+				<medi:component xmltag="CharacterEncoding,Coded" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="SyntaxReleaseNumber" required="false" minLength="2" maxLength="2" type="String"/>
+			</medi:field>
+			<medi:field xmltag="INTERCHANGE_SENDER" required="true">
+				<medi:component xmltag="InterchangeSenderIdentification" required="false" minLength="0" maxLength="35" type="String"/>
+				<medi:component xmltag="IDCodeQualifier" required="false" minLength="0" maxLength="4" type="String"/>
+				<medi:component xmltag="InterchangeSenderInternalIdentification" required="false" minLength="0" maxLength="35" type="String"/>
+				<medi:component xmltag="InterchangeSenderInternalSub-identification" required="false" minLength="0" maxLength="35" type="String"/>
+			</medi:field>
+			<medi:field xmltag="INTERCHANGE_RECIPIENT" required="true">
+				<medi:component xmltag="InterchangeRecipientIdentification" required="false" minLength="0" maxLength="35" type="String"/>
+				<medi:component xmltag="IDCodeQualifier" required="false" minLength="0" maxLength="4" type="String"/>
+				<medi:component xmltag="InterchangeRecipientInternalIdentification" required="false" minLength="0" maxLength="35" type="String"/>
+				<medi:component xmltag="InterchangeRecipientInternalSub-identification" required="false" minLength="0" maxLength="35" type="String"/>
+			</medi:field>
+			<medi:field xmltag="DATE_TIME_OF_PREPARATION" required="true">
+				<medi:component xmltag="Date" required="false" minLength="6" maxLength="8" type="BigDecimal"/>
+				<medi:component xmltag="Time" required="false" minLength="4" maxLength="4" type="BigDecimal"/>
+			</medi:field>
+			<medi:field xmltag="INTERCHANGE_CONTROL_REFERENCE" required="true" minLength="0" maxLength="14" type="String"/>
+			<medi:field xmltag="RECIPIENT_REFERENCE_PASSWORD_DETAILS" required="false">
+				<medi:component xmltag="RecipientReferencepassword" required="false" minLength="0" maxLength="14" type="String"/>
+				<medi:component xmltag="RecipientReferencepasswordQualifier" required="false" minLength="2" maxLength="2" type="String"/>
+			</medi:field>
+			<medi:field xmltag="APLICATION_REFERENCE" required="false" minLength="0" maxLength="14" type="String"/>
+			<medi:field xmltag="PROCESSING_PRIORITY_CODE" required="false" minLength="1" maxLength="1" type="String"/>
+			<medi:field xmltag="ACKNOWLEDGEMENT_REQUEST" required="false" minLength="1" maxLength="1" type="BigDecimal"/>
+			<medi:field xmltag="INTERCHANGE_AGREEMENT_IDENTIFIER" required="false" minLength="0" maxLength="35" type="String"/>
+			<medi:field xmltag="TEST_INDICATOR" required="false" minLength="1" maxLength="1" type="BigDecimal"/>
+		</medi:segment>
+		
+		<medi:segment xmltag="INTERCHANGE_TRAILER" segcode="UNZ" description="To end and check the completeness of an interchange.">
+			<medi:field xmltag="InterchangeControlCount" required="true" minLength="0" maxLength="6" type="BigDecimal"/>
+			<medi:field xmltag="InterchangeControlReference" required="true" minLength="0" maxLength="14" type="String"/>
+		</medi:segment>
+		<medi:segment xmltag="GROUP_HEADER" segcode="UNG" description="To head, identify and specify a Functional Group.">
+			<medi:field xmltag="MessageGroupIdentification" required="false" minLength="0" maxLength="6" type="String"/>
+			<medi:field xmltag="ApplicationSenderIdentification" required="false">
+				<medi:component xmltag="ApplicationSenderIdentification" required="false" minLength="0" maxLength="35" type="String"/>
+				<medi:component xmltag="IDCodeQualifier" required="false" minLength="0" maxLength="4" type="String"/>
+			</medi:field>
+			<medi:field xmltag="APPLICATION_RECIPIENT_IDENTIFICATION" required="false">
+				<medi:component xmltag="ApplicationRecipientIdentification" required="false" minLength="0" maxLength="35" type="String"/>
+				<medi:component xmltag="IDCodeQualifier" required="false" minLength="0" maxLength="4" type="String"/>
+			</medi:field>
+			<medi:field xmltag="DATE_TIME_OF_PREPARATION" required="false">
+				<medi:component xmltag="Date" required="false" minLength="6" maxLength="8" type="BigDecimal"/>
+				<medi:component xmltag="Time" required="false" minLength="4" maxLength="4" type="BigDecimal"/>
+			</medi:field>
+			<medi:field xmltag="GROUPREFERENCENUMBER" required="true" minLength="0" maxLength="14" type="String"/>
+			<medi:field xmltag="CONTROLLING_AGENCY_CODED" required="false" minLength="0" maxLength="3" type="String"/>
+			<medi:field xmltag="MESSAGE_VERSION" required="false">
+				<medi:component xmltag="MESSAGE_VERSION_NUMBER" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="MESSAGE_RELEASE_NUMBER" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="ASSOCIATION_ASSIGNED_CODE" required="false" minLength="0" maxLength="6" type="String"/>
+			</medi:field>
+			<medi:field xmltag="APPLICATION_PASSWORD" required="false" minLength="0" maxLength="14" type="String"/>
+		</medi:segment>
+
+		<medi:segment xmltag="FUNCTIONAL_GROUP_TRAILER" segcode="UNE" description="To end and check the completeness of a Functional Group">
+			<medi:field xmltag="GROUP_CONTROL_COUNT" required="true" minLength="0" maxLength="6" type="BigDecimal"/>
+			<medi:field xmltag="GROUP_REFERENCE_NUMBER" required="true" minLength="0" maxLength="14" type="String"/>
+		</medi:segment>
+
+		<medi:segment xmltag="Message Header" segcode="UNH" description="To head, identify and specify a Message">
+			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" required="true" minLength="0" maxLength="14" type="String"/>
+			<medi:field xmltag="MESSAGE_IDENTIFIER" required="true">
+				<medi:component xmltag="MessageType" required="false" minLength="0" maxLength="6" type="String"/>
+				<medi:component xmltag="MessageVersionNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="MessageReleaseNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="ControllingAgency,Coded" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="AssociationAssignedCode" required="false" minLength="0" maxLength="6" type="String"/>
+				<medi:component xmltag="CodeListDirectoryVersionNumber" required="false" minLength="0" maxLength="6" type="String"/>
+				<medi:component xmltag="MessageTypeSub-functionIdentification" required="false" minLength="0" maxLength="6" type="String"/>
+			</medi:field>
+			<medi:field xmltag="COMMON_ACCESS_REFERENCE" required="false" minLength="0" maxLength="35" type="String"/>
+			<medi:field xmltag="STATUS_OF_THE_TRANSFER" required="false">
+				<medi:component xmltag="SequenceOfTransfers" required="false" minLength="0" maxLength="2" type="BigDecimal"/>
+				<medi:component xmltag="FirstAndLastTransfer" required="false" minLength="1" maxLength="1" type="String"/>
+			</medi:field>
+			<medi:field xmltag="MESSAGE_SUBSET_IDENTIFICATION" required="false">
+				<medi:component xmltag="MessageSubsetIdentification" required="false" minLength="0" maxLength="14" type="String"/>
+				<medi:component xmltag="MessageSubsetVersionNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="MessageSubsetReleaseNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="ControllingAgency,Coded" required="false" minLength="0" maxLength="3" type="String"/>
+			</medi:field>
+			<medi:field xmltag="MESSAGE_IMPLEMENTATION_GUIDELINE_IDENTIFICATION" required="false">
+				<medi:component xmltag="MessageImplementationGuidelineIdentification" required="false" minLength="0" maxLength="14" type="String"/>
+				<medi:component xmltag="MessageImplementationGuidelineVersionNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="MessageImplementationGuidelineReleaseNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="ControllingAgency,Coded" required="false" minLength="0" maxLength="3" type="String"/>
+			</medi:field>
+			<medi:field xmltag="SCENARIO_IDENTIFICATION" required="false">
+				<medi:component xmltag="ScenarioIdentification" required="false" minLength="0" maxLength="14" type="String"/>
+				<medi:component xmltag="ScenarioVersionNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="ScenarioReleaseNumber" required="false" minLength="0" maxLength="3" type="String"/>
+				<medi:component xmltag="ControllingAgencyCode" required="false" minLength="0" maxLength="3" type="String"/>
+			</medi:field>
+		</medi:segment>
+
+		<medi:segment xmltag="MESSAGE_TRAILER" segcode="UNT" description="To end and check the completeness of a Message">
+			<medi:field xmltag="NUMBER_OF_SEGMENTS_IN_MESSAGE" required="true" minLength="0" maxLength="10" type="BigDecimal"/>
+			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" required="true" minLength="0" maxLength="14" type="String"/>
+		</medi:segment>
+
+		<medi:segment xmltag="SECTION_CONTROL" segcode="UNS" description="To separate Header, Detail and Summary sections of a message">
+			<medi:field xmltag="SECTION_IDENTIFICATION" required="true" minLength="1" maxLength="1" type="String"/>
+		</medi:segment>
+		
+	</medi:segments>
+</medi:edimap>
