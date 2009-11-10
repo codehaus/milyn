@@ -375,7 +375,7 @@
         <xs:attribute name="data" type="xs:string" use="required">
             <xs:annotation>
                 <xs:documentation xml:lang="en">
-                    The Source data event stream element event defining the data to be bound.
+                    The data selector for the data value to be bound.
                     <p/>
                     Think of this as the element path (in the Source data) to the data.
                     <h3>Examples</h3>
