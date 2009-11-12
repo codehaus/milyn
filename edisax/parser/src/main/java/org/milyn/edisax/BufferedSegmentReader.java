@@ -31,7 +31,9 @@ import java.io.Reader;
  */
 class BufferedSegmentReader {
 
-    private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);   
+    private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);
+
+    public static String IGNORE_CR_LF = "!$";
 
     private Reader reader;
     private StringBuffer segmentBuffer = new StringBuffer(512);
@@ -40,6 +42,7 @@ class BufferedSegmentReader {
     private Delimiters delimiters;
 	private char[] segmentDelimiter;
     private String escape;
+    private boolean ignoreCrLf;
 
     /**
      * Construct the stream reader.
@@ -52,8 +55,14 @@ class BufferedSegmentReader {
             reader = new InputStreamReader(ediInputSource.getByteStream());
         }
         this.delimiters = delimiters;
-        this.segmentDelimiter = delimiters.getSegment().toCharArray();
         this.escape = delimiters.getEscape();
+        this.ignoreCrLf = delimiters.getSegment().endsWith("!$");
+
+        if (ignoreCrLf) {
+            this.segmentDelimiter = delimiters.getSegment().replace("!$", "").toCharArray();
+        } else {
+            this.segmentDelimiter = delimiters.getSegment().toCharArray();
+        }
     }
     
     /**
@@ -79,6 +88,12 @@ class BufferedSegmentReader {
         
         // Read the next segment...
         while(c != -1) {
+
+            if (ignoreCrLf && (c == '\n' || c == '\r')) {
+                c = reader.read();
+                continue;
+            }
+
             segmentBuffer.append((char)c);
             
             int segLen = segmentBuffer.length();
