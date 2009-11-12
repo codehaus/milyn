@@ -66,8 +66,8 @@
 
     <resource-config selector="namespace">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">prefix</param>
-        <param name="mapToSpecifier">uri</param>
+        <param name="attribute">uri</param>
+        <param name="mapToSpecifier">prefix</param>
     </resource-config>
 
     <!--
