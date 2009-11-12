@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 public class UnCefactDefinitionReader {
 
     /**
-     * Matches the line of '-' characters separating the data-, composite- or segment-definitions. 
+     * Matches the line of '-' characters separating the data-, composite- or segment-definitions.
      */
     private static final String ELEMENT_SEPARATOR = "^-+$";
 
@@ -33,7 +33,7 @@ public class UnCefactDefinitionReader {
      * Group4 = mandatory
      * Group5 = type
      * Group6 = min occurance
-     * Group7 = max occurance 
+     * Group7 = max occurance
      */
     private static final Pattern WHOLE_DATA_ELEMENT = Pattern.compile("^(\\d{3}) *(\\d{4}) *(.*) *.*(C|M) *(an|n|a)(\\.*)(\\d*)");
 
@@ -223,7 +223,7 @@ public class UnCefactDefinitionReader {
 
         line = readUntilValue(reader);
         LinePart linePart;
-        while (line != null && !line.isEmpty()) {
+        while (line != null && line.length() != 0) {
             linePart = getLinePart(reader, line);
             if (linePart != null) {
                 Component component = new Component();
@@ -338,7 +338,7 @@ public class UnCefactDefinitionReader {
         if (line.startsWith(prefix)) {
             result.append(line.replace(prefix, ""));
             line = reader.readLine();
-            while (!line.isEmpty()) {
+            while (line.length() != 0) {
                 result.append(line.trim());
                 line = reader.readLine();
             }
@@ -347,11 +347,11 @@ public class UnCefactDefinitionReader {
     }
 
     private static String readUntilValue(BufferedReader reader) throws IOException {
-        String _line = reader.readLine();
-        while (_line != null && _line.isEmpty()) {
-            _line = reader.readLine();
+        String line = reader.readLine();
+        while (line != null && line.length() != 0) {
+            line = reader.readLine();
         }
-        return _line;
+        return line;
     }
 
 
@@ -407,7 +407,7 @@ public class UnCefactDefinitionReader {
 //                in.close();
 //            }
 //        }
-        
+
         Map<String, Field> composites = null;
 //        try {
 //            in = new FileInputStream("C:\\Documents and Settings\\bardl\\Skrivbord\\d08a\\edcd\\EDCD.08A");
