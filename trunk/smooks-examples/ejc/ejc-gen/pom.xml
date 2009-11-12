@@ -29,4 +29,12 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-core</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>

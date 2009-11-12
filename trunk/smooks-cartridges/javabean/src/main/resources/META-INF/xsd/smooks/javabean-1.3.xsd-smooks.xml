@@ -24,12 +24,6 @@
 
     <resource-config selector="bean">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">createOnElementNS</param>
-        <param name="mapTo">selector-namespace</param>
-    </resource-config>
-
-    <resource-config selector="bean">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanId</param>
     </resource-config>
 
@@ -66,12 +60,6 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">data</param>
         <param name="mapTo">selector</param>
-    </resource-config>
-
-    <resource-config selector="bean/value">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">dataNS</param>
-        <param name="mapTo">selector-namespace</param>
     </resource-config>
 
     <resource-config selector="bean/value">
@@ -143,12 +131,6 @@
     </resource-config>
 
     <resource-config selector="bean/wiring">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">wireOnElementNS</param>
-        <param name="mapTo">selector-namespace</param>
-    </resource-config>
-
-    <resource-config selector="bean/wiring">
     	<resource>org.milyn.javabean.ext.WireOnElementChecker</resource>
     </resource-config>
 
@@ -168,12 +150,6 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">execOnElement</param>
         <param name="mapTo">selector</param>
-    </resource-config>
-
-    <resource-config selector="bean/expression">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">execOnElementNS</param>
-        <param name="mapTo">selector-namespace</param>
     </resource-config>
 
     <resource-config selector="bean/expression">
@@ -217,12 +193,6 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">data</param>
         <param name="mapTo">selector</param>
-    </resource-config>
-
-    <resource-config selector="smooks-resource-list/value">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">dataNS</param>
-        <param name="mapTo">selector-namespace</param>
     </resource-config>
 
     <resource-config selector="smooks-resource-list/value">

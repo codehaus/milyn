@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
-<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.3.xsd">
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+	xmlns:core="http://www.milyn.org/xsd/smooks/smooks-core-1.3.xsd"
+	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.3.xsd">
 
 	<profiles>
 		<profile base-profile="other" />
 	</profiles>
+
+	<core:namespaces>
+		<core:namespace prefix="y" uri="http://y" />
+	</core:namespaces>
 
     <jb:value
     	beanId="customerName"
@@ -25,8 +31,7 @@
 
 	<jb:value
 		beanId="date"
-		data="date"
-		dataNS="http://y"
+		data="y:date"
 		decoder="Date"
 	>
 	    <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>

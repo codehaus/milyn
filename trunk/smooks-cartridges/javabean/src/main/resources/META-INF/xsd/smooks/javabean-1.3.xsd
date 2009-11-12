@@ -129,14 +129,6 @@
    						</xs:documentation>
    					</xs:annotation>
    				</xs:attribute>
-   				<xs:attribute name="createOnElementNS" type="xs:anyURI">
-   					<xs:annotation>
-   						<xs:documentation xml:lang="en">
-   							Namespace control for the
-   							"createOnElement" attribute.
-   						</xs:documentation>
-   					</xs:annotation>
-   				</xs:attribute>
    				<xs:attribute name="extendLifecycle" type="xs:boolean">
    					<xs:annotation>
    						<xs:documentation xml:lang="en">
@@ -254,14 +246,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="wireOnElementNS" type="xs:anyURI">
-			<xs:annotation>
-				<xs:documentation xml:lang="en">
-					Namespace control for the "wireOnElement"
-					attribute.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:complexType>
 
     <xs:complexType name="ExpressionBinding">
@@ -303,12 +287,6 @@
                             the result bound to the target property) when an "end" element event ("visitAfter")
                             for the element "orderItem" (with a parent element of "order") is encountered in the
                             Source data event stream.
-                        </xs:documentation>
-                    </xs:annotation>
-                </xs:attribute>
-                <xs:attribute name="execOnElementNS" type="xs:anyURI">
-                    <xs:annotation>
-                        <xs:documentation xml:lang="en">Namespace control for the "execOnElement" attribute.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
@@ -443,12 +421,6 @@
             <xs:annotation>
                 <xs:documentation xml:lang="en">The default data value, where a null/empty data String is returned
                     for the data element.
-                </xs:documentation>
-            </xs:annotation>
-        </xs:attribute>
-        <xs:attribute name="dataNS" type="xs:anyURI">
-            <xs:annotation>
-                <xs:documentation xml:lang="en">The namespace for the "data" selector (see "data" attribute).
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
