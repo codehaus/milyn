@@ -347,9 +347,9 @@ public class UnCefactDefinitionReader {
     }
 
     private static String readUntilValue(BufferedReader reader) throws IOException {
-        String line = reader.readLine();
-        while (line != null && line.length() != 0) {
-            line = reader.readLine();
+        String _line = reader.readLine();
+        while (_line != null && _line.length() == 0) {
+            _line = reader.readLine();
         }
         return line;
     }
