@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author
@@ -30,11 +31,13 @@ public class HsqlServer {
     private String password = "";
 
     private Connection connection;
-
+    
+    private final CountDownLatch startGate = new CountDownLatch(1);
+    
     public HsqlServer(final int port) throws Exception {
         final String databaseName = "milyn-hsql-" + port;
 
-        url = "jdbc:hsqldb:hsql://localhost:" + port + "/" + databaseName;
+        url = "jdbc:hsqldb:hsql://localhost:" + port + "/" + databaseName +";shutdown=true";
         logger.info("Starting Hypersonic Database '" + url + "'.");
         new Thread() {
             @Override
@@ -51,12 +54,11 @@ public class HsqlServer {
 
 
                 hsqlServer = server;
+                startGate.countDown();
             }
         }.start();
 
-        while(hsqlServer == null) {
-            Thread.sleep(50);
-        }
+        startGate.await();
 
         DriverManager.registerDriver(new jdbcDriver());
         connection = DriverManager.getConnection(url, username, password);
@@ -65,10 +67,14 @@ public class HsqlServer {
     public void stop() throws Exception {
         try {
             hsqlServer.signalCloseAllServerConnections();
-            //connection.close();
-        } finally {
+            connection.close();
+        } catch (final SQLException ignored) {
+            logger.error(ignored.getMessage(), ignored);
+        } 
+        finally {
             hsqlServer.stop();
-            while( hsqlServer.getState() != ServerConstants.SERVER_STATE_SHUTDOWN) {
+            org.hsqldb.DatabaseManager.closeDatabases(0);
+            while(hsqlServer.getState() != ServerConstants.SERVER_STATE_SHUTDOWN) {
                 Thread.sleep(100L);
             }
         }
