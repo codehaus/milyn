@@ -75,10 +75,10 @@ public class SAXHandler extends DefaultHandler2 {
 
         deliveryConfig = ((SAXContentDeliveryConfig)executionContext.getDeliveryConfig());
         visitorConfigMap = deliveryConfig.getOptimizedVisitorConfig();
-        
+
         SAXElementVisitorMap starVisitorConfigs = visitorConfigMap.get("*");
         SAXElementVisitorMap starStarVisitorConfigs = visitorConfigMap.get("**");
-        
+
         if(starVisitorConfigs != null) {
         	globalVisitorConfig = starVisitorConfigs.merge(starStarVisitorConfigs);
         } else {
@@ -91,7 +91,7 @@ public class SAXHandler extends DefaultHandler2 {
 
         rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, execContext.getDeliveryConfig());
         defaultSerializer.setRewriteEntities(rewriteEntities);
-        
+
         defaultSerializationOn = executionContext.isDefaultSerializationOn();
         if(defaultSerializationOn) {
             // If it's not explicitly configured off, we auto turn it off if the NullWriter is configured...
@@ -118,7 +118,7 @@ public class SAXHandler extends DefaultHandler2 {
         } finally {
             VisitorConfigMap.execCleanables(deliveryConfig.getExecCleanables(), execContext);
         }
-    }    
+    }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         WriterManagedSAXElement element;
@@ -268,7 +268,7 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     private void visitBefore(WriterManagedSAXElement element, SAXElementVisitorMap elementVisitorConfig) {
-        
+
         // Now create the new "current" processor...
         ElementProcessor processor = new ElementProcessor();
 
@@ -556,7 +556,9 @@ public class SAXHandler extends DefaultHandler2 {
     	if(error instanceof TerminateException) {
             throw (TerminateException) error;
         }
-    	
+
+    	execContext.setTerminationError(error);
+
         if(terminateOnVisitorException) {
         	if(error instanceof SmooksException) {
                 throw (SmooksException) error;
