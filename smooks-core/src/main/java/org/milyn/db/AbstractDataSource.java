@@ -36,7 +36,7 @@ import java.util.Set;
 
 /**
  * DataSource management resource.
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefore, Producer, VisitLifecycleCleanable, ExecutionLifecycleCleanable {
@@ -63,7 +63,7 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
         unbind(executionContext);
     }
 
-    private void bind(ExecutionContext executionContext) {
+    protected void bind(ExecutionContext executionContext) {
         executionContext.setAttribute(DS_CONTEXT_KEY_PREFIX + getName(), this);
     }
 
@@ -104,7 +104,9 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
 
             try {
                 connection = datasource.getConnection();
-                connection.setAutoCommit(datasource.isAutoCommit());
+                if(connection.getAutoCommit() != datasource.isAutoCommit()) {
+                	connection.setAutoCommit(datasource.isAutoCommit());
+                }
             } catch (SQLException e) {
                 throw new SmooksException("Unable to open connection to dataSource '" + dataSourceName + "'.", e);
             }

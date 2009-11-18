@@ -15,34 +15,63 @@
 */
 package org.milyn.db;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.cdr.annotation.ConfigParam.Use;
+import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.annotation.Initialize;
+import org.milyn.event.report.annotation.VisitAfterReport;
+import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.assertion.AssertArgument;
 
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 
 /**
  * Jndi based DataSource.
+ * <p />
+ * Configure the JNDI datasource, transaction manager, transaction jndi (optional), etc.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
+@VisitBeforeReport(summary = "Bind JndiDataSource <b>${resource.parameters.datasource}</b> to ExecutionContext.", detailTemplate = "reporting/JndiDataSource_before.html")
+@VisitAfterReport(summary = "Cleaning up JndiDataSource <b>${resource.parameters.datasource}</b>. Includes performing commit/rollback etc.", detailTemplate = "reporting/JndiDataSource_after.html")
 public class JndiDataSource extends AbstractDataSource {
 
     @ConfigParam(name = "datasource")
     private String name;
 
-    @ConfigParam
+    @ConfigParam(use=Use.OPTIONAL)
+    private String datasourceJndi;
+
+    @ConfigParam(use=Use.OPTIONAL)
+    private String transactionJndi;
+
+    @ConfigParam(defaultVal="false")
     private boolean autoCommit;
+
+    @ConfigParam(defaultVal = "true")
+    private boolean setAutoCommitAllowed;
+
+    @ConfigParam(name = "transactionManager", defaultVal = TransactionManagerType.JDBC_STRING, decoder = TransactionManagerType.DataDecoder.class)
+    private TransactionManagerType transactionManagerType;
 
     private DataSource datasource;
 
-    public JndiDataSource()
-    {
+    public JndiDataSource(){
     }
 
     public JndiDataSource(String name, boolean autoCommit) {
@@ -58,31 +87,107 @@ public class JndiDataSource extends AbstractDataSource {
 
     @Initialize
     public void intitialize() {
-        InitialContext context = null;
+        if(datasourceJndi == null) {
+        	datasourceJndi = name;
+        }
 
-        try {
-            context = new InitialContext();
-            datasource = (DataSource) context.lookup(name);
-        } catch (NamingException e) {
-            throw new SmooksConfigurationException("DataSource lookup failed for DataSource '" + name + "'.  Make sure you have the DataSource descriptor deployed and that the JNDI names match.", e);
-        } finally {
-            if(context != null) {
-                try {
-                    context.close();
-                } catch (NamingException e) {
-                    throw new SmooksConfigurationException("Error closing Naming Context after looking up DataSource '" + name + "'.", e);
-                }
-            }
+        datasource = (DataSource) lookup(datasourceJndi);
+
+        if(transactionManagerType == TransactionManagerType.JTA) {
+        	if(transactionJndi == null || transactionJndi.length() == 0) {
+        		throw new SmooksConfigurationException("The transactionJndi attribute must be set when the JTA transaction manager is set.");
+        	}
+
+        	//On JTA transaction manager then the autoCommit is always false
+        	autoCommit = false;
         }
     }
 
     @Override
-    public Connection getConnection() throws SQLException {
-        return datasource.getConnection();
+    protected void bind(ExecutionContext executionContext) {
+    	super.bind(executionContext);
+
+    	if(transactionManagerType == TransactionManagerType.JTA) {
+    		ManagedConnection connection = (ManagedConnection) AbstractDataSource.getConnection(name, executionContext);
+
+    		connection.begin();
+    	}
     }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+    	Connection connection = datasource.getConnection();
+
+    	switch (transactionManagerType) {
+		case JDBC:
+			return new ManagedConnection(connection, new JdbcTransactionManager(connection));
+		case EXTERNAL:
+			return new ManagedConnection(connection, new ExternalTransactionManager(connection, setAutoCommitAllowed));
+		case JTA:
+			UserTransaction userTransaction = (UserTransaction) lookup(transactionJndi);
+			return new ManagedConnection(connection, new JtaTransactionManager(connection, userTransaction, setAutoCommitAllowed));
+		default:
+			throw new NotImplementedException("Unknown TransactionManagerType '" + transactionManagerType + "'");
+		}
+
+    }
+
+	private Object lookup(String jndi) {
+		Context context = null;
+		try {
+			context = new InitialContext();
+		    return context.lookup(jndi);
+		} catch (NamingException e) {
+		    throw new SmooksConfigurationException("JNDI Context lookup failed for '" + jndi + "'.", e);
+		} finally {
+		    if(context != null) {
+		        try {
+		            context.close();
+		        } catch (NamingException e) {
+		            throw new SmooksConfigurationException("Error closing Naming Context after looking up DataSource JNDI '" + datasourceJndi + "'.", e);
+		        }
+		    }
+		}
+	}
 
     @Override
     public boolean isAutoCommit() {
         return autoCommit;
     }
+
+    private class ManagedConnection extends ConnectionDelegate {
+
+    	private TransactionManager transactionManager;
+
+		public ManagedConnection(Connection delegate, TransactionManager transactionManager) {
+			super(delegate);
+			this.transactionManager = transactionManager;
+		}
+
+		public void begin() {
+			transactionManager.begin();
+		}
+
+		@Override
+		public void commit() throws SQLException {
+			transactionManager.commit();
+		}
+
+		@Override
+		public void rollback() throws SQLException {
+			transactionManager.rollback();
+		}
+
+		@Override
+		public boolean getAutoCommit() throws SQLException {
+			return transactionManager.getAutoCommit();
+		}
+
+		@Override
+		public void setAutoCommit(boolean autoCommit) throws SQLException {
+			transactionManager.setAutoCommit(autoCommit);
+		}
+
+    }
+
 }
