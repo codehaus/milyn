@@ -335,7 +335,7 @@ public class SmooksDOMFilter extends Filter {
     }
 
     private static String[] GLOBAL_SELECTORS = new String[] {"*", "**"};
-    
+
     /**
      * Filter the supplied W3C Element.
      * <p/>
@@ -661,7 +661,7 @@ public class SmooksDOMFilter extends Filter {
 
         return copy;
     }
-    
+
     /**
      * Element Prcessor class.
      * <p/>
@@ -822,6 +822,8 @@ public class SmooksDOMFilter extends Filter {
         if (eventListener != null) {
             eventListener.onEvent(new ElementVisitEvent(element, configMapping, visitSequence, error));
         }
+
+        executionContext.setTerminationError(error);
 
         if(terminateOnVisitorException) {
             if(error instanceof SmooksException) {
