@@ -37,7 +37,7 @@ public class DatasourceCleanupTest extends TestCase {
 
         // Cleanup should get called twice.  Once for the visitAfter event and once for the
         // executeExecutionLifecycleCleanup event...
-        smooks.filterSource(new StringSource("<a></a>"), null);
+        smooks.filterSource(new StringSource("<a></a>"));
         assertEquals(2, MockDatasource.cleanupCallCount);
         assertTrue(MockDatasource.committed);
     }
@@ -46,7 +46,7 @@ public class DatasourceCleanupTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("exception-ds-lifecycle.xml"));
 
         try {
-            smooks.filterSource(new StringSource("<a><b/><c/></a>"), null);
+            smooks.filterSource(new StringSource("<a><b/><c/></a>"));
             fail("Expected exception...");
         } catch(SmooksException e) {
             // Expected
