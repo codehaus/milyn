@@ -24,7 +24,6 @@ public class ExternalTransactionManager implements TransactionManager {
         this.isSetAutoCommitAllowed = isSetAutoCommitAllowed;
     }
 
-    @Override
     public void begin() {
     	if(isSetAutoCommitAllowed) {
 	    	try {
@@ -37,11 +36,9 @@ public class ExternalTransactionManager implements TransactionManager {
     	}
     }
 
-	@Override
 	public void commit() {
 	}
 
-	@Override
 	public void rollback() {
 	}
 
