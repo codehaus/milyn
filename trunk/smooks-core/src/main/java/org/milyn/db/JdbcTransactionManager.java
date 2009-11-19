@@ -6,14 +6,27 @@ import java.sql.SQLException;
 import org.milyn.assertion.AssertArgument;
 
 
-class JdbcTransactionManager extends TransactionManager {
+class JdbcTransactionManager implements TransactionManager {
 
-	private Connection connection;
+	private final Connection connection;
 
-	public JdbcTransactionManager(Connection connection) {
+	private final boolean autoCommit;
+
+	public JdbcTransactionManager(Connection connection, boolean autoCommit) {
 		AssertArgument.isNotNull(connection, "connection");
 
 		this.connection = connection;
+		this.autoCommit = autoCommit;
+	}
+
+	public void begin() {
+		try {
+			if(connection.getAutoCommit() != autoCommit) {
+				connection.setAutoCommit(autoCommit);
+			}
+		} catch (SQLException e) {
+			throw new TransactionException("Exception while setting the autoCommit flag of the connection");
+		}
 	}
 
 	/*
@@ -24,7 +37,7 @@ class JdbcTransactionManager extends TransactionManager {
 		try {
 			connection.commit();
 		} catch (SQLException e) {
-			throw new TransactionException("Exception while committing the transaction");
+			throw new TransactionException("Exception while committing the connection");
 		}
 	}
 
@@ -36,28 +49,7 @@ class JdbcTransactionManager extends TransactionManager {
 		try {
 			connection.rollback();
 		} catch (SQLException e) {
-			throw new TransactionException("Exception while rolling back the transaction");
-		}
-	}
-
-	@Override
-	public boolean getAutoCommit() {
-		try {
-			return connection.getAutoCommit();
-		} catch (SQLException e) {
-			throw new TransactionException("Exception while getting the autoCommit on the connection");
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.milyn.db.TransactionManager#setAutoCommit(boolean)
-	 */
-	public void setAutoCommit(boolean autoCommit) {
-		try {
-			connection.setAutoCommit(autoCommit);
-		} catch (SQLException e) {
-			throw new TransactionException("Exception while setting the autoCommint on the connection");
+			throw new TransactionException("Exception while rolling back the connection");
 		}
 	}
 

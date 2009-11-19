@@ -11,47 +11,26 @@ package org.milyn.db;
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  *
  */
-class TransactionManager {
+public interface TransactionManager {
 
 	/**
 	 * Begin the transaction
 	 *
 	 * @throws TransactionException If an exception got thrown while beginning the exception
 	 */
-    public void begin() {
-    }
-
+    void begin();
     /**
 	 * Commit the transaction
 	 *
 	 * @throws TransactionException If an exception got thrown while committing the exception
 	 */
-    public void commit() {
-    }
+    void commit();
 
     /**
 	 * Rollback the transaction
 	 *
 	 * @throws TransactionException If an exception got thrown while rollingback the exception
 	 */
-    public void rollback() {
-    }
-
-    /**
-	 * returns the autoCommit flag of the connection
-	 *
-	 * @throws TransactionException If an exception got thrown while getting the autoCommit
-	 */
-    public boolean getAutoCommit() {
-    	return false;
-    }
-
-    /**
-	 * Set the autocommit of the connection
-	 *
-	 * @throws TransactionException If an exception got thrown while setting the autoCommit
-	 */
-    public void setAutoCommit(boolean autoCommit) {
-    }
+    void rollback();
 
 }

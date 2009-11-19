@@ -16,6 +16,7 @@
 package org.milyn.db;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
@@ -104,32 +105,8 @@ public class JndiDataSource extends AbstractDataSource {
     }
 
     @Override
-    protected void bind(ExecutionContext executionContext) {
-    	super.bind(executionContext);
-
-    	if(transactionManagerType == TransactionManagerType.JTA) {
-    		ManagedConnection connection = (ManagedConnection) AbstractDataSource.getConnection(name, executionContext);
-
-    		connection.begin();
-    	}
-    }
-
-    @Override
     public Connection getConnection() throws SQLException {
-    	Connection connection = datasource.getConnection();
-
-    	switch (transactionManagerType) {
-		case JDBC:
-			return new ManagedConnection(connection, new JdbcTransactionManager(connection));
-		case EXTERNAL:
-			return new ManagedConnection(connection, new ExternalTransactionManager(connection, setAutoCommitAllowed));
-		case JTA:
-			UserTransaction userTransaction = (UserTransaction) lookup(transactionJndi);
-			return new ManagedConnection(connection, new JtaTransactionManager(connection, userTransaction, setAutoCommitAllowed));
-		default:
-			throw new NotImplementedException("Unknown TransactionManagerType '" + transactionManagerType + "'");
-		}
-
+    	return datasource.getConnection();
     }
 
 	private Object lookup(String jndi) {
@@ -155,39 +132,17 @@ public class JndiDataSource extends AbstractDataSource {
         return autoCommit;
     }
 
-    private class ManagedConnection extends ConnectionDelegate {
-
-    	private TransactionManager transactionManager;
-
-		public ManagedConnection(Connection delegate, TransactionManager transactionManager) {
-			super(delegate);
-			this.transactionManager = transactionManager;
-		}
-
-		public void begin() {
-			transactionManager.begin();
-		}
-
-		@Override
-		public void commit() throws SQLException {
-			transactionManager.commit();
-		}
-
-		@Override
-		public void rollback() throws SQLException {
-			transactionManager.rollback();
-		}
-
-		@Override
-		public boolean getAutoCommit() throws SQLException {
-			return transactionManager.getAutoCommit();
-		}
-
-		@Override
-		public void setAutoCommit(boolean autoCommit) throws SQLException {
-			transactionManager.setAutoCommit(autoCommit);
-		}
-
+    @Override
+    public TransactionManager createTransactionManager(Connection connection) {
+    	switch(transactionManagerType) {
+	    	case JDBC:
+	    		return new JdbcTransactionManager(connection, isAutoCommit());
+	    	case JTA:
+	    		return new JtaTransactionManager(connection, (UserTransaction)lookup(transactionJndi), setAutoCommitAllowed);
+	    	case EXTERNAL:
+	    		return new ExternalTransactionManager(connection, isAutoCommit(), setAutoCommitAllowed);
+	    	default:
+	    		throw new SmooksException("The TransactionManager type '" + transactionManagerType + "' is unknown. This is probably a bug!");
+    	}
     }
-
 }

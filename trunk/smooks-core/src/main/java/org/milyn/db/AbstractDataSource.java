@@ -43,6 +43,7 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
 
     private static final String DS_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#datasource:";
     private static final String CONNECTION_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#connection:";
+    private static final String TRANSACTION_MANAGER_CONTEXT_KEY_PREFIX = AbstractDataSource.class.getName() + "#transactionManager:";
 
     public final void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         bind(executionContext);
@@ -70,14 +71,19 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
     protected void unbind(ExecutionContext executionContext) {
         try {
             Connection connection = (Connection) executionContext.getAttribute(CONNECTION_CONTEXT_KEY_PREFIX + getName());
+
             if(connection != null) {
+            	TransactionManager transactionManager = (TransactionManager) executionContext.getAttribute(TRANSACTION_MANAGER_CONTEXT_KEY_PREFIX  + getName());
+            	if(transactionManager == null) {
+            		throw new SmooksException("No TransactionManager is set for the datasource '" + getName() + "'");
+            	}
                 try {
                     if(!isAutoCommit()) {
                         // If there's no termination error on the context, commit, otherwise rollback...
                         if(executionContext.getTerminationError() == null) {
-                            connection.commit();
+                        	transactionManager.commit();
                         } else {
-                            connection.rollback();
+                        	transactionManager.rollback();
                         }
                     }
                 } finally {
@@ -89,6 +95,7 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
             throw new SmooksException("Unable to unbind DataSource '" + getName() + "'.");
         } finally {
             executionContext.removeAttribute(DS_CONTEXT_KEY_PREFIX + getName());
+            executionContext.removeAttribute(TRANSACTION_MANAGER_CONTEXT_KEY_PREFIX + getName());
         }
     }
 
@@ -101,16 +108,18 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
             if(datasource == null) {
                 throw new SmooksException("DataSource '" + dataSourceName + "' not bound to context.  Configure an '" + AbstractDataSource.class.getName() +  "' implementation and target it at '#document'.");
             }
-
             try {
                 connection = datasource.getConnection();
-                if(connection.getAutoCommit() != datasource.isAutoCommit()) {
-                	connection.setAutoCommit(datasource.isAutoCommit());
-                }
+
+                TransactionManager transactionManager = datasource.createTransactionManager(connection);
+                transactionManager.begin();
+
+                executionContext.setAttribute(CONNECTION_CONTEXT_KEY_PREFIX + dataSourceName, connection);
+                executionContext.setAttribute(TRANSACTION_MANAGER_CONTEXT_KEY_PREFIX + dataSourceName, transactionManager);
             } catch (SQLException e) {
                 throw new SmooksException("Unable to open connection to dataSource '" + dataSourceName + "'.", e);
             }
-            executionContext.setAttribute(CONNECTION_CONTEXT_KEY_PREFIX + dataSourceName, connection);
+
         }
 
         return connection;
@@ -125,5 +134,9 @@ public abstract class AbstractDataSource implements SAXVisitBefore, DOMVisitBefo
     public abstract Connection getConnection() throws SQLException;
 
     public abstract boolean isAutoCommit();
+
+    public TransactionManager createTransactionManager(Connection connection) {
+    	return new JdbcTransactionManager(connection, isAutoCommit());
+    }
 
 }
