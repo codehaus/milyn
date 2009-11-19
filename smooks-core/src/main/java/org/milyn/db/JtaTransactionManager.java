@@ -13,7 +13,7 @@ import javax.transaction.UserTransaction;
 
 import org.milyn.assertion.AssertArgument;
 
-class JtaTransactionManager extends TransactionManager {
+class JtaTransactionManager implements TransactionManager {
 
 	private UserTransaction transaction;
 
@@ -36,7 +36,6 @@ class JtaTransactionManager extends TransactionManager {
 		this.setAutoCommitAllowed = setAutoCommitAllowed;
 	}
 
-	@Override
 	public void begin() {
 		try {
 			newTransaction = transaction.getStatus() == Status.STATUS_NO_TRANSACTION;
@@ -57,7 +56,6 @@ class JtaTransactionManager extends TransactionManager {
 		}
 	}
 
-	@Override
 	public void commit() {
 		if(newTransaction) {
 			try {
@@ -68,7 +66,6 @@ class JtaTransactionManager extends TransactionManager {
 		}
 	}
 
-	@Override
 	public void rollback() {
 		if(newTransaction) {
 			try {
