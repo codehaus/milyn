@@ -53,8 +53,46 @@ import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
 /**
- * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * DAO Locator
+ * <p />
+ * This DAO locator uses lookup methods or methods that accept a query to
+ * lookup entities from a data source. In case of a query it depends on the DAO
+ * or the Scribe adapter what the query language is.
  *
+ * <h3>Configuration</h3>
+ * <b>Namespace:</b> http://www.milyn.org/xsd/smooks/persistence-1.2.xsd<br>
+ * <b>Element:</b> locator<br>
+ * <b>Attributes:</b>
+ *
+ * Take a look at the schema for all the information on the configurations parameters.
+ *
+ * <h3>Configuration Example</h3>
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot;?&gt;
+ * &lt;smooks-resource-list xmlns=&quot;http://www.milyn.org/xsd/smooks-1.1.xsd&quot;
+ *    xmlns:dao=&quot;http://www.milyn.org/xsd/smooks/persistence-1.2.xsd&quot;&gt;
+ *      &lt;dao:locator beanId=&quot;entity&quot; lookup=&quot;something&quot; lookupOnElement=&quot;b&quot;&gt;
+ *      &lt;dao:params&gt;
+ *         &lt;dao:value name=&quot;arg1&quot; decoder=&quot;Integer&quot; data=&quot;c&quot; /&gt;
+ *         &lt;dao:expression name=&quot;arg2&quot;&gt;dAnde.d + dAnde.e&lt;/dao:expression&gt;
+ *         &lt;dao:wiring name=&quot;arg3&quot; beanIdRef=&quot;dAnde&quot; wireOnElement=&quot;e&quot; /&gt;
+ *         &lt;dao:value name=&quot;arg4&quot; data=&quot;f/@name&quot; /&gt;
+ *         &lt;dao:value name=&quot;arg5&quot; decoder=&quot;Date&quot; data=&quot;g&quot; &gt;
+ *            &lt;dao:decodeParam name=&quot;format&quot;&gt;yyyy-MM-dd HH:mm:ss&lt;/dao:decodeParam&gt;
+ *         &lt;/dao:value&gt;
+ *      &lt;/dao:params&gt;
+ *  &lt;/dao:locator&gt;
+ *
+ *  &lt;dao:locator beanId=&quot;customer&quot; lookupOnElement=&quot;b&quot;&gt;
+ *     &lt;dao:query&gt;from Customer c where c.id = :arg1&lt;/dao:query&gt;
+ *     &lt;dao:params&gt;
+ *        &lt;dao:value name=&quot;arg1&quot; decoder=&quot;Integer&quot; data=&quot;c&quot; /&gt;
+ *     &lt;/dao:params&gt;
+ *  &lt;/dao:locator&gt;
+ * &lt;/smooks-resource-list&gt;
+ * </pre>
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 @VisitBeforeReport(summary = "Initializing parameter container to hold the parameters needed for the lookup.", detailTemplate="reporting/EntityLocator_before.html")
 @VisitAfterReport(summary = "Looking up entity to put under beanId '${resource.parameters.beanId}'.", detailTemplate="reporting/EntityLocator_after.html")
