@@ -53,10 +53,42 @@ import org.milyn.scribe.register.DaoRegister;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
-
 /**
- * @author maurice
+ * DAO Inserter
+ * <p />
+ * This DAO inserter calls the insert method of a DAO, using a entity bean from
+ * the bean context as parameter.
  *
+ * <h3>Configuration</h3>
+ * <b>Namespace:</b> http://www.milyn.org/xsd/smooks/persistence-1.2.xsd<br>
+ * <b>Element:</b> inserter<br>
+ * <b>Attributes:</b>
+ * <ul>
+ *  <li><b>beanId</b> : The id under which the entity bean is bound in the bean context. (<i>required</i>)
+ *  <li><b>insertOnElement</b> : The element selector to select the element when the inserter should execute. (<i>required</i>)
+ * 	<li><b>dao</b> : The name of the DAO that will be used. If it is not set then the default DAO is used. (<i>optional</i>)
+ *  <li><b>name*</b> : The name of the insert method. Depending of the adapter this can mean different things.
+ *                     For instance when using annotated DAO's you can name the methods and target them with this property, but
+ *                     when using the Ibatis adapter you set the id of the Ibatis statement in this attribute. (<i>optional</i>)
+ *  <li><b>insertedBeanId</b> : The bean id under which the inserted bean will be stored. If not set then the object returned
+ *                              by the insert method will not be stored in bean context. (<i>optional</i>)
+ *  <li><b>insertBefore</b> : If the inserter should execute on the 'before' event. (<i>default: false</i>)
+ * </ul>
+ *
+ * <i>* This attribute is not supported by all scribe adapters.</i>
+ *
+ * <h3>Configuration Example</h3>
+ * <pre>
+ * &lt;?xml version=&quot;1.0&quot;?&gt;
+ * &lt;smooks-resource-list xmlns=&quot;http://www.milyn.org/xsd/smooks-1.1.xsd&quot;
+ *   xmlns:dao=&quot;http://www.milyn.org/xsd/smooks/persistence-1.2.xsd&quot;&gt;
+ *
+ *      &lt;dao:inserter dao=&quot;dao&quot; name=&quot;insertIt&quot; beanId=&quot;toInsert&quot; insertOnElement=&quot;root&quot; insertBeanId=&quot;inserted&quot; insertBefore=&quot;false&quot; /&gt;
+ *
+ * &lt;/smooks-resource-list&gt;
+ * </pre>
+ *
+ * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('insertBefore') && parameters.insertBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('insertBefore') || parameters.insertBefore.value != 'true'")
