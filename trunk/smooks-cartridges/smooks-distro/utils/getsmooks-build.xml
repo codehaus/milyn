@@ -1,9 +1,9 @@
 <project name="Get-Smooks" default="smooks.dependencies.get" basedir="." xmlns:artifact="urn:maven-artifact-ant">
 
-    <property name="smooks.version" value="1.2-SNAPSHOT"/>
+    <property name="smooks.version" value="1.3-SNAPSHOT"/>
 
     <description>
-        Script for pulling the current Smooks v${smooks.version} jars from the maven repo. 
+        Script for pulling the current Smooks v${smooks.version} jars from the maven repo.
     </description>
 
     <property environment="env"/>
@@ -53,7 +53,7 @@
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-scribe-ibatis"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-scribe-jpa"/>
 
-            <remoteRepository refid="codehaus.m2.snapshots" />            
+            <remoteRepository refid="codehaus.m2.snapshots" />
         </artifact:dependencies>
 
         <tstamp>
