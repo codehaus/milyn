@@ -172,6 +172,10 @@
         <param name="mapTo">expression</param>
     </resource-config>
 
+    <resource-config selector="bean/expression">
+        <resource>org.milyn.javabean.ext.SelectorPropertyResolver</resource>
+    </resource-config>
+
     <!--
         Bean Instance Populator Resource (Expression)...
     -->

@@ -6,7 +6,7 @@
 			+= new Integer(_VALUE);
 		</jb:expression>
 
-		<jb:expression property="csv" execOnElement="number" initVal="''">
+		<jb:expression property="csv" execOnElement="number/@id" initVal="''">
 			var csv = total.csv;
 			if(csv.length() > 0) {
 				csv += ',';

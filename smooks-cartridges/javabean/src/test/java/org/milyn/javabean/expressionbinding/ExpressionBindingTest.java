@@ -26,6 +26,8 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
+import org.milyn.container.ExecutionContext;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
@@ -69,12 +71,15 @@ public class ExpressionBindingTest extends TestCase {
 
     	JavaResult result = new JavaResult();
 
-    	smooks.filterSource(new StreamSource(getClass().getResourceAsStream("02_number.xml")), result);
+    	ExecutionContext context = smooks.createExecutionContext();
+    	context.setEventListener(new HtmlReportGenerator("target/expression_data_variable.html"));
+
+    	smooks.filterSource(context, new StreamSource(getClass().getResourceAsStream("02_number.xml")), result);
 
     	Total total = (Total) result.getBean("total");
 
     	assertEquals(20, (int) total.getTotal());
-    	assertEquals("1,2,3,4", total.getCsv());
+    	assertEquals("10,20,30,40", total.getCsv());
 
     }
 
