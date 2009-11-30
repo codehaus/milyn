@@ -1,6 +1,6 @@
 <numbers>
-    <number>1</number>
-    <number>2</number>
-    <number>3</number>
-    <number>4</number>
+    <number id="10">1</number>
+    <number id="20">2</number>
+    <number id="30">3</number>
+    <number id="40">4</number>
 </numbers>
