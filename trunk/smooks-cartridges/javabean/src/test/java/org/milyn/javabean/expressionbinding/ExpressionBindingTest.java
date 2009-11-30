@@ -72,7 +72,7 @@ public class ExpressionBindingTest extends TestCase {
     	JavaResult result = new JavaResult();
 
     	ExecutionContext context = smooks.createExecutionContext();
-    	context.setEventListener(new HtmlReportGenerator("target/expression_data_variable.html"));
+    	//context.setEventListener(new HtmlReportGenerator("target/expression_data_variable.html"));
 
     	smooks.filterSource(context, new StreamSource(getClass().getResourceAsStream("02_number.xml")), result);
 
