@@ -66,11 +66,11 @@
                 <module>smooks-core</module>
                 <module>magger</module>
                 <module>tinak</module>
-                <module>edisax</module>
                 <module>scribe</module>
-                <module>ejc</module>
-                <module>ejc/maven-ejc-plugin</module>
-                <module>ect</module>
+                <module>edi/edisax</module>
+                <module>edi/ejc</module>
+                <module>edi/ejc/maven-ejc-plugin</module>
+                <module>edi/ect</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
