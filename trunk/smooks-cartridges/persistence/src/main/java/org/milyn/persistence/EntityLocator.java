@@ -214,18 +214,30 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 
 			Object result = lookup(dao, executionContext);
 
-			if(uniqueResult == true) {
+			if(result != null && uniqueResult == true) {
 				if(result instanceof Collection){
 					Collection<Object> resultCollection = (Collection<Object>) result;
 
-					if(resultCollection.size() == 1) {
+					if(resultCollection.size() == 0) {
+						result = null;
+					} else if(resultCollection.size() == 1) {
 						for(Object value : resultCollection) {
 							result = value;
 						}
-					} else if(resultCollection.size() == 1) {
-						result = null;
 					} else {
-						throw new NonUniqueResultException("The DAO '" + daoName + "' returned multiple results for the lookup '" + lookupName + "'");
+						String exception;
+						if(daoName == null) {
+							exception = "The " + getDaoNameFromAdapter(dao) + " DAO";
+						} else {
+							exception = "The DAO '" + daoName + "'";
+						}
+						exception += " returned multiple results for the ";
+						if(lookupName != null) {
+							exception += "lookup '" + lookupName + "'";
+						} else {
+							exception += "query '" + query + "'";
+						}
+						throw new NonUniqueResultException(exception);
 					}
 
 				} else {
@@ -235,11 +247,19 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 			}
 
 			if(result == null && onNoResult == OnNoResult.EXCEPTION) {
-				if(lookupName != null) {
-					throw new NoLookupResultException("The DAO '" + daoName + "' returned no results for lookup '" + lookupName + "'");
+				String exception;
+				if(daoName == null) {
+					exception = "The " + getDaoNameFromAdapter(dao) + " DAO";
 				} else {
-					throw new NoLookupResultException("The DAO '" + daoName + "' returned no results found for query '" + query + "'");
+					exception = "The DAO '" + daoName + "'";
 				}
+				exception += " returned no results for lookup ";
+				if(lookupName != null) {
+					exception += "lookup '" + query + "'";
+				} else {
+					exception += "query '" + query + "'";
+				}
+				throw new NoLookupResultException(exception);
 			}
 
 			BeanContext beanContext = executionContext.getBeanContext();
@@ -273,6 +293,13 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 				return daoInvoker.lookupByQuery(query, ((PositionalParameterContainer) container).getValues());
 			}
 		}
+	}
+
+	private String getDaoNameFromAdapter(Object dao) {
+		String className = dao.getClass().getSimpleName();
+
+		className = className.replace("Dao", "");
+		return className.replace("Adapter", "");
 	}
 
 }

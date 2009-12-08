@@ -45,7 +45,7 @@ import org.testng.annotations.Test;
 @Test(groups="unit")
 public class EntityUpdaterTest extends BaseTestCase {
 
-	private static final boolean ENABLE_REPORTING = true;
+	private static final boolean ENABLE_REPORTING = false;
 
 	private static final String SIMPLE_XML =  "<root />";
 
