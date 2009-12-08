@@ -17,7 +17,6 @@ package org.milyn.persistence;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -196,7 +195,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 					} else {
 						String exception;
 						if(daoName == null) {
-							exception = "The " + getDaoNameFromAdapter(dao) + " DAO";
+							exception = "The " + dao + " DAO";
 						} else {
 							exception = "The DAO '" + daoName + "'";
 						}
@@ -218,7 +217,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 			if(result == null && onNoResult == OnNoResult.EXCEPTION) {
 				String exception;
 				if(daoName == null) {
-					exception = "The " + getDaoNameFromAdapter(dao) + " DAO";
+					exception = "The " + dao + " DAO";
 				} else {
 					exception = "The DAO '" + daoName + "'";
 				}
