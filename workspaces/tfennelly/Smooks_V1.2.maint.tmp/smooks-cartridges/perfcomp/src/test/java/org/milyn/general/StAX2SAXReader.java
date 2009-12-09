@@ -17,43 +17,44 @@ package org.milyn.general;
 
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.xml.CloneableReader;
 import org.milyn.xml.SmooksXMLReader;
 import org.milyn.delivery.sax.ReadOnlySAXHandler;
-import org.milyn.delivery.sax.SAXContentDeliveryConfig;
 import org.milyn.delivery.sax.SAXElementVisitorMap;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
-import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.ext.DefaultHandler2;
 
 import javax.xml.stream.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class StAX2SAXReader implements SmooksXMLReader {
+public class StAX2SAXReader implements SmooksXMLReader, CloneableReader {
 
-    private XMLInputFactory staxInputFactory = XMLInputFactory.newInstance();
+    private static XMLInputFactory staxInputFactory = XMLInputFactory.newInstance();
     private ExecutionContext executionContext;
     private ReadOnlySAXHandler contentHandler;
-    private LexicalHandler lexicalHandler;
     private AttributesImpl attributes = new AttributesImpl();
-    private SAXContentDeliveryConfig deliveryConfig;
-    private Map<String, SAXElementVisitorMap> visitorConfigMap;
     private int elementCount = 0;
-
-    public StAX2SAXReader() {
-        staxInputFactory.setProperty(XMLInputFactory.IS_COALESCING, false);
+    
+    static {
+    	staxInputFactory.setProperty(XMLInputFactory.IS_COALESCING, false);
     }
+
+	public XMLReader cloneReader(ExecutionContext executionContext, DefaultHandler2 handler) {
+		StAX2SAXReader clone = new StAX2SAXReader();
+		clone.executionContext = executionContext;
+		clone.setContentHandler(handler);
+		return clone;
+	}
 
     public void setExecutionContext(ExecutionContext executionContext) {
         this.executionContext = executionContext;
-        deliveryConfig = ((SAXContentDeliveryConfig)executionContext.getDeliveryConfig());
-        visitorConfigMap = deliveryConfig.getOptimizedVisitorConfig();
     }
 
     public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
@@ -64,26 +65,6 @@ public class StAX2SAXReader implements SmooksXMLReader {
     }
 
     public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-        return null;
-    }
-
-    public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
-        if("http://xml.org/sax/properties/lexical-handler".equals(name)) {
-            lexicalHandler = (LexicalHandler) value;
-        }
-    }
-
-    public void setEntityResolver(EntityResolver resolver) {
-    }
-
-    public EntityResolver getEntityResolver() {
-        return null;
-    }
-
-    public void setDTDHandler(DTDHandler handler) {
-    }
-
-    public DTDHandler getDTDHandler() {
         return null;
     }
 
@@ -99,19 +80,11 @@ public class StAX2SAXReader implements SmooksXMLReader {
         return contentHandler;
     }
 
-    public void setErrorHandler(ErrorHandler handler) {
-    }
-
-    public ErrorHandler getErrorHandler() {
-        return null;
-    }
-
     public void parse(InputSource input) throws IOException, SAXException {
         XMLStreamReader staxReader = openStAXReader(input);
 
         contentHandler.startDocument();
         try {
-            //eatMessage(staxReader);
             moveToNextElement(staxReader);
             parseElement(staxReader, false);
         } catch (XMLStreamException e) {
@@ -128,7 +101,7 @@ public class StAX2SAXReader implements SmooksXMLReader {
         boolean isRoot = (elementCount == 0);
         Attributes attrs;
 
-        elementVisitorConfig = contentHandler.getElementVisitorConfig(name.getLocalPart(), isRoot);
+        elementVisitorConfig = contentHandler.getElementVisitorConfig(name.getLocalPart().toLowerCase(), isRoot);
         forwardEvents  = (forwardEvents || elementVisitorConfig != null);
         
         if(forwardEvents) {
@@ -155,21 +128,6 @@ public class StAX2SAXReader implements SmooksXMLReader {
 	                    contentHandler.endElement();
                 	}
                     return;
-            }
-        }
-    }
-
-    private void eatMessage(XMLStreamReader staxReader) throws XMLStreamException {
-        while(staxReader.hasNext()) {
-            staxReader.next();
-            switch (staxReader.getEventType()) {
-                case XMLStreamConstants.START_ELEMENT:
-                    String elementName = staxReader.getLocalName();
-                    SAXElementVisitorMap config = visitorConfigMap.get(elementName);
-                    if(config != null) {
-                        QName qName = staxReader.getName();
-                    }
-                    break;
             }
         }
     }
@@ -202,10 +160,6 @@ public class StAX2SAXReader implements SmooksXMLReader {
         return attributes;
     }
 
-    private String getText(XMLStreamReader staxReader) {
-        return new String(staxReader.getTextCharacters(), staxReader.getTextStart(), staxReader.getTextLength());
-    }
-
     private XMLStreamReader openStAXReader(InputSource input) throws SAXException, IOException {
         XMLStreamReader staxReader;
 
@@ -232,6 +186,68 @@ public class StAX2SAXReader implements SmooksXMLReader {
         return staxReader;
     }
 
-    public void parse(String systemId) throws IOException, SAXException {
-    }
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#getDTDHandler()
+	 */
+	public DTDHandler getDTDHandler() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#getEntityResolver()
+	 */
+	public EntityResolver getEntityResolver() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#getErrorHandler()
+	 */
+	public ErrorHandler getErrorHandler() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#parse(java.lang.String)
+	 */
+	public void parse(String systemId) throws IOException, SAXException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#setDTDHandler(org.xml.sax.DTDHandler)
+	 */
+	public void setDTDHandler(DTDHandler handler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#setEntityResolver(org.xml.sax.EntityResolver)
+	 */
+	public void setEntityResolver(EntityResolver resolver) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#setErrorHandler(org.xml.sax.ErrorHandler)
+	 */
+	public void setErrorHandler(ErrorHandler handler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.xml.sax.XMLReader#setProperty(java.lang.String, java.lang.Object)
+	 */
+	public void setProperty(String name, Object value)
+			throws SAXNotRecognizedException, SAXNotSupportedException {
+		// TODO Auto-generated method stub
+		
+	}
 }

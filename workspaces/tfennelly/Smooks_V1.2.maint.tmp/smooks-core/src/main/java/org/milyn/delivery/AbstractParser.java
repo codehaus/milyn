@@ -30,6 +30,7 @@ import org.milyn.delivery.java.XStreamXMLReader;
 import org.milyn.io.NullReader;
 import org.milyn.io.NullWriter;
 import org.milyn.util.ClassUtil;
+import org.milyn.xml.CloneableReader;
 import org.milyn.xml.NullSourceXMLReader;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.*;
@@ -186,60 +187,73 @@ public class AbstractParser {
 
 
     protected XMLReader createXMLReader(DefaultHandler2 handler) throws SAXException {
-        XMLReader reader;
-        ExecutionContext execContext = getExecContext();
-        Source source = FilterSource.getSource(execContext);
+        XMLReader reader = (XMLReader) execContext.getContext().getAttribute(XMLReader.class);
+        
+        if(reader == null || !(reader instanceof CloneableReader)) {
+        	synchronized (XMLReader.class) {
+        		reader = (XMLReader) execContext.getContext().getAttribute(XMLReader.class);
+        		if(reader == null || !(reader instanceof CloneableReader)) {
+			        Source source = FilterSource.getSource(execContext);
+			
+			        if (saxDriverConfig != null && saxDriverConfig.getResource() != null) {
+			            String className = saxDriverConfig.getResource();
+			
+			            reader = XMLReaderFactory.createXMLReader(className);
+			        } else if (source instanceof JavaSource) {
+			            JavaSource javaSource = (JavaSource) source;
+			
+			            if (isFeatureOn(JavaSource.FEATURE_GENERATE_EVENT_STREAM, saxDriverConfig) && !javaSource.isEventStreamRequired()) {
+			                throw new SAXException("Invalid Smooks configuration.  Feature '" + JavaSource.FEATURE_GENERATE_EVENT_STREAM + "' is explicitly configured 'on' in the Smooks configuration, while the supplied JavaSource has explicitly configured event streaming to be off (through a call to JavaSource.setEventStreamRequired).");
+			            }
+			
+			            // Event streaming must be explicitly turned off.  If is on as long as it is (a) not configured "off" in
+			            // the smooks config (via the reader features) and (b) not turned off via the supplied JavaSource...
+			            boolean eventStreamingOn = (!isFeatureOff(JavaSource.FEATURE_GENERATE_EVENT_STREAM, saxDriverConfig) && javaSource.isEventStreamRequired());
+			            if (eventStreamingOn && javaSource.getSourceObjects() != null) {
+			                reader = new XStreamXMLReader();
+			            } else {
+			                reader = new NullSourceXMLReader();
+			            }
+			        } else {
+			            reader = XMLReaderFactory.createXMLReader();
+			        }
+			
+			        if (reader instanceof SmooksXMLReader) {
+			            if (saxDriverConfig != null) {
+			                Configurator.configure((SmooksXMLReader) reader, saxDriverConfig, execContext.getContext());
+			            }
+			            ((SmooksXMLReader) reader).setExecutionContext(execContext);
+			        }
+			
+			        if (reader instanceof JavaXMLReader) {
+			            if (!(source instanceof JavaSource)) {
+			                throw new SAXException("A " + JavaSource.class.getName() + " source must be supplied for " + JavaXMLReader.class.getName() + " implementations.");
+			            }
+			            ((JavaXMLReader) reader).setSourceObjects(((JavaSource) source).getSourceObjects());
+			        }
+			
+			        reader.setContentHandler(handler);
+			        try {
+			            reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
+			        } catch (SAXNotRecognizedException e) {
+			            logger.debug("XMLReader property 'http://xml.org/sax/properties/lexical-handler' not recognized by XMLReader '" + reader.getClass().getName() + "'.");
+			        }
+			        reader.setFeature("http://xml.org/sax/features/namespaces", true);
+			        reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+			
+			        setHandlers(reader);
+			        setFeatures(reader);
+			        
+			        execContext.getContext().setAttribute(XMLReader.class, reader);
+        		}
+        	}
+        }
 
-        if (saxDriverConfig != null && saxDriverConfig.getResource() != null) {
-            String className = saxDriverConfig.getResource();
-
-            reader = XMLReaderFactory.createXMLReader(className);
-        } else if (source instanceof JavaSource) {
-            JavaSource javaSource = (JavaSource) source;
-
-            if (isFeatureOn(JavaSource.FEATURE_GENERATE_EVENT_STREAM, saxDriverConfig) && !javaSource.isEventStreamRequired()) {
-                throw new SAXException("Invalid Smooks configuration.  Feature '" + JavaSource.FEATURE_GENERATE_EVENT_STREAM + "' is explicitly configured 'on' in the Smooks configuration, while the supplied JavaSource has explicitly configured event streaming to be off (through a call to JavaSource.setEventStreamRequired).");
-            }
-
-            // Event streaming must be explicitly turned off.  If is on as long as it is (a) not configured "off" in
-            // the smooks config (via the reader features) and (b) not turned off via the supplied JavaSource...
-            boolean eventStreamingOn = (!isFeatureOff(JavaSource.FEATURE_GENERATE_EVENT_STREAM, saxDriverConfig) && javaSource.isEventStreamRequired());
-            if (eventStreamingOn && javaSource.getSourceObjects() != null) {
-                reader = new XStreamXMLReader();
-            } else {
-                reader = new NullSourceXMLReader();
-            }
+        if(reader instanceof CloneableReader) {
+        	return ((CloneableReader) reader).cloneReader(execContext, handler);
         } else {
-            reader = XMLReaderFactory.createXMLReader();
+        	return reader;
         }
-
-        if (reader instanceof SmooksXMLReader) {
-            if (saxDriverConfig != null) {
-                Configurator.configure((SmooksXMLReader) reader, saxDriverConfig, execContext.getContext());
-            }
-            ((SmooksXMLReader) reader).setExecutionContext(execContext);
-        }
-
-        if (reader instanceof JavaXMLReader) {
-            if (!(source instanceof JavaSource)) {
-                throw new SAXException("A " + JavaSource.class.getName() + " source must be supplied for " + JavaXMLReader.class.getName() + " implementations.");
-            }
-            ((JavaXMLReader) reader).setSourceObjects(((JavaSource) source).getSourceObjects());
-        }
-
-        reader.setContentHandler(handler);
-        try {
-            reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
-        } catch (SAXNotRecognizedException e) {
-            logger.debug("XMLReader property 'http://xml.org/sax/properties/lexical-handler' not recognized by XMLReader '" + reader.getClass().getName() + "'.");
-        }
-        reader.setFeature("http://xml.org/sax/features/namespaces", true);
-        reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-
-        setHandlers(reader);
-        setFeatures(reader);
-
-        return reader;
     }
 
     private void setHandlers(XMLReader reader) throws SAXException {

@@ -39,14 +39,14 @@ import com.envoisolutions.sxc.xpath.XPathEventHandler;
 public class SXCComparisonTest extends TestCase {
 
     private static final int NUM_WARMUPS = 10;
-    private static final int NUM_ITERATIONS = 50;
+    private static final int NUM_ITERATIONS = 10000;
 
     public void test_sxc_big() throws Exception {
         runSXC("root/test/global", "big_global.xml");
     }
 
     public void test_sxc_small() throws Exception {
-        runSXC("Envelope/Header/Security/UsernameToken/Password", "small-soap-message.xml");
+        runSXC("*/Password", "small-soap-message.xml");
     }
 
     public void test_smooks_big() throws IOException, SAXException {
@@ -54,12 +54,13 @@ public class SXCComparisonTest extends TestCase {
     }
 
     public void test_smooks_small() throws Exception {
-    	runSmooks("usernametoken/password", "small-soap-message.xml");
+    	runSmooks("Password", "small-soap-message.xml");
     }
 
 	private void runSXC(String target, String message) throws Exception {
         
 		final boolean[] match = new boolean[]{false};
+		final long[] invCount = new long[]{0};
         
         XPathEventHandler eventHandler = new XPathEventHandler() {
 
@@ -73,6 +74,8 @@ public class SXCComparisonTest extends TestCase {
                 
                 String elementText = event.getReader().getElementText();
                 elementText = elementText;
+                
+                invCount[0]++;
             }
 
         };
@@ -92,6 +95,7 @@ public class SXCComparisonTest extends TestCase {
         }
         System.out.println("Took: " + (System.currentTimeMillis() - start));
         assertTrue(match[0]);
+        //System.out.println(invCount[0]);
 	}
 
     private void runSmooks(String target, String message) throws IOException, SAXException {
