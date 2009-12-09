@@ -1,0 +1,14 @@
+<Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"  
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Header>     
+    <Security xmlns:wsse="http://schemas.xmlsoap.org/ws/2002/04/secext">
+      <UsernameToken>
+        <Username>Clark</Username>
+        <Password>griswald</Password>
+      </UsernameToken>
+    </Security>
+  </Header>
+  <Body>
+  </Body>
+</Envelope>
