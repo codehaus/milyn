@@ -35,46 +35,69 @@ public class FilterSettings {
     private boolean maintainElementStack = true;
     private boolean closeSource = true;
     private boolean closeResult = true;
+    private int readerPoolSize = 0;
 
     public FilterSettings() {
     }
+    
+    public static FilterSettings newDOMSettings() {
+    	return new FilterSettings(StreamFilterType.DOM);
+    }
+    
+    public static FilterSettings newSAXSettings() {
+    	return new FilterSettings(StreamFilterType.SAX);
+    }
 
     public FilterSettings(StreamFilterType filterType) {
+    	assertNonStaticDecl();
         this.filterType = filterType;
     }
 
-    public FilterSettings setFilterType(StreamFilterType filterType) {
+	public FilterSettings setFilterType(StreamFilterType filterType) {
+    	assertNonStaticDecl();
         this.filterType = filterType;
         return this;
     }
 
     public FilterSettings setRewriteEntities(boolean rewriteEntities) {
+    	assertNonStaticDecl();
         this.rewriteEntities = rewriteEntities;
         return this;
     }
 
     public FilterSettings setDefaultSerializationOn(boolean defaultSerializationOn) {
+    	assertNonStaticDecl();
         this.defaultSerializationOn = defaultSerializationOn;
         return this;
     }
 
     public FilterSettings setTerminateOnException(boolean terminateOnException) {
+    	assertNonStaticDecl();
         this.terminateOnException = terminateOnException;
         return this;
     }
 
     public FilterSettings setMaintainElementStack(boolean maintainElementStack) {
+    	assertNonStaticDecl();
         this.maintainElementStack = maintainElementStack;
         return this;
     }
 
     public FilterSettings setCloseSource(boolean closeSource) {
+    	assertNonStaticDecl();
         this.closeSource = closeSource;
         return this;
     }
 
     public FilterSettings setCloseResult(boolean closeResult) {
+    	assertNonStaticDecl();
         this.closeResult = closeResult;
+        return this;
+    }
+    
+    public FilterSettings setReaderPoolSize(int readerPoolSize) {
+    	assertNonStaticDecl();
+        this.readerPoolSize = readerPoolSize;
         return this;
     }
 
@@ -86,6 +109,13 @@ public class FilterSettings {
         ParameterAccessor.setParameter(Filter.MAINTAIN_ELEMENT_STACK, Boolean.toString(maintainElementStack), smooks);
         ParameterAccessor.setParameter(Filter.CLOSE_SOURCE, Boolean.toString(closeSource), smooks);
         ParameterAccessor.setParameter(Filter.CLOSE_RESULT, Boolean.toString(closeResult), smooks);
+        ParameterAccessor.setParameter(Filter.XML_READER_POOL_SIZE, Integer.toString(readerPoolSize), smooks);
     }
+
+	private void assertNonStaticDecl() {
+		if(this == DEFAULT_DOM || this == DEFAULT_SAX) {
+			throw new UnsupportedOperationException("Invalid attempt to modify static filter type declaration.");
+		}
+	}
 }
 

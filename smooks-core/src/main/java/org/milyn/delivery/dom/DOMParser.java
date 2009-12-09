@@ -21,6 +21,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
+import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.Filter;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
@@ -116,10 +118,25 @@ public class DOMParser extends AbstractParser {
   	 * @throws IOException Unable to read the input stream.
   	 */
   	private void parse(Source source, DOMBuilder contentHandler) throws SAXException, IOException {
-          XMLReader domReader = createXMLReader(contentHandler);
-          domReader.parse(createInputSource(domReader, source, getExecContext()));
+  		ExecutionContext executionContext = Filter.getCurrentExecutionContext();
+  		
+  		if(executionContext != null) {
+			ContentDeliveryConfig deliveryConfig = executionContext.getDeliveryConfig();        
+	  		XMLReader domReader = deliveryConfig.getXMLReader();
+	  		
+	  		try {
+	  			if(domReader == null) {
+	  				domReader = createXMLReader(contentHandler);
+	  			}	        
+		        domReader.parse(createInputSource(domReader, source, getExecContext()));
+	  		} finally {
+	  			if(domReader != null) {
+	  				deliveryConfig.returnXMLReader(domReader);
+	  			}
+	  		}
+  		} else {
+	  		XMLReader domReader = createXMLReader(contentHandler);
+	        domReader.parse(createInputSource(domReader, source, getExecContext()));
+  		}
   	}
-
-
-
 }
