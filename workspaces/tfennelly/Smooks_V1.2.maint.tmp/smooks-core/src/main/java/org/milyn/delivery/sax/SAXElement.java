@@ -114,7 +114,7 @@ public class SAXElement {
      */
     public SAXElement(QName name, Attributes attributes, SAXElement parent) {
         this.name = name;
-        this.attributes = copyAttributes(attributes);
+        this.attributes = attributes;
         this.parent = parent;
     }
 
@@ -165,7 +165,7 @@ public class SAXElement {
      * @param attributes The attributes to copy.
      * @return The new {@link Attributes} instance with a copy of the attributes.
      */
-    private Attributes copyAttributes(Attributes attributes) {
+    public static Attributes copyAttributes(Attributes attributes) {
         AttributesImpl attributesCopy = new AttributesImpl();
         attributesCopy.setAttributes(attributes);
         return attributesCopy;

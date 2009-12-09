@@ -1183,48 +1183,54 @@ public class SmooksResourceConfiguration {
     }
 
     private boolean isTargetedAtElementContext(String elementName, String parentElementName, Index index) {
-        if (contextualSelector[index.i].equals("*")) {
-            index.i--;
-        } else if (contextualSelector[index.i].equals("**")) {
-            if(index.i == 0) {
-                // No more tokens to match and ** matches everything
-                return true;
-            } else if(index.i == 1) {
-                if(parentElementName == null && contextualSelector[index.i - 1].equals(DOCUMENT_FRAGMENT_SELECTOR)) {
-                    // we're at the root of the document and the only selector left is
-                    // the document selector.  Pass..
-                    return true;
-                } else if(parentElementName == null) {
-                    // we're at the root of the document, yet there are still
-                    // unmatched tokens in the selector.  Fail...
-                    return false;
-                }
-            } else if(parentElementName == null) {
-                // we're at the root of the document, yet there are still
-                // unmatched tokens in the selector.  Fail...
-                return false;
-            }
+        int i = index.i;
 
-            String parentContextToken = contextualSelector[index.i - 1];
-
-            // decrement if the parent context token is * or **,
-            // or if the parent node is an element whose name matches
-            // that of the parent context token, or if the parent context token is * or **...
-            if(parentContextToken.equals("*") || parentContextToken.equals("**")) {
-                index.i--;
-            } else if(parentContextToken.equalsIgnoreCase(parentElementName)) {
-                index.i--;
-            }
-        } else if (!contextualSelector[index.i].equalsIgnoreCase(elementName)) {
-            return false;
-        } else {
-            index.i--;
-        }
-
-        if (parentElementName == null) {
-            if(index.i >= 0 && !contextualSelector[index.i].equals("**")) {
-                return contextualSelector[index.i].equals(DOCUMENT_FRAGMENT_SELECTOR);
-            }
+        try {
+			if (contextualSelector[i].equals("*")) {
+	            i--;
+	        } else if (contextualSelector[i].equals("**")) {
+	            if(i == 0) {
+	                // No more tokens to match and ** matches everything
+	                return true;
+	            } else if(i == 1) {
+	                if(parentElementName == null && contextualSelector[i - 1].equals(DOCUMENT_FRAGMENT_SELECTOR)) {
+	                    // we're at the root of the document and the only selector left is
+	                    // the document selector.  Pass..
+	                    return true;
+	                } else if(parentElementName == null) {
+	                    // we're at the root of the document, yet there are still
+	                    // unmatched tokens in the selector.  Fail...
+	                    return false;
+	                }
+	            } else if(parentElementName == null) {
+	                // we're at the root of the document, yet there are still
+	                // unmatched tokens in the selector.  Fail...
+	                return false;
+	            }
+	
+	            String parentContextToken = contextualSelector[i - 1];
+	
+	            // decrement if the parent context token is * or **,
+	            // or if the parent node is an element whose name matches
+	            // that of the parent context token, or if the parent context token is * or **...
+	            if(parentContextToken.equals("*") || parentContextToken.equals("**")) {
+	                i--;
+	            } else if(parentContextToken.equalsIgnoreCase(parentElementName)) {
+	                i--;
+	            }
+	        } else if (!contextualSelector[i].equalsIgnoreCase(elementName)) {
+	            return false;
+	        } else {
+	            i--;
+	        }
+	
+	        if (parentElementName == null) {
+	            if(i >= 0 && !contextualSelector[i].equals("**")) {
+	                return contextualSelector[i].equals(DOCUMENT_FRAGMENT_SELECTOR);
+	            }
+	        }
+        } finally {
+        	index.i = i;
         }
 
         return true;

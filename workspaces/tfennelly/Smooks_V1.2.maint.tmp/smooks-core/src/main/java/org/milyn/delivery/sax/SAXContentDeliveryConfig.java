@@ -94,24 +94,39 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
         extractChildVisitors();
 
+        // We need a list of all selector element path tokens.  We use this
+        // to add "blank" SAXElementVisitorMap entries for element names that
+        // don't have a SAXElementVisitorMap.  This is needed to ensure that
+        // events for these elements are forwarded to the SAX Handler impls.
+        Set<String> selectorPathElementNames = new HashSet<String>();
+        
         // Now extract the before, child and after visitors for all configured elements...
-        Set<String> elementNames = new HashSet();
+        Set<String> elementNames = new HashSet<String>();
         elementNames.addAll(visitBefores.getTable().keySet());
         elementNames.addAll(visitAfters.getTable().keySet());
 
         for (String elementName : elementNames) {
-            SAXElementVisitorMap entry = new SAXElementVisitorMap();
+            SAXElementVisitorMap entry = new SAXElementVisitorMap(false);
 
             entry.setVisitBefores(visitBefores.getTable().get(elementName));
             entry.setChildVisitors(childVisitors.getTable().get(elementName));
             entry.setVisitAfters(visitAfters.getTable().get(elementName));
             entry.setVisitCleanables(visitCleanables.getTable().get(elementName));
+            
+            entry.addSelectorPathElementNames(selectorPathElementNames);
+            
             optimizedVisitorConfig.put(elementName, entry);
+        }
+        
+        for(String selectorPathElementName : selectorPathElementNames) {
+        	if(!optimizedVisitorConfig.containsKey(selectorPathElementName)) {
+                optimizedVisitorConfig.put(selectorPathElementName, new SAXElementVisitorMap(true));
+        	}
         }
     }
 
     public SAXElementVisitorMap getCombinedOptimizedConfig(String[] elementNames) {
-        SAXElementVisitorMap combinedConfig = new SAXElementVisitorMap();
+        SAXElementVisitorMap combinedConfig = new SAXElementVisitorMap(false);
 
         combinedConfig.setVisitBefores(new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>());
         combinedConfig.setChildVisitors(new ArrayList<ContentHandlerConfigMap<SAXVisitChildren>>());
@@ -122,6 +137,11 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
             SAXElementVisitorMap elementConfig = optimizedVisitorConfig.get(elementName.toLowerCase());
 
             if(elementConfig != null) {
+            	
+            	if(elementConfig.isBlank) {
+            		return elementConfig;
+            	}
+            	
                 List<ContentHandlerConfigMap<SAXVisitBefore>> elementVisitBefores = elementConfig.getVisitBefores();
                 List<ContentHandlerConfigMap<SAXVisitChildren>> elementChildVisitors = elementConfig.getChildVisitors();
                 List<ContentHandlerConfigMap<SAXVisitAfter>> elementVisitAfteres = elementConfig.getVisitAfters();

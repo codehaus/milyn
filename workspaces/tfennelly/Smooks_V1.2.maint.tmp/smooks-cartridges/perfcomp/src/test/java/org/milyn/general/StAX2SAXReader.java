@@ -15,8 +15,10 @@
 */
 package org.milyn.general;
 
+import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.xml.SmooksXMLReader;
+import org.milyn.delivery.sax.ReadOnlySAXHandler;
 import org.milyn.delivery.sax.SAXContentDeliveryConfig;
 import org.milyn.delivery.sax.SAXElementVisitorMap;
 import org.xml.sax.*;
@@ -37,11 +39,12 @@ public class StAX2SAXReader implements SmooksXMLReader {
 
     private XMLInputFactory staxInputFactory = XMLInputFactory.newInstance();
     private ExecutionContext executionContext;
-    private ContentHandler contentHandler;
+    private ReadOnlySAXHandler contentHandler;
     private LexicalHandler lexicalHandler;
     private AttributesImpl attributes = new AttributesImpl();
     private SAXContentDeliveryConfig deliveryConfig;
     private Map<String, SAXElementVisitorMap> visitorConfigMap;
+    private int elementCount = 0;
 
     public StAX2SAXReader() {
         staxInputFactory.setProperty(XMLInputFactory.IS_COALESCING, false);
@@ -85,7 +88,11 @@ public class StAX2SAXReader implements SmooksXMLReader {
     }
 
     public void setContentHandler(ContentHandler contentHandler) {
-        this.contentHandler = contentHandler;
+    	if(contentHandler instanceof ReadOnlySAXHandler) {
+    		this.contentHandler = (ReadOnlySAXHandler) contentHandler;
+    	} else {
+    		throw new SmooksConfigurationException("Sorry, the " + getClass().getSimpleName() + " can only be used with the SAX Filter.");
+    	}
     }
 
     public ContentHandler getContentHandler() {
@@ -104,9 +111,9 @@ public class StAX2SAXReader implements SmooksXMLReader {
 
         contentHandler.startDocument();
         try {
-            eatMessage(staxReader);
-            //moveToNextElement(staxReader);
-            //parseElement(staxReader);
+            //eatMessage(staxReader);
+            moveToNextElement(staxReader);
+            parseElement(staxReader, false);
         } catch (XMLStreamException e) {
             throw new SAXException("Error reading XML Stream.", e);
         } finally {
@@ -114,39 +121,39 @@ public class StAX2SAXReader implements SmooksXMLReader {
         }
     }
 
-    private void parseElement(XMLStreamReader staxReader) throws XMLStreamException, SAXException {
+    private static Attributes emptyAttributes = new AttributesImpl();
+    private void parseElement(XMLStreamReader staxReader, boolean forwardEvents) throws XMLStreamException, SAXException {
         QName name = staxReader.getName();
-        String nsUri = name.getNamespaceURI();
-        String localPart = name.getLocalPart();
-        String nsPrefix = name.getPrefix();
-        String qName;
+        SAXElementVisitorMap elementVisitorConfig;
+        boolean isRoot = (elementCount == 0);
+        Attributes attrs;
 
-        if(nsPrefix != null) {
-            qName = nsPrefix + ":" + localPart;
-        } else {
-            qName = localPart;
-        }
-        contentHandler.startElement(nsUri, localPart, qName, getAttributes(staxReader));
+        elementVisitorConfig = contentHandler.getElementVisitorConfig(name.getLocalPart(), isRoot);
+        forwardEvents  = (forwardEvents || elementVisitorConfig != null);
+        
+        if(forwardEvents) {
+        	attrs = getAttributes(staxReader);
+        	contentHandler.startElement(name, attrs, elementVisitorConfig);
+        }        
+        
+        elementCount++;
 
         while(staxReader.hasNext()) {
             staxReader.next();
             switch (staxReader.getEventType()) {
                 case XMLStreamConstants.START_ELEMENT:
-                    parseElement(staxReader);
+                    parseElement(staxReader, forwardEvents);
+                    
                     break;
                 case XMLStreamConstants.CHARACTERS:
-                    contentHandler.characters(staxReader.getTextCharacters(), staxReader.getTextStart(), staxReader.getTextLength());
-                    break;
-                case XMLStreamConstants.COMMENT:
-                    lexicalHandler.comment(staxReader.getTextCharacters(), staxReader.getTextStart(), staxReader.getTextLength());
-                    break;
-                case XMLStreamConstants.CDATA:
-                    lexicalHandler.startCDATA();
-                    contentHandler.characters(staxReader.getTextCharacters(), staxReader.getTextStart(), staxReader.getTextLength());
-                    lexicalHandler.endCDATA();
+                	if(elementVisitorConfig != null && !elementVisitorConfig.isBlank) {
+                		contentHandler.characters(staxReader.getTextCharacters(), staxReader.getTextStart(), staxReader.getTextLength());
+                	}
                     break;
                 case XMLStreamConstants.END_ELEMENT:
-                    contentHandler.endElement(nsUri, localPart, qName);
+                	if(forwardEvents) {
+	                    contentHandler.endElement();
+                	}
                     return;
             }
         }

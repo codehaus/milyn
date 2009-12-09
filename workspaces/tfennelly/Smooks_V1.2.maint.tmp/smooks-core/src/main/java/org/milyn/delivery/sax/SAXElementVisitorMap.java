@@ -15,11 +15,13 @@
 */
 package org.milyn.delivery.sax;
 
+import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.VisitLifecycleCleanable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * SAXElement visitor Map.
@@ -28,11 +30,16 @@ import java.util.List;
  */
 public class SAXElementVisitorMap {
 
-    private List<ContentHandlerConfigMap<SAXVisitBefore>> visitBefores;
-    private List<ContentHandlerConfigMap<SAXVisitChildren>> childVisitors;
-    private List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters;
-    private List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables;
-
+	public boolean isBlank = false;
+    public List<ContentHandlerConfigMap<SAXVisitBefore>> visitBefores;
+    public List<ContentHandlerConfigMap<SAXVisitChildren>> childVisitors;
+    public List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters;
+    public List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables;
+    
+    public SAXElementVisitorMap(boolean isBlank) {
+    	this.isBlank = isBlank;
+    }
+    
     public List<ContentHandlerConfigMap<SAXVisitBefore>> getVisitBefores() {
         return visitBefores;
     }
@@ -52,8 +59,24 @@ public class SAXElementVisitorMap {
     public List<ContentHandlerConfigMap<SAXVisitAfter>> getVisitAfters() {
         return visitAfters;
     }
+    
+    public void addSelectorPathElementNames(Set<String> nameSet) {
+    	addSelectorPathElementNames(visitBefores, nameSet);
+    	addSelectorPathElementNames(visitAfters, nameSet);
+    }
 
-    public void setVisitAfters(List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters) {
+	private <T extends ContentHandler> void addSelectorPathElementNames(List<ContentHandlerConfigMap<T>> visitorConfigList, Set<String> nameSet) {
+		if(visitorConfigList != null) {
+			for(ContentHandlerConfigMap<T> visitorConfig : visitorConfigList) {
+				String[] selectorTokens = visitorConfig.getResourceConfig().getContextualSelector();
+				for(String selectorToken : selectorTokens) {
+					nameSet.add(selectorToken);
+				}
+			}
+		}
+	}
+
+	public void setVisitAfters(List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters) {
         this.visitAfters = visitAfters;
     }
 
@@ -71,7 +94,7 @@ public class SAXElementVisitorMap {
     		return this;
     	}    	
     	
-    	SAXElementVisitorMap merge = new SAXElementVisitorMap();
+    	SAXElementVisitorMap merge = new SAXElementVisitorMap(map.isBlank);
     	
         merge.visitBefores = new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>();
         merge.childVisitors = new ArrayList<ContentHandlerConfigMap<SAXVisitChildren>>();

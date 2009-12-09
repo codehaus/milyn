@@ -29,6 +29,7 @@ import org.milyn.event.types.ElementPresentEvent;
 import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.io.NullWriter;
+import org.milyn.util.Cleanable;
 import org.milyn.xml.DocType;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -45,7 +46,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SAXHandler extends DefaultHandler2 {
+public class SAXHandler extends DefaultHandler2 implements Cleanable {
 
     private static Log logger = LogFactory.getLog(SAXHandler.class);
     private ExecutionContext execContext;
@@ -111,13 +112,25 @@ public class SAXHandler extends DefaultHandler2 {
         dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext, cleanupList);
     }
 
-    public void cleanup() {
+    public void clean() {
         try {
             cleanupList.cleanup();
         } finally {
             VisitorConfigMap.execCleanables(deliveryConfig.getExecCleanables(), execContext);
         }
     }    
+
+	public SAXElementVisitorMap getElementVisitorConfig(String elementName, boolean isRoot) {
+		SAXElementVisitorMap elementVisitorConfig;
+
+		if(isRoot) {
+            elementVisitorConfig = deliveryConfig.getCombinedOptimizedConfig(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
+        } else {
+            elementVisitorConfig = visitorConfigMap.get(elementName);
+        }
+		
+		return elementVisitorConfig;
+	}
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         WriterManagedSAXElement element;
@@ -129,13 +142,15 @@ public class SAXHandler extends DefaultHandler2 {
         elementQName = SAXElement.toQName(namespaceURI, localName, qName);
         elementName = elementQName.getLocalPart();
 
-        if(isRoot) {
-            elementVisitorConfig = deliveryConfig.getCombinedOptimizedConfig(new String[] {SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR, elementName});
-        } else {
-            elementVisitorConfig = visitorConfigMap.get(elementName.toLowerCase());
-        }
+        elementVisitorConfig = getElementVisitorConfig(elementName.toLowerCase(), isRoot);
 
-        if(elementVisitorConfig == null) {
+        startElement(elementQName, SAXElement.copyAttributes(atts), elementVisitorConfig);
+    }
+
+	public void startElement(QName elementQName, Attributes atts, SAXElementVisitorMap elementVisitorConfig) {
+		WriterManagedSAXElement element;
+		
+		if(elementVisitorConfig == null) {
             elementVisitorConfig = globalVisitorConfig;
         }
 
@@ -150,7 +165,7 @@ public class SAXHandler extends DefaultHandler2 {
                 eventListener.onEvent(new ElementPresentEvent(new WriterManagedSAXElement(elementQName, atts, currentProcessor.element)));
             }
         } else {
-            if(!isRoot) {
+            if(currentProcessor != null && currentProcessor.element != null) {
                 // Push the existing "current" processor onto the stack and create a new current
                 // based on this start event...
                 element = new WriterManagedSAXElement(elementQName, atts, currentProcessor.element);
@@ -168,9 +183,13 @@ public class SAXHandler extends DefaultHandler2 {
 
             visitBefore(element, elementVisitorConfig);
         }
-    }
+	}
 
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+    	endElement();
+    }
+    
+    public void endElement() throws SAXException {
         boolean flush = false;
 
         // Apply the dynamic visitors...

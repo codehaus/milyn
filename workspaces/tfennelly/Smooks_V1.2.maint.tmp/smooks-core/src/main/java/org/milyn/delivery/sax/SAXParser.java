@@ -23,8 +23,11 @@ import javax.xml.transform.Source;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
+import org.milyn.io.NullWriter;
+import org.milyn.util.Cleanable;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.ext.DefaultHandler2;
 
 /**
  * Smooks SAX data stream parser.
@@ -34,24 +37,31 @@ import org.xml.sax.XMLReader;
  */
 public class SAXParser extends AbstractParser {
 
-    private SAXHandler saxHandler;
+    private Cleanable cleanableHandler;
 
     public SAXParser(ExecutionContext execContext) {
         super(execContext);
     }
 
     protected Writer parse(Source source, Result result, ExecutionContext executionContext) throws SAXException, IOException {
+    	DefaultHandler2 handler;
+    	Writer writer = getWriter(result, executionContext);
+    	
+        if (!(writer instanceof NullWriter)) {
+        	handler = new SAXHandler(getExecContext(), writer);
+        } else {
+        	handler = new ReadOnlySAXHandler(getExecContext());
+        }
+        cleanableHandler = (Cleanable) handler;
 
-        Writer writer = getWriter(result, executionContext);
         XMLReader saxReader;
-
-        saxHandler = new SAXHandler(getExecContext(), writer);
-        saxReader = createXMLReader(saxHandler);
+        saxReader = createXMLReader(handler);
         saxReader.parse(createInputSource(saxReader, source, executionContext));
+        
         return writer;
     }
 
     public void cleanup() {
-        saxHandler.cleanup();
+    	cleanableHandler.clean();
     }
 }
