@@ -183,6 +183,8 @@ public class ContentDeliveryConfigBuilder {
             if(sortVisitors) {
                 domConfig.sort();
             }
+            
+            domConfig.initializeXMLReaderPool();
 
             return domConfig;
         } else {
@@ -204,6 +206,8 @@ public class ContentDeliveryConfigBuilder {
             if(sortVisitors) {
                 saxConfig.sort();
             }
+            
+            saxConfig.initializeXMLReaderPool();
 
             return saxConfig;
         }

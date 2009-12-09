@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
+import org.milyn.delivery.ContentDeliveryConfig;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -43,11 +44,22 @@ public class SAXParser extends AbstractParser {
     protected Writer parse(Source source, Result result, ExecutionContext executionContext) throws SAXException, IOException {
 
         Writer writer = getWriter(result, executionContext);
+        ContentDeliveryConfig deliveryConfig = executionContext.getDeliveryConfig();
         XMLReader saxReader;
 
-        saxHandler = new SAXHandler(getExecContext(), writer);
-        saxReader = createXMLReader(saxHandler);
-        saxReader.parse(createInputSource(saxReader, source, executionContext));
+        saxHandler = new SAXHandler(getExecContext(), writer);        
+        saxReader = deliveryConfig.getXMLReader();
+        try {
+	        if(saxReader == null) {
+	        	saxReader = createXMLReader(saxHandler);
+	        }
+	        saxReader.parse(createInputSource(saxReader, source, executionContext));
+        } finally {
+	        if(saxReader != null) {
+	        	deliveryConfig.returnXMLReader(saxReader);
+	        }
+        }
+        
         return writer;
     }
 
