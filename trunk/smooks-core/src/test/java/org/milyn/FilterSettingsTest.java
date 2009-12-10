@@ -37,7 +37,7 @@ public class FilterSettingsTest extends TestCase {
 		assertEquals(null, ParameterAccessor.getStringParameter(Filter.CLOSE_RESULT, execContext.getDeliveryConfig()));
 		assertEquals(null, ParameterAccessor.getStringParameter(Filter.CLOSE_SOURCE, execContext.getDeliveryConfig()));
 		assertEquals(null, ParameterAccessor.getStringParameter(Filter.DEFAULT_SERIALIZATION_ON, execContext.getDeliveryConfig()));
-		assertEquals(null, ParameterAccessor.getStringParameter(Filter.MAINTAIN_ELEMENT_STACK, execContext.getDeliveryConfig()));
+		assertEquals(null, ParameterAccessor.getStringParameter(Filter.READER_POOL_SIZE, execContext.getDeliveryConfig()));
 		assertEquals(null, ParameterAccessor.getStringParameter(Filter.ENTITIES_REWRITE, execContext.getDeliveryConfig()));
 		assertEquals(null, ParameterAccessor.getStringParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, execContext.getDeliveryConfig()));
 	}
@@ -50,7 +50,7 @@ public class FilterSettingsTest extends TestCase {
 		assertEquals("true", ParameterAccessor.getStringParameter(Filter.CLOSE_RESULT, execContext.getDeliveryConfig()));
 		assertEquals("true", ParameterAccessor.getStringParameter(Filter.CLOSE_SOURCE, execContext.getDeliveryConfig()));
 		assertEquals("true", ParameterAccessor.getStringParameter(Filter.DEFAULT_SERIALIZATION_ON, execContext.getDeliveryConfig()));
-		assertEquals("true", ParameterAccessor.getStringParameter(Filter.MAINTAIN_ELEMENT_STACK, execContext.getDeliveryConfig()));
+		assertEquals("3", ParameterAccessor.getStringParameter(Filter.READER_POOL_SIZE, execContext.getDeliveryConfig()));
 		assertEquals("true", ParameterAccessor.getStringParameter(Filter.ENTITIES_REWRITE, execContext.getDeliveryConfig()));
 		assertEquals("true", ParameterAccessor.getStringParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, execContext.getDeliveryConfig()));
 	}

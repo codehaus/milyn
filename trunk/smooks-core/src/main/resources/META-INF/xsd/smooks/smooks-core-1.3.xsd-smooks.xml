@@ -32,12 +32,6 @@
         <param name="mapTo">terminate.on.visitor.exception</param>
     </resource-config>
 
-	<resource-config selector="filterSettings">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">maintainElementStack</param>
-        <param name="mapTo">maintain.element.stack</param>
-    </resource-config>
-
     <resource-config selector="filterSettings">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">closeSource</param>
@@ -54,6 +48,12 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">rewriteEntities</param>
         <param name="mapTo">entities.rewrite</param>
+    </resource-config>
+
+	<resource-config selector="filterSettings">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">readerPoolSize</param>
+        <param name="mapTo">reader.pool.size</param>
     </resource-config>
 
     <!--

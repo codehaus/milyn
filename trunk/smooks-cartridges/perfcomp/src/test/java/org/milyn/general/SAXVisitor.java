@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class SAXVisitor implements SAXVisitAfter {
 
-    private static boolean match = false;
+    public static boolean match = false;
 
     public void visitAfter(SAXElement saxElement, ExecutionContext executionContext) throws SmooksException, IOException {
         match = true;

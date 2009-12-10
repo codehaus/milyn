@@ -49,11 +49,6 @@
                         <xs:documentation>Terminate Filtering on Exception</xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
-		        <xs:attribute name="maintainElementStack" type="xs:boolean">
-                    <xs:annotation>
-                        <xs:documentation>Maintain Element Stack</xs:documentation>
-                    </xs:annotation>
-                </xs:attribute>
 		        <xs:attribute name="closeSource" type="xs:boolean">
                     <xs:annotation>
                         <xs:documentation>Close Filter Source (Stream Sources only)</xs:documentation>
@@ -67,6 +62,18 @@
                 <xs:attribute name="rewriteEntities" type="xs:boolean" >
                     <xs:annotation>
                         <xs:documentation>Rewrite Entities</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="readerPoolSize" type="xs:int" >
+                    <xs:annotation>
+                        <xs:documentation>
+                        Reader Pool Size.
+                        <p/>  
+                        Some Reader implementations are expensive to create. Pooling them can give a
+                        huge performance boost.  Assign based on your applications threading model.
+                        <p/>
+                        Default pool size is 0 i.e. a new Reader will be created for every message.
+                        </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
     		</xs:extension>
