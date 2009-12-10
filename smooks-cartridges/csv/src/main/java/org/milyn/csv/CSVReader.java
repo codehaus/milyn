@@ -146,7 +146,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     private static char[] INDENT_2  = new char[] {'\t', '\t'};
 
     private ContentHandler contentHandler;
-	private ExecutionContext request;
+	private ExecutionContext execContext;
 
     @ConfigParam(name = "fields")
     private String[] csvFields;
@@ -236,7 +236,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
 	 */
 	public void setExecutionContext(ExecutionContext request) {
-		this.request = request;
+		this.execContext = request;
 	}
 
 	/* (non-Javadoc)
@@ -246,88 +246,93 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         if(contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse CSV stream.");
         }
-        if(request == null) {
-            throw new IllegalStateException("Smooks container 'request' not set.  Cannot parse CSV stream.");
+        if(execContext == null) {
+            throw new IllegalStateException("'execContext' not set.  Cannot parse CSV stream.");
         }
 
-		Reader csvStreamReader;
-		au.com.bytecode.opencsv.CSVReader csvLineReader;
-        String[] csvRecord;
-
-		// Get a reader for the CSV source...
-        csvStreamReader = csvInputSource.getCharacterStream();
-        if(csvStreamReader == null) {
-            csvStreamReader = new InputStreamReader(csvInputSource.getByteStream(), encoding);
+        try {
+			Reader csvStreamReader;
+			au.com.bytecode.opencsv.CSVReader csvLineReader;
+	        String[] csvRecord;
+	
+			// Get a reader for the CSV source...
+	        csvStreamReader = csvInputSource.getCharacterStream();
+	        if(csvStreamReader == null) {
+	            csvStreamReader = new InputStreamReader(csvInputSource.getByteStream(), encoding);
+	        }
+	
+	        // Create the CSV line reader...
+	        csvLineReader = new au.com.bytecode.opencsv.CSVReader(csvStreamReader, separator, quoteChar, skipLines);
+	
+	        // Start the document and add the root "csv-set" element...
+	        contentHandler.startDocument();
+	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, "", EMPTY_ATTRIBS);
+	
+	        // Output each of the CVS line entries...
+	        int lineNumber = 0;
+	        int expectedCount = getExpectedColumnsCount();
+	        
+	        while ((csvRecord = csvLineReader.readNext()) != null) {
+	        	lineNumber++; // First line is line "1"
+	
+	        	if(csvRecord.length < expectedCount) {
+	        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain number of items at least as in CSV config file " + csvFields.length + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
+	        		continue;
+	        	}
+	
+	            if(indent) {
+	                contentHandler.characters(INDENT_LF, 0, 1);
+	                contentHandler.characters(INDENT_1, 0, 1);
+	            }
+	
+	            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", EMPTY_ATTRIBS);
+	        	int recordIt = 0;
+	            for(int fieldIt = 0; fieldIt < csvFields.length; fieldIt++) {
+	                String fieldName = csvFields[fieldIt];
+	
+	                if(fieldName.startsWith(IGNORE_FIELD)) {
+	                	int toSkip = parseIgnoreFieldDirective(fieldName);
+	                	if(toSkip == Integer.MAX_VALUE){
+	                		break;
+	                	}
+	                	recordIt += toSkip;
+	                	continue;
+	                }                
+	
+	                if(indent) {
+	                    contentHandler.characters(INDENT_LF, 0, 1);
+	                    contentHandler.characters(INDENT_2, 0, 2);
+	                }
+	
+	                contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", EMPTY_ATTRIBS);
+	                contentHandler.characters(csvRecord[recordIt].toCharArray(), 0, csvRecord[recordIt].length());
+	                contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
+	
+	                if(indent) {
+	                }
+	
+	                recordIt++;
+	            }
+	
+	            if(indent) {
+	                contentHandler.characters(INDENT_LF, 0, 1);
+	                contentHandler.characters(INDENT_1, 0, 1);
+	            }
+	
+	            contentHandler.endElement(null, recordElementName, "");
+	        }
+	
+	        if(indent) {
+	            contentHandler.characters(INDENT_LF, 0, 1);
+	        }
+	
+	        // Close out the "csv-set" root element and end the document..
+	        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
+	        contentHandler.endDocument();
+        } finally {
+        	contentHandler = null;
+        	execContext = null;
         }
-
-        // Create the CSV line reader...
-        csvLineReader = new au.com.bytecode.opencsv.CSVReader(csvStreamReader, separator, quoteChar, skipLines);
-
-        // Start the document and add the root "csv-set" element...
-        contentHandler.startDocument();
-        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, "", EMPTY_ATTRIBS);
-
-        // Output each of the CVS line entries...
-        int lineNumber = 0;
-        int expectedCount = getExpectedColumnsCount();
-        
-        while ((csvRecord = csvLineReader.readNext()) != null) {
-        	lineNumber++; // First line is line "1"
-
-        	if(csvRecord.length < expectedCount) {
-        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain number of items at least as in CSV config file " + csvFields.length + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
-        		continue;
-        	}
-
-            if(indent) {
-                contentHandler.characters(INDENT_LF, 0, 1);
-                contentHandler.characters(INDENT_1, 0, 1);
-            }
-
-            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, "", EMPTY_ATTRIBS);
-        	int recordIt = 0;
-            for(int fieldIt = 0; fieldIt < csvFields.length; fieldIt++) {
-                String fieldName = csvFields[fieldIt];
-
-                if(fieldName.startsWith(IGNORE_FIELD)) {
-                	int toSkip = parseIgnoreFieldDirective(fieldName);
-                	if(toSkip == Integer.MAX_VALUE){
-                		break;
-                	}
-                	recordIt += toSkip;
-                	continue;
-                }                
-
-                if(indent) {
-                    contentHandler.characters(INDENT_LF, 0, 1);
-                    contentHandler.characters(INDENT_2, 0, 2);
-                }
-
-                contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, "", EMPTY_ATTRIBS);
-                contentHandler.characters(csvRecord[recordIt].toCharArray(), 0, csvRecord[recordIt].length());
-                contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, "");
-
-                if(indent) {
-                }
-
-                recordIt++;
-            }
-
-            if(indent) {
-                contentHandler.characters(INDENT_LF, 0, 1);
-                contentHandler.characters(INDENT_1, 0, 1);
-            }
-
-            contentHandler.endElement(null, recordElementName, "");
-        }
-
-        if(indent) {
-            contentHandler.characters(INDENT_LF, 0, 1);
-        }
-
-        // Close out the "csv-set" root element and end the document..
-        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, "");
-        contentHandler.endDocument();
 	}
 
     private int parseIgnoreFieldDirective(String field) {

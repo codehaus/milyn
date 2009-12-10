@@ -203,29 +203,33 @@ public class EDIParser implements XMLReader {
             throw new IllegalStateException("'mappingModel' not set.  Cannot parse EDI stream.");
         }
         
-        // Create a reader for reading the EDI segments...
-        segmentReader = new BufferedSegmentReader(ediInputSource, edifactModel.getDelimiters());
-        
-        // Fire the startDocument event, as well as the startElement event...
-        contentHandler.startDocument();
-        startElement(edifactModel.getEdimap().getSegments().getXmltag(), false);
-
-        // Work through all the segments in the model.  Move to the first segment before starting...
-        if(segmentReader.moveToNextSegment()) {
-        	mapSegments(edifactModel.getEdimap().getSegments().getSegments());
-
-    		// If we reach the end of the mapping model and we still have more EDI segments in the message....     		
-            while (segmentReader.hasCurrentSegment()) {
-                if (!EMPTY_LINE.matcher(segmentReader.getCurrentSegment().toString()).matches()) {
-                    throw new EDIParseException(edifactModel.getEdimap(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s). Current EDI segment is [" + segmentReader.getCurrentSegment() + "]");
-                }
-                segmentReader.moveToNextSegment();
-            }
+        try {
+	        // Create a reader for reading the EDI segments...
+	        segmentReader = new BufferedSegmentReader(ediInputSource, edifactModel.getDelimiters());
+	        
+	        // Fire the startDocument event, as well as the startElement event...
+	        contentHandler.startDocument();
+	        startElement(edifactModel.getEdimap().getSegments().getXmltag(), false);
+	
+	        // Work through all the segments in the model.  Move to the first segment before starting...
+	        if(segmentReader.moveToNextSegment()) {
+	        	mapSegments(edifactModel.getEdimap().getSegments().getSegments());
+	
+	    		// If we reach the end of the mapping model and we still have more EDI segments in the message....     		
+	            while (segmentReader.hasCurrentSegment()) {
+	                if (!EMPTY_LINE.matcher(segmentReader.getCurrentSegment().toString()).matches()) {
+	                    throw new EDIParseException(edifactModel.getEdimap(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s). Current EDI segment is [" + segmentReader.getCurrentSegment() + "]");
+	                }
+	                segmentReader.moveToNextSegment();
+	            }
+	        }
+	
+	        // Fire the endDocument event, as well as the endElement event...
+	        endElement(edifactModel.getEdimap().getSegments().getXmltag(), true);
+	        contentHandler.endDocument();
+        } finally {
+        	contentHandler = null;
         }
-
-        // Fire the endDocument event, as well as the endElement event...
-        endElement(edifactModel.getEdimap().getSegments().getXmltag(), true);
-        contentHandler.endDocument();
     }
 
     /**
