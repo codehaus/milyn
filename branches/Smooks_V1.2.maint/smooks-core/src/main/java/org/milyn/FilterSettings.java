@@ -109,7 +109,7 @@ public class FilterSettings {
         ParameterAccessor.setParameter(Filter.MAINTAIN_ELEMENT_STACK, Boolean.toString(maintainElementStack), smooks);
         ParameterAccessor.setParameter(Filter.CLOSE_SOURCE, Boolean.toString(closeSource), smooks);
         ParameterAccessor.setParameter(Filter.CLOSE_RESULT, Boolean.toString(closeResult), smooks);
-        ParameterAccessor.setParameter(Filter.XML_READER_POOL_SIZE, Integer.toString(readerPoolSize), smooks);
+        ParameterAccessor.setParameter(Filter.READER_POOL_SIZE, Integer.toString(readerPoolSize), smooks);
     }
 
 	private void assertNonStaticDecl() {
