@@ -19,6 +19,7 @@ import com.thoughtworks.xstream.io.xml.SaxWriter;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.payload.JavaSource;
 import org.xml.sax.*;
 
@@ -38,9 +39,13 @@ public class XStreamXMLReader implements JavaXMLReader {
     private boolean includeEnclosingDocument = true;
 
     private SaxWriter xstreamReader;
+    
+    @Initialize
+    public void intialize() {
+        xstreamReader = new SaxWriter(includeEnclosingDocument);
+    }
 
     public void setSourceObjects(List<Object> sourceObjects) throws SmooksConfigurationException {
-        xstreamReader = new SaxWriter(includeEnclosingDocument);
         try {
             xstreamReader.setProperty(SaxWriter.SOURCE_OBJECT_LIST_PROPERTY, sourceObjects);
         } catch (SAXNotRecognizedException e) {
