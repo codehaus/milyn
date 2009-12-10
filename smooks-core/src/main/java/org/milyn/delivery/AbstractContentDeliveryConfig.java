@@ -20,8 +20,11 @@ import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ApplicationContext;
 import org.milyn.dtd.DTDStore;
 import org.milyn.event.types.ConfigBuilderEvent;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Abstract {@link ContentDeliveryConfig}.
@@ -30,7 +33,7 @@ import java.util.*;
  */
 public abstract class AbstractContentDeliveryConfig implements ContentDeliveryConfig {
 
-    /**
+	/**
      * Container context.
      */
     private ApplicationContext applicationContext;
@@ -54,6 +57,9 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
     private List<ConfigBuilderEvent> configBuilderEvents = new ArrayList<ConfigBuilderEvent>();
 
     private Boolean isDefaultSerializationOn = null;
+    
+    private List<XMLReader> readerPool = new CopyOnWriteArrayList<XMLReader>();
+	private int readerPoolSize;
 
     public void setApplicationContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -147,4 +153,30 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
 
         return isDefaultSerializationOn;
     }
+    
+    public void initializeXMLReaderPool() {
+    	try {
+	        readerPoolSize = Integer.parseInt(ParameterAccessor.getStringParameter(Filter.READER_POOL_SIZE, "0", this).trim());
+    	} catch(NumberFormatException e) {
+    		readerPoolSize = 0;
+    	}
+    }
+
+	public XMLReader getXMLReader() throws SAXException {
+		synchronized(readerPool) {
+			if(!readerPool.isEmpty()) {
+				return readerPool.remove(0);
+			} else {
+				return null;
+			}
+		}
+	}
+
+	public void returnXMLReader(XMLReader reader) {
+		synchronized(readerPool) {
+			if(readerPool.size() < readerPoolSize) {
+				readerPool.add(reader);
+			}
+		}
+	}
 }

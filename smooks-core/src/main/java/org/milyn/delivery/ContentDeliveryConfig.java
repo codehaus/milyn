@@ -1,5 +1,5 @@
 /*
- Milyn - Copyright (C) 2006
+Ò Milyn - Copyright (C) 2006
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,8 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.event.types.ConfigBuilderEvent;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.ordering.Consumer;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * Content delivery configuration.
@@ -119,4 +121,19 @@ public interface ContentDeliveryConfig {
      * @see #SMOOKS_VISITORS_SORT
      */
     public void sort() throws SmooksConfigurationException;
+    
+    /**
+     * Get an {@link XMLReader} instance from the 
+     * reader pool associated with this ContentDelivery config instance.
+     * @return An XMLReader instance if the pool is not empty, otherwise null.
+     */
+    public XMLReader getXMLReader() throws SAXException;
+    
+    /**
+     * Return an {@link XMLReader} instance to the
+     * reader pool associated with this ContentDelivery config instance.
+     * @param reader The XMLReader instance to be returned.  If the pool is full, the instance
+     * is left to the GC (i.e. lost).
+     */
+    public void returnXMLReader(XMLReader reader);
 }

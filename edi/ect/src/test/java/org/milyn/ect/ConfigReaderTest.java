@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Edimap;
-import org.milyn.edisax.model.internal.SegmentGroup;
 import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.EDIConfigurationException;
 import org.xml.sax.SAXException;
