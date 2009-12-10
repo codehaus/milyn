@@ -241,129 +241,135 @@ public class JSONReader implements SmooksXMLReader {
             throw new IllegalStateException("Smooks container 'executionContext' not set.  Cannot parse JSON stream.");
         }
 
-		// Get a reader for the JSON source...
-        Reader jsonStreamReader = csvInputSource.getCharacterStream();
-        if(jsonStreamReader == null) {
-            jsonStreamReader = new InputStreamReader(csvInputSource.getByteStream(), encoding);
-        }
-
-        // Create the JSON parser...
-        JsonParser jp = null;
         try {
-
-        	if(logger.isTraceEnabled()) {
-        		logger.trace("Creating JSON parser");
-        	}
-
-        	jp = jsonFactory.createJsonParser(jsonStreamReader);
-
-	        // Start the document and add the root "csv-set" element...
-	        contentHandler.startDocument();
-	        startElement(rootName, 0);
-
-	        if(logger.isTraceEnabled()) {
-	        	logger.trace("Starting JSON parsing");
+			// Get a reader for the JSON source...
+	        Reader jsonStreamReader = csvInputSource.getCharacterStream();
+	        if(jsonStreamReader == null) {
+	            jsonStreamReader = new InputStreamReader(csvInputSource.getByteStream(), encoding);
 	        }
-
-	        boolean first = true;
-	        Stack<String> elementStack = new Stack<String>();
-	        Stack<Type> typeStack = new Stack<Type>();
-	        JsonToken t;
-	        while ((t = jp.nextToken()) != null) {
-
+	
+	        // Create the JSON parser...
+	        JsonParser jp = null;
+	        try {
+	
 	        	if(logger.isTraceEnabled()) {
-	        		logger.trace("Token: " + t.name());
+	        		logger.trace("Creating JSON parser");
 	        	}
-
-	        	switch(t) {
-
-	        	case START_OBJECT:
-	        	case START_ARRAY:
-	        		if(!first) {
-		        		if(!typeStack.empty() && typeStack.peek() == Type.ARRAY) {
+	
+	        	jp = jsonFactory.createJsonParser(jsonStreamReader);
+	
+		        // Start the document and add the root "csv-set" element...
+		        contentHandler.startDocument();
+		        startElement(rootName, 0);
+	
+		        if(logger.isTraceEnabled()) {
+		        	logger.trace("Starting JSON parsing");
+		        }
+	
+		        boolean first = true;
+		        Stack<String> elementStack = new Stack<String>();
+		        Stack<Type> typeStack = new Stack<Type>();
+		        JsonToken t;
+		        while ((t = jp.nextToken()) != null) {
+	
+		        	if(logger.isTraceEnabled()) {
+		        		logger.trace("Token: " + t.name());
+		        	}
+	
+		        	switch(t) {
+	
+		        	case START_OBJECT:
+		        	case START_ARRAY:
+		        		if(!first) {
+			        		if(!typeStack.empty() && typeStack.peek() == Type.ARRAY) {
+			        			startElement(arrayElementName, typeStack.size());
+			        		}
+		        		}
+		        		typeStack.push(t == JsonToken.START_ARRAY ? Type.ARRAY : Type.OBJECT);
+		        		break;
+	
+		        	case END_OBJECT:
+		        	case END_ARRAY:
+	
+		        		typeStack.pop();
+	
+		        		boolean typeStackPeekIsArray = !typeStack.empty() && typeStack.peek() == Type.ARRAY;
+	
+		        		if(!elementStack.empty() && !typeStackPeekIsArray) {
+		        			endElement(elementStack.pop(), typeStack.size());
+		        		}
+	
+	
+		        		if(typeStackPeekIsArray) {
+		        			endElement(arrayElementName, typeStack.size());
+		        		}
+		        		break;
+	
+		        	case FIELD_NAME:
+	
+		        		String text = jp.getText();
+	
+		        		if(logger.isTraceEnabled()) {
+			        		logger.trace("Field name: " + text);
+			        	}
+	
+		        		String name = getElementName(text);
+	
+	        			startElement(name, typeStack.size());
+	        			elementStack.add(name);
+	
+	
+		        		break;
+	
+		        	default:
+	
+		        		String value;
+	
+		        		if(t == JsonToken.VALUE_NULL) {
+		        			value = nullValueReplacement;
+		        		} else {
+		        			value = jp.getText();
+		        		}
+	
+		        		if(typeStack.peek() == Type.ARRAY) {
+	
 		        			startElement(arrayElementName, typeStack.size());
 		        		}
-	        		}
-	        		typeStack.push(t == JsonToken.START_ARRAY ? Type.ARRAY : Type.OBJECT);
-	        		break;
-
-	        	case END_OBJECT:
-	        	case END_ARRAY:
-
-	        		typeStack.pop();
-
-	        		boolean typeStackPeekIsArray = !typeStack.empty() && typeStack.peek() == Type.ARRAY;
-
-	        		if(!elementStack.empty() && !typeStackPeekIsArray) {
-	        			endElement(elementStack.pop(), typeStack.size());
-	        		}
-
-
-	        		if(typeStackPeekIsArray) {
-	        			endElement(arrayElementName, typeStack.size());
-	        		}
-	        		break;
-
-	        	case FIELD_NAME:
-
-	        		String text = jp.getText();
-
-	        		if(logger.isTraceEnabled()) {
-		        		logger.trace("Field name: " + text);
+	
+		        		contentHandler.characters(value.toCharArray(), 0, value.length());
+	
+		        		if(typeStack.peek() == Type.ARRAY) {
+	
+		        			endElement(arrayElementName);
+	
+		        		} else {
+	
+			        		endElement(elementStack.pop());
+	
+		        		}
+	
+		        		break;
+	
+	
 		        	}
-
-	        		String name = getElementName(text);
-
-        			startElement(name, typeStack.size());
-        			elementStack.add(name);
-
-
-	        		break;
-
-	        	default:
-
-	        		String value;
-
-	        		if(t == JsonToken.VALUE_NULL) {
-	        			value = nullValueReplacement;
-	        		} else {
-	        			value = jp.getText();
-	        		}
-
-	        		if(typeStack.peek() == Type.ARRAY) {
-
-	        			startElement(arrayElementName, typeStack.size());
-	        		}
-
-	        		contentHandler.characters(value.toCharArray(), 0, value.length());
-
-	        		if(typeStack.peek() == Type.ARRAY) {
-
-	        			endElement(arrayElementName);
-
-	        		} else {
-
-		        		endElement(elementStack.pop());
-
-	        		}
-
-	        		break;
-
-
-	        	}
-
-	        	first = false;
+	
+		        	first = false;
+		        }
+		        endElement(rootName, 0);
+		        contentHandler.endDocument();
+	        } finally {
+	
+	        	try {
+	        		jp.close();
+	        	} catch (Exception e) {
+				}
+	
+	
 	        }
-	        endElement(rootName, 0);
-	        contentHandler.endDocument();
         } finally {
-
-        	try {
-        		jp.close();
-        	} catch (Exception e) {
-			}
-
-
+        	// These properties need to be reset for every execution (e.g. when reader is pooled).
+        	contentHandler = null;
+        	executionContext = null;
         }
 	}
 
