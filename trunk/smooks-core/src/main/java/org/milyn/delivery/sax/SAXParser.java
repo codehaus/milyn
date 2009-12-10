@@ -51,8 +51,9 @@ public class SAXParser extends AbstractParser {
         saxReader = deliveryConfig.getXMLReader();
         try {
 	        if(saxReader == null) {
-	        	saxReader = createXMLReader(saxHandler);
+	        	saxReader = createXMLReader();
 	        }
+	        configureReader(saxReader, saxHandler, executionContext, source);
 	        saxReader.parse(createInputSource(saxReader, source, executionContext));
         } finally {
 	        if(saxReader != null) {

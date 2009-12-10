@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.ProfileTargetingExpression;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
@@ -82,10 +83,11 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
 	 */
     @Config
     private SmooksResourceConfiguration configuration;
-	/**
-	 * The Smooks container request.
-	 */
-	private ExecutionContext executionContext;
+    /**
+     * Application context.
+     */
+    @AppContext
+    private ApplicationContext applicationContext;
 
     @ConfigParam(name = MODEL_CONFIG_KEY)
     private String modelConfigData;
@@ -97,8 +99,6 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
     private Boolean validate;
 
     public void setExecutionContext(ExecutionContext executionContext) {
-		AssertArgument.isNotNull(executionContext, "executionContext");
-		this.executionContext = executionContext;
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
 	 */
 	private EdifactModel getMappingModel() throws IOException, SAXException {
         EdifactModel edifactModel;
-        Hashtable mappings = getMappingTable(executionContext.getContext());
+        Hashtable mappings = getMappingTable(applicationContext);
 
 		synchronized (configuration) {
             edifactModel = (EdifactModel) mappings.get(configuration);

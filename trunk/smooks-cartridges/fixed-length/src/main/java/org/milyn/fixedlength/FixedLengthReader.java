@@ -167,7 +167,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
     private static char[] INDENT_2  = new char[] {'\t', '\t'};
 
     private ContentHandler contentHandler;
-	private ExecutionContext request;
+	private ExecutionContext execContext;
 
     @ConfigParam(name = "fields")
     private String[] flFields;
@@ -269,7 +269,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
 	 */
 	public void setExecutionContext(ExecutionContext request) {
-		this.request = request;
+		this.execContext = request;
 	}
 
 	@Initialize
@@ -285,130 +285,135 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
         if(contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse Fixed Length stream.");
         }
-        if(request == null) {
-            throw new IllegalStateException("Smooks container 'request' not set.  Cannot parse Fixed Length stream.");
+        if(execContext == null) {
+            throw new IllegalStateException("'execContext' not set.  Cannot parse Fixed Length stream.");
         }
 
-        Reader flStreamReader;
-		BufferedReader flLineReader;
-        String flRecord;
-        int lineNumber = 0;
-
-		// Get a reader for the Fixed Length source...
-        flStreamReader = flInputSource.getCharacterStream();
-        if(flStreamReader == null) {
-            flStreamReader = new InputStreamReader(flInputSource.getByteStream(), encoding);
+        try {
+	        Reader flStreamReader;
+			BufferedReader flLineReader;
+	        String flRecord;
+	        int lineNumber = 0;
+	
+			// Get a reader for the Fixed Length source...
+	        flStreamReader = flInputSource.getCharacterStream();
+	        if(flStreamReader == null) {
+	            flStreamReader = new InputStreamReader(flInputSource.getByteStream(), encoding);
+	        }
+	
+	        // Create the Fixed Length line reader...
+	        flLineReader = new BufferedReader(flStreamReader);
+	
+	        // Start the document and add the root element...
+	        contentHandler.startDocument();
+	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY, EMPTY_ATTRIBS);
+	
+	        // Output each of the Fixed Length line entries...
+	        while ((flRecord = flLineReader.readLine()) != null) {
+	        	lineNumber++; // First line is line "1"
+	
+	        	if (lineNumber <= this.skipLines) {
+	        		continue;
+	        	}
+	        	boolean invalidLength = flRecord.length() < totalFieldLenght;
+	        	if(invalidLength && strict) {
+	        		if(logger.isWarnEnabled()) {
+	            		logger.warn("[WARNING-FIXEDLENGTH] Fixed Length line #" + lineNumber + " is invalid.  The line doesn't contain enough characters to fill all the fields. This line is skipped.");
+	            	}
+	        		continue;
+	        	}
+	
+	        	char[] recordChars = flRecord.toCharArray();
+	
+	        	if(indent) {
+	                contentHandler.characters(INDENT_LF, 0, 1);
+	                contentHandler.characters(INDENT_1, 0, 1);
+	            }
+	
+	            AttributesImpl attrs = EMPTY_ATTRIBS;
+	            // Add a lineNumber ID
+	            if (this.lineNumber || invalidLength) {
+	            	attrs = new AttributesImpl();
+	            	if(this.lineNumber) {
+	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, lineNumberAttributeName, "xs:int", Integer.toString(lineNumber));
+	            	}
+	            	if(invalidLength) {
+	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
+	            	}
+	            }
+	
+	            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
+	
+	            // Loops through fields
+	            int fieldLengthTotal = 0;
+	        	for(int i = 0; i < flFields.length; i++) {
+	           		// Field name local to the loop
+	                String fieldName = fields[i].getName();
+	                // Field length local to the loop
+	                int fieldLength = fields[i].getLength();
+	
+	                StringFunctionExecutor stringFunctionExecutor = fields[i].getStringFunctionExecutor();
+	
+	                if(!fields[i].ignore()) {
+	                	if(indent) {
+	                        contentHandler.characters(INDENT_LF, 0, 1);
+	                        contentHandler.characters(INDENT_2, 0, 2);
+	                    }
+	
+	                	// Check that there are enough characters in the string
+	                	boolean truncated = fieldLengthTotal + fieldLength > flRecord.length();
+	
+	                	AttributesImpl recordAttrs = EMPTY_ATTRIBS;
+	
+	                	//If truncated then set the truncated attribute
+	                	if(truncated) {
+	                		recordAttrs = new AttributesImpl();
+	                        recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
+	                	}
+	
+	                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, recordAttrs);
+	
+	                    // If not truncated then set the element data
+	                    if(!truncated) {
+	                    	if(stringFunctionExecutor == null) {
+	                    		contentHandler.characters(recordChars, fieldLengthTotal, fieldLength);
+	                    	} else {
+	                    		String value = flRecord.substring(fieldLengthTotal, fieldLengthTotal + fieldLength);
+	
+	                    		value = stringFunctionExecutor.execute(value);
+	
+	                    		contentHandler.characters(value.toCharArray(), 0, value.length());
+	                    	}
+	            		}
+	
+	                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
+	        		}
+	
+	                fieldLengthTotal += fieldLength;
+	        	}
+	
+	        	if(indent) {
+	                contentHandler.characters(INDENT_LF, 0, 1);
+	                contentHandler.characters(INDENT_1, 0, 1);
+	            }
+	
+	            contentHandler.endElement(null, recordElementName, StringUtils.EMPTY);
+	
+	
+	        }
+	
+	        if(indent) {
+	            contentHandler.characters(INDENT_LF, 0, 1);
+	        }
+	
+	        // Close out the "fixedlength-set" root element and end the document..
+	        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY);
+	        contentHandler.endDocument();
+        } finally {
+        	// These properties need to be reset for every execution (e.g. when reader is pooled).
+        	contentHandler = null;
+        	execContext = null;
         }
-
-        // Create the Fixed Length line reader...
-        flLineReader = new BufferedReader(flStreamReader);
-
-        // Start the document and add the root element...
-        contentHandler.startDocument();
-        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY, EMPTY_ATTRIBS);
-
-        // Output each of the Fixed Length line entries...
-        while ((flRecord = flLineReader.readLine()) != null) {
-        	lineNumber++; // First line is line "1"
-
-        	if (lineNumber <= this.skipLines) {
-        		continue;
-        	}
-        	boolean invalidLength = flRecord.length() < totalFieldLenght;
-        	if(invalidLength && strict) {
-        		if(logger.isWarnEnabled()) {
-            		logger.warn("[WARNING-FIXEDLENGTH] Fixed Length line #" + lineNumber + " is invalid.  The line doesn't contain enough characters to fill all the fields. This line is skipped.");
-            	}
-        		continue;
-        	}
-
-        	char[] recordChars = flRecord.toCharArray();
-
-        	if(indent) {
-                contentHandler.characters(INDENT_LF, 0, 1);
-                contentHandler.characters(INDENT_1, 0, 1);
-            }
-
-            AttributesImpl attrs = EMPTY_ATTRIBS;
-            // Add a lineNumber ID
-            if (this.lineNumber || invalidLength) {
-            	attrs = new AttributesImpl();
-            	if(this.lineNumber) {
-            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, lineNumberAttributeName, "xs:int", Integer.toString(lineNumber));
-            	}
-            	if(invalidLength) {
-            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
-            	}
-            }
-
-            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
-
-            // Loops through fields
-            int fieldLengthTotal = 0;
-        	for(int i = 0; i < flFields.length; i++) {
-           		// Field name local to the loop
-                String fieldName = fields[i].getName();
-                // Field length local to the loop
-                int fieldLength = fields[i].getLength();
-
-                StringFunctionExecutor stringFunctionExecutor = fields[i].getStringFunctionExecutor();
-
-                if(!fields[i].ignore()) {
-                	if(indent) {
-                        contentHandler.characters(INDENT_LF, 0, 1);
-                        contentHandler.characters(INDENT_2, 0, 2);
-                    }
-
-                	// Check that there are enough characters in the string
-                	boolean truncated = fieldLengthTotal + fieldLength > flRecord.length();
-
-                	AttributesImpl recordAttrs = EMPTY_ATTRIBS;
-
-                	//If truncated then set the truncated attribute
-                	if(truncated) {
-                		recordAttrs = new AttributesImpl();
-                        recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
-                	}
-
-                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, recordAttrs);
-
-                    // If not truncated then set the element data
-                    if(!truncated) {
-                    	if(stringFunctionExecutor == null) {
-                    		contentHandler.characters(recordChars, fieldLengthTotal, fieldLength);
-                    	} else {
-                    		String value = flRecord.substring(fieldLengthTotal, fieldLengthTotal + fieldLength);
-
-                    		value = stringFunctionExecutor.execute(value);
-
-                    		contentHandler.characters(value.toCharArray(), 0, value.length());
-                    	}
-            		}
-
-                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
-        		}
-
-                fieldLengthTotal += fieldLength;
-        	}
-
-        	if(indent) {
-                contentHandler.characters(INDENT_LF, 0, 1);
-                contentHandler.characters(INDENT_1, 0, 1);
-            }
-
-            contentHandler.endElement(null, recordElementName, StringUtils.EMPTY);
-
-
-        }
-
-        if(indent) {
-            contentHandler.characters(INDENT_LF, 0, 1);
-        }
-
-        // Close out the "fixedlength-set" root element and end the document..
-        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY);
-        contentHandler.endDocument();
-
 	}
 
     public void setContentHandler(ContentHandler contentHandler) {

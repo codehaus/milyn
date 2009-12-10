@@ -126,8 +126,9 @@ public class DOMParser extends AbstractParser {
 	  		
 	  		try {
 	  			if(domReader == null) {
-	  				domReader = createXMLReader(contentHandler);
+	  				domReader = createXMLReader();
 	  			}	        
+		        configureReader(domReader, contentHandler, executionContext, source);
 		        domReader.parse(createInputSource(domReader, source, getExecContext()));
 	  		} finally {
 	  			if(domReader != null) {
@@ -135,7 +136,8 @@ public class DOMParser extends AbstractParser {
 	  			}
 	  		}
   		} else {
-	  		XMLReader domReader = createXMLReader(contentHandler);
+	  		XMLReader domReader = createXMLReader();
+	        configureReader(domReader, contentHandler, executionContext, source);
 	        domReader.parse(createInputSource(domReader, source, getExecContext()));
   		}
   	}
