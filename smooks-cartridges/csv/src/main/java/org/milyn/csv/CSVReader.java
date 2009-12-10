@@ -162,7 +162,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     private static String RECORD_TRUNCATED_ATTR = "truncated";
 
     private ContentHandler contentHandler;
-	private ExecutionContext request;
+	private ExecutionContext execContext;
 
     @ConfigParam(name = "fields")
     private String[] csvFields;
@@ -282,7 +282,7 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
 	 */
 	public void setExecutionContext(ExecutionContext request) {
-		this.request = request;
+		this.execContext = request;
 	}
 
 	/* (non-Javadoc)
@@ -292,106 +292,112 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         if(contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse CSV stream.");
         }
-        if(request == null) {
-            throw new IllegalStateException("Smooks container 'request' not set.  Cannot parse CSV stream.");
+        if(execContext == null) {
+            throw new IllegalStateException("'execContext' not set.  Cannot parse CSV stream.");
         }
 
-		Reader csvStreamReader;
-		au.com.bytecode.opencsv.CSVReader csvLineReader;
-        String[] csvRecord;
-
-		// Get a reader for the CSV source...
-        csvStreamReader = csvInputSource.getCharacterStream();
-        if(csvStreamReader == null) {
-            csvStreamReader = new InputStreamReader(csvInputSource.getByteStream(), encoding);
+        try {
+			Reader csvStreamReader;
+			au.com.bytecode.opencsv.CSVReader csvLineReader;
+	        String[] csvRecord;
+	
+			// Get a reader for the CSV source...
+	        csvStreamReader = csvInputSource.getCharacterStream();
+	        if(csvStreamReader == null) {
+	            csvStreamReader = new InputStreamReader(csvInputSource.getByteStream(), encoding);
+	        }
+	
+	        // Create the CSV line reader...
+	        csvLineReader = new au.com.bytecode.opencsv.CSVReader(csvStreamReader, separator, quoteChar, skipLines);
+	
+	        // Start the document and add the root "csv-set" element...
+	        contentHandler.startDocument();
+	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY, EMPTY_ATTRIBS);
+	
+	        // Output each of the CVS line entries...
+	        int lineNumber = 0;
+	        int expectedCount = getExpectedColumnsCount();
+	
+	        while ((csvRecord = csvLineReader.readNext()) != null) {
+	        	lineNumber++; // First line is line "1"
+	
+	        	if(csvRecord.length < expectedCount && strict) {
+	        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain number of items at least as in CSV config file " + csvFields.length + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
+	        		continue;
+	        	}
+	
+	            if(indent) {
+	                contentHandler.characters(INDENT_LF, 0, 1);
+	                contentHandler.characters(INDENT_1, 0, 1);
+	            }
+	
+	            AttributesImpl attrs = new AttributesImpl();
+	            // If we reached here it means that this line has to be in the sax stream
+	            // hence we first add the record number attribute on the csv-record element
+	    		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_NUMBER_ATTR, "xs:int", Integer.toString(lineNumber));
+	            // if this line is truncated, we add the truncated attribute onto the csv-record element
+	            if (csvRecord.length < expectedCount)
+	            	attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
+	            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
+	        	int recordIt = 0;
+	            for(Field field : fields) {
+	                String fieldName = field.getName();
+	
+	                if(field.ignore()) {
+	                	int toSkip = parseIgnoreFieldDirective(fieldName);
+	                	if(toSkip == Integer.MAX_VALUE){
+	                		break;
+	                	}
+	                	recordIt += toSkip;
+	                	continue;
+	                }
+	
+	                if(indent) {
+	                    contentHandler.characters(INDENT_LF, 0, 1);
+	                    contentHandler.characters(INDENT_2, 0, 2);
+	                }
+	
+	                // Don't insert the element if the csv record does not contain it!!
+	                if (recordIt < csvRecord.length) {
+	                	String value = csvRecord[recordIt];
+	
+	                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, EMPTY_ATTRIBS);
+	
+	                    StringFunctionExecutor stringFunctionExecutor = field.getStringFunctionExecutor();
+	                    if(stringFunctionExecutor != null) {
+	                    	value = stringFunctionExecutor.execute(value);
+	                    }
+	
+	                    contentHandler.characters(value.toCharArray(), 0, value.length());
+	                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
+	                }
+	
+	                if(indent) {
+	                }
+	
+	                recordIt++;
+	            }
+	
+	            if(indent) {
+	                contentHandler.characters(INDENT_LF, 0, 1);
+	                contentHandler.characters(INDENT_1, 0, 1);
+	            }
+	
+	            contentHandler.endElement(null, recordElementName, StringUtils.EMPTY);
+	        }
+	
+	        if(indent) {
+	            contentHandler.characters(INDENT_LF, 0, 1);
+	        }
+	
+	        // Close out the "csv-set" root element and end the document..
+	        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY);
+	        contentHandler.endDocument();
+        } finally {
+        	// These properties need to be reset for every execution (e.g. when reader is pooled).
+        	contentHandler = null;
+        	execContext = null;
         }
-
-        // Create the CSV line reader...
-        csvLineReader = new au.com.bytecode.opencsv.CSVReader(csvStreamReader, separator, quoteChar, skipLines);
-
-        // Start the document and add the root "csv-set" element...
-        contentHandler.startDocument();
-        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY, EMPTY_ATTRIBS);
-
-        // Output each of the CVS line entries...
-        int lineNumber = 0;
-        int expectedCount = getExpectedColumnsCount();
-
-        while ((csvRecord = csvLineReader.readNext()) != null) {
-        	lineNumber++; // First line is line "1"
-
-        	if(csvRecord.length < expectedCount && strict) {
-        		logger.warn("[CORRUPT-CSV] CSV line #" + lineNumber + " invalid [" + Arrays.asList(csvRecord) + "].  The line should contain number of items at least as in CSV config file " + csvFields.length + " fields [" + csvFields + "], but contains " + csvRecord.length + " fields.  Ignoring!!");
-        		continue;
-        	}
-
-            if(indent) {
-                contentHandler.characters(INDENT_LF, 0, 1);
-                contentHandler.characters(INDENT_1, 0, 1);
-            }
-
-            AttributesImpl attrs = new AttributesImpl();
-            // If we reached here it means that this line has to be in the sax stream
-            // hence we first add the record number attribute on the csv-record element
-    		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_NUMBER_ATTR, "xs:int", Integer.toString(lineNumber));
-            // if this line is truncated, we add the truncated attribute onto the csv-record element
-            if (csvRecord.length < expectedCount)
-            	attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
-            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
-        	int recordIt = 0;
-            for(Field field : fields) {
-                String fieldName = field.getName();
-
-                if(field.ignore()) {
-                	int toSkip = parseIgnoreFieldDirective(fieldName);
-                	if(toSkip == Integer.MAX_VALUE){
-                		break;
-                	}
-                	recordIt += toSkip;
-                	continue;
-                }
-
-                if(indent) {
-                    contentHandler.characters(INDENT_LF, 0, 1);
-                    contentHandler.characters(INDENT_2, 0, 2);
-                }
-
-                // Don't insert the element if the csv record does not contain it!!
-                if (recordIt < csvRecord.length) {
-                	String value = csvRecord[recordIt];
-
-                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, EMPTY_ATTRIBS);
-
-                    StringFunctionExecutor stringFunctionExecutor = field.getStringFunctionExecutor();
-                    if(stringFunctionExecutor != null) {
-                    	value = stringFunctionExecutor.execute(value);
-                    }
-
-                    contentHandler.characters(value.toCharArray(), 0, value.length());
-                    contentHandler.endElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY);
-                }
-
-                if(indent) {
-                }
-
-                recordIt++;
-            }
-
-            if(indent) {
-                contentHandler.characters(INDENT_LF, 0, 1);
-                contentHandler.characters(INDENT_1, 0, 1);
-            }
-
-            contentHandler.endElement(null, recordElementName, StringUtils.EMPTY);
-        }
-
-        if(indent) {
-            contentHandler.characters(INDENT_LF, 0, 1);
-        }
-
-        // Close out the "csv-set" root element and end the document..
-        contentHandler.endElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY);
-        contentHandler.endDocument();
 	}
 
     private int parseIgnoreFieldDirective(String field) {

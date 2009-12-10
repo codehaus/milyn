@@ -184,8 +184,7 @@ public class AbstractParser {
         }
     }
 
-
-    protected XMLReader createXMLReader(DefaultHandler2 handler) throws SAXException {
+    protected XMLReader createXMLReader() throws SAXException {
         XMLReader reader;
         ExecutionContext execContext = getExecContext();
         Source source = FilterSource.getSource(execContext);
@@ -214,9 +213,24 @@ public class AbstractParser {
         }
 
         if (reader instanceof SmooksXMLReader) {
-            if (saxDriverConfig != null) {
-                Configurator.configure((SmooksXMLReader) reader, saxDriverConfig, execContext.getContext());
-            }
+        	if(saxDriverConfig != null) {
+        		Configurator.configure(reader, saxDriverConfig, execContext.getContext());
+        	} else {
+        		Configurator.initialise(reader);
+        	}
+        }
+
+        reader.setFeature("http://xml.org/sax/features/namespaces", true);
+        reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
+
+        setHandlers(reader);
+        setFeatures(reader);
+
+        return reader;
+    }
+
+	protected void configureReader(XMLReader reader, DefaultHandler2 handler, ExecutionContext execContext, Source source) throws SAXException {
+		if (reader instanceof SmooksXMLReader) {
             ((SmooksXMLReader) reader).setExecutionContext(execContext);
         }
 
@@ -228,19 +242,13 @@ public class AbstractParser {
         }
 
         reader.setContentHandler(handler);
+
         try {
             reader.setProperty("http://xml.org/sax/properties/lexical-handler", handler);
         } catch (SAXNotRecognizedException e) {
             logger.debug("XMLReader property 'http://xml.org/sax/properties/lexical-handler' not recognized by XMLReader '" + reader.getClass().getName() + "'.");
         }
-        reader.setFeature("http://xml.org/sax/features/namespaces", true);
-        reader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-
-        setHandlers(reader);
-        setFeatures(reader);
-
-        return reader;
-    }
+	}
 
     private void setHandlers(XMLReader reader) throws SAXException {
         if (saxDriverConfig != null) {

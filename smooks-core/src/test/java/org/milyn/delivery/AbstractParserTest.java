@@ -15,9 +15,16 @@
 */
 package org.milyn.delivery;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
+
+import org.apache.xerces.parsers.SAXParser;
 import org.milyn.container.ExecutionContext;
+import org.milyn.payload.StringSource;
+import org.milyn.FilterSettings;
+import org.milyn.GenericReaderConfigurator;
 import org.milyn.Smooks;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.DefaultHandler2;
 
@@ -33,8 +40,9 @@ public class AbstractParserTest extends TestCase {
         ExecutionContext execContext = smooks.createExecutionContext();
 
         TestParser parser = new TestParser(execContext);
-        TestXMLReader reader = (TestXMLReader) parser.createXMLReader(new DefaultHandler2());
+        TestXMLReader reader = (TestXMLReader) parser.createXMLReader();
 
+        parser.configureReader(reader, new DefaultHandler2(), execContext, null);
         assertEquals(7, reader.features.size());
         assertTrue(reader.features.get("feature-on-1"));
         assertTrue(reader.features.get("feature-on-2"));
@@ -45,11 +53,75 @@ public class AbstractParserTest extends TestCase {
         assertNotNull(reader.entityResolver);
         assertNotNull(reader.errorHandler);
     }
+    
+    public void test_readerPool_Pooled() {
+    	Smooks smooks = new Smooks();
+    	
+    	smooks.setReaderConfig(new GenericReaderConfigurator(PooledSAXParser.class));
+    	smooks.setFilterSettings(FilterSettings.newSAXSettings().setReaderPoolSize(1));
+    	
+    	PooledSAXParser.numSetHandlerCalls = 0;
+    	smooks.filterSource(new StringSource("<x/>"));
+    	smooks.filterSource(new StringSource("<x/>"));
+    	smooks.filterSource(new StringSource("<x/>"));    	
+    	assertEquals(3, PooledSAXParser.numSetHandlerCalls);
+    }
+    
+    public void test_readerPool_Unpooled() {
+    	Smooks smooks = new Smooks();
+    	
+    	smooks.setReaderConfig(new GenericReaderConfigurator(UnpooledSAXParser.class));
+    	smooks.setFilterSettings(FilterSettings.newSAXSettings().setReaderPoolSize(1));
+    	
+    	UnpooledSAXParser.numSetHandlerCalls = 0;
+    	smooks.filterSource(new StringSource("<x/>"));
+    	smooks.filterSource(new StringSource("<x/>"));
+    	smooks.filterSource(new StringSource("<x/>"));    	
+    	assertEquals(3, UnpooledSAXParser.numSetHandlerCalls);
+    }
 
     private class TestParser extends AbstractParser {
         public TestParser(ExecutionContext execContext) {
             super(execContext);
         }
     }
-
+    
+    public static class PooledSAXParser extends SAXParser {
+    	
+    	public static int numSetHandlerCalls = 0;
+    	public static PooledSAXParser lastParserInstance;
+    	public static ContentHandler lastHandlerInstance;
+    	
+		public void setContentHandler(ContentHandler handler) {
+			if(lastParserInstance == null) {
+				lastParserInstance = this;
+			}
+			if(this != lastParserInstance) {
+				Assert.fail("Should only be 1 parser instanse (pooled).");
+			}
+			if(handler == lastHandlerInstance) {
+				Assert.fail("Shouldn't be just 1 handler instanse (pooled or unpooled).");
+			}
+			numSetHandlerCalls++;
+			super.setContentHandler(handler);
+		}    	
+    }
+    
+    public static class UnpooledSAXParser extends SAXParser {
+    	
+    	public static int numSetHandlerCalls = 0;
+    	public static UnpooledSAXParser lastParserInstance;
+    	public static ContentHandler lastHandlerInstance;
+    	
+		public void setContentHandler(ContentHandler handler) {
+			if(this == lastParserInstance) {
+				Assert.fail("Shouldn't be just 1 parser instanse (unpooled).");
+			}
+			if(handler == lastHandlerInstance) {
+				Assert.fail("Shouldn't be just 1 handler instanse (pooled or unpooled).");
+			}
+			numSetHandlerCalls++;
+			super.setContentHandler(handler);
+		}    	
+    }
 }
