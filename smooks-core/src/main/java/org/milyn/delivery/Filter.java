@@ -79,7 +79,7 @@ public abstract class Filter {
 
     public static final String TERMINATE_ON_VISITOR_EXCEPTION = "terminate.on.visitor.exception";
 
-    public static final String XML_READER_POOL_SIZE = "xmlreader.pool.size";
+    public static final String READER_POOL_SIZE = "reader.pool.size";
 
     /**
      * Filter the content in the supplied {@link javax.xml.transform.Source} instance, outputing the result

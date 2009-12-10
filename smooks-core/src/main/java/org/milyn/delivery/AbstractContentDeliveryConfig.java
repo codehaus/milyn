@@ -156,7 +156,7 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
     
     public void initializeXMLReaderPool() {
     	try {
-	        readerPoolSize = Integer.parseInt(ParameterAccessor.getStringParameter(Filter.XML_READER_POOL_SIZE, "0", this).trim());
+	        readerPoolSize = Integer.parseInt(ParameterAccessor.getStringParameter(Filter.READER_POOL_SIZE, "0", this).trim());
     	} catch(NumberFormatException e) {
     		readerPoolSize = 0;
     	}
