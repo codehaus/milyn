@@ -40,10 +40,13 @@ import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
 import org.jaxen.saxpath.SAXPathException;
 
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -126,6 +129,10 @@ public class Smooks {
      */
     public Smooks(String resourceURI) throws IOException, SAXException {
         this();
+        URIResourceLocator resourceLocator = new URIResourceLocator();
+        
+        resourceLocator.setBaseURI(URIResourceLocator.extractBaseURI(resourceURI));
+        context.setResourceLocator(resourceLocator);
         addConfigurations(resourceURI);
     }
 
@@ -144,6 +151,7 @@ public class Smooks {
      */
     public Smooks(InputStream resourceConfigStream) throws IOException, SAXException {
         this();
+        context.setResourceLocator(new URIResourceLocator());
         addConfigurations(resourceConfigStream);
     }
 

@@ -177,6 +177,35 @@ public class URIResourceLocator implements ContainerResourceLocator {
 		}
 	}
 
+    /**
+     * Get the base URI for this locator instance.
+     * @return The base URI for the locator instance.
+     */
+    public URI getBaseURI() {
+    	return baseURI;
+    }
+    
+    /**
+     * Extract the base URI from the supplied resource URI.
+     * @param resourceURI The resource URI.
+     * @return The base URI for the supplied resource URI.
+     */
+    public static URI extractBaseURI(String resourceURI) {
+        URI uri = URI.create(resourceURI);
+		File resFile = new File(uri.getPath());
+        
+        try {
+        	File configFolder = resFile.getParentFile();
+        	if(configFolder != null) {
+        		return new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), configFolder.getPath(), uri.getQuery(), uri.getFragment());
+        	}
+		} catch (URISyntaxException e) {
+			logger.warn("Error extracting base URI.", e);
+		}
+    	
+		return URI.create("./");
+    }
+
     private static class ResolvedURI {
         private String inputURI;
         private URI resolvedURI;
