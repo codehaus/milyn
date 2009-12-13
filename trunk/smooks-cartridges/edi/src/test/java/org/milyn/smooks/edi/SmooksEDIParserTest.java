@@ -74,7 +74,7 @@ public class SmooksEDIParserTest extends TestCase {
 			test("http://nothing/there.xml");
 			fail("Expected IllegalStateException.");
 		} catch(SmooksException e) {
-			assertEquals("Invalid EDI mapping model config specified for org.milyn.smooks.edi.EDIReader.  Unable to access URI based mapping model [http://nothing/there.xml].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getCause().getMessage());
+			assertEquals("Invalid EDI mapping model config specified for org.milyn.edisax.EDIParser.  Unable to access URI based mapping model [http://nothing/there.xml].", e.getCause().getMessage());
 		}
 
 		// Mandatory "mapping-model" config param is not a valid URI, nor is it a valid inlined config...

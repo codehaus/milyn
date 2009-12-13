@@ -16,17 +16,30 @@
 
 package org.milyn.edisax.model.internal;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Edimap {
 
+	private URI src;
     private List<Import> imports;
     private Description description;
     private Delimiters delimiters;
     private SegmentGroup segments;
 
-    public List<Import> getImport() {
+    public Edimap() {    	
+    }
+    
+    public Edimap(URI src) {
+    	this.src = src;
+    }
+    
+    public URI getSrc() {
+    	return src;
+    }
+    
+    public List<Import> getImports() {
         if (imports == null) {
             imports = new ArrayList<Import>();
         }
@@ -57,4 +70,10 @@ public class Edimap {
         this.segments = value;
     }
 
+    /**
+     * @deprecated Use {@link #getImports()}.
+     */
+    public List<Import> getImport() {
+    	return getImports();
+    }
 }

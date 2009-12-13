@@ -84,8 +84,8 @@ public class UnEdifactReader {
             messageISR = new InputStreamReader(messageFIS);
             edimap = UnEdifactMessageReader.readMessage(messageISR);
             if (edimap != null) {
-                edimap.getImport().get(0).setResource(definitionResource);
-                edimap.getImport().add(interchangeEnvImport);
+                edimap.getImports().get(0).setResource(definitionResource);
+                edimap.getImports().add(interchangeEnvImport);
             }
         } finally {
             if (messageFIS != null) {

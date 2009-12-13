@@ -16,6 +16,7 @@
 
 package org.milyn.edisax.model;
 
+import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParseException;
 import org.milyn.edisax.model.internal.*;
@@ -24,6 +25,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +38,28 @@ import java.util.Map;
 public class EdifactModel {
 
     private org.milyn.edisax.model.internal.Edimap edimap;
+	private URI modelURI;
+	private URI importBaseURI;
 
     /**
+     * Public default Constructor.
+     */
+    public EdifactModel() {    	
+		this.importBaseURI = URIResourceLocator.getSystemBaseURI();
+    }
+    
+    /**
+     * Public constructor.
+     * @param modelURI The model resource URI.
+     * @param importBaseURI The base URI for loading imports.
+	 */
+	public EdifactModel(URI modelURI, URI importBaseURI) {
+		AssertArgument.isNotNull(importBaseURI, "importBaseURI");
+		this.modelURI = modelURI;
+		this.importBaseURI = importBaseURI;
+	}
+
+	/**
      * Returns the edimap containing the parser logic.
      * @return edi-message-mapping.
      */
@@ -73,8 +95,9 @@ public class EdifactModel {
         //To prevent circular dependency the name/url of all imported urls are stored in a dependency tree.
         //If a name/url already exists in a parent node, we have a circular dependency.
         DependencyTree<String> tree = new DependencyTree<String>();
+        EDIConfigDigester digester = new EDIConfigDigester(modelURI, importBaseURI);
 
-        edimap = EDIConfigDigester.digestConfig(inputStream);
+        edimap = digester.digestEDIConfig(inputStream);
         importFiles(tree.getRoot(), edimap, tree);
     }
 
@@ -91,13 +114,19 @@ public class EdifactModel {
     private void importFiles(Node<String> parent, Edimap edimap, DependencyTree<String> tree) throws SAXException, EDIConfigurationException, IOException {
         Edimap importedEdimap;
         Node<String> child, conflictNode;
-        for (Import imp : edimap.getImport()) {
-            child = new Node<String>(imp.getResource());
+        for (Import imp : edimap.getImports()) {
+            String resource = imp.getResource();
+            
+			child = new Node<String>(resource);
             conflictNode = tree.add(parent, child);
             if ( conflictNode != null ) {
-                throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + imp.getResource() + "] and [" + conflictNode.getValue() + "]");
-            }            
-            importedEdimap = EDIConfigDigester.digestConfig(findUrl(imp.getResource()));
+                throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + resource + "] and [" + conflictNode.getValue() + "]");
+            }
+            
+            URI resourceURI = imp.getResourceURI();
+			EDIConfigDigester digester = new EDIConfigDigester(resourceURI, URIResourceLocator.extractBaseURI(resourceURI));
+            
+            importedEdimap = digester.digestEDIConfig(findUrl(resource));
             importFiles(child, importedEdimap, tree);
             Map<String, Segment> importedSegments = createImportMap(importedEdimap);
 
@@ -206,7 +235,7 @@ public class EdifactModel {
         try {
             inputStream = new URIResourceLocator().getResource(url);
         } catch (IOException e) {
-            throw new EDIParseException(edimap, "Unable to locate resource [" + url + "]", e);
+            throw new EDIParseException(edimap, "Unable to locate EDI Mapping Model [" + url + "]", e);
         }
 
         return inputStream;
