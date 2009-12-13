@@ -16,9 +16,11 @@
 
 package org.milyn.edisax.model;
 
+import org.milyn.resource.URIResourceLocator;
 import org.milyn.xml.XmlUtil;
 import org.milyn.xml.XsdDOMValidator;
 import org.milyn.io.StreamUtils;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDITypeEnum;
 import org.milyn.edisax.model.internal.*;
@@ -30,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
 
@@ -40,11 +43,33 @@ import java.util.*;
  */
 public class EDIConfigDigester {
 
+	private URI modelURI;
+	private URIResourceLocator importLocator;
+
     public static final String XSD_V10 = "http://www.milyn.org/schema/edi-message-mapping-1.0.xsd";
     public static final String XSD_V11 = "http://www.milyn.org/schema/edi-message-mapping-1.1.xsd";
     public static final String XSD_V12 = "http://www.milyn.org/schema/edi-message-mapping-1.2.xsd";
     public static final String XSD_V13 = "http://www.milyn.org/schema/edi-message-mapping-1.3.xsd";
     private static final String NAMESPACE_SUFFIX = ":";
+    
+    /**
+     * Public default Constructor.
+     */
+    public EDIConfigDigester() {    	
+    	importLocator = new URIResourceLocator();
+    }
+    
+    /**
+     * Public constructor.
+     * @param modelURI The model resource URI.
+     * @param importBaseURI The base URI for loading imports.
+	 */
+    public EDIConfigDigester(URI modelURI, URI importBaseURI) {
+		AssertArgument.isNotNull(importBaseURI, "importBaseURI");
+		this.modelURI = modelURI;
+    	importLocator = new URIResourceLocator();
+    	importLocator.setBaseURI(importBaseURI);
+    }
 
     /**
      * Digest the XML edi-message-mapping configuration stream.
@@ -55,6 +80,18 @@ public class EDIConfigDigester {
      * @throws EDIConfigurationException Multiple or no namespaces in edi-message-mapping.
      */
     public static Edimap digestConfig(InputStream stream) throws IOException, SAXException, EDIConfigurationException {
+    	return new EDIConfigDigester().digestEDIConfig(stream);
+    }
+    
+    /**
+     * Digest the XML edi-message-mapping configuration stream.
+     * @param stream the edi-message-mapping stream.
+     * @return the {@link org.milyn.edisax.model.internal.Edimap}.
+     * @throws IOException Error parsing the XML stream.
+     * @throws SAXException Error parsing the XML stream.
+     * @throws EDIConfigurationException Multiple or no namespaces in edi-message-mapping.
+     */
+    public Edimap digestEDIConfig(InputStream stream) throws IOException, SAXException, EDIConfigurationException {
         Document configDoc;
         byte[] streamBuffer = StreamUtils.readStream(stream);
 
@@ -77,7 +114,7 @@ public class EDIConfigDigester {
 
         validator.validate();
 
-        Edimap edimap = new Edimap();
+        Edimap edimap = new Edimap(modelURI);
 
         if(assertValidXSD(ediNS)) {
             digestXSDValidatedConfig(configDoc,  edimap, ediNS);
@@ -104,7 +141,7 @@ public class EDIConfigDigester {
      * @param schemaName the schema uri.
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when unable to retrieve namespace in configuration.
      */
-    private static void digestXSDValidatedConfig(Document configDoc, Edimap edimap, String schemaName) throws EDIConfigurationException {
+    private void digestXSDValidatedConfig(Document configDoc, Edimap edimap, String schemaName) throws EDIConfigurationException {
 
         //Retrieve the namespace for the schema.
         String namespacePrefix = retrieveNamespace(configDoc.getDocumentElement(), schemaName);
@@ -157,11 +194,14 @@ public class EDIConfigDigester {
      * @param node the Import element.
      * @param edimap the {@link org.milyn.edisax.model.internal.Edimap} to populate.
      */
-    private static void digestImport(Node node, Edimap edimap) {
+    private void digestImport(Node node, Edimap edimap) {
         Import edimapImport = new Import();
-        edimap.getImport().add(edimapImport);
-        edimapImport.setResource(getAttributeValue(node, "resource"));
-        edimapImport.setNamespace(getAttributeValue(node, "namespace"));
+        edimap.getImports().add(edimapImport);
+        
+        URI resourceURI = importLocator.resolveURI(getAttributeValue(node, "resource"));
+		edimapImport.setResourceURI(resourceURI);
+        
+		edimapImport.setNamespace(getAttributeValue(node, "namespace"));
         edimapImport.setTruncatableFields(getNodeValueAsBoolean(node, "truncatableFields"));
         edimapImport.setTruncatableComponents(getNodeValueAsBoolean(node, "truncatableComponents"));
         edimapImport.setTruncatableSegments(getNodeValueAsBoolean(node, "truncatableSegments"));

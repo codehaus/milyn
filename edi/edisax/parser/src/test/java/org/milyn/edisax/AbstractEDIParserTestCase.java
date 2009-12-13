@@ -17,6 +17,7 @@ package org.milyn.edisax;
 
 import junit.framework.TestCase;
 import org.milyn.io.StreamUtils;
+import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -31,8 +32,9 @@ import java.io.StringReader;
 public abstract class AbstractEDIParserTestCase extends TestCase {
 
     protected void test(String testpack) throws IOException {
+    	String packageName = getClass().getPackage().getName().replace('.', '/');
+    	String mappingModel = "/" + packageName + "/" + testpack + "/edi-to-xml-mapping.xml";
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-input.txt")));
-		InputStream mapping = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-to-xml-mapping.xml")));
 		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/expected.xml"))).trim();
 		MockContentHandler contentHandler = new MockContentHandler();
 
@@ -42,7 +44,7 @@ public abstract class AbstractEDIParserTestCase extends TestCase {
 			String mappingResult = null;
 
 			parser.setContentHandler(contentHandler);
-			parser.setMappingModel(EDIParser.parseMappingModel(mapping));
+			parser.setMappingModel(EDIParser.parseMappingModel(mappingModel, URIResourceLocator.extractBaseURI(mappingModel)));
             parser.setFeature(EDIParser.VALIDATE, true);
 			parser.parse(new InputSource(input));
 

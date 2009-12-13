@@ -135,7 +135,7 @@ public class UnEdifactMessageReader {
 
             Import ediImport = new Import();
             ediImport.setNamespace(agency);
-            edimap.getImport().add(ediImport);
+            edimap.getImports().add(ediImport);
 
             Map<String, String> definitions = parseMessageDefinition(breader);
 

@@ -21,10 +21,13 @@ import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.*;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -128,6 +131,36 @@ public class EDIParser implements XMLReader {
     private BufferedSegmentReader segmentReader;
 
     /**
+     * Parse the supplied mapping model config path and return the generated EdiMap.
+     * <p/>
+     * Can be used to set the mapping model to be used during the parsing operation.
+     * See {@link #setMappingModel(EdifactModel)}.
+     * @param mappingConfig Config path.  Must conform with the
+     * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
+     * schema.
+     * @param baseURI The base URI against which the config path is to be resolved.  This works on down
+     * and helps in resolving imported models.
+     * @return The Edimap for the mapping model.
+     * @throws IOException Error reading the model stream.
+     * @throws SAXException Invalid model.
+     * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
+     */
+    public static EdifactModel parseMappingModel(String mappingConfig, URI baseURI) throws IOException, SAXException, EDIConfigurationException {
+    	if(isValidURI(mappingConfig)) {
+    		URIResourceLocator resourceLocator = new URIResourceLocator();
+    		URI importBaseURI;
+    		
+    		resourceLocator.setBaseURI(baseURI);    		
+    		URI resourceURI = resourceLocator.resolveURI(mappingConfig);
+			importBaseURI = URIResourceLocator.extractBaseURI(resourceURI);
+    		
+    		return parseMappingModel(getMappingConfigData(resourceLocator, mappingConfig), resourceURI, importBaseURI);    		
+    	} else {
+    		return parseMappingModel(new StringReader(mappingConfig), null, baseURI);
+    	}
+    }
+
+    /**
      * Parse the supplied mapping model config stream and return the generated EdiMap.
      * <p/>
      * Can be used to set the mapping model to be used during the parsing operation.
@@ -141,9 +174,28 @@ public class EDIParser implements XMLReader {
      * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
     public static EdifactModel parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
+    	return parseMappingModel(mappingConfigStream, null, URIResourceLocator.getSystemBaseURI());
+    }
+
+    /**
+     * Parse the supplied mapping model config stream and return the generated EdiMap.
+     * <p/>
+     * Can be used to set the mapping model to be used during the parsing operation.
+     * See {@link #setMappingModel(EdifactModel)}.
+     * @param mappingConfigStream Config stream.  Must conform with the
+     * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
+     * schema.
+     * @param resourceURI The resource URI.
+     * @param importBaseURI The base URI for loading imports.
+     * @return The Edimap for the mapping model.
+     * @throws IOException Error reading the model stream.
+     * @throws SAXException Invalid model.
+     * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
+     */
+    public static EdifactModel parseMappingModel(InputStream mappingConfigStream, URI resourceURI, URI importBaseURI) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
         try {
-            return parseMappingModel(new InputStreamReader(mappingConfigStream));
+            return parseMappingModel(new InputStreamReader(mappingConfigStream), resourceURI, importBaseURI);
         } finally {
             mappingConfigStream.close();
         }
@@ -163,7 +215,28 @@ public class EDIParser implements XMLReader {
      * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
     public static EdifactModel parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
+    	return parseMappingModel(mappingConfigStream, null, URIResourceLocator.getSystemBaseURI());
+    }
+
+    /**
+     * Parse the supplied mapping model config stream and return the generated EdiMap.
+     * <p/>
+     * Can be used to set the mapping model to be used during the parsing operation.
+     * See {@link #setMappingModel(org.milyn.edisax.model.EdifactModel)}.
+     * @param mappingConfigStream Config stream.  Must conform with the
+     * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
+     * schema.
+     * @param resourceURI The resource URI.
+     * @param importBaseURI The base URI for loading imports.
+     * @return The EdifactModel for the mapping model.
+     * @throws IOException Error reading the model stream.
+     * @throws SAXException Invalid model.
+     * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
+     */
+    public static EdifactModel parseMappingModel(Reader mappingConfigStream, URI resourceURI, URI importBaseURI) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
+        AssertArgument.isNotNull(importBaseURI, "importBaseURI");
+        // The resourceURI can be null e.g. when the mapping model was inlined in the Smooks config.
 
         EdifactModel edifactModel;
         String mappingConfig;
@@ -174,16 +247,47 @@ public class EDIParser implements XMLReader {
     		mappingConfigStream.close();
     	}
 
-        edifactModel = new EdifactModel();
+        edifactModel = new EdifactModel(resourceURI, importBaseURI);
         edifactModel.parseSequence(new ByteArrayInputStream(mappingConfig.getBytes()));
 
 		return edifactModel;
     }
 
 	/**
+	 * Get the actual mapping configuration data (the XML).
+	 * @param resourceLocator Resource locator used to open the config stream.
+	 * @param mappingConfig Mapping config path.
+	 * 
+	 * @return The mapping configuration data stream.
+	 */
+	private static InputStream getMappingConfigData(URIResourceLocator resourceLocator, String mappingConfig) {
+		InputStream configStream = null;
+
+		try {
+			configStream = resourceLocator.getResource(mappingConfig);
+		} catch (IOException e) {
+			IllegalStateException state = new IllegalStateException("Invalid EDI mapping model config specified for " + EDIParser.class.getName() + ".  Unable to access URI based mapping model [" + resourceLocator.resolveURI(mappingConfig) + "].");
+			state.initCause(e);
+			throw state;
+		}
+		
+		return configStream;
+	}
+	
+	private static boolean isValidURI(String string) {
+		try {
+			new URI(string);
+		} catch (URISyntaxException e) {
+			// It's not a valid URI...
+			return false;
+		}	
+		return true;
+	}
+
+	/**
 	 * Set the EDI mapping model to be used in all subsequent parse operations.
 	 * <p/>
-	 * The model can be generated through a call to {@link #parseMappingModel(InputStream)}.
+	 * The model can be generated through a call to the {@link EDIParser}.
 	 * 
 	 * @param mappingModel The mapping model.
 	 */

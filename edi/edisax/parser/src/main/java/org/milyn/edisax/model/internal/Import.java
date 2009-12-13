@@ -16,23 +16,38 @@
 
 package org.milyn.edisax.model.internal;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class Import {
 
-    private String resource;
+    private URI resourceURI;
     private String namespace;
     private Boolean truncatableSegments;
     private Boolean truncatableFields;
     private Boolean truncatableComponents;
 
     public String getResource() {
-        return resource;
+        return resourceURI.toString();
     }
 
     public void setResource(String value) {
-        this.resource = value;
+        try {
+			this.resourceURI = new URI(value);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Invalid EDI import URI '" + value + "'.", e);
+		}
     }
 
-    public String getNamespace() {
+	public void setResourceURI(URI resourceURI) {
+		this.resourceURI = resourceURI;
+	}
+
+	public URI getResourceURI() {
+		return resourceURI;
+	}
+
+	public String getNamespace() {
         return namespace;
     }
 

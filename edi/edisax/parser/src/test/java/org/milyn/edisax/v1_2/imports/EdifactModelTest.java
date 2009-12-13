@@ -26,19 +26,31 @@ import org.xml.sax.SAXException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * Validates that the EdifactModel's logic works as expected.
  * @author bardl
  */
 public class EdifactModelTest extends TestCase {
+	
+	private String packageName = "/" + EdifactModelTest.class.getPackage().getName().replace('.', '/');
 
     public void testImport_truncatableSegmentsExists() throws IOException, EDIConfigurationException, SAXException {
         EdifactModel ediModel = new EdifactModel();
         InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-config-truncatableSegmentsExists.xml")));
         ediModel.parseSequence(input);
 
-        assertTrue("The truncatableSegments attribute should exist in Import element.", ediModel.getEdimap().getImport().get(0).isTruncatableSegments());
+        assertTrue("The truncatableSegments attribute should exist in Import element.", ediModel.getEdimap().getImports().get(0).isTruncatableSegments());
+        assertTrue("The truncatable attribute should have value [true] in Segment.", ((Segment)ediModel.getEdimap().getSegments().getSegments().get(0).getSegments().get(0)).isTruncatable());
+    }
+
+    public void testImport_truncatableSegmentsExists_relative() throws IOException, EDIConfigurationException, SAXException {
+        EdifactModel ediModel = new EdifactModel(URI.create(packageName + "/" + "edi-config-truncatableSegmentsExists-relativepath.xml"), URI.create(packageName));
+        InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-config-truncatableSegmentsExists-relativepath.xml")));
+        ediModel.parseSequence(input);
+
+        assertTrue("The truncatableSegments attribute should exist in Import element.", ediModel.getEdimap().getImports().get(0).isTruncatableSegments());
         assertTrue("The truncatable attribute should have value [true] in Segment.", ((Segment)ediModel.getEdimap().getSegments().getSegments().get(0).getSegments().get(0)).isTruncatable());
     }
 
@@ -47,7 +59,7 @@ public class EdifactModelTest extends TestCase {
         InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-config-truncatableSegmentsNotExists.xml")));
         ediModel.parseSequence(input);
 
-        assertTrue("The truncatableSegments attribute should not exist in Import element.", ediModel.getEdimap().getImport().get(0).isTruncatableSegments() == null);
+        assertTrue("The truncatableSegments attribute should not exist in Import element.", ediModel.getEdimap().getImports().get(0).isTruncatableSegments() == null);
         assertTrue("The truncatable attribute should have value [true] in Segment.", !((Segment)ediModel.getEdimap().getSegments().getSegments().get(0).getSegments().get(0)).isTruncatable());
     }        
 }
