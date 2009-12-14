@@ -216,7 +216,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
         try {
         	File configFolder = resFile.getParentFile();
         	if(configFolder != null) {
-        		return new URI(resourceURI.getScheme(), resourceURI.getUserInfo(), resourceURI.getHost(), resourceURI.getPort(), configFolder.getPath(), resourceURI.getQuery(), resourceURI.getFragment());
+        		return new URI(resourceURI.getScheme(), resourceURI.getUserInfo(), resourceURI.getHost(), resourceURI.getPort(), configFolder.getPath().replace('\\', '/'), resourceURI.getQuery(), resourceURI.getFragment());
         	}
 		} catch (URISyntaxException e) {
 			logger.warn("Error extracting base URI.", e);
