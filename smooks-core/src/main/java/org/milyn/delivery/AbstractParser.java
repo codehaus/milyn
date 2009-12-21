@@ -293,7 +293,14 @@ public class AbstractParser {
         } catch (Throwable t) {
             // Ignore
         }
-
+        // Report namespace decls as per SAX 2.0.2 spec...
+        try {
+        	// http://www.saxproject.org/apidoc/org/xml/sax/package-summary.html#package_description
+            reader.setFeature("http://xml.org/sax/features/xmlns-uris", true);
+        } catch (Throwable t) {
+            // Not a SAX 2.0.2 compliant parser... Ignore
+        }
+        
         if (saxDriverConfig != null) {
             List<Parameter> features;
 
