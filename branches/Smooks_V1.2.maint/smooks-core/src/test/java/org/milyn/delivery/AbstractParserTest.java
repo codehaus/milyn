@@ -43,7 +43,7 @@ public class AbstractParserTest extends TestCase {
         TestXMLReader reader = (TestXMLReader) parser.createXMLReader();
 
         parser.configureReader(reader, new DefaultHandler2(), execContext, null);
-        assertEquals(7, reader.features.size());
+        assertEquals(8, reader.features.size());
         assertTrue(reader.features.get("feature-on-1"));
         assertTrue(reader.features.get("feature-on-2"));
         assertTrue(!reader.features.get("feature-off-1"));
