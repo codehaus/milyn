@@ -85,6 +85,31 @@ public class WriterUtil {
         }
     }
 
+    public static void writeText(SAXText text, Writer writer) throws IOException {
+        if(writer != null) {
+            switch (text.getType()) {
+                case TEXT:
+                    writer.write(text.getCharacters(), text.getOffset(), text.getLength());
+                    break;
+                case CDATA:
+                    writer.write("<![CDATA[");
+                    writer.write(text.getCharacters(), text.getOffset(), text.getLength());
+                    writer.write("]]>");
+                    break;
+                case COMMENT:
+                    writer.write("<!--");
+                    writer.write(text.getCharacters(), text.getOffset(), text.getLength());
+                    writer.write("-->");
+                    break;
+                case ENTITY:
+                    writer.write("&");
+                    writer.write(HTMLEntityLookup.getEntityRef(text.getCharacters()[text.getOffset()]));
+                    writer.write(';');
+                    break;
+            }
+        }
+    }
+
     private static void writeUnclosedElement(SAXElement element, Writer writer, boolean encodeSpecialChars) throws IOException {
         QName name = element.getName();
         String prefix = name.getPrefix();
