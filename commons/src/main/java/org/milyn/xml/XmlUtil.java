@@ -16,7 +16,11 @@
 
 package org.milyn.xml;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
@@ -75,15 +79,9 @@ public class XmlUtil {
         XSD,
     }
 
-    public static final DocumentBuilder documentBuilder;
+    private static final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 
-    static {
-        try {
-            documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new IllegalStateException("Error creating DOM DocumentBuilder instance.", e);
-        }
-    }
+    private static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
 
     public static final char[] LT = new char[] {'&', 'l', 't', ';'};
     public static final char[] GT = new char[] {'&', 'g', 't', ';'};
@@ -482,26 +480,6 @@ public class XmlUtil {
         } else {
             return serialize(nodeList);
         }
-    }
-
-    /**
-     * Create an element with the specified name.
-     * @param localPart The localPart name.
-     * @return Element instance.
-     */
-    public static Element createElement(String localPart) {
-        return createElementNS(XMLConstants.NULL_NS_URI, localPart);
-    }
-
-    /**
-     * Create an element with the specified name and namespace.
-     * @param namespace The namespace.
-     * @param localPart The localPart name.
-     * @return Element instance.
-     */
-    public static Element createElementNS(String namespace, String localPart) {
-        Document document = documentBuilder.newDocument();
-        return document.createElementNS(namespace, localPart);
     }
 
     /**

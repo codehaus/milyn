@@ -15,9 +15,6 @@
 */
 package org.milyn.event.types;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksResourceConfiguration;
@@ -31,19 +28,12 @@ import org.milyn.event.ElementProcessingEvent;
 import org.milyn.event.ResourceBasedEvent;
 import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
-import org.milyn.expression.MVELExpressionEvaluator;
-import org.milyn.util.CollectionsUtil;
-import org.milyn.util.MultiLineToStringBuilder;
 import org.milyn.util.FreeMarkerTemplate;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
-import java.util.Map.Entry;
 
 /**
  * Element Visit Event.
@@ -67,8 +57,7 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
         this.sequence = sequence;
         ExecutionContext executionContext = Filter.getCurrentExecutionContext();
         try {
-            executionContextState = MultiLineToStringBuilder.toString(executionContext);
-
+            executionContextState = executionContext.toString();
         } catch (Exception e) {
             StringWriter exceptionWriter = new StringWriter();
             e.printStackTrace(new PrintWriter(exceptionWriter));
@@ -114,12 +103,12 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
         ContentHandler handler = configMapping.getContentHandler();
         if (getSequence() == VisitSequence.BEFORE) {
             VisitBeforeReport reportAnnotation = handler.getClass().getAnnotation(VisitBeforeReport.class);
-            if (reportAnnotation != null && evalReportCondition(reportAnnotation.condition())) {
+            if (reportAnnotation != null) {
                 applyReportTemplates(reportAnnotation.summary(), reportAnnotation.detailTemplate(), handler.getClass(), executionContext);
             }
         } else {
             VisitAfterReport reportAnnotation = handler.getClass().getAnnotation(VisitAfterReport.class);
-            if (reportAnnotation != null && evalReportCondition(reportAnnotation.condition())) {
+            if (reportAnnotation != null) {
                 applyReportTemplates(reportAnnotation.summary(), reportAnnotation.detailTemplate(), handler.getClass(), executionContext);
             }
         }
@@ -128,12 +117,6 @@ public class ElementVisitEvent extends ElementProcessingEvent implements Resourc
             // No template ...
             reportDetail = executionContextState;
         }
-    }
-
-    private boolean evalReportCondition(String condition) {
-        MVELExpressionEvaluator conditionEval = new MVELExpressionEvaluator();
-        conditionEval.setExpression(condition);
-        return conditionEval.eval(configMapping.getResourceConfig());
     }
 
     private void applyReportTemplates(String summary, String detailTemplate, Class handlerClass, ExecutionContext executionContext) {

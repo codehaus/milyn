@@ -15,23 +15,31 @@
 */
 package org.milyn.rules.regex;
 
-import org.milyn.rules.BasicRuleEvalResult;
+import org.milyn.rules.RuleEvalResult;
 
 import java.util.regex.Pattern;
 
 /**
  * Regex RuleEvalResult.
- * This class extends {@link BasicRuleEvalResult} and adds the Regex Pattern
- * and text that te regex was evaluated on.
- *
+ * 
  * @author <a href="mailto:danielbevenius@gmail.com">Daniel Bevenius</a>
  */
-public class RegexRuleEvalResult extends BasicRuleEvalResult
+public class RegexRuleEvalResult implements RuleEvalResult
 {
     /**
-     * Serial unique identifier.
+     * The result for a rule evaluation
      */
-    private static final long serialVersionUID = -3431124009222908170L;
+    final boolean matched;
+
+    /**
+     * The name of the rules that produced this result.
+     */
+    final String ruleName;
+
+    /**
+     * The name of the provider that produced this result.
+     */
+    final String providerName;
 
     /**
      * The regex pattern.
@@ -39,31 +47,46 @@ public class RegexRuleEvalResult extends BasicRuleEvalResult
     final Pattern pattern;
 
     /**
-     * The text used in the match.
+     * The test used in the match.
      */
     private String text;
 
     /**
      * Creates a RuleEvalResult that indicates a successfully executed rule.
      */
-    public RegexRuleEvalResult(final boolean matched, final String ruleName, final String ruleProviderName, final Pattern pattern, final String text)
+    public RegexRuleEvalResult(final boolean matched, final String ruleName, final String providerName, final Pattern pattern, final String text)
     {
-        super(matched, ruleName, ruleProviderName);
+        this.matched = matched;
+        this.ruleName = ruleName;
+        this.providerName = providerName;
         this.pattern = pattern;
         this.text = text;
     }
 
-    /**
-     * @return Patten the compiled regular expression.
-     */
+    public boolean matched()
+    {
+        return matched;
+    }
+
+    public String getRuleName()
+    {
+        return ruleName;
+    }
+
+    public String getRuleProviderName()
+    {
+        return providerName;
+    }
+
+    public Throwable getEvalException() {
+        return null;
+    }
+
     public Pattern getPattern()
     {
         return pattern;
     }
 
-    /**
-     * @return String the text that the  regular expression was evaluated on/against.
-     */
     public String getText() {
         return text;
     }
@@ -71,7 +94,7 @@ public class RegexRuleEvalResult extends BasicRuleEvalResult
     @Override
     public String toString()
     {
-        return String.format("%s, matched=%b, providerName=%s, ruleName=%s, text=%s, pattern=%s", getClass().getSimpleName(), matched(), getRuleProviderName(), getRuleName(), text, pattern);
+        return String.format("%s, matched=%b, providerName=%s, ruleName=%s, text=%s, pattern=%s", getClass().getSimpleName(), matched, providerName, ruleName, text, pattern);
     }
 
 }

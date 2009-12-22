@@ -17,6 +17,7 @@ package org.milyn.delivery.sax;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.SmooksException;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -64,7 +65,7 @@ import java.util.*;
 public class SAXElement {
 
     private QName name;
-    private AttributesImpl attributes;
+    private Attributes attributes;
     private SAXElement parent;
     private Writer writer;
     private List<SAXText> text;
@@ -79,35 +80,6 @@ public class SAXElement {
     private Object l1Cache;
     private SAXVisitor l1CacheOwner;
     private Map<SAXVisitor, Object> l2Caches;
-
-    /**
-     * Public constructor.
-     *
-     * @param namespaceURI The Namespace URI, or the empty string if the
-     *                     element has no Namespace URI or if Namespace
-     *                     processing is not being performed.
-     * @param localName    The local name (without prefix), or the
-     *                     empty string if Namespace processing is not being
-     *                     performed.
-     */
-    public SAXElement(String namespaceURI, String localName) {
-        this(namespaceURI, localName, null, new AttributesImpl(), null);
-    }
-
-    /**
-     * Public constructor.
-     *
-     * @param namespaceURI The Namespace URI, or the empty string if the
-     *                     element has no Namespace URI or if Namespace
-     *                     processing is not being performed.
-     * @param localName    The local name (without prefix), or the
-     *                     empty string if Namespace processing is not being
-     *                     performed.
-     * @param parent       Parent element, or null if the element is the document root element.
-     */
-    public SAXElement(String namespaceURI, String localName, SAXElement parent) {
-        this(namespaceURI, localName, null, new AttributesImpl(), parent);
-    }
 
     /**
      * Public constructor.
@@ -193,7 +165,7 @@ public class SAXElement {
      * @param attributes The attributes to copy.
      * @return The new {@link Attributes} instance with a copy of the attributes.
      */
-    private AttributesImpl copyAttributes(Attributes attributes) {
+    private Attributes copyAttributes(Attributes attributes) {
         AttributesImpl attributesCopy = new AttributesImpl();
         attributesCopy.setAttributes(attributes);
         return attributesCopy;
@@ -231,32 +203,6 @@ public class SAXElement {
      */
     public List<SAXText> getText() {
         return text;
-    }
-
-    /**
-     * Add a text object to this instance.
-     * <p/>
-     * Utility method, userd mainly for testing.
-     *
-     * @param text The text to be added.
-     */
-    public void addText (String text) {
-        addText(text, TextType.TEXT);
-    }
-
-    /**
-     * Add a text object to this instance.
-     * <p/>
-     * Utility method, userd mainly for testing.
-     *
-     * @param text The text to be added.
-     * @param type The text type.
-     */
-    public void addText (String text, TextType type) {
-        if(this.text == null) {
-            accumulateText();
-        }
-        this.text.add(new SAXText(text, type));
     }
 
     /**
@@ -380,7 +326,7 @@ public class SAXElement {
      */
     public void setAttributes(Attributes attributes) {
         AssertArgument.isNotNull(attributes, "attributes");
-        this.attributes = copyAttributes(attributes);
+        this.attributes = attributes;
     }
 
     /**
@@ -398,49 +344,9 @@ public class SAXElement {
      * @param attribute The attribute name.
      * @return The attribute value, or an empty string if the attribute is not specified.
      */
-    public String getAttributeNS(String namespaceURI, String attribute) {
+    public String getAttribute(String namespaceURI, String attribute) {
         return SAXUtil.getAttribute(namespaceURI, attribute, attributes, "");
     }
-
-    /**
-     * Get the named attribute from this element.
-     * @param namespaceURI The namespace URI of the required attribute.
-     * @param attribute The attribute name.
-     * @return The attribute value, or an empty string if the attribute is not specified.
-     * @deprecated Use {@link #getAttributeNS(String, String)}.
-     */
-    public String getAttribute(String namespaceURI, String attribute) {
-        return getAttributeNS(namespaceURI, attribute);
-    }
-
-
-    /**
-     * Set the named attribute on this element.
-     * @param attribute The attribute name.
-     * @param value The attribute value.
-     */
-    public void setAttribute(String attribute, String value) {
-        setAttributeNS(XMLConstants.NULL_NS_URI, attribute,  value);
-    }
-
-    /**
-     * Set the named attribute on this element.
-     * @param namespaceURI The attribute namespace URI.
-     * @param attribute The attribute name.
-     * @param value The attribute value.
-     */
-    public void setAttributeNS(String namespaceURI, String attribute, String value) {
-        int attribCount = attributes.getLength();
-
-        for(int i = 0; i < attribCount; i++) {
-            if(namespaceURI.equals(attributes.getURI(i)) && attribute.equals(attributes.getLocalName(i))) {
-                attributes.removeAttribute(i);
-            }
-        }
-
-        attributes.addAttribute(namespaceURI, attribute, "", "CDATA", value);
-    }
-
 
     /**
      * Get the <a href="#element_cache_object">element cache object</a>.

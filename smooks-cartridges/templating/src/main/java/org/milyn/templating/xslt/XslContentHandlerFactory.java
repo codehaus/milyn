@@ -16,6 +16,8 @@
 
 package org.milyn.templating.xslt;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
@@ -24,7 +26,6 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.annotation.Resource;
-import org.milyn.javabean.context.BeanContext;
 
 
 /**
@@ -50,7 +51,7 @@ import org.milyn.javabean.context.BeanContext;
  *          2. be added to ("addto") the target element, or
  *          3. be inserted before ("insertbefore") the target element, or
  *          4. be inserted after ("insertafter") the target element.
- *          5. be bound to ("bindto") a {@link BeanContext} variable named by the "bindId" param.
+ *          5. be bound to ("bindto") a {@link org.milyn.javabean.repository.BeanRepository} variable named by the "bindId" param.
  *          Default "replace".--&gt;
  *     &lt;param name="<b>action</b>"&gt;<i>replace/addto/insertbefore/insertafter/bindto</i>&lt;/param&gt;
  *

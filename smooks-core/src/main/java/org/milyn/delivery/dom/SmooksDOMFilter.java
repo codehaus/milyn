@@ -335,7 +335,7 @@ public class SmooksDOMFilter extends Filter {
     }
 
     private static String[] GLOBAL_SELECTORS = new String[] {"*", "**"};
-
+    
     /**
      * Filter the supplied W3C Element.
      * <p/>
@@ -472,7 +472,7 @@ public class SmooksDOMFilter extends Filter {
             SmooksResourceConfiguration config = configMap.getResourceConfig();
 
             // Make sure the assembly unit is targeted at this element...
-            if (!config.isTargetedAtElement(element, executionContext)) {
+            if (!config.isTargetedAtElement(element)) {
                 continue;
             }
 
@@ -515,7 +515,7 @@ public class SmooksDOMFilter extends Filter {
         SmooksResourceConfiguration config = configMap.getResourceConfig();
 
         // Make sure the assembly unit is targeted at this element...
-        if (!config.isTargetedAtElement(element, executionContext)) {
+        if (!config.isTargetedAtElement(element)) {
             return;
         }
 
@@ -661,7 +661,7 @@ public class SmooksDOMFilter extends Filter {
 
         return copy;
     }
-
+    
     /**
      * Element Prcessor class.
      * <p/>
@@ -741,7 +741,7 @@ public class SmooksDOMFilter extends Filter {
             SmooksResourceConfiguration config = configMap.getResourceConfig();
 
             // Make sure the processing unit is targeted at this element...
-            if (!config.isTargetedAtElement(element, executionContext)) {
+            if (!config.isTargetedAtElement(element)) {
                 return;
             }
 
@@ -822,8 +822,6 @@ public class SmooksDOMFilter extends Filter {
         if (eventListener != null) {
             eventListener.onEvent(new ElementVisitEvent(element, configMapping, visitSequence, error));
         }
-
-        executionContext.setTerminationError(error);
 
         if(terminateOnVisitorException) {
             if(error instanceof SmooksException) {

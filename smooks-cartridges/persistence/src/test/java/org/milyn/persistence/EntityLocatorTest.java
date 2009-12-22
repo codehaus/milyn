@@ -86,7 +86,7 @@ public class EntityLocatorTest extends BaseTestCase {
             Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
             smooks.filterSource(executionContext, source);
 
-            assertSame(result, executionContext.getBeanContext().getBean("entity"));
+            assertSame(result, BeanRepository.getInstance(executionContext).getBean("entity"));
         } finally {
             smooks.close();
         }
@@ -107,7 +107,7 @@ public class EntityLocatorTest extends BaseTestCase {
 
             //We put an object on the 'entity' location to check if the locater removes it because it found
             //no result
-            executionContext.getBeanContext().addBean("entity", new Object());
+            BeanRepository.getInstance(executionContext).addBean("entity", new Object());
 
             PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
@@ -116,7 +116,7 @@ public class EntityLocatorTest extends BaseTestCase {
             Source source = new StreamSource(getClass().getResourceAsStream("input-message-01.xml" ) );
             smooks.filterSource(executionContext, source);
 
-            assertNull(executionContext.getBeanContext().getBean("entity"));
+            assertNull(BeanRepository.getInstance(executionContext).getBean("entity"));
         } finally {
             smooks.close();
         }

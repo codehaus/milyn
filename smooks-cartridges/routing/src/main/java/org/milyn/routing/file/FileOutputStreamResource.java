@@ -37,7 +37,6 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
@@ -258,7 +257,9 @@ public class FileOutputStreamResource extends AbstractOutputStreamResource
     		return true;
     	}
 
-    	return closeOnCondition.eval(executionContext.getBeanContext().getBeanMap());
+    	BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+
+    	return closeOnCondition.eval(beanRepository.getBeanMap());
     }
 
     @Override

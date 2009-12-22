@@ -40,10 +40,6 @@
         <priority value="ERROR"/>
     </category>
 
-    <category name="org.milyn.cdr.xpath">
-        <priority value="DEBUG"/>
-    </category>
-
     <category name="freemarker">
         <priority value="ERROR"/>
     </category>

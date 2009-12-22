@@ -15,7 +15,7 @@
 
 package org.milyn.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.hsqldb.ServerConstants;
 import org.junit.Test;
@@ -28,10 +28,9 @@ import org.junit.Test;
  */
 public class HsqlServerTest
 {
-    @Test 
-    public void startStop() throws Exception
+    @Test public void startStop() throws Exception
     {
-        for (int i = 0 ; i < 50; i++)
+        for (int i = 0 ; i < 10; i++)
         {
             startStopCycle();
         }

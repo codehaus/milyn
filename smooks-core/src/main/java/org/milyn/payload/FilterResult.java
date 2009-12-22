@@ -21,13 +21,12 @@ import javax.xml.transform.Result;
 
 /**
  * Filtration/Transformation {@link Result}.
- *
+ * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public abstract class FilterResult implements Result {
 
-    public static final String CONTEXT_KEY = FilterResult.class.getName() + "#CONTEXT_KEY";
-
+    private static final String CONTEXT_KEY = FilterResult.class.getName() + "#CONTEXT_KEY";
     private String systemId;
 
     public static void setResults(ExecutionContext executionContext, Result... results) {

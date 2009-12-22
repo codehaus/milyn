@@ -43,9 +43,11 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
     }
 
     public static void resolveSelectorTokens(SmooksResourceConfiguration populatorConfig) {
-        String valueAttributeName = populatorConfig.getTargetAttribute();
+        String[] selectorTokens = populatorConfig.getContextualSelector();
+        String valueAttributeName = SmooksResourceConfiguration.extractTargetAttribute(selectorTokens);
 
         if(valueAttributeName != null && !valueAttributeName.trim().equals("")) {
+            populatorConfig.setSelector(getSelectorProperty(selectorTokens));
             populatorConfig.setParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME, valueAttributeName);
         }
     }

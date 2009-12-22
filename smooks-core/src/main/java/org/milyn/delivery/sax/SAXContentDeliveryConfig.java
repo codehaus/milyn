@@ -19,13 +19,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
 import org.milyn.delivery.ordering.Sorter;
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.xpath.SelectorStep;
-import org.milyn.cdr.xpath.evaluators.equality.IndexEvaluator;
-import org.milyn.cdr.xpath.evaluators.equality.ElementIndexCounter;
 
-import javax.xml.namespace.QName;
-import javax.xml.XMLConstants;
 import java.util.*;
 
 /**
@@ -99,162 +93,21 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         }
 
         extractChildVisitors();
-        
-        List<ContentHandlerConfigMap<SAXVisitBefore>> starVBs = new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>();
-        List<ContentHandlerConfigMap<SAXVisitChildren>> starVCs = new ArrayList<ContentHandlerConfigMap<SAXVisitChildren>>();
-        List<ContentHandlerConfigMap<SAXVisitAfter>> starVAs = new ArrayList<ContentHandlerConfigMap<SAXVisitAfter>>();
-        List<ContentHandlerConfigMap<VisitLifecycleCleanable>> starCleanables = new ArrayList<ContentHandlerConfigMap<VisitLifecycleCleanable>>();
-        
-        if(visitBefores.getTable().get("*") != null) {
-        	starVBs.addAll(visitBefores.getTable().get("*"));
-        }
-        if(visitBefores.getTable().get("**") != null) {
-        	starVBs.addAll(visitBefores.getTable().get("**"));
-        }
-        if(childVisitors.getTable().get("*") != null) {
-        	starVCs.addAll(childVisitors.getTable().get("*"));
-        }
-        if(childVisitors.getTable().get("**") != null) {
-        	starVCs.addAll(childVisitors.getTable().get("**"));
-        }
-        if(visitAfters.getTable().get("*") != null) {
-        	starVAs.addAll(visitAfters.getTable().get("*"));
-        }
-        if(visitAfters.getTable().get("**") != null) {
-        	starVAs.addAll(visitAfters.getTable().get("**"));
-        }
-        if(visitCleanables.getTable().get("*") != null) {
-        	starCleanables.addAll(visitCleanables.getTable().get("*"));
-        }
-        if(visitCleanables.getTable().get("**") != null) {
-        	starCleanables.addAll(visitCleanables.getTable().get("**"));
-        }
-        
+
         // Now extract the before, child and after visitors for all configured elements...
-        Set<String> elementNames = new HashSet<String>();
+        Set<String> elementNames = new HashSet();
         elementNames.addAll(visitBefores.getTable().keySet());
         elementNames.addAll(visitAfters.getTable().keySet());
 
         for (String elementName : elementNames) {
             SAXElementVisitorMap entry = new SAXElementVisitorMap();
-            List<ContentHandlerConfigMap<SAXVisitBefore>> befores = visitBefores.getTable().get(elementName);
-            List<ContentHandlerConfigMap<SAXVisitChildren>> children = childVisitors.getTable().get(elementName);
-            List<ContentHandlerConfigMap<SAXVisitAfter>> afters = visitAfters.getTable().get(elementName);
-            List<ContentHandlerConfigMap<VisitLifecycleCleanable>> cleanables = visitCleanables.getTable().get(elementName);
-        	boolean isStar = (elementName.equals("*") || elementName.equals("**"));
 
-        	// So what's going on with the "*" and "**" resources here?  Basically, we are adding
-        	// these resources to all targeted elements, accept for "*" and "**" themselves.
-        	
-            if(befores != null && !isStar) {
-            	befores.addAll(starVBs);
-            }
-            entry.setVisitBefores(befores);
-            
-            if(children != null && !isStar) {
-            	children.addAll(starVCs);
-            }
-            entry.setChildVisitors(children);
-            
-            if(afters != null && !isStar) {
-            	afters.addAll(starVAs);
-            }
-            entry.setVisitAfters(afters);
-            
-            if(cleanables != null && !isStar) {
-            	cleanables.addAll(starCleanables);
-            }
-            entry.setVisitCleanables(cleanables);
-
-            entry.initAccumulateText();
-
+            entry.setVisitBefores(visitBefores.getTable().get(elementName));
+            entry.setChildVisitors(childVisitors.getTable().get(elementName));
+            entry.setVisitAfters(visitAfters.getTable().get(elementName));
+            entry.setVisitCleanables(visitCleanables.getTable().get(elementName));
             optimizedVisitorConfig.put(elementName, entry);
         }
-    }
-
-    public void assertSelectorsNotAccessingText() {
-        assertSelectorsNotAccessingText(visitBefores);
-        assertSelectorsNotAccessingText(childVisitors);
-    }
-
-    private void assertSelectorsNotAccessingText(ContentHandlerConfigMapTable saxVisitorMap) {
-        Map<String, List<ContentHandlerConfigMap<? extends SAXVisitor>>> table = saxVisitorMap.getTable();
-        Collection<List<ContentHandlerConfigMap<? extends SAXVisitor>>> contentHandlerMaps = table.values();
-
-        for(List<ContentHandlerConfigMap<? extends SAXVisitor>> contentHandlerMapList : contentHandlerMaps) {
-            for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : contentHandlerMapList) {
-                SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
-                SelectorStep selectorStep = resourceConfig.getSelectorStep();
-
-                if(selectorStep.accessesText()) {
-                    throw new SmooksConfigurationException("Unsupported selector '" + selectorStep.getXPathExpression() + "' on resource '" + resourceConfig + "'.  The 'text()' XPath token is only supported on SAX Visitor implementations that implement the " + SAXVisitAfter.class.getName() + " interface only.  Class '" + resourceConfig.getResource() + "' implements other SAX Visitor interfaces.");
-                }
-            }
-        }
-    }
-
-    public void addIndexCounters() {
-        Map<String, SAXElementVisitorMap> optimizedVisitorConfigCopy = new LinkedHashMap(optimizedVisitorConfig);
-        Collection<SAXElementVisitorMap> visitorMaps = optimizedVisitorConfigCopy.values();
-
-        for(SAXElementVisitorMap visitorMap : visitorMaps) {
-            addIndexCounters(visitorMap.getVisitBefores());
-            addIndexCounters(visitorMap.getChildVisitors());
-            addIndexCounters(visitorMap.getVisitAfters());
-        }
-    }
-
-    private <T extends SAXVisitor> void addIndexCounters(List<ContentHandlerConfigMap<T>> saxVisitorMap) {
-        if(saxVisitorMap == null) {
-            return;
-        }
-
-        for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : saxVisitorMap) {
-            SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
-            SelectorStep[] selectorSteps = resourceConfig.getSelectorSteps();
-            List<IndexEvaluator> indexEvaluators = new ArrayList<IndexEvaluator>();
-
-            for(SelectorStep selectorStep : selectorSteps) {
-                indexEvaluators.clear();
-                selectorStep.getEvaluators(IndexEvaluator.class, indexEvaluators);
-                for(IndexEvaluator indexEvaluator : indexEvaluators) {
-                    if(indexEvaluator.getCounter() == null) {
-                        ElementIndexCounter indexCounter = new ElementIndexCounter(selectorStep);
-
-                        indexEvaluator.setCounter(indexCounter);
-                        addIndexCounter(indexCounter);
-                    }
-                }
-            }
-        }
-    }
-
-    private void addIndexCounter(ElementIndexCounter indexCounter) {
-        SelectorStep selectorStep = indexCounter.getSelectorStep();
-        QName targetElement = selectorStep.getTargetElement();
-        String targetElementName = targetElement.getLocalPart().toLowerCase();
-        String targetNS = targetElement.getNamespaceURI();
-        SAXElementVisitorMap visitorMap = optimizedVisitorConfig.get(targetElementName);
-
-        if(visitorMap == null) {
-            visitorMap = new SAXElementVisitorMap();
-            optimizedVisitorConfig.put(targetElementName, visitorMap);
-        }
-
-        List<ContentHandlerConfigMap<SAXVisitBefore>> vbs = visitorMap.getVisitBefores();
-
-        if(vbs == null) {
-            vbs = new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>();
-            visitorMap.setVisitBefores(vbs);
-        }
-
-        SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration(targetElementName);
-
-        if(targetNS != null && targetNS != XMLConstants.NULL_NS_URI) {
-            resourceConfig.setSelectorNamespaceURI(targetNS);
-        }
-
-        vbs.add(0, new ContentHandlerConfigMap(indexCounter, resourceConfig));
     }
 
     public SAXElementVisitorMap getCombinedOptimizedConfig(String[] elementNames) {
@@ -301,8 +154,6 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         if(combinedConfig.getVisitCleanables().isEmpty()) {
             combinedConfig.setVisitCleanables(null);
         }
-
-        combinedConfig.initAccumulateText();
 
         if(combinedConfig.getVisitBefores() == null && combinedConfig.getChildVisitors() == null && combinedConfig.getVisitAfters() == null ) {
             return null;

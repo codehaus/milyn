@@ -20,8 +20,6 @@ import junit.framework.TestCase;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.util.DomUtil;
 import org.milyn.xml.XmlUtil;
-import org.milyn.cdr.xpath.SelectorStep;
-import org.milyn.cdr.xpath.SelectorStepBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.helpers.AttributesImpl;
@@ -75,14 +73,16 @@ public class SmooksResourceConfigurationTest extends TestCase {
         SmooksResourceConfiguration rc3 = new SmooksResourceConfiguration("a/b/c/d/e", "blah");
         SmooksResourceConfiguration rc4 = new SmooksResourceConfiguration("xx/a/b/c/d/e", "blah");
         SmooksResourceConfiguration rc5 = new SmooksResourceConfiguration("xx/b/c/d/e", "blah");
+        SmooksResourceConfiguration rc6 = new SmooksResourceConfiguration("xx", "blah");
         SmooksResourceConfiguration rc7 = new SmooksResourceConfiguration("/c/d/e", "blah");
 
-        assertTrue(rc1.isTargetedAtElement(e, null));
-        assertTrue(rc2.isTargetedAtElement(e, null));
-        assertTrue(rc3.isTargetedAtElement(e, null));
-        assertTrue(!rc4.isTargetedAtElement(e, null));
-        assertTrue(!rc5.isTargetedAtElement(e, null));
-        assertTrue(!rc7.isTargetedAtElement(e, null));
+        assertTrue(rc1.isTargetedAtElementContext(e));
+        assertTrue(rc2.isTargetedAtElementContext(e));
+        assertTrue(rc3.isTargetedAtElementContext(e));
+        assertTrue(!rc4.isTargetedAtElementContext(e));
+        assertTrue(!rc5.isTargetedAtElementContext(e));
+        assertTrue(!rc6.isTargetedAtElementContext(e));
+        assertTrue(!rc7.isTargetedAtElementContext(e));
     }
 
     public void test_isTargetedAtElement_DOM_with_Attribute() {
@@ -96,15 +96,15 @@ public class SmooksResourceConfigurationTest extends TestCase {
 
         assertEquals("e", rc8.getTargetElement());
         assertEquals("attrib1", rc8.getTargetAttribute());
-        assertTrue(rc8.isTargetedAtElement(e, null));
+        assertTrue(rc8.isTargetedAtElementContext(e));
 
         assertEquals("e", rc9.getTargetElement());
         assertEquals("attrib1", rc9.getTargetAttribute());
-        assertTrue(rc9.isTargetedAtElement(e, null));
+        assertTrue(rc9.isTargetedAtElementContext(e));
 
         assertEquals("e", rc10.getTargetElement());
         assertEquals("attrib1", rc10.getTargetAttribute());
-        assertTrue(!rc10.isTargetedAtElement(e, null));
+        assertTrue(!rc10.isTargetedAtElementContext(e));
     }
 
     public void test_isTargetedAtElement_DOM_wildcards() {
@@ -135,34 +135,34 @@ public class SmooksResourceConfigurationTest extends TestCase {
         SmooksResourceConfiguration rc22 = new SmooksResourceConfiguration("*/e", "blah");
         SmooksResourceConfiguration rc23 = new SmooksResourceConfiguration("/*/e", "blah");
 
-        assertTrue(rc1.isTargetedAtElement(e, null));
-        assertTrue(rc2.isTargetedAtElement(e, null));
-        assertTrue(rc3.isTargetedAtElement(e, null));
+        assertTrue(rc1.isTargetedAtElementContext(e));
+        assertTrue(rc2.isTargetedAtElementContext(e));
+        assertTrue(rc3.isTargetedAtElementContext(e));
 
-        assertTrue(!rc4.isTargetedAtElement(e, null));
-        assertTrue(!rc5.isTargetedAtElement(e, null));
+        assertTrue(!rc4.isTargetedAtElementContext(e));
+        assertTrue(!rc5.isTargetedAtElementContext(e));
 
-        assertTrue(rc6.isTargetedAtElement(e, null));
-        assertTrue(rc7.isTargetedAtElement(e, null));
-        assertTrue(rc8.isTargetedAtElement(e, null));
-        assertTrue(rc9.isTargetedAtElement(e, null));
-        assertTrue(rc10.isTargetedAtElement(e, null));
-        assertTrue(rc11.isTargetedAtElement(e, null));
-        assertTrue(rc12.isTargetedAtElement(e, null));
-        assertTrue(rc13.isTargetedAtElement(e, null));
-        assertTrue(rc14.isTargetedAtElement(e, null));
-        assertTrue(rc15.isTargetedAtElement(e, null));
-        assertTrue(rc16.isTargetedAtElement(e, null));
+        assertTrue(rc6.isTargetedAtElementContext(e));
+        assertTrue(rc7.isTargetedAtElementContext(e));
+        assertTrue(rc8.isTargetedAtElementContext(e));
+        assertTrue(rc9.isTargetedAtElementContext(e));
+        assertTrue(rc10.isTargetedAtElementContext(e));
+        assertTrue(rc11.isTargetedAtElementContext(e));
+        assertTrue(rc12.isTargetedAtElementContext(e));
+        assertTrue(rc13.isTargetedAtElementContext(e));
+        assertTrue(rc14.isTargetedAtElementContext(e));
+        assertTrue(rc15.isTargetedAtElementContext(e));
+        assertTrue(rc16.isTargetedAtElementContext(e));
         
-        assertTrue(!rc17.isTargetedAtElement(e, null));
-        assertTrue(!rc18.isTargetedAtElement(e, null));
-        assertTrue(!rc19.isTargetedAtElement(e, null));
+        assertTrue(!rc17.isTargetedAtElementContext(e));
+        assertTrue(!rc18.isTargetedAtElementContext(e));
+        assertTrue(!rc19.isTargetedAtElementContext(e));
 
-        assertTrue(rc20.isTargetedAtElement(e, null));
-        assertTrue(rc21.isTargetedAtElement(e, null));
-        assertTrue(rc22.isTargetedAtElement(e, null));
+        assertTrue(rc20.isTargetedAtElementContext(e));
+        assertTrue(rc21.isTargetedAtElementContext(e));
+        assertTrue(rc22.isTargetedAtElementContext(e));
 
-        assertTrue(!rc23.isTargetedAtElement(e, null));
+        assertTrue(!rc23.isTargetedAtElementContext(e));
     }
 
     public void test_isTargetedAtElement_DOM_rooted() {
@@ -182,11 +182,11 @@ public class SmooksResourceConfigurationTest extends TestCase {
             assertEquals("Invalid selector 'xx/#document/a/b/c/a/d/e'.  '#document' token can only exist at the start of the selector.", ex.getMessage());
         }
 
-        assertTrue(rc1.isTargetedAtElement(e, null));
-        assertTrue(!rc2.isTargetedAtElement(e, null));
-        assertTrue(rc3.isTargetedAtElement(e, null));
-        assertTrue(rc4.isTargetedAtElement(e, null));
-        assertTrue(!rc5.isTargetedAtElement(e, null));
+        assertTrue(rc1.isTargetedAtElementContext(e));
+        assertTrue(!rc2.isTargetedAtElementContext(e));
+        assertTrue(rc3.isTargetedAtElementContext(e));
+        assertTrue(rc4.isTargetedAtElementContext(e));
+        assertTrue(!rc5.isTargetedAtElementContext(e));
     }
 
     public void test_isTargetedAtElement_SAX() {
@@ -197,12 +197,14 @@ public class SmooksResourceConfigurationTest extends TestCase {
         SmooksResourceConfiguration rc3 = new SmooksResourceConfiguration("a/b/c/d/e", "blah");
         SmooksResourceConfiguration rc4 = new SmooksResourceConfiguration("xx/a/b/c/d/e", "blah");
         SmooksResourceConfiguration rc5 = new SmooksResourceConfiguration("xx/b/c/d/e", "blah");
+        SmooksResourceConfiguration rc6 = new SmooksResourceConfiguration("xx", "blah");
 
-        assertTrue(rc1.isTargetedAtElement(e, null));
-        assertTrue(rc2.isTargetedAtElement(e, null));
-        assertTrue(rc3.isTargetedAtElement(e, null));
-        assertTrue(!rc4.isTargetedAtElement(e, null));
-        assertTrue(!rc5.isTargetedAtElement(e, null));
+        assertTrue(rc1.isTargetedAtElementContext(e));
+        assertTrue(rc2.isTargetedAtElementContext(e));
+        assertTrue(rc3.isTargetedAtElementContext(e));
+        assertTrue(!rc4.isTargetedAtElementContext(e));
+        assertTrue(!rc5.isTargetedAtElementContext(e));
+        assertTrue(!rc6.isTargetedAtElementContext(e));
     }
 
     public void test_isTargetedAtElement_SAX_wildcards() {
@@ -234,42 +236,42 @@ public class SmooksResourceConfigurationTest extends TestCase {
         SmooksResourceConfiguration rc22 = new SmooksResourceConfiguration("*/e", "blah");
         SmooksResourceConfiguration rc23 = new SmooksResourceConfiguration("/*/e", "blah");
 
-        assertTrue(rc1.isTargetedAtElement(e, null));
-        assertTrue(rc2.isTargetedAtElement(e, null));
-        assertTrue(rc3.isTargetedAtElement(e, null));
+        assertTrue(rc1.isTargetedAtElementContext(e));
+        assertTrue(rc2.isTargetedAtElementContext(e));
+        assertTrue(rc3.isTargetedAtElementContext(e));
 
-        assertTrue(!rc4.isTargetedAtElement(e, null));
-        assertTrue(!rc5.isTargetedAtElement(e, null));
+        assertTrue(!rc4.isTargetedAtElementContext(e));
+        assertTrue(!rc5.isTargetedAtElementContext(e));
 
-        assertTrue(rc6.isTargetedAtElement(e, null));
-        assertTrue(rc7.isTargetedAtElement(e, null));
-        assertTrue(rc8.isTargetedAtElement(e, null));
-        assertTrue(rc9.isTargetedAtElement(e, null));
-        assertTrue(rc10.isTargetedAtElement(e, null));
-        assertTrue(rc11.isTargetedAtElement(e, null));
-        assertTrue(rc12.isTargetedAtElement(e, null));
-        assertTrue(rc13.isTargetedAtElement(e, null));
-        assertTrue(rc14.isTargetedAtElement(e, null));
-        assertTrue(rc15.isTargetedAtElement(e, null));
-        assertTrue(rc16.isTargetedAtElement(e, null));
-        assertTrue(rc15_1.isTargetedAtElement(e, null));
-        assertTrue(rc16_1.isTargetedAtElement(e, null));
+        assertTrue(rc6.isTargetedAtElementContext(e));
+        assertTrue(rc7.isTargetedAtElementContext(e));
+        assertTrue(rc8.isTargetedAtElementContext(e));
+        assertTrue(rc9.isTargetedAtElementContext(e));
+        assertTrue(rc10.isTargetedAtElementContext(e));
+        assertTrue(rc11.isTargetedAtElementContext(e));
+        assertTrue(rc12.isTargetedAtElementContext(e));
+        assertTrue(rc13.isTargetedAtElementContext(e));
+        assertTrue(rc14.isTargetedAtElementContext(e));
+        assertTrue(rc15.isTargetedAtElementContext(e));
+        assertTrue(rc16.isTargetedAtElementContext(e));
+        assertTrue(rc15_1.isTargetedAtElementContext(e));
+        assertTrue(rc16_1.isTargetedAtElementContext(e));
 
-        assertTrue(!rc17.isTargetedAtElement(e, null));
-        assertTrue(!rc18.isTargetedAtElement(e, null));
-        assertTrue(!rc19.isTargetedAtElement(e, null));
+        assertTrue(!rc17.isTargetedAtElementContext(e));
+        assertTrue(!rc18.isTargetedAtElementContext(e));
+        assertTrue(!rc19.isTargetedAtElementContext(e));
 
-        assertTrue(rc20.isTargetedAtElement(e, null));
-        assertTrue(rc21.isTargetedAtElement(e, null));
-        assertTrue(rc22.isTargetedAtElement(e, null));
+        assertTrue(rc20.isTargetedAtElementContext(e));
+        assertTrue(rc21.isTargetedAtElementContext(e));
+        assertTrue(rc22.isTargetedAtElementContext(e));
 
-        assertTrue(!rc23.isTargetedAtElement(e, null));
+        assertTrue(!rc23.isTargetedAtElementContext(e));
     }
 
     public void test_attributeSelector() {        
         // Test that the attribute part of the selector doesn't get lowercased...
         SmooksResourceConfiguration resource = new SmooksResourceConfiguration("a/b/@myAttribute");
-        assertEquals("a/b{@myAttribute}", SelectorStepBuilder.toString(resource.getSelectorSteps()));
+        assertEquals("[a, b, @myAttribute]", Arrays.asList(resource.getContextualSelector()).toString());
     }
 
     public void test_isTargetedAtElement_SAX_rooted() {
@@ -281,11 +283,11 @@ public class SmooksResourceConfigurationTest extends TestCase {
         SmooksResourceConfiguration rc4 = new SmooksResourceConfiguration("/a/b/**/d/e", "blah");
         SmooksResourceConfiguration rc5 = new SmooksResourceConfiguration("/a/b/*/d/e", "blah");
 
-        assertTrue(rc1.isTargetedAtElement(e, null));
-        assertTrue(!rc2.isTargetedAtElement(e, null));
-        assertTrue(rc3.isTargetedAtElement(e, null));
-        assertTrue(rc4.isTargetedAtElement(e, null));
-        assertTrue(!rc5.isTargetedAtElement(e, null));
+        assertTrue(rc1.isTargetedAtElementContext(e));
+        assertTrue(!rc2.isTargetedAtElementContext(e));
+        assertTrue(rc3.isTargetedAtElementContext(e));
+        assertTrue(rc4.isTargetedAtElementContext(e));
+        assertTrue(!rc5.isTargetedAtElementContext(e));
     }
 
     public void test_isTargetedAtElement_SAX_with_Attribute() {
@@ -301,15 +303,15 @@ public class SmooksResourceConfigurationTest extends TestCase {
 
         assertEquals("e", rc8.getTargetElement());
         assertEquals("attrib1", rc8.getTargetAttribute());
-        assertTrue(rc8.isTargetedAtElement(e, null));
+        assertTrue(rc8.isTargetedAtElementContext(e));
 
         assertEquals("e", rc9.getTargetElement());
         assertEquals("attrib1", rc9.getTargetAttribute());
-        assertTrue(rc9.isTargetedAtElement(e, null));
+        assertTrue(rc9.isTargetedAtElementContext(e));
 
         assertEquals("e", rc10.getTargetElement());
         assertEquals("attrib1", rc10.getTargetAttribute());
-        assertTrue(!rc10.isTargetedAtElement(e, null));
+        assertTrue(!rc10.isTargetedAtElementContext(e));
     }
 
     private SAXElement buildE() {

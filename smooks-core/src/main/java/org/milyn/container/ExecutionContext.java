@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -18,7 +18,6 @@ package org.milyn.container;
 
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.event.ExecutionEventListener;
-import org.milyn.javabean.context.BeanContext;
 import org.milyn.profile.ProfileSet;
 
 import java.net.URI;
@@ -112,7 +111,7 @@ public interface ExecutionContext extends BoundAttributeStore {
     /**
      * Get the ExecutionEventListener for the {@link ExecutionContext}.
      * @return The listener instance.
-     * @see #setEventListener(ExecutionEventListener)
+     * @see #setEventListener(ExecutionEventListener) 
      */
     public abstract ExecutionEventListener getEventListener();
 
@@ -123,7 +122,7 @@ public interface ExecutionContext extends BoundAttributeStore {
      * @param terminationError The termination Error/Exception.
      */
     public abstract void  setTerminationError(Throwable terminationError);
-
+    
 
     /**
      * Set the error/exception that caused the filter operation associated with
@@ -169,10 +168,4 @@ public interface ExecutionContext extends BoundAttributeStore {
      * @return True if default serialization is on, otherwise false.
      */
     public boolean isDefaultSerializationOn();
-
-    /**
-     * Get the BeanContext in use in this context
-     * @return The BeanContext
-     */
-    public abstract BeanContext getBeanContext();
 }

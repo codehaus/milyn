@@ -23,14 +23,13 @@ import org.milyn.util.ClassUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Binding "property" attribute checker.
  * <p/>
- * The binding "property" attribute should not be specified when binding to a Collection/Array, and must be
+ * The binding "property" attribute should not be specified when binding to a List/Array, and must be
  * specified when binding to a non-collection.  This visitor enforces these constraints.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -39,7 +38,7 @@ public class PropertyChecker implements DOMVisitBefore {
 
     private static enum BeanType {
         ARRAY,
-        COLLECTION,
+        LIST,
         MAP,
         OTHER
     }
@@ -53,14 +52,14 @@ public class PropertyChecker implements DOMVisitBefore {
         if(isPropertSpecified && isSetterMethodSpecified) {
         	throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'property' and a 'setterMethod' attribute.  Only one of both may be set.");
         }
-        if(isPropertSpecified && beanType == BeanType.COLLECTION) {
-            throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'property' attribute.  This is not valid for a Collection target.");
+        if(isPropertSpecified && beanType == BeanType.LIST) {
+            throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'property' attribute.  This is not valid for a List target.");
         }
         if(isPropertSpecified && beanType == BeanType.ARRAY) {
             throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'property' attribute.  This is not valid for an Array target.");
         }
-        if(isSetterMethodSpecified && beanType == BeanType.COLLECTION) {
-            throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'setterMethod' attribute.  This is not valid for a Collection target.");
+        if(isSetterMethodSpecified && beanType == BeanType.LIST) {
+            throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'setterMethod' attribute.  This is not valid for a List target.");
         }
         if(isSetterMethodSpecified && beanType == BeanType.ARRAY) {
             throw new SmooksConfigurationException("'" + bindingType + "' binding specifies a 'setterMethod' attribute.  This is not valid for an Array target.");
@@ -76,10 +75,10 @@ public class PropertyChecker implements DOMVisitBefore {
         if(beanClassName.endsWith("[]")) {
             return BeanType.ARRAY;
         } else {
-            Class<?> beanClass = getBeanClass(bindingElement);
+            Class beanClass = getBeanClass(bindingElement);
 
-            if (Collection.class.isAssignableFrom(beanClass)) {
-                return BeanType.COLLECTION;
+            if (List.class.isAssignableFrom(beanClass)) {
+                return BeanType.LIST;
             } else if (Map.class.isAssignableFrom(beanClass)) {
                 return BeanType.MAP;
             } else {
@@ -88,10 +87,10 @@ public class PropertyChecker implements DOMVisitBefore {
         }
     }
 
-    private Class<?> getBeanClass(Element bindingElement) {
+    private Class getBeanClass(Element bindingElement) {
         String beanClassName = getBeanTypeName(bindingElement);
 
-        Class<?> beanClass;
+        Class beanClass;
         try {
             beanClass = ClassUtil.forName(beanClassName, getClass());
         } catch (ClassNotFoundException e) {

@@ -17,8 +17,6 @@ package org.milyn.delivery.sax;
 
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.VisitLifecycleCleanable;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.xpath.SelectorStep;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +32,6 @@ public class SAXElementVisitorMap {
     private List<ContentHandlerConfigMap<SAXVisitChildren>> childVisitors;
     private List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters;
     private List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables;
-    private boolean accumulateText = false;
 
     public List<ContentHandlerConfigMap<SAXVisitBefore>> getVisitBefores() {
         return visitBefores;
@@ -67,27 +64,7 @@ public class SAXElementVisitorMap {
     public void setVisitCleanables(List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables) {
         this.visitCleanables = visitCleanables;
     }
-
-    public boolean accumulateText() {
-        return accumulateText;
-    }
-
-    public void initAccumulateText() {
-        if(visitAfters == null) {
-            return;
-        }
-
-        for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : visitAfters) {
-            SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
-            SelectorStep selectorStep = resourceConfig.getSelectorStep();
-
-            if(selectorStep.accessesText()) {
-                accumulateText = true;
-                break;
-            }
-        }
-    }
-
+    
     public SAXElementVisitorMap merge(SAXElementVisitorMap map) {
     	if(map == null) {
     		// No need to merge...
@@ -109,9 +86,7 @@ public class SAXElementVisitorMap {
         merge.visitAfters.addAll(map.visitAfters);
         merge.visitCleanables.addAll(visitCleanables);
         merge.visitCleanables.addAll(map.visitCleanables);
-        
-        merge.accumulateText = (accumulateText || merge.accumulateText);
-
-        return merge;
+    	
+    	return merge;
     }
 }

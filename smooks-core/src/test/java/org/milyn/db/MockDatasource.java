@@ -50,8 +50,6 @@ public class MockDatasource extends AbstractDataSource {
                     return null;
                 } else if(method.getName().equals("close")) {
                     return null;
-                }  else if(method.getName().equals("getAutoCommit")) {
-                    return true;
                 }
 
                 throw new RuntimeException("Unexpected call to method: " + method);

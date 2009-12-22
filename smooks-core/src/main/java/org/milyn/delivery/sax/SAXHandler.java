@@ -23,7 +23,6 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
-import org.milyn.delivery.sax.terminate.TerminateException;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
 import org.milyn.event.types.ElementPresentEvent;
@@ -75,10 +74,10 @@ public class SAXHandler extends DefaultHandler2 {
 
         deliveryConfig = ((SAXContentDeliveryConfig)executionContext.getDeliveryConfig());
         visitorConfigMap = deliveryConfig.getOptimizedVisitorConfig();
-
+        
         SAXElementVisitorMap starVisitorConfigs = visitorConfigMap.get("*");
         SAXElementVisitorMap starStarVisitorConfigs = visitorConfigMap.get("**");
-
+        
         if(starVisitorConfigs != null) {
         	globalVisitorConfig = starVisitorConfigs.merge(starStarVisitorConfigs);
         } else {
@@ -91,7 +90,7 @@ public class SAXHandler extends DefaultHandler2 {
 
         rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, execContext.getDeliveryConfig());
         defaultSerializer.setRewriteEntities(rewriteEntities);
-
+        
         defaultSerializationOn = executionContext.isDefaultSerializationOn();
         if(defaultSerializationOn) {
             // If it's not explicitly configured off, we auto turn it off if the NullWriter is configured...
@@ -118,7 +117,7 @@ public class SAXHandler extends DefaultHandler2 {
         } finally {
             VisitorConfigMap.execCleanables(deliveryConfig.getExecCleanables(), execContext);
         }
-    }
+    }    
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         WriterManagedSAXElement element;
@@ -268,7 +267,7 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     private void visitBefore(WriterManagedSAXElement element, SAXElementVisitorMap elementVisitorConfig) {
-
+        
         // Now create the new "current" processor...
         ElementProcessor processor = new ElementProcessor();
 
@@ -281,17 +280,13 @@ public class SAXHandler extends DefaultHandler2 {
             // And visit it with the targeted visitor...
             List<ContentHandlerConfigMap<SAXVisitBefore>> visitBeforeMappings = currentProcessor.elementVisitorConfig.getVisitBefores();
 
-            if(elementVisitorConfig.accumulateText()) {
-                currentProcessor.element.accumulateText();
-            }
-
             if(visitBeforeMappings != null) {
                 int mappingCount = visitBeforeMappings.size();
 
                 for(int i = 0; i < mappingCount; i++) {
                     ContentHandlerConfigMap<SAXVisitBefore> mapping = visitBeforeMappings.get(i);
                     try {
-                        if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
+                        if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                             mapping.getContentHandler().visitBefore(currentProcessor.element, execContext);
                             // Register the targeting event.  No need to register this event again on the visitAfter...
                             if(eventListener != null) {
@@ -341,7 +336,7 @@ public class SAXHandler extends DefaultHandler2 {
 
                 for(int i = 0; i < mappingCount; i++) {
                     ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
-                    if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
+                    if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                         try {
                             mapping.getContentHandler().onChildElement(currentProcessor.element, childElement, execContext);
                         } catch(Throwable t) {
@@ -378,7 +373,7 @@ public class SAXHandler extends DefaultHandler2 {
     private void visitAfter(ContentHandlerConfigMap<SAXVisitAfter> afterMapping) {
 
         try {
-            if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
+            if(afterMapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                 afterMapping.getContentHandler().visitAfter(currentProcessor.element, execContext);
                 if(eventListener != null) {
                     eventListener.onEvent(new ElementVisitEvent(currentProcessor.element, afterMapping, VisitSequence.AFTER));
@@ -433,7 +428,7 @@ public class SAXHandler extends DefaultHandler2 {
                         for(int i = 0; i < mappingCount; i++) {
                             ContentHandlerConfigMap<SAXVisitChildren> mapping = visitChildMappings.get(i);
                             try {
-                                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element, execContext)) {
+                                if(mapping.getResourceConfig().isTargetedAtElement(currentProcessor.element)) {
                                     mapping.getContentHandler().onChildText(currentProcessor.element, textWrapper, execContext);
                                 }
                             } catch(Throwable t) {
@@ -553,14 +548,8 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     private void processVisitorException(Throwable error, String errorMsg) {
-    	if(error instanceof TerminateException) {
-            throw (TerminateException) error;
-        }
-
-    	execContext.setTerminationError(error);
-
         if(terminateOnVisitorException) {
-        	if(error instanceof SmooksException) {
+            if(error instanceof SmooksException) {
                 throw (SmooksException) error;
             } else {
                 throw new SmooksException(errorMsg, error);

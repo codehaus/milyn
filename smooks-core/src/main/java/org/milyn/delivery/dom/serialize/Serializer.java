@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.ParameterAccessor;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
@@ -38,6 +39,7 @@ import org.w3c.dom.*;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Node serializer.
@@ -313,7 +315,7 @@ public class Serializer {
                 SmooksResourceConfiguration config = configMap.getResourceConfig();
 
                 // Make sure the serialization unit is targeted at this element.
-                if(!config.isTargetedAtElement(element, executionContext)) {
+                if(!config.isTargetedAtElement(element)) {
                     continue;
                 }
 

@@ -19,10 +19,8 @@ package org.milyn.cdr;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.annotation.Configurator;
-import org.milyn.cdr.xpath.SelectorStep;
 import org.milyn.classpath.ClasspathUtils;
 import org.milyn.container.ApplicationContext;
-import org.milyn.container.ApplicationContextInitializer;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.ContentHandlerFactory;
 import org.milyn.delivery.JavaContentHandlerFactory;
@@ -34,9 +32,7 @@ import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.util.ClassUtil;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.Smooks;
-import org.milyn.xml.NamespaceMappings;
 import org.xml.sax.SAXException;
-import org.jaxen.saxpath.SAXPathException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,7 +40,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * {@link org.milyn.cdr.SmooksResourceConfiguration} context store.
@@ -67,9 +62,8 @@ public class SmooksResourceConfigurationStore {
 	private List<SmooksResourceConfigurationList> configLists = new ArrayList<SmooksResourceConfigurationList>();
     /**
      * A complete list of all the that have been initialized and added to this store.
-     * This has been transformed into a CopyOnWriteArrayList to fix http://jira.codehaus.org/browse/MILYN-381
      */
-    private List<Object> initializedObjects = new CopyOnWriteArrayList<Object>() {
+    private List<Object> initializedObjects = new ArrayList<Object>() {
         public boolean add(Object object) {
             if(contains(object)) {
                 // Don't add the same object again...
@@ -215,32 +209,11 @@ public class SmooksResourceConfigurationStore {
         }
 
         configList = XMLConfigDigester.digestConfig(resourceConfigStream, baseURI);
-        processAppContextInitializers(configList);
         configLists.add(configList);
 
         // XSD v1.0 added profiles to the resource config.  If there were any, add them to the
         // profile store.
         addProfileSets(configList.getProfiles());
-    }
-
-    private void processAppContextInitializers(SmooksResourceConfigurationList configList) {
-        for(int i = 0; i < configList.size(); i++) {
-            SmooksResourceConfiguration resourceConfig = configList.get(i);
-            Class javaClass = resourceConfig.toJavaResource();
-
-            if(javaClass != null && ApplicationContextInitializer.class.isAssignableFrom(javaClass)) {
-                ApplicationContextInitializer initializer;
-
-                try {
-                    initializer = (ApplicationContextInitializer) javaClass.newInstance();
-                } catch (Exception e) {
-                    throw new SmooksConfigurationException("Failed to create an instance of the '" + javaClass.getName() + "' ApplicationContextInitializer class.", e);
-                }
-
-                Configurator.configure(initializer, resourceConfig, applicationContext);
-                initializedObjects.add(initializer);
-            }
-        }
     }
 
     private void addProfileSets(List<ProfileSet> profileSets) {
@@ -423,9 +396,7 @@ public class SmooksResourceConfigurationStore {
     public void close() {
         if(initializedObjects != null) {
             logger.debug("Uninitializing all ContentHandler instances allocated through this store.");
-            // We uninitialize in reverse order...
-            for(int i = initializedObjects.size() - 1; i >= 0; i--) {
-                Object object = initializedObjects.get(i);
+            for(Object object : initializedObjects) {
                 try {
                     logger.debug("Uninitializing ContentHandler instance: " + object.getClass().getName());
                     Configurator.uninitialise(object);
@@ -434,16 +405,6 @@ public class SmooksResourceConfigurationStore {
                 }
             }
             initializedObjects = null;
-        }
-    }
-
-    public void setNamespaces() throws SAXPathException {
-        Properties namespaces = NamespaceMappings.getMappings(applicationContext);
-
-        for(SmooksResourceConfigurationList resourceConfigList : configLists) {
-            for(int i = 0; i < resourceConfigList.size(); i++) {
-                SelectorStep.setNamespaces(resourceConfigList.get(i).getSelectorSteps(), namespaces);
-            }
         }
     }
 }

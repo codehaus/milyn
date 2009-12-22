@@ -34,7 +34,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.thoughtworks.xstream.io.xml.XppDriver;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>

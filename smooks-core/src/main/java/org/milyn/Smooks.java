@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -20,9 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.ReaderConfigurator;
-import org.milyn.xml.NamespaceMappings;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.standalone.StandaloneApplicationContext;
@@ -38,20 +36,15 @@ import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
-import org.jaxen.saxpath.SAXPathException;
-
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
 
 /**
  * Smooks executor class.
@@ -71,7 +64,7 @@ import java.util.Properties;
  * <pre>
  * Smooks smooks = {@link #Smooks(String) new Smooks}("smooks-config.xml");
  * {@link ExecutionContext} execContext;
- *
+ * 
  * execContext = smooks.{@link #createExecutionContext createExecutionContext}();
  * smooks.{@link #filterSource filter}(new {@link StreamSource}(...), new {@link StreamResult}(...), execContext);
  * </pre>
@@ -129,10 +122,6 @@ public class Smooks {
      */
     public Smooks(String resourceURI) throws IOException, SAXException {
         this();
-        URIResourceLocator resourceLocator = new URIResourceLocator();
-        
-        resourceLocator.setBaseURI(URIResourceLocator.extractBaseURI(resourceURI));
-        context.setResourceLocator(resourceLocator);
         addConfigurations(resourceURI);
     }
 
@@ -151,7 +140,6 @@ public class Smooks {
      */
     public Smooks(InputStream resourceConfigStream) throws IOException, SAXException {
         this();
-        context.setResourceLocator(new URIResourceLocator());
         addConfigurations(resourceConfigStream);
     }
 
@@ -188,16 +176,6 @@ public class Smooks {
         SmooksResourceConfiguration readerConfig = readerConfigurator.toConfig();
         readerConfig.setSelector(AbstractParser.ORG_XML_SAX_DRIVER);
         addConfiguration(readerConfig);
-    }
-
-    /**
-     * Set the namespace prefix-to-uri mappings to be used on this Smooks instance.
-     * @param namespaces The namespace prefix-to-uri mappings.
-     */
-    public void setNamespaces(Properties namespaces) {
-        AssertArgument.isNotNull(namespaces, "namespaces");
-        assertIsConfigurable();
-        NamespaceMappings.setMappings(namespaces, context);
     }
 
     /**
@@ -365,35 +343,17 @@ public class Smooks {
      * @throws UnknownProfileMemberException Unknown target profile.
      */
     public ExecutionContext createExecutionContext(String targetProfile) throws UnknownProfileMemberException {
+        isConfigurable = false;
         if(classLoader != null) {
             ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
             try {
-                if(isConfigurable) {
-                    initializeResourceConfigurations();
-                }
                 return new StandaloneExecutionContext(targetProfile, context, visitorConfigMap);
             } finally {
                 Thread.currentThread().setContextClassLoader(contextClassLoader);
             }
         } else {
-            if(isConfigurable) {
-                initializeResourceConfigurations();
-            }
             return new StandaloneExecutionContext(targetProfile, context, visitorConfigMap);
-        }
-    }
-
-    private synchronized void initializeResourceConfigurations() {
-        if(!isConfigurable) {
-            return;
-        }
-        isConfigurable = false;
-
-        try {
-            context.getStore().setNamespaces();
-        } catch (SAXPathException e) {
-            throw new SmooksConfigurationException("Error configuring namespaces", e);
         }
     }
 

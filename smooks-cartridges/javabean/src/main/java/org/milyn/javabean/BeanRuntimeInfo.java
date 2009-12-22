@@ -67,7 +67,7 @@ public class BeanRuntimeInfo {
     public BeanRuntimeInfo() {
     }
 
-    public BeanRuntimeInfo(Class<?> clazz) {
+    public BeanRuntimeInfo(Class clazz) {
     	resolveBeanRuntimeInfo(clazz);
     }
 
@@ -152,16 +152,16 @@ public class BeanRuntimeInfo {
             this.setClassification(clazz);
 
             // check for a default constructor.
-//	        try {
-//	            clazz.getConstructor();
-//	        } catch (NoSuchMethodException e) {
-//	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
-//	        }
+	        try {
+	            clazz.getConstructor();
+	        } catch (NoSuchMethodException e) {
+	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanClass + " doesn't have a public default constructor.");
+	        }
 
         }
     }
 
-    private void resolveBeanRuntimeInfo(Class<?> clazz) {
+    private void resolveBeanRuntimeInfo(Class clazz) {
         // If it's an array, we use a List and extract an array from it on the
         // visitAfter event....
         if(clazz.isArray()) {
@@ -174,11 +174,11 @@ public class BeanRuntimeInfo {
             this.setClassification(clazz);
 
             // check for a default constructor.
-//	        try {
-//	            clazz.getConstructor();
-//	        } catch (NoSuchMethodException e) {
-//	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + clazz.getName() + " doesn't have a public default constructor.");
-//	        }
+	        try {
+	            clazz.getConstructor();
+	        } catch (NoSuchMethodException e) {
+	            throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + clazz.getName() + " doesn't have a public default constructor.");
+	        }
 
         }
     }

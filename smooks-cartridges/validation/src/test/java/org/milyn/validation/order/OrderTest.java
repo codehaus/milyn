@@ -78,7 +78,7 @@ public class OrderTest extends TestCase {
             smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order-message-03.xml")), result);
             fail("Expected SmooksException");
         } catch(SmooksException e) {
-            assertEquals("A FATAL validation failure has occured [/order/order-items/order-item[3]/fail] RegexRuleEvalResult, matched=false, providerName=product, ruleName=failProduct, text=true, pattern=false", e.getCause().getMessage());
+            assertEquals("A FATAL validation failure has occured: [/order/order-items/order-item[3]/fail] RegexRuleEvalResult, matched=false, providerName=product, ruleName=failProduct, text=true, pattern=false", e.getCause().getMessage());
             assertEquals(5, result.getNumFailures());
             assertEquals("[/order/order-items/order-item[3]/fail] RegexRuleEvalResult, matched=false, providerName=product, ruleName=failProduct, text=true, pattern=false", result.getFatal().toString());
         } finally {

@@ -29,7 +29,6 @@ import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
 import org.milyn.profile.DefaultProfileSet;
-import org.milyn.resource.URIResourceLocator;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -138,16 +137,6 @@ public class SmooksTest extends TestCase {
         assertEquals(1, visitor2.callCount);
     }
 
-
-    public void test_setResourceLocator() throws IOException, SAXException {
-        Smooks smooks = new Smooks("classpath:/org/milyn/test_setClassLoader_01.xml");
-
-        // Check that the base URI was properly resolved
-        URIResourceLocator resourceLocator = (URIResourceLocator)smooks.getApplicationContext().getResourceLocator();
-		assertEquals("classpath:/org/milyn/", resourceLocator.getBaseURI().toString());
-		assertEquals("classpath:/org/milyn/somethingelse.xml", resourceLocator.getBaseURI().resolve("somethingelse.xml").toString());
-    }
-    
     private class TestDOMVisitorBefore implements DOMVisitBefore {
         private int callCount = 0;
         public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {

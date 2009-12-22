@@ -76,18 +76,4 @@ public abstract class AssertArgument {
 					+ "' arg in method call.");
 		}
 	}
-
-	/**
-	 * Assert that the argument is an instance of the specified class.
-	 *
-	 * @param arg Argument.
-	 * @param clazz The Class type to check.
-	 * @param argName Argument name.
-	 * @throws IllegalArgumentException Argument is null or empty.
-	 */
-	public static void isInstanceOf(Object arg, Class clazz, String argName) throws IllegalArgumentException {
-		if (clazz.isAssignableFrom(arg.getClass())) {
-			throw new IllegalArgumentException("Argument '" + argName + "' is not an instance of '" + clazz.getName() + "'.");
-		}
-	}
 }

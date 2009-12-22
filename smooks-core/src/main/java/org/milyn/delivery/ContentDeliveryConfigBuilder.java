@@ -202,15 +202,12 @@ public class ContentDeliveryConfigBuilder {
             saxConfig.getConfigBuilderEvents().addAll(configBuilderEvents);
             
             saxConfig.optimizeConfig();
-            saxConfig.assertSelectorsNotAccessingText();
 
             if(sortVisitors) {
                 saxConfig.sort();
             }
             
             saxConfig.initializeXMLReaderPool();
-
-            saxConfig.addIndexCounters();
 
             return saxConfig;
         }

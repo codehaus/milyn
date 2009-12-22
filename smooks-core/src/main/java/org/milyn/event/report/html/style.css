@@ -1,26 +1,4 @@
 
-body{
-	font-size:1em;
-}
-
-html{
-	font-size:100%;
-}
-
-p, div, span, h1 {
-	font-family: verdana;
-	font-size: 0.92em
-}
-
-h1 {
-	font-size: 1.25em;
-	color: #0D6826;
-}
-
-a, a:link, a:visited, a:hover {
-	color: blue;
-}
-
 /*--------------------------------------------------
   REQUIRED to hide the non-active tab content.
   But do not hide them in the print stylesheet!
@@ -81,15 +59,14 @@ ul.tabbernav li a:hover {
 }
 
 ul.tabbernav li.tabberactive a {
-    background-color: #DBD7D7;
-    border-bottom: 1px solid #DBD7D7;
-    color: #000;
+    background-color: #fff;
+    border-bottom: 1px solid #fff;
 }
 
 ul.tabbernav li.tabberactive a:hover {
     color: #000;
-    background: #DBD7D7;
-    border-bottom: 1px solid #DBD7D7;
+    background: white;
+    border-bottom: 1px solid white;
 }
 
 /*--------------------------------------------------
@@ -129,62 +106,75 @@ you can set a fixed height */
 }
 
 .tabberlive#outertab .tabbertab {
-    height: 600px;
+    overflow: auto;
+}
+
+.tabberlive#outertab .tabbertab {
+    height: 650px;
 }
 
 .tabbertab {
     position: relative;
-    background-color: #DBD7D7;
+    background-color: rgb( 238, 233, 233 );
 }
 
 #left {
     float: left;
-    height: 99%;
-    width: 28%;
+    height: 93%;
+    width: 25%;
+    margin: 1%;
     border-style: groove;
     background-color: white;
-    overflow: auto;
+    overflow: scroll;
 }
 
 #right {
     position: relative;
-    float: left;
-    height: 98%;
-    width: 71%;
-    margin-left: 0.4%;
+    float: right;
+    height: 93%;
+    margin: 1%;
+    width: 65%;
 }
 
 #righttop {
-    height: 25%;
-    width: 100%;
+    float: top;
+    height: 28%;
+    width: 97%;
     border-style: groove;
     background-color: white;
-    overflow: auto;
-    margin-bottom: 0.4%;
+    overflow: scroll;
+}
+
+#rightmiddle {
+    float: top;
+    height: 6%;
+    width: 97%;
 }
 
 #rightbottom {
-    height: 74%;
-    width: 100%;
+    float: bottom;
+    height: 65%;
+    width: 97%;
     border-style: groove;
     background-color: white;
-    overflow: auto;
+    overflow: scroll;
 }
 
 #result-summary {
     float: top;
-    height: 12%;
+    height: 10%;
     border-style: groove;
     background-color: white;
-    overflow: auto;
-    margin-bottom: 0.4%;
+    overflow: scroll;
+    margin: 1%;
 }
 
 
 #result-detail {
     float: bottom;
-    height: 85%;
+    height: 80%;
     border-style: groove;
     background-color: white;
-    overflow: auto;
+    overflow: scroll;
+    margin: 1%;
 }

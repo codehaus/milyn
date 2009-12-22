@@ -69,14 +69,14 @@ public class URIResourceLocator implements ContainerResourceLocator {
      */
     public static final String BASE_URI_SYSKEY = "org.milyn.resource.baseuri";
 
-    private URI baseURI = getSystemBaseURI();
+    private URI baseURI = URI.create(System.getProperty(BASE_URI_SYSKEY, "./"));
 
     public InputStream getResource(String configName, String defaultUri)
             throws IllegalArgumentException, IOException {
         return getResource(defaultUri);
     }
 
-	public InputStream getResource(String uri) throws IllegalArgumentException, IOException {
+    public InputStream getResource(String uri) throws IllegalArgumentException, IOException {
         ResolvedURI resolvedURI = new ResolvedURI(uri, resolveURI(uri));
 
         return getResource(resolvedURI);
@@ -175,54 +175,6 @@ public class URIResourceLocator implements ContainerResourceLocator {
         } else {
             this.baseURI = baseURI;
 		}
-	}
-
-    /**
-     * Get the base URI for this locator instance.
-     * @return The base URI for the locator instance.
-     */
-    public URI getBaseURI() {
-    	return baseURI;
-    }
-
-    /**
-     * Get the system defined base URI.
-     * <p/>
-     * Defined by the system property {@link #BASE_URI_SYSKEY}.
-	 * @return System base URI.
-	 */
-	public static URI getSystemBaseURI() {
-		return URI.create(System.getProperty(BASE_URI_SYSKEY, "./"));
-	}
-    
-    /**
-     * Extract the base URI from the supplied resource URI.
-     * @param resourceURI The resource URI.
-     * @return The base URI for the supplied resource URI.
-     */
-    public static URI extractBaseURI(String resourceURI) {
-        URI uri = URI.create(resourceURI);
-		return extractBaseURI(uri);
-    }
-
-    /**
-     * Extract the base URI from the supplied resource URI.
-     * @param resourceURI The resource URI.
-     * @return The base URI for the supplied resource URI.
-     */
-	public static URI extractBaseURI(URI resourceURI) {
-		File resFile = new File(resourceURI.getPath());
-        
-        try {
-        	File configFolder = resFile.getParentFile();
-        	if(configFolder != null) {
-        		return new URI(resourceURI.getScheme(), resourceURI.getUserInfo(), resourceURI.getHost(), resourceURI.getPort(), configFolder.getPath().replace('\\', '/'), resourceURI.getQuery(), resourceURI.getFragment());
-        	}
-		} catch (URISyntaxException e) {
-			logger.warn("Error extracting base URI.", e);
-		}
-    	
-		return URI.create("./");
 	}
 
     private static class ResolvedURI {

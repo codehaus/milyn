@@ -24,7 +24,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanRepository;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -47,7 +46,7 @@ public class CounterTest {
 	private SmooksResourceConfiguration config;
 
 	private MockExecutionContext executionContext;
-	private BeanContext beanContext;
+	private BeanRepository beanRepository;
 
 
 	@Test ( groups = "unit" )
@@ -237,7 +236,7 @@ public class CounterTest {
 	}
 
 	private long getCounterValue(String beanId) {
-		Object valueObj = beanContext.getBean(beanId);
+		Object valueObj = beanRepository.getBean(beanId);
 
 		assertNotNull(valueObj);
 		assertTrue(valueObj instanceof Long);
@@ -250,7 +249,7 @@ public class CounterTest {
 
 		config = new SmooksResourceConfiguration(selector, Counter.class.getName());
 		executionContext = new MockExecutionContext();
-		beanContext = executionContext.getBeanContext();
+		beanRepository = BeanRepository.getInstance(executionContext);
 	}
 
 }

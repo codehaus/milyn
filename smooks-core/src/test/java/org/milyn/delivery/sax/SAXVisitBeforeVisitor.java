@@ -36,12 +36,4 @@ public class SAXVisitBeforeVisitor implements SAXVisitBefore {
         visited = true;
         staticInjectedParam = injectedParam;
     }
-
-	/**
-	 * @param injectedParam the injectedParam to set
-	 */
-	public SAXVisitBeforeVisitor setInjectedParam(String injectedParam) {
-		this.injectedParam = injectedParam;
-		return this;
-	}
 }

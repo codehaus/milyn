@@ -26,8 +26,7 @@ import javax.xml.transform.Source;
  */
 public abstract class FilterSource implements Source {
 
-    public static final String CONTEXT_KEY = FilterSource.class.getName() + "#CONTEXT_KEY";
-
+    private static final String CONTEXT_KEY = FilterSource.class.getName() + "#CONTEXT_KEY";
     private String systemId;
 
     public static Source getSource(ExecutionContext executionContext) {

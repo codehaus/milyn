@@ -3,14 +3,14 @@
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -20,8 +20,6 @@ import org.milyn.cdr.ParameterAccessor;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.dom.MockContentDeliveryConfig;
 import org.milyn.event.ExecutionEventListener;
-import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.StandaloneBeanContextFactory;
 import org.milyn.profile.DefaultProfileSet;
 import org.milyn.profile.Profile;
 import org.milyn.profile.ProfileSet;
@@ -34,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *
+ * 
  * @author tfennelly
  */
 public class MockExecutionContext implements ExecutionContext {
@@ -51,7 +49,6 @@ public class MockExecutionContext implements ExecutionContext {
     private String contentEncoding;
     private ExecutionEventListener executionListener;
     private Throwable terminationError;
-    private BeanContext beanContext;
 
     public void setDocumentSource(URI docSource) {
         this.docSource = docSource;
@@ -161,20 +158,13 @@ public class MockExecutionContext implements ExecutionContext {
 	public void removeAttribute(Object key) {
 		attributes.remove(key);
 	}
-
+    
     public MockContentDeliveryConfig getMockDeliveryConfig() {
         return (MockContentDeliveryConfig) this.deliveryConfig;
     }
-
+    
     public Map getAttributes()
     {
     	return attributes;
     }
-
-	public BeanContext getBeanContext() {
-		if(beanContext == null) {
-			beanContext = StandaloneBeanContextFactory.create(this);
-		}
-		return beanContext;
-	}
 }

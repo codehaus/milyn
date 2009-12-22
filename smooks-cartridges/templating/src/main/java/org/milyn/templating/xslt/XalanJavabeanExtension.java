@@ -119,7 +119,7 @@ public class XalanJavabeanExtension {
 			throw new IllegalStateException(message);
 		}
 		
-		Map<String, Object> beans = activeRequest.getBeanContext().getBeanMap();
+		Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(activeRequest).getBeanMap();
 		Object parsedExpression = expressionCache.get(ognlExpression);
 		
 		if(parsedExpression == null) {

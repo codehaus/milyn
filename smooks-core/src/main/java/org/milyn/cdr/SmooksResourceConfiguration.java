@@ -21,7 +21,6 @@ import org.milyn.classpath.*;
 import org.milyn.container.*;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.Filter;
-import org.milyn.delivery.Visitor;
 import org.milyn.delivery.sax.*;
 import org.milyn.expression.*;
 import org.milyn.io.*;
@@ -29,39 +28,38 @@ import org.milyn.profile.*;
 import org.milyn.resource.*;
 import org.milyn.util.*;
 import org.milyn.xml.*;
-import org.milyn.cdr.xpath.SelectorStepBuilder;
-import org.milyn.cdr.xpath.SelectorStep;
-import org.milyn.cdr.xpath.evaluators.XPathExpressionEvaluator;
-import org.milyn.cdr.xpath.evaluators.PassThruEvaluator;
 import org.w3c.dom.*;
-import org.jaxen.saxpath.SAXPathException;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import javassist.NotFoundException;
-import javassist.CannotCompileException;
-
-import javax.xml.namespace.QName;
-
 /**
  * Smooks Resource Targeting Configuration.
  * <p/>
- * A Smooks <b>Resource</b> is anything that can be used by Smooks in the process of analysing or
+ * A <b>Content Delivery Resource</b> is anything that can be used by Smooks in the process of analysing or
  * transforming a data stream.  They could be pieces
- * of Java logic (SAX or DOM element {@link Visitor} implementations), some text or script resource, or perhaps
+ * of Java logic ({@link org.milyn.delivery.dom.DOMElementVisitor},
+ * {@link org.milyn.delivery.dom.serialize.SerializationUnit}), some text or script resource, or perhaps
  * simply a configuration parameter (see {@link org.milyn.cdr.ParameterAccessor}).
  * <p/>
  * <h2 id="restargeting">What is Resource Targeting?</h2>
- * Smooks works by "targeting" {@link Visitor} resources at message fragments.
- * This typically means targeting a piece of tranformation logic (XSLT, Java, Groovy etc)
- * at a specific fragment of that message.  The fragment may
+ * Smooks works by "targeting" resources at message transformation/analysis processes.
+ * It targets resources at <b>message profiles</b>, and then <b>message fragments</b>
+ * (or other aspects of the transformation/analysis process) within that message profile.
+ * This typically means targeting a piece of tranformation logic (XSLT, Java, Groovy etc) at a specific
+ * type of message ("base profile"), and then at a specific fragment of that message.  The fragment may
  * include as much or as little of the document as required.  Smooks also allows you to target multilpe
- * resources at the same fragment.
+ * resources at the same fragment (see {@link org.milyn.cdr.SmooksResourceConfigurationSortComparator}).
+ * <p/>
+ * Note you don't have to use message profiling.  You can simply create a set of configurations
+ * that are only targeted at message fragments (no profiling info), supply them to a
+ * {@link org.milyn.Smooks} instance and then use an {@link org.milyn.container.ExecutionContext}
+ * instance that's not based on a profile (see {@link org.milyn.Smooks#createExecutionContext()}).  This is
+ * definitely the easiest way to start using Smooks.
  * <p/>
  * <h2 id="restargeting">Resource Targeting Configurations</h2>
- * Smooks can be manually/programmatically configured (through code), but the easiest way of working is through XML.  The follwoing
+ * Smooks can be manually configured (through code), but the easiest way of working is through XML.  The follwoing
  * are a few sample configurations.  Explanations follow the samples.
  * <p/>
  * <b>A basic sample</b>.  Note that it is not using any profiling.  The <b>resource-config</b> element maps directly to an instance of this class.
@@ -103,20 +101,22 @@ import javax.xml.namespace.QName;
  * <li><b id="useragent">target-profile</b>: A list of 1 or more {@link ProfileTargetingExpression profile targeting expressions}.
  * (supports wildcards "*").
  * </ol>
+ * <p/>
  * </li>
  * <li><b id="selector">selector</b>: Selector string.  Used by Smooks to "lookup" a resource configuration.
- * This is typically the message fragment name (partial XPath support), but as mentioned above, not all resources are
+ * This is typically the message fragment name, but as mentioned above, not all resources are
  * transformation/analysis resources targeted at a message fragment - this is why we didn't call this attribute
  * "target-fragment". This attribute supports a list of comma separated selectors, allowing you to target a
- * single resource at multiple selector (e.g. fragments).  Where the resource is a {@link Visitor} implementation, the selector
- * is treated as an XPath expression (full XPath spec not supported), otherwise the selector value is treated as an opaque value.
+ * single resource at multiple selector (e.g. fragments).
  * <p/>
  * <br/>
  * Example selectors:
  * <ol>
- * <li>For a {@link Visitor} implementation, use the target fragment name e.g. "order", "address", "address/name", "item[2]/price[text() = 99.99]" etc. 
- * Also supports wildcard based fragment selection ("*").  See the <a href="www.smooks.org">User Guide</a> for more details on setting selectors for {@link Visitor} type
- * resources.
+ * <li><u>The target fragment name (e.g. for HTML - table, tr, pre etc)</u>.  This type of selector can
+ * be contextual e.g. "x/y/z" will target the
+ * resource at all "z" fragments nested inside a "y" fragment, which is in turn nested inside
+ * an "x" fragment.  Also supports CSS style selectors e.g. "td ol li".  See sample configurations above.
+ * Also supports wildcard based fragment selection ("*").
  * </li>
  * <li>"#document" is a special selector that targets a resource at the "document" fragment i.e. the whole document,
  * or document root node fragment.</li>
@@ -125,12 +125,9 @@ import javax.xml.namespace.QName;
  * <p/>
  * </li>
  * <li><b id="namespace">selector-namespace</b>: The XML namespace of the selector target for this resource.  This is used
- * to target {@link Visitor} implementations at fragments from a
+ * to target {@link org.milyn.delivery.ContentHandler}s at XML elements from a
  * specific XML namespace e.g. "http://www.w3.org/2002/xforms".  If not defined, the resource
  * is targeted at all namespces.
- * <p/>
- * Note that since Smooks v1.3, namespace URI-to-prefix mappings can be configured through the "smooks-core" configuration namespace.  Then,
- * selectors can be configured with namespace prefixes, removing the need to use the "selector-namespace" configuration.
  * </li>
  * </ul>
  * <p/>
@@ -184,27 +181,20 @@ public class SmooksResourceConfiguration {
      */
     private String selector;
     /**
+     * Element based selectors can be contextual ala CSS contextual selectors.
+     * The are of the CSS contextual selector form i.e. "UL UL LI".  This String
+     * array contains a parsed contextual selector.
+     */
+    private String[] contextualSelector;
+    private boolean isContextualSelector;
+    /**
      * The name of the target element specified on the selector.
      */
-    private QName targetElement;
+    private String targetElement;
     /**
      * The name of an attribute, if one is specified on the selector.
-     */
-    private QName targetAttribute;
-    /**
-     * Selector step.  Is the last step in the selectorSteps array.
-     * We maintsain it as a stanalone variable as a small optimization i.e to save
-     * indexing into the selectorSteps array.
-     */
-    private SelectorStep selectorStep;
-    /**
-     * Selector steps.
-     */
-    private SelectorStep[] selectorSteps;
-    /**
-     * Is the selector contextual i.e. does it have multiple steps.
-     */
-    private boolean isContextualSelector;
+     */                                                              
+    private String targetAttribute;
     /**
      * Target profile.
      */
@@ -215,7 +205,7 @@ public class SmooksResourceConfiguration {
      */
     private String[] profileTargetingExpressionStrings;
     /**
-     * Targeting expressions built from the target-profile list.
+     * Targeting expresssions built from the target-profile list.
      */
     private ProfileTargetingExpression[] profileTargetingExpressions;
     /**
@@ -331,7 +321,7 @@ public class SmooksResourceConfiguration {
         SmooksResourceConfiguration clone = new SmooksResourceConfiguration();
 
         clone.selector = selector;
-        clone.selectorSteps = selectorSteps;
+        clone.contextualSelector = contextualSelector;
         clone.targetElement = targetElement;
         clone.targetAttribute = targetAttribute;
         clone.isContextualSelector = isContextualSelector;
@@ -408,44 +398,14 @@ public class SmooksResourceConfiguration {
             throw new SmooksConfigurationException("Invalid selector '" + selector + "'.  '" + DOCUMENT_FRAGMENT_SELECTOR + "' token can only exist at the start of the selector.");
         }
 
-        isXmlDef = selector.startsWith(XML_DEF_PREFIX);
-
-        try {
-            selectorSteps = SelectorStepBuilder.buildSteps(selector);
-        } catch (SAXPathException e) {
-            selectorSteps = constructSelectorStepsFromLegacySelector(selector);
-        }
-
-        selectorStep = selectorSteps[selectorSteps.length - 1];
-        targetElement = selectorStep.getTargetElement();
-        targetAttribute = selectorStep.getTargetAttribute();
-        isContextualSelector = (selectorSteps.length > 1);
-    }
-
-    private SelectorStep[] constructSelectorStepsFromLegacySelector(String selector) {
-        // In case it's a legacy selector that we don't support...
-
         if(selector.startsWith("/")) {
             selector = DOCUMENT_FRAGMENT_SELECTOR + selector;
         }
-
-        String[] contextualSelector = parseSelector(selector);
-
-        List<LegacySelectorStep> selectorStepList = new ArrayList<LegacySelectorStep>();
-        for(int i = 0; i < contextualSelector.length; i++) {
-            String targetElementName = contextualSelector[i];
-
-            if(i == contextualSelector.length - 2 && contextualSelector[contextualSelector.length - 1].startsWith("@")) {
-                selectorStepList.add(new LegacySelectorStep(selector,  targetElementName, contextualSelector[contextualSelector.length - 1]));
-                break;
-            } else {
-                selectorStepList.add(new LegacySelectorStep(selector,  targetElementName));
-            }
-        }
-
-        logger.debug("Unable to parse selector '" + selector + "' as an XPath selector (even after normalization).  Parsing as a legacy style selector.");
-
-        return selectorStepList.toArray(new SelectorStep[selectorStepList.size()]);
+        isXmlDef = selector.startsWith(XML_DEF_PREFIX);
+        contextualSelector = parseSelector(selector);
+        targetElement = extractTargetElement(contextualSelector);
+        targetAttribute = extractTargetAttribute(contextualSelector);
+        isContextualSelector = (contextualSelector.length > 1);
     }
 
     public static String[] parseSelector(String selector) {
@@ -575,26 +535,9 @@ public class SmooksResourceConfiguration {
      * <a href="#attribdefs">Attribute Definitions</a> section.
      *
      * @return The contxtual selector definition.
-     * @deprecated Use {#link #getSelectorSteps}.
      */
     public String[] getContextualSelector() {
-        return SelectorStepBuilder.toContextualSelector(selectorSteps);
-    }
-
-    /**
-     * Get the selector steps.
-     * @return The selector steps.
-     */
-    public SelectorStep[] getSelectorSteps() {
-        return selectorSteps;
-    }
-
-    /**
-     * Get the targeting selector step.
-     * @return The targeting selector step.
-     */
-    public SelectorStep getSelectorStep() {
-        return selectorStep;
+        return contextualSelector;
     }
 
     /**
@@ -610,22 +553,6 @@ public class SmooksResourceConfiguration {
      * @return The target XML element name.
      */
     public String getTargetElement() {
-        return targetElement.getLocalPart();
-    }
-
-    /**
-     * Get the {@link QName} of the target element where the {@link #getSelector() selector}
-     * is targeting the resource at an XML element.
-     * <p/>
-     * Accomodates the fact that element based selectors can be contextual. This method
-     * is not relevant where the selector is not targeting an XML element.
-     * <p/>
-     * See details about the "selector" attribute in the
-     * <a href="#attribdefs">Attribute Definitions</a> section.
-     *
-     * @return The target XML element {@link QName}.
-     */
-    public QName getTargetElementQName() {
         return targetElement;
     }
 
@@ -635,18 +562,6 @@ public class SmooksResourceConfiguration {
      * @return An attribute name, if one was specified on the selector, otherwise null.
      */
     public String getTargetAttribute() {
-        if(targetAttribute == null) {
-            return null;
-        }
-        return targetAttribute.getLocalPart();
-    }
-
-    /**
-     * Get the name of the attribute specified on the selector, if one was
-     * specified.
-     * @return An attribute name, if one was specified on the selector, otherwise null.
-     */
-    public QName getTargetAttributeQName() {
         return targetAttribute;
     }
 
@@ -1175,48 +1090,39 @@ public class SmooksResourceConfiguration {
      * Note this doesn't perform any namespace checking.
      *
      * @param element The element to check against.
-     * @param executionContext
      * @return True if this resource configuration is targeted at the specified
      *         element in context, otherwise false.
      */
-    private boolean isTargetedAtElementContext(Element element, ExecutionContext executionContext) {
+    public boolean isTargetedAtElementContext(Element element) {
         Node currentNode = element;
-        ContextIndex index = new ContextIndex(executionContext);
-
-        index.i = selectorSteps.length - 1;
-
-        // Unless it's **, start at the parent because the current element
-        // has already been tested...
-        if(!selectorSteps[index.i].isStarStar()) {
-            index.i = selectorSteps.length - 2;
-            currentNode = element.getParentNode();
-        } else {
-        	// The target selector step is "**".  If the parent one is "#document" and we're at
-        	// the root now, then fail...
-        	if(selectorSteps.length == 2 && selectorSteps[0].isRooted() && element.getParentNode() == null) {
-        		return false;
-        	}
-        }
+        Index index = new Index();
 
         if (currentNode == null || currentNode.getNodeType() != Node.ELEMENT_NODE) {
             return false;
         }
 
+        index.i = contextualSelector.length - 1;
+        if(contextualSelector[index.i].charAt(0) == '@') {
+            index.i = contextualSelector.length - 2;
+        }
+
         // Check the element name(s).
-        while (index.i >= 0 && currentNode != null) {
+        while (index.i >= 0) {
             Element currentElement = (Element) currentNode;
+            String elementName = DomUtils.getName(currentElement);
             Node parentNode;
+            String parentElementName = null;
 
             parentNode = currentElement.getParentNode();
-            if(parentNode == null || parentNode.getNodeType() != Node.ELEMENT_NODE) {
-                parentNode = null;
+            if(parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE) {
+                parentElementName = DomUtils.getName((Element)parentNode);
             }
 
-            if(!isTargetedAtElementContext(currentElement, (Element) parentNode, index)) {
+            if(!isTargetedAtElementContext(elementName, parentElementName, index)) {
                 return false;
             }
 
-            if (parentNode == null) {
+            if (parentElementName == null) {
                 return true;
             }
 
@@ -1236,38 +1142,33 @@ public class SmooksResourceConfiguration {
      * Note this doesn't perform any namespace checking.
      *
      * @param element The element to check against.
-     * @param executionContext
      * @return True if this resource configuration is targeted at the specified
      *         element in context, otherwise false.
      */
-    private boolean isTargetedAtElementContext(SAXElement element, ExecutionContext executionContext) {
+    public boolean isTargetedAtElementContext(SAXElement element) {
         SAXElement currentElement = element;
-        ContextIndex index = new ContextIndex(executionContext);
-
-        index.i = selectorSteps.length - 1;
-
-        // Unless it's **, start at the parent because the current element
-        // has already been tested...
-        if(!selectorSteps[index.i].isStarStar()) {
-            index.i = selectorSteps.length - 2;
-            currentElement = element.getParent();
-        } else {
-        	// The target selector step is "**".  If the parent one is "#document" and we're at
-        	// the root now, then fail...
-        	if(selectorSteps.length == 2 && selectorSteps[0].isRooted() && element.getParent() == null) {
-        		return false;
-        	}
-        }
+        Index index = new Index();
 
         if (currentElement == null) {
             return false;
         }
 
+        index.i = contextualSelector.length - 1;
+        if(contextualSelector[index.i].charAt(0) == '@') {
+            index.i = contextualSelector.length - 2;
+        }
+
         // Check the element name(s).
         while (index.i >= 0) {
+            String elementName = currentElement.getName().getLocalPart();
             SAXElement parentElement = currentElement.getParent();
+            String parentElementName = null;
 
-            if(!isTargetedAtElementContext(currentElement, parentElement, index)) {
+            if(parentElement != null) {
+                parentElementName = parentElement.getName().getLocalPart();
+            }
+
+            if(!isTargetedAtElementContext(elementName, parentElementName, index)) {
                 return false;
             }
 
@@ -1281,128 +1182,48 @@ public class SmooksResourceConfiguration {
         return true;
     }
 
-    private boolean isTargetedAtElementContext(Element element, Element parentElement, ContextIndex index) {
-        if(selectorSteps[index.i].isRooted() && parentElement != null) {
-            return false;
-        } else if (selectorSteps[index.i].isStar()) {
+    private boolean isTargetedAtElementContext(String elementName, String parentElementName, Index index) {
+        if (contextualSelector[index.i].equals("*")) {
             index.i--;
-        } else if (selectorSteps[index.i].isStarStar()) {
+        } else if (contextualSelector[index.i].equals("**")) {
             if(index.i == 0) {
                 // No more tokens to match and ** matches everything
                 return true;
             } else if(index.i == 1) {
-                SelectorStep parentStep = selectorSteps[index.i - 1];
-
-                if(parentElement == null && parentStep.isRooted()) {
+                if(parentElementName == null && contextualSelector[index.i - 1].equals(DOCUMENT_FRAGMENT_SELECTOR)) {
                     // we're at the root of the document and the only selector left is
                     // the document selector.  Pass..
                     return true;
-                } else 
-                	if(parentElement == null) {
+                } else if(parentElementName == null) {
                     // we're at the root of the document, yet there are still
                     // unmatched tokens in the selector.  Fail...
                     return false;
                 }
-            } else if(parentElement == null) {
+            } else if(parentElementName == null) {
                 // we're at the root of the document, yet there are still
                 // unmatched tokens in the selector.  Fail...
                 return false;
             }
 
-            SelectorStep parentStep = selectorSteps[index.i - 1];
+            String parentContextToken = contextualSelector[index.i - 1];
 
-            if(parentStep.isTargetedAtElement(parentElement)) {
-                if(!parentStep.isStarStar()) {
-                    XPathExpressionEvaluator evaluator = parentStep.getPredicatesEvaluator();
-                    if(evaluator == null) {
-                        logger.warn("Predicate Evaluators for resource [" + this + "] is null.  XPath step predicates will not be evaluated.");
-                    } else if(!evaluator.evaluate(parentElement, index.executionContext)) {
-                        return false;
-                    }
-                }
+            // decrement if the parent context token is * or **,
+            // or if the parent node is an element whose name matches
+            // that of the parent context token, or if the parent context token is * or **...
+            if(parentContextToken.equals("*") || parentContextToken.equals("**")) {
+                index.i--;
+            } else if(parentContextToken.equalsIgnoreCase(parentElementName)) {
                 index.i--;
             }
-        } else if (!selectorSteps[index.i].isTargetedAtElement(element)) {
+        } else if (!contextualSelector[index.i].equalsIgnoreCase(elementName)) {
             return false;
         } else {
-            if(!selectorSteps[index.i].isStarStar()) {
-                XPathExpressionEvaluator evaluator = selectorSteps[index.i].getPredicatesEvaluator();
-                if(evaluator == null) {
-                    logger.warn("Predicate Evaluators for resource [" + this + "] is null.  XPath step predicates will not be evaluated.");
-                } else if(!evaluator.evaluate(element, index.executionContext)) {
-                    return false;
-                }
-            }
             index.i--;
         }
 
-        if (parentElement == null) {
-            if(index.i >= 0 && !selectorSteps[index.i].isStarStar()) {
-                return selectorSteps[index.i].isRooted();
-            }
-        }
-
-        return true;
-    }
-
-    private boolean isTargetedAtElementContext(SAXElement element, SAXElement parentElement, ContextIndex index) {
-        if(selectorSteps[index.i].isRooted() && parentElement != null) {
-            return false;
-        } else if (selectorSteps[index.i].isStar()) {
-            index.i--;
-        } else if (selectorSteps[index.i].isStarStar()) {
-            if(index.i == 0) {
-                // No more tokens to match and ** matches everything
-                return true;
-            } else if(index.i == 1) {
-                SelectorStep parentStep = selectorSteps[index.i - 1];
-
-                if(parentElement == null && parentStep.isRooted()) {
-                    // we're at the root of the document and the only selector left is
-                    // the document selector.  Pass..
-                    return true;
-                } else 
-                	if(parentElement == null) {
-                    // we're at the root of the document, yet there are still
-                    // unmatched tokens in the selector.  Fail...
-                    return false;
-                }
-            } else if(parentElement == null) {
-                // we're at the root of the document, yet there are still
-                // unmatched tokens in the selector.  Fail...
-                return false;
-            }
-
-            SelectorStep parentStep = selectorSteps[index.i - 1];
-
-            if(parentStep.isTargetedAtElement(parentElement)) {
-                if(!parentStep.isStarStar()) {
-                    XPathExpressionEvaluator evaluator = parentStep.getPredicatesEvaluator();
-                    if(evaluator == null) {
-                        logger.warn("Predicate Evaluators for resource [" + this + "] is null.  XPath step predicates will not be evaluated.");
-                    } else if(!evaluator.evaluate(parentElement, index.executionContext)) {
-                        return false;
-                    }
-                }
-                index.i--;
-            }
-        } else if (!selectorSteps[index.i].isTargetedAtElement(element)) {
-            return false;
-        } else {
-            if(!selectorSteps[index.i].isStarStar()) {
-                XPathExpressionEvaluator evaluator = selectorSteps[index.i].getPredicatesEvaluator();
-                if(evaluator == null) {
-                    logger.warn("Predicate Evaluators for resource [" + this + "] is null.  XPath step predicates will not be evaluated.");
-                } else if(!evaluator.evaluate(element, index.executionContext)) {
-                    return false;
-                }
-            }
-            index.i--;
-        }
-
-        if (parentElement == null) {
-            if(index.i >= 0 && !selectorSteps[index.i].isStarStar()) {
-                return selectorSteps[index.i].isRooted();
+        if (parentElementName == null) {
+            if(index.i >= 0 && !contextualSelector[index.i].equals("**")) {
+                return contextualSelector[index.i].equals(DOCUMENT_FRAGMENT_SELECTOR);
             }
         }
 
@@ -1416,40 +1237,19 @@ public class SmooksResourceConfiguration {
      * match for the configuration.
      *
      * @param element The element to be checked.
-     * @param executionContext
      * @return True if this configuration is targeted at the supplied element, otherwise false.
      */
-    public boolean isTargetedAtElement(Element element, ExecutionContext executionContext) {
+    public boolean isTargetedAtElement(Element element) {
         if (!assertConditionTrue()) {
             return false;
         }
 
-        if (namespaceURI != null) {
-            if(!isTargetedAtNamespace(element.getNamespaceURI())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
-                }
-                return false;
+        if (!isTargetedAtNamespace(element.getNamespaceURI())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
             }
-        } else {
-            // We don't test the SelectorStep namespace if a namespace is configured on the
-            // resource configuration.  This is why we have this code inside the else block.
-            if(!selectorStep.isTargetedAtNamespace(element.getNamespaceURI())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Not applying resource [" + this + "] to element [" + DomUtils.getXPath(element) + "].  Element not in namespace [" + selectorStep.getTargetElement().getNamespaceURI() + "].");
-                }
-                return false;
-            }
-        }
-
-        XPathExpressionEvaluator evaluator = selectorStep.getPredicatesEvaluator();
-        if(evaluator == null) {
-            logger.warn("Predicate Evaluators for resource [" + this + "] is null.  XPath step predicates will not be evaluated.");
-        } else if(!evaluator.evaluate(element, executionContext)) {
             return false;
-        }
-
-        if (isContextualSelector && !isTargetedAtElementContext(element, executionContext)) {
+        } else if (isSelectorContextual() && !isTargetedAtElementContext(element)) {
             // Note: If the selector is not contextual, there's no need to perform the
             // isTargetedAtElementContext check because we already know the unit is targeted at the
             // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
@@ -1469,42 +1269,21 @@ public class SmooksResourceConfiguration {
      * match for the configuration.
      *
      * @param element The element to be checked.
-     * @param executionContext
      * @return True if this configuration is targeted at the supplied element, otherwise false.
      */
-    public boolean isTargetedAtElement(SAXElement element, ExecutionContext executionContext) {
+    public boolean isTargetedAtElement(SAXElement element) {
         if (expressionEvaluator != null && !assertConditionTrue()) {
             return false;
         }
 
-        if (namespaceURI != null) {
-            if(!isTargetedAtNamespace(element.getName().getNamespaceURI())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  Element not in namespace [" + namespaceURI + "].");
-                }
-                return false;
+        if (namespaceURI != null && !isTargetedAtNamespace(element.getName().getNamespaceURI())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  Element not in namespace [" + getSelectorNamespaceURI() + "].");
             }
-        } else {
-            // We don't test the SelectorStep namespace if a namespace is configured on the
-            // resource configuration.  This is why we have this code inside the else block.
-            if(!selectorStep.isTargetedAtNamespace(element.getName().getNamespaceURI())) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  Element not in namespace [" + selectorStep.getTargetElement().getNamespaceURI() + "].");
-                }
-                return false;
-            }
-        }
-
-        XPathExpressionEvaluator evaluator = selectorStep.getPredicatesEvaluator();
-        if(evaluator == null) {
-            logger.warn("Predicate Evaluators for resource [" + this + "] is null.  XPath step predicates will not be evaluated.");
-        } else if(!evaluator.evaluate(element, executionContext)) {
             return false;
-        }
-
-        if (isContextualSelector && !isTargetedAtElementContext(element, executionContext)) {
+        } else if (isContextualSelector && !isTargetedAtElementContext(element)) {
             // Note: If the selector is not contextual, there's no need to perform the
-            // isTargetedAtElementContext check because we already know the visitor is targeted at the
+            // isTargetedAtElementContext check because we already know the unit is targeted at the
             // element by name - because we looked it up by name in the 1st place (at least that's the assumption).
             if (logger.isDebugEnabled()) {
                 logger.debug("Not applying resource [" + this + "] to element [" + element.getName() + "].  This resource is only targeted at '" + element.getName().getLocalPart() + "' when in the following context '" + getSelector() + "'.");
@@ -1629,28 +1408,7 @@ public class SmooksResourceConfiguration {
         return selectorProp.toString();
     }
 
-    private class ContextIndex {
+    private class Index {
         private int i;
-        private ExecutionContext executionContext;
-
-        public ContextIndex(ExecutionContext executionContext) {
-            this.executionContext = executionContext;
-        }
-    }
-
-    private class LegacySelectorStep extends SelectorStep {
-        public LegacySelectorStep(String selector, String targetElementName) {
-            super(selector, targetElementName);
-        }
-        public LegacySelectorStep(String xpathExpression, String targetElementName, String targetAttributeName) {
-            super(xpathExpression, targetElementName, targetAttributeName);
-        }
-        public XPathExpressionEvaluator getPredicatesEvaluator() {
-            return PassThruEvaluator.INSTANCE;
-        }
-        public void buildPredicatesEvaluator(Properties namespaces) throws SAXPathException, NotFoundException, CannotCompileException, IllegalAccessException, InstantiationException {
-            // Ignore this.
-        }
-        
     }
 }

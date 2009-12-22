@@ -343,7 +343,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
             Writer writer = new StringWriter();
             applyTemplate(template, element, executionContext, writer);
 
-            executionContext.getBeanContext().addBean(getBindBeanId(), writer.toString());
+            BeanRepositoryManager.getBeanRepository(executionContext).addBean(getBindBeanId(), writer.toString());
         } else {
             Writer writer = element.getWriter(this);
             applyTemplate(template, element, executionContext, writer);

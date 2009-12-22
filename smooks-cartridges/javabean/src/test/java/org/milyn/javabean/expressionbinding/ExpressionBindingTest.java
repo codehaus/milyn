@@ -26,8 +26,6 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.Smooks;
-import org.milyn.container.ExecutionContext;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
@@ -64,23 +62,6 @@ public class ExpressionBindingTest extends TestCase {
 
         assertEquals(10, message5.get("number"));
         assertEquals(15, message5.get("numberAddition"));
-    }
-
-    public void test_data_variable() throws Exception {
-    	Smooks smooks = new Smooks(getClass().getResourceAsStream("02_binding.xml"));
-
-    	JavaResult result = new JavaResult();
-
-    	ExecutionContext context = smooks.createExecutionContext();
-    	//context.setEventListener(new HtmlReportGenerator("target/expression_data_variable.html"));
-
-    	smooks.filterSource(context, new StreamSource(getClass().getResourceAsStream("02_number.xml")), result);
-
-    	Total total = (Total) result.getBean("total");
-
-    	assertEquals(20, (int) total.getTotal());
-    	assertEquals("10,20,30,40", total.getCsv());
-
     }
 
     private void assertDateValue(JavaResult result, String beanId) {
