@@ -21,9 +21,13 @@ import org.milyn.FilterSettings;
 import org.milyn.Smooks;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XMLAssert;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
@@ -43,14 +47,9 @@ public class FragmentSerializerNSConfigTest extends TestCase {
 
         smooks.setFilterSettings(filterSettings);
         smooks.filterSource(source, result);
-        assertEquals("<cc1:Address xmlns:cc1=\"http://test.com\">\n" +
-                "            <cc1:AddressType>Home</cc1:AddressType>\n" +
-                "            <cc1:AddressLine1>String</cc1:AddressLine1>\n" +
-                "            <cc1:City>String</cc1:City>\n" +
-                "            <cc1:PostalCode>String</cc1:PostalCode>\n" +
-                "            <cc1:County>String</cc1:County>\n" +
-                "        </cc1:Address>",
-                result.getBean("soapBody").toString().trim());
+
+        XMLUnit.setIgnoreWhitespace( true );
+        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("children-only.xml")), new StringReader(result.getBean("soapBody").toString().trim()));
     }
 
     public void test_all_SAX() throws IOException, SAXException {
@@ -66,15 +65,8 @@ public class FragmentSerializerNSConfigTest extends TestCase {
 
         smooks.setFilterSettings(filterSettings);
         smooks.filterSource(source, result);
-        assertEquals("<?xml version=\"1.0\"?>\n<soapenv:Body xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\">\n" +
-                "        <cc1:Address xmlns:cc1=\"http://test.com\">\n" +
-                "            <cc1:AddressType>Home</cc1:AddressType>\n" +
-                "            <cc1:AddressLine1>String</cc1:AddressLine1>\n" +
-                "            <cc1:City>String</cc1:City>\n" +
-                "            <cc1:PostalCode>String</cc1:PostalCode>\n" +
-                "            <cc1:County>String</cc1:County>\n" +
-                "        </cc1:Address>\n" +
-                "    </soapenv:Body>",
-                result.getBean("soapBody").toString().trim());
+
+        XMLUnit.setIgnoreWhitespace( true );
+        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("all.xml")), new StringReader(result.getBean("soapBody").toString().trim()));
     }
 }
