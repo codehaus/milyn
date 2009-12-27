@@ -44,6 +44,7 @@ import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.context.BeanIdStore;
+import org.milyn.javabean.decoders.PreprocessDecoder;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
@@ -603,6 +604,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             throw new DataDecodeException("Configured decoder '" + typeAlias + ":" + decoders.get(0).getClass().getName() + "' is not an instance of " + DataDecoder.class.getName());
         } else {
             decoder = (DataDecoder) decoders.get(0);
+        }
+        
+        if(decoder instanceof PreprocessDecoder) {
+            PreprocessDecoder preprocessDecoder = (PreprocessDecoder) decoder;
+            if(preprocessDecoder.getBaseDecoder() == null) {
+            	preprocessDecoder.setBaseDecoder(resolveDecoderReflectively());
+            }
         }
 
         return decoder;
