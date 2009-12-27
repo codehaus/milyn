@@ -22,6 +22,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.javabean.BeanUtils;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.decoders.PreprocessDecoder;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -58,10 +59,23 @@ public class DecodeParamResolver implements DOMVisitBefore {
                 // Configure the new decoder config...
                 decoderConfig.setSelector("decoder:" + reType);
                 decoderConfig.setTargetProfile(extensionContext.getDefaultProfile());
-                decoderConfig.setResource(decoder.getClass().getName());
+                
+                if(type != null) {
+                	decoderConfig.setResource(decoder.getClass().getName());
+                }
+                
                 for(int i = 0; i < decodeParams.getLength(); i++) {
                     Element decoderParam = (Element) decodeParams.item(i);
-                    decoderConfig.setParameter(decoderParam.getAttribute("name"), DomUtils.getAllText(decoderParam, true));
+                    String name = decoderParam.getAttribute("name");
+                    
+                    if(name.equals(PreprocessDecoder.VALUE_PRE_PROCESSING)) {
+                    	// Wrap the decoder in the PreprocessDecoder...
+                    	decoderConfig.setResource(PreprocessDecoder.class.getName());
+                    	if(type != null) {
+                    		decoderConfig.setParameter(PreprocessDecoder.BASE_DECODER, decoder.getClass().getName());
+                    	}
+                    }                    
+                    decoderConfig.setParameter(name, DomUtils.getAllText(decoderParam, true));
                 }
             } finally {
                 extensionContext.getResourceStack().pop();
