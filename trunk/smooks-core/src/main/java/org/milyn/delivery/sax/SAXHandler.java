@@ -284,6 +284,10 @@ public class SAXHandler extends DefaultHandler2 {
             if(elementVisitorConfig.accumulateText()) {
                 currentProcessor.element.accumulateText();
             }
+            SAXVisitor acquireWriterFor = elementVisitorConfig.acquireWriterFor();
+            if(acquireWriterFor != null) {
+            	element.getWriter(acquireWriterFor);
+            }
 
             if(visitBeforeMappings != null) {
                 int mappingCount = visitBeforeMappings.size();

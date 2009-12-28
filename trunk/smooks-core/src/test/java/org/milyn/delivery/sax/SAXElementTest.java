@@ -89,7 +89,7 @@ public class SAXElementTest extends TestCase {
             saxElement1.getTextContent();
             fail("Expected SmooksException.");
         } catch(SmooksException e) {
-            assertEquals("Illegal call to getTextAsString().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText().", e.getMessage());
+            assertEquals("Illegal call to getTextContent().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText(), or annotate the Visitor implementation class with the @TextConsumer annotation.", e.getMessage());
         }
 
         saxElement1.accumulateText();

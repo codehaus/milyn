@@ -16,6 +16,8 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.sax.annotation.StreamResultWriter;
+import org.milyn.delivery.sax.annotation.TextConsumer;
 import org.milyn.SmooksException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,7 +45,7 @@ import java.util.*;
  * can use the {@link org.milyn.delivery.sax.WriterUtil} class.
  * <p/>
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations can also control the serialization
- * of their "child elements" by {@link #setWriter(java.io.Writer, SAXVisitor) setting the writter}
+ * of their "child elements" by {@link #setWriter(java.io.Writer, SAXVisitor) setting the writer}
  * on the SAXElement instance they receive.  This works because Smooks passes the
  * writer instance that's set on a SAXElement instance to all of the SAXElement
  * instances created for child elements.
@@ -54,10 +56,9 @@ import java.util.*;
  * for that element.  Any other visitors requesting access to get or change the writer
  * will result in a {@link SAXWriterAccessException} being thrown.  In this situation,
  * you need to restructure the offending Smooks configuration and eliminate one of the
- * visitors attempting to gain access to the writer.  If developing a new visitor,
- * you probably need to change the visitor to also implement the {@link SAXVisitBefore}
- * interface and use that event method to acquire ownership of the element writer
- * through a call to {@link SAXElement#getWriter(SAXVisitor)}.
+ * visitors attempting to gain access to the writer.  If developing a new Visitor,
+ * you should annotate the new Visitor class with the {@link StreamResultWriter @StreamResultWriter}
+ * annotation.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -206,7 +207,8 @@ public class SAXElement {
     /**
      * Turn on {@link SAXText text} accumulation for this {@link SAXElement}.
      * <p/>
-     * For performance reasons, {@link SAXText Text} accumulation is not on by default. 
+     * For performance reasons, {@link SAXText Text} accumulation is not on by default.
+     * @see TextConsumer
      */
     public void accumulateText() {
         if(text == null) {
@@ -228,6 +230,7 @@ public class SAXElement {
      * @return The child {@link SAXText text} list associated with this {@link SAXElement},
      * or null if this {@link SAXElement} is not {@link #accumulateText() accumulating text}.
      * @see #accumulateText() 
+     * @see TextConsumer
      */
     public List<SAXText> getText() {
         return text;
@@ -239,6 +242,8 @@ public class SAXElement {
      * Utility method, userd mainly for testing.
      *
      * @param text The text to be added.
+     * @see #accumulateText() 
+     * @see TextConsumer
      */
     public void addText (String text) {
         addText(text, TextType.TEXT);
@@ -251,6 +256,8 @@ public class SAXElement {
      *
      * @param text The text to be added.
      * @param type The text type.
+     * @see #accumulateText() 
+     * @see TextConsumer
      */
     public void addText (String text, TextType type) {
         if(this.text == null) {
@@ -273,10 +280,11 @@ public class SAXElement {
      * @throws SmooksException This {@link SAXElement} instance does not have
      * {@link #accumulateText() text accumulation} turned on.
      * @see #accumulateText() 
+     * @see TextConsumer
      */
     public String getTextContent() throws SmooksException {
         if(text == null) {
-            throw new SmooksException("Illegal call to getTextAsString().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText().");
+            throw new SmooksException("Illegal call to getTextContent().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText(), or annotate the Visitor implementation class with the @TextConsumer annotation.");
         }
 
         if(textAccumulator == null) {
@@ -307,6 +315,7 @@ public class SAXElement {
      * @param visitor The visitor requesting access to element writer.
      * @return The element writer.
      * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
+     * @see StreamResultWriter
      */
     public Writer getWriter(SAXVisitor visitor) throws SAXWriterAccessException {
         // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
@@ -322,6 +331,7 @@ public class SAXElement {
      * @param writer  The element writer.
      * @param visitor The visitor requesting to set the element writer.
      * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
+     * @see StreamResultWriter
      */
     public void setWriter(Writer writer, SAXVisitor visitor) throws SAXWriterAccessException {
         // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
@@ -338,6 +348,7 @@ public class SAXElement {
      * @param visitor The visitor being checked.
      * @return True if the {@link SAXVisitor} owns the {@link Writer} associated
      * with this {@link SAXElement} instance, otherwise false.
+     * @see StreamResultWriter
      */
     public boolean isWriterOwner(SAXVisitor visitor) {
         // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
