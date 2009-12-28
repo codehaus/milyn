@@ -167,6 +167,7 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
             entry.setVisitCleanables(cleanables);
 
             entry.initAccumulateText();
+            entry.initAcquireWriterFor();
 
             optimizedVisitorConfig.put(elementName, entry);
         }

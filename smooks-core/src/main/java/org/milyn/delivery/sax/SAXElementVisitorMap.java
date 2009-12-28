@@ -17,9 +17,12 @@ package org.milyn.delivery.sax;
 
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.VisitLifecycleCleanable;
+import org.milyn.delivery.sax.annotation.StreamResultWriter;
+import org.milyn.delivery.sax.annotation.TextConsumer;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.xpath.SelectorStep;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class SAXElementVisitorMap {
     private List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters;
     private List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables;
     private boolean accumulateText = false;
+    private SAXVisitor acquireWriterFor = null;
 
     public List<ContentHandlerConfigMap<SAXVisitBefore>> getVisitBefores() {
         return visitBefores;
@@ -72,11 +76,25 @@ public class SAXElementVisitorMap {
         return accumulateText;
     }
 
+    public SAXVisitor acquireWriterFor() {
+        return acquireWriterFor;
+    }
+
     public void initAccumulateText() {
+    	// If any of the before/after handlers are marked as text consumers...
+        if(getAnnotatedHandler(visitBefores, TextConsumer.class) != null) {
+            accumulateText = true;
+        	return;
+        }
+        if(getAnnotatedHandler(visitAfters, TextConsumer.class) != null) {
+            accumulateText = true;
+        	return;
+        }
+    	
+    	// If any of the selector steps need access to the fragment text...
         if(visitAfters == null) {
             return;
         }
-
         for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : visitAfters) {
             SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
             SelectorStep selectorStep = resourceConfig.getSelectorStep();
@@ -86,6 +104,13 @@ public class SAXElementVisitorMap {
                 break;
             }
         }
+    }
+
+    public void initAcquireWriterFor() {
+    	acquireWriterFor = getAnnotatedHandler(visitBefores, StreamResultWriter.class);
+    	if(acquireWriterFor == null) {
+        	acquireWriterFor = getAnnotatedHandler(visitAfters, StreamResultWriter.class);
+    	}
     }
 
     public SAXElementVisitorMap merge(SAXElementVisitorMap map) {
@@ -114,4 +139,19 @@ public class SAXElementVisitorMap {
 
         return merge;
     }
+
+	private <T extends SAXVisitor> T getAnnotatedHandler(List<ContentHandlerConfigMap<T>> handlerMaps, Class<? extends Annotation> annotationClass) {
+		if(handlerMaps == null) {
+			return null;
+		}
+		
+		for(ContentHandlerConfigMap<T> handlerMap : handlerMaps) {
+        	T contentHandler = handlerMap.getContentHandler();
+			if(contentHandler.getClass().isAnnotationPresent(annotationClass)) {
+        		return contentHandler;
+        	}        			
+        }
+		
+		return null;
+	}
 }
