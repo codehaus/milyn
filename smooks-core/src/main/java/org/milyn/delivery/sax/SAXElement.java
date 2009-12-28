@@ -42,7 +42,7 @@ import java.util.*;
  * Each SAXElement instance has a {@link Writer writer} set on it.
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations can take care of
  * serializing the elements at which they are targeted themselves.  Alternatively, they
- * can use the {@link org.milyn.delivery.sax.WriterUtil} class.
+ * can use the {@link org.milyn.delivery.sax.SAXElementWriterUtil} class.
  * <p/>
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations can also control the serialization
  * of their "child elements" by {@link #setWriter(java.io.Writer, SAXVisitor) setting the writer}
