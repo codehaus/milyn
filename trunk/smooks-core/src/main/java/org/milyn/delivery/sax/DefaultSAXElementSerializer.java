@@ -68,7 +68,7 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
         if(element.isWriterOwner(writerOwner)) {
             if(!isStartWritten(element)) {
                 element.setCache(this, true);
-                WriterUtil.writeStartElement(element, element.getWriter(writerOwner), rewriteEntities);
+                SAXElementWriterUtil.writeStartElement(element, element.getWriter(writerOwner), rewriteEntities);
             }
         }
     }
@@ -77,9 +77,9 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
         if(element.isWriterOwner(writerOwner)) {
             if(!isStartWritten(element)) {
                 // It's an empty element...
-                WriterUtil.writeEmptyElement(element, element.getWriter(writerOwner), rewriteEntities);
+                SAXElementWriterUtil.writeEmptyElement(element, element.getWriter(writerOwner), rewriteEntities);
             } else {
-                WriterUtil.writeEndElement(element, element.getWriter(writerOwner));
+                SAXElementWriterUtil.writeEndElement(element, element.getWriter(writerOwner));
             }
         }
     }

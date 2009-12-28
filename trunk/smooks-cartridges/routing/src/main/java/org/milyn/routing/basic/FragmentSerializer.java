@@ -23,7 +23,7 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.delivery.sax.WriterUtil;
+import org.milyn.delivery.sax.SAXElementWriterUtil;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.xml.XmlUtil;
@@ -156,11 +156,11 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
 	        	// Print child content only, so only print the start if the depth is greater
 	        	// than 1...
 	        	if(depth > 0) {
-	        		WriterUtil.writeStartElement(element, fragmentWriter, true);
+	        		SAXElementWriterUtil.writeStartElement(element, fragmentWriter, true);
 	        	}
 	        } else {
 	        	// Printing all of the element, so just print the start element...
-	        	WriterUtil.writeStartElement(element, fragmentWriter, true);
+	        	SAXElementWriterUtil.writeStartElement(element, fragmentWriter, true);
 	        }
 	        depth++;
 		}
@@ -170,7 +170,7 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
 	    }
 	    
 		public void onChildText(SAXElement element, SAXText text, ExecutionContext executionContext) throws SmooksException, IOException {
-	    	WriterUtil.writeText(text, fragmentWriter);
+	    	SAXElementWriterUtil.writeText(text, fragmentWriter);
 	    }
 
 		public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -179,11 +179,11 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
 	        	// Print child content only, so only print the empty element if the depth is greater
 	        	// than 1...
 	        	if(depth > 0) {
-	        		WriterUtil.writeEndElement(element, fragmentWriter);
+	        		SAXElementWriterUtil.writeEndElement(element, fragmentWriter);
 	        	}
 	        } else {
 	        	// Printing all of the elements, so just print the end of the element...
-	        	WriterUtil.writeEndElement(element, fragmentWriter);
+	        	SAXElementWriterUtil.writeEndElement(element, fragmentWriter);
 	        }
 		}		
 
