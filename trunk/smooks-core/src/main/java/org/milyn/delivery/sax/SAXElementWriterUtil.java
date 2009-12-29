@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * {@link SAXElement} writing/serialization utility class.
+ * {@link SAXElement} XML writing/serialization utility class.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
