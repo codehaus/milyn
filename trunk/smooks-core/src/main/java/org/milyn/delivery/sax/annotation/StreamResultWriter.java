@@ -39,7 +39,7 @@ import org.milyn.delivery.sax.SAXVisitor;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.FIELD})
 @Inherited
 public @interface StreamResultWriter {
 }

@@ -17,6 +17,7 @@ package org.milyn.delivery.sax;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
 import javax.xml.transform.stream.StreamResult;
 
@@ -110,7 +111,13 @@ public class SAXToXMLWriter {
 	 * @throws IOException Exception writing.
 	 */
     public void writeText(SAXElement element, Writer writer) throws IOException {
-    	for(SAXText text : element.getText()) {
+    	List<SAXText> textList = element.getText();
+    	
+    	if(textList == null) {
+    		return;
+    	}
+    	
+		for(SAXText text : textList) {
         	SAXElementWriterUtil.writeText(text, writer);
     	}
     }	
