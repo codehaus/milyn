@@ -21,6 +21,9 @@ import org.milyn.cdr.*;
 import org.milyn.container.*;
 import org.milyn.delivery.*;
 import org.milyn.delivery.annotation.*;
+import org.milyn.delivery.sax.SAXToXMLWriter;
+import org.milyn.delivery.sax.SAXVisitor;
+import org.milyn.delivery.sax.annotation.StreamResultWriter;
 import org.milyn.javabean.*;
 import org.milyn.config.Configurable;
 import org.milyn.util.ClassUtil;
@@ -123,8 +126,9 @@ public class Configurator {
             processFieldConfigParamAnnotations(contentHandlerClass, instance, config);
         }
         processFieldConfigAnnotations(contentHandlerClass, instance, config);
+        processStreamResultWriterAnnotations(instance, config);
     }
-
+    
     private static <U> void processFieldConfigParamAnnotations(Class contentHandlerClass, U instance, SmooksResourceConfiguration config) {
         Field[] fields = contentHandlerClass.getDeclaredFields();
 
@@ -164,6 +168,36 @@ public class Configurator {
                 applyConfig(field, instance, config);
             }
         }
+    }
+
+    private static <U> void processStreamResultWriterAnnotations(U instance, SmooksResourceConfiguration config) {
+    	if(!(instance instanceof SAXVisitor)) {
+    		return;
+    	}
+    	
+    	List<Field> streamResFields = ClassUtil.getAnnotatedFields(instance.getClass(), StreamResultWriter.class);
+    	boolean encodeSpecialCharacters = config.getBoolParameter(Filter.ENTITIES_REWRITE, true);
+    	
+    	for(Field streamResField : streamResFields) {
+    		// If already initialized, ignore...
+    		try {
+	    		if(ClassUtil.getField(streamResField, instance) != null) {
+	    			continue;
+	    		}
+	        } catch (IllegalAccessException e) {
+	            throw new SmooksConfigurationException("Unable to get property field value for '" + getLongMemberName(streamResField) + "'.", e);
+	        }
+    		
+    		Class<?> type = streamResField.getType();
+    		if(type == SAXToXMLWriter.class) {
+    			SAXToXMLWriter xmlWriter = new SAXToXMLWriter((SAXVisitor) instance, encodeSpecialCharacters);
+    			try {
+					ClassUtil.setField(streamResField, instance, xmlWriter);
+				} catch (IllegalAccessException e) {
+		            throw new SmooksConfigurationException("Unable to inject SAXToXMLWriter property field value for '" + getLongMemberName(streamResField) + "'.", e);
+				}    			
+    		}
+    	}
     }
 
     private static <U> void checkPropertiesConfigured(Class contentHandlerClass, U instance) {

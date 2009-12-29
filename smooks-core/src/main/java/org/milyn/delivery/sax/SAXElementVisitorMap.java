@@ -19,6 +19,7 @@ import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.sax.annotation.StreamResultWriter;
 import org.milyn.delivery.sax.annotation.TextConsumer;
+import org.milyn.util.ClassUtil;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.xpath.SelectorStep;
 
@@ -82,11 +83,11 @@ public class SAXElementVisitorMap {
 
     public void initAccumulateText() {
     	// If any of the before/after handlers are marked as text consumers...
-        if(getAnnotatedHandler(visitBefores, TextConsumer.class) != null) {
+        if(getAnnotatedHandler(visitBefores, TextConsumer.class, false) != null) {
             accumulateText = true;
         	return;
         }
-        if(getAnnotatedHandler(visitAfters, TextConsumer.class) != null) {
+        if(getAnnotatedHandler(visitAfters, TextConsumer.class, false) != null) {
             accumulateText = true;
         	return;
         }
@@ -107,9 +108,12 @@ public class SAXElementVisitorMap {
     }
 
     public void initAcquireWriterFor() {
-    	acquireWriterFor = getAnnotatedHandler(visitBefores, StreamResultWriter.class);
+    	acquireWriterFor = getAnnotatedHandler(visitBefores, StreamResultWriter.class, true);
     	if(acquireWriterFor == null) {
-        	acquireWriterFor = getAnnotatedHandler(visitAfters, StreamResultWriter.class);
+        	acquireWriterFor = getAnnotatedHandler(visitAfters, StreamResultWriter.class, true);
+        	if(acquireWriterFor == null) {
+        		
+        	}
     	}
     }
 
@@ -140,7 +144,7 @@ public class SAXElementVisitorMap {
         return merge;
     }
 
-	private <T extends SAXVisitor> T getAnnotatedHandler(List<ContentHandlerConfigMap<T>> handlerMaps, Class<? extends Annotation> annotationClass) {
+	private <T extends SAXVisitor> T getAnnotatedHandler(List<ContentHandlerConfigMap<T>> handlerMaps, Class<? extends Annotation> annotationClass, boolean checkFields) {
 		if(handlerMaps == null) {
 			return null;
 		}
@@ -149,7 +153,9 @@ public class SAXElementVisitorMap {
         	T contentHandler = handlerMap.getContentHandler();
 			if(contentHandler.getClass().isAnnotationPresent(annotationClass)) {
         		return contentHandler;
-        	}        			
+        	} else if(checkFields && !ClassUtil.getAnnotatedFields(contentHandler.getClass(), annotationClass).isEmpty()) {
+        		return contentHandler;
+        	}
         }
 		
 		return null;

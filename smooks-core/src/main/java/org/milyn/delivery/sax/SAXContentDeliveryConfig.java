@@ -304,6 +304,7 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         }
 
         combinedConfig.initAccumulateText();
+        combinedConfig.initAcquireWriterFor();
 
         if(combinedConfig.getVisitBefores() == null && combinedConfig.getChildVisitors() == null && combinedConfig.getVisitAfters() == null ) {
             return null;

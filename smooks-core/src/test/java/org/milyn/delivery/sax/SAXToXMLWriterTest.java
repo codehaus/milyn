@@ -17,12 +17,14 @@ package org.milyn.delivery.sax;
 
 import java.io.IOException;
 
+import org.milyn.FilterSettings;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.sax.annotation.StreamResultWriter;
 import org.milyn.payload.StringResult;
 import org.milyn.payload.StringSource;
+import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
 
@@ -32,30 +34,40 @@ import junit.framework.TestCase;
  */
 public class SAXToXMLWriterTest extends TestCase {
 
-	public void test() {
+	public void test_all_write_methods() {
 		Smooks smooks = new Smooks();
 		StringResult stringResult = new StringResult();
 		
-		smooks.addVisitor(new MyWrittingVisitor().setLeftWrapping("{{").setRightWrapping("}}"), "a");
-		smooks.addVisitor(new MyWrittingVisitor().setLeftWrapping("((").setRightWrapping("))"), "b");
+		smooks.addVisitor(new AllWrittingVisitor().setLeftWrapping("{{").setRightWrapping("}}"), "a");
+		smooks.addVisitor(new AllWrittingVisitor().setLeftWrapping("((").setRightWrapping("))"), "b");
 		smooks.filterSource(new StringSource("<a><b>sometext</b></a>"), stringResult);
 		
 		assertEquals("{{<a>((<b>sometext</b>))</a>}}", stringResult.getResult());
 	}	
-	
-	@StreamResultWriter	
-	private class MyWrittingVisitor implements SAXElementVisitor {
 
-		private SAXToXMLWriter writer = new SAXToXMLWriter(this, true);
+	public void test_vafter_write_method() throws IOException, SAXException {
+		Smooks smooks = new Smooks(getClass().getResourceAsStream("SAXToXMLWriterTest_config.xml"));
+		StringResult stringResult = new StringResult();
+		
+		smooks.filterSource(new StringSource("<a><b>some&amp;text</b></a>"), stringResult);
+		
+		assertEquals("<a><b>{{some&#38;text}}</b></a>", stringResult.getResult());
+		assertEquals("some&amp;#38;text", VisitAfterWrittingVisitor.elementText);
+	}	
+	
+	private class AllWrittingVisitor implements SAXElementVisitor {
+
+		@StreamResultWriter	
+		private SAXToXMLWriter writer;
 		private String leftWrapping;
 		private String rightWrapping;
 		
-		public MyWrittingVisitor setLeftWrapping(String leftWrapping) {
+		public AllWrittingVisitor setLeftWrapping(String leftWrapping) {
 			this.leftWrapping = leftWrapping;
 			return this;
 		}
 		
-		public MyWrittingVisitor setRightWrapping(String rightWrapping) {
+		public AllWrittingVisitor setRightWrapping(String rightWrapping) {
 			this.rightWrapping = rightWrapping;
 			return this;
 		}
