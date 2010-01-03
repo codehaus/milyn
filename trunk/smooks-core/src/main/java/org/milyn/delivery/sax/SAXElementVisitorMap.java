@@ -111,9 +111,6 @@ public class SAXElementVisitorMap {
     	acquireWriterFor = getAnnotatedHandler(visitBefores, StreamResultWriter.class, true);
     	if(acquireWriterFor == null) {
         	acquireWriterFor = getAnnotatedHandler(visitAfters, StreamResultWriter.class, true);
-        	if(acquireWriterFor == null) {
-        		
-        	}
     	}
     }
 
