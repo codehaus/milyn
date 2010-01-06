@@ -1,6 +1,7 @@
 package org.milyn.ect.formats.unedifact;
 
 import org.milyn.edisax.model.internal.*;
+import org.milyn.edisax.model.EdifactModel;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -101,7 +102,7 @@ public class UnEdifactMessageReader {
     private static final String DELIMITER_DATA = ":";
     private static final String ESCAPE = "?";
 
-    public static Edimap readMessage(Reader reader) throws IOException {
+    public static Edimap readMessage(Reader reader, boolean isSplitIntoImport, Edimap definitionModel) throws IOException {
 
         Edimap edimap = null;
         BufferedReader breader = null;
@@ -133,13 +134,21 @@ public class UnEdifactMessageReader {
             edimap.getDescription().setName(MESSAGE_NAME);
             edimap.getDescription().setVersion(version + release);
 
-            Import ediImport = new Import();
-            ediImport.setNamespace(agency);
-            edimap.getImports().add(ediImport);
+            Map<String, Segment> segmentDefinitions = null;
+            if (isSplitIntoImport) {
+                Import ediImport = new Import();
+                ediImport.setNamespace(agency);
+                ediImport.setResource(new File("TODO - Set resource.").toURI().toString());
+                edimap.getImports().add(ediImport);
+            }  else {
+                segmentDefinitions = getSegmentDefinitions(definitionModel);
+            }
+
 
             Map<String, String> definitions = parseMessageDefinition(breader);
 
-            parseMessageStructure(breader, rootGroup, definitions, agency);
+
+            parseMessageStructure(breader, rootGroup, definitions, agency, isSplitIntoImport, segmentDefinitions);
 
         } finally {
             if (breader != null) {
@@ -150,12 +159,20 @@ public class UnEdifactMessageReader {
         return edimap;
     }
 
+    private static Map<String, Segment> getSegmentDefinitions(Edimap definitionModel) {
+        Map<String, Segment> result = new HashMap<String, Segment>();
+        for (SegmentGroup segmentGroup : definitionModel.getSegments().getSegments()) {
+            result.put(segmentGroup.getSegcode(), (Segment)segmentGroup);
+        }
+        return result;
+    }
+
     private static boolean legalMessage(BufferedReader reader) throws IOException {
         String line = reader.readLine();
         return line.matches(LEGAL_MESSAGE);
     }
 
-    private static void parseMessageStructure(BufferedReader reader, SegmentGroup group, Map<String, String> definitions, String agency) throws IOException {
+    private static void parseMessageStructure(BufferedReader reader, SegmentGroup group, Map<String, String> definitions, String agency, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
         String line = reader.readLine();
         while (!line.matches(SEGMENT_TABLE)) {
             line = reader.readLine();
@@ -164,7 +181,7 @@ public class UnEdifactMessageReader {
         while (!line.matches(SEGMENT_TABLE_HEADER)) {
             line = reader.readLine();
         }
-        parseNextSegment(reader, group, definitions, agency);
+        parseNextSegment(reader, group, definitions, agency, isSplitIntoImport, segmentDefinitions);
     }
 
     private static Map<String, String> parseMessageDefinition(BufferedReader reader) throws IOException {
@@ -202,13 +219,13 @@ public class UnEdifactMessageReader {
         return definitions;
     }
 
-    private static int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions, String agency) throws IOException {
+    private static int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions, String agency, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
         String line = reader.readLine();
         while (line != null) {
             if (line.matches(SEGMENT_REGULAR)) {
                 Matcher matcher = Pattern.compile(SEGMENT_REGULAR).matcher(line);
                 matcher.matches();
-                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency);
+                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency, isSplitIntoImport, segmentDefinitions);
                 parentGroup.getSegments().add(segment);
             } else if (line.matches(SEGMENT_GROUP_START)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_START).matcher(line);
@@ -216,7 +233,7 @@ public class UnEdifactMessageReader {
                 SegmentGroup group = createGroup(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), definitions);
                 parentGroup.getSegments().add(group);
 
-                int result = parseNextSegment(reader, group, definitions, agency);
+                int result = parseNextSegment(reader, group, definitions, agency, isSplitIntoImport, segmentDefinitions);
                 if (result != 0) {
                     return result - 1;
                 }
@@ -224,7 +241,7 @@ public class UnEdifactMessageReader {
             } else if (line.matches(SEGMENT_GROUP_END)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_END).matcher(line);
                 matcher.matches();
-                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency);
+                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency, isSplitIntoImport, segmentDefinitions);
                 parentGroup.getSegments().add(segment);
                 return extractPlusCharacter(matcher.group(6)).length() - 1;
             }
@@ -247,13 +264,18 @@ public class UnEdifactMessageReader {
         return group;
     }
 
-    private static Segment createSegment(String id, String segcode, String description, String mandatory, String maxOccurance, Map<String, String> definitions, String agency) {
+    private static Segment createSegment(String id, String segcode, String description, String mandatory, String maxOccurance, Map<String, String> definitions, String agency, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) {
         Segment segment = new Segment();
         segment.setSegcode(segcode);
-        if (!segcode.startsWith("UN")) {
-            segment.setSegref(agency + ":" + segcode);
-        } else {
+        if (isSplitIntoImport) {
             segment.setSegref(INTERCHANGE_NAMESPACE + ":" + segcode);
+        } else {
+            Segment importedSegment = segmentDefinitions.get(segcode);
+            segment.getFields().addAll(importedSegment.getFields());
+
+            if (importedSegment.getSegments().size() > 0) {
+                segment.getSegments().addAll(importedSegment.getSegments());
+            }
         }
         segment.setXmltag(description.trim());
         segment.setDocumentation(definitions.get(id).trim());
@@ -280,7 +302,7 @@ public class UnEdifactMessageReader {
         try {
             in = new FileInputStream("C:\\Documents and Settings\\bardl\\Skrivbord\\d08a\\edmd\\INVOIC_D.08A");
             reader = new InputStreamReader(in);            
-            return UnEdifactMessageReader.readMessage(reader);
+            return UnEdifactMessageReader.readMessage(reader, false, null);
         } finally {
             if (reader != null) {
                 reader.close();

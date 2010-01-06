@@ -3,14 +3,13 @@ package org.milyn.ect.formats.unedifact;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Import;
 import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.ect.EdimapConfiguration;
 import org.milyn.ect.EdiParseException;
-import org.xml.sax.SAXException;
+import org.milyn.ect.ConfigReader;
+import org.milyn.util.ClassUtil;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -18,103 +17,145 @@ import java.util.zip.ZipInputStream;
  * UnEdifactReader
  * @author bardl
  */
-public class UnEdifactReader {
+public class UnEdifactReader implements ConfigReader {
+    
     private static final int BUFFER = 2048;
     private static final String INTERCHANGE_DEFINITION = "un-edifact-interchange-definition.xml";
 
-    public static List<EdimapConfiguration> parse(String infile, String message, String outDirectory) throws IOException, EdiParseException {
+    private boolean useImport;
+    private Map<String, byte[]> definitionFiles;
+    private Map<String, byte[]> messageFiles;
+    private Edimap definitionModel;
 
-        File zipfile =  new File(infile);
-        String version = zipfile.getName().substring(0, zipfile.getName().lastIndexOf('.'));
+    public void initialize(InputStream inputStream, boolean useImport) throws IOException, EdiParseException {
+        this.useImport = useImport;
 
-        String definitionResource = outDirectory + File.separator + "un-edifact-definition-" + version + ".xml";
-        File decompressedDir = unzpipAll(zipfile);                                                     
-        String fileExtension = getFileExtension(decompressedDir + File.separator + "eded");
+        if (!(inputStream instanceof ZipInputStream)) {
+            throw new IOException("InputStream should be a ZipInputStream when parsing UnEdifact specification.");
+        }
 
+        ZipInputStream zipInputStream = (ZipInputStream)inputStream;
+
+        definitionFiles = new HashMap<String, byte[]>();
+        messageFiles = new HashMap<String, byte[]>();
+        readDefinitionEntries(zipInputStream, new ZipDirectoryEntry("eded.", definitionFiles), new ZipDirectoryEntry("edcd.", definitionFiles), new ZipDirectoryEntry("edsd.", definitionFiles), new ZipDirectoryEntry("edmd.", "*", messageFiles));
         List<EdimapConfiguration> edimaps = new ArrayList<EdimapConfiguration>();
 
-        //Interchange envelope. Handcoded at the moment.
-        String interchangeDefinitionResource = outDirectory + File.separator + INTERCHANGE_DEFINITION;
-        EdifactModel interchangeEnvelope = new EdifactModel();
+        // Read Definition Configuration
+        definitionModel = parseEDIDefinitionFiles();
+
+        //Interchange envelope is inserted into the definitions. Handcoded at the moment.
         try {
+            EdifactModel interchangeEnvelope = new EdifactModel();
             interchangeEnvelope.parseSequence(Thread.currentThread().getContextClassLoader().getResourceAsStream("org/milyn/ect/formats/unedifact/" + INTERCHANGE_DEFINITION));
+            definitionModel.getSegments().getSegments().addAll(interchangeEnvelope.getEdimap().getSegments().getSegments());
         } catch (Exception e) {
             throw new EdiParseException(e.getMessage(), e);
         }
 
-        Import interchangeEnvImport = new Import();
-        interchangeEnvImport.setNamespace(UnEdifactMessageReader.INTERCHANGE_NAMESPACE);
-        interchangeEnvImport.setResource(new File(interchangeDefinitionResource).toURI().toString());
 
-        // Read Definition Configuration
-        Edimap definitionEdimap = parseEDIDefinitionFiles(decompressedDir, fileExtension);
+//        Import interchangeEnvImport = new Import();
+//        interchangeEnvImport.setNamespace(UnEdifactMessageReader.INTERCHANGE_NAMESPACE);
+//        interchangeEnvImport.setResource(new File(interchangeDefinitionResource).toURI().toString());
+//
+//                              
+//
+//        // Read Message Configurations
+//        File messageDir = new File(decompressedDir + File.separator + "edmd");
+//        for (String fileName : messageDir.list()) {
+//            if (message.equalsIgnoreCase("ALL") || fileName.toLowerCase().startsWith(message.toLowerCase())) {
+//                System.out.println("Parsing message [" + fileName + "]");
+//                EdimapConfiguration edimapConfig = parseEDIMessage(messageDir + File.separator + fileName, outDirectory + File.separator + "un-edifact-message-" + fileName + ".xml", new File(definitionResource).toURI().toString(), interchangeEnvImport);
+//                if (edimapConfig.getEdimap() != null) {
+//                    edimaps.add(edimapConfig);
+//                }
+//            }
+//        }
+//
+//        // Prepare Edimap for output.
+//        definitionEdimap.getSegments().setXmltag(edimaps.get(0).getEdimap().getDescription().getName() + "-Definition");
+//        definitionEdimap.setDescription(edimaps.get(0).getEdimap().getDescription());
+//        definitionEdimap.setDelimiters(edimaps.get(0).getEdimap().getDelimiters());
+//        edimaps.add(new EdimapConfiguration(definitionEdimap, definitionResource));
+//
+//        edimaps.add(new EdimapConfiguration( interchangeEnvelope.getEdimap(), interchangeDefinitionResource));
+//
 
-        // Read Message Configurations
-        File messageDir = new File(decompressedDir + File.separator + "edmd");
-        for (String fileName : messageDir.list()) {
-            if (message.equalsIgnoreCase("ALL") || fileName.toLowerCase().startsWith(message.toLowerCase())) {
-                System.out.println("Parsing message [" + fileName + "]");
-                EdimapConfiguration edimapConfig = parseEDIMessage(messageDir + File.separator + fileName, outDirectory + File.separator + "un-edifact-message-" + fileName + ".xml", new File(definitionResource).toURI().toString(), interchangeEnvImport);
-                if (edimapConfig.getEdimap() != null) {
-                    edimaps.add(edimapConfig);
-                }
-            }
-        }
-
-        // Prepare Edimap for output.
-        definitionEdimap.getSegments().setXmltag(edimaps.get(0).getEdimap().getDescription().getName() + "-Definition");
-        definitionEdimap.setDescription(edimaps.get(0).getEdimap().getDescription());
-        definitionEdimap.setDelimiters(edimaps.get(0).getEdimap().getDelimiters());
-        edimaps.add(new EdimapConfiguration(definitionEdimap, definitionResource));
-
-        edimaps.add(new EdimapConfiguration( interchangeEnvelope.getEdimap(), interchangeDefinitionResource));
 
 
-
-        return edimaps;
     }
 
-    private static EdimapConfiguration parseEDIMessage(String fileName, String outFile, String definitionResource, Import interchangeEnvImport) throws IOException {
-
-        Edimap edimap;
-        Reader messageISR = null;
-        InputStream messageFIS = null;
-        try {
-            messageFIS = new FileInputStream(fileName);
-            messageISR = new InputStreamReader(messageFIS);
-            edimap = UnEdifactMessageReader.readMessage(messageISR);
-            if (edimap != null) {
-                edimap.getImports().get(0).setResource(definitionResource);
-                edimap.getImports().add(interchangeEnvImport);
-            }
-        } finally {
-            if (messageFIS != null) {
-                messageFIS.close();
-            }
-            if (messageISR != null) {
-                messageISR.close();
-            }            
-        }
-        return new EdimapConfiguration(edimap, outFile);
+    public Set<String> getMessageNames() {
+        return messageFiles.keySet();
     }
 
-    private static Edimap parseEDIDefinitionFiles(File decompressedDir, String fileExtension) throws IOException, EdiParseException {
-        Edimap definitionEdimap;
-        FileInputStream dataFIS = null;
-        FileInputStream compositeFIS = null;
-        FileInputStream segmentFIS = null;
+    public Edimap getMappingModelForMessage(String messageName) throws IOException {
+        return parseEdiMessage(messageName);
+    }
+
+    private Edimap parseEdiMessage(String messageName) throws IOException {
+        byte[] message = messageFiles.get(messageName);
+
+        Edimap edimap = null;
+        if (message != null) {
+            InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(message));
+            try {
+                edimap = UnEdifactMessageReader.readMessage(reader, useImport, definitionModel);
+            } finally {
+                reader.close();
+            }
+        }
+        return edimap;
+    }
+
+    public Edimap getDefinitionModel() throws IOException {
+        if (definitionModel.getDescription() == null) {
+            Edimap messageEdimap = parseEdiMessage(messageFiles.keySet().iterator().next());
+
+            // Prepare Edimap for output.
+            definitionModel.getSegments().setXmltag(messageEdimap.getDescription().getName() + "-Definition");
+            definitionModel.setDescription(messageEdimap.getDescription());
+            definitionModel.setDelimiters(messageEdimap.getDelimiters());
+        }
+        return definitionModel;
+    }
+
+//    private static EdimapConfiguration parseEDIMessage(String fileName, String outFile, String definitionResource, Import interchangeEnvImport) throws IOException {
+//
+//        Edimap edimap;
+//        Reader messageISR = null;
+//        InputStream messageFIS = null;
+//        try {
+//            messageFIS = new FileInputStream(fileName);
+//            messageISR = new InputStreamReader(messageFIS);
+//            edimap = UnEdifactMessageReader.readMessage(messageISR);
+//            if (edimap != null) {
+//                edimap.getImports().get(0).setResource(definitionResource);
+//                edimap.getImports().add(interchangeEnvImport);
+//            }
+//        } finally {
+//            if (messageFIS != null) {
+//                messageFIS.close();
+//            }
+//            if (messageISR != null) {
+//                messageISR.close();
+//            }
+//        }
+//        return new EdimapConfiguration(edimap, outFile);
+//    }
+
+    private Edimap parseEDIDefinitionFiles() throws IOException, EdiParseException {
+
+        Edimap edifactModel;
         Reader dataISR = null;
         Reader compositeISR = null;
         Reader segmentISR = null;
         try {
-            dataFIS = new FileInputStream(decompressedDir + File.separator + "eded" + File.separator + "EDED" + fileExtension);
-            dataISR = new InputStreamReader(dataFIS);
-            compositeFIS = new FileInputStream(decompressedDir + File.separator + "edcd" + File.separator + "EDCD" + fileExtension);
-            compositeISR = new InputStreamReader(compositeFIS);
-            segmentFIS = new FileInputStream(decompressedDir + File.separator + "edsd" + File.separator + "EDSD" + fileExtension);
-            segmentISR = new InputStreamReader(segmentFIS);
+            dataISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("eded.")));
+            compositeISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("edcd.")));
+            segmentISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("edsd.")));
 
-            definitionEdimap = UnCefactDefinitionReader.test(dataISR, compositeISR, segmentISR);
+            edifactModel = UnCefactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
         } finally {
             if (dataISR != null) {
                 dataISR.close();
@@ -125,74 +166,138 @@ public class UnEdifactReader {
             if (segmentISR != null) {
                 segmentISR.close();
             }
-            if (dataFIS != null) {
-                dataFIS.close();
-            }
-            if (compositeFIS != null) {
-                compositeFIS.close();
-            }
-            if (segmentFIS != null) {
-                segmentFIS.close();
-            }
         }
-        return definitionEdimap;
+        return edifactModel;
+
+
+
+
+//        Edimap definitionEdimap;
+//        FileInputStream dataFIS = null;
+//        FileInputStream compositeFIS = null;
+//        FileInputStream segmentFIS = null;
+//        Reader dataISR = null;
+//        Reader compositeISR = null;
+//        Reader segmentISR = null;
+//        try {
+//            dataFIS = new FileInputStream(decompressedDir + File.separator + "eded" + File.separator + "EDED" + fileExtension);
+//            dataISR = new InputStreamReader(dataFIS);
+//            compositeFIS = new FileInputStream(decompressedDir + File.separator + "edcd" + File.separator + "EDCD" + fileExtension);
+//            compositeISR = new InputStreamReader(compositeFIS);
+//            segmentFIS = new FileInputStream(decompressedDir + File.separator + "edsd" + File.separator + "EDSD" + fileExtension);
+//            segmentISR = new InputStreamReader(segmentFIS);
+//
+//            definitionEdimap = UnCefactDefinitionReader.test(dataISR, compositeISR, segmentISR);
+//        } finally {
+//            if (dataISR != null) {
+//                dataISR.close();
+//            }
+//            if (compositeISR != null) {
+//                compositeISR.close();
+//            }
+//            if (segmentISR != null) {
+//                segmentISR.close();
+//            }
+//            if (dataFIS != null) {
+//                dataFIS.close();
+//            }
+//            if (compositeFIS != null) {
+//                compositeFIS.close();
+//            }
+//            if (segmentFIS != null) {
+//                segmentFIS.close();
+//            }
+//        }
+//        return definitionEdimap;
     }
 
-    private static String getFileExtension(String path) throws EdiParseException {
-        File file = new File(path);
-        String[] files = file.list();
-        if (files.length > 0) {
-            return files[0].substring(files[0].lastIndexOf('.'), files[0].length());
-        } else {
-            throw new EdiParseException("Could not decide file extension in edifact specification.");
-        }
-    }
 
-    private static File unzpipAll(File file) throws IOException {
-        File decompressedDir = unzpip(file);
 
-        FilenameFilter filter = new FilenameFilter(){
-            public boolean accept(File dir, String name) {
-                return name.matches(".*\\.zip");
-            }};
-        for (File zipFile : decompressedDir.listFiles(filter)) {
-            unzpip(zipFile);
-        }
 
-        return decompressedDir;
-    }
+    private static void readDefinitionEntries(ZipInputStream folderZip, ZipDirectoryEntry... entries) throws IOException {
 
-    private static File unzpip(File file) throws IOException {
-        ZipInputStream zis = null;
-        try {
-            File unzipDirectory = new File(file.getCanonicalPath().substring(0, file.getCanonicalPath().length() - 4));
-            BufferedOutputStream dest;
-            FileInputStream fis = new FileInputStream(file);
-            zis = new ZipInputStream(new BufferedInputStream(fis));
-            ZipEntry entry;
-            while((entry = zis.getNextEntry()) != null) {
-                int count;
-                byte data[] = new byte[BUFFER];
+        ZipEntry fileEntry = folderZip.getNextEntry();
+        while (fileEntry != null) {
+            for (ZipDirectoryEntry entry : entries) {
+                if (fileEntry.getName().toLowerCase().startsWith(entry.getDirectory())) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                // write the files to the disk
-                if (!unzipDirectory.exists()) {
-                    unzipDirectory.mkdirs();
+                    byte[] bytes = new byte[BUFFER];
+                    int size = 0;
+                      while ((size = folderZip.read(bytes, 0, bytes.length)) != -1) {
+                        baos.write(bytes, 0, size);
+                      }
+
+                    ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(baos.toByteArray()));
+                    readZipEntry(entry.getEntries(), zipInputStream, entry.getFile());
+                    zipInputStream.close();
                 }
-
-                FileOutputStream fos = new FileOutputStream(new File(unzipDirectory.getCanonicalPath() + File.separator + entry.getName()));                
-                dest = new BufferedOutputStream(fos, BUFFER);
-                while ((count = zis.read(data, 0, BUFFER)) != -1) {
-                    dest.write(data, 0, count);
-                }
-                dest.flush();
-                dest.close();
-                fos.close();
             }
-            return unzipDirectory;
-        } finally {
-            if (zis != null) {
-                zis.close();
-            }
+            folderZip.closeEntry();
+            fileEntry = folderZip.getNextEntry();
         }
     }
+
+    private static boolean readZipEntry(Map<String, byte[]> files, ZipInputStream folderZip, String entry) throws IOException {
+
+        boolean result = false;
+
+        ZipEntry fileEntry = folderZip.getNextEntry();
+        while (fileEntry != null) {
+            if (fileEntry.getName().toLowerCase().startsWith(entry) || entry.equals("*")) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                byte[] bytes = new byte[2048];
+                int size = 0;
+                  while ((size = folderZip.read(bytes, 0, bytes.length)) != -1) {
+                    baos.write(bytes, 0, size);
+                  }
+
+                result = true;
+                if (entry.equals("*")) {
+                    if (fileEntry.getName().indexOf('_') != -1) {
+                        files.put(fileEntry.getName().substring(0, fileEntry.getName().indexOf('_')), baos.toByteArray());
+                    }
+                } else {
+                    files.put(entry, baos.toByteArray());
+                    break;
+                }
+            }
+            folderZip.closeEntry();
+            fileEntry = folderZip.getNextEntry();
+        }
+
+        return result;
+    }
+
+
+    private static class ZipDirectoryEntry {
+        private String directory;
+        private String file;
+        private Map<String, byte[]> entries;
+
+        private ZipDirectoryEntry(String directory, Map<String, byte[]> entries) {
+            this(directory, directory, entries);
+        }
+
+        public ZipDirectoryEntry(String directory, String file, Map<String, byte[]> entries) {
+            this.directory = directory;
+            this.file = file;
+            this.entries = entries;
+        }
+
+        public String getDirectory() {
+            return directory;
+        }
+
+        public String getFile() {
+            return file;
+        }
+
+        public Map<String, byte[]> getEntries() {
+            return entries;
+        }
+    }
+
+
 }

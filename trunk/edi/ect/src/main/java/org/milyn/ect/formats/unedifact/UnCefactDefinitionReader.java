@@ -391,7 +391,7 @@ public class UnCefactDefinitionReader {
         return part;
     }
 
-    public static Edimap test(Reader dataReader, Reader compositeReader, Reader segmentReader) throws IOException, EdiParseException {
+    public static Edimap parse(Reader dataReader, Reader compositeReader, Reader segmentReader) throws IOException, EdiParseException {
 //        FileInputStream in = null;
 //        Reader reader = null;
         Map<String, Component> datas = null;

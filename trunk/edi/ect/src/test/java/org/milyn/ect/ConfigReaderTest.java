@@ -2,19 +2,20 @@ package org.milyn.ect;
 
 import junit.framework.TestCase;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileInputStream;
+import java.io.*;
+import java.util.zip.ZipInputStream;
 
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.ect.formats.unedifact.UnEdifactReader;
+import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
 public class ConfigReaderTest extends TestCase {
 
-    public void test_Converting_UnEdifact_D08A() throws IOException, EdiParseException, EDIConfigurationException, SAXException {
+    public void test_Converting_UnEdifact_D08A() throws IOException, EdiParseException, EDIConfigurationException, SAXException, InstantiationException, IllegalAccessException {
         String directory = Thread.currentThread().getContextClassLoader().getResource("").getFile();
 
         /**
@@ -32,27 +33,23 @@ public class ConfigReaderTest extends TestCase {
          */
         String message = "INVOIC";
 
-        ConfigReader.convert(outDir, infile, message);
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org" + File.separator + "milyn" + File.separator + "ect" + File.separator + "D08A.zip");
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+
+        EdiConvertionTool ect = new EdiConvertionTool(zipInputStream, ConfigReader.Impls.UNEDIFACT.newInstance());
+        String result = ect.getMappingModelForMessage("INVOIC");
+        //ConfigReader.convert(outDir, infile, message);
 
         // Assert that the generated configuration is correct.
-        assertCorrectGeneratedConfiguration(outDir);
+        assertCorrectGeneratedConfiguration(result);
 
     }
 
-    private void assertCorrectGeneratedConfiguration(String outDir) throws SAXException, EDIConfigurationException, IOException {
-        assertTrue("The number of generated files should be 3.", new File(outDir).list().length == 3);
-
-        for (String fileName : new File(outDir).list()) {
-            assertTrue("Generated files does not match expected filename.",
-                    fileName.equalsIgnoreCase("un-edifact-definition-D08A.xml") ||
-                    fileName.equalsIgnoreCase("un-edifact-message-INVOIC_D.08A.xml") ||
-                    fileName.equalsIgnoreCase("un-edifact-interchange-definition.xml"));
-        }
-
+    private void assertCorrectGeneratedConfiguration(String invoic) throws SAXException, EDIConfigurationException, IOException {
+        
         // Test reading the generated file into the Smooks edimap model.
-        FileInputStream fis = new FileInputStream(outDir + File.separator + "un-edifact-message-INVOIC_D.08A.xml");
         EdifactModel model = new EdifactModel();
-        model.parseSequence(fis);
+        model.parseSequence(new ByteArrayInputStream(invoic.getBytes()));
         Edimap edimap = model.getEdimap();
 
         //Some assertions.
