@@ -2,6 +2,7 @@ package org.milyn.ect;
 
 import org.milyn.ect.formats.unedifact.UnEdifactReader;
 import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.util.ClassUtil;
 
 import java.io.*;
 import java.util.*;
@@ -17,14 +18,17 @@ public class EdiConvertionTool {
 
     private ConfigReader configReader;
 
-
-    public EdiConvertionTool(InputStream inputStream, String configReader) throws EdiParseException, InstantiationException, IllegalAccessException, IOException {
+    public EdiConvertionTool(InputStream inputStream, String configReader) throws EdiParseException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException {
         try {
             this.configReader = ConfigReader.Impls.valueOf(configReader).newInstance();
-            this.configReader.initialize(inputStream, false);
         } catch (IllegalArgumentException e) {
-            throw new EdiParseException("Illegal name provided for configReader. It should be one of [" + Arrays.toString(ConfigReader.Impls.values()) + "].", e);
+            Class configReaderType = ClassUtil.forName(configReader, ConfigReader.class);
+            if (configReaderType == null) {
+                throw new EdiParseException("Illegal name provided for configReader. It should be one of [" + Arrays.toString(ConfigReader.Impls.values()) + "] or a classpath to a class implementing ConfigReader.", e);
+            }
+            this.configReader = (ConfigReader)configReaderType.newInstance();
         }
+        this.configReader.initialize(inputStream, false);
     }
 
     public EdiConvertionTool(InputStream inputStream, ConfigReader configReader) throws IOException, EdiParseException {

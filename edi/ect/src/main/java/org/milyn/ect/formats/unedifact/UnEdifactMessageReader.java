@@ -138,7 +138,7 @@ public class UnEdifactMessageReader {
             if (isSplitIntoImport) {
                 Import ediImport = new Import();
                 ediImport.setNamespace(agency);
-                ediImport.setResource(new File("TODO - Set resource.").toURI().toString());
+                ediImport.setResource("TODO");
                 edimap.getImports().add(ediImport);
             }  else {
                 segmentDefinitions = getSegmentDefinitions(definitionModel);
@@ -268,7 +268,7 @@ public class UnEdifactMessageReader {
         Segment segment = new Segment();
         segment.setSegcode(segcode);
         if (isSplitIntoImport) {
-            segment.setSegref(INTERCHANGE_NAMESPACE + ":" + segcode);
+            segment.setSegref(agency + ":" + segcode);
         } else {
             Segment importedSegment = segmentDefinitions.get(segcode);
             segment.getFields().addAll(importedSegment.getFields());
