@@ -4,45 +4,51 @@ import junit.framework.TestCase;
 
 import java.io.*;
 import java.util.zip.ZipInputStream;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Edimap;
-import org.milyn.edisax.model.internal.Segment;
+import org.milyn.edisax.model.internal.*;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.ect.formats.unedifact.UnEdifactReader;
+import org.milyn.ect.configreader.CustomConfigReader;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
 public class ConfigReaderTest extends TestCase {
 
     public void test_Converting_UnEdifact_D08A() throws IOException, EdiParseException, EDIConfigurationException, SAXException, InstantiationException, IllegalAccessException {
-        String directory = Thread.currentThread().getContextClassLoader().getResource("").getFile();
-
-        /**
-         * The zip-file containing the specifications.
-         */
-        String infile  = directory + "org" + File.separator + "milyn" + File.separator + "ect" + File.separator + "D08A.zip";
-
-        /**
-         * The directory where the config-files shall be written.
-         */
-        String outDir  = Thread.currentThread().getContextClassLoader().getResource("").getFile() + File.separator + "test-output";
 
         /**
          * Write out the INVOIC message. Try changing parameter to ALL for writing out all messages.
          */
         String message = "INVOIC";
 
+        /**
+         * Create the ZipInputStream containing the Un Edifact Specification.
+         */
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org" + File.separator + "milyn" + File.separator + "ect" + File.separator + "D08A.zip");
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
+        /**
+         * Initialize the EdiConvertionTool
+         */
         EdiConvertionTool ect = new EdiConvertionTool(zipInputStream, ConfigReader.Impls.UNEDIFACT.newInstance());
-        String result = ect.getMappingModelForMessage("INVOIC");
-        //ConfigReader.convert(outDir, infile, message);
+        String result = ect.getMappingModelForMessage(message);
 
         // Assert that the generated configuration is correct.
         assertCorrectGeneratedConfiguration(result);
 
+    }
+
+    public void test_Custom_ConfigReader() throws IOException, EdiParseException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+        EdiConvertionTool ect = new EdiConvertionTool(null, new CustomConfigReader());
+        String model = ect.getDefinitionModel();
+        assertTrue("Edimap.description should contain the name [Custom Config Reader]", model.contains("<medi:description version=\"1.0\" name=\"Custom Config Reader\"/>"));
+
+        ect = new EdiConvertionTool(null, "org.milyn.ect.configreader.CustomConfigReader");
+        model = ect.getDefinitionModel();
+        assertTrue("Edimap.description should contain the name [Custom Config Reader]", model.contains("<medi:description version=\"1.0\" name=\"Custom Config Reader\"/>"));
     }
 
     private void assertCorrectGeneratedConfiguration(String invoic) throws SAXException, EDIConfigurationException, IOException {
@@ -70,4 +76,5 @@ public class ConfigReaderTest extends TestCase {
         assertTrue("BGM segment should have 4 fields but had " + segment.getFields().size(), segment.getFields().size() == 4);
         assertTrue("The first Field should have 4 Components", segment.getFields().get(0).getComponent().size() == 4);
     }
+
 }
