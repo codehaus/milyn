@@ -67,7 +67,7 @@ public class SaxDomCompTest extends TestCase {
     }
 
     private void runTransform(Smooks smooks, Writer writer) throws InterruptedException {
-        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order-message.xml")), new StreamResult(writer));
+        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), new StreamResult(writer));
         Thread.sleep(20);
     }
 }
