@@ -94,14 +94,14 @@ public class SmooksOverheadTest extends TestCase {
 
         for(int i = 0; i < NUM_WARMUPS; i++) {
             JavaResult javaResult = new JavaResult();
-            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
+            smooks.filter(new StreamSource(getMessageReader()), javaResult);
         }
 
         long start = System.currentTimeMillis();
         JavaResult javaResult = null;
         for(int i = 0; i < NUM_ITERATIONS; i++) {
             javaResult = new JavaResult();
-            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
+            smooks.filter(new StreamSource(getMessageReader()), javaResult);
         }
         System.out.println(config + " took: " + (System.currentTimeMillis() - start));
         List orderItems = (List) javaResult.getBean("orderItemList");
