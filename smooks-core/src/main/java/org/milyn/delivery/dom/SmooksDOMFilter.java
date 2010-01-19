@@ -379,7 +379,13 @@ public class SmooksDOMFilter extends Filter {
         }
 
         globalProcessingBefores = deliveryConfig.getProcessingVisitBefores().getMappings(GLOBAL_SELECTORS);
+        if(globalProcessingBefores != null && globalProcessingBefores.isEmpty()) {
+        	globalProcessingBefores = null;
+        }
         globalProcessingAfters = deliveryConfig.getProcessingVisitAfters().getMappings(GLOBAL_SELECTORS);
+        if(globalProcessingAfters != null && globalProcessingAfters.isEmpty()) {
+        	globalProcessingAfters = null;
+        }
 
         int transListLength;
         Vector transList = new Vector();
