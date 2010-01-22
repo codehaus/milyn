@@ -2,7 +2,7 @@
 <project default="assemble" name="Assembly">
 
     <property name="version.base" value="1.2"/>
-    <property name="version" value="${version.base}.3"/>
+    <property name="version" value="${version.base}.5"/>
 
     <property name="mainDistroName" value="smooks-${version}"/>
     <property name="mainTargetdir" value="target/${mainDistroName}"/>
@@ -52,30 +52,40 @@
             <arg line="project-info-reports:dependencies"/>
         </exec>
 
-        <antcall target="buildMainDistro"/>
-        <antcall target="buildExamplesDistro"/>
-    </target>
-
-    <target name="buildMainDistro">
-
         <property name="docsdir" value="${mainTargetdir}/docs"/>
         <property name="javadocdir" value="${docsdir}/javadoc"/>
 
+        <antcall target="copyArtifacts"/>
+        <antcall target="buildExamplesDistro"/>
+        <antcall target="buildMainDistro"/>
+    </target>
+
+    <target name="copyArtifacts">
         <mkdir dir="target/site"/>
         <mkdir dir="${mainTargetdir}"/>
         <mkdir dir="${javadocdir}"/>
+        <mkdir dir="${exampleTargetdir}"/>
 
+    	<copy todir="${exampleTargetdir}">
+            <fileset dir="../../smooks-examples"/>
+        </copy>
+    	<delete includeemptydirs="true">
+			<fileset dir="${exampleTargetdir}" includes="**/bin/**" />
+		</delete>
+    </target>
+
+    <target name="buildMainDistro">
         <copy todir="${mainTargetdir}">
             <fileset dir="./">
                 <include name="README.html"/>
                 <include name="LICENSE.txt"/>
             </fileset>
             <fileset dir="target/site"/>
-            <fileset dir="../../" includes="smooks-examples/**"/>
+            <fileset dir="target" includes="${examplesDistroName}/**"/>
             <fileset dir="target" includes="lib/*.jar"/>
         </copy>
 
-        <antcall target="move-javadoc">
+    	<antcall target="move-javadoc">
             <param name="source" value="../../smooks-core"/>
             <param name="target" value="${javadocdir}/smooks"/>
         </antcall>
@@ -167,13 +177,6 @@
     </target>
 
     <target name="buildExamplesDistro">
-
-        <mkdir dir="${exampleTargetdir}"/>
-
-        <copy todir="${exampleTargetdir}">
-            <fileset dir="../../smooks-examples"/>
-        </copy>
-
         <!-- Zip up the examples distro... -->
         <zip destfile="target/${examplesDistroName}.zip" basedir="target" includes="${examplesDistroName}/**"/>
     </target>
