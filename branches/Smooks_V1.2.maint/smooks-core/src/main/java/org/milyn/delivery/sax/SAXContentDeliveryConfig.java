@@ -34,6 +34,7 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private ContentHandlerConfigMapTable<SAXVisitAfter> visitAfters;
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables;
     private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables;
+    private FilterBypass filterBypass;
 
     private Map<String, SAXElementVisitorMap> optimizedVisitorConfig = new HashMap<String, SAXElementVisitorMap>();
 
@@ -76,6 +77,10 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
     public Map<String, SAXElementVisitorMap> getOptimizedVisitorConfig() {
         return optimizedVisitorConfig;
     }
+    
+    public FilterBypass getFilterBypass() {
+    	return filterBypass;
+    }
 
     public Filter newFilter(ExecutionContext executionContext) {
         return new SmooksSAXFilter(executionContext);
@@ -108,9 +113,11 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
             entry.setVisitCleanables(visitCleanables.getTable().get(elementName));
             optimizedVisitorConfig.put(elementName, entry);
         }
+        
+		filterBypass = getFilterBypass(visitBefores, visitAfters);
     }
 
-    public SAXElementVisitorMap getCombinedOptimizedConfig(String[] elementNames) {
+	public SAXElementVisitorMap getCombinedOptimizedConfig(String[] elementNames) {
         SAXElementVisitorMap combinedConfig = new SAXElementVisitorMap();
 
         combinedConfig.setVisitBefores(new ArrayList<ContentHandlerConfigMap<SAXVisitBefore>>());

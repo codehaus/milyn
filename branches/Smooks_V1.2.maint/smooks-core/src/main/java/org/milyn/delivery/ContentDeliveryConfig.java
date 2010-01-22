@@ -136,4 +136,11 @@ public interface ContentDeliveryConfig {
      * is left to the GC (i.e. lost).
      */
     public void returnXMLReader(XMLReader reader);
+    
+    /**
+     * Get the {@link FilterBypass} for this delivery configuration. 
+     * @return The {@link FilterBypass} for this delivery configuration, or
+     * null if non configured.
+     */
+    public FilterBypass getFilterBypass();
 }

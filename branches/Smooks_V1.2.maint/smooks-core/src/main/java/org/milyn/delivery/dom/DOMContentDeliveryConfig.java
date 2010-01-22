@@ -30,15 +30,12 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
     private ContentHandlerConfigMapTable<DOMVisitBefore> assemblyVisitBefores;
     private ContentHandlerConfigMapTable<DOMVisitAfter> assemblyVisitAfters;
-
     private ContentHandlerConfigMapTable<DOMVisitBefore> processingVisitBefores;
     private ContentHandlerConfigMapTable<DOMVisitAfter> processingVisitAfters;
-
     private ContentHandlerConfigMapTable<SerializationUnit> serailizationVisitors;
-
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables;
-
     private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables;
+    private FilterBypass filterBypass;
 
     public ContentHandlerConfigMapTable<DOMVisitBefore> getAssemblyVisitBefores() {
         return assemblyVisitBefores;
@@ -100,10 +97,18 @@ public class DOMContentDeliveryConfig extends AbstractContentDeliveryConfig {
         return new SmooksDOMFilter(executionContext);
     }
 
+    public FilterBypass getFilterBypass() {
+    	return filterBypass;
+    }
+
     public void sort() throws SmooksConfigurationException {
         assemblyVisitBefores.sort(Sorter.SortOrder.PRODUCERS_FIRST);
         assemblyVisitAfters.sort(Sorter.SortOrder.CONSUMERS_FIRST);
         processingVisitBefores.sort(Sorter.SortOrder.PRODUCERS_FIRST);
         processingVisitAfters.sort(Sorter.SortOrder.CONSUMERS_FIRST);
     }
+
+	public void configureFilterBypass() {
+		filterBypass = getFilterBypass(assemblyVisitBefores, assemblyVisitAfters, processingVisitBefores, processingVisitAfters, serailizationVisitors);
+	}
 }
