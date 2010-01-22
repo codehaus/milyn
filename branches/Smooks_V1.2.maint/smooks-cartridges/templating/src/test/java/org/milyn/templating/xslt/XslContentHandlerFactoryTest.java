@@ -116,7 +116,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filterSource(new StringSource("<a/>"), result);
-        assertEquals("<xxxxxx></xxxxxx>", result.getResult());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><xxxxxx/>", result.getResult());
     }
 
     public void test_inline_xsl_function() throws SAXException, IOException {
@@ -124,7 +124,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filterSource(new StringSource("<a name='kalle'/>"), result);
-        assertEquals("<x>kalle</x>", result.getResult());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><x>kalle</x>", result.getResult());
     }
 
     public void test_inline_02() throws SAXException, IOException {
@@ -132,7 +132,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filterSource(new StringSource("<a/>"), result);
-        assertEquals("Hi there!", result.getResult());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>Hi there!", result.getResult());
     }
 
     public void test_inline_03() throws SAXException, IOException {
@@ -140,7 +140,7 @@ public class XslContentHandlerFactoryTest extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filterSource(new StringSource("<a/>"), result);
-        assertEquals("<xxxxxx></xxxxxx>", result.getResult());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><xxxxxx/>", result.getResult());
     }
 
     public void test_badxsl() throws IOException, SAXException {

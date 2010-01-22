@@ -20,12 +20,15 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.io.StreamUtils;
 import org.milyn.util.ClassUtil;
 import org.milyn.xml.XmlUtil;
 import org.milyn.xml.DomUtils;
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
+import org.milyn.delivery.AbstractParser;
+import org.milyn.delivery.FilterBypass;
 import org.milyn.delivery.dom.serialize.GhostElementSerializationUnit;
 import org.milyn.delivery.ordering.Consumer;
 import org.apache.commons.lang.StringUtils;
@@ -39,6 +42,7 @@ import org.xml.sax.SAXParseException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -53,7 +57,7 @@ import java.io.StringReader;
  */
 @VisitBeforeReport(condition = "false")
 @VisitAfterReport(summary = "Applied XSL Template.", detailTemplate = "reporting/XslTemplateProcessor_After.html")
-public class XslTemplateProcessor extends AbstractTemplateProcessor implements Consumer {
+public class XslTemplateProcessor extends AbstractTemplateProcessor implements Consumer, FilterBypass {
     /**
      * Logger.
      */
@@ -71,6 +75,18 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor implements C
      * Is this processor processing an XSLT <a href="#templatelets">Templatelet</a>.
      */
     private boolean isTemplatelet;
+    /**
+     * This Visitor implements the {@link FilterBypass} interface.  This config param allows
+     * the user to enable/disable the bypass.
+     */
+    @ConfigParam(defaultVal = "true")
+    private boolean enableFilterBypass;
+    
+    /**
+     * Is the Smooks configuration, for which this visitor is a part, targeted at an XML message stream.
+     * We know if it is by the XML reader configured (or not configured).
+     */
+    private volatile Boolean isXMLTargetedConfiguration;
 
     /**
      * Is the template application synchronized or not.
@@ -171,8 +187,7 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor implements C
     }
 
     private void performTransform(Element element, Element transRes, Document ownerDoc) throws TransformerException {
-        Transformer transformer;
-        transformer = xslTemplate.newTransformer();
+        Transformer transformer = xslTemplate.newTransformer();
 
         if (element == ownerDoc.getDocumentElement()) {
             transformer.transform(new DOMSource(ownerDoc), new DOMResult(transRes));
@@ -180,6 +195,48 @@ public class XslTemplateProcessor extends AbstractTemplateProcessor implements C
             transformer.transform(new DOMSource(element), new DOMResult(transRes));
         }
     }
+    
+	public boolean bypass(ExecutionContext executionContext, Source source, Result result) throws SmooksException {
+		if(!enableFilterBypass) {
+			return false;
+		} 		
+		if(!isXMLTargetedConfiguration(executionContext)) {
+			return false;
+		}
+		if((source instanceof StreamSource || source instanceof DOMSource) && (result instanceof StreamResult || result instanceof DOMResult)) {
+	        try {
+				Transformer transformer = xslTemplate.newTransformer();
+				transformer.transform(source, result);
+				return true;
+			} catch (TransformerConfigurationException e) {
+				throw new SmooksException("Error applying XSLT.", e);
+			} catch (TransformerException e) {
+				throw new SmooksException("Error applying XSLT.", e);
+			}			
+		}
+				
+		return false;
+	}
+
+	private boolean isXMLTargetedConfiguration(ExecutionContext executionContext) {
+		if(isXMLTargetedConfiguration == null) {
+			synchronized (this) {				
+				if(isXMLTargetedConfiguration == null) {
+					SmooksResourceConfiguration readerConfiguration = AbstractParser.getSAXParserConfiguration(executionContext.getDeliveryConfig());
+					if(readerConfiguration != null) {
+						// We have an reader config, if the class is not configured, we assume 
+						// the expected Source to be XML...
+						isXMLTargetedConfiguration = (readerConfiguration.getResource() == null);
+					} else {
+						// If no reader config is present at all, we assume the expected Source is XML...
+						isXMLTargetedConfiguration = true;
+					}
+				}
+			}
+		}
+		
+		return isXMLTargetedConfiguration;
+	}
 
     private static class XslErrorListener implements ErrorListener {
         private final boolean failOnWarning;
