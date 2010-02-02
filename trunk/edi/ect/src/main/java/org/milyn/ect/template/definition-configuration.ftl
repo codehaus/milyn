@@ -15,8 +15,10 @@
 <#if segment.class.simpleName == "Segment">
 ${indent}<@writeSegment segment=segment indent=indent+"\t"/>
 <#else>
-${indent}<medi:segmentGroup>
-<#if segmentGroup.documentation?exists>${indent+"\t"}<medi:documentation>${segmentGroup.documentation}</medi:documentation></#if>
+${indent}<medi:segmentGroup <#if segment.xmltag?exists>xmltag="<@formatXmlTag value=segment.xmltag/>" </#if><#if
+segment.minOccurs?exists>minOccurs="${segment.minOccurs}" </#if><#if
+segment.maxOccurs?exists>maxOccurs="${segment.maxOccurs}" </#if>>
+<#if segment.documentation?exists>${indent+"\t"}<medi:documentation>${segment.documentation}</medi:documentation></#if>
 <@writeSegmentGroup segmentGroup=segment indent=indent+"\t"/>
 ${indent}</medi:segmentGroup>
 </#if>
@@ -24,37 +26,42 @@ ${indent}</medi:segmentGroup>
 </#macro>
 
 <#macro writeSegment segment indent>
-${indent}<medi:segment <#if segment.xmltag?exists>xmltag="<@formatXmlTag value=segment.xmltag/>" </#if><#if segment.minOccurs?exists>minOccurs="${segment.minOccurs}" </#if><#if segment.maxOccurs?exists>maxOccurs="${segment.maxOccurs}" </#if><#if segment.segcode?exists>segcode="${segment.segcode}" </#if><#if segment.segref?exists>segref="${segment.segref}" </#if><#if segment.truncatable?exists>truncatable="${segment.truncatable?string}" </#if><#if segment.description?exists>description="${segment.description}"</#if>>
-<#if segment.documentation?exists>${indent+"\t"}<medi:documentation><@handleHtmlEntities value=segment.documentation/></medi:documentation></#if>
+${indent}<medi:segment <#if segment.xmltag?exists>xmltag="<@formatXmlTag value=segment.xmltag/>" </#if><#if
+segment.minOccurs?exists>minOccurs="${segment.minOccurs}" </#if><#if
+segment.maxOccurs?exists>maxOccurs="${segment.maxOccurs}" </#if><#if
+segment.segcode?exists>segcode="${segment.segcode}" </#if><#if
+segment.segref?exists>segref="${segment.segref}" </#if><#if
+segment.truncatable?exists>truncatable="${segment.truncatable?string}" </#if><#if
+segment.description?exists>description="${segment.description}"</#if><#if
+segment.fields?size &gt; 0 || segment.documentation?exists>></#if><#if segment.documentation?exists>
+${indent+"\t"}<medi:documentation><@handleHtmlEntities value=segment.documentation/></medi:documentation></#if>
 <#list segment.fields as field>
 <@writeField field=field indent=indent+"\t"/>
-</#list>
-${indent}</medi:segment>
+</#list><#if segment.fields?size&gt;0 || segment.documentation?exists>${indent}</medi:segment><#else>/></#if>
 </#macro>
 
 <#macro writeField field indent>
-${indent}<medi:field <@writeValueNodeAttributes value=field/><#if field.required?exists>required="${field.required?string}" </#if><#if field.truncatable?exists>truncatable="${field.truncatable?string}" </#if>>
-<#if field.documentation?exists>${indent+"\t"}<medi:documentation>${field.documentation}</medi:documentation></#if>
-<#list field.component as component>
-<@writeComponent component=component indent=indent+"\t"/>
-</#list>
-${indent}</medi:field>
+${indent}<medi:field <@writeValueNodeAttributes value=field/><#if
+field.required?exists>required="${field.required?string}" </#if><#if
+field.truncatable?exists>truncatable="${field.truncatable?string}" </#if><#if
+field.component?size &gt; 0 || field.documentation?exists>></#if><#if field.documentation?exists>
+${indent+"\t"}<medi:documentation>${field.documentation}</medi:documentation></#if><#list field.component as component>
+<@writeComponent component=component indent=indent+"\t"/></#list><#if field.component?size &gt; 0 || field.documentation?exists>
+${indent}</medi:field><#else>/></#if>
 </#macro>
 
 
 <#macro writeComponent component indent>
-${indent}<medi:component <@writeValueNodeAttributes value=component/><#if component.required?exists>required="${component.required?string}" </#if><#if component.truncatable?exists>truncatable="${component.truncatable?string}" </#if>>
-<#if component.documentation?exists>${indent+"\t"}<medi:documentation>${component.documentation}</medi:documentation></#if>
-<#list component.subComponent as subcomponent>
+${indent}<medi:component <@writeValueNodeAttributes value=component/><#if component.required?exists>required="${component.required?string}" </#if><#if component.truncatable?exists>truncatable="${component.truncatable?string}" </#if><#if component.subComponent?size &gt; 0 || component.documentation?exists>></#if><#if component.documentation?exists>
+${indent+"\t"}<medi:documentation>${component.documentation}</medi:documentation></#if><#list component.subComponent as subcomponent>
 <@writeSubComponent subComponent=subcomponent indent=indent+"\t"/>
-</#list>
-${indent}</medi:component>
+</#list><#if component.subComponent?size&gt;0 || component.documentation?exists>
+${indent}</medi:component><#else>/></#if>
 </#macro>
 
 <#macro writeSubComponent subComponent indent>
-${indent}<medi:subComponent <@writeValueNodeAttributes value=subComponent/><#if subComponent.required?exists>required="${subComponent.required?string}" </#if>>
-<#if subComponent.documentation?exists>${indent+"\t"}<medi:documentation>${subComponent.documentation}</medi:documentation></#if>
-${indent}</medi:subComponent>
+${indent}<medi:subComponent <@writeValueNodeAttributes value=subComponent/><#if subComponent.required?exists>required="${subComponent.required?string}" </#if><#if subComponent.documentation?exists>></#if>
+<#if subComponent.documentation?exists>${indent+"\t"}<medi:documentation>${subComponent.documentation}</medi:documentation></#if><#if subComponent.documentation?exists>${indent}</medi:subComponent><#else>/></#if>
 </#macro>
 
 <#macro writeValueNodeAttributes value><#if value.xmltag?exists>xmltag="<@formatXmlTag value=value.xmltag/>" </#if><#if value.type?exists>type="${value.type}" </#if><#if value.typeParameters?exists>typeParameters="${value.typeParameters}" </#if><#if value.minLength?exists>minLength="${value.minLength}" </#if><#if value.maxLength?exists>maxLength="${value.maxLength}" </#if></#macro>
