@@ -33,11 +33,7 @@ import org.xml.sax.SAXException;
 public class SmooksPerfTest extends TestCase {
 
     public void test() throws IOException, SAXException {
-        runSmooks("smooks-config.xml");
-    }
-
-    private void runSmooks(String config) throws IOException, SAXException {
-        Smooks smooks = new Smooks(getClass().getResourceAsStream(config));
+        Smooks smooks = new Smooks(getClass().getResourceAsStream("smooks-config.xml"));
 
         for(int i = 0; i < TestConstants.NUM_WARMUPS; i++) {
             JavaResult javaResult = new JavaResult();
@@ -51,7 +47,7 @@ public class SmooksPerfTest extends TestCase {
             smooks.filterSource(new StreamSource(TestConstants.getMessageReader()), javaResult);
         }
         
-        System.out.println(config + " took: " + (System.currentTimeMillis() - start));
+        System.out.println("Smooks took: " + (System.currentTimeMillis() - start));
         Order order = (Order) javaResult.getBean("order");
         if(order != null) {
         	System.out.println("Num order items: " + order.getOrderItems().size());
