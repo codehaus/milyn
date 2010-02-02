@@ -323,7 +323,7 @@ public class UnCefactDefinitionReader {
             return "String";
         }
 
-        if (typeAndOccurance[0].equals("n")) {
+        if (typeAndOccurance[0].trim().equals("n")) {
             return "BigDecimal";
         } else {
             return "String";
