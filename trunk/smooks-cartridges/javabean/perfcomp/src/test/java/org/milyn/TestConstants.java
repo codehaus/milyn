@@ -20,10 +20,10 @@ import java.io.InputStreamReader;
 public class TestConstants {
 
     public static final int NUM_WARMUPS = 100;
-    public static final int NUM_ITERATIONS = 100;
+    public static final int NUM_ITERATIONS = 50000;
 	
 
     public static InputStreamReader getMessageReader() {
-        return new InputStreamReader(TestConstants.class.getResourceAsStream("order-01.xml"));
+        return new InputStreamReader(TestConstants.class.getResourceAsStream("39910.xml"));
     }
 }
