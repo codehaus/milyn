@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 public class TestConstants {
 
     public static final int NUM_WARMUPS = 100;
-    public static final int NUM_ITERATIONS = 100000;
+    public static final int NUM_ITERATIONS = 100;
 	
 
     public static InputStreamReader getMessageReader() {

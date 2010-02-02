@@ -15,7 +15,7 @@
 */
 package org.milyn;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * 
@@ -23,19 +23,19 @@ import java.util.List;
  */
 public class Order {
 
-	List<OrderItem> orderItems;
+	public ArrayList<OrderItem> orderItems;
 
 	/**
 	 * @return the orderItems
 	 */
-	public List<OrderItem> getOrderItems() {
+	public ArrayList<OrderItem> getOrderItems() {
 		return orderItems;
 	}
 
 	/**
 	 * @param orderItems the orderItems to set
 	 */
-	public void setOrderItems(List<OrderItem> orderItems) {
+	public void setOrderItems(ArrayList<OrderItem> orderItems) {
 		this.orderItems = orderItems;
 	}	
 }

@@ -6,10 +6,10 @@ import java.math.BigDecimal;
  * @author
  */
 public class OrderItem {
-    private int position;
-    private Long quantity;
-    private BigDecimal price;
-    private String title;
+	public int position;
+	public Long quantity;
+	public BigDecimal price;
+	public String title;
 
     public int getPosition() {
         return position;
