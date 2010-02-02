@@ -1,15 +1,30 @@
+/*
+	Milyn - Copyright (C) 2006 - 2010
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
 package org.milyn.ect.formats.unedifact;
 
-import org.milyn.edisax.model.internal.Edimap;
-import org.milyn.edisax.model.internal.Import;
-import org.milyn.edisax.model.EdifactModel;
-import org.milyn.ect.EdimapConfiguration;
-import org.milyn.ect.EdiParseException;
 import org.milyn.ect.ConfigReader;
+import org.milyn.ect.EdiParseException;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.util.ClassUtil;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -39,7 +54,6 @@ public class UnEdifactReader implements ConfigReader {
         definitionFiles = new HashMap<String, byte[]>();
         messageFiles = new HashMap<String, byte[]>();
         readDefinitionEntries(zipInputStream, new ZipDirectoryEntry("eded.", definitionFiles), new ZipDirectoryEntry("edcd.", definitionFiles), new ZipDirectoryEntry("edsd.", definitionFiles), new ZipDirectoryEntry("edmd.", "*", messageFiles));
-        List<EdimapConfiguration> edimaps = new ArrayList<EdimapConfiguration>();
 
         // Read Definition Configuration
         definitionModel = parseEDIDefinitionFiles();
@@ -47,41 +61,11 @@ public class UnEdifactReader implements ConfigReader {
         //Interchange envelope is inserted into the definitions. Handcoded at the moment.
         try {
             EdifactModel interchangeEnvelope = new EdifactModel();
-            interchangeEnvelope.parseSequence(Thread.currentThread().getContextClassLoader().getResourceAsStream("org/milyn/ect/formats/unedifact/" + INTERCHANGE_DEFINITION));
+            interchangeEnvelope.parseSequence(ClassUtil.getResourceAsStream(INTERCHANGE_DEFINITION, this.getClass()));
             definitionModel.getSegments().getSegments().addAll(interchangeEnvelope.getEdimap().getSegments().getSegments());
         } catch (Exception e) {
             throw new EdiParseException(e.getMessage(), e);
         }
-
-
-//        Import interchangeEnvImport = new Import();
-//        interchangeEnvImport.setNamespace(UnEdifactMessageReader.INTERCHANGE_NAMESPACE);
-//        interchangeEnvImport.setResource(new File(interchangeDefinitionResource).toURI().toString());
-//
-//                              
-//
-//        // Read Message Configurations
-//        File messageDir = new File(decompressedDir + File.separator + "edmd");
-//        for (String fileName : messageDir.list()) {
-//            if (message.equalsIgnoreCase("ALL") || fileName.toLowerCase().startsWith(message.toLowerCase())) {
-//                System.out.println("Parsing message [" + fileName + "]");
-//                EdimapConfiguration edimapConfig = parseEDIMessage(messageDir + File.separator + fileName, outDirectory + File.separator + "un-edifact-message-" + fileName + ".xml", new File(definitionResource).toURI().toString(), interchangeEnvImport);
-//                if (edimapConfig.getEdimap() != null) {
-//                    edimaps.add(edimapConfig);
-//                }
-//            }
-//        }
-//
-//        // Prepare Edimap for output.
-//        definitionEdimap.getSegments().setXmltag(edimaps.get(0).getEdimap().getDescription().getName() + "-Definition");
-//        definitionEdimap.setDescription(edimaps.get(0).getEdimap().getDescription());
-//        definitionEdimap.setDelimiters(edimaps.get(0).getEdimap().getDelimiters());
-//        edimaps.add(new EdimapConfiguration(definitionEdimap, definitionResource));
-//
-//        edimaps.add(new EdimapConfiguration( interchangeEnvelope.getEdimap(), interchangeDefinitionResource));
-//
-
-
 
     }
 
@@ -169,46 +153,6 @@ public class UnEdifactReader implements ConfigReader {
         }
         return edifactModel;
 
-
-
-
-//        Edimap definitionEdimap;
-//        FileInputStream dataFIS = null;
-//        FileInputStream compositeFIS = null;
-//        FileInputStream segmentFIS = null;
-//        Reader dataISR = null;
-//        Reader compositeISR = null;
-//        Reader segmentISR = null;
-//        try {
-//            dataFIS = new FileInputStream(decompressedDir + File.separator + "eded" + File.separator + "EDED" + fileExtension);
-//            dataISR = new InputStreamReader(dataFIS);
-//            compositeFIS = new FileInputStream(decompressedDir + File.separator + "edcd" + File.separator + "EDCD" + fileExtension);
-//            compositeISR = new InputStreamReader(compositeFIS);
-//            segmentFIS = new FileInputStream(decompressedDir + File.separator + "edsd" + File.separator + "EDSD" + fileExtension);
-//            segmentISR = new InputStreamReader(segmentFIS);
-//
-//            definitionEdimap = UnCefactDefinitionReader.test(dataISR, compositeISR, segmentISR);
-//        } finally {
-//            if (dataISR != null) {
-//                dataISR.close();
-//            }
-//            if (compositeISR != null) {
-//                compositeISR.close();
-//            }
-//            if (segmentISR != null) {
-//                segmentISR.close();
-//            }
-//            if (dataFIS != null) {
-//                dataFIS.close();
-//            }
-//            if (compositeFIS != null) {
-//                compositeFIS.close();
-//            }
-//            if (segmentFIS != null) {
-//                segmentFIS.close();
-//            }
-//        }
-//        return definitionEdimap;
     }
 
 
@@ -223,7 +167,7 @@ public class UnEdifactReader implements ConfigReader {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                     byte[] bytes = new byte[BUFFER];
-                    int size = 0;
+                    int size;
                       while ((size = folderZip.read(bytes, 0, bytes.length)) != -1) {
                         baos.write(bytes, 0, size);
                       }
@@ -248,7 +192,7 @@ public class UnEdifactReader implements ConfigReader {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                 byte[] bytes = new byte[2048];
-                int size = 0;
+                int size;
                   while ((size = folderZip.read(bytes, 0, bytes.length)) != -1) {
                     baos.write(bytes, 0, size);
                   }

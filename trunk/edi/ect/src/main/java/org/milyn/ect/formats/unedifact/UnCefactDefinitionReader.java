@@ -1,3 +1,18 @@
+/*
+	Milyn - Copyright (C) 2006 - 2010
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License (version 2.1) as published by the Free Software
+	Foundation.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+	See the GNU Lesser General Public License for more details:
+	http://www.gnu.org/licenses/lgpl.txt
+*/
 package org.milyn.ect.formats.unedifact;
 
 import org.milyn.edisax.model.internal.*;
@@ -10,7 +25,8 @@ import java.util.regex.Matcher;
 
 
 /**
- * UnCefactReader
+ * UnCefactDefinitionReader
+ * @author bardl
  */
 public class UnCefactDefinitionReader {
 
@@ -288,7 +304,6 @@ public class UnCefactDefinitionReader {
         String repr = getValue(reader, "Repr:");
         String[] typeAndOccurance = repr.split(DOTS);
 
-//component.setId(id);
         component.setXmltag(name.trim());
         component.setType(getType(typeAndOccurance));
         component.setMinLength(getMinLength(typeAndOccurance));
@@ -392,41 +407,10 @@ public class UnCefactDefinitionReader {
     }
 
     public static Edimap parse(Reader dataReader, Reader compositeReader, Reader segmentReader) throws IOException, EdiParseException {
-//        FileInputStream in = null;
-//        Reader reader = null;
-        Map<String, Component> datas = null;
-//        try {
-//            in = new FileInputStream("C:\\Documents and Settings\\bardl\\Skrivbord\\d08a\\eded\\EDED.08A");
-//            reader = new InputStreamReader(in);
-            datas = UnCefactDefinitionReader.readComponents(dataReader);
-//        } finally {
-//            if (reader != null) {
-//                reader.close();
-//            }
-//            if (in != null) {
-//                in.close();
-//            }
-//        }
 
-        Map<String, Field> composites = null;
-//        try {
-//            in = new FileInputStream("C:\\Documents and Settings\\bardl\\Skrivbord\\d08a\\edcd\\EDCD.08A");
-//            reader = new InputStreamReader(in);
-            composites = UnCefactDefinitionReader.readFields(compositeReader, datas);
-//        } finally {
-//            reader.close();
-//            in.close();
-//        }
-
-        List<Segment> segments = null;
-//        try {
-//            in = new FileInputStream("C:\\Documents and Settings\\bardl\\Skrivbord\\d08a\\edsd\\EDSD.08A");
-//            reader = new InputStreamReader(in);
-            segments = UnCefactDefinitionReader.readSegments(segmentReader, composites, datas);
-//        } finally {
-//            reader.close();
-//            in.close();
-//        }
+        Map<String, Component> datas = UnCefactDefinitionReader.readComponents(dataReader);
+        Map<String, Field> composites = UnCefactDefinitionReader.readFields(compositeReader, datas);
+        List<Segment> segments = UnCefactDefinitionReader.readSegments(segmentReader, composites, datas);
 
         Edimap edimap = new Edimap();
         edimap.setSegments(new SegmentGroup());
