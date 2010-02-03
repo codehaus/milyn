@@ -12,15 +12,23 @@
     <artifactId>milyn-smooks-example-ect-unedifact</artifactId>
     <version>1.0</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-core</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.milyn</groupId>
                 <artifactId>maven-ect-plugin</artifactId>
-                <version>1.3-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+                <version>${milyn.smooks.core.version}</version>
                 <configuration>
-                    <unEdifactZip>d08a.zip</unEdifactZip>
-                    <outFile>target/unedifact-invoic-model.xml</outFile>
+                    <src>d08a.zip</src>
+                    <srcType>UNEDIFACT</srcType>
                     <messageName>INVOIC</messageName>
                 </configuration>
                 <executions>
@@ -29,13 +37,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-core</artifactId>
-            <version>${milyn.smooks.core.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>
