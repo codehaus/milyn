@@ -107,6 +107,16 @@ public class SAXElementVisitorMap {
         }
     }
 
+    public void initAccumulateText(SAXElementVisitorMap srcMap) {
+    	this.accumulateText = (this.accumulateText || srcMap.accumulateText);
+    }
+    
+    public void initAcquireWriterFor(SAXElementVisitorMap srcMap) {
+    	if(this.acquireWriterFor == null) {
+    		this.acquireWriterFor = srcMap.acquireWriterFor;
+    	}
+    }
+    
     public void initAcquireWriterFor() {
     	acquireWriterFor = getAnnotatedHandler(visitBefores, StreamResultWriter.class, true);
     	if(acquireWriterFor == null) {
