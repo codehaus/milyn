@@ -41,6 +41,7 @@
         <module>ejc/ejc-gen</module>
         <module>ejc/ejc-use</module>
         <module>edi-with-import-to-java</module>
+        <module>ect</module>
     </modules>
 
     <properties>

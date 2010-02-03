@@ -54,6 +54,12 @@ public class ECTUnEdifactMojo extends AbstractMojo {
         if(unEdifactZip.exists()) {
             try {
                 ect.setUnEdifactZip(unEdifactZip);
+                
+                File outDir = outFile.getParentFile();
+                if(outDir != null && !outDir.exists()) {
+                	outDir.mkdirs();
+                }
+                
                 ect.setOutFile(outFile);
                 ect.setMessageName(messageName);
                 ect.execute();
