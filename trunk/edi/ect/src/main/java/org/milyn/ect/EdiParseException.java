@@ -15,14 +15,13 @@
 */
 package org.milyn.ect;
 
+import org.milyn.SmooksException;
+
 /**
  * EdiParseException
  * @author bardl
  */
-public class EdiParseException extends Exception {
-
-    public EdiParseException() {
-    }
+public class EdiParseException extends SmooksException {
 
     public EdiParseException(String message) {
         super(message);
@@ -30,10 +29,6 @@ public class EdiParseException extends Exception {
 
     public EdiParseException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public EdiParseException(Throwable cause) {
-        super(cause);
     }
 
 }
