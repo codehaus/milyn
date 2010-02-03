@@ -20,7 +20,7 @@
                 <version>1.3-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
                 <configuration>
                     <unEdifactZip>d08a.zip</unEdifactZip>
-                    <outFile>unedifact-invoic-model.xml</outFile>
+                    <outFile>target/unedifact-invoic-model.xml</outFile>
                     <messageName>INVOIC</messageName>
                 </configuration>
                 <executions>
