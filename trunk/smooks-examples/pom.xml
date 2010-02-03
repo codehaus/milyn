@@ -36,12 +36,12 @@
         <module>jms-router</module>
         <module>json-to-java</module>
         <module>sj-testimonial</module>
-		<module>dao-router</module>
+        <module>dao-router</module>
         <module>validation-basic</module>
         <module>ejc/ejc-gen</module>
         <module>ejc/ejc-use</module>
         <module>edi-with-import-to-java</module>
-        <module>ect</module>
+        <module>ect-unedifact</module>
     </modules>
 
     <properties>

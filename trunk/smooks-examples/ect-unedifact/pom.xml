@@ -7,9 +7,9 @@
         <artifactId>smooks-examples</artifactId>
         <version>1.3-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
     </parent>
-    <name>Milyn Smooks Example - ECT - Model Gen</name>
+    <name>Milyn Smooks Example - ECT - UN/EDIFACT</name>
     <groupId>org.milyn</groupId>
-    <artifactId>milyn-smooks-example-ect-model-gen</artifactId>
+    <artifactId>milyn-smooks-example-ect-unedifact</artifactId>
     <version>1.0</version>
 
     <build>
