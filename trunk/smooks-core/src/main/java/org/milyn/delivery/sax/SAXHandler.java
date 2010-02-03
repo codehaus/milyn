@@ -59,14 +59,21 @@ public class SAXHandler extends DefaultHandler2 {
     private boolean rewriteEntities = true;
     private boolean defaultSerializationOn;
     private boolean maintainElementStack;
-    private DefaultSAXElementSerializer defaultSerializer = new DefaultSAXElementSerializer();
-    private ContentHandlerConfigMap defaultSerializerMapping;
-    private ExecutionEventListener eventListener;
     private boolean reverseVisitOrderOnVisitAfter;
     private boolean terminateOnVisitorException;
+    private DefaultSAXElementSerializer defaultSerializer = new DefaultSAXElementSerializer();
+    private static ContentHandlerConfigMap defaultSerializerMapping;
+    private ExecutionEventListener eventListener;
     private ExecutionLifecycleCleanableList cleanupList;
     private DynamicSAXElementVisitorList dynamicVisitorList;
     private StringBuilder cdataNodeBuilder = new StringBuilder();
+    
+    static {
+        // Configure the default handler mapping...
+        SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementSerializer.class.getName());
+        resource.setDefaultResource(true);
+        defaultSerializerMapping = new ContentHandlerConfigMap(new DefaultSAXElementSerializer(), resource);
+    }
 
     public SAXHandler(ExecutionContext executionContext, Writer writer) {
         this.execContext = executionContext;
@@ -76,6 +83,7 @@ public class SAXHandler extends DefaultHandler2 {
         deliveryConfig = ((SAXContentDeliveryConfig)executionContext.getDeliveryConfig());
         visitorConfigMap = deliveryConfig.getOptimizedVisitorConfig();
 
+        SAXContentDeliveryConfig contentDeliveryConfig = (SAXContentDeliveryConfig) executionContext.getDeliveryConfig();
         SAXElementVisitorMap starVisitorConfigs = visitorConfigMap.get("*");
         SAXElementVisitorMap starStarVisitorConfigs = visitorConfigMap.get("**");
 
@@ -85,11 +93,7 @@ public class SAXHandler extends DefaultHandler2 {
         	globalVisitorConfig = starStarVisitorConfigs;
         }
 
-        // Configure the default handler mapping...
-        SmooksResourceConfiguration resource = new SmooksResourceConfiguration("*", DefaultSAXElementSerializer.class.getName());
-        resource.setDefaultResource(true);
-
-        rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, execContext.getDeliveryConfig());
+        rewriteEntities = contentDeliveryConfig.isRewriteEntities();
         defaultSerializer.setRewriteEntities(rewriteEntities);
 
         defaultSerializationOn = executionContext.isDefaultSerializationOn();
@@ -97,12 +101,11 @@ public class SAXHandler extends DefaultHandler2 {
             // If it's not explicitly configured off, we auto turn it off if the NullWriter is configured...
             defaultSerializationOn = !(writer instanceof NullWriter);
         }
-        maintainElementStack = ParameterAccessor.getBoolParameter(Filter.MAINTAIN_ELEMENT_STACK, true, executionContext.getDeliveryConfig());
-        defaultSerializerMapping = new ContentHandlerConfigMap(new DefaultSAXElementSerializer(), resource);
+        maintainElementStack = contentDeliveryConfig.isMaintainElementStack();
 
-        reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, executionContext.getDeliveryConfig());
+        reverseVisitOrderOnVisitAfter = contentDeliveryConfig.isReverseVisitOrderOnVisitAfter();
         if(!(executionContext.getEventListener() instanceof AbstractReportGenerator)) {
-            terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, executionContext.getDeliveryConfig());
+            terminateOnVisitorException = contentDeliveryConfig.isTerminateOnVisitorException();
         } else {
             terminateOnVisitorException = false;
         }

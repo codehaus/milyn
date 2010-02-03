@@ -18,6 +18,7 @@ package org.milyn.delivery.sax;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
 import org.milyn.delivery.ordering.Sorter;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.xpath.SelectorStep;
@@ -40,6 +41,10 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private ContentHandlerConfigMapTable<SAXVisitAfter> visitAfters;
     private ContentHandlerConfigMapTable<VisitLifecycleCleanable> visitCleanables;
     private ContentHandlerConfigMapTable<ExecutionLifecycleCleanable> execCleanables;
+    private boolean rewriteEntities;
+    private boolean maintainElementStack;
+    private boolean reverseVisitOrderOnVisitAfter;
+    private boolean terminateOnVisitorException;
 
     private Map<String, SAXElementVisitorMap> optimizedVisitorConfig = new HashMap<String, SAXElementVisitorMap>();
 
@@ -171,6 +176,11 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
             optimizedVisitorConfig.put(elementName, entry);
         }
+
+        rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, this);
+        maintainElementStack = ParameterAccessor.getBoolParameter(Filter.MAINTAIN_ELEMENT_STACK, true, this);
+        reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, this);
+        terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, this);
     }
 
     public void assertSelectorsNotAccessingText() {
@@ -287,6 +297,9 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
                 if(elementVisitCleanables != null) {
                     combinedConfig.getVisitCleanables().addAll(elementVisitCleanables);
                 }
+                
+                combinedConfig.initAccumulateText(elementConfig);
+                combinedConfig.initAcquireWriterFor(elementConfig);
             }
         }
 
@@ -302,9 +315,6 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         if(combinedConfig.getVisitCleanables().isEmpty()) {
             combinedConfig.setVisitCleanables(null);
         }
-
-        combinedConfig.initAccumulateText();
-        combinedConfig.initAcquireWriterFor();
 
         if(combinedConfig.getVisitBefores() == null && combinedConfig.getChildVisitors() == null && combinedConfig.getVisitAfters() == null ) {
             return null;
@@ -347,4 +357,20 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
             }
         }
     }
+
+	public boolean isRewriteEntities() {
+		return rewriteEntities;
+	}
+
+	public boolean isMaintainElementStack() {
+		return maintainElementStack;
+	}
+
+	public boolean isReverseVisitOrderOnVisitAfter() {
+		return reverseVisitOrderOnVisitAfter;
+	}
+
+	public boolean isTerminateOnVisitorException() {
+		return terminateOnVisitorException;
+	}
 }
