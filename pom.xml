@@ -71,6 +71,7 @@
                 <module>edi/ejc</module>
                 <module>edi/ejc/maven-ejc-plugin</module>
                 <module>edi/ect</module>
+                <module>edi/ect/maven-ect-plugin</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
