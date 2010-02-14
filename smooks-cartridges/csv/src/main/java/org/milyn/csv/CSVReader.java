@@ -334,10 +334,10 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 	            AttributesImpl attrs = new AttributesImpl();
 	            // If we reached here it means that this line has to be in the sax stream
 	            // hence we first add the record number attribute on the csv-record element
-	    		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_NUMBER_ATTR, "xs:int", Integer.toString(lineNumber));
+	            attrs.addAttribute(XMLConstants.NULL_NS_URI, RECORD_NUMBER_ATTR, RECORD_NUMBER_ATTR, "xs:int", Integer.toString(lineNumber));
 	            // if this line is truncated, we add the truncated attribute onto the csv-record element
 	            if (csvRecord.length < expectedCount)
-	            	attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
+	            	attrs.addAttribute(XMLConstants.NULL_NS_URI, RECORD_TRUNCATED_ATTR, RECORD_TRUNCATED_ATTR, "xs:boolean", Boolean.TRUE.toString());
 	            contentHandler.startElement(XMLConstants.NULL_NS_URI, recordElementName, StringUtils.EMPTY, attrs);
 	        	int recordIt = 0;
 	            for(Field field : fields) {
