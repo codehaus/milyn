@@ -151,7 +151,10 @@ public class SmooksResourceConfigurationStore {
             throw new IllegalStateException("Failed to load " + resourceFile + ".  Expected to be in the same package as " + getClass().getName());
         }
         try {
-            registerResources(resourceFile, resource);
+            SmooksResourceConfigurationList resourceList = registerResources(resourceFile, resource);            
+            for(int i = 0; i < resourceList.size(); i++) {
+            	resourceList.get(i).setDefaultResource(true);
+            }
         } catch (Exception e) {
             throw new IllegalStateException("Error processing resource file '" + resourceFile + "'.", e);
         }
@@ -200,11 +203,12 @@ public class SmooksResourceConfigurationStore {
      * stream.
      * @param baseURI The base URI to be associated with the configuration stream.
      * @param resourceConfigStream XML resource configuration stream.
+     * @return The SmooksResourceConfigurationList created from the added resource configuration.
      * @throws SAXException Error parsing the resource stream.
      * @throws IOException Error reading resource stream.
      * @see SmooksResourceConfiguration
      */
-    public void registerResources(String baseURI, InputStream resourceConfigStream) throws SAXException, IOException, URISyntaxException {
+    public SmooksResourceConfigurationList registerResources(String baseURI, InputStream resourceConfigStream) throws SAXException, IOException, URISyntaxException {
         SmooksResourceConfigurationList configList;
 
         if(baseURI == null || baseURI.trim().equals("")) {
@@ -221,6 +225,8 @@ public class SmooksResourceConfigurationStore {
         // XSD v1.0 added profiles to the resource config.  If there were any, add them to the
         // profile store.
         addProfileSets(configList.getProfiles());
+        
+        return configList;
     }
 
     private void processAppContextInitializers(SmooksResourceConfigurationList configList) {

@@ -41,6 +41,6 @@ public class MILYN_140_Test extends TestCase {
         StringResult result = new StringResult();
 
         smooks.filterSource(new StringSource("<x/>"), result);
-        assertEquals("Hi there!", result.getResult());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>Hi there!", result.getResult());
     }
 }

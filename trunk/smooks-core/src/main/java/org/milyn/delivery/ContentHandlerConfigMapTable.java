@@ -29,6 +29,7 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
 
     private Map<String, List<ContentHandlerConfigMap<T>>> table = new LinkedHashMap<String, List<ContentHandlerConfigMap<T>>>();
     private int count = 0;
+    private int userConfiguredCount = 0;
 
     /**
      * Add a delivery unit mapping for the specified selector.
@@ -55,6 +56,10 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
         }
         elementMappings.add(mapInst);
         count++;
+        
+        if(!mapInst.getResourceConfig().isDefaultResource()) {
+        	userConfiguredCount++;
+        }
     }
 
     /**
@@ -120,6 +125,14 @@ public class ContentHandlerConfigMapTable<T extends ContentHandler> {
      */
     public int getCount() {
         return count;
+    }
+
+    /**
+     * Get the total number of user configured mappings on this table.
+     * @return The total number of user configured mappings on this table.
+     */
+    public int getUserConfiguredCount() {
+        return userConfiguredCount;
     }
 
     /**

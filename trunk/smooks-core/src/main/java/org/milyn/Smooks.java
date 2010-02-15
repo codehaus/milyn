@@ -499,8 +499,17 @@ public class Smooks {
                     eventListener.onEvent(new FilterLifecycleEvent(FilterLifecycleEvent.EventType.STARTED));
                 }
 
-                Filter messageFilter = executionContext.getDeliveryConfig().newFilter(executionContext);
-
+                ContentDeliveryConfig deliveryConfig = executionContext.getDeliveryConfig();
+				
+                if(results != null && results.length == 1 && results[0] != null) {
+	                FilterBypass filterBypass = deliveryConfig.getFilterBypass();                
+	                if(filterBypass != null && filterBypass.bypass(executionContext, source, results[0])) {
+	                	// We're done... a filter bypass was applied...
+	                	return;
+	                }
+                }
+                
+                Filter messageFilter = deliveryConfig.newFilter(executionContext);
                 Filter.setFilter(messageFilter);
                 try {
                     // Attach the source and results to the context...
