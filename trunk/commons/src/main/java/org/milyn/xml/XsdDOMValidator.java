@@ -29,8 +29,10 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -50,6 +52,18 @@ public class XsdDOMValidator {
     private Document document;
     private URI defaultNamespace;
     private List<URI> namespaces = new ArrayList<URI>();
+    private static Set<String> ignoredNamespaces = new HashSet<String>();
+    
+    static {
+    	ignoredNamespaces.add(XMLConstants.NULL_NS_URI);
+    	ignoredNamespaces.add(XMLConstants.RELAXNG_NS_URI);
+    	ignoredNamespaces.add(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+    	ignoredNamespaces.add(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    	ignoredNamespaces.add(XMLConstants.W3C_XPATH_DATATYPE_NS_URI);
+    	ignoredNamespaces.add(XMLConstants.XML_DTD_NS_URI);
+    	ignoredNamespaces.add(XMLConstants.XML_NS_URI);
+    	ignoredNamespaces.add(XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
+    }
 
     public XsdDOMValidator(Document document) throws SAXException {
         AssertArgument.isNotNull(document, "document");
@@ -85,14 +99,17 @@ public class XsdDOMValidator {
     public void validate() throws SAXException, IOException {
         // Using the namespace URI list, create the XSD Source array used to
         // create the merged Schema instance...
-        Source[] xsdSources = new Source[namespaces.size()];
+    	List<Source> xsdSources = new ArrayList<Source>();
         for (int i = 0; i < namespaces.size(); i++) {
-            xsdSources[i] = getNamespaceSource(namespaces.get(i));
+            URI namespace = namespaces.get(i);
+            if(!ignoredNamespaces.contains(namespace.toString())) {
+            	xsdSources.add(getNamespaceSource(namespace));
+            }
         }
 
         // Create the merged Schema instance and from that, create the Validator instance...
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(xsdSources);
+        Schema schema = schemaFactory.newSchema(xsdSources.toArray(new Source[xsdSources.size()]));
         Validator validator = schema.newValidator();
 
         // Validate the document...
