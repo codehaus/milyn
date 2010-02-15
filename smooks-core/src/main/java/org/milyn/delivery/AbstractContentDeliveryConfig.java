@@ -24,6 +24,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -179,4 +180,60 @@ public abstract class AbstractContentDeliveryConfig implements ContentDeliveryCo
 			}
 		}
 	}
+
+    protected FilterBypass getFilterBypass(ContentHandlerConfigMapTable... visitorTables) {
+    	for(ContentHandlerConfigMapTable visitorTable : visitorTables) {
+            if(visitorTable != null && visitorTable.getUserConfiguredCount() > 1) {
+            	// If any of the visitor tables have more than 1 visitor instance...
+            	return null;
+            }
+    	}
+    	
+    	// Gather the possible set of FilterBypass instances...
+    	Set<FilterBypass> bypassSet = new HashSet<FilterBypass>();
+    	for(ContentHandlerConfigMapTable visitorTable : visitorTables) {
+            if(visitorTable != null && visitorTable.getUserConfiguredCount() == 1) {
+            	FilterBypass filterBypass = getFilterBypass(visitorTable);
+            	
+            	if(filterBypass != null) {
+            		bypassSet.add(filterBypass);
+            	} else {
+            		// There's a non-FilterBypass Visitor configured, so we can't 
+            		// use the Bypass Filter
+            		return null;
+            	}
+            }
+    	}
+    	
+    	// If there's just one FilterBypass instance, return it...
+    	if(bypassSet.size() == 1) {
+    		return bypassSet.iterator().next();
+    	}
+    	
+    	// Otherwise we're not going to allow filter bypassing...
+    	return null;
+    }
+	
+    private <T extends Visitor> FilterBypass getFilterBypass(ContentHandlerConfigMapTable<T> visitorTable) {
+        Set<Entry<String, List<ContentHandlerConfigMap<T>>>> entries = visitorTable.getTable().entrySet();
+        
+        for(Entry<String, List<ContentHandlerConfigMap<T>>> entry : entries) {
+        	ContentHandlerConfigMap<T> configMap = entry.getValue().get(0);
+        	SmooksResourceConfiguration resourceConfig = configMap.getResourceConfig();
+        	
+        	if(!resourceConfig.isDefaultResource()) {
+	        	if(resourceConfig.getTargetElement().equals(SmooksResourceConfiguration.DOCUMENT_FRAGMENT_SELECTOR)) {
+	        		T visitor = configMap.getContentHandler();
+	        		if(visitor instanceof FilterBypass) {
+	        			return (FilterBypass) visitor;
+	        		}
+	        	}
+	
+	        	// Make sure we only iterate once...
+	        	return null;
+        	}
+        }    	
+    	
+    	return null;
+    }
 }

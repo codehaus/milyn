@@ -185,6 +185,7 @@ public class ContentDeliveryConfigBuilder {
             }
             
             domConfig.initializeXMLReaderPool();
+            domConfig.configureFilterBypass();
 
             return domConfig;
         } else {

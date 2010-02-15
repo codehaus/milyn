@@ -45,6 +45,7 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
     private boolean maintainElementStack;
     private boolean reverseVisitOrderOnVisitAfter;
     private boolean terminateOnVisitorException;
+    private FilterBypass filterBypass;
 
     private Map<String, SAXElementVisitorMap> optimizedVisitorConfig = new HashMap<String, SAXElementVisitorMap>();
 
@@ -86,6 +87,10 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
 
     public Map<String, SAXElementVisitorMap> getOptimizedVisitorConfig() {
         return optimizedVisitorConfig;
+    }
+    
+    public FilterBypass getFilterBypass() {
+    	return filterBypass;
     }
 
     public Filter newFilter(ExecutionContext executionContext) {
@@ -181,6 +186,8 @@ public class SAXContentDeliveryConfig extends AbstractContentDeliveryConfig {
         maintainElementStack = ParameterAccessor.getBoolParameter(Filter.MAINTAIN_ELEMENT_STACK, true, this);
         reverseVisitOrderOnVisitAfter = ParameterAccessor.getBoolParameter(Filter.REVERSE_VISIT_ORDER_ON_VISIT_AFTER, true, this);
         terminateOnVisitorException = ParameterAccessor.getBoolParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, true, this);
+        
+		filterBypass = getFilterBypass(visitBefores, visitAfters);
     }
 
     public void assertSelectorsNotAccessingText() {
