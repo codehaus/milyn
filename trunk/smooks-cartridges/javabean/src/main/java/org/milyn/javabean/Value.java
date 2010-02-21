@@ -99,6 +99,20 @@ public class Value implements VisitorAppender {
 	}
 
 	/**
+     * Create a Value binding configuration.
+     *
+	 * @param beanId The bean id under which the value will be stored.
+	 * @param data The data selector for the data value to be bound.
+	 * @param type Data type.
+	 */
+	public Value(String beanId, String data, Class<?> type) {
+		this(beanId, data);
+		AssertArgument.isNotNull(type, "type");
+
+		this.decoder = DataDecoder.Factory.create(type);
+	}
+
+	/**
 	 * The namespace for the data selector for the data value to be bound.
 	 *
 	 * @param targetNamespace The namespace
@@ -118,6 +132,18 @@ public class Value implements VisitorAppender {
 	 */
 	public Value setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
+
+		return this;
+	}
+
+	/**
+	 * Set the binding value data type.
+	 * @param type The data type.
+	 * 
+	 * @return <code>this</code> Value configuration instance.
+	 */
+	public Value setType(Class<?> type) {
+		this.decoder = DataDecoder.Factory.create(type);
 
 		return this;
 	}

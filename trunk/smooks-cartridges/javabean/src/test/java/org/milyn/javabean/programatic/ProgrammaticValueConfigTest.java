@@ -55,4 +55,18 @@ public class ProgrammaticValueConfigTest extends TestCase {
 		assertEquals(Boolean.TRUE, result.getBean("privatePerson"));
 	}
 
+	public void test_02() {
+
+		Smooks smooks = new Smooks();
+
+		smooks.addVisitor(new Value("customerNumber1", "customer/@number", Integer.class));
+		smooks.addVisitor(new Value("customerNumber2", "customer/@number").setType(Integer.class));
+
+		JavaResult result = new JavaResult();
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("../order-01.xml")), result);
+
+		assertEquals(123123, result.getBean("customerNumber1"));
+		assertEquals(123123, result.getBean("customerNumber2"));
+	}
+
 }
