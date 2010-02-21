@@ -17,7 +17,6 @@ package org.milyn.javabean;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.delivery.VisitorAppender;
 import org.milyn.delivery.VisitorConfigMap;
 import org.milyn.javabean.ext.SelectorPropertyResolver;
 
@@ -71,10 +70,9 @@ import org.milyn.javabean.ext.SelectorPropertyResolver;
  * </pre>
  *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ * @see Bean
  */
-public class Value implements VisitorAppender {
-
-	private String beanId;
+public class Value extends BindingAppender {
 
 	private String dataSelector;
 
@@ -91,10 +89,10 @@ public class Value implements VisitorAppender {
 	 * @param data The data selector for the data value to be bound.
 	 */
 	public Value(String beanId, String data) {
+		super(beanId);
 		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
 		AssertArgument.isNotNullAndNotEmpty(data, "dataSelector");
 
-		this.beanId = beanId;
 		this.dataSelector = data;
 	}
 
@@ -166,7 +164,7 @@ public class Value implements VisitorAppender {
 	 */
 	public void addVisitors(VisitorConfigMap visitorMap) {
 
-		ValueBinder binder = new ValueBinder(beanId);
+		ValueBinder binder = new ValueBinder(getBeanId());
 		SmooksResourceConfiguration populatorConfig = new SmooksResourceConfiguration(dataSelector);
 
 		SelectorPropertyResolver.resolveSelectorTokens(populatorConfig);

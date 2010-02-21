@@ -18,7 +18,6 @@ package org.milyn.javabean;
 import org.milyn.Smooks;
 import org.milyn.util.ClassUtil;
 import org.milyn.delivery.VisitorConfigMap;
-import org.milyn.delivery.VisitorAppender;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.ext.SelectorPropertyResolver;
@@ -113,11 +112,11 @@ import java.util.ArrayList;
  * </pre>
  *
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
+ * @see Value
  */
-public class Bean implements VisitorAppender {
+public class Bean extends BindingAppender {
 
-    private BeanInstanceCreator beanInstanceCreator;
-    private String beanId;
+    BeanInstanceCreator beanInstanceCreator;
     private Class<?> beanClass;
     private String createOnElement;
     private String targetNamespace;
@@ -196,25 +195,15 @@ public class Bean implements VisitorAppender {
      * @param factory		   	The factory that will create the runtime object
      */
     public <T> Bean(Class<T> beanClass, String beanId, String createOnElement, String createOnElementNS, Factory<? extends T> factory) {
+    	super(beanId);
         AssertArgument.isNotNull(beanClass, "beanClass");
-        AssertArgument.isNotNull(beanId, "beanId");
         AssertArgument.isNotNull(createOnElement, "createOnElement");
 
         this.beanClass = beanClass;
-        this.beanId = beanId;
         this.createOnElement = createOnElement;
         this.targetNamespace = createOnElementNS;
 
         beanInstanceCreator = new BeanInstanceCreator(beanId, beanClass, factory);
-    }
-
-    /**
-     * Get the beanId of this Bean configuration.
-     *
-     * @return The beanId of this Bean configuration.
-     */
-    public String getBeanId() {
-        return beanInstanceCreator.getBeanId();
     }
 
     /**
@@ -496,7 +485,7 @@ public class Bean implements VisitorAppender {
 
         // Add the create bean visitor...
         SmooksResourceConfiguration creatorConfig = visitorMap.addVisitor(beanInstanceCreator, createOnElement, targetNamespace, true);
-        creatorConfig.setParameter("beanId", beanId);
+        creatorConfig.setParameter("beanId", getBeanId());
         creatorConfig.setParameter("beanClass", beanClass.getName());
 
         // Recurse down the wired beans...
@@ -507,7 +496,7 @@ public class Bean implements VisitorAppender {
         // Add the populate bean visitors...
         for(Binding binding : bindings) {
             SmooksResourceConfiguration populatorConfig = visitorMap.addVisitor(binding.beanInstancePopulator, binding.selector, targetNamespace, true);
-            populatorConfig.setParameter("beanId", beanId);
+            populatorConfig.setParameter("beanId", getBeanId());
             if(binding.assertTargetIsCollection) {
                 assertBeanClassIsCollection();
             }
@@ -550,7 +539,7 @@ public class Bean implements VisitorAppender {
         BeanRuntimeInfo beanRuntimeInfo = beanInstanceCreator.getBeanRuntimeInfo();
 
         if (beanRuntimeInfo.getClassification() != BeanRuntimeInfo.Classification.COLLECTION_COLLECTION && beanRuntimeInfo.getClassification() != BeanRuntimeInfo.Classification.ARRAY_COLLECTION) {
-            throw new IllegalArgumentException("Invalid call to a Collection/array Bean.bindTo method for a non Collection/Array target.  Binding target type '" + beanRuntimeInfo.getPopulateType().getName() + "' (beanId '" + beanId + "').  Use one of the Bean.bindTo methods that specify a 'bindingMember' argument.");
+            throw new IllegalArgumentException("Invalid call to a Collection/array Bean.bindTo method for a non Collection/Array target.  Binding target type '" + beanRuntimeInfo.getPopulateType().getName() + "' (beanId '" + getBeanId() + "').  Use one of the Bean.bindTo methods that specify a 'bindingMember' argument.");
         }
     }
 
