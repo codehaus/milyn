@@ -335,10 +335,10 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	            if (this.lineNumber || invalidLength) {
 	            	attrs = new AttributesImpl();
 	            	if(this.lineNumber) {
-	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, lineNumberAttributeName, "xs:int", Integer.toString(lineNumber));
+	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, lineNumberAttributeName, lineNumberAttributeName, "xs:int", Integer.toString(lineNumber));
 	            	}
 	            	if(invalidLength) {
-	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
+	            		attrs.addAttribute(XMLConstants.NULL_NS_URI, truncatedAttributeName, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
 	            	}
 	            }
 	
@@ -368,7 +368,7 @@ public class FixedLengthReader implements SmooksXMLReader, VisitorAppender {
 	                	//If truncated then set the truncated attribute
 	                	if(truncated) {
 	                		recordAttrs = new AttributesImpl();
-	                        recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, StringUtils.EMPTY, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
+	                        recordAttrs.addAttribute(XMLConstants.NULL_NS_URI, truncatedAttributeName, truncatedAttributeName, "xs:boolean", Boolean.TRUE.toString());
 	                	}
 	
 	                    contentHandler.startElement(XMLConstants.NULL_NS_URI, fieldName, StringUtils.EMPTY, recordAttrs);
