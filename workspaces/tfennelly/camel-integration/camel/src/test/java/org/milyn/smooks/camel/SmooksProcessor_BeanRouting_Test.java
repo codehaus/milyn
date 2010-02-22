@@ -33,30 +33,36 @@ import org.milyn.smooks.camel.routing.BeanRouter;
  */
 public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
 	
-	protected DirectBProcessor directBProcessor;
+	protected DirectProcessor directBProcessor;
+	protected DirectProcessor directCProcessor;
 
 	@Test
     public void test_dsl_configured() throws Exception {
-		test_bean("direct:a1");
-    }
-
-	@Test
-    public void test_xml_configured() throws Exception {
-		test_bean("direct:a2");
-    }
-
-	public void test_bean(String fromEndpoint) throws Exception {
-        template.request(fromEndpoint, new Processor() {
-            public void process(Exchange exchange) throws Exception {
-                exchange.getIn().setBody(new StringSource("<coords><coord x='111' y='222' /><coord x='333' y='444' /></coords>"));
-            }
-        });
-        
+		sendTo("direct:a1");        
         assertEquals(2, directBProcessor.coords.size());
         assertEquals(111, directBProcessor.coords.get(0).getX());
         assertEquals(222, directBProcessor.coords.get(0).getY());
         assertEquals(333, directBProcessor.coords.get(1).getX());
         assertEquals(444, directBProcessor.coords.get(1).getY());
+    }
+
+	@Test
+    public void test_xml_configured() throws Exception {
+		sendTo("direct:a2");
+        assertEquals(1, directBProcessor.coords.size());
+        assertEquals(111, directBProcessor.coords.get(0).getX());
+        assertEquals(222, directBProcessor.coords.get(0).getY());
+        assertEquals(1, directCProcessor.coords.size());
+        assertEquals(333, directCProcessor.coords.get(0).getX());
+        assertEquals(444, directCProcessor.coords.get(0).getY());
+    }
+
+	public void sendTo(String fromEndpoint) throws Exception {
+        template.request(fromEndpoint, new Processor() {
+            public void process(Exchange exchange) throws Exception {
+                exchange.getIn().setBody(new StringSource("<coords><coord x='111' y='222' /><coord x='333' y='444' /></coords>"));
+            }
+        });
     }
 
 	/* (non-Javadoc)
@@ -76,13 +82,15 @@ public class SmooksProcessor_BeanRouting_Test extends CamelTestSupport {
 
                 from("direct:a2").process(new SmooksProcessor(getClass().getResourceAsStream("bean_routing_01.xml"), this));
                 
-                directBProcessor = new DirectBProcessor();
+                directBProcessor = new DirectProcessor();
                 from("direct:b").process(directBProcessor);            	
+                directCProcessor = new DirectProcessor();
+                from("direct:c").process(directCProcessor);            	
             }
         };
 	}
 	
-	private class DirectBProcessor implements Processor {
+	private class DirectProcessor implements Processor {
 
 		private List<Coordinate> coords = new ArrayList<Coordinate>();
 		
