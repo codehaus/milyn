@@ -15,6 +15,9 @@
 */
 package org.milyn.smooks.camel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -30,12 +33,13 @@ public class SmooksProcessor_StringResult_Test extends CamelTestSupport {
 
 	@Test
     public void test() throws Exception {
-        Exchange response = template.request("direct:blah", new Processor() {
+        Exchange response = template.request("direct:a", new Processor() {
             public void process(Exchange exchange) throws Exception {
                 exchange.getIn().setBody(new StringSource("<x/>"));
             }
         });
-        assertOutMessageBodyEquals(response, "<x></x>");
+        
+        assertEquals("<x></x>", DirectBProcessor.inMessage);
     }
 
 	/* (non-Javadoc)
@@ -45,8 +49,18 @@ public class SmooksProcessor_StringResult_Test extends CamelTestSupport {
 	protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             public void configure() {
-                from("direct:blah").process(new SmooksProcessor().mapCharResult());
+                from("direct:a").process(new SmooksProcessor().mapCharResult()).to("direct:b");
+                from("direct:b").process(new DirectBProcessor());
             }
         };
+	}
+	
+	private static class DirectBProcessor implements Processor {
+
+		private static String inMessage;
+		
+		public void process(Exchange exchange) throws Exception {
+			inMessage = (String) exchange.getIn().getBody();
+		}		
 	}
 }
