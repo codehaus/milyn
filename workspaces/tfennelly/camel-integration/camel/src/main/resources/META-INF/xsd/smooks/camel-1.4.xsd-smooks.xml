@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" 
+                      default-selector-namespace="http://www.milyn.org/xsd/smooks/camel-1.4.xsd">
+
+    <resource-config selector="router">
+        <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
+        <param name="resource">org.milyn.smooks.camel.routing.BeanRouter</param>
+    </resource-config>
+    
+    <resource-config selector="router">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">beanId</param>
+    </resource-config>
+    
+    <resource-config selector="router">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">toEndpoint</param>
+    </resource-config>
+
+    <resource-config selector="router">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">routeOnElement</param>
+        <param name="mapTo">selector</param>
+    </resource-config>
+    
+</smooks-resource-list>
