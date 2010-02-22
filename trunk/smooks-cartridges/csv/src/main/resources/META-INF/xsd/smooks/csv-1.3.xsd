@@ -98,6 +98,12 @@
                         </xs:documentation>
                     </xs:annotation>
                 </xs:attribute>
+                <xs:attribute name="validateHeader" type="xs:boolean" use="optional" default="false">
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
     		</xs:extension>
     	</xs:complexContent>
     </xs:complexType>

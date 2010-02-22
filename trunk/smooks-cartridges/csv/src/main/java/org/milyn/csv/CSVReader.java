@@ -192,6 +192,9 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
     @ConfigParam(defaultVal="true")
     private boolean strict;
 
+	@ConfigParam(defaultVal = "false")
+	private boolean validateHeader;
+
     @ConfigParam(use = ConfigParam.Use.OPTIONAL)
     private String bindBeanId;
 
@@ -309,7 +312,11 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
 	
 	        // Create the CSV line reader...
 	        csvLineReader = new au.com.bytecode.opencsv.CSVReader(csvStreamReader, separator, quoteChar, skipLines);
-	
+
+			if (validateHeader) {
+				validateHeader(csvLineReader);
+			}
+
 	        // Start the document and add the root "csv-set" element...
 	        contentHandler.startDocument();
 	        contentHandler.startElement(XMLConstants.NULL_NS_URI, rootElementName, StringUtils.EMPTY, EMPTY_ATTRIBS);
@@ -400,7 +407,70 @@ public class CSVReader implements SmooksXMLReader, VisitorAppender {
         }
 	}
 
-    private int parseIgnoreFieldDirective(String field) {
+	private void validateHeader(final au.com.bytecode.opencsv.CSVReader reader) throws IOException {
+		String[] headers = reader.readNext();
+		if (headers == null) {
+			throw new CSVHeaderValidationException(getFieldNames(fields));
+		}
+
+		if (validateHeader(fields, headers)) {
+			return;
+		}
+
+		throw new CSVHeaderValidationException(getFieldNames(fields), headers);
+	}
+
+	private String[] getFieldNames(final Field[] fields) {
+		if (fields == null) {
+			return new String[] {};
+		}
+
+		String[] names = new String[fields.length];
+
+		int n = 0;
+		for (Field field : fields) {
+			if (!field.ignore()) {
+				names[n] = field.getName();
+			}
+			n++;
+		}
+
+		return names;
+	}
+
+	private boolean validateHeader(final Field[] fields, final String[] headers) {
+		if (fields.length != headers.length) {
+			return false;
+		}
+
+		int n = 0;
+		for (Field field : fields) {
+			if (!field.ignore()) {
+				if (headers.length <= n) {
+					return false;
+				}
+
+				String header = headers[n];
+				if (header == null) {
+					header = "";
+				}
+
+				String name = field.getName();
+				if (name == null) {
+					name = "";
+				}
+
+				if (!name.equals(header)) {
+					return false;
+				}
+			}
+			n++;
+		}
+
+		return true;
+	}
+
+	private int parseIgnoreFieldDirective(String field) {
         String op = field.substring(IGNORE_FIELD.length());
         int toSkip = 0;
         if (op.length() == 0) {

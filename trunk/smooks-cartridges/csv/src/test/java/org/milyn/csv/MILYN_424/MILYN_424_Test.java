@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
  * <p/>
  * Test and fix contributed thanks to Clemens Fuchslocher.
  * 
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @author Clemens Fuchslocher
  */
 public class MILYN_424_Test extends TestCase {
 
