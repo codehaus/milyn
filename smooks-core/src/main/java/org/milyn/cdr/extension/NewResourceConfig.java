@@ -45,6 +45,7 @@ public class NewResourceConfig implements DOMElementVisitor {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration();
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);
 
+        config.setExtendedConfigNS(element.getNamespaceURI());
         config.setResource(resource);
 
         // Set the defaults...

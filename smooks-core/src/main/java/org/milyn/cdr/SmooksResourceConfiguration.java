@@ -259,6 +259,10 @@ public class SmooksResourceConfiguration {
      * {@link org.milyn.delivery.sax.DefaultSAXElementSerializer}.
      */
     private boolean defaultResource = false;
+    /**
+     * The extended config namespace from which the  resource was created.
+     */
+    private String extendedConfigNS;
 
     /**
      * Public default constructor.
@@ -330,6 +334,7 @@ public class SmooksResourceConfiguration {
     public Object clone() {
         SmooksResourceConfiguration clone = new SmooksResourceConfiguration();
 
+        clone.extendedConfigNS = extendedConfigNS;
         clone.selector = selector;
         clone.selectorSteps = selectorSteps;
         clone.targetElement = targetElement;
@@ -352,8 +357,24 @@ public class SmooksResourceConfiguration {
 
         return clone;
     }
+    
+    /**
+     * Get the extended config namespace from which this configuration was created.
+	 * @return The extended config namespace from which this configuration was created.
+	 */
+	public String getExtendedConfigNS() {
+		return extendedConfigNS;
+	}
 
-    public void attachGlobalParameters(ApplicationContext appContext) {
+    /**
+     * Set the extended config namespace from which this configuration was created.
+	 * @param extendedConfigNS The extended config namespace from which this configuration was created.
+	 */
+	public void setExtendedConfigNS(String extendedConfigNS) {
+		this.extendedConfigNS = extendedConfigNS;
+	}
+
+	public void attachGlobalParameters(ApplicationContext appContext) {
         if(globalParams == null) {
             globalParams = appContext.getStore().getGlobalParams();
         }

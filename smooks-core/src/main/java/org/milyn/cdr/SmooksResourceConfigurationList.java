@@ -180,4 +180,25 @@ public class SmooksResourceConfigurationList {
         loadedResources.add(resource);
         return true;
     }
+
+	/**
+	 * Lookup a resource configuration from this config list.
+	 * <p/>
+	 * Note that this is resource config order-dependent.  It will not locate configs that
+	 * have not yet been loaded.
+	 *
+	 * @param searchCriteria The resource lookup criteria.
+	 * @return List of matches resources, or an empty List if no matches are found.
+	 */
+	public List<SmooksResourceConfiguration> lookupResource(ConfigSearch searchCriteria) {
+		List<SmooksResourceConfiguration> results = new ArrayList<SmooksResourceConfiguration>();
+		
+		for(SmooksResourceConfiguration config : list) {
+			if(searchCriteria.matches(config)) {
+				results.add(config);
+			}
+		}
+		
+		return results;
+	}
 }
