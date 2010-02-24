@@ -18,6 +18,7 @@ package org.milyn.javabean.expression;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -36,18 +37,27 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
     public void test() throws IOException, SAXException {
         Smooks smooks;
         ExecutionContext execContext;
+        Map<String, Object> bean = new HashMap<String, Object>();
 
         DOMVisitor.visited = false;
         smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
+        
         execContext = smooks.createExecutionContext();
-        smooks.filterSource(execContext, new StreamSource(new StringReader("<a>hello</a>")), null);
+        execContext.getBeanContext().addBean("aBean", bean);
+        bean.put("a", "hello");
+        
+        smooks.filterSource(execContext, new StreamSource(new StringReader("<a/>")), null);
         assertTrue(DOMVisitor.visited);
 
         DOMVisitor.visited = false;
         smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
+
         execContext = smooks.createExecutionContext();
-        smooks.filterSource(execContext, new StreamSource(new StringReader("<a>goodbye</a>")), null);
-        //assertFalse(DOMVisitor.visited);
+        execContext.getBeanContext().addBean("aBean", bean);
+        bean.put("a", "goodbye");        
+        
+        smooks.filterSource(execContext, new StreamSource(new StringReader("<a/>")), null);
+        assertFalse(DOMVisitor.visited);
     }
 
     public void testInvalidExpression() {

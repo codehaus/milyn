@@ -48,7 +48,9 @@ public class CloneResourceConfig implements DOMElementVisitor {
 	        }
         }
 
-        config.setResource(resource);
+        if(resource != null) {
+        	config.setResource(resource);
+        }
 
         extensionContext.addResource(config);
     }

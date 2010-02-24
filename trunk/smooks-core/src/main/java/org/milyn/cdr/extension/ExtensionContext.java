@@ -89,6 +89,18 @@ public class ExtensionContext {
     }
 
     /**
+     * Add a resource configuration template to the resources stack for this Extension Context.
+     * <p/>
+     * This resource is not added as a resource on the Smooks instance, but is instead available
+     * for cloning.
+     *
+     * @param resource The resource to be added.
+     */
+    public void addResourceTemplate(SmooksResourceConfiguration resource) {
+        resourceStack.push(resource);
+    }
+
+    /**
      * Get the resource stack.
      * @return The resource stack.
      * @see #addResource(org.milyn.cdr.SmooksResourceConfiguration) 

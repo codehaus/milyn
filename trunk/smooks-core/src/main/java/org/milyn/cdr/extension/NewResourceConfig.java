@@ -38,6 +38,9 @@ public class NewResourceConfig implements DOMElementVisitor {
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String resource;
 
+    @ConfigParam(defaultVal = "false")
+    private boolean isTemplate;
+
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration();
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);
@@ -57,7 +60,11 @@ public class NewResourceConfig implements DOMElementVisitor {
         config.setTargetProfile(targetProfile);
         config.setConditionEvaluator(extensionContext.getDefaultConditionEvaluator());
 
-        extensionContext.addResource(config);
+        if(isTemplate) {
+        	extensionContext.addResourceTemplate(config);
+        } else {
+        	extensionContext.addResource(config);
+        }
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
