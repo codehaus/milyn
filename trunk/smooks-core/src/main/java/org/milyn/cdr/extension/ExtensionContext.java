@@ -15,7 +15,9 @@
 */
 package org.milyn.cdr.extension;
 
+import org.milyn.cdr.ConfigSearch;
 import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksResourceConfigurationList;
 import org.milyn.cdr.XMLConfigDigester;
 import org.milyn.container.ExecutionContext;
 import org.milyn.expression.ExpressionEvaluator;
@@ -117,6 +119,18 @@ public class ExtensionContext {
     public List<SmooksResourceConfiguration> getResources() {
         return resources;
     }
+    
+    /**
+     * Get the active resource configuration list.
+     * <p/>
+     * This is the global config list i.e. not just the config list for the config
+     * being processed.
+     * 
+     * @return The active resource configuration list.
+     */
+    public SmooksResourceConfigurationList getResourceList() {
+    	return xmlConfigDigester.getResourceList();
+    }
 
     public XMLConfigDigester getXmlConfigDigester() {
         return xmlConfigDigester;
@@ -148,5 +162,18 @@ public class ExtensionContext {
 		}
 		
 		return null;
+	}
+
+	/**
+	 * Lookup an existing resource configuration from the global config list.
+	 * <p/>
+	 * Note that this is resource config order-dependent.  It will not locate configs that
+	 * have not yet been loaded.
+	 *
+	 * @param searchCriteria The resource lookup criteria.
+	 * @return List of matches resources, or an empty List if no matches are found.
+	 */
+	public List<SmooksResourceConfiguration> lookupResource(ConfigSearch searchCriteria) {
+		return xmlConfigDigester.getResourceList().lookupResource(searchCriteria);
 	}
 }
