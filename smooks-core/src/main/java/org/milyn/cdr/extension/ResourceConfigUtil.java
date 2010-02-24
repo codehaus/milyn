@@ -19,6 +19,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.expression.BeanMapExpressionEvaluator;
 import org.w3c.dom.Element;
 
 /**
@@ -41,6 +42,8 @@ public abstract class ResourceConfigUtil {
             config.setDefaultResource(Boolean.parseBoolean(value));
         } else if(setOn.equals("targetProfile")) {
             config.setTargetProfile(value);
+        } else if(setOn.equals("condition") && value.length() > 0) {
+            config.setConditionEvaluator(new BeanMapExpressionEvaluator(value));
         } else if(setOn.equals("conditionRef")) {
             ExtensionContext execentionContext = ExtensionContext.getExtensionContext(executionContext);
             config.setConditionEvaluator(execentionContext.getXmlConfigDigester().getConditionEvaluator(value));
@@ -69,6 +72,8 @@ public abstract class ResourceConfigUtil {
             config.setDefaultResource(false);
         } else if(property.equals("targetProfile")) {
             config.setTargetProfile(null);
+        } else if(property.equals("condition")) {
+            config.setConditionEvaluator(null);
         } else if(property.equals("conditionRef")) {
             config.setConditionEvaluator(null);
         } else {
@@ -89,6 +94,8 @@ public abstract class ResourceConfigUtil {
             setProperty(toConfig, toProperty, Boolean.toString(fromConfig.isDefaultResource()), executionContext);
         } else if(fromProperty.equals("targetProfile")) {
             setProperty(toConfig, toProperty, fromConfig.getTargetProfile(), executionContext);
+        } else if(fromProperty.equals("condition")) {
+            toConfig.setConditionEvaluator(fromConfig.getConditionEvaluator());
         } else if(fromProperty.equals("conditionRef")) {
             toConfig.setConditionEvaluator(fromConfig.getConditionEvaluator());
         } else {
