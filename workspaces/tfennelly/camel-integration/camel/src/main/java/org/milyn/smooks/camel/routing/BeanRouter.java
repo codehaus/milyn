@@ -55,7 +55,7 @@ public class BeanRouter implements SAXVisitAfter, Consumer {
 			throw new SmooksConfigurationException("RouteBuilder instance not set on Smooks ApplicationContext.  Supply RouteBuilder instance to SmooksProcessor constructor.");
 		}
 		
-		fromEndpoint = new BeanEndpoint(beanId, toEndpoint);
+		fromEndpoint = new BeanEndpoint(beanId);
 		fromEndpoint.setCamelContext(routeBuilder.getContext());
 		routeBuilder.from(fromEndpoint).to(toEndpoint);
 	}

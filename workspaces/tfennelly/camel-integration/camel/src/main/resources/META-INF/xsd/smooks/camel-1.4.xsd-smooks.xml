@@ -2,25 +2,46 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd" 
                       default-selector-namespace="http://www.milyn.org/xsd/smooks/camel-1.4.xsd">
 
-    <resource-config selector="router">
+    <resource-config selector="route">
         <resource>org.milyn.cdr.extension.NewResourceConfig</resource>
         <param name="resource">org.milyn.smooks.camel.routing.BeanRouter</param>
+        <param name="isTemplate">true</param>
     </resource-config>
     
-    <resource-config selector="router">
+    <resource-config selector="route">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">beanId</param>
     </resource-config>
-    
-    <resource-config selector="router">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">toEndpoint</param>
-    </resource-config>
 
-    <resource-config selector="router">
+    <resource-config selector="route">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">routeOnElement</param>
         <param name="mapTo">selector</param>
+    </resource-config>
+
+    <resource-config selector="route/to">
+        <resource>org.milyn.cdr.extension.CloneResourceConfig</resource>
+    </resource-config>
+    
+    <resource-config selector="route/to">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">endpoint</param>
+        <param name="mapTo">toEndpoint</param>
+    </resource-config>
+    
+    <resource-config selector="route/to">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">if</param>
+        <param name="mapTo">condition</param>
+    </resource-config>
+    
+    <resource-config selector="route/to">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromText</resource>
+        <param name="mapTo">condition</param>
+    </resource-config>
+    
+    <resource-config selector="route/to">
+        <resource>org.milyn.smooks.camel.routing.RoutingSelectorLookup</resource>
     </resource-config>
     
 </smooks-resource-list>

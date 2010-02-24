@@ -35,17 +35,15 @@ import org.apache.camel.impl.DefaultExchange;
 public class BeanEndpoint extends DefaultEndpoint implements Consumer {
 
 	private String beanId;
-	private String toEndpoint;
 	private Processor processor;
 	private boolean started;
 
 	/**
-	 * @param beanId
-	 * @param toEndpoint
+	 * Constructor.
+	 * @param beanId The bean Id.
 	 */
-	public BeanEndpoint(String beanId, String toEndpoint) {
+	public BeanEndpoint(String beanId) {
 		this.beanId = beanId;
-		this.toEndpoint = toEndpoint;
 	}
 
 	/* (non-Javadoc)

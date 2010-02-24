@@ -17,12 +17,15 @@ package org.milyn.smooks.camel;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.util.Map;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.milyn.Smooks;
@@ -179,18 +182,33 @@ public class SmooksProcessor implements Processor {
 		
 		// Filter...
 		if(resultMapper != null) {
-			Source source = SourceFactory.getInstance().createSource(exchange.getIn().getBody());
+			Source source = getSource(exchange);
 			Result result = resultMapper.createResult();
 			smooks.filterSource(execContect, source, result);
 			
 			// And map the result back into the exchange...
 			resultMapper.mapResult(result, exchange);
 		} else {
-			Source source = SourceFactory.getInstance().createSource(exchange.getIn().getBody());
-			smooks.filterSource(execContect, source);			
+			smooks.filterSource(execContect, getSource(exchange));			
 		}
 	}
 	
+	private Source getSource(Exchange exchange) {
+		Message in = exchange.getIn();
+		
+		Source source = in.getBody(Source.class);
+		if(source == null) {
+			Reader reader = in.getBody(Reader.class);
+			if(reader == null) {				
+				source = SourceFactory.getInstance().createSource(in.getBody());
+			} else {
+				source = new StreamSource(reader);
+			}
+		}
+		
+		return source;
+	}
+
 	/**
 	 * Close the Smooks instance.
 	 */

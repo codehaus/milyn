@@ -11,35 +11,50 @@
 			Configuration</xs:documentation>
 	</xs:annotation>
 
-	<xs:element name="router" substitutionGroup="smooks:abstract-resource-config" type="smooks-camel:router" />
-	<xs:complexType name="router">
-		<xs:complexContent>
-			<xs:extension base="smooks:element-visitor">
+	<xs:element name="route" substitutionGroup="smooks:abstract-resource-config" type="smooks-camel:route" />
+	<xs:complexType name="route">
+        <xs:complexContent>
+            <xs:extension base="smooks:abstract-resource-config">
+		        <xs:sequence>
+		            <xs:element name="to" type="smooks-camel:to" minOccurs="1" maxOccurs="unbounded" />
+		        </xs:sequence>
 				<xs:attribute name="beanId" type="xs:string" use="required">
 					<xs:annotation>
 						<xs:documentation xml:lang="en">
 							The beanId of the bean to be routed.
-                        </xs:documentation>
+		                      </xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="toEndpoint" type="xs:string" use="required">
-					<xs:annotation>
-						<xs:documentation xml:lang="en">
-							The Camel endpoint to which the bean is to be routed.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="routeOnElement" type="xs:string"
-					use="required">
+				<xs:attribute name="routeOnElement" type="xs:string" use="optional">
 					<xs:annotation>
 						<xs:documentation xml:lang="en">
 							The source element event on which to trigger routing of the bean.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-
+            </xs:extension>
+        </xs:complexContent>
+	</xs:complexType>
+	
+	<xs:complexType name="to">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+				<xs:attribute name="endpoint" type="xs:string" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							The Camel endpoint to which the bean is to be routed.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="if" type="xs:string" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							If condition.  Also supports adding of the condition on the child element.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
 	</xs:complexType>
 
 </xs:schema>

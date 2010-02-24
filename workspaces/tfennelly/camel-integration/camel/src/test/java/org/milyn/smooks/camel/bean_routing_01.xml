@@ -13,14 +13,10 @@
         <jb:value property="y" data="coords/coord/@y" />
     </jb:bean>
     
-    <!-- Route "coordinate" bean instances where x < 200 to the "direct:b" endpoint for processing... -->
-    <camel:router beanId="coordinate" toEndpoint="direct:b" routeOnElement="coords/coord">
-        <condition><!-- coordinate.x < 200 --></condition>
-    </camel:router>
-    
-    <!-- Route "coordinate" bean instances where x > 200 to the "direct:c" endpoint for processing... -->
-    <camel:router beanId="coordinate" toEndpoint="direct:c" routeOnElement="coords/coord">
-        <condition><!-- coordinate.x > 200 --></condition>
-    </camel:router>
+    <!-- Route "coordinate" bean instances for processing... -->
+    <camel:route>
+        <camel:to endpoint="direct:b"><!-- coordinate.x < 200 --></camel:to> 
+        <camel:to endpoint="direct:c" if="coordinate.x > 200" /> 
+    </camel:route>
 
 </smooks-resource-list>
