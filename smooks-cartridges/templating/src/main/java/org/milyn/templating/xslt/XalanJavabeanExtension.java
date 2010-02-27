@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -119,7 +119,7 @@ public class XalanJavabeanExtension {
 			throw new IllegalStateException(message);
 		}
 		
-		Map<String, Object> beans = activeRequest.getBeanContext().getBeanMap();
+		Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(activeRequest).getBeanMap();
 		Object parsedExpression = expressionCache.get(ognlExpression);
 		
 		if(parsedExpression == null) {

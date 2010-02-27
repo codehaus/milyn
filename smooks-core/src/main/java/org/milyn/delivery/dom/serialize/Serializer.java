@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.cdr.ResourceConfigurationNotFoundException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.ParameterAccessor;
+import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.delivery.ContentHandlerConfigMap;
@@ -38,6 +39,7 @@ import org.w3c.dom.*;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Node serializer.
@@ -111,6 +113,9 @@ public class Serializer {
         // Set the default SerializationUnit
         defaultSerializationOn = ParameterAccessor.getBoolParameter(Filter.DEFAULT_SERIALIZATION_ON, true, executionContext.getDeliveryConfig());
         if(defaultSerializationOn) {
+            SmooksResourceConfiguration resourceConfig = new SmooksResourceConfiguration("*", "*", DefaultSerializationUnit.class.getName());
+            
+            resourceConfig.setDefaultResource(true);
             defaultSerializationUnit = new DefaultSerializationUnit();
             boolean rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, executionContext.getDeliveryConfig());
             defaultSerializationUnit.setRewriteEntities(rewriteEntities);
@@ -310,7 +315,7 @@ public class Serializer {
                 SmooksResourceConfiguration config = configMap.getResourceConfig();
 
                 // Make sure the serialization unit is targeted at this element.
-                if(!config.isTargetedAtElement(element, executionContext)) {
+                if(!config.isTargetedAtElement(element)) {
                     continue;
                 }
 

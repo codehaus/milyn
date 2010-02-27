@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,6 @@ import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.db.DirectDataSource;
 import org.milyn.container.ExecutionContext;
-import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepository;
@@ -114,15 +112,15 @@ public class SQLExecutorTest extends TestCase
     @SuppressWarnings("unchecked")
 	private void test_appContextTime(Smooks smooks) throws IOException, SAXException, InterruptedException {
         ExecutionContext execContext = smooks.createExecutionContext();
-        BeanContext beanContext = execContext.getBeanContext();
+        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
         smooks.filterSource(execContext, new StringSource("<doc/>"), null);
-        List orders11 = (List) beanContext.getBean("orders1");
-        List orders12 = (List) beanContext.getBean("orders2");
+        List orders11 = (List) beanRepository.getBean("orders1");
+        List orders12 = (List) beanRepository.getBean("orders2");
 
         smooks.filterSource(execContext, new StringSource("<doc/>"), null);
-        List orders21 = (List) beanContext.getBean("orders1");
-        List orders22 = (List) beanContext.getBean("orders2");
+        List orders21 = (List) beanRepository.getBean("orders1");
+        List orders22 = (List) beanRepository.getBean("orders2");
 
         assertTrue(orders11 != orders21);
         assertTrue(orders12 == orders22); // order12 should come from the app context cache
@@ -131,15 +129,15 @@ public class SQLExecutorTest extends TestCase
         Thread.sleep(2050);
 
         smooks.filterSource(execContext, new StringSource("<doc/>"), null);
-        List orders31 = (List) beanContext.getBean("orders1");
-        List orders32 = (List) beanContext.getBean("orders2");
+        List orders31 = (List) beanRepository.getBean("orders1");
+        List orders32 = (List) beanRepository.getBean("orders2");
 
         assertTrue(orders11 != orders31);
         assertTrue(orders12 != orders32); // order12 shouldn't come from the app context cache - timed out ala TTL
 
         smooks.filterSource(execContext, new StringSource("<doc/>"), null);
-        List orders41 = (List) beanContext.getBean("orders1");
-        List orders42 = (List) beanContext.getBean("orders2");
+        List orders41 = (List) beanRepository.getBean("orders1");
+        List orders42 = (List) beanRepository.getBean("orders2");
 
         assertTrue(orders31 != orders41);
         assertTrue(orders32 == orders42); // order42 should come from the app context cache
@@ -151,10 +149,10 @@ public class SQLExecutorTest extends TestCase
 
         try {
             ExecutionContext execContext = smooks.createExecutionContext();
-            BeanContext beanContext = execContext.getBeanContext();
+            BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
             smooks.filterSource(execContext, new StringSource("<doc/>"), null);
-            Map<String, Object> myOrder = (Map<String, Object>) beanContext.getBean("myOrder");
+            Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
 
             assertEquals("{ORDERNUMBER=2, CUSTOMERNUMBER=2, PRODUCTCODE=456}", myOrder.toString());
         } finally {
@@ -169,10 +167,10 @@ public class SQLExecutorTest extends TestCase
 
         try {
             ExecutionContext execContext = smooks.createExecutionContext();
-            BeanContext beanContext = execContext.getBeanContext();
+            BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
 
             smooks.filterSource(execContext, new StringSource("<doc/>"), null);
-            Map<String, Object> myOrder = (Map<String, Object>) beanContext.getBean("myOrder");
+            Map<String, Object> myOrder = (Map<String, Object>) beanRepository.getBean("myOrder");
 
             assertEquals(null, myOrder);
         } finally {
@@ -185,12 +183,12 @@ public class SQLExecutorTest extends TestCase
 
         try {
             ExecutionContext execContext = smooks.createExecutionContext();
-            BeanContext beanContext = execContext.getBeanContext();
-            BeanIdStore beanIdStore =  execContext.getContext().getBeanIdStore();
+            BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(execContext);
+            BeanIdRegister beanIdRegister =  BeanRepositoryManager.getInstance(execContext.getContext()).getBeanIdRegister();
 
-            BeanId requiredOrderNumId = beanIdStore.register("requiredOrderNum");
+            BeanId requiredOrderNumId = beanIdRegister.register("requiredOrderNum");
 
-            beanContext.addBean(requiredOrderNumId, 9999);
+            beanRepository.addBean(requiredOrderNumId, 9999);
             try {
                 smooks.filterSource(execContext, new StringSource("<doc/>"), null);
                 fail("Expected DataSelectionException");

@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,9 @@ import junit.framework.TestCase;
 
 import org.milyn.container.ExecutionContext;
 import org.milyn.container.MockExecutionContext;
-import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
+import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanId;
@@ -44,8 +43,8 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object bean2 = new MyGoodBean();
 
-        getBeanIdStore().register("bean1");
-        getBeanIdStore().register("bean2");
+        getBeanIdRegister().register("bean1");
+        getBeanIdRegister().register("bean2");
 
         assertNull(BeanAccessor.getBean(executionContext, "bean1"));
         assertNull(BeanAccessor.getBean(executionContext, "bean2"));
@@ -68,7 +67,7 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        getBeanIdStore().register("bean1");
+        getBeanIdRegister().register("bean1");
 
         assertNull(BeanAccessor.getBean(executionContext, "bean1"));
 
@@ -88,8 +87,8 @@ public class BeanAccessorTest extends TestCase {
         Object bean1 = new MyGoodBean();
         Object newBean1 = new MyGoodBean();
 
-        getBeanIdStore().register("bean1");
-        getBeanIdStore().register("notExisting");
+        getBeanIdRegister().register("bean1");
+        getBeanIdRegister().register("notExisting");
 
         BeanAccessor.addBean(executionContext, "bean1", bean1);
 
@@ -119,10 +118,10 @@ public class BeanAccessorTest extends TestCase {
         Object child2 = new MyGoodBean();
         Object childChild = new MyGoodBean();
 
-        BeanId parentId = getBeanIdStore().register("parent");
-        BeanId child1Id = getBeanIdStore().register("child");
-        BeanId child2Id = getBeanIdStore().register("child2");
-        BeanId child3Id = getBeanIdStore().register("childChild");
+        BeanId parentId = getBeanIdRegister().register("parent");
+        BeanId child1Id = getBeanIdRegister().register("child");
+        BeanId child2Id = getBeanIdRegister().register("child2");
+        BeanId child3Id = getBeanIdRegister().register("childChild");
 
         // check single level association
         BeanAccessor.addBean(executionContext, "parent", parent);
@@ -193,8 +192,8 @@ public class BeanAccessorTest extends TestCase {
         final Object bean1 = new MyGoodBean();
         final Object bean2 = new MyGoodBean();
 
-        getBeanIdStore().register("bean1");
-        getBeanIdStore().register("bean2");
+        getBeanIdRegister().register("bean1");
+        getBeanIdRegister().register("bean2");
 
         MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
         BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
@@ -282,7 +281,7 @@ public class BeanAccessorTest extends TestCase {
 	public void test_bean_lifecycle_change_observers_associates() {
         Object bean = new MyGoodBean();
 
-        getBeanIdStore().register("bean");
+        getBeanIdRegister().register("bean");
 
         MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
         MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
@@ -313,11 +312,19 @@ public class BeanAccessorTest extends TestCase {
     /**
 	 *
 	 */
-	private BeanIdStore getBeanIdStore() {
-        return executionContext.getContext().getBeanIdStore();
+	private BeanIdRegister getBeanIdRegister() {
+		BeanRepositoryManager beanRepositoryManager = getRepositoryManager();
+
+        return beanRepositoryManager.getBeanIdRegister();
 	}
 
 
+    /**
+	 * @return
+	 */
+	private BeanRepositoryManager getRepositoryManager() {
+		return BeanRepositoryManager.getInstance(executionContext.getContext());
+	}
 
     public class MockBeanLifecycleObserver implements BeanLifecycleObserver {
 
@@ -338,11 +345,11 @@ public class BeanAccessorTest extends TestCase {
     }
 
     private void markBeanContextEnd(BeanId parentId, BeanId child1Id, BeanId child2Id, BeanId child3Id) {
-        BeanContext beanContext = executionContext.getBeanContext();
-        beanContext.setBeanInContext(parentId, false);
-        beanContext.setBeanInContext(child1Id, false);
-        beanContext.setBeanInContext(child2Id, false);
-        beanContext.setBeanInContext(child3Id, false);
+        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
+        beanRepository.setBeanInContext(parentId, false);
+        beanRepository.setBeanInContext(child1Id, false);
+        beanRepository.setBeanInContext(child2Id, false);
+        beanRepository.setBeanInContext(child3Id, false);
     }
 
 }

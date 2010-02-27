@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -16,11 +16,7 @@
 package org.milyn.routing.db;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,19 +33,20 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.ordering.Consumer;
-import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.expression.ExpressionEvaluator;
+import org.milyn.delivery.ordering.Producer;
+import org.milyn.delivery.ordering.Consumer;
 import org.milyn.expression.MVELExpressionEvaluator;
-import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdStore;
-import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
+import org.milyn.expression.ExpressionEvaluator;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.util.CollectionsUtil;
+import org.milyn.javabean.repository.BeanIdRegister;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
+import org.milyn.javabean.decoders.MVELExpressionEvaluatorDecoder;
 import org.milyn.util.FreeMarkerTemplate;
+import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
 
 /**
@@ -135,10 +132,10 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 
     @Initialize
     public void intitialize() throws SmooksConfigurationException {
-    	BeanIdStore beanIdStore = appContext.getBeanIdStore();
+    	BeanIdRegister beanIdRegister = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister();
 
-    	beanIdObj = beanIdStore.register(beanId);
-    	resultSetBeanId = beanIdStore.register(resultSetName);
+    	beanIdObj = beanIdRegister.register(beanId);
+    	resultSetBeanId = beanIdRegister.register(resultSetName);
     }
 
     public Set<? extends Object> getProducts() {
@@ -182,7 +179,7 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 	}
 
     private void selectRow(ExecutionContext executionContext) throws SmooksException {
-    	BeanContext beanRepository = executionContext.getBeanContext();
+    	BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
 
     	Map<String, Object> beanMapClone = new HashMap<String, Object>(beanRepository.getBeanMap());
 

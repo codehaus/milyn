@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,7 @@ package org.milyn.delivery.sax;
 
 import org.milyn.delivery.ContentHandlerConfigMap;
 import org.milyn.delivery.VisitLifecycleCleanable;
-import org.milyn.delivery.sax.annotation.StreamResultWriter;
-import org.milyn.delivery.sax.annotation.TextConsumer;
-import org.milyn.util.ClassUtil;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.xpath.SelectorStep;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +32,6 @@ public class SAXElementVisitorMap {
     private List<ContentHandlerConfigMap<SAXVisitChildren>> childVisitors;
     private List<ContentHandlerConfigMap<SAXVisitAfter>> visitAfters;
     private List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables;
-    private boolean accumulateText = false;
-    private SAXVisitor acquireWriterFor = null;
 
     public List<ContentHandlerConfigMap<SAXVisitBefore>> getVisitBefores() {
         return visitBefores;
@@ -72,58 +64,7 @@ public class SAXElementVisitorMap {
     public void setVisitCleanables(List<ContentHandlerConfigMap<VisitLifecycleCleanable>> visitCleanables) {
         this.visitCleanables = visitCleanables;
     }
-
-    public boolean accumulateText() {
-        return accumulateText;
-    }
-
-    public SAXVisitor acquireWriterFor() {
-        return acquireWriterFor;
-    }
-
-    public void initAccumulateText() {
-    	// If any of the before/after handlers are marked as text consumers...
-        if(getAnnotatedHandler(visitBefores, TextConsumer.class, false) != null) {
-            accumulateText = true;
-        	return;
-        }
-        if(getAnnotatedHandler(visitAfters, TextConsumer.class, false) != null) {
-            accumulateText = true;
-        	return;
-        }
-    	
-    	// If any of the selector steps need access to the fragment text...
-        if(visitAfters == null) {
-            return;
-        }
-        for(ContentHandlerConfigMap<? extends SAXVisitor> contentHandlerMap : visitAfters) {
-            SmooksResourceConfiguration resourceConfig = contentHandlerMap.getResourceConfig();
-            SelectorStep selectorStep = resourceConfig.getSelectorStep();
-
-            if(selectorStep.accessesText()) {
-                accumulateText = true;
-                break;
-            }
-        }
-    }
-
-    public void initAccumulateText(SAXElementVisitorMap srcMap) {
-    	this.accumulateText = (this.accumulateText || srcMap.accumulateText);
-    }
     
-    public void initAcquireWriterFor(SAXElementVisitorMap srcMap) {
-    	if(this.acquireWriterFor == null) {
-    		this.acquireWriterFor = srcMap.acquireWriterFor;
-    	}
-    }
-    
-    public void initAcquireWriterFor() {
-    	acquireWriterFor = getAnnotatedHandler(visitBefores, StreamResultWriter.class, true);
-    	if(acquireWriterFor == null) {
-        	acquireWriterFor = getAnnotatedHandler(visitAfters, StreamResultWriter.class, true);
-    	}
-    }
-
     public SAXElementVisitorMap merge(SAXElementVisitorMap map) {
     	if(map == null) {
     		// No need to merge...
@@ -145,26 +86,7 @@ public class SAXElementVisitorMap {
         merge.visitAfters.addAll(map.visitAfters);
         merge.visitCleanables.addAll(visitCleanables);
         merge.visitCleanables.addAll(map.visitCleanables);
-        
-        merge.accumulateText = (accumulateText || merge.accumulateText);
-
-        return merge;
+    	
+    	return merge;
     }
-
-	private <T extends SAXVisitor> T getAnnotatedHandler(List<ContentHandlerConfigMap<T>> handlerMaps, Class<? extends Annotation> annotationClass, boolean checkFields) {
-		if(handlerMaps == null) {
-			return null;
-		}
-		
-		for(ContentHandlerConfigMap<T> handlerMap : handlerMaps) {
-        	T contentHandler = handlerMap.getContentHandler();
-			if(contentHandler.getClass().isAnnotationPresent(annotationClass)) {
-        		return contentHandler;
-        	} else if(checkFields && !ClassUtil.getAnnotatedFields(contentHandler.getClass(), annotationClass).isEmpty()) {
-        		return contentHandler;
-        	}
-        }
-		
-		return null;
-	}
 }

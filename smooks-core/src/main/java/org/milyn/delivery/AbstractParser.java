@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -41,15 +41,12 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -114,51 +111,27 @@ public class AbstractParser {
     }
 
     protected Reader getReader(Source source, ExecutionContext executionContext) {
-    	if(source != null) {
-	        if (source instanceof StreamSource) {
-	            StreamSource streamSource = (StreamSource) source;
-	            if (streamSource.getReader() != null) {
-	                return streamSource.getReader();
-	            } else if (streamSource.getInputStream() != null) {
-	            	return streamToReader(streamSource.getInputStream(), executionContext);
-				} else if (streamSource.getSystemId() != null) {
-					return systemIdToReader(streamSource.getSystemId(), executionContext);
-				} 
-	            
-	            throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream, Reader or SystemId instance.");
-			} else if (source.getSystemId() != null) {
-				return systemIdToReader(source.getSystemId(), executionContext);
-			} 
-    	}
-    	
+        if (source instanceof StreamSource) {
+            StreamSource streamSource = (StreamSource) source;
+            if (streamSource.getReader() != null) {
+                return streamSource.getReader();
+            } else if (streamSource.getInputStream() != null) {
+                try {
+                    if (executionContext != null) {
+                        return new InputStreamReader(streamSource.getInputStream(), executionContext.getContentEncoding());
+                    } else {
+                        return new InputStreamReader(streamSource.getInputStream(), "UTF-8");
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    throw new SmooksException("Unable to decode input stream.", e);
+                }
+            } else {
+                throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream or Reader instance.");
+            }
+        }
+
         return new NullReader();
     }
-
-	private Reader systemIdToReader(String systemId, ExecutionContext executionContext) {
-		URL resourceURL;
-		try {
-			resourceURL = new URL(systemId);
-		} catch (MalformedURLException e) {
-		    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Must be a valid URL.", e);
-		}
-		try {
-			return streamToReader(resourceURL.openStream(), executionContext);
-		} catch (IOException e) {
-		    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Unable to open stream to resource.", e);
-		}
-	}
-
-	private Reader streamToReader(InputStream inputStream, ExecutionContext executionContext) {
-		try {
-		    if (executionContext != null) {
-		        return new InputStreamReader(inputStream, executionContext.getContentEncoding());
-		    } else {
-		        return new InputStreamReader(inputStream, "UTF-8");
-		    }
-		} catch (UnsupportedEncodingException e) {
-		    throw new SmooksException("Unable to decode input stream.", e);
-		}
-	}
 
     protected InputSource createInputSource(XMLReader inputReader, Source source, ExecutionContext executionContext) {
         InputSource inputSource;

@@ -15,8 +15,8 @@ public final class RouterTestHelper
 	{
         final MockExecutionContext executionContext = new MockExecutionContext();
 
-        BeanId beanId = executionContext.getContext().getBeanIdStore().register(beanIdName);
-        executionContext.getBeanContext().addBean(beanId, bean);
+        BeanId beanId = BeanRepositoryManager.getInstance(executionContext.getContext()).getBeanIdRegister().register(beanIdName);
+        BeanRepositoryManager.getBeanRepository(executionContext).addBean(beanId, bean);
         return executionContext;
 	}
 

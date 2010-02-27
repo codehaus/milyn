@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,6 @@ package org.milyn.templating.freemarker;
 import freemarker.ext.dom.NodeModel;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.DOMModel;
-import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
@@ -36,16 +35,16 @@ public abstract class FreeMarkerUtils {
      * Get a "merged" model for FreeMarker templating.
      * <p/>
      * This utility merges the current set of beans being managed by the
-     * {@link BeanContext} associated with the
+     * {@link org.milyn.javabean.repository.BeanRepository} associated with the
      * current {@link ExecutionContext}, with the contents of the {@link DOMModel}
      * associated with the current {@link ExecutionContext}.  This is very useful
-     * for templating with FreeMarker.
+     * for templating with FreeMarker. 
      *
      * @param executionContext The current execution context.
      * @return A merged templating model.
      */
     public static Map<String, Object> getMergedModel(ExecutionContext executionContext) {
-        Map<String, Object> beans = executionContext.getBeanContext().getBeanMap();
+        Map<String, Object> beans = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
         Map<String, Object> model = beans;
         DOMModel domModel = DOMModel.getModel(executionContext);
 
@@ -82,10 +81,8 @@ public abstract class FreeMarkerUtils {
         return elementToNodeModel.nodeModel;
     }
 
-
-	private static Map<String, ElementToNodeModel> getElementToNodeModelMap(ExecutionContext executionContext) {
-		@SuppressWarnings("unchecked")
-		Map<String, ElementToNodeModel> map = (Map<String, ElementToNodeModel>) executionContext.getAttribute(ElementToNodeModel.class);
+    private static Map<String, ElementToNodeModel> getElementToNodeModelMap(ExecutionContext executionContext) {
+        Map<String, ElementToNodeModel> map = (Map<String, ElementToNodeModel>) executionContext.getAttribute(ElementToNodeModel.class);
 
         if(map == null) {
             map = new HashMap<String, ElementToNodeModel>();

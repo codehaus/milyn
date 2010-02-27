@@ -1,5 +1,5 @@
 /*
- * Milyn - Copyright (C) 2006 - 2010
+ * Milyn - Copyright (C) 2006
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License (version 2.1) as published
@@ -33,14 +33,13 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.io.AbstractOutputStreamResource;
-import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
 /**
  * OutputStreamRouter is a fragment Visitor (DOM/SAX) that can be used to route
- * context beans ({@link BeanContext} beans) an OutputStream.
+ * context beans ({@link org.milyn.javabean.repository.BeanRepository} beans) an OutputStream.
  * </p>
  * An OutputStreamRouter is used in combination with a concreate implementation of
  * {@link AbstractOutputStreamResource}, for example a {@link org.milyn.routing.file.FileOutputStreamResource}.
@@ -91,7 +90,8 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
     @Initialize
     public void initialize() throws SmooksConfigurationException {
 
-    	beanId = applicationContext.getBeanIdStore().getBeanId(beanIdName);
+    	BeanRepositoryManager beanRepositoryManager = BeanRepositoryManager.getInstance(applicationContext);
+    	beanId = beanRepositoryManager.getBeanIdRegister().getBeanId(beanIdName);
 
     }
 
@@ -137,7 +137,7 @@ public class OutputStreamRouter implements DOMElementVisitor, SAXVisitBefore, SA
 
 	private void write( final ExecutionContext executionContext )
 	{
-		Object bean = executionContext.getBeanContext().getBean( beanId );
+		Object bean = BeanRepositoryManager.getBeanRepository(executionContext).getBean( beanId );
         if ( bean == null )
         {
         	throw new SmooksException( "A bean with id [" + beanId + "] was not found in the executionContext");

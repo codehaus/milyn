@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,7 @@ public class DatasourceCleanupTest extends TestCase {
 
         // Cleanup should get called twice.  Once for the visitAfter event and once for the
         // executeExecutionLifecycleCleanup event...
-        smooks.filterSource(new StringSource("<a></a>"));
+        smooks.filterSource(new StringSource("<a></a>"), null);
         assertEquals(2, MockDatasource.cleanupCallCount);
         assertTrue(MockDatasource.committed);
     }
@@ -46,7 +46,7 @@ public class DatasourceCleanupTest extends TestCase {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("exception-ds-lifecycle.xml"));
 
         try {
-            smooks.filterSource(new StringSource("<a><b/><c/></a>"));
+            smooks.filterSource(new StringSource("<a><b/><c/></a>"), null);
             fail("Expected exception...");
         } catch(SmooksException e) {
             // Expected

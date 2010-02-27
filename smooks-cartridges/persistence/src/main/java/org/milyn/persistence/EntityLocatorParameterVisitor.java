@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -42,11 +42,9 @@ import org.milyn.javabean.BeanRuntimeInfo;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
-import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.context.BeanIdStore;
-import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
@@ -110,7 +108,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
 
     private Parameter<?> parameter;
 
-    private BeanIdStore beanIdStore;
+    private BeanRepositoryManager beanRepositoryManager;
 
     private BeanRuntimeInfo wiredBeanRuntimeInfo;
 
@@ -136,7 +134,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
         beanWiring = wireBeanIdName != null;
         isAttribute = (valueAttributeName != null);
 
-        beanIdStore = appContext.getBeanIdStore();
+        beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
 
         if(parameterListType == ParameterListType.NAMED) {
         	NamedParameterIndex parameterIndex = (NamedParameterIndex) ParameterManager.getParameterIndex(entityLocatorId, appContext);
@@ -246,7 +244,7 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
 
     private BeanId getWireBeanId() {
 		if(wireBeanId == null) {
-            wireBeanId = beanIdStore.register(wireBeanIdName);
+            wireBeanId = beanRepositoryManager.getBeanIdRegister().register(wireBeanIdName);
         }
 
         return wireBeanId;
@@ -255,17 +253,17 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
     private void bindBeanValue(final ExecutionContext executionContext) {
     	final BeanId targetBeanId = getWireBeanId();
 
-    	final BeanContext beanContext = executionContext.getBeanContext();
+    	final BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
 
-    	Object bean = beanContext.getBean(targetBeanId);
+    	Object bean = beanRepository.getBean(targetBeanId);
         if(bean == null) {
 
             // Register the observer which looks for the creation of the selected bean via its beanIdName. When this observer is triggered then
             // we look if we got something we can set immediately or that we got an array collection. For an array collection we need the array representation
             // and not the list representation. So we register and observer who looks for the change from the list to the array
-        	beanContext.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanContextLifecycleObserver(){
+        	beanRepository.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanRepositoryLifecycleObserver(){
 
-                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
+                public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
 
                     BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
 
@@ -273,8 +271,8 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
 
                         // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
                         // can then set this array
-                    	beanContext.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanContextLifecycleObserver() {
-                            public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
+                    	beanRepository.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanRepositoryLifecycleObserver() {
+                            public void onBeanLifecycleEvent(BeanRepositoryLifecycleEvent event) {
 
                                 populateAndSetPropertyValue(event.getBean(), executionContext);
 
@@ -294,12 +292,13 @@ public class EntityLocatorParameterVisitor implements DOMElementVisitor, SAXVisi
 
 
     private void removeBeanLifecycleObserver(ExecutionContext executionContext) {
-    	executionContext.getBeanContext().removeBeanLifecycleObserver(getWireBeanId(), BeanLifecycle.BEGIN, getId());
+    	BeanRepositoryManager.getBeanRepository(executionContext)
+    		.removeBeanLifecycleObserver(getWireBeanId(), BeanLifecycle.BEGIN, getId());
     }
 
 
     private void bindExpressionValue(ExecutionContext executionContext) {
-        Map<String, Object> beanMap = executionContext.getBeanContext().getBeanMap();
+        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(executionContext).getBeanMap();
         Object dataObject = expression.getValue(beanMap);
 
         if(dataObject instanceof String) {

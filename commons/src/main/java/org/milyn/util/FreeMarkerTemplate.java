@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -75,11 +75,6 @@ public class FreeMarkerTemplate {
 
     public String apply(Object contextObject) {
         StringWriter outputWriter = new StringWriter();
-        apply(contextObject, outputWriter);
-        return outputWriter.toString();
-    }
-
-    public void apply(Object contextObject, Writer outputWriter) {
         try {
             template.process(contextObject, outputWriter);
         } catch (TemplateException e) {
@@ -87,5 +82,6 @@ public class FreeMarkerTemplate {
         } catch (IOException e) {
             throw new IllegalStateException("Unexpected IOException.", e);
         }
+        return outputWriter.toString();
     }
 }

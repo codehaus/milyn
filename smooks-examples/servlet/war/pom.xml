@@ -31,6 +31,10 @@
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 				<exclusion>
+					<groupId>nekohtml</groupId>
+					<artifactId>nekohtml</artifactId>
+				</exclusion>
+				<exclusion>
 					<groupId>javax.servlet</groupId>
 					<artifactId>servlet-api</artifactId>
 				</exclusion>
@@ -49,7 +53,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
-				<version>1.0-beta-1</version>
+				<version>1.0-alpha-1</version>
 				<configuration>
 					<path>/example-servlet</path>
 				</configuration>

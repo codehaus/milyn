@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,6 @@
 
 package org.milyn.device.ident;
 
-import org.milyn.xml.DomUtils;
 import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,6 +25,8 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.sun.org.apache.xerces.internal.util.DOMUtil;
 
 /**
  * Device Ident configuration XML digester. 
@@ -72,7 +73,7 @@ public class IdentConfigDigester {
 
                 if(child.getNodeType() == Node.ELEMENT_NODE) {
                     Element identUnitEl = (Element) child;
-                    String identUnitQName = DomUtils.getName(identUnitEl);
+                    String identUnitQName = DOMUtil.getName(identUnitEl);
                     String id = identUnitEl.getAttribute("id");
                     String identName = identUnitEl.getAttribute("name");
                     String value = identUnitEl.getAttribute("value");

@@ -1,5 +1,5 @@
 /*
- Milyn - Copyright (C) 2006 - 2010
+ Milyn - Copyright (C) 2006
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -74,20 +74,6 @@ public abstract class AssertArgument {
 		if (arg == null || arg.trim().length() == 0) {
 			throw new IllegalArgumentException("null or empty '" + argName
 					+ "' arg in method call.");
-		}
-	}
-
-	/**
-	 * Assert that the argument is an instance of the specified class.
-	 *
-	 * @param arg Argument.
-	 * @param clazz The Class type to check.
-	 * @param argName Argument name.
-	 * @throws IllegalArgumentException Argument is null or empty.
-	 */
-	public static void isInstanceOf(Object arg, Class clazz, String argName) throws IllegalArgumentException {
-		if (clazz.isAssignableFrom(arg.getClass())) {
-			throw new IllegalArgumentException("Argument '" + argName + "' is not an instance of '" + clazz.getName() + "'.");
 		}
 	}
 }

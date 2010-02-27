@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -41,30 +41,8 @@ import org.milyn.scribe.register.DaoRegister;
 import org.w3c.dom.Element;
 
 /**
- * DAO Flusher
- * <p />
- * This DAO flusher calls the flush method of a DAO.
- *
- * <h3>Configuration</h3>
- * <b>Namespace:</b> http://www.milyn.org/xsd/smooks/persistence-1.2.xsd<br>
- * <b>Element:</b> flusher<br>
- * <b>Attributes:</b>
- * <ul>
- *  <li><b>flushOnElement</b> : The element selector to select the element when the flusher should execute. (<i>required</i>)
- * 	<li><b>dao</b> : The name of the DAO that needs to get flushed. If it is not set then the default DAO will be flushed. (<i>optional</i>)
- *  <li><b>flushBefore</b> : If the flusher should exeute on the 'before' event. (<i>default: false</i>)
- * </ul>
- * <h3>Configuration Example</h3>
- * <pre>
- * &lt;?xml version=&quot;1.0&quot;?&gt;
- * &lt;smooks-resource-list xmlns=&quot;http://www.milyn.org/xsd/smooks-1.1.xsd&quot;
- *   xmlns:dao=&quot;http://www.milyn.org/xsd/smooks/persistence-1.2.xsd&quot;&gt;
- *
- *      &lt;dao:flusher dao=&quot;dao&quot; flushOnElement=&quot;root&quot; flushBefore=&quot;false&quot; /&gt;
- * &lt;/smooks-resource-list&gt;
- * </pre>
- *
  * @author <a href="mailto:maurice.zeijen@smies.com">maurice.zeijen@smies.com</a>
+ *
  */
 @VisitBeforeIf(	condition = "parameters.containsKey('flushBefore') && parameters.flushBefore.value == 'true'")
 @VisitAfterIf( condition = "!parameters.containsKey('flushBefore') || parameters.flushBefore.value != 'true'")

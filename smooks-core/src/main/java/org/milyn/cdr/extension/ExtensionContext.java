@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -15,9 +15,7 @@
 */
 package org.milyn.cdr.extension;
 
-import org.milyn.cdr.ConfigSearch;
 import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksResourceConfigurationList;
 import org.milyn.cdr.XMLConfigDigester;
 import org.milyn.container.ExecutionContext;
 import org.milyn.expression.ExpressionEvaluator;
@@ -91,18 +89,6 @@ public class ExtensionContext {
     }
 
     /**
-     * Add a resource configuration template to the resources stack for this Extension Context.
-     * <p/>
-     * This resource is not added as a resource on the Smooks instance, but is instead available
-     * for cloning.
-     *
-     * @param resource The resource to be added.
-     */
-    public void addResourceTemplate(SmooksResourceConfiguration resource) {
-        resourceStack.push(resource);
-    }
-
-    /**
      * Get the resource stack.
      * @return The resource stack.
      * @see #addResource(org.milyn.cdr.SmooksResourceConfiguration) 
@@ -118,18 +104,6 @@ public class ExtensionContext {
      */
     public List<SmooksResourceConfiguration> getResources() {
         return resources;
-    }
-    
-    /**
-     * Get the active resource configuration list.
-     * <p/>
-     * This is the global config list i.e. not just the config list for the config
-     * being processed.
-     * 
-     * @return The active resource configuration list.
-     */
-    public SmooksResourceConfigurationList getResourceList() {
-    	return xmlConfigDigester.getResourceList();
     }
 
     public XMLConfigDigester getXmlConfigDigester() {
@@ -162,18 +136,5 @@ public class ExtensionContext {
 		}
 		
 		return null;
-	}
-
-	/**
-	 * Lookup an existing resource configuration from the global config list.
-	 * <p/>
-	 * Note that this is resource config order-dependent.  It will not locate configs that
-	 * have not yet been loaded.
-	 *
-	 * @param searchCriteria The resource lookup criteria.
-	 * @return List of matches resources, or an empty List if no matches are found.
-	 */
-	public List<SmooksResourceConfiguration> lookupResource(ConfigSearch searchCriteria) {
-		return xmlConfigDigester.getResourceList().lookupResource(searchCriteria);
 	}
 }

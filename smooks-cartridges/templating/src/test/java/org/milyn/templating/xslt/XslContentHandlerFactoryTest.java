@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -103,12 +103,12 @@ public class XslContentHandlerFactoryTest extends TestCase {
         context = smooks.createExecutionContext();
         smooks.filterSource(context, new StreamSource(input), null);
 
-        assertEquals("<bind/>", context.getBeanContext().getBean("mybeanTemplate"));
+        assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         input = new StringReader("<c/>");
         context = smooks.createExecutionContext();
         smooks.filterSource(context, new StreamSource(input), null);
-        assertEquals("<bind/>", context.getBeanContext().getBean("mybeanTemplate"));
+        assertEquals("<bind/>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
     public void test_inline_01() throws SAXException, IOException {

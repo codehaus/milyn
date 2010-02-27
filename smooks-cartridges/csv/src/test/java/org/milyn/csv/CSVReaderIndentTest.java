@@ -39,14 +39,14 @@ public class CSVReaderIndentTest extends TestCase {
             StringResult result = new StringResult();
             smooks.filterSource(new StreamSource(getClass().getResourceAsStream("input-message-01.csv")), result);
             assertEquals("<csv-set>\n" +
-                    "\t<csv-record number=\"1\">\n" +
+                    "\t<csv-record>\n" +
                     "\t\t<firstname>Tom</firstname>\n" +
                     "\t\t<lastname>Fennelly</lastname>\n" +
                     "\t\t<gender>Male</gender>\n" +
                     "\t\t<age>4</age>\n" +
                     "\t\t<country>Ireland</country>\n" +
                     "\t</csv-record>\n" +
-                    "\t<csv-record number=\"2\">\n" +
+                    "\t<csv-record>\n" +
                     "\t\t<firstname>Mike</firstname>\n" +
                     "\t\t<lastname>Fennelly</lastname>\n" +
                     "\t\t<gender>Male</gender>\n" +

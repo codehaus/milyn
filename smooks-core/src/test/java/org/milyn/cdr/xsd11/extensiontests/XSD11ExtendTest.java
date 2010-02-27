@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -42,7 +42,7 @@ public class XSD11ExtendTest extends TestCase {
         XsdDOMValidator validator = new XsdDOMValidator(configDoc);
 
         assertEquals("http://www.milyn.org/xsd/smooks-1.1.xsd", validator.getDefaultNamespace().toString());
-        assertEquals("[http://www.milyn.org/xsd/smooks-1.1.xsd, http://www.milyn.org/xsd/smooks/test-xsd-01.xsd, http://www.w3.org/2001/XMLSchema-instance]", validator.getNamespaces().toString());
+        assertEquals("[http://www.milyn.org/xsd/smooks-1.1.xsd, http://www.milyn.org/xsd/smooks/test-xsd-01.xsd]", validator.getNamespaces().toString());
 
         validator.validate();
     }

@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -15,16 +15,13 @@
 */
 package org.milyn.rules;
 
-import java.io.Serializable;
-
 /**
  * Basic rule evaluation result.
- *
+ * 
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
-public class BasicRuleEvalResult implements RuleEvalResult, Serializable {
+public class BasicRuleEvalResult implements RuleEvalResult {
 
-    private static final long serialVersionUID = 6702697098759533150L;
     private boolean matched;
     private String ruleName;
     private String ruleProviderName;

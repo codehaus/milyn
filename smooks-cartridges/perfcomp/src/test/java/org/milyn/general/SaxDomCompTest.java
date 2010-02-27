@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -67,7 +67,7 @@ public class SaxDomCompTest extends TestCase {
     }
 
     private void runTransform(Smooks smooks, Writer writer) throws InterruptedException {
-        smooks.filter(new StreamSource(getClass().getResourceAsStream("order-message.xml")), new StreamResult(writer));
+        smooks.filterSource(new StreamSource(getClass().getResourceAsStream("order-message.xml")), new StreamResult(writer));
         Thread.sleep(20);
     }
 }

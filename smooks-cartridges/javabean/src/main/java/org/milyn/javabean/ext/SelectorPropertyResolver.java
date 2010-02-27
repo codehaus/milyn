@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -43,9 +43,11 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
     }
 
     public static void resolveSelectorTokens(SmooksResourceConfiguration populatorConfig) {
-        String valueAttributeName = populatorConfig.getTargetAttribute();
+        String[] selectorTokens = populatorConfig.getContextualSelector();
+        String valueAttributeName = SmooksResourceConfiguration.extractTargetAttribute(selectorTokens);
 
         if(valueAttributeName != null && !valueAttributeName.trim().equals("")) {
+            populatorConfig.setSelector(getSelectorProperty(selectorTokens));
             populatorConfig.setParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME, valueAttributeName);
         }
     }

@@ -7,7 +7,7 @@
     <!--
     Configure the EDI Reader to parse the message stream into a stream of SAX events.
     -->
-    <edi:reader mappingModel="/example/edi-to-java-order-mapping.xml" />
+    <edi:reader mappingModel="/example/edi-to-xml-order-mapping.xml" />
 
     <!--
     Create an "example.beans.Order" bean instance when we visit the start of the <order> element.

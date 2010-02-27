@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.thoughtworks.xstream.io.xml.XppDriver;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -94,14 +93,14 @@ public class SmooksOverheadTest extends TestCase {
 
         for(int i = 0; i < NUM_WARMUPS; i++) {
             JavaResult javaResult = new JavaResult();
-            smooks.filter(new StreamSource(getMessageReader()), javaResult);
+            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
         }
 
         long start = System.currentTimeMillis();
         JavaResult javaResult = null;
         for(int i = 0; i < NUM_ITERATIONS; i++) {
             javaResult = new JavaResult();
-            smooks.filter(new StreamSource(getMessageReader()), javaResult);
+            smooks.filterSource(new StreamSource(getMessageReader()), javaResult);
         }
         System.out.println(config + " took: " + (System.currentTimeMillis() - start));
         List orderItems = (List) javaResult.getBean("orderItemList");

@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -40,7 +40,7 @@ public class StaticVariableBinderTest extends TestCase {
 
         smooks.filterSource(execContext, new StreamSource(new StringReader("<x/>")), null);
 
-        Map<String, Object> beanMap = execContext.getBeanContext().getBeanMap();
+        Map<String, Object> beanMap = BeanRepositoryManager.getBeanRepository(execContext).getBeanMap();
 
         //assertEquals("{statvar={variable3=Hi Var3, variable1=Hi Var1, variable2=Hi Var2}}", BeanAccessor.getBeanMap(execContext).toString());
         assertEquals("Hi Var1", new BeanMapExpressionEvaluator("statvar.variable1").getValue(beanMap));

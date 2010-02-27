@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -77,8 +77,8 @@ public class SAXElementTest extends TestCase {
 
         SAXElement saxElement = new SAXElement("http://x", "a", "x", attributes, null);
         assertEquals("1", saxElement.getAttribute("a"));
-        assertEquals("a", saxElement.getAttributeNS("http://a", "a"));
-        assertEquals("b", saxElement.getAttributeNS("http://b", "a"));
+        assertEquals("a", saxElement.getAttribute("http://a", "a"));
+        assertEquals("b", saxElement.getAttribute("http://b", "a"));
     }
 
     public void test_accumulateText() {
@@ -89,7 +89,7 @@ public class SAXElementTest extends TestCase {
             saxElement1.getTextContent();
             fail("Expected SmooksException.");
         } catch(SmooksException e) {
-            assertEquals("Illegal call to getTextContent().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText(), or annotate the Visitor implementation class with the @TextConsumer annotation.", e.getMessage());
+            assertEquals("Illegal call to getTextAsString().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText().", e.getMessage());
         }
 
         saxElement1.accumulateText();

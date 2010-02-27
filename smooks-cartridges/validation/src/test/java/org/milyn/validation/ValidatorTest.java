@@ -1,5 +1,5 @@
 /*
- * Milyn - Copyright (C) 2006 - 2010
+ * Milyn - Copyright (C) 2006
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License (version 2.1) as published
@@ -23,15 +23,20 @@ import org.junit.Test;
 import org.milyn.container.MockApplicationContext;
 import org.milyn.container.MockExecutionContext;
 import org.milyn.rules.RuleProviderAccessor;
+import org.milyn.rules.RuleEvalResult;
 import org.milyn.rules.regex.RegexProvider;
 import org.milyn.payload.FilterResult;
 import org.milyn.payload.StringSource;
 import org.milyn.Smooks;
 import org.milyn.FilterSettings;
+import org.milyn.resource.URIResourceLocator;
+import org.milyn.util.FreeMarkerTemplate;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.net.URL;
 
 /**
  * Unit test for {@link Validator}
@@ -137,21 +142,10 @@ public class ValidatorTest
         try
         {
             validator.validate(data, executionContext);
-            fail("A ValidationException should have been thrown");
         }
         catch (final Exception e)
         {
-            assertTrue( e instanceof ValidationException);
-
-            OnFailResult onFailResult = ((ValidationException) e).getOnFailResult();
-            assertNotNull(onFailResult);
-            /*
-             *  [null] is the failFragmentPath. This test method only exercises the validate method, hence the
-             *  frailFramentPath, which is set in visitAfte, is never set.
-             */
-		    String expected = "[null] RegexRuleEvalResult, matched=false, providerName=addressing, ruleName=email, text=xyz, pattern=\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*([,;]\\s*\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*)*";
-            assertEquals(expected, onFailResult.getMessage());
-            assertEquals("A FATAL validation failure has occured " + expected, e.getMessage());
+            assertEquals("A FATAL validation failure has occured: RegexRuleEvalResult, matched=false, providerName=addressing, ruleName=email, text=xyz, pattern=\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*([,;]\\s*\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*)*", e.getMessage());
         }
     }
 

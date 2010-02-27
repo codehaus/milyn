@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,7 @@ package org.milyn.smooks.edi;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.ProfileTargetingExpression;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.AppContext;
@@ -28,7 +29,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
-import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.InputSource;
@@ -36,7 +36,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXNotRecognizedException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -69,6 +74,10 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
 	 * Model resource configuration key.
 	 */
 	public static final String MODEL_CONFIG_KEY = "mapping-model";
+	/**
+	 * URI based mapping locator.
+	 */
+	private static URIResourceLocator uriMappingLocator = new URIResourceLocator();
 	/**
 	 * The parser configuration.
 	 */
@@ -130,18 +139,10 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
 		synchronized (configuration) {
             edifactModel = (EdifactModel) mappings.get(configuration);
             if(edifactModel == null) {
+                InputStream mappingConfigData = getMappingConfigData();
+				
 				try {
-	            	ContainerResourceLocator resourceLocator = applicationContext.getResourceLocator();
-	            	
-	            	if(resourceLocator instanceof URIResourceLocator) {
-	            		// This will resolve config paths relative to the containing smooks config file....
-	            		edifactModel = EDIParser.parseMappingModel(modelConfigData, ((URIResourceLocator)resourceLocator).getBaseURI());
-	            	} else {
-	            		edifactModel = EDIParser.parseMappingModel(modelConfigData, URIResourceLocator.getSystemBaseURI());
-	            	}
-	    			if(edifactModel == null) {
-	    				logger.error("Invalid " + MODEL_CONFIG_KEY + " config value '" + modelConfigData + "'. Failed to locate EDI Mapping Model resource!");
-	    			}
+					edifactModel = EDIParser.parseMappingModel(new InputStreamReader(mappingConfigData, encoding));
 				} catch (IOException e) {
                     IOException newE = new IOException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".");
 					newE.initCause(e);
@@ -152,8 +153,10 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
                     throw new SAXException("Error parsing EDI mapping model [" + configuration.getStringParameter(MODEL_CONFIG_KEY) + "].  Target Profile(s) " + getTargetProfiles() + ".", e);
                 }
                 mappings.put(configuration, edifactModel);
-				logger.debug("Parsed, validated and cached EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
-			} else if(logger.isInfoEnabled()) {
+                if(logger.isDebugEnabled()) {
+                	logger.debug("Parsed, validated and cached EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "].  Target Profile(s) " + getTargetProfiles() + ".");
+                }
+			} else if(logger.isDebugEnabled()) {
 				logger.debug("Found EDI mapping model [" + edifactModel.getEdimap().getDescription().getName() + ", Version " + edifactModel.getEdimap().getDescription().getVersion() + "] in the model cache.  Target Profile(s) " + getTargetProfiles() + ".");
 			}
 		}
@@ -175,6 +178,37 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
 		}
 		
 		return mappingModelTable;
+	}
+
+	/**
+	 * Get the actual mapping configuration data (the XML).
+	 * <p/>
+	 * Attempts to interpret the {@link #MODEL_CONFIG_KEY} config parameter as a URI to access the config.
+	 * If this parameter does not specify a URI, it's value will be interpreted as being an inlined 
+	 * Mapping Model configuration.
+	 * 
+	 * @return The mapping configuration data stream.
+	 */
+	private InputStream getMappingConfigData() {
+		InputStream configStream = null;
+
+		try {
+			new URI(modelConfigData);
+			configStream = uriMappingLocator.getResource(modelConfigData);
+			if(configStream == null) {
+				logger.error("Invalid " + MODEL_CONFIG_KEY + " config value '" + modelConfigData + "'. Failed to locate resource!");
+			}
+		} catch (URISyntaxException e) {
+			// It's not a URI based specification.  Return the contents under the assumption 
+			// that it's an inlined config...
+			configStream = new ByteArrayInputStream(modelConfigData.getBytes());
+		} catch (IOException e) {
+			IllegalStateException state = new IllegalStateException("Invalid EDI mapping model config specified for " + getClass().getName() + ".  Unable to access URI based mapping model [" + modelConfigData + "].  Target Profile(s) " + getTargetProfiles() + ".");
+			state.initCause(e);
+			throw state;
+		}
+		
+		return configStream;
 	}
 
     private List<ProfileTargetingExpression> getTargetProfiles() {

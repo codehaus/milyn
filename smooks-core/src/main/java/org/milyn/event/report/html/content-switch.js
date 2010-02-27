@@ -19,7 +19,7 @@ function selectElement(elementId) {
     removeHighlight("righttop")
     hideContent("righttop")
     hideContent("rightbottom")
-
+    
     highlight("messageNode-" + elementId);
     showContent("block-" + elementId);
 }
@@ -28,8 +28,6 @@ function selectVisitor(elementId) {
     removeHighlight("righttop")
     hideContent("rightbottom")
 
-    highlightCode("block-details-config-" + elementId);
-    highlightCode("block-details-state-" + elementId);
     highlight("block-details-link-" + elementId);
     showContent("block-details-" + elementId);
 }
@@ -40,14 +38,6 @@ function showContent(contentId) {
         contentElement.style.visibility = "visible";
         contentElement.style.display = "block";
         contentElement.setAttribute("visiblity", "set");
-
-    }
-}
-
-function highlightCode(codeId) {
-	var codeElement = document.getElementById(codeId)
-    if(codeElement != null) {
-    	SyntaxHighlighter.highlight(null, codeElement);
     }
 }
 

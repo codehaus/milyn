@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@ package org.milyn.rules.mvel;
 
 import org.milyn.rules.RuleProvider;
 import org.milyn.rules.RuleEvalResult;
+import org.milyn.rules.BasicRuleEvalResult;
 import org.milyn.container.ExecutionContext;
 import org.milyn.SmooksException;
 import org.milyn.javabean.repository.BeanRepository;
@@ -74,15 +75,16 @@ public class MVELProvider implements RuleProvider {
             throw new SmooksException("Unknown rule name '" + ruleName + "' on MVEL RuleProvider '" + name + "'.");
         }
 
+        BeanRepository beanContext = BeanRepository.getInstance(context);
+
         try {
-            return new MVELRuleEvalResult(evaluator.eval(context.getBeanContext().getBeanMap()), ruleName, name, selectedData.toString());
+            return new BasicRuleEvalResult(evaluator.eval(beanContext.getBeanMap()), ruleName, name);
         } catch(Throwable t) {
-            return new MVELRuleEvalResult(t, ruleName, name, selectedData.toString());
+            return new BasicRuleEvalResult(t, ruleName, name);
         }
     }
 
-    @SuppressWarnings("unchecked")
-	private void loadRules() {
+    private void loadRules() {
         if (src == null) {
             throw new SmooksException("ruleFile not specified.");
         }

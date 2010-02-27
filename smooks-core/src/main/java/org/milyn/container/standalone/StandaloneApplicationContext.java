@@ -1,16 +1,16 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
-	License (version 2.1) as published by the Free Software
+	License (version 2.1) as published by the Free Software 
 	Foundation.
 
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-	See the GNU Lesser General Public License for more details:
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    
+	See the GNU Lesser General Public License for more details:    
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
@@ -22,8 +22,6 @@ import java.util.Map;
 
 import org.milyn.cdr.SmooksResourceConfigurationStore;
 import org.milyn.container.ApplicationContext;
-import org.milyn.javabean.context.BeanIdStore;
-import org.milyn.javabean.context.StandaloneBeanContextFactory;
 import org.milyn.profile.*;
 import org.milyn.resource.ContainerResourceLocator;
 import org.milyn.resource.URIResourceLocator;
@@ -31,22 +29,21 @@ import org.milyn.resource.URIResourceLocator;
 /**
  * Standalone container execution context for Smooks.
  * <p/>
- * This context allows Smooks to be executed outside the likes of a
+ * This context allows Smooks to be executed outside the likes of a 
  * Servlet Container.
  * @author tfennelly
  */
 public class StandaloneApplicationContext implements ApplicationContext {
 
-    private Hashtable<Object, Object> attributes = new Hashtable<Object, Object>();
-	private ContainerResourceLocator resourceLocator;
+    private Hashtable attributes = new Hashtable();
+	private ContainerResourceLocator resourceLocator;	
 	private SmooksResourceConfigurationStore resStore;
 	private DefaultProfileStore profileStore = new DefaultProfileStore();
-	private BeanIdStore beanIdStore = new BeanIdStore();
-
+    
     /**
      * Public constructor.
      * <p/>
-     *
+     * 
      */
     public StandaloneApplicationContext() {
         resourceLocator = new URIResourceLocator();
@@ -96,15 +93,9 @@ public class StandaloneApplicationContext implements ApplicationContext {
 	public ProfileStore getProfileStore() {
 		return profileStore;
 	}
-
-	public Map<Object, Object> getAttributes()
+	
+	public Map getAttributes()
 	{
 		return attributes;
 	}
-
-	public BeanIdStore getBeanIdStore() {
-		return beanIdStore;
-	}
-
-
 }

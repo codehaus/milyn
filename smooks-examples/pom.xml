@@ -6,7 +6,7 @@
     <artifactId>smooks-examples</artifactId>
     <name>Milyn Smooks Examples (Base POM)</name>
     <packaging>pom</packaging>
-    <version>1.3-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.2.5</version> <!-- base pom version - do not remove this comment -->
 
     <modules>
         <module>css</module>
@@ -24,7 +24,6 @@
         <module>csv-to-xml-2</module>
         <module>csv-to-java</module>
         <module>csv-to-java-programmatic</module>
-        <module>fixed-length-to-java</module>
         <module>edi-to-xml</module>
         <module>edi-to-java</module>
         <module>profiling</module>
@@ -36,16 +35,15 @@
         <module>jms-router</module>
         <module>json-to-java</module>
         <module>sj-testimonial</module>
-        <module>dao-router</module>
+		<module>dao-router</module>
         <module>validation-basic</module>
         <module>ejc/ejc-gen</module>
         <module>ejc/ejc-use</module>
         <module>edi-with-import-to-java</module>
-        <module>ect-unedifact</module>
     </modules>
 
     <properties>
-        <milyn.smooks.core.version>1.3-SNAPSHOT</milyn.smooks.core.version>
+        <milyn.smooks.core.version>1.2.5</milyn.smooks.core.version>
         <milyn.smooks.servlet.version>${milyn.smooks.core.version}</milyn.smooks.servlet.version>
         <milyn.smooks.misc.version>${milyn.smooks.core.version}</milyn.smooks.misc.version>
         <milyn.smooks.dtd.version>${milyn.smooks.core.version}</milyn.smooks.dtd.version>
@@ -53,7 +51,6 @@
         <milyn.smooks.javabean.version>${milyn.smooks.core.version}</milyn.smooks.javabean.version>
         <milyn.smooks.templating.version>${milyn.smooks.core.version}</milyn.smooks.templating.version>
         <milyn.smooks.csv.version>${milyn.smooks.core.version}</milyn.smooks.csv.version>
-        <milyn.smooks.fixed-length.version>${milyn.smooks.core.version}</milyn.smooks.fixed-length.version>
         <milyn.smooks.edi.version>${milyn.smooks.core.version}</milyn.smooks.edi.version>
         <milyn.smooks.scripting.version>${milyn.smooks.core.version}</milyn.smooks.scripting.version>
         <milyn.smooks.routing.version>${milyn.smooks.core.version}</milyn.smooks.routing.version>

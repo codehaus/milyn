@@ -5,13 +5,15 @@
     <groupId>org.milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.3-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.2.5</version> <!-- base pom version - do not remove this comment -->
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
     <properties>
-        <milyn.smooks.core.version.base>1.3</milyn.smooks.core.version.base>
-        <milyn.smooks.core.version>${milyn.smooks.core.version.base}-SNAPSHOT</milyn.smooks.core.version>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <milyn.smooks.core.version.base>1.2.5</milyn.smooks.core.version.base>
+        <milyn.smooks.core.version>${milyn.smooks.core.version.base}</milyn.smooks.core.version>
 
         <milyn.commons.version.base>${milyn.smooks.core.version.base}</milyn.commons.version.base>
         <milyn.commons.version>${milyn.smooks.core.version}</milyn.commons.version>
@@ -38,23 +40,17 @@
         <milyn.scribe.ibatis.version>${milyn.smooks.core.version}</milyn.scribe.ibatis.version>
 
         <xerces.version>2.7.1</xerces.version>
-        <xalan.version>2.7.1</xalan.version>
+        <xalan.version>2.7.0</xalan.version>
         <xml_apis.version>1.3.02</xml_apis.version>
         <xstream.version>1.2.2</xstream.version>
-        <commons_lang.version>2.4</commons_lang.version>
+        <commons_lang.version>2.1</commons_lang.version>
         <nekohtml.version>0.9.5</nekohtml.version>
         <dtdparser.version>1.21</dtdparser.version>
         <freemarker.version>2.3.11</freemarker.version>
         <opencsv.version>1.8</opencsv.version>
         <ant.version>1.7.0</ant.version>
         <javassist.version>3.10.0.GA</javassist.version>
-        <mvel.version>2.0.14</mvel.version>
-        <jaxen.version>1.1.1</jaxen.version>
-		<javax.transaction.version>1.1</javax.transaction.version>
-		<mockejb.version>0.6-beta2</mockejb.version>
-		<mockito.version>1.8.0</mockito.version>
 
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <profiles>
@@ -66,12 +62,10 @@
                 <module>smooks-core</module>
                 <module>magger</module>
                 <module>tinak</module>
+                <module>edisax</module>
                 <module>scribe</module>
-                <module>edi/edisax</module>
-                <module>edi/ejc</module>
-                <module>edi/ejc/maven-ejc-plugin</module>
-                <module>edi/ect</module>
-                <module>edi/ect/maven-ect-plugin</module>
+                <module>ejc</module>
+                <module>ejc/maven-ejc-plugin</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
@@ -87,11 +81,10 @@
                 <module>smooks-core</module>
                 <module>magger</module>
                 <module>tinak</module>
+                <module>edisax</module>
                 <module>scribe</module>
-                <module>edi/edisax</module>
-                <module>edi/ejc</module>
-                <module>edi/ejc/maven-ejc-plugin</module>
-                <module>edi/ect</module>
+                <module>ejc</module>
+                <module>ejc/maven-ejc-plugin</module>
                 <module>smooks-cartridges</module>
             </modules>
         </profile>

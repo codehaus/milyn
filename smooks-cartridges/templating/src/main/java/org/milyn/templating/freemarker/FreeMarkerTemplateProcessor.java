@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -343,7 +343,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
             Writer writer = new StringWriter();
             applyTemplate(template, element, executionContext, writer);
 
-            executionContext.getBeanContext().addBean(getBindBeanId(), writer.toString());
+            BeanRepositoryManager.getBeanRepository(executionContext).addBean(getBindBeanId(), writer.toString());
         } else {
             Writer writer = element.getWriter(this);
             applyTemplate(template, element, executionContext, writer);

@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -16,9 +16,8 @@
 package org.milyn.delivery.sax;
 
 import org.milyn.assertion.AssertArgument;
-import org.milyn.delivery.sax.annotation.StreamResultWriter;
-import org.milyn.delivery.sax.annotation.TextConsumer;
 import org.milyn.SmooksException;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -42,10 +41,10 @@ import java.util.*;
  * Each SAXElement instance has a {@link Writer writer} set on it.
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations can take care of
  * serializing the elements at which they are targeted themselves.  Alternatively, they
- * can use the {@link org.milyn.delivery.sax.SAXElementWriterUtil} class.
+ * can use the {@link org.milyn.delivery.sax.WriterUtil} class.
  * <p/>
  * {@link org.milyn.delivery.sax.SAXVisitor} implementations can also control the serialization
- * of their "child elements" by {@link #setWriter(java.io.Writer, SAXVisitor) setting the writer}
+ * of their "child elements" by {@link #setWriter(java.io.Writer, SAXVisitor) setting the writter}
  * on the SAXElement instance they receive.  This works because Smooks passes the
  * writer instance that's set on a SAXElement instance to all of the SAXElement
  * instances created for child elements.
@@ -56,16 +55,17 @@ import java.util.*;
  * for that element.  Any other visitors requesting access to get or change the writer
  * will result in a {@link SAXWriterAccessException} being thrown.  In this situation,
  * you need to restructure the offending Smooks configuration and eliminate one of the
- * visitors attempting to gain access to the writer.  If developing a new Visitor,
- * you should annotate the new Visitor class with the {@link StreamResultWriter @StreamResultWriter}
- * annotation.
+ * visitors attempting to gain access to the writer.  If developing a new visitor,
+ * you probably need to change the visitor to also implement the {@link SAXVisitBefore}
+ * interface and use that event method to acquire ownership of the element writer
+ * through a call to {@link SAXElement#getWriter(SAXVisitor)}.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class SAXElement {
 
     private QName name;
-    private AttributesImpl attributes;
+    private Attributes attributes;
     private SAXElement parent;
     private Writer writer;
     private List<SAXText> text;
@@ -80,35 +80,6 @@ public class SAXElement {
     private Object l1Cache;
     private SAXVisitor l1CacheOwner;
     private Map<SAXVisitor, Object> l2Caches;
-
-    /**
-     * Public constructor.
-     *
-     * @param namespaceURI The Namespace URI, or the empty string if the
-     *                     element has no Namespace URI or if Namespace
-     *                     processing is not being performed.
-     * @param localName    The local name (without prefix), or the
-     *                     empty string if Namespace processing is not being
-     *                     performed.
-     */
-    public SAXElement(String namespaceURI, String localName) {
-        this(namespaceURI, localName, null, new AttributesImpl(), null);
-    }
-
-    /**
-     * Public constructor.
-     *
-     * @param namespaceURI The Namespace URI, or the empty string if the
-     *                     element has no Namespace URI or if Namespace
-     *                     processing is not being performed.
-     * @param localName    The local name (without prefix), or the
-     *                     empty string if Namespace processing is not being
-     *                     performed.
-     * @param parent       Parent element, or null if the element is the document root element.
-     */
-    public SAXElement(String namespaceURI, String localName, SAXElement parent) {
-        this(namespaceURI, localName, null, new AttributesImpl(), parent);
-    }
 
     /**
      * Public constructor.
@@ -194,7 +165,7 @@ public class SAXElement {
      * @param attributes The attributes to copy.
      * @return The new {@link Attributes} instance with a copy of the attributes.
      */
-    private AttributesImpl copyAttributes(Attributes attributes) {
+    private Attributes copyAttributes(Attributes attributes) {
         AttributesImpl attributesCopy = new AttributesImpl();
         attributesCopy.setAttributes(attributes);
         return attributesCopy;
@@ -207,8 +178,7 @@ public class SAXElement {
     /**
      * Turn on {@link SAXText text} accumulation for this {@link SAXElement}.
      * <p/>
-     * For performance reasons, {@link SAXText Text} accumulation is not on by default.
-     * @see TextConsumer
+     * For performance reasons, {@link SAXText Text} accumulation is not on by default. 
      */
     public void accumulateText() {
         if(text == null) {
@@ -230,40 +200,9 @@ public class SAXElement {
      * @return The child {@link SAXText text} list associated with this {@link SAXElement},
      * or null if this {@link SAXElement} is not {@link #accumulateText() accumulating text}.
      * @see #accumulateText() 
-     * @see TextConsumer
      */
     public List<SAXText> getText() {
         return text;
-    }
-
-    /**
-     * Add a text object to this instance.
-     * <p/>
-     * Utility method, userd mainly for testing.
-     *
-     * @param text The text to be added.
-     * @see #accumulateText() 
-     * @see TextConsumer
-     */
-    public void addText (String text) {
-        addText(text, TextType.TEXT);
-    }
-
-    /**
-     * Add a text object to this instance.
-     * <p/>
-     * Utility method, userd mainly for testing.
-     *
-     * @param text The text to be added.
-     * @param type The text type.
-     * @see #accumulateText() 
-     * @see TextConsumer
-     */
-    public void addText (String text, TextType type) {
-        if(this.text == null) {
-            accumulateText();
-        }
-        this.text.add(new SAXText(text, type));
     }
 
     /**
@@ -280,11 +219,10 @@ public class SAXElement {
      * @throws SmooksException This {@link SAXElement} instance does not have
      * {@link #accumulateText() text accumulation} turned on.
      * @see #accumulateText() 
-     * @see TextConsumer
      */
     public String getTextContent() throws SmooksException {
         if(text == null) {
-            throw new SmooksException("Illegal call to getTextContent().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText(), or annotate the Visitor implementation class with the @TextConsumer annotation.");
+            throw new SmooksException("Illegal call to getTextAsString().  SAXElement instance not accumulating SAXText Objects.  You must call SAXElement.accumulateText().");
         }
 
         if(textAccumulator == null) {
@@ -315,7 +253,6 @@ public class SAXElement {
      * @param visitor The visitor requesting access to element writer.
      * @return The element writer.
      * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
-     * @see StreamResultWriter
      */
     public Writer getWriter(SAXVisitor visitor) throws SAXWriterAccessException {
         // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
@@ -331,7 +268,6 @@ public class SAXElement {
      * @param writer  The element writer.
      * @param visitor The visitor requesting to set the element writer.
      * @throws SAXWriterAccessException Invalid access request for the element writer. See <a href="#element-writing">element writing</a>.
-     * @see StreamResultWriter
      */
     public void setWriter(Writer writer, SAXVisitor visitor) throws SAXWriterAccessException {
         // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
@@ -348,7 +284,6 @@ public class SAXElement {
      * @param visitor The visitor being checked.
      * @return True if the {@link SAXVisitor} owns the {@link Writer} associated
      * with this {@link SAXElement} instance, otherwise false.
-     * @see StreamResultWriter
      */
     public boolean isWriterOwner(SAXVisitor visitor) {
         // This implementation doesn't actually enforce the "one writer per element" rule.  It's enforced from
@@ -391,7 +326,7 @@ public class SAXElement {
      */
     public void setAttributes(Attributes attributes) {
         AssertArgument.isNotNull(attributes, "attributes");
-        this.attributes = copyAttributes(attributes);
+        this.attributes = attributes;
     }
 
     /**
@@ -409,49 +344,9 @@ public class SAXElement {
      * @param attribute The attribute name.
      * @return The attribute value, or an empty string if the attribute is not specified.
      */
-    public String getAttributeNS(String namespaceURI, String attribute) {
+    public String getAttribute(String namespaceURI, String attribute) {
         return SAXUtil.getAttribute(namespaceURI, attribute, attributes, "");
     }
-
-    /**
-     * Get the named attribute from this element.
-     * @param namespaceURI The namespace URI of the required attribute.
-     * @param attribute The attribute name.
-     * @return The attribute value, or an empty string if the attribute is not specified.
-     * @deprecated Use {@link #getAttributeNS(String, String)}.
-     */
-    public String getAttribute(String namespaceURI, String attribute) {
-        return getAttributeNS(namespaceURI, attribute);
-    }
-
-
-    /**
-     * Set the named attribute on this element.
-     * @param attribute The attribute name.
-     * @param value The attribute value.
-     */
-    public void setAttribute(String attribute, String value) {
-        setAttributeNS(XMLConstants.NULL_NS_URI, attribute,  value);
-    }
-
-    /**
-     * Set the named attribute on this element.
-     * @param namespaceURI The attribute namespace URI.
-     * @param attribute The attribute name.
-     * @param value The attribute value.
-     */
-    public void setAttributeNS(String namespaceURI, String attribute, String value) {
-        int attribCount = attributes.getLength();
-
-        for(int i = 0; i < attribCount; i++) {
-            if(namespaceURI.equals(attributes.getURI(i)) && attribute.equals(attributes.getLocalName(i))) {
-                attributes.removeAttribute(i);
-            }
-        }
-
-        attributes.addAttribute(namespaceURI, attribute, "", "CDATA", value);
-    }
-
 
     /**
      * Get the <a href="#element_cache_object">element cache object</a>.

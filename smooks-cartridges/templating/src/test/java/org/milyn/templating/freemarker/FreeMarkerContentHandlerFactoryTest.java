@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -134,12 +134,12 @@ public class FreeMarkerContentHandlerFactoryTest extends TestCase {
         input = new StringReader("<a><b><c x='xvalueonc2' /></b></a>");
         smooks.filterSource(context, new StreamSource(input), null);
 
-        assertEquals("<mybean>xvalueonc2</mybean>",context.getBeanContext().getBean("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc2</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
 
         context = smooks.createExecutionContext();
         input = new StringReader("<c x='xvalueonc1' />");
         smooks.filterSource(context, new StreamSource(input), null);
-        assertEquals("<mybean>xvalueonc1</mybean>", context.getBeanContext().getBean("mybeanTemplate"));
+        assertEquals("<mybean>xvalueonc1</mybean>", BeanRepositoryManager.getBeanRepository(context).getBean("mybeanTemplate"));
     }
 
     public void test_template_include() throws SAXException, IOException {

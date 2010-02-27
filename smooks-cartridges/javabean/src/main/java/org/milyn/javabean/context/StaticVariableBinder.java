@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -34,13 +34,16 @@ import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
 import org.milyn.javabean.repository.BeanId;
+import org.milyn.javabean.repository.BeanIdRegister;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
 /**
  * Static variable binding visitor.
  * <p/>
  * Binds resource paramater variables into the bean context (managed by the
- * {@link BeanContext}).  The paramater values are all bound
+ * {@link org.milyn.javabean.repository.BeanRepository}).  The paramater values are all bound
  * into a bean accessor Map named "statvar", so variables bound in this way
  * can be referenced in expressions or templates as e.g "<i>${statvar.<b>xxx</b>}</i>"
  * (for static variable "xxx").
@@ -50,6 +53,8 @@ import org.w3c.dom.Element;
 public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisitor {
 
     private static final String STATVAR = "statvar";
+
+    private BeanRepositoryManager beanRepositoryManager;
 
     private BeanId beanId;
 
@@ -63,10 +68,14 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     @Initialize
     public void initialize() throws SmooksConfigurationException {
 
-        beanId = appContext.getBeanIdStore().getBeanId(STATVAR);
+    	beanRepositoryManager = BeanRepositoryManager.getInstance(appContext);
+
+        BeanIdRegister beanIdRegister = beanRepositoryManager.getBeanIdRegister();
+
+        beanId = beanIdRegister.getBeanId(STATVAR);
 
         if(beanId == null) {
-        	beanId = appContext.getBeanIdStore().register(STATVAR);
+        	beanId = beanRepositoryManager.getBeanIdRegister().register(STATVAR);
         }
 
 
@@ -97,7 +106,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
         for (Object parameter : params) {
             // It's either an object, or list of objects...
-            if (parameter instanceof List<?>) {
+            if (parameter instanceof List) {
                 // Bind the first paramater...
                 bindParameter((Parameter) ((List<?>) parameter).get(0), executionContext);
             } else if (parameter instanceof Parameter) {
@@ -110,11 +119,11 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 	private void bindParameter(Parameter parameter, ExecutionContext executionContext) {
         Map<String, Object> params = null;
 
-        BeanContext beanContext = executionContext.getBeanContext();
+        BeanRepository beanRepository = BeanRepositoryManager.getBeanRepository(executionContext);
 
         try {
         	@SuppressWarnings("unchecked")
-        	Map<String, Object> castParams = (Map<String, Object>) beanContext.getBean(beanId);
+        	Map<String, Object> castParams = (Map<String, Object>) beanRepository.getBean(beanId);
 
         	params = castParams;
         } catch(ClassCastException e) {
@@ -123,7 +132,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
         if(params == null) {
             params = new HashMap<String, Object>();
-            beanContext.addBean(beanId, params);
+            beanRepository.addBean(beanId, params);
         }
 
         params.put(parameter.getName(), parameter.getValue(executionContext.getDeliveryConfig()));

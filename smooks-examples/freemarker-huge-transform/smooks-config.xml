@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
-                      xmlns:core="http://www.milyn.org/xsd/smooks/smooks-core-1.3.xsd"
                       xmlns:ftl="http://www.milyn.org/xsd/smooks/freemarker-1.1.xsd">
 
     <!--
@@ -8,7 +7,10 @@
     intermediate DOM for the "complete" message - there are "mini" DOMs
     for the NodeModels below)....
     -->
-    <core:filterSettings type="SAX" defaultSerialization="false" />
+    <params>
+        <param name="stream.filter.type">SAX</param>
+        <param name="default.serialization.on">false</param>
+    </params>
 
     <!--
     Create 2 NodeModels.  One high level model for the "order"

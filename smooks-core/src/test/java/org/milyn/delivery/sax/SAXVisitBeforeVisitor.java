@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -36,12 +36,4 @@ public class SAXVisitBeforeVisitor implements SAXVisitBefore {
         visited = true;
         staticInjectedParam = injectedParam;
     }
-
-	/**
-	 * @param injectedParam the injectedParam to set
-	 */
-	public SAXVisitBeforeVisitor setInjectedParam(String injectedParam) {
-		this.injectedParam = injectedParam;
-		return this;
-	}
 }

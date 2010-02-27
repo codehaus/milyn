@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -48,9 +48,7 @@ public class CloneResourceConfig implements DOMElementVisitor {
 	        }
         }
 
-        if(resource != null) {
-        	config.setResource(resource);
-        }
+        config.setResource(resource);
 
         extensionContext.addResource(config);
     }

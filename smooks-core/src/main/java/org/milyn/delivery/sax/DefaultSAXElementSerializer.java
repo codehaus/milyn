@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -68,7 +68,7 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
         if(element.isWriterOwner(writerOwner)) {
             if(!isStartWritten(element)) {
                 element.setCache(this, true);
-                SAXElementWriterUtil.writeStartElement(element, element.getWriter(writerOwner), rewriteEntities);
+                WriterUtil.writeStartElement(element, element.getWriter(writerOwner), rewriteEntities);
             }
         }
     }
@@ -77,9 +77,9 @@ public class DefaultSAXElementSerializer implements SAXElementVisitor {
         if(element.isWriterOwner(writerOwner)) {
             if(!isStartWritten(element)) {
                 // It's an empty element...
-                SAXElementWriterUtil.writeEmptyElement(element, element.getWriter(writerOwner), rewriteEntities);
+                WriterUtil.writeEmptyElement(element, element.getWriter(writerOwner), rewriteEntities);
             } else {
-                SAXElementWriterUtil.writeEndElement(element, element.getWriter(writerOwner));
+                WriterUtil.writeEndElement(element, element.getWriter(writerOwner));
             }
         }
     }

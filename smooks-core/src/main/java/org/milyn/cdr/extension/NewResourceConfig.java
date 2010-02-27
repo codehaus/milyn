@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -38,14 +38,10 @@ public class NewResourceConfig implements DOMElementVisitor {
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String resource;
 
-    @ConfigParam(defaultVal = "false")
-    private boolean isTemplate;
-
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         SmooksResourceConfiguration config = new SmooksResourceConfiguration();
         ExtensionContext extensionContext = ExtensionContext.getExtensionContext(executionContext);
 
-        config.setExtendedConfigNS(element.getNamespaceURI());
         config.setResource(resource);
 
         // Set the defaults...
@@ -61,11 +57,7 @@ public class NewResourceConfig implements DOMElementVisitor {
         config.setTargetProfile(targetProfile);
         config.setConditionEvaluator(extensionContext.getDefaultConditionEvaluator());
 
-        if(isTemplate) {
-        	extensionContext.addResourceTemplate(config);
-        } else {
-        	extensionContext.addResource(config);
-        }
+        extensionContext.addResource(config);
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {

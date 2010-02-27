@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -360,28 +360,6 @@ public class ClassUtil {
             return field.get(instance);
         } finally {
             field.setAccessible(isAccessible);
-        }
-    }
-
-    public static List<Field> getAnnotatedFields(Class runtimeClass, Class<? extends Annotation> annotationClass) {
-    	List<Field> streamWriterFields = new ArrayList<Field>();
-    	getAnnotatedFields(runtimeClass, streamWriterFields, annotationClass);
-    	return streamWriterFields;
-    }
-    
-    private static void getAnnotatedFields(Class runtimeClass, List<Field> annotatedFields, Class<? extends Annotation> annotationClass) {
-        Field[] fields = runtimeClass.getDeclaredFields();
-
-        // Work back up the Inheritance tree first...
-        Class superClass = runtimeClass.getSuperclass();
-        if(superClass != null) {
-        	getAnnotatedFields(superClass, annotatedFields, annotationClass);
-        }
-
-        for (Field field : fields) {
-        	if(field.isAnnotationPresent(annotationClass)) {
-        		annotatedFields.add(field);
-        	}
         }
     }
 

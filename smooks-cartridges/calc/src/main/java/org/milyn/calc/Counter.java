@@ -1,5 +1,5 @@
 /*
- * Milyn - Copyright (C) 2006 - 2010
+ * Milyn - Copyright (C) 2006
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License (version 2.1) as published
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.milyn.SmooksException;
+import org.milyn.util.CollectionsUtil;
 import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
@@ -28,14 +29,14 @@ import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
 import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.dom.DOMVisitBefore;
-import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.expression.MVELExpressionEvaluator;
-import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.util.CollectionsUtil;
+import org.milyn.javabean.repository.BeanRepository;
+import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
 /**
@@ -125,7 +126,7 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 	@Initialize
 	public void initialize() {
 
-		beanId = appContext.getBeanIdStore().register(beanIdName);
+		beanId = BeanRepositoryManager.getInstance(appContext).getBeanIdRegister().register(beanIdName);
 
 		countDirection = CountDirection.valueOf(direction);
 
@@ -157,14 +158,14 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 	}
 
 	public void count(ExecutionContext executionContext) {
-		BeanContext beanContext = executionContext.getBeanContext();
+		BeanRepository beanRepository = BeanRepository.getInstance(executionContext);
 
-		Long value = (Long) beanContext.getBean(beanId);
+		Long value = (Long) beanRepository.getBean(beanId);
 
-		if(value == null || (resetCondition != null && resetCondition.eval(beanContext.getBeanMap()))) {
-			value = getStart(beanContext);
+		if(value == null || (resetCondition != null && resetCondition.eval(beanRepository.getBeanMap()))) {
+			value = getStart(beanRepository);
 		} else {
-			int amount = getAmount(beanContext);
+			int amount = getAmount(beanRepository);
 
 			if(countDirection == CountDirection.INCREMENT) {
 				value = value + amount;
@@ -172,11 +173,11 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 				value = value - amount;
 			}
 		}
-		beanContext.addBean(beanId, value);
+		beanRepository.addBean(beanId, value);
 	}
 
 
-	private Long getStart(BeanContext beanContext) {
+	private Long getStart(BeanRepository beanRepository) {
 
 		if(start == null && startExpression == null) {
 
@@ -188,7 +189,7 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 
 		} else {
 
-			Object result = startExpression.getValue(beanContext.getBeanMap());
+			Object result = startExpression.getValue(beanRepository.getBeanMap());
 
 			if(!(result instanceof Long || result instanceof Integer)) {
 				throw new SmooksException("The start expression must result in a Integer or a Long");
@@ -199,7 +200,7 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 		}
 	}
 
-	private int getAmount(BeanContext beanContext) {
+	private int getAmount(BeanRepository beanRepository) {
 
 		if(amount == null && amountExpression == null) {
 
@@ -211,7 +212,7 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 
 		} else {
 
-			Object result = amountExpression.getValue(beanContext.getBeanMap());
+			Object result = amountExpression.getValue(beanRepository.getBeanMap());
 
 			if(result instanceof Integer == false) {
 				throw new SmooksException("The amount expression must result in a Integer");

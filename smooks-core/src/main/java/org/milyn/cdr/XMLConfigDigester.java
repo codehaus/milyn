@@ -1,5 +1,5 @@
 /*
-	Milyn - Copyright (C) 2006 - 2010
+	Milyn - Copyright (C) 2006
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
@@ -66,7 +66,7 @@ public final class XMLConfigDigester {
 
     private static Log logger = LogFactory.getLog(XMLConfigDigester.class);
 
-    private final SmooksResourceConfigurationList resourcelist;
+    private final SmooksResourceConfigurationList list;
     private final Stack<SmooksConfig> configStack = new Stack<SmooksConfig>();
 
     private final Map<String, Smooks> extendedConfigDigesters = new HashMap<String, Smooks>();
@@ -91,7 +91,7 @@ public final class XMLConfigDigester {
      * @param list Config list.
      */
     private XMLConfigDigester(SmooksResourceConfigurationList list) {
-        this.resourcelist = list;
+        this.list = list;
         configStack.push(new SmooksConfig("root-config"));
     }
 
@@ -116,14 +116,6 @@ public final class XMLConfigDigester {
         digester.digestConfigRecursively(new InputStreamReader(stream), baseURI);
 
         return list;
-    }
-    
-    /**
-     * Get the active resource configuration list.
-     * @return The active resource configuration list.
-     */
-    public SmooksResourceConfigurationList getResourceList() {
-    	return resourcelist;
     }
 
     private void digestConfigRecursively(Reader stream, String baseURI) throws IOException, SAXException, URISyntaxException, SmooksConfigurationException {
@@ -161,7 +153,7 @@ public final class XMLConfigDigester {
             }
         }
 
-        if (resourcelist.isEmpty()) {
+        if (list.isEmpty()) {
             throw new SAXException("Invalid Content Delivery Resource archive definition file: 0 Content Delivery Resource definitions.");
         }
     }
@@ -197,9 +189,9 @@ public final class XMLConfigDigester {
             // Add the parameters...
             digestParameters(currentElement, resourceConfig);
 
-            resourcelist.add(resourceConfig);
+            list.add(resourceConfig);
             if (logger.isDebugEnabled()) {
-                logger.debug("Adding smooks-resource config from [" + resourcelist.getName() + "]: " + resourceConfig);
+                logger.debug("Adding smooks-resource config from [" + list.getName() + "]: " + resourceConfig);
             }
 
             cdrIndex++;
@@ -282,7 +274,7 @@ public final class XMLConfigDigester {
             SmooksResourceConfiguration globalParamsConfig = new SmooksResourceConfiguration(ParameterAccessor.GLOBAL_PARAMETERS);
 
             digestParameters(paramsElement, globalParamsConfig);
-            resourcelist.add(globalParamsConfig);
+            list.add(globalParamsConfig);
         }
     }
 
@@ -361,7 +353,7 @@ public final class XMLConfigDigester {
         configureFeatures(configElement, resourceConfig);
         configureParams(configElement, resourceConfig);
 
-        resourcelist.add(resourceConfig);
+        list.add(resourceConfig);
     }
 
     private void configureHandlers(Element configElement, SmooksResourceConfiguration resourceConfig) {
@@ -453,7 +445,7 @@ public final class XMLConfigDigester {
         // Add the parameters...
         digestParameters(configElement, resourceConfig);
 
-        resourcelist.add(resourceConfig);
+        list.add(resourceConfig);
         if (resource == null) {
             if (resourceConfig.getParameters(SmooksResourceConfiguration.PARAM_RESDATA) != null) {
                 logger.warn("Resource 'null' for resource config: " + resourceConfig + ".  This is probably an error because the configuration contains a 'resdata' param, which suggests it is following the old DTD based configuration model.  The new model requires the resource to be specified in the <resource> element.");
@@ -462,7 +454,7 @@ public final class XMLConfigDigester {
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Adding smooks-resource config from [" + resourcelist.getName() + "]: " + resourceConfig);
+            logger.debug("Adding smooks-resource config from [" + list.getName() + "]: " + resourceConfig);
         }
     }
 
@@ -489,7 +481,7 @@ public final class XMLConfigDigester {
         // Copy the created resources from the ExtensionContext and onto the SmooksResourceConfigurationList...
         List<SmooksResourceConfiguration> resources = extentionContext.getResources();
         for (SmooksResourceConfiguration resource : resources) {
-            resourcelist.add(resource);
+            list.add(resource);
         }
     }
 
@@ -634,7 +626,7 @@ public final class XMLConfigDigester {
                     profileSet.addProfiles(subProfiles.split(","));
                 }
 
-                resourcelist.add(profileSet);
+                list.add(profileSet);
             }
         }
     }
