@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="assemble" name="Assembly">
 
-    <property name="version.base" value="1.2"/>
+    <property name="version.base" value="1.3"/>
     <property name="version" value="${version.base}"/>
-    <property name="mvn.version" value="1.2"/>
+    <property name="mvn.version" value="1.3"/>
 
     <property name="mainDistroName" value="smooks-${version}"/>
     <property name="mainTargetdir" value="target/${mainDistroName}"/>
@@ -85,16 +85,16 @@
             <param name="target" value="${javadocdir}/commons"/>
         </antcall>
         <antcall target="move-javadoc">
-            <param name="source" value="../../edisax/parser"/>
-            <param name="target" value="${javadocdir}/edisax"/>
+            <param name="source" value="../../edi/edisax/parser"/>
+            <param name="target" value="${javadocdir}/edi/edisax"/>
         </antcall>
         <antcall target="move-javadoc">
-            <param name="source" value="../../magger"/>
-            <param name="target" value="${javadocdir}/magger"/>
+            <param name="source" value="../../edi/ect"/>
+            <param name="target" value="${javadocdir}/edi/ect"/>
         </antcall>
         <antcall target="move-javadoc">
-            <param name="source" value="../../tinak"/>
-            <param name="target" value="${javadocdir}/tinak"/>
+            <param name="source" value="../../edi/ejc"/>
+            <param name="target" value="${javadocdir}/edi/ejc"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/calc"/>
@@ -143,10 +143,6 @@
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/scripting"/>
             <param name="target" value="${javadocdir}/smooks-cartridges/scripting"/>
-        </antcall>
-        <antcall target="move-javadoc">
-            <param name="source" value="../../smooks-cartridges/servlet"/>
-            <param name="target" value="${javadocdir}/smooks-cartridges/servlet"/>
         </antcall>
         <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/templating"/>
