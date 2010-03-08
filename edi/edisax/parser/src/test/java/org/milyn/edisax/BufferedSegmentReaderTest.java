@@ -107,7 +107,7 @@ public class BufferedSegmentReaderTest extends TestCase {
 		int segIndex = 0;
 		
 		while(segIndex < segments.length && reader.moveToNextSegment()) {
-			String segment = reader.getCurrentSegment().toString();
+			String segment = reader.getSegmentBuffer().toString();
 			assertEquals("Segment comparison failure.", segments[segIndex], segment);
 			segIndex++;
 		}
@@ -117,31 +117,12 @@ public class BufferedSegmentReaderTest extends TestCase {
 
     private BufferedSegmentReader createSegmentReader(String input, String segmentDelim, String fieldDelim) {
         InputSource inputSource = new InputSource(new ByteArrayInputStream(input.getBytes()));
-        Delimiters delimiters = new MockDelimiters(segmentDelim, fieldDelim);
+        Delimiters delimiters = new Delimiters().setSegment(segmentDelim).setField(fieldDelim);
         BufferedSegmentReader reader = new BufferedSegmentReader(inputSource, delimiters);
         return reader;
     }
 
     public void test_split() {
 		Arrays.asList(StringUtils.splitPreserveAllTokens("a*b***C*d", "*"));
-	}
-	
-	private class MockDelimiters extends Delimiters {
-
-		private String segmentDelim;
-		private String fieldDelim;
-		
-		public MockDelimiters(String segmentDelim, String fieldDelim) {
-			this.segmentDelim = segmentDelim;
-			this.fieldDelim = fieldDelim;
-		}
-		public String getSegment() { return segmentDelim; }
-		public void setSegment(String arg0) { }
-		public String getField() { return fieldDelim; }
-		public void setField(String arg0) { }
-		public String getComponent() { return null; }
-		public void setComponent(String arg0) { }
-		public String getSubComponent() { return null; }
-		public void setSubComponent(String arg0) { }
 	}
 }

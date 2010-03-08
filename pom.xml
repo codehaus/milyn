@@ -67,11 +67,7 @@
                 <module>magger</module>
                 <module>tinak</module>
                 <module>scribe</module>
-                <module>edi/edisax</module>
-                <module>edi/ejc</module>
-                <module>edi/ejc/maven-ejc-plugin</module>
-                <module>edi/ect</module>
-                <module>edi/ect/maven-ect-plugin</module>
+                <module>edi</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
@@ -88,10 +84,7 @@
                 <module>magger</module>
                 <module>tinak</module>
                 <module>scribe</module>
-                <module>edi/edisax</module>
-                <module>edi/ejc</module>
-                <module>edi/ejc/maven-ejc-plugin</module>
-                <module>edi/ect</module>
+                <module>edi</module>
                 <module>smooks-cartridges</module>
             </modules>
         </profile>

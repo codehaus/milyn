@@ -23,44 +23,80 @@ public class Delimiters {
     private String component;
     private String subComponent;
     private String escape;
+    private volatile char[] segmentDelimiter;
+    private boolean ignoreCRLF;
 
     public String getSegment() {
         return segment;
     }
 
-    public void setSegment(String value) {
+    public Delimiters setSegment(String value) {
         this.segment = value;
+		initSegmentDelimiter();
+        return this;
     }
 
     public String getField() {
         return field;
     }
 
-    public void setField(String value) {
+    public Delimiters setField(String value) {
         this.field = value;
+        return this;
     }
 
     public String getComponent() {
         return component;
     }
 
-    public void setComponent(String value) {
+    public Delimiters setComponent(String value) {
         this.component = value;
+        return this;
     }
 
     public String getSubComponent() {
         return subComponent;
     }
     
-    public void setSubComponent(String value) {
+    public Delimiters setSubComponent(String value) {
         this.subComponent = value;
+        return this;
     }
 
     public String getEscape() {
         return escape;
     }
 
-    public void setEscape(String escape) {
+    public Delimiters setEscape(String escape) {
         this.escape = escape;
+        return this;
     }
+
+	public char[] getSegmentDelimiter() {
+		if(segmentDelimiter == null) {
+			initSegmentDelimiter();
+		}
+		return segmentDelimiter;
+	}
+
+	public boolean ignoreCRLF() {
+		if(segmentDelimiter == null) {
+			initSegmentDelimiter();
+		}
+		return ignoreCRLF;
+	}
+	
+	private synchronized void initSegmentDelimiter() {
+		if(segmentDelimiter != null) {
+			return;
+		}
+		
+        this.ignoreCRLF = segment.endsWith("!$");
+
+        if (ignoreCRLF) {
+            this.segmentDelimiter = segment.replace("!$", "").toCharArray();
+        } else {
+            this.segmentDelimiter = segment.toCharArray();
+        }
+	}
 }

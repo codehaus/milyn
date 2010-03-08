@@ -1,0 +1,24 @@
+<unEdifact>
+<message2>
+	<segBB>
+		<field-a>f1</field-a>
+		<field-b>f2</field-b>
+		<field-c>f3</field-c>
+	</segBB>
+</message2>
+<message2>
+	<segBB>
+		<field-a>f11</field-a>
+		<field-b>f22</field-b>
+		<field-c>f33</field-c>
+	</segBB>
+</message2>
+<message1>
+	<segA>
+		<field-1>f1</field-1>
+		<field-2>f2</field-2>
+	</segA>
+	<segB>
+		<field-11>f11</field-11>
+	</segB>
+</message1></unEdifact>
