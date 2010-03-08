@@ -16,6 +16,9 @@
 
 package org.milyn.assertion;
 
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * Argument assertion utilities.
  *
@@ -74,6 +77,45 @@ public abstract class AssertArgument {
 		if (arg == null || arg.trim().length() == 0) {
 			throw new IllegalArgumentException("null or empty '" + argName
 					+ "' arg in method call.");
+		}
+	}
+
+	/**
+	 * Assert that the argument is neither null nor empty.
+	 *
+	 * @param arg Argument.
+	 * @param argName Argument name.
+	 * @throws IllegalArgumentException Argument is null or empty.
+	 */
+	public static void isNotNullAndNotEmpty(Object[] arg, String argName) throws IllegalArgumentException {
+		if (arg == null || arg.length == 0) {
+			throw new IllegalArgumentException("null or empty '" + argName + "' arg in method call.");
+		}
+	}
+
+	/**
+	 * Assert that the argument is neither null nor empty.
+	 *
+	 * @param arg Argument.
+	 * @param argName Argument name.
+	 * @throws IllegalArgumentException Argument is null or empty.
+	 */
+	public static void isNotNullAndNotEmpty(Collection<?> arg, String argName) throws IllegalArgumentException {
+		if (arg == null || arg.isEmpty()) {
+			throw new IllegalArgumentException("null or empty '" + argName + "' arg in method call.");
+		}
+	}
+
+	/**
+	 * Assert that the argument is neither null nor empty.
+	 *
+	 * @param arg Argument.
+	 * @param argName Argument name.
+	 * @throws IllegalArgumentException Argument is null or empty.
+	 */
+	public static void isNotNullAndNotEmpty(Map<?, ?> arg, String argName) throws IllegalArgumentException {
+		if (arg == null || arg.isEmpty()) {
+			throw new IllegalArgumentException("null or empty '" + argName + "' arg in method call.");
 		}
 	}
 
