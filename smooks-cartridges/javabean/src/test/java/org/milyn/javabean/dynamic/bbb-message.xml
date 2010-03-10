@@ -1,0 +1,8 @@
+<bbb:root xmlns:bbb="http://www.acme.com/xsd/bbb.xsd">
+	<bbb:bbb>
+	   <bbb:value property="1234.87" />
+	</bbb:bbb>
+	<aaa:aaa xmlns:aaa="http://www.acme.com/xsd/aaa.xsd">
+	   <aaa:value property="1234" />
+	</aaa:aaa>
+</bbb:root>

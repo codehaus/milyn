@@ -47,9 +47,22 @@ public class CollectionsUtil {
      * @return The {@link List}.
      */
     public static <T> List<T> toList(T... objects) {
-        List<T> theSet = new ArrayList<T>();
-        addToCollection(theSet, objects);
-        return theSet;
+        List<T> theList = new ArrayList<T>();
+        addToCollection(theList, objects);
+        return theList;
+    }
+
+    /**
+     * Create an Object {@link List} from the supplied Enumeration of objects.
+     * @param objects The objects to be added to the list.
+     * @return The {@link List}.
+     */
+    public static <T> List<T> toList(Enumeration<T> objects) {
+        List<T> theList = new ArrayList<T>();
+        while(objects.hasMoreElements()) {
+        	theList.add(objects.nextElement());
+        }        
+        return theList;
     }
 
     private static <T> void addToCollection(Collection<T> theCollection, T... objects) {
