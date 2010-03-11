@@ -197,7 +197,12 @@ public class DynamicModelBuilder {
 		} finally {
 			for(Source schemaSource : schemas) {
 				if(schemaSource instanceof StreamSource) {
-					((StreamSource)schemaSource).getInputStream().close();
+					StreamSource streamSource = (StreamSource)schemaSource;
+					if(streamSource.getInputStream() != null) {
+						streamSource.getInputStream().close();
+					} else if(streamSource.getReader() != null) {
+						streamSource.getReader().close();
+					}
 				}
 			}
 		}
@@ -209,12 +214,14 @@ public class DynamicModelBuilder {
     	for (String namespace : namespaces) {
     		InputSource schemaSource = schemaResolver.resolveEntity(namespace, namespace);
     		
-    		if(schemaSource.getByteStream() != null) {
-    			xsdSources.add(new StreamSource(schemaSource.getByteStream()));
-    		} else if(schemaSource.getCharacterStream() != null) {
-    			xsdSources.add(new StreamSource(schemaSource.getCharacterStream()));
-    		} else {
-    			throw new SAXException("Schema resolver '" + schemaResolver.getClass().getName() + "' failed to resolve schema for namespace '" + namespace + "'.  Resolver must return a Reader or InputStream in the InputSource.");
+    		if(schemaSource != null) {
+	    		if(schemaSource.getByteStream() != null) {
+	    			xsdSources.add(new StreamSource(schemaSource.getByteStream()));
+	    		} else if(schemaSource.getCharacterStream() != null) {
+	    			xsdSources.add(new StreamSource(schemaSource.getCharacterStream()));
+	    		} else {
+	    			throw new SAXException("Schema resolver '" + schemaResolver.getClass().getName() + "' failed to resolve schema for namespace '" + namespace + "'.  Resolver must return a Reader or InputStream in the InputSource.");
+	    		}
     		}
         }
 
