@@ -20,6 +20,7 @@ public class Delimiters {
 
     private String segment;
     private String field;
+    private String fieldRepeat;
     private String component;
     private String subComponent;
     private String escape;
@@ -45,7 +46,16 @@ public class Delimiters {
         return this;
     }
 
-    public String getComponent() {
+	public String getFieldRepeat() {
+		return fieldRepeat;
+	}
+
+	public Delimiters setFieldRepeat(String fieldRepeat) {
+		this.fieldRepeat = fieldRepeat;
+		return this;
+	}
+
+	public String getComponent() {
         return component;
     }
 
