@@ -76,7 +76,7 @@ import org.xml.sax.SAXException;
  * The default descriptor file is "META-INF/services/org/smooks/javabean/dynamic/ns-descriptors.properties",
  * but you can define a different descriptor file in the constructor.  Of course there can be many instances
  * of this file on the classpath i.e. one per module/jar.  This allows you to easily add extensions and updates
- * to you configuration model, without having to define new Java models for the new namespaces (versions) etc.
+ * to your configuration model, without having to define new Java models for the new namespaces (versions) etc.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -173,10 +173,12 @@ public class DynamicModelBuilder {
     	for (String namespace : namespaces) {
     		InputSource schemaSource = bindingResolver.resolveEntity(namespace, namespace);
     		
-    		if(schemaSource.getByteStream() != null) {
-    			smooks.addConfigurations(schemaSource.getByteStream());
-    		} else {
-    			throw new SAXException("Binding configuration resolver '" + bindingResolver.getClass().getName() + "' failed to resolve binding configuration for namespace '" + namespace + "'.  Resolver must return an InputStream in the InputSource.");
+    		if(schemaSource != null) {
+	    		if(schemaSource.getByteStream() != null) {
+	    			smooks.addConfigurations(schemaSource.getByteStream());
+	    		} else {
+	    			throw new SAXException("Binding configuration resolver '" + bindingResolver.getClass().getName() + "' failed to resolve binding configuration for namespace '" + namespace + "'.  Resolver must return an InputStream in the InputSource.");
+	    		}
     		}
         }
 
