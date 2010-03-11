@@ -50,6 +50,7 @@ public class EDIConfigDigester {
     public static final String XSD_V11 = "http://www.milyn.org/schema/edi-message-mapping-1.1.xsd";
     public static final String XSD_V12 = "http://www.milyn.org/schema/edi-message-mapping-1.2.xsd";
     public static final String XSD_V13 = "http://www.milyn.org/schema/edi-message-mapping-1.3.xsd";
+    public static final String XSD_V14 = "http://www.milyn.org/schema/edi-message-mapping-1.4.xsd";
     private static final String NAMESPACE_SUFFIX = ":";
     
     /**
@@ -131,7 +132,7 @@ public class EDIConfigDigester {
      * @return true if ediNS is valid, false otherwise.
      */
     private static boolean assertValidXSD(String ediNS) {
-        return XSD_V10.equals(ediNS) || XSD_V11.equals(ediNS) || XSD_V12.equals(ediNS) || XSD_V13.equals(ediNS);
+        return XSD_V10.equals(ediNS) || XSD_V11.equals(ediNS) || XSD_V12.equals(ediNS) || XSD_V13.equals(ediNS) || XSD_V14.equals(ediNS);
     }
 
     /**
@@ -172,6 +173,7 @@ public class EDIConfigDigester {
         edimap.setDelimiters(delimiters);
         delimiters.setSegment(getAttributeValue(node, "segment"));
         delimiters.setField(getAttributeValue(node, "field"));
+        delimiters.setFieldRepeat(getAttributeValue(node, "fieldRepeat"));
         delimiters.setComponent(getAttributeValue(node, "component"));
         delimiters.setSubComponent(getAttributeValue(node, "sub-component"));
         delimiters.setEscape(getAttributeValue(node, "escape"));

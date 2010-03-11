@@ -500,11 +500,20 @@ public class EDIParser implements XMLReader {
 
 		// Iterate over the fields and map them...
         int numFields = currentSegmentFields.length - 1; // It's "currentSegmentFields.length - 1" because we don't want to include the segment code.
+        Delimiters delimiters = segmentReader.getDelimiters();
+        String fieldRepeat = delimiters.getFieldRepeat();
 		for(int i = 0; i < numFields; i++) {
 			String fieldMessageVal = currentSegmentFields[i + 1]; // +1 to skip the segment code
 			Field expectedField = expectedFields.get(i);
-			
-			mapField(fieldMessageVal, expectedField, i, segmentCode);
+
+			if(fieldRepeat != null) {
+				String[] repeatedFields = EDIUtils.split(fieldMessageVal, fieldRepeat, delimiters.getEscape());
+				for(String repeatedField : repeatedFields) {
+					mapField(repeatedField, expectedField, i, segmentCode);
+				}
+			} else {			
+				mapField(fieldMessageVal, expectedField, i, segmentCode);
+			}
 		}
 	}
 
