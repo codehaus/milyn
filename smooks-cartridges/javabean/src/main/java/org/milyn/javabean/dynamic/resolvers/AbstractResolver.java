@@ -45,19 +45,24 @@ abstract class AbstractResolver implements EntityResolver {
 
 	protected InputSource resolve(String systemId, String resourceName) throws SAXException {
 		String prefix = getNamespacePrefix(systemId);
-		String resourceLocation = getDescriptorValue(prefix + "." + resourceName);
 		
-		if(resourceLocation == null) {
-			throw new SAXException("Failed to resolve " + resourceName + " for namespace '" + systemId + "'.");
+		if(prefix != null) {
+			String resourceLocation = getDescriptorValue(prefix + "." + resourceName);
+			
+			if(resourceLocation == null) {
+				throw new SAXException("Failed to resolve " + resourceName + " for namespace '" + systemId + "'.");
+			}
+			
+			InputStream stream = ClassUtil.getResourceAsStream(resourceLocation, getClass());
+	
+			if(stream == null) {
+				throw new SAXException(resourceName + " '" + resourceLocation + "' for namespace '" + systemId + "' does not resolve to a Classpath resource.");
+			}
+			
+			return new InputSource(stream);
+		} else {
+			return null;
 		}
-		
-		InputStream stream = ClassUtil.getResourceAsStream(resourceLocation, getClass());
-
-		if(stream == null) {
-			throw new SAXException(resourceName + " '" + resourceLocation + "' for namespace '" + systemId + "' does not resolve to a Classpath resource.");
-		}
-		
-		return new InputSource(stream);
 	}
 	
 	private String getNamespacePrefix(String systemId) {
