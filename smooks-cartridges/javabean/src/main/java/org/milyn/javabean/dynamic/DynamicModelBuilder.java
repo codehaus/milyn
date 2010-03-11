@@ -239,16 +239,21 @@ public class DynamicModelBuilder {
 	private void addNamespaces(Element element, Set<String> namespaces) {
 		addNamespace(element, namespaces);
 		
+		// Capture the attribute namespace...
 		NamedNodeMap attributes = element.getAttributes();
 		int attribCount = attributes.getLength();
 		for (int i = 0; i < attribCount; i++) {
 			addNamespace(attributes.item(i), namespaces);
 		}		
 		
+		// Capture the element namespace...
 		NodeList children = element.getChildNodes();
 		int childCount = children.getLength();
 		for (int i = 0; i < childCount; i++) {
-			addNamespace(children.item(i), namespaces);
+			Node node = children.item(i);			
+			if(node.getNodeType() == Node.ELEMENT_NODE) {
+				addNamespaces((Element) node, namespaces);
+			}
 		}		
 	}
 
@@ -256,7 +261,7 @@ public class DynamicModelBuilder {
 		String namespaceURI = node.getNamespaceURI();
 		if(namespaceURI != null && !namespaceURI.trim().equals("") && !XmlUtil.isXMLReservedNamespace(namespaceURI)) {
 			namespaces.add(namespaceURI);
-		}
+		}		
 	}
 
 	private Document toDocument(Reader message) {
