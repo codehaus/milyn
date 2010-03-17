@@ -52,7 +52,7 @@ public class UNHHandler implements ControlBlockHandler {
 		}
 		
 		String messageName = fields[2];
-		EdifactModel mappingModel = UNEdifactUtil.getMappingModel(messageName, mappingModels);
+		EdifactModel mappingModel = UNEdifactUtil.getMappingModel(messageName, segmentReader.getDelimiters(), mappingModels);
 		
 		try {
 			EDIParser parser = new EDIParser();

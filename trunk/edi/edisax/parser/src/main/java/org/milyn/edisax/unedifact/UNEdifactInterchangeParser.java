@@ -16,6 +16,7 @@
 package org.milyn.edisax.unedifact;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,9 @@ import javax.xml.XMLConstants;
 import org.apache.commons.lang.StringUtils;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.BufferedSegmentReader;
+import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
+import org.milyn.edisax.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
@@ -44,7 +47,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class InterchangeParser implements XMLReader {
+public class UNEdifactInterchangeParser implements XMLReader {
 
 	private static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
 	
@@ -93,11 +96,27 @@ public class InterchangeParser implements XMLReader {
 	 * The models can be generated through a call to the {@link EDIParser}.
 	 * 
 	 * @param mappingModels The mapping models.
-	 * @return 
+	 * @return This parser instance.
 	 */
-	public InterchangeParser addMappingModels(Map<Description, EdifactModel> mappingModels) {
+	public UNEdifactInterchangeParser addMappingModels(Map<Description, EdifactModel> mappingModels) {
 		AssertArgument.isNotNullAndNotEmpty(mappingModels, "mappingModels");		
 		this.mappingModels.putAll(mappingModels);
+		return this;
+	}
+
+	/**
+	 * Add EDI mapping models to be used in all subsequent parse operations.
+	 * 
+	 * @param mappingModelFiles Semi-colon separated list of mapping model files.  Supports zip files.
+	 * @param baseURI The base URI against which the mapping model URIs is to be resolved.
+	 * 
+	 * @return This parser instance.
+	 * @throws EDIConfigurationException Error processing one of the Mapping Model configs.
+	 * @throws SAXException 
+	 * @throws IOException 
+	 */
+	public UNEdifactInterchangeParser addMappingModels(String mappingModelFiles, URI baseURI) throws EDIConfigurationException, IOException, SAXException {
+		EDIUtils.loadMappingModels(mappingModelFiles, mappingModels, baseURI);
 		return this;
 	}
 
@@ -107,9 +126,9 @@ public class InterchangeParser implements XMLReader {
 	 * The models can be generated through a call to the {@link EDIParser}.
 	 * 
 	 * @param mappingModels The mapping models.
-	 * @return 
+	 * @return This parser instance.
 	 */
-	public InterchangeParser addMappingModel(EdifactModel mappingModel) {
+	public UNEdifactInterchangeParser addMappingModel(EdifactModel mappingModel) {
 		AssertArgument.isNotNull(mappingModel, "mappingModel");		
 		this.mappingModels.put(mappingModel.getEdimap().getDescription(), mappingModel);
 		return this;

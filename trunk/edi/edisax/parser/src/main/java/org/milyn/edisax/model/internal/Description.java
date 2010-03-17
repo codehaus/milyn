@@ -16,6 +16,8 @@
 
 package org.milyn.edisax.model.internal;
 
+import org.milyn.assertion.AssertArgument;
+
 public class Description {
 
     private String name;
@@ -25,8 +27,9 @@ public class Description {
         return name;
     }
 
-    public Description setName(String value) {
-        this.name = value;
+    public Description setName(String name) {
+    	AssertArgument.isNotNull(name, "name");
+        this.name = name.trim();
         return this;
     }
 
@@ -34,8 +37,9 @@ public class Description {
         return version;
     }
 
-    public Description setVersion(String value) {
-        this.version = value;
+    public Description setVersion(String version) {
+    	AssertArgument.isNotNull(version, "version");
+        this.version = version.trim();
         return this;
     }
 
