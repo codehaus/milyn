@@ -431,9 +431,11 @@ public class EDIParser implements XMLReader {
                 }
             }
 
-            // Make sure we haven't encountered a message with too many instances of the current expected segment...
             if(segmentProcessingCount >= maxOccurs) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Maximum of " + maxOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedSegmentGroup, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
+                // Move to the next "expected" segment and start the loop again...
+                segmentMappingIndex++;
+                segmentProcessingCount = 0;
+                continue;
             }
 
             // The current read message segment appears to match that expected according to the mapping model.
