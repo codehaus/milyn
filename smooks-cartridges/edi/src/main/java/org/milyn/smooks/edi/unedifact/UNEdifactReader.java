@@ -16,7 +16,7 @@
 package org.milyn.smooks.edi.unedifact;
 
 import org.milyn.container.ExecutionContext;
-import org.milyn.edisax.unedifact.InterchangeParser;
+import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.xml.SmooksXMLReader;
 
 /**
@@ -24,7 +24,7 @@ import org.milyn.xml.SmooksXMLReader;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNEdifactReader extends InterchangeParser implements SmooksXMLReader  {
+public class UNEdifactReader extends UNEdifactInterchangeParser implements SmooksXMLReader  {
 
 	/* (non-Javadoc)
 	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)

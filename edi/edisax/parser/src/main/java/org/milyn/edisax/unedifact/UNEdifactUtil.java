@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.unedifact.handlers.UNAHandler;
 import org.milyn.edisax.unedifact.handlers.UNBHandler;
@@ -68,11 +69,19 @@ public abstract class UNEdifactUtil {
 		return handler;
 	}
 
-	public static EdifactModel getMappingModel(String messageName, Map<Description, EdifactModel> mappingModels) throws SAXException {
+	public static EdifactModel getMappingModel(String messageName, Delimiters delimiters, Map<Description, EdifactModel> mappingModels) throws SAXException {
 		Set<Entry<Description, EdifactModel>> modelSet = mappingModels.entrySet();
 		
+		// We need to replace the component delimiters in message name from the interchange, with the
+		// default component delimiter, so we can match the name in the interchange against the names
+		// in the config models (which should use the default UN/EDIFACT delimiters)...
+		messageName = messageName.replace(delimiters.getComponent(), ":");
+		
 		for(Entry<Description, EdifactModel> mappingModel : modelSet) {
-			if(mappingModel.getKey().getName().trim().equals(messageName.trim())) {
+			Description description = mappingModel.getKey();
+			String compoundName = description.getName() + ":" + description.getVersion();
+			
+			if(compoundName.equals(messageName.trim())) {
 				return mappingModel.getValue();
 			}
 		}
