@@ -21,6 +21,7 @@ import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.*;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.DataDecodeException;
+import org.milyn.lang.Mutable;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
@@ -122,7 +123,7 @@ public class EDIParser implements XMLReader {
     private Map<String, Boolean> features;
 
     private ContentHandler contentHandler;
-    private int depth = 0;
+    private Mutable<Integer> indentDepth;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
     private static Pattern EMPTY_LINE = Pattern.compile("[\n\r ]*");
 
@@ -295,8 +296,24 @@ public class EDIParser implements XMLReader {
     	AssertArgument.isNotNull(mappingModel, "mappingModel");
         edifactModel = mappingModel;
     }
-    
+	
     /**
+     * Get the indent depth counter
+	 * @return Indent depth counter.
+	 */
+	public Mutable<Integer> getIndentDepth() {
+		return indentDepth;
+	}
+
+    /**
+     * Set the indent depth counter
+	 * @param indentDepth Indent depth counter.
+	 */
+	public void setIndentDepth(Mutable<Integer> indentDepth) {
+		this.indentDepth = indentDepth;
+	}
+
+	/**
      * Parse an EDI InputSource.
      */
     public void parse(InputSource ediInputSource) throws IOException, SAXException {
@@ -312,6 +329,9 @@ public class EDIParser implements XMLReader {
 	        // Create a reader for reading the EDI segments...
 	        segmentReader = new BufferedSegmentReader(ediInputSource, edifactModel.getDelimiters());
 	        
+	        // Initialize the indent counter...
+	        indentDepth = new Mutable<Integer>(0);
+	        
 	        // Fire the startDocument event, as well as the startElement event...
 	        contentHandler.startDocument();
 	        parse(false);
@@ -323,11 +343,14 @@ public class EDIParser implements XMLReader {
     
     /**
      * Parse an EDI message, using a supplied segment reader.
-     * @param segmentReader Segment Reader.
      */
-    public void parse(BufferedSegmentReader segmentReader) throws IOException, SAXException {
+    public void parse() throws IOException, SAXException {
         if(contentHandler == null) {
             throw new IllegalStateException("'contentHandler' not set.  Cannot parse EDI stream.");
+        }
+
+        if(segmentReader == null) {
+            throw new IllegalStateException("'bufferedSegmentReader' not set.  Cannot parse EDI stream.");
         }
 
         if(edifactModel == null || edifactModel.getEdimap() == null) {
@@ -335,13 +358,16 @@ public class EDIParser implements XMLReader {
         }
         
         try {
-	        // Set the reader for reading the EDI segments...
-	        this.segmentReader = segmentReader;
 	        parse(true);
         } finally {
         	contentHandler = null;
         }
     }
+
+	public EDIParser setBufferedSegmentReader(BufferedSegmentReader segmentReader) {
+		this.segmentReader = segmentReader;
+		return this;
+	}
 
 	private void parse(boolean indent) throws SAXException, IOException, EDIParseException {
 		startElement(edifactModel.getEdimap().getSegments().getXmltag(), indent);
@@ -747,16 +773,16 @@ public class EDIParser implements XMLReader {
         }
     }
 
-    private void startElement(String elementName, boolean indent) throws SAXException {
+    public void startElement(String elementName, boolean indent) throws SAXException {
         if(indent) {
             indent();
         }
         contentHandler.startElement(null, elementName, "", EMPTY_ATTRIBS);
-        depth++;
+        indentDepth.value++;
     }
 
-    private void endElement(String elementName, boolean indent) throws SAXException {
-        depth--;
+    public void endElement(String elementName, boolean indent) throws SAXException {
+    	indentDepth.value--;
         if(indent) {
             indent();
         }
@@ -766,7 +792,10 @@ public class EDIParser implements XMLReader {
     // HACK :-) it's hardly going to be deeper than this!!
     private static final char[] indentChars = (new String("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t").toCharArray());
     private void indent() throws SAXException {
-        contentHandler.characters(indentChars, 0, depth + 1);
+    	if(indentDepth == null) {
+    		throw new IllegalStateException("'indentDepth' property not set on parser instance.  Cannot indent.");
+    	}
+        contentHandler.characters(indentChars, 0, indentDepth.value + 1);
     }
 
     public void setContentHandler(ContentHandler contentHandler) {
