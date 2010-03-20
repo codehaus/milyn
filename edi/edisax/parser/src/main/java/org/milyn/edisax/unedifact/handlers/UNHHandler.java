@@ -21,9 +21,10 @@ import java.util.Map;
 import org.milyn.edisax.BufferedSegmentListener;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIParser;
+import org.milyn.edisax.interchange.ControlBlockHandler;
+import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
-import org.milyn.edisax.unedifact.ControlBlockHandler;
 import org.milyn.edisax.unedifact.UNEdifactUtil;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
@@ -36,10 +37,11 @@ public class UNHHandler implements ControlBlockHandler {
 	
 	private UNTSegmentListener untSegmentListener = new UNTSegmentListener();
 
-	/* (non-Javadoc)
-	 * @see org.milyn.edisax.unedifact.ControlBlockHandler#process(org.milyn.edisax.BufferedSegmentReader, java.util.Map, org.xml.sax.ContentHandler)
-	 */
-	public void process(BufferedSegmentReader segmentReader, Map<Description, EdifactModel> mappingModels, ContentHandler contentHandler) throws IOException, SAXException {
+	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
+		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
+		Map<Description, EdifactModel> mappingModels = interchangeContext.getMappingModels();
+		ContentHandler contentHandler = interchangeContext.getContentHandler();
+
 		// Move to the end of the UNH segment i.e. start of the message..
 		segmentReader.moveToNextSegment();
 		

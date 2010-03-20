@@ -28,6 +28,8 @@ import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.interchange.ControlBlockHandler;
+import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
@@ -67,7 +69,6 @@ public class UNEdifactInterchangeParser implements XMLReader {
 		
         try {
 	        BufferedSegmentReader segmentReader = new BufferedSegmentReader(unedifactInterchange, defaultUNEdifactDelimiters);
-	        ControlBlockHandler handler;
 	        String segCode;
 	        
 	        contentHandler.startDocument();
@@ -76,8 +77,10 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	        while(true) {
 		        segCode = segmentReader.read(3);
 		        if(segCode.length() == 3) {
-		        	handler = UNEdifactUtil.getControlBlockHandler(segCode);
-		        	handler.process(segmentReader, mappingModels, contentHandler);
+		        	ControlBlockHandler handler = UNEdifactUtil.getControlBlockHandler(segCode);
+		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler);
+		        	
+		        	handler.process(interchangeContext);
 		        } else {
 		        	break;
 		        }
