@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.edisax.unedifact;
+package org.milyn.edisax.interchange;
 
 import java.io.IOException;
 import java.util.Map;
@@ -32,11 +32,8 @@ public interface ControlBlockHandler {
 
 	/**
 	 * Process a UN/EDIFACT control block.
-	 * @param segmentReader The segment reader instance.
-	 * @param mappingModels The mapping models.
-	 * @param contentHandler The content handler.
-     * @throws IOException Error reading an EDI segment from the input stream.
+	 * @param interchangeContext The interchange context.
      * @throws SAXException EDI processing exception.
 	 */
-	void process(BufferedSegmentReader segmentReader, Map<Description, EdifactModel> mappingModels, ContentHandler contentHandler)  throws IOException, SAXException;
+	void process(InterchangeContext interchangeContext)  throws IOException, SAXException;
 }

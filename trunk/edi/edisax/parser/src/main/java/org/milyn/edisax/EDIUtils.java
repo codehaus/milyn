@@ -229,7 +229,7 @@ public class EDIUtils {
 				ClassLoader threadCCL = Thread.currentThread().getContextClassLoader();
 				
 				try {
-					ZippedModelsClassLoader zipClassLoader = new ZippedModelsClassLoader(zipEntries);
+					ZippedModelsClassLoader zipClassLoader = new ZippedModelsClassLoader(threadCCL, zipEntries);
 					
 					Thread.currentThread().setContextClassLoader(zipClassLoader);
 					for (String rootMappingModel : rootMappingModels) {
@@ -309,8 +309,9 @@ public class EDIUtils {
 	private static class ZippedModelsClassLoader extends ClassLoader {
 
 		private Map<String, byte[]> zipEntries;
-
-		public ZippedModelsClassLoader(Map<String, byte[]> zipEntries) {
+		
+		public ZippedModelsClassLoader(ClassLoader parent, Map<String, byte[]> zipEntries) {
+			super(parent);
 			this.zipEntries = zipEntries;
 		}
 
@@ -323,7 +324,7 @@ public class EDIUtils {
 			if(bytes != null) {
 				return new ByteArrayInputStream(bytes);
 			} else {
-				return null;
+				return super.getResourceAsStream(name);
 			}
 		}
 	}

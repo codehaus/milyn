@@ -492,7 +492,7 @@ public class EDIParser implements XMLReader {
 	 * are expected to map to.
      * @throws SAXException EDI processing exception.
 	 */
-	private void mapFields(String[] currentSegmentFields, Segment segment) throws SAXException {
+	public void mapFields(String[] currentSegmentFields, Segment segment) throws SAXException {
         String segmentCode = segment.getSegcode();
 
         List<Field> expectedFields = segment.getFields();

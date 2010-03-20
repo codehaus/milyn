@@ -16,14 +16,11 @@
 package org.milyn.edisax.unedifact.handlers;
 
 import java.io.IOException;
-import java.util.Map;
 
 import org.milyn.edisax.BufferedSegmentReader;
-import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Description;
-import org.milyn.edisax.unedifact.ControlBlockHandler;
+import org.milyn.edisax.interchange.ControlBlockHandler;
+import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.unedifact.UNEdifactUtil;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -32,10 +29,9 @@ import org.xml.sax.SAXException;
  */
 public class UNGHandler implements ControlBlockHandler {
 
-	/* (non-Javadoc)
-	 * @see org.milyn.edisax.unedifact.ControlBlockHandler#process(org.milyn.edisax.BufferedSegmentReader, java.util.Map, org.xml.sax.ContentHandler)
-	 */
-	public void process(BufferedSegmentReader segmentReader, Map<Description, EdifactModel> mappingModels, ContentHandler contentHandler) throws IOException, SAXException {
+	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
+		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
+
 		segmentReader.moveToNextSegment();
         while(true) {
 	        String segCode = segmentReader.read(3);
@@ -45,7 +41,7 @@ public class UNGHandler implements ControlBlockHandler {
 	    		break;
 	        } else {	        	
 	        	ControlBlockHandler handler = UNEdifactUtil.getControlBlockHandler(segCode);
-	        	handler.process(segmentReader, mappingModels, contentHandler);
+	        	handler.process(interchangeContext);
 	        }
         }		
 	}
