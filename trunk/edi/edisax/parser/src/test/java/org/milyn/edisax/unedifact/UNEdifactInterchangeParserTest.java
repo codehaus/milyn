@@ -75,7 +75,10 @@ public class UNEdifactInterchangeParserTest extends TestCase {
 		// Test message 01 - has a UNA segment...
 		handler = new MockContentHandler();
 		parser.setContentHandler(handler);		
-		parser.parse(new InputSource(getClass().getResourceAsStream("unedifact-msg-02.edi")));		
+		parser.parse(new InputSource(getClass().getResourceAsStream("unedifact-msg-02.edi")));
+		
+		System.out.println(handler.xmlMapping);
+		
         XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected.xml")), new StringReader(handler.xmlMapping.toString()));
 	}
