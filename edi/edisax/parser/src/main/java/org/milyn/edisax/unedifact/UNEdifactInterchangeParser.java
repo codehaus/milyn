@@ -86,6 +86,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 		        }
 	        }
 	        
+	        contentHandler.characters(new char[] {'\n'}, 0, 1);
 	        contentHandler.endElement(XMLConstants.NULL_NS_URI, "unEdifact", StringUtils.EMPTY);
 	        contentHandler.endDocument();
         } finally {

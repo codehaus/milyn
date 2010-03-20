@@ -21,6 +21,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
+import org.milyn.lang.Mutable;
 import org.xml.sax.ContentHandler;
 
 /**
@@ -33,7 +34,7 @@ public class InterchangeContext {
 	private BufferedSegmentReader segmentReader; 
 	private Map<Description, EdifactModel> mappingModels; 
 	private ContentHandler contentHandler;
-	public int intent = 0;
+    public Mutable<Integer> indentDepth = new Mutable<Integer>(0);
 	
 	/**
 	 * Public constructor.

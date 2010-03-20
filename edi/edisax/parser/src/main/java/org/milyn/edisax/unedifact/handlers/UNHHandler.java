@@ -61,9 +61,13 @@ public class UNHHandler implements ControlBlockHandler {
 			
 			parser.setContentHandler(contentHandler);
 			parser.setMappingModel(mappingModel);
+			parser.setBufferedSegmentReader(segmentReader);
+			parser.setIndentDepth(interchangeContext.indentDepth);
 			
 			segmentReader.setSegmentListener(untSegmentListener);
-			parser.parse(segmentReader);
+			interchangeContext.indentDepth.value++;
+			parser.parse();
+			interchangeContext.indentDepth.value--;
 		} finally {
 			segmentReader.setSegmentListener(null);
 		}		
