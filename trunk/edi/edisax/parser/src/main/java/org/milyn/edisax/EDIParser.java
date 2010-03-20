@@ -21,7 +21,7 @@ import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.*;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.DataDecodeException;
-import org.milyn.lang.Mutable;
+import org.milyn.lang.MutableInt;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
@@ -123,7 +123,7 @@ public class EDIParser implements XMLReader {
     private Map<String, Boolean> features;
 
     private ContentHandler contentHandler;
-    private Mutable<Integer> indentDepth;
+    private MutableInt indentDepth;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
     private static Pattern EMPTY_LINE = Pattern.compile("[\n\r ]*");
 
@@ -301,7 +301,7 @@ public class EDIParser implements XMLReader {
      * Get the indent depth counter
 	 * @return Indent depth counter.
 	 */
-	public Mutable<Integer> getIndentDepth() {
+	public MutableInt getIndentDepth() {
 		return indentDepth;
 	}
 
@@ -309,7 +309,7 @@ public class EDIParser implements XMLReader {
      * Set the indent depth counter
 	 * @param indentDepth Indent depth counter.
 	 */
-	public void setIndentDepth(Mutable<Integer> indentDepth) {
+	public void setIndentDepth(MutableInt indentDepth) {
 		this.indentDepth = indentDepth;
 	}
 
@@ -330,7 +330,7 @@ public class EDIParser implements XMLReader {
 	        segmentReader = new BufferedSegmentReader(ediInputSource, edifactModel.getDelimiters());
 	        
 	        // Initialize the indent counter...
-	        indentDepth = new Mutable<Integer>(0);
+	        indentDepth = new MutableInt(0);
 	        
 	        // Fire the startDocument event, as well as the startElement event...
 	        contentHandler.startDocument();

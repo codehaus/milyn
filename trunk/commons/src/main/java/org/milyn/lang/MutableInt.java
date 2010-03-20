@@ -15,18 +15,15 @@
 */
 package org.milyn.lang;
 
-import org.milyn.assertion.AssertArgument;
-
 /**
- * Mutable generic type.
+ * Mutable Integer.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Mutable<T> {
+public class MutableInt {
 	
-	public T value;
+	public int value;
 	
-	public Mutable(T initialValue) {
-		AssertArgument.isNotNull(initialValue, "initialValue");
+	public MutableInt(int initialValue) {
 		this.value = initialValue;
 	}
 }
