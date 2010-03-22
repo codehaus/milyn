@@ -67,7 +67,7 @@ public abstract class AbstractEDIParserTestCase extends TestCase {
         }
     }
 
-    protected void testEDIParseException(String testpack, String segmentNodeName, int segmentNumber) throws IOException, EDIParseException {
+    protected void testEDIParseException(String testpack, String segmentNodeName, int segmentNumber) throws IOException {
 		InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-input.txt")));
 		InputStream mapping = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream(testpack + "/edi-to-xml-mapping.xml")));
 
@@ -86,8 +86,6 @@ public abstract class AbstractEDIParserTestCase extends TestCase {
 		} catch (EDIParseException e) {
             if (segmentNodeName == null) {
                 assertTrue( "EDIParseException should contain no MappingNode.", e.getErrorNode() == null );
-            } else if(e.getErrorNode() == null) {
-                throw e;
             } else {
 			    assertEquals( "EDIParseException should contain the MappingNode with xmltag [" + segmentNodeName + "]. Instead it contains [" + e.getErrorNode().getXmltag() + "].",  e.getErrorNode().getXmltag(), segmentNodeName );
             }

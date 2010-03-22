@@ -73,76 +73,25 @@ public class EDIParserTest extends AbstractEDIParserTestCase {
 		assertEquals(1, segment.getFields().size());
 	}
 	
-	public void test_mapping_01() throws IOException {
+	public void test_mappings() throws IOException {
 		test("test01");
-	}
-	
-	public void test_mapping_02() throws IOException {
 		test("test02");
-	}
-	
-	public void test_mapping_03() throws IOException {
 		test("test03");
-	}
-	
-	public void test_mapping_04() throws IOException {
 		test("test04");
-	}
-	
-	public void test_mapping_05() throws IOException {
 		test("test05");
-	}
-	
-	public void test_mapping_06() throws IOException {
 		test("test06");
-	}
-	
-	public void test_mapping_07() throws IOException {
 		test("test07");
-	}
-	
-	public void test_mapping_08() throws IOException {
 		test("test08");
-	}
-	
-	public void test_mapping_09() throws IOException {
 		test("test09");
-	}
-	
-	public void test_mapping_10() throws IOException {
 		test("test10");
-	}
-	
-	public void test_mapping_11() throws IOException {
 		test("test11");
-	}
-	
-	public void test_mapping_12() throws IOException {
 		test("test12");
-	}
-	
-	public void test_mapping_13() throws IOException {
 		test("test13");
-	}
-	
-	public void test_mapping_14() throws IOException {
 		test("test14");
-	}
-	
-	public void test_mapping_15() throws IOException {
 		test("test15");
-	}
-	
-	public void test_mapping_16() throws IOException {
-		test("test16");
-	}
-	
-	public void test_mapping_17() throws IOException {
-		test("test17");
-	}
-	
-	public void test_mapping_18() throws IOException {
-		test("test18");
+        test("test16");
+        test("test17");
+        test("test18");
 	}
 
     public void test_MILYN_108() throws IOException {
@@ -162,7 +111,7 @@ public class EDIParserTest extends AbstractEDIParserTestCase {
         test("test-MILYN-108-11"); // Tests Field and Component Truncation
     }
 
-    public void testCorrectEdiParseException() throws IOException, EDIParseException {
+    public void testCorrectEdiParseException() throws IOException {
         /**
          * Test correct EDIParseException when reaching end of Edimap-model but more data exists in inputfile.
          */
@@ -176,12 +125,7 @@ public class EDIParserTest extends AbstractEDIParserTestCase {
         /**
          * Test error in segment node.
          */
-        try {
-        	testEDIParseException("error-segment", "message-seg", 2);
-        	fail("Expected EDIParseException.");
-        } catch(EDIParseException e) {
-        	assertEquals("EDI message processing failed [Test Message][1.0].  Reached end of mapping model but there are more EDI segments in the incoming message.  Read 2 segment(s). Current EDI segment is [SEG*6*7**9*10]", e.getMessage());
-        }
+        testEDIParseException("error-segment", "message-seg", 2);
 
         /**
          * Test error in field node.

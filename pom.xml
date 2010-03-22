@@ -5,13 +5,13 @@
     <groupId>org.milyn</groupId>
     <artifactId>milyn</artifactId>
     <packaging>pom</packaging>
-    <version>1.4-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.3</version> <!-- base pom version - do not remove this comment -->
     <name>Milyn (Base POM)</name>
     <url>http://milyn.codehaus.org</url>
 
     <properties>
-        <milyn.smooks.core.version.base>1.4</milyn.smooks.core.version.base> <!-- ## Smooks Version ## -->
-        <milyn.smooks.core.version>${milyn.smooks.core.version.base}-SNAPSHOT</milyn.smooks.core.version> <!-- ## Smooks Version ## --> <!-- add/remove "-SNAPSHOT" here as necessary -->
+        <milyn.smooks.core.version.base>1.3</milyn.smooks.core.version.base> <!-- ## Smooks Version ## -->
+        <milyn.smooks.core.version>${milyn.smooks.core.version.base}</milyn.smooks.core.version> <!-- ## Smooks Version ## --> <!-- add/remove "-SNAPSHOT" here as necessary -->
 
         <milyn.commons.version.base>${milyn.smooks.core.version.base}</milyn.commons.version.base>
         <milyn.commons.version>${milyn.smooks.core.version}</milyn.commons.version>
@@ -67,7 +67,11 @@
                 <module>magger</module>
                 <module>tinak</module>
                 <module>scribe</module>
-                <module>edi</module>
+                <module>edi/edisax</module>
+                <module>edi/ejc</module>
+                <module>edi/ejc/maven-ejc-plugin</module>
+                <module>edi/ect</module>
+                <module>edi/ect/maven-ect-plugin</module>
                 <module>smooks-cartridges</module>
                 <module>smooks-examples</module>
             </modules>
@@ -84,7 +88,10 @@
                 <module>magger</module>
                 <module>tinak</module>
                 <module>scribe</module>
-                <module>edi</module>
+                <module>edi/edisax</module>
+                <module>edi/ejc</module>
+                <module>edi/ejc/maven-ejc-plugin</module>
+                <module>edi/ect</module>
                 <module>smooks-cartridges</module>
             </modules>
         </profile>

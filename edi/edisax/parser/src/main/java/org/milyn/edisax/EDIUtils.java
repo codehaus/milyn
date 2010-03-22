@@ -16,27 +16,8 @@
 
 package org.milyn.edisax;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.milyn.assertion.AssertArgument;
-import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Description;
-import org.milyn.resource.URIResourceLocator;
-import org.xml.sax.SAXException;
 
 /**
  * EDIUtils contain different helper-methods for handling edifact.
@@ -44,10 +25,6 @@ import org.xml.sax.SAXException;
  * @author bardl
  */
 public class EDIUtils {
-
-    private static Log logger = LogFactory.getLog(EDIUtils.class);
-    
-    public static final String EDI_MAPPING_MODEL_ZIP_LIST_FILE = "META-INF/services/org/smooks/edi/mapping-models.lst";
 
     /**
      * Splits a String by delimiter as long as delimiter does not follow an escape sequence.
@@ -164,168 +141,113 @@ public class EDIUtils {
 
         return tokens.toArray(new String[tokens.size()]);
     }
-    
-    public static void loadMappingModels(String mappingModelFiles, Map<Description, EdifactModel> mappingModels, URI baseURI) throws EDIConfigurationException, IOException, SAXException {
-		AssertArgument.isNotNullAndNotEmpty(mappingModelFiles, "mappingModelFiles");
-		AssertArgument.isNotNull(mappingModels, "mappingModels");
-		AssertArgument.isNotNull(baseURI, "baseURI");
 
-		String[] mappingModelFileTokens = mappingModelFiles.split(";");
-		
-		for(String mappingModelFile : mappingModelFileTokens) {
-			mappingModelFile = mappingModelFile.trim();
-			
-			// First try processing based on the file extension
-			if(mappingModelFile.endsWith(".xml")) {
-				if(loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
-					return;
-				}
-			} else if(mappingModelFile.endsWith(".zip") || mappingModelFile.endsWith(".jar")) {
-				if(loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
-					return;
-				}
-			}
-			
-			// The file extension didn't match up with what we expected, so perform a
-			// brute force attempt to process the config... 
-			if(!loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
-				if(!loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
-					throw new EDIConfigurationException("Failed to process EDI Mapping Model config file '" + mappingModelFile + "'.  Not a valid EDI Mapping Model configuration.");
-				}
-			}
-		}
+    public static void main(String[] args) {
+        String[] test = EDIUtils.split("ATS+hep:iee+hai??+kai=haikai+slut", "+", "?");
+        String[] expected = new String[]{"ATS", "hep:iee", "hai?+kai=haikai", "slut"};
+        if (!equal(test,expected)) {
+            System.out.println("Fel1");
+        }
+
+        test = EDIUtils.split("ATS+hep:iee+hai?#?#+kai=haikai+slut", "+", "?#");
+        expected = new String[]{"ATS", "hep:iee", "hai?#+kai=haikai", "slut"};
+        if (!equal(test,expected)) {
+            System.out.println("Fel2");
+        }
+
+        test = EDIUtils.split("ATS+#hep:iee+#hai?#?#+#kai=haikai+#slut", "+#", "?#");
+        expected = new String[]{"ATS", "hep:iee", "hai?#+#kai=haikai", "slut"};
+        if (!equal(test,expected)) {
+            System.out.println("Fel3");
+        }
+
+        test = EDIUtils.split("ATS+#hep:iee+#hai??+#kai=haikai+#slut", "+#", "?");
+        expected = new String[]{"ATS", "hep:iee", "hai?+#kai=haikai", "slut"};
+        if (!equal(test,expected)) {
+            System.out.println("Fel4");
+        }
+
+        test = EDIUtils.split("ATS+#hep:iee+#hai??+#kai=haikai+#slut", "+#", null);
+        expected = new String[]{"ATS", "hep:iee", "hai??", "kai=haikai", "slut"};
+        if (!equal(test,expected)) {
+            System.out.println("Fel5");
+        }
+
+        // Test restarting escape sequence within escape sequence.
+        test = EDIUtils.split("ATS+hep:iee+hai??#+kai=haikai+slut", "+", "?#");
+        expected = new String[]{"ATS", "hep:iee", "hai?+kai=haikai", "slut"};
+        if (!equal(test,expected)) {
+            System.out.println("Fel6");
+        }
+
+        // Test restarting delimiter sequence within delimiter sequence.
+        test = EDIUtils.split("ATS++#hep:iee+#hai?+#kai=haikai+#slut", "+#", "?");
+        expected = new String[]{"ATS+", "hep:iee", "hai+#kai=haikai", "slut"};
+        if (!equal(test,expected)) {
+            System.out.println("Fel7");
+        }
+
+
+        /**************************************************************************
+         * Testcases defined by split
+         * ************************************************************************/
+        if (EDIUtils.split(null, "*", null) != null) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("", null, null), new String[0])) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("abc def", null, null), new String[]{"abc", "def"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("abc def", " ", null), new String[]{"abc", "def"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("abc  def", " ", null), new String[]{"abc", "", "def"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("ab:cd:ef", ":", null), new String[]{"ab", "cd", "ef"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("ab:cd:ef:", ":", null), new String[]{"ab", "cd", "ef", ""})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("ab:cd:ef::", ":", null), new String[]{"ab", "cd", "ef", "", ""})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split(":cd:ef", ":", null), new String[]{"", "cd", "ef"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split("::cd:ef", ":", null), new String[]{"", "", "cd", "ef"})) {
+            System.out.println("Fel8");
+        }
+
+        if (!equal(EDIUtils.split(":cd:ef:", ":", null), new String[]{"", "cd", "ef", ""})) {
+            System.out.println("Fel8");
+        }
+
+        System.out.println("");
     }
 
-	private static boolean loadXMLMappingModel(String mappingModelFile, Map<Description, EdifactModel> mappingModels, URI baseURI) throws EDIConfigurationException {
-		try {
-			EdifactModel model = EDIParser.parseMappingModel(mappingModelFile, baseURI);
-			mappingModels.put(model.getEdimap().getDescription(), model);
-			return true;
-		} catch (IOException e) {
-			return false;
-		} catch (SAXException e) {
-			logger.debug("Configured mapping model file '" + mappingModelFile + "' is not a valid Mapping Model xml file.");
-			return false;
-		}		
-	}
+    private static boolean equal(String[] test, String[] expected) {
+        if (test.length != expected.length) {
+            return false;
+        }
 
-	private static boolean loadZippedMappingModels(String mappingModelFile, Map<Description, EdifactModel> mappingModels, URI baseURI) throws IOException, SAXException, EDIConfigurationException {
-		URIResourceLocator locator = new URIResourceLocator();
-		
-		locator.setBaseURI(baseURI);
-		
-		InputStream rawZipStream = locator.getResource(mappingModelFile);
-		if(rawZipStream != null) {
-			Map<String, byte[]> zipEntries = loadZipEntries(rawZipStream);
-			
-			if(zipEntries != null) {
-				List<String> rootMappingModels = getMappingModelList(zipEntries);
-				
-				if(rootMappingModels.isEmpty()) {
-					logger.debug("Configured mapping model file '" + mappingModelFile + "' is not a valid Mapping Model zip file.  Check that the zip has a valid '" + EDI_MAPPING_MODEL_ZIP_LIST_FILE + "' mapping list file.");
-					return false;
-				}
-				
-				ClassLoader threadCCL = Thread.currentThread().getContextClassLoader();
-				
-				try {
-					ZippedModelsClassLoader zipClassLoader = new ZippedModelsClassLoader(threadCCL, zipEntries);
-					
-					Thread.currentThread().setContextClassLoader(zipClassLoader);
-					for (String rootMappingModel : rootMappingModels) {
-						EdifactModel mappingModel = EDIParser.parseMappingModel(rootMappingModel, baseURI);
-						mappingModels.put(mappingModel.getEdimap().getDescription(), mappingModel);
-					}
-				} finally {
-					Thread.currentThread().setContextClassLoader(threadCCL);
-				}
-				
-				return true;
-			}		
-		}
-		
-		return false;
-	}
-
-	private static List<String> getMappingModelList(Map<String, byte[]> zipEntries) throws IOException {
-		List<String> rootMappingModels = new ArrayList<String>();
-		byte[] zipEntryBytes = zipEntries.get(EDI_MAPPING_MODEL_ZIP_LIST_FILE);
-		
-		if(zipEntryBytes != null) {
-			ByteArrayInputStream entryStream = new ByteArrayInputStream(zipEntryBytes);
-			
-			try {
-				BufferedReader lineReader = new BufferedReader(new InputStreamReader(entryStream, "UTF-8"));
-				
-				String line = lineReader.readLine();
-				while(line != null) {
-					line = line.trim();
-					if(line.length() > 0 && !line.startsWith("#")) {
-						rootMappingModels.add(line);
-					}					
-					line = lineReader.readLine();
-				}
-			} finally {
-				entryStream.close();
-			}
-		}
-			
-		return rootMappingModels;
-	}
-
-	private static Map<String, byte[]> loadZipEntries(InputStream rawStream) {
-		Map<String, byte[]> zipEntries = new HashMap<String, byte[]>();
-		
-		try {
-			ZipInputStream zipStream = new ZipInputStream(rawStream);
-			ZipEntry zipEntry = zipStream.getNextEntry();
-			ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
-			byte[] byteReadBuffer = new byte[512];
-			int byteReadCount;
-			
-			while(zipEntry != null) {
-				while((byteReadCount = zipStream.read(byteReadBuffer)) != -1) {
-					outByteStream.write(byteReadBuffer, 0, byteReadCount);
-				}
-				zipEntries.put(zipEntry.getName(), outByteStream.toByteArray());
-				outByteStream.reset();
-				
-				zipEntry = zipStream.getNextEntry();
-			}
-		} catch(Exception e) {
-			// Assume it's not a Zip file.  Just return null...
-			return null;
-		} finally {
-			try {
-				rawStream.close();
-			} catch (IOException e) {
-				logger.error("Unexpected error closing EDI Mapping Model Zip stream.", e);
-			}
-		}
-		
-		return zipEntries;
-	}
-	
-	private static class ZippedModelsClassLoader extends ClassLoader {
-
-		private Map<String, byte[]> zipEntries;
-		
-		public ZippedModelsClassLoader(ClassLoader parent, Map<String, byte[]> zipEntries) {
-			super(parent);
-			this.zipEntries = zipEntries;
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
-		 */
-		@Override
-		public InputStream getResourceAsStream(String name) {
-			byte[] bytes = zipEntries.get(name);
-			if(bytes != null) {
-				return new ByteArrayInputStream(bytes);
-			} else {
-				return super.getResourceAsStream(name);
-			}
-		}
-	}
+        for (int i = 0; i < test.length; i++) {
+            if (!test[i].equals(expected[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -16,8 +16,6 @@
 
 package org.milyn.edisax.model.internal;
 
-import org.milyn.assertion.AssertArgument;
-
 public class Description {
 
     private String name;
@@ -27,53 +25,16 @@ public class Description {
         return name;
     }
 
-    public Description setName(String name) {
-    	AssertArgument.isNotNull(name, "name");
-        this.name = name.trim();
-        return this;
+    public void setName(String value) {
+        this.name = value;
     }
 
     public String getVersion() {
         return version;
     }
 
-    public Description setVersion(String version) {
-    	AssertArgument.isNotNull(version, "version");
-        this.version = version.trim();
-        return this;
+    public void setVersion(String value) {
+        this.version = value;
     }
 
-	@Override
-	public boolean equals(Object obj) {
-		assertInitialized();		
-
-		if(obj == null) {
-			return false;
-		}
-		if(obj == this) {
-			return true;
-		}
-		
-		if(obj instanceof Description) {
-			Description description = (Description) obj;
-			return description.name.equals(name) && description.version.equals(version);
-		} else if (obj instanceof String) {
-			// Just comparing the names and ignoring the version...
-			return obj.equals(name);
-		}
-		
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		assertInitialized();		
-		return (name + "#" + version).hashCode();
-	}
-
-	private void assertInitialized() {
-		if(name == null || version == null) {
-			throw new IllegalStateException("Description 'name' and/or 'version' properties are not initialized.");
-		}
-	}    
 }

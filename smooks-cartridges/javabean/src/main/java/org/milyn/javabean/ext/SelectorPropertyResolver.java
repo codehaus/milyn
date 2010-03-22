@@ -15,8 +15,6 @@
 */
 package org.milyn.javabean.ext;
 
-import javax.xml.namespace.QName;
-
 import org.milyn.*;
 import org.milyn.javabean.BeanInstancePopulator;
 import org.milyn.cdr.*;
@@ -45,16 +43,10 @@ public class SelectorPropertyResolver implements DOMVisitBefore {
     }
 
     public static void resolveSelectorTokens(SmooksResourceConfiguration populatorConfig) {
-        QName valueAttributeQName = populatorConfig.getTargetAttributeQName();
-        
-        if(valueAttributeQName != null) {
-	        String valueAttributeName = valueAttributeQName.getLocalPart();
-	        String valueAttributePrefix = valueAttributeQName.getPrefix();
-	
-	        populatorConfig.setParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME, valueAttributeName);
-	        if(valueAttributePrefix != null && !valueAttributePrefix.trim().equals("")) {
-	        	populatorConfig.setParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_PREFIX, valueAttributePrefix);
-	        }
+        String valueAttributeName = populatorConfig.getTargetAttribute();
+
+        if(valueAttributeName != null && !valueAttributeName.trim().equals("")) {
+            populatorConfig.setParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME, valueAttributeName);
         }
     }
 
