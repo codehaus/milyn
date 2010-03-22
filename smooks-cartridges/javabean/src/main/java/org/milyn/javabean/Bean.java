@@ -336,6 +336,7 @@ public class Bean extends BindingAppender {
         // Configure the populator visitor...
         beanInstancePopulator.setBeanId(getBeanId());
         beanInstancePopulator.setValueAttributeName(populatorConfig.getStringParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME));
+        beanInstancePopulator.setValueAttributePrefix(populatorConfig.getStringParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_PREFIX));
 
         Method bindingMethod = getBindingMethod(bindingMember, beanClass);
         if (bindingMethod != null) {
@@ -462,6 +463,7 @@ public class Bean extends BindingAppender {
         // Configure the populator visitor...
         beanInstancePopulator.setBeanId(getBeanId());
         beanInstancePopulator.setValueAttributeName(populatorConfig.getStringParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_NAME));
+        beanInstancePopulator.setValueAttributePrefix(populatorConfig.getStringParameter(BeanInstancePopulator.VALUE_ATTRIBUTE_PREFIX));
         beanInstancePopulator.setDecoder(dataDecoder);
 
         bindings.add(new Binding(populatorConfig.getSelector(), beanInstancePopulator, true));

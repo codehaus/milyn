@@ -47,6 +47,7 @@ import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.decoders.PreprocessDecoder;
 import org.milyn.javabean.decoders.StringDecoder;
 import org.milyn.xml.DomUtils;
+import org.milyn.xml.NamespaceMappings;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -78,6 +79,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private static final String EXPRESSION_VALUE_VARIABLE_NAME = "_VALUE";
 
     public static final String VALUE_ATTRIBUTE_NAME = "valueAttributeName";
+    public static final String VALUE_ATTRIBUTE_PREFIX = "valueAttributePrefix";
 
     private String id;
 
@@ -100,6 +102,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String valueAttributeName;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private String valueAttributePrefix;
+    private String valueAttributeNS;
 
     @ConfigParam(name="type", defaultVal = AnnotationConstants.NULL_STRING)
     private String typeAlias;
@@ -154,6 +160,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         this.valueAttributeName = valueAttributeName;
     }
 
+    public void setValueAttributePrefix(String valueAttributePrefix) {
+        this.valueAttributePrefix = valueAttributePrefix;
+    }
+
     public void setTypeAlias(String typeAlias) {
         this.typeAlias = typeAlias;
     }
@@ -181,6 +191,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, appContext);
         beanWiring = wireBeanIdName != null;
         isAttribute = (valueAttributeName != null);
+
+        if(valueAttributePrefix != null) {
+        	Properties namespaces = NamespaceMappings.getMappings(appContext);
+        	valueAttributeNS = namespaces.getProperty(valueAttributePrefix);
+        }
 
         beanIdStore = appContext.getBeanIdStore();
         beanId = beanIdStore.getBeanId(beanIdName);
@@ -317,7 +332,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         String dataString;
 
         if (isAttribute) {
-            dataString = DomUtils.getAttributeValue(element, valueAttributeName);
+        	if(valueAttributeNS != null) {
+        		dataString = DomUtils.getAttributeValue(element, valueAttributeName, valueAttributeNS);
+        	} else {
+        		dataString = DomUtils.getAttributeValue(element, valueAttributeName);
+        	}
         } else {
             dataString = DomUtils.getAllText(element, false);
         }
@@ -358,7 +377,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         String dataString = null;
         if(expressionEvaluator == null || expressionHasDataVariable) {
 	        if (isAttribute) {
-	            dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes());
+	        	if(valueAttributeNS != null) {
+	        		dataString = SAXUtil.getAttribute(valueAttributeNS, valueAttributeName, element.getAttributes(), null);
+	        	} else {
+	        		dataString = SAXUtil.getAttribute(valueAttributeName, element.getAttributes(), null);
+	        	}
 	        } else {
 	            dataString = element.getTextContent();
 	        }
