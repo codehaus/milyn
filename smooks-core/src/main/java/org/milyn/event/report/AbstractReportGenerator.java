@@ -43,7 +43,7 @@ import java.util.Stack;
 
 /**
  * Abstract execution report generator.
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public abstract class AbstractReportGenerator extends BasicExecutionEventListener {
@@ -122,7 +122,7 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
 
             return false;
         }
-        
+
         return true;
     }
 
@@ -176,18 +176,20 @@ public abstract class AbstractReportGenerator extends BasicExecutionEventListene
         Result[] results = FilterResult.getResults(executionContext);
         report.setResults(resultNodes);
         if(results != null) {
-            for(int i = 0; i < results.length; i++) {
-                ResultNode resultNode = new ResultNode();
+            for(Result result : results) {
+                if(result != null) {
+                	ResultNode resultNode = new ResultNode();
+	                resultNodes.add(resultNode);
+	                if(result instanceof JavaResult) {
+	                    resultNode.setSummary("This Smooks Filtering operation produced a JavaResult.  The following is an XML serialization of the JavaResult bean Map entries.");
+	                } else if(result instanceof StringResult) {
+	                    resultNode.setSummary("This Smooks Filtering operation produced the following StreamResult.");
+	                } else {
+	                    resultNode.setSummary("Cannot show Smooks Filtering Result.  Modify the code and use a '" + StringResult.class.getName() + "' Result in the call to the Smooks.filter() method.");
+	                }
 
-                resultNodes.add(resultNode);
-                if(results[i] instanceof JavaResult) {
-                    resultNode.setSummary("This Smooks Filtering operation produced a JavaResult.  The following is an XML serialization of the JavaResult bean Map entries.");
-                } else if(results[i]instanceof StringResult) {
-                    resultNode.setSummary("This Smooks Filtering operation produced the following StreamResult.");
-                } else {
-                    resultNode.setSummary("Cannot show Smooks Filtering Result.  Modify the code and use a '" + StringResult.class.getName() + "' Result in the call to the Smooks.filter() method.");
+                	resultNode.setDetail(result.toString());
                 }
-                resultNode.setDetail(results[i].toString());
             }
         }
 
