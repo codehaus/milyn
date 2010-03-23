@@ -21,7 +21,6 @@ import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.*;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.DataDecodeException;
-import org.milyn.lang.MutableInt;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.*;
 import org.xml.sax.helpers.AttributesImpl;
@@ -123,7 +122,7 @@ public class EDIParser implements XMLReader {
     private Map<String, Boolean> features;
 
     private ContentHandler contentHandler;
-    private MutableInt indentDepth;
+    private int depth = 0;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
     private static Pattern EMPTY_LINE = Pattern.compile("[\n\r ]*");
 
@@ -296,24 +295,8 @@ public class EDIParser implements XMLReader {
     	AssertArgument.isNotNull(mappingModel, "mappingModel");
         edifactModel = mappingModel;
     }
-	
+    
     /**
-     * Get the indent depth counter
-	 * @return Indent depth counter.
-	 */
-	public MutableInt getIndentDepth() {
-		return indentDepth;
-	}
-
-    /**
-     * Set the indent depth counter
-	 * @param indentDepth Indent depth counter.
-	 */
-	public void setIndentDepth(MutableInt indentDepth) {
-		this.indentDepth = indentDepth;
-	}
-
-	/**
      * Parse an EDI InputSource.
      */
     public void parse(InputSource ediInputSource) throws IOException, SAXException {
@@ -329,65 +312,30 @@ public class EDIParser implements XMLReader {
 	        // Create a reader for reading the EDI segments...
 	        segmentReader = new BufferedSegmentReader(ediInputSource, edifactModel.getDelimiters());
 	        
-	        // Initialize the indent counter...
-	        indentDepth = new MutableInt(0);
-	        
 	        // Fire the startDocument event, as well as the startElement event...
 	        contentHandler.startDocument();
-	        parse(false);
+	        startElement(edifactModel.getEdimap().getSegments().getXmltag(), false);
+	
+	        // Work through all the segments in the model.  Move to the first segment before starting...
+	        if(segmentReader.moveToNextSegment()) {
+	        	mapSegments(edifactModel.getEdimap().getSegments().getSegments());
+	
+	    		// If we reach the end of the mapping model and we still have more EDI segments in the message....     		
+	            while (segmentReader.hasCurrentSegment()) {
+	                if (!EMPTY_LINE.matcher(segmentReader.getCurrentSegment().toString()).matches()) {
+	                    throw new EDIParseException(edifactModel.getEdimap(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s). Current EDI segment is [" + segmentReader.getCurrentSegment() + "]");
+	                }
+	                segmentReader.moveToNextSegment();
+	            }
+	        }
+	
+	        // Fire the endDocument event, as well as the endElement event...
+	        endElement(edifactModel.getEdimap().getSegments().getXmltag(), true);
 	        contentHandler.endDocument();
         } finally {
         	contentHandler = null;
         }
     }
-    
-    /**
-     * Parse an EDI message, using a supplied segment reader.
-     */
-    public void parse() throws IOException, SAXException {
-        if(contentHandler == null) {
-            throw new IllegalStateException("'contentHandler' not set.  Cannot parse EDI stream.");
-        }
-
-        if(segmentReader == null) {
-            throw new IllegalStateException("'bufferedSegmentReader' not set.  Cannot parse EDI stream.");
-        }
-
-        if(edifactModel == null || edifactModel.getEdimap() == null) {
-            throw new IllegalStateException("'mappingModel' not set.  Cannot parse EDI stream.");
-        }
-        
-        try {
-	        parse(true);
-        } finally {
-        	contentHandler = null;
-        }
-    }
-
-	public EDIParser setBufferedSegmentReader(BufferedSegmentReader segmentReader) {
-		this.segmentReader = segmentReader;
-		return this;
-	}
-
-	private void parse(boolean indent) throws SAXException, IOException, EDIParseException {
-		startElement(edifactModel.getEdimap().getSegments().getXmltag(), indent);
-
-		// Work through all the segments in the model.  Move to the first segment before starting...
-		if(segmentReader.moveToNextSegment()) {
-			mapSegments(edifactModel.getEdimap().getSegments().getSegments());
-
-			// If we reach the end of the mapping model and we still have more EDI segments in the message....     		
-		    while (segmentReader.hasCurrentSegment()) {
-		        if (!EMPTY_LINE.matcher(segmentReader.getSegmentBuffer().toString()).matches()) {
-		            throw new EDIParseException(edifactModel.getEdimap(), "Reached end of mapping model but there are more EDI segments in the incoming message.  Read " + segmentReader.getCurrentSegmentNumber() + " segment(s). Current EDI segment is [" + segmentReader.getSegmentBuffer() + "]");
-		        }
-		        segmentReader.moveToNextSegment();
-		    }
-		}
-
-		// Fire the endDocument event, as well as the endElement event...
-		endElement(edifactModel.getEdimap().getSegments().getXmltag(), true);
-	}
 
     /**
      * Map a list of EDI Segments to SAX events.
@@ -442,7 +390,7 @@ public class EDIParser implements XMLReader {
             // If the current segment being read from the incoming message doesn't match the expected
             // segment code....
             if(!currentSegmentFields[0].equals(expectedSegmentGroup.getSegcode())) {
-                Matcher matcher = expectedSegmentGroup.getSegcodePattern().matcher(segmentReader.getSegmentBuffer());
+                Matcher matcher = expectedSegmentGroup.getSegcodePattern().matcher(segmentReader.getCurrentSegment());
 
                 if(!matcher.matches()) {
                     // If we haven't read the minimum number of instances of the current "expected" segment, raise an error...
@@ -457,11 +405,9 @@ public class EDIParser implements XMLReader {
                 }
             }
 
+            // Make sure we haven't encountered a message with too many instances of the current expected segment...
             if(segmentProcessingCount >= maxOccurs) {
-                // Move to the next "expected" segment and start the loop again...
-                segmentMappingIndex++;
-                segmentProcessingCount = 0;
-                continue;
+                throw new EDIParseException(edifactModel.getEdimap(), "Maximum of " + maxOccurs + " instances of segment [" + expectedSegmentGroup.getSegcode() + "] exceeded.  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", expectedSegmentGroup, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
 
             // The current read message segment appears to match that expected according to the mapping model.
@@ -518,7 +464,7 @@ public class EDIParser implements XMLReader {
 	 * are expected to map to.
      * @throws SAXException EDI processing exception.
 	 */
-	public void mapFields(String[] currentSegmentFields, Segment segment) throws SAXException {
+	private void mapFields(String[] currentSegmentFields, Segment segment) throws SAXException {
         String segmentCode = segment.getSegcode();
 
         List<Field> expectedFields = segment.getFields();
@@ -528,20 +474,11 @@ public class EDIParser implements XMLReader {
 
 		// Iterate over the fields and map them...
         int numFields = currentSegmentFields.length - 1; // It's "currentSegmentFields.length - 1" because we don't want to include the segment code.
-        Delimiters delimiters = segmentReader.getDelimiters();
-        String fieldRepeat = delimiters.getFieldRepeat();
 		for(int i = 0; i < numFields; i++) {
 			String fieldMessageVal = currentSegmentFields[i + 1]; // +1 to skip the segment code
 			Field expectedField = expectedFields.get(i);
-
-			if(fieldRepeat != null) {
-				String[] repeatedFields = EDIUtils.split(fieldMessageVal, fieldRepeat, delimiters.getEscape());
-				for(String repeatedField : repeatedFields) {
-					mapField(repeatedField, expectedField, i, segmentCode);
-				}
-			} else {			
-				mapField(fieldMessageVal, expectedField, i, segmentCode);
-			}
+			
+			mapField(fieldMessageVal, expectedField, i, segmentCode);
 		}
 	}
 
@@ -560,8 +497,7 @@ public class EDIParser implements XMLReader {
 
 		// If there are components defined on this field...
 		if(expectedComponents.size() != 0) {
-            Delimiters delimiters = segmentReader.getDelimiters();
-			String[] currentFieldComponents = EDIUtils.split(fieldMessageVal, delimiters.getComponent(), delimiters.getEscape());
+            String[] currentFieldComponents = EDIUtils.split(fieldMessageVal, edifactModel.getDelimiters().getComponent(), edifactModel.getDelimiters().getEscape());
 
             assertComponentsOK(expectedField, fieldIndex, segmentCode, expectedComponents, currentFieldComponents);
 
@@ -599,8 +535,7 @@ public class EDIParser implements XMLReader {
 		startElement(expectedComponent.getXmltag(), true);
 
 		if(expectedSubComponents.size() != 0) {
-            Delimiters delimiters = segmentReader.getDelimiters();
-			String[] currentComponentSubComponents = EDIUtils.split(componentMessageVal, delimiters.getSubComponent(), delimiters.getEscape());
+            String[] currentComponentSubComponents = EDIUtils.split(componentMessageVal, edifactModel.getDelimiters().getSubComponent(), edifactModel.getDelimiters().getEscape());
 
             assertSubComponentsOK(expectedComponent, fieldIndex, componentIndex, segmentCode, field, expectedSubComponents, currentComponentSubComponents);
 
@@ -773,16 +708,16 @@ public class EDIParser implements XMLReader {
         }
     }
 
-    public void startElement(String elementName, boolean indent) throws SAXException {
+    private void startElement(String elementName, boolean indent) throws SAXException {
         if(indent) {
             indent();
         }
         contentHandler.startElement(null, elementName, "", EMPTY_ATTRIBS);
-        indentDepth.value++;
+        depth++;
     }
 
-    public void endElement(String elementName, boolean indent) throws SAXException {
-    	indentDepth.value--;
+    private void endElement(String elementName, boolean indent) throws SAXException {
+        depth--;
         if(indent) {
             indent();
         }
@@ -792,10 +727,7 @@ public class EDIParser implements XMLReader {
     // HACK :-) it's hardly going to be deeper than this!!
     private static final char[] indentChars = (new String("\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t").toCharArray());
     private void indent() throws SAXException {
-    	if(indentDepth == null) {
-    		throw new IllegalStateException("'indentDepth' property not set on parser instance.  Cannot indent.");
-    	}
-        contentHandler.characters(indentChars, 0, indentDepth.value + 1);
+        contentHandler.characters(indentChars, 0, depth + 1);
     }
 
     public void setContentHandler(ContentHandler contentHandler) {
@@ -804,6 +736,52 @@ public class EDIParser implements XMLReader {
 
     public ContentHandler getContentHandler() {
         return contentHandler;
+    }
+
+    /****************************************************************************
+     *
+     * The following methods are currently unimplemnted...
+     *
+     ****************************************************************************/
+
+    public void parse(String systemId) throws IOException, SAXException {
+        throw new UnsupportedOperationException("Operation not supports by this reader.");
+    }
+
+    public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
+        return getFeatures().get(name);
+    }
+
+    public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
+        getFeatures().put(name, value);
+    }
+
+    public DTDHandler getDTDHandler() {
+        return null;
+    }
+
+    public void setDTDHandler(DTDHandler arg0) {
+    }
+
+    public EntityResolver getEntityResolver() {
+        return null;
+    }
+
+    public void setEntityResolver(EntityResolver arg0) {
+    }
+
+    public ErrorHandler getErrorHandler() {
+        return null;
+    }
+
+    public void setErrorHandler(ErrorHandler arg0) {
+    }
+
+    public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
+        return null;
+    }
+
+    public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
     }
 
     private Map<String, Boolean> getFeatures() {
@@ -815,51 +793,5 @@ public class EDIParser implements XMLReader {
     private void initializeFeatures() {
         features = new HashMap<String,Boolean>();
         features.put(VALIDATE, false);
-    }
-    
-    /****************************************************************************
-     *
-     * The following methods are currently unimplemnted...
-     *
-     ****************************************************************************/
-    
-    public void parse(String systemId) throws IOException, SAXException {
-    	throw new UnsupportedOperationException("Operation not supports by this reader.");
-    }
-    
-    public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-    	return getFeatures().get(name);
-    }
-    
-    public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
-    	getFeatures().put(name, value);
-    }
-    
-    public DTDHandler getDTDHandler() {
-    	return null;
-    }
-    
-    public void setDTDHandler(DTDHandler arg0) {
-    }
-    
-    public EntityResolver getEntityResolver() {
-    	return null;
-    }
-    
-    public void setEntityResolver(EntityResolver arg0) {
-    }
-    
-    public ErrorHandler getErrorHandler() {
-    	return null;
-    }
-    
-    public void setErrorHandler(ErrorHandler arg0) {
-    }
-    
-    public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-    	return null;
-    }
-    
-    public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
     }
 }

@@ -48,9 +48,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * XMl utility methods.
@@ -88,28 +85,11 @@ public class XmlUtil {
         }
     }
 
-    private static Set<String> xmlReservedNamespaces = new HashSet<String>();
-    
-    static {
-    	xmlReservedNamespaces.add(XMLConstants.NULL_NS_URI);
-    	xmlReservedNamespaces.add(XMLConstants.RELAXNG_NS_URI);
-    	xmlReservedNamespaces.add(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-    	xmlReservedNamespaces.add(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    	xmlReservedNamespaces.add(XMLConstants.W3C_XPATH_DATATYPE_NS_URI);
-    	xmlReservedNamespaces.add(XMLConstants.XML_DTD_NS_URI);
-    	xmlReservedNamespaces.add(XMLConstants.XML_NS_URI);
-    	xmlReservedNamespaces.add(XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
-    }
-
     public static final char[] LT = new char[] {'&', 'l', 't', ';'};
     public static final char[] GT = new char[] {'&', 'g', 't', ';'};
     public static final char[] AMP = new char[] {'&', 'a', 'm', 'p', ';'};
     public static final char[] QUOT = new char[] {'&', 'q', 'u', 'o', 't', ';'};
     public static final char[] APOS = new char[] {'&', 'a', 'p', 'o', 's', ';'};
-
-	public static boolean isXMLReservedNamespace(String namespace) {
-		return xmlReservedNamespaces.contains(namespace);
-	}
 
     /**
      * Remove all entities from the supplied <code>Reader</code> stream

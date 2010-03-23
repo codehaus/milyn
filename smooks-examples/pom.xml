@@ -6,7 +6,7 @@
     <artifactId>smooks-examples</artifactId>
     <name>Milyn Smooks Examples (Base POM)</name>
     <packaging>pom</packaging>
-    <version>1.4-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
+    <version>1.3.1</version> <!-- base pom version - do not remove this comment -->
 
     <modules>
         <module>css</module>
@@ -41,11 +41,10 @@
         <module>ejc/ejc-gen</module>
         <module>ejc/ejc-use</module>
         <module>edi-with-import-to-java</module>
-        <module>ect-unedifact</module>
     </modules>
 
     <properties>
-        <milyn.smooks.core.version>1.4-SNAPSHOT</milyn.smooks.core.version> <!-- ## Smooks Version ## -->
+        <milyn.smooks.core.version>1.3.1</milyn.smooks.core.version> <!-- ## Smooks Version ## -->
         <milyn.smooks.servlet.version>${milyn.smooks.core.version}</milyn.smooks.servlet.version>
         <milyn.smooks.misc.version>${milyn.smooks.core.version}</milyn.smooks.misc.version>
         <milyn.smooks.dtd.version>${milyn.smooks.core.version}</milyn.smooks.dtd.version>

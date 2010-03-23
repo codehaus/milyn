@@ -2,8 +2,8 @@
 <project default="assemble" name="Assembly">
 
     <property name="version.base" value="1.3"/>
-    <property name="version" value="${version.base}"/>
-    <property name="mvn.version" value="1.3"/>
+    <property name="version" value="${version.base}.1"/>
+    <property name="mvn.version" value="1.3.1"/>
 
     <property name="mainDistroName" value="smooks-${version}"/>
     <property name="mainTargetdir" value="target/${mainDistroName}"/>

@@ -122,7 +122,8 @@ public class ClassUtil {
 				resource = resourceName;
 			}
 		}
-		final ClassLoader threadClassLoader = Thread.currentThread().getContextClassLoader();
+		final ClassLoader threadClassLoader = Thread.currentThread()
+				.getContextClassLoader();
 		if (threadClassLoader != null) {
 			final InputStream is = threadClassLoader
 					.getResourceAsStream(resource);
@@ -140,21 +141,6 @@ public class ClassUtil {
 		}
 
 		return ClassLoader.getSystemResourceAsStream(resource);
-	}
-	
-	public static List<URL> getResources(String resourcePath, Class<?> caller) throws IOException {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		
-		if (classLoader != null) {
-			return CollectionsUtil.toList(classLoader.getResources(resourcePath));
-		}
-
-		classLoader = caller.getClassLoader();
-		if (classLoader != null) {
-			return CollectionsUtil.toList(classLoader.getResources(resourcePath));
-		}
-
-		return new ArrayList<URL>();
 	}
 
     public static List<Class> findInstancesOf(final Class type, String[] igrnoreList, String[] includeList) {

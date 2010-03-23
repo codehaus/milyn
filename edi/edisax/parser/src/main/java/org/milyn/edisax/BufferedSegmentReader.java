@@ -24,13 +24,12 @@ import org.xml.sax.InputSource;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Stack;
 
 /**
  * Buffered EDI Stream Segment reader.
  * @author tfennelly
  */
-public class BufferedSegmentReader {
+class BufferedSegmentReader {
 
     private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);
 
@@ -40,123 +39,45 @@ public class BufferedSegmentReader {
     private StringBuffer segmentBuffer = new StringBuffer(512);
     private String[] currentSegmentFields = null;
 	private int currentSegmentNumber = 0;
-	private Stack<Delimiters> delimitersStack = new Stack<Delimiters>();
-    private Delimiters currentDelimiters;
-    private BufferedSegmentListener segmentListener;
+    private Delimiters delimiters;
+	private char[] segmentDelimiter;
+    private String escape;
+    private boolean ignoreCrLf;
 
     /**
      * Construct the stream reader.
      * @param ediInputSource EDI Stream input source.
-     * @param rootDelimiters Root currentDelimiters.  New currentDelimiters can be pushed and popped.
+     * @param delimiters Segment delimiter String.
      */
-    public BufferedSegmentReader(InputSource ediInputSource, Delimiters rootDelimiters) {
+    protected BufferedSegmentReader(InputSource ediInputSource, Delimiters delimiters) {
         reader = ediInputSource.getCharacterStream();
         if(reader == null) {
             reader = new InputStreamReader(ediInputSource.getByteStream());
         }
-        this.currentDelimiters = rootDelimiters;
+        this.delimiters = delimiters;
+        this.escape = delimiters.getEscape();
+        this.ignoreCrLf = delimiters.getSegment().endsWith("!$");
+
+        if (ignoreCrLf) {
+            this.segmentDelimiter = delimiters.getSegment().replace("!$", "").toCharArray();
+        } else {
+            this.segmentDelimiter = delimiters.getSegment().toCharArray();
+        }
     }
     
     /**
-     * Get the current delimiter set.
-	 * @return the currentDelimiters The current delimiter set.
-	 */
-	public Delimiters getDelimiters() {
-		return currentDelimiters;
-	}
-	
-	/**
-	 * Push in a new {@link Delimiters} set into the reader.
-	 * @param delimiters New delimiters.
-	 */
-	public void pushDelimiters(Delimiters delimiters) {
-		delimitersStack.push(currentDelimiters);
-		currentDelimiters = delimiters;
-	}
-	
-	/**
-	 * Restore the parent delimiters set.
-	 * <p/>
-	 * Be sure to {@link #getDelimitersStack() get the delimiters stack} and check 
-	 * that it is not empty before popping.
-	 */
-	public void popDelimiters() {
-		currentDelimiters = delimitersStack.pop();
-	}
-	
-	/**
-	 * Get the 
-	 * @return the delimitersStack
-	 */
-	public Stack<Delimiters> getDelimitersStack() {
-		return delimitersStack;
-	}
-	
-	/**
-	 * Read a fixed number of characters from the input source.
-	 * @param numChars The number of characters to read.
-	 * @return The characters in a String.  If the end of the input source
-	 * was reached, the length of the string will be less than the requested number
-	 * of characters.
-	 * @throws IOException Error reading from input source.
-	 */
-	public String read(int numChars) throws IOException {
-    	int c;
-    	
-    	segmentBuffer.setLength(0);
-        while((c = reader.read()) != -1) {
-        	segmentBuffer.append((char)c);
-        	if(segmentBuffer.length() == numChars) {
-        		break;
-        	}
-        }
-
-        try {
-        	return segmentBuffer.toString();
-        } finally {
-        	segmentBuffer.setLength(0);
-        }
-	}	
-
-	/**
-	 * Set the segment listener.
-	 * @param segmentListener The segment listener.
-	 */
-	public void setSegmentListener(BufferedSegmentListener segmentListener) {
-		this.segmentListener = segmentListener;
-	}
-
-	/**
-     * Move to the next EDI segment.
-     * <p/>
-     * Simply reads and buffers the next EDI segment.  Clears the current contents of
-     * the buffer before reading.
-     * @return True if a "next" segment exists, otherwise false.
-     * @throws IOException Error reading from EDI stream.
-     */
-    public boolean moveToNextSegment() throws IOException {
-    	return moveToNextSegment(true);
-    }
-
-	/**
      * Move to the next EDI segment.
      * <p/>
      * Simply reads and buffers the next EDI segment.
-     * @param clearBuffer Clear the segment buffer before reading.
      * @return True if a "next" segment exists, otherwise false.
      * @throws IOException Error reading from EDI stream.
      */
-    public boolean moveToNextSegment(boolean clearBuffer) throws IOException {
+    protected boolean moveToNextSegment() throws IOException {
         int c = reader.read();
-        char[] segmentDelimiter = currentDelimiters.getSegmentDelimiter();
         int delimiterLen = segmentDelimiter.length;
-        String escape = currentDelimiters.getEscape();
         int escapeLen = escape != null ? escape.length() : 0;
-        boolean ignoreCRLF = currentDelimiters.ignoreCRLF();
 
-        if(clearBuffer) {
-        	segmentBuffer.setLength(0);
-        }
+        segmentBuffer.setLength(0);
         currentSegmentFields = null;
 
         // We reached the end of the stream the last time this method was
@@ -168,7 +89,7 @@ public class BufferedSegmentReader {
         // Read the next segment...
         while(c != -1) {
 
-            if (ignoreCRLF && (c == '\n' || c == '\r')) {
+            if (ignoreCrLf && (c == '\n' || c == '\r')) {
                 c = reader.read();
                 continue;
             }
@@ -217,12 +138,8 @@ public class BufferedSegmentReader {
         }
         
         currentSegmentNumber++;
-
-        if(segmentListener != null) {
-        	return segmentListener.onSegment(this);
-        } else {
-        	return true;
-        }
+        
+        return true;
     }
     
     /**
@@ -230,18 +147,16 @@ public class BufferedSegmentReader {
      * @return True if a current segment exists, otherwise false.
      */
     public boolean hasCurrentSegment() {
-        if(segmentListener != null) {
-        	return segmentListener.onSegment(this);
-        } else {
-        	return segmentBuffer.length() != 0;
-        }
+    	return segmentBuffer.length() != 0;
     }
 
     /**
-     * Get the segment buffer.
-     * @return The segment buffer.
+     * Get the current EDI segment.
+     * @return The current EDI segment.
+     * @throws IllegalStateException No current Segment.
      */
-    public StringBuffer getSegmentBuffer() {
+    protected StringBuffer getCurrentSegment() throws IllegalStateException {
+    	assertCurrentSegmentExists();
         return segmentBuffer;
     }
 
@@ -250,21 +165,22 @@ public class BufferedSegmentReader {
      * @return The current EDI segment fields array.
      * @throws IllegalStateException No current Segment.
      */
-    public String[] getCurrentSegmentFields() throws IllegalStateException {
+    protected String[] getCurrentSegmentFields() throws IllegalStateException {
     	assertCurrentSegmentExists();
 
         if(currentSegmentFields == null) {
-              currentSegmentFields = EDIUtils.split(segmentBuffer.toString(), currentDelimiters.getField(), currentDelimiters.getEscape());
-
-              // If the segment delimiter is a LF, strip off any preceding CR characters...
-              if(currentDelimiters.getSegment().equals("\n")) {
-            	  int endIndex = currentSegmentFields.length - 1;
-            	  if(currentSegmentFields[endIndex].endsWith("\r")) {
-            		  int stringLen = currentSegmentFields[endIndex].length();
-            		  currentSegmentFields[endIndex] = currentSegmentFields[endIndex].substring(0, stringLen - 1);
-            	  }
-              }
-        }    	
+//            currentSegmentFields = StringUtils.splitPreserveAllTokens(segmentBuffer.toString(), delimiters.getField());
+              currentSegmentFields = EDIUtils.split(segmentBuffer.toString(), delimiters.getField(), delimiters.getEscape());
+        }
+    	
+    	// If the segment delimiter is a LF, strip off any preceeding CR characters...
+    	if(delimiters.getSegment().equals("\n")) {
+    		int endIndex = currentSegmentFields.length - 1;
+    		if(currentSegmentFields[endIndex].endsWith("\r")) {
+    			int stringLen = currentSegmentFields[endIndex].length();
+    			currentSegmentFields[endIndex] = currentSegmentFields[endIndex].substring(0, stringLen - 1);
+    		}
+    	}
     	
         return currentSegmentFields;
     }
@@ -283,7 +199,7 @@ public class BufferedSegmentReader {
 	 * Assert that there is a current segment.
 	 */
 	private void assertCurrentSegmentExists() {
-		if(segmentBuffer.length() == 0) {
+		if(!hasCurrentSegment()) {
     		throw new IllegalStateException("No current segment available.  Possible conditions: \n" 
     									+ "\t\t1. A call to moveToNextSegment() was not made, or \n"
     									+ "\t\t2. The last call to moveToNextSegment() returned false.");
