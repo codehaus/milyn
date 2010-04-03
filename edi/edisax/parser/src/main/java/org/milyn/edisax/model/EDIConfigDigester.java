@@ -304,7 +304,7 @@ public class EDIConfigDigester {
 
             if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "component")) {
                 Component component = new Component();
-                field.getComponent().add(component);
+                field.getComponents().add(component);
                 digestComponent(currentNode, component, namespacePrefix, field);
             }
         }
@@ -326,7 +326,7 @@ public class EDIConfigDigester {
 
             if (currentNode.getNodeName().equalsIgnoreCase(namespacePrefix + "sub-component")) {
                 SubComponent subComponent = new SubComponent();
-                component.getSubComponent().add(subComponent);
+                component.getSubComponents().add(subComponent);
                 setValuesForSubComponent(currentNode, subComponent, namespacePrefix, component);
             }
         }

@@ -20,7 +20,15 @@ public class SubComponent extends ValueNode {
 
     private Boolean required;
 
-    public boolean isRequired() {
+	public SubComponent() {
+	}
+
+	public SubComponent(String xmltag, Boolean required) {
+		super(xmltag);
+		this.required = required;
+	}
+
+	public boolean isRequired() {
         return required != null && required;
     }
 

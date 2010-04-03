@@ -98,10 +98,10 @@ public class EdiConfigReader {
         JClass child;
         for (Field field : fields) {
             LOG.debug("Parsing field " + field.getXmltag());
-            if (field.getComponent() != null && field.getComponent().size() > 0) {
+            if (field.getComponents() != null && field.getComponents().size() > 0) {
                 //Add class type.
                 child = createChildAndConnectWithParent(parent, field, 1);
-                parseComponents(field.getComponent(), child);
+                parseComponents(field.getComponents(), child);
             } else {
                 //Add primitive type.
                 createAndAddSimpleType(field, parent);
@@ -140,10 +140,10 @@ public class EdiConfigReader {
     private void parseComponents(List<Component> components, JClass parent) throws IllegalNameException {
         JClass child;
         for (Component component : components) {
-            if (component.getSubComponent() != null && component.getSubComponent().size() > 0) {
+            if (component.getSubComponents() != null && component.getSubComponents().size() > 0) {
                 //Add class type.
                 child = createChildAndConnectWithParent(parent, component, 1);
-                parseSubComponents(component.getSubComponent(), child);
+                parseSubComponents(component.getSubComponents(), child);
             } else {
                 //Add primitive type.
                 createAndAddSimpleType(component, parent);

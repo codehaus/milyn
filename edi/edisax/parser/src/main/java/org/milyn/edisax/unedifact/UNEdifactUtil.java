@@ -16,7 +16,6 @@
 package org.milyn.edisax.unedifact;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -25,6 +24,7 @@ import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
+import org.milyn.edisax.unedifact.handlers.GenericHandler;
 import org.milyn.edisax.unedifact.handlers.UNAHandler;
 import org.milyn.edisax.unedifact.handlers.UNBHandler;
 import org.milyn.edisax.unedifact.handlers.UNGHandler;
@@ -38,19 +38,10 @@ import org.xml.sax.SAXException;
  */
 public abstract class UNEdifactUtil {
 
-	private static Set<String> unedifactCtrlSegments = new HashSet<String>();
 	private static Map<String, ControlBlockHandler> unedifactCtrlBlockHandlers = new HashMap<String, ControlBlockHandler>();
+	private static GenericHandler genericHandler = new GenericHandler();
 	
 	static {
-		// Initialize the control segments...
-		unedifactCtrlSegments.add("UNA");
-		unedifactCtrlSegments.add("UNB");
-		unedifactCtrlSegments.add("UNG");
-		unedifactCtrlSegments.add("UNH");
-		unedifactCtrlSegments.add("UNT");
-		unedifactCtrlSegments.add("UNE");
-		unedifactCtrlSegments.add("UNZ");
-
 		// Initialize the control block handlers...
 		unedifactCtrlBlockHandlers.put("UNA", new UNAHandler());
 		unedifactCtrlBlockHandlers.put("UNB", new UNBHandler());
@@ -58,15 +49,18 @@ public abstract class UNEdifactUtil {
 		unedifactCtrlBlockHandlers.put("UNH", new UNHHandler());
 	}
 	
-	public static boolean isUNEdifactControlSegmentCode(String segCode) {
-		return unedifactCtrlSegments.contains(segCode);
-	}
-	
 	public static ControlBlockHandler getControlBlockHandler(String segCode) throws SAXException {
 		ControlBlockHandler handler = unedifactCtrlBlockHandlers.get(segCode);
+		
 		if(handler == null) {
-			throw new SAXException("Unknown UN/EDIFACT control block segment code '" + segCode + "'.");
+			if(segCode.charAt(0) == 'U') {
+				// Just squirt out the control segment contents using the generic handler...
+				handler = genericHandler;
+			} else {
+				throw new SAXException("Unknown UN/EDIFACT control block segment code '" + segCode + "'.");
+			}
 		}
+		
 		return handler;
 	}
 

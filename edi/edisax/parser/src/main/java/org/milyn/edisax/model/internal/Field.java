@@ -24,12 +24,32 @@ public class Field extends ValueNode {
     private List<Component> component;
     private Boolean required;
     private Boolean truncatable;
+    
+    public Field() {    	
+    }
 
-    public List<Component> getComponent() {
+	public Field(String xmltag, Boolean required) {
+		super(xmltag);
+		this.required = required;
+		this.truncatable = true;
+	}
+
+	public Field(String xmltag, Boolean required, Boolean truncatable) {
+		super(xmltag);
+		this.required = required;
+		this.truncatable = truncatable;
+	}
+
+	public List<Component> getComponents() {
         if (component == null) {
             component = new ArrayList<Component>();
         }
         return this.component;
+    }
+    
+    public Field addComponent(Component component) {
+    	getComponents().add(component);
+    	return this;
     }
 
     public boolean isRequired() {

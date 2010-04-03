@@ -25,11 +25,31 @@ public class Component extends ValueNode {
     private Boolean required;
     private Boolean truncatable;
 
-    public List<SubComponent> getSubComponent() {
+	public Component() {
+	}
+    
+	public Component(String xmltag, Boolean required) {
+		super(xmltag);
+		this.required = required;
+		this.truncatable = true;
+	}
+    
+	public Component(String xmltag, Boolean required, Boolean truncatable) {
+		super(xmltag);
+		this.required = required;
+		this.truncatable = truncatable;
+	}
+
+	public List<SubComponent> getSubComponents() {
         if (subComponent == null) {
             subComponent = new ArrayList<SubComponent>();
         }
         return this.subComponent;
+    }
+    
+    public Component addSubComponent(SubComponent subComponent) {
+    	getSubComponents().add(subComponent);
+    	return this;
     }
 
     public boolean isRequired() {

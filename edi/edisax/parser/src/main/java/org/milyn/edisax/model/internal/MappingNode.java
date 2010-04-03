@@ -21,8 +21,15 @@ public class MappingNode {
     private String xmltag;
     private String documentation;
     private MappingNode parent;
+    
+	public MappingNode() {
+	}
+    
+	public MappingNode(String xmltag) {
+		this.xmltag = xmltag;
+	}
 
-    public String getXmltag() {
+	public String getXmltag() {
         return xmltag;
     }
 

@@ -24,9 +24,11 @@ import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Description;
+import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.unedifact.UNEdifactUtil;
-import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -34,45 +36,48 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class UNHHandler implements ControlBlockHandler {
+
+	private Segment unhSegment;
+	private Segment untSegment;
+	
+	public UNHHandler() {
+		createSegmentsDefs();
+	}
 	
 	private UNTSegmentListener untSegmentListener = new UNTSegmentListener();
 
 	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 		Map<Description, EdifactModel> mappingModels = interchangeContext.getMappingModels();
-		ContentHandler contentHandler = interchangeContext.getContentHandler();
+		
+		interchangeContext.getControlSegmentParser().startElement("message", true);
 
-		// Move to the end of the UNH segment i.e. start of the message..
-		segmentReader.moveToNextSegment();
+		// Move to the end of the UNH segment and map it's fields..
+		segmentReader.moveToNextSegment(false);
+		interchangeContext.mapControlSegment(unhSegment, false);
 		
-		// Process the message based on message name in the UNH fields...
-		
+		// Select the mapping model to use for this message...
 		String[] fields = segmentReader.getCurrentSegmentFields();
-		
-		if(fields.length < 3) {
-			throw new SAXException("Invalid UNH segment [" + segmentReader.getSegmentBuffer() + "]. Unable to access message name.");
-		}
-		
 		String messageName = fields[2];
 		EdifactModel mappingModel = UNEdifactUtil.getMappingModel(messageName, segmentReader.getDelimiters(), mappingModels);
 		
+		// Map the message... stopping at the UNT segment...
 		try {
-			EDIParser parser = new EDIParser();
-			
-			parser.setContentHandler(contentHandler);
-			parser.setMappingModel(mappingModel);
-			parser.setBufferedSegmentReader(segmentReader);
-			parser.setIndentDepth(interchangeContext.indentDepth);
+			EDIParser parser = interchangeContext.newParser(mappingModel);
 			
 			segmentReader.setSegmentListener(untSegmentListener);
-			interchangeContext.indentDepth.value++;
 			parser.parse();
-			interchangeContext.indentDepth.value--;
 		} finally {
 			segmentReader.setSegmentListener(null);
 		}		
 		
-		// We're at the end of the UNT segment now.  See the UNTSegmentListener below...
+		// We're at the end of the UNT segment now.  See the UNTSegmentListener below.
+		
+		// Map the UNT segment...
+		interchangeContext.mapControlSegment(untSegment, true);
+		segmentReader.getSegmentBuffer().setLength(0);
+
+		interchangeContext.getControlSegmentParser().endElement("message", true);
 	}
 	
 	private class UNTSegmentListener implements BufferedSegmentListener {
@@ -87,5 +92,53 @@ public class UNHHandler implements ControlBlockHandler {
 			// only return true if it's not UNT...
 			return !fields[0].equals("UNT");
 		}		
+	}
+
+	private void createSegmentsDefs() {
+		// UNH Segment Definition...
+		// http://www.gefeg.com/jswg/v41/se/se16.htm
+		unhSegment = new Segment();
+		unhSegment.setSegcode("UNH");
+		unhSegment.setXmltag("UNH");
+		unhSegment.setDescription("UNH - Message Header");
+		unhSegment.setTruncatable(true);
+		unhSegment.addField(new Field("messageRefNum", true));
+		unhSegment.addField(new Field("messageIdentifier", true).
+                addComponent(new Component("type", true)).
+                addComponent(new Component("versionNum", true)).
+                addComponent(new Component("releaseNum", true)).
+                addComponent(new Component("controllingAgencyCode", true)).
+                addComponent(new Component("associationAssignedCode", false)).
+                addComponent(new Component("codeListDirVersionNum", false)).
+                addComponent(new Component("typeSubFunctionId", false)));
+		unhSegment.addField(new Field("commonAccessRef", false));
+		unhSegment.addField(new Field("transferStatus", false).
+                addComponent(new Component("sequence", true)).
+                addComponent(new Component("firtAndLast", false)));
+		unhSegment.addField(new Field("subset", false).
+                addComponent(new Component("id", true)).
+                addComponent(new Component("versionNum", false)).
+                addComponent(new Component("releaseNum", false)).
+                addComponent(new Component("controllingAgencyCode", false)));
+		unhSegment.addField(new Field("implementationGuideline", false).
+                addComponent(new Component("id", true)).
+                addComponent(new Component("versionNum", false)).
+                addComponent(new Component("releaseNum", false)).
+                addComponent(new Component("controllingAgencyCode", false)));
+		unhSegment.addField(new Field("scenario", false).
+                addComponent(new Component("id", true)).
+                addComponent(new Component("versionNum", false)).
+                addComponent(new Component("releaseNum", false)).
+                addComponent(new Component("controllingAgencyCode", false)));
+
+		// UNT Segment Definition...
+		// http://www.gefeg.com/jswg/v41/se/se20.htm
+		untSegment = new Segment();
+		untSegment.setSegcode("UNT");
+		untSegment.setXmltag("UNT");
+		untSegment.setDescription("UNE - Message Trailer");
+		untSegment.setTruncatable(true);
+		untSegment.addField(new Field("segmentCount", true));
+		untSegment.addField(new Field("messageRefNum", true));
 	}
 }

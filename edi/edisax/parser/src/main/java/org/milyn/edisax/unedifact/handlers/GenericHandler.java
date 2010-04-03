@@ -20,38 +20,30 @@ import java.io.IOException;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
-import org.milyn.edisax.model.internal.Delimiters;
 import org.xml.sax.SAXException;
 
 /**
- * UNA Segment Handler.
+ * Generic Control Segment Handler.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNAHandler implements ControlBlockHandler {
+public class GenericHandler implements ControlBlockHandler {
 
 	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
-		Delimiters delimiters = new Delimiters();
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
+		
+		segmentReader.moveToNextSegment(false);
+		
+		String[] fields = segmentReader.getCurrentSegmentFields();
+		StringBuffer segBuffer = segmentReader.getSegmentBuffer();
+		char[] segChars = new char[segBuffer.length()];
+		
+		segBuffer.getChars(0, segBuffer.length(), segChars, 0);
+		
+		interchangeContext.getControlSegmentParser().startElement(fields[0], true);
+		interchangeContext.getControlSegmentParser().getContentHandler().characters(segChars, 0, segChars.length);
+		interchangeContext.getControlSegmentParser().endElement(fields[0], false);		
 
-		// The UNA segment code is still in the segment buffer... clear it before 
-		// reading the segment delimiters...
+		// And clear out the buffer...
 		segmentReader.getSegmentBuffer().setLength(0);
-		
-		// Read the delimiter chars one-by-one and set in the Delimiters instance...
-		
-		// 1st char is the component ("sub-element") delimiter...
-		delimiters.setComponent( segmentReader.read(1));
-		// 2nd char is the field ("data-element") delimiter...
-		delimiters.setField(     segmentReader.read(1));
-		// 3rd char is the decimal point indicator... ignoring for now...
-		segmentReader.read(1);
-		// 4th char is the escape char ("release")...
-		delimiters.setEscape(    segmentReader.read(1));
-		// 5th char is reserved for future use...
-		segmentReader.read(1);
-		// 6th char is the segment delimiter...
-		delimiters.setSegment(   segmentReader.read(1));
-
-		segmentReader.pushDelimiters(delimiters);
 	}
 }

@@ -45,7 +45,7 @@ public abstract class AbstractEDIParserTestCase extends TestCase {
 
 			parser.setContentHandler(contentHandler);
 			parser.setMappingModel(EDIParser.parseMappingModel(mappingModel, URIResourceLocator.extractBaseURI(mappingModel)));
-            parser.setFeature(EDIParser.VALIDATE, true);
+            parser.setFeature(EDIParser.FEATURE_VALIDATE, true);
 			parser.parse(new InputSource(input));
 
 			mappingResult = contentHandler.xmlMapping.toString().trim();
@@ -78,7 +78,7 @@ public abstract class AbstractEDIParserTestCase extends TestCase {
 
 			parser.setContentHandler(contentHandler);
 			parser.setMappingModel(EDIParser.parseMappingModel(mapping));
-            parser.setFeature(EDIParser.VALIDATE, true);
+            parser.setFeature(EDIParser.FEATURE_VALIDATE, true);
 			parser.parse(new InputSource(input));
 
             assertTrue("Test case should thow an EdiParseException.", false);

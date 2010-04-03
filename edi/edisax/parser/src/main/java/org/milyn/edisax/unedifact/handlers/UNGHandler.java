@@ -20,6 +20,9 @@ import java.io.IOException;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
+import org.milyn.edisax.model.internal.Component;
+import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.unedifact.UNEdifactUtil;
 import org.xml.sax.SAXException;
 
@@ -29,20 +32,71 @@ import org.xml.sax.SAXException;
  */
 public class UNGHandler implements ControlBlockHandler {
 
+	private Segment ungSegment;
+	private Segment uneSegment;
+	
+	public UNGHandler() {
+		createSegmentsDefs();
+	}
+
 	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 
-		segmentReader.moveToNextSegment();
+		interchangeContext.getControlSegmentParser().startElement("group", true);
+		
+		segmentReader.moveToNextSegment(false);
+		interchangeContext.mapControlSegment(ungSegment, true);
+		
         while(true) {
-	        String segCode = segmentReader.read(3);
+	        String segCode = segmentReader.peek(3);
 	        
 	        if(segCode.equals("UNE")) {
-	    		segmentReader.moveToNextSegment();
+	    		segmentReader.moveToNextSegment(false);
+	    		interchangeContext.mapControlSegment(uneSegment, true);
 	    		break;
 	        } else {	        	
 	        	ControlBlockHandler handler = UNEdifactUtil.getControlBlockHandler(segCode);
 	        	handler.process(interchangeContext);
 	        }
         }		
+
+        interchangeContext.getControlSegmentParser().endElement("group", true);
+	}
+	
+	private void createSegmentsDefs() {
+		// UNG Segment Definition...
+		// http://www.gefeg.com/jswg/v41/se/se15.htm
+		ungSegment = new Segment();
+		ungSegment.setSegcode("UNG");
+		ungSegment.setXmltag("UNG");
+		ungSegment.setDescription("UNG - Group Header");
+		ungSegment.setTruncatable(true);
+		ungSegment.addField(new Field("groupId", false));
+		ungSegment.addField(new Field("applicationSender",  false).
+                addComponent(new Component("id",            true)).
+                addComponent(new Component("codeQualifier", false)));
+		ungSegment.addField(new Field("applicationRecipient", false).
+                addComponent(new Component("id",              true)).
+                addComponent(new Component("codeQualifier",   false)));
+		ungSegment.addField(new Field("dateTime",  false).
+                addComponent(new Component("date", true)).
+                addComponent(new Component("time", true)));
+		ungSegment.addField(new Field("groupRef", true));
+		ungSegment.addField(new Field("controllingAgencyCode", false));
+		ungSegment.addField(new Field("messageVersion",        false).
+                addComponent(new Component("versionNum",       true)).
+                addComponent(new Component("releaseNum",       true)).
+                addComponent(new Component("associationCode", false)));
+		ungSegment.addField(new Field("applicationPassword",  false));
+
+		// UNE Segment Definition...
+		// http://www.gefeg.com/jswg/v41/se/se14.htm
+		uneSegment = new Segment();
+		uneSegment.setSegcode("UNE");
+		uneSegment.setXmltag("UNE");
+		uneSegment.setDescription("UNE - Group Trailer");
+		uneSegment.setTruncatable(true);
+		uneSegment.addField(new Field("controlCount", true));
+		uneSegment.addField(new Field("groupRef", true));
 	}
 }

@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.edisax.unedifact;
+package org.milyn.edisax.unedifact.no_ung;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +31,7 @@ import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.EDIUtils;
 import org.milyn.edisax.MockContentHandler;
 import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.io.StreamUtils;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -41,11 +42,11 @@ import junit.framework.TestCase;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNEdifactInterchangeParserTest extends TestCase {
-	
+public class UNEdifactInterchangeParser_no_ung_Test extends TestCase {
+
 	public void test_unzipped() throws IOException, SAXException, EDIConfigurationException {
-		EdifactModel model1 = EDIParser.parseMappingModel(getClass().getResourceAsStream("MSG1-model.xml"));
-		EdifactModel model2 = EDIParser.parseMappingModel(getClass().getResourceAsStream("MSG2-model.xml"));
+		EdifactModel model1 = EDIParser.parseMappingModel(getClass().getResourceAsStream("../MSG1-model.xml"));
+		EdifactModel model2 = EDIParser.parseMappingModel(getClass().getResourceAsStream("../MSG2-model.xml"));
 		
 		UNEdifactInterchangeParser parser = new UNEdifactInterchangeParser();
 		parser.addMappingModel(model1).addMappingModel(model2);
@@ -69,6 +70,7 @@ public class UNEdifactInterchangeParserTest extends TestCase {
 		handler = new MockContentHandler();
 		parser.setContentHandler(handler);		
 		parser.parse(new InputSource(getClass().getResourceAsStream("unedifact-msg-01.edi")));		
+		//System.out.println(handler.xmlMapping);
         XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected.xml")), new StringReader(handler.xmlMapping.toString()));
 
@@ -76,8 +78,6 @@ public class UNEdifactInterchangeParserTest extends TestCase {
 		handler = new MockContentHandler();
 		parser.setContentHandler(handler);		
 		parser.parse(new InputSource(getClass().getResourceAsStream("unedifact-msg-02.edi")));
-		
-		System.out.println(handler.xmlMapping);
 		
         XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected.xml")), new StringReader(handler.xmlMapping.toString()));
@@ -90,10 +90,10 @@ public class UNEdifactInterchangeParserTest extends TestCase {
 		
 		ZipOutputStream zipStream = new ZipOutputStream(new FileOutputStream(zipFile));		
 		try {
-			addZipEntry("test/models/subs/MSG1-model.xml", "MSG1-model.xml", zipStream);
-			addZipEntry("test/models/subs/MSG2-model.xml", "MSG2-model.xml", zipStream);
-			addZipEntry("test/models/MSG3-model.xml", "MSG3-model.xml", zipStream);
-			addZipEntry(EDIUtils.EDI_MAPPING_MODEL_ZIP_LIST_FILE, "mapping-models.lst", zipStream);
+			addZipEntry("test/models/subs/MSG1-model.xml", "../MSG1-model.xml", zipStream);
+			addZipEntry("test/models/subs/MSG2-model.xml", "../MSG2-model.xml", zipStream);
+			addZipEntry("test/models/MSG3-model.xml", "../MSG3-model.xml", zipStream);
+			addZipEntry(EDIUtils.EDI_MAPPING_MODEL_ZIP_LIST_FILE, "../mapping-models.lst", zipStream);
 		} finally {
 			zipStream.close();
 		}

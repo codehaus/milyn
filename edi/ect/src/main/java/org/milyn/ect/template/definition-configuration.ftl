@@ -44,18 +44,18 @@ ${indent+"\t"}<medi:documentation><@handleHtmlEntities value=segment.documentati
 ${indent}<medi:field <@writeValueNodeAttributes value=field/><#if
 field.required?exists>required="${field.required?string}" </#if><#if
 field.truncatable?exists>truncatable="${field.truncatable?string}" </#if><#if
-field.component?size &gt; 0 || field.documentation?exists>></#if><#if field.documentation?exists>
-${indent+"\t"}<medi:documentation>${field.documentation}</medi:documentation></#if><#list field.component as component>
-<@writeComponent component=component indent=indent+"\t"/></#list><#if field.component?size &gt; 0 || field.documentation?exists>
+field.components?size &gt; 0 || field.documentation?exists>></#if><#if field.documentation?exists>
+${indent+"\t"}<medi:documentation>${field.documentation}</medi:documentation></#if><#list field.components as component>
+<@writeComponent component=component indent=indent+"\t"/></#list><#if field.components?size &gt; 0 || field.documentation?exists>
 ${indent}</medi:field><#else>/></#if>
 </#macro>
 
 
 <#macro writeComponent component indent>
-${indent}<medi:component <@writeValueNodeAttributes value=component/><#if component.required?exists>required="${component.required?string}" </#if><#if component.truncatable?exists>truncatable="${component.truncatable?string}" </#if><#if component.subComponent?size &gt; 0 || component.documentation?exists>></#if><#if component.documentation?exists>
-${indent+"\t"}<medi:documentation>${component.documentation}</medi:documentation></#if><#list component.subComponent as subcomponent>
+${indent}<medi:component <@writeValueNodeAttributes value=component/><#if component.required?exists>required="${component.required?string}" </#if><#if component.truncatable?exists>truncatable="${component.truncatable?string}" </#if><#if component.subComponents?size &gt; 0 || component.documentation?exists>></#if><#if component.documentation?exists>
+${indent+"\t"}<medi:documentation>${component.documentation}</medi:documentation></#if><#list component.subComponents as subcomponent>
 <@writeSubComponent subComponent=subcomponent indent=indent+"\t"/>
-</#list><#if component.subComponent?size&gt;0 || component.documentation?exists>
+</#list><#if component.subComponents?size&gt;0 || component.documentation?exists>
 ${indent}</medi:component><#else>/></#if>
 </#macro>
 

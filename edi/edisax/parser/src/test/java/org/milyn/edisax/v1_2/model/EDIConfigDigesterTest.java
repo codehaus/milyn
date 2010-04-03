@@ -63,9 +63,9 @@ public class EDIConfigDigesterTest extends TestCase {
         //Fields
         for (Field field : segment.getFields()) {
             assertEquals("Field[" + field.getXmltag() + "] should have the Segment[" + segment.getXmltag() + "] as parent", field.getParent(), segment);
-            for (Component component : field.getComponent()) {
+            for (Component component : field.getComponents()) {
                 assertEquals("Component[" + component.getXmltag() + "] should have the Field[" + field.getXmltag() + "] as parent", component.getParent(), field);
-                for (SubComponent subComponent : component.getSubComponent()) {
+                for (SubComponent subComponent : component.getSubComponents()) {
                     assertEquals("SubComponent[" + subComponent.getXmltag() + "] should have the Component[" + component.getXmltag() + "] as parent", subComponent.getParent(), component);
                 }
             }
@@ -101,7 +101,7 @@ public class EDIConfigDigesterTest extends TestCase {
 
         // Assert Component is read correctly.
         // <medi:component xmltag="aBinary" required="true" type="Binary" minLength="0" maxLength="8"/>
-        Component component = fields.get(1).getComponent().get(0);
+        Component component = fields.get(1).getComponents().get(0);
         assertEquals("Failed to digest type-attribute for Component", component.getType(), "Binary");
         assertNull("Parameters-attribute should be null in Component", component.getTypeParameters());
         assertEquals("Failed to digest minLength-attribute for Component", component.getMinLength(), new Integer(0));
@@ -110,7 +110,7 @@ public class EDIConfigDigesterTest extends TestCase {
 
         // Assert SubComponent is read correctly.
         // <medi:sub-component xmltag="aNumeric" type="Numeric" format="#0.00" minLength="1" maxLength="4"/>
-        SubComponent subcomponent = fields.get(1).getComponent().get(1).getSubComponent().get(0);
+        SubComponent subcomponent = fields.get(1).getComponents().get(1).getSubComponents().get(0);
         assertEquals("Failed to digest type-attribute for SubComponent", subcomponent.getType(), "Double");
         assertEquals("Failed to digest parameters-attribute for SubComponent", subcomponent.getTypeParameters().get(0).getKey(), "format");
         assertEquals("Failed to digest format-attribute for SubComponent", subcomponent.getTypeParameters().get(0).getValue(), "#0.00");
