@@ -51,6 +51,8 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class UNEdifactInterchangeParser implements XMLReader {
 
+    private Map<String, Boolean> features = new HashMap<String, Boolean>();
+	
 	private static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
 	
 	private Map<Description, EdifactModel> mappingModels = new HashMap<Description, EdifactModel>();
@@ -69,18 +71,23 @@ public class UNEdifactInterchangeParser implements XMLReader {
 		
         try {
 	        BufferedSegmentReader segmentReader = new BufferedSegmentReader(unedifactInterchange, defaultUNEdifactDelimiters);
+	        boolean validate = getFeature(EDIParser.FEATURE_VALIDATE);
 	        String segCode;
+	        
+	        segmentReader.setIgnoreNewLines(getFeature(EDIParser.FEATURE_IGNORE_NEWLINES));
 	        
 	        contentHandler.startDocument();
 	        contentHandler.startElement(XMLConstants.NULL_NS_URI, "unEdifact", StringUtils.EMPTY, new AttributesImpl());
 	
 	        while(true) {
-		        segCode = segmentReader.read(3);
+		        segCode = segmentReader.peek(3);
 		        if(segCode.length() == 3) {
 		        	ControlBlockHandler handler = UNEdifactUtil.getControlBlockHandler(segCode);
-		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler);
+		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, validate);
 		        	
+					interchangeContext.indentDepth.value++;
 		        	handler.process(interchangeContext);
+					interchangeContext.indentDepth.value--;
 		        } else {
 		        	break;
 		        }
@@ -145,6 +152,22 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	public void setContentHandler(ContentHandler contentHandler) {
 		this.contentHandler = contentHandler;
 	}
+
+	public void ignoreNewLines(boolean ignoreNewLines) {
+		setFeature(EDIParser.FEATURE_IGNORE_NEWLINES, ignoreNewLines);
+	}
+    
+    public void setFeature(String name, boolean value) {
+    	features.put(name, value);
+    }
+    
+    public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
+    	Boolean feature = features.get(name);
+    	if(feature == null) {
+    		return false;
+    	}
+    	return feature;
+    }
     
     /****************************************************************************
      *
@@ -154,13 +177,6 @@ public class UNEdifactInterchangeParser implements XMLReader {
     
     public void parse(String systemId) throws IOException, SAXException {
     	throw new UnsupportedOperationException("Operation not supports by this reader.");
-    }
-    
-    public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
-    	return false;
-    }
-    
-    public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
     }
     
     public DTDHandler getDTDHandler() {

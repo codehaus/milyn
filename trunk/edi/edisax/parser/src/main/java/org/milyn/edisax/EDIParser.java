@@ -119,14 +119,15 @@ import java.util.regex.Pattern;
  */
 public class EDIParser implements XMLReader {
 
-    protected static final String VALIDATE = "http://xml.org/sax/features/validation";
+    public static final String FEATURE_VALIDATE = "http://xml.org/sax/features/validation";
+    public static final String FEATURE_IGNORE_NEWLINES = "http://xml.org/sax/features/ignore-newlines";
+    
     private Map<String, Boolean> features;
 
     private ContentHandler contentHandler;
     private MutableInt indentDepth;
     private static Attributes EMPTY_ATTRIBS = new AttributesImpl();
     private static Pattern EMPTY_LINE = Pattern.compile("[\n\r ]*");
-
 
     private EdifactModel edifactModel;
     private BufferedSegmentReader segmentReader;
@@ -328,6 +329,7 @@ public class EDIParser implements XMLReader {
         try {
 	        // Create a reader for reading the EDI segments...
 	        segmentReader = new BufferedSegmentReader(ediInputSource, edifactModel.getDelimiters());
+	        segmentReader.setIgnoreNewLines(getFeature(FEATURE_IGNORE_NEWLINES));
 	        
 	        // Initialize the indent counter...
 	        indentDepth = new MutableInt(0);
@@ -554,7 +556,7 @@ public class EDIParser implements XMLReader {
      * @throws SAXException EDI processing exception.
 	 */
 	private void mapField(String fieldMessageVal, Field expectedField, int fieldIndex, String segmentCode) throws SAXException {
-		List<Component> expectedComponents = expectedField.getComponent();
+		List<Component> expectedComponents = expectedField.getComponents();
 
         startElement(expectedField.getXmltag(), true);
 
@@ -594,7 +596,7 @@ public class EDIParser implements XMLReader {
      * @throws SAXException EDI processing exception.
 	 */
 	private void mapComponent(String componentMessageVal, Component expectedComponent, int fieldIndex, int componentIndex, String segmentCode, String field) throws SAXException {
-		List<SubComponent> expectedSubComponents = expectedComponent.getSubComponent();
+		List<SubComponent> expectedSubComponents = expectedComponent.getSubComponents();
 
 		startElement(expectedComponent.getXmltag(), true);
 
@@ -654,7 +656,7 @@ public class EDIParser implements XMLReader {
 
         for (int i = 1; i < currentSegmentFields.length; i++) {
             Field field = expectedFields.get(i-1);
-            if (field.getComponent().size() == 0 && (!currentSegmentFields[i].equals(""))) {
+            if (field.getComponents().size() == 0 && (!currentSegmentFields[i].equals(""))) {
                 validateValueNode(field, currentSegmentFields[i]);
             }
         }
@@ -692,7 +694,7 @@ public class EDIParser implements XMLReader {
 
         for (int i = 0; i < currentFieldComponents.length; i++) {
             Component component = expectedComponents.get(i);
-            if (component.getSubComponent().size() == 0 && (!currentFieldComponents[i].equals(""))) {
+            if (component.getSubComponents().size() == 0 && (!currentFieldComponents[i].equals(""))) {
                 validateValueNode(component, currentFieldComponents[i]);
             }
         }
@@ -740,7 +742,7 @@ public class EDIParser implements XMLReader {
 
         // Return when validation is turned off.
         try {
-            if (!getFeature(VALIDATE)) {
+            if (!getFeature(FEATURE_VALIDATE)) {
                 return;
             }
         } catch (SAXNotRecognizedException e) {
@@ -814,7 +816,8 @@ public class EDIParser implements XMLReader {
     }
     private void initializeFeatures() {
         features = new HashMap<String,Boolean>();
-        features.put(VALIDATE, false);
+        features.put(FEATURE_VALIDATE, false);
+        features.put(FEATURE_IGNORE_NEWLINES, false);
     }
     
     /****************************************************************************
@@ -831,7 +834,7 @@ public class EDIParser implements XMLReader {
     	return getFeatures().get(name);
     }
     
-    public void setFeature(String name, boolean value) throws SAXNotRecognizedException, SAXNotSupportedException {
+    public void setFeature(String name, boolean value) {
     	getFeatures().put(name, value);
     }
     

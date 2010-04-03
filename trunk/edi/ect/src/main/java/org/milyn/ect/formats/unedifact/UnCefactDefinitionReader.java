@@ -193,7 +193,7 @@ public class UnCefactDefinitionReader {
         field.setTruncatable(oldField.isTruncatable());
         field.setType(oldField.getType());
         field.setTypeParameters(oldField.getTypeParameters());
-        field.getComponent().addAll(oldField.getComponent());
+        field.getComponents().addAll(oldField.getComponents());
         return field;
     }
 
@@ -245,7 +245,7 @@ public class UnCefactDefinitionReader {
                 Component component = new Component();
                 component.setRequired(linePart.isMandatory());
                 populateComponent(component, components.get(linePart.getId()));
-                field.getComponent().add(component);
+                field.getComponents().add(component);
             }
             line = reader.readLine();
         }

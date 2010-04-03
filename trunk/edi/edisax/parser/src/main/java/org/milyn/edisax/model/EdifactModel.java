@@ -194,7 +194,7 @@ public class EdifactModel {
             for ( Field field : segment.getFields()) {
                 field.setTruncatable(isTruncatable(truncatableFields, field.isTruncatable()));
                 if ( truncatableComponents != null ) {
-                    for (Component component : field.getComponent()) {
+                    for (Component component : field.getComponents()) {
                         component.setTruncatable(isTruncatable(truncatableComponents, component.isTruncatable()));
                     }
                 }

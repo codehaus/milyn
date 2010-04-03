@@ -39,11 +39,20 @@ public class ValueNode extends MappingNode {
     private DataDecoder decoder;
     private Class<?> typeClass;
     private Properties decodeParams;
+    
+	public ValueNode() {
+	}
+    
+	public ValueNode(String xmltag) {
+		super(xmltag);
+		minLength = 0;
+		maxLength = 1;
+	}
 
-    public String getType() {
+	public String getType() {
         return type;
     }
-
+    
     public void setType(String type) {
         this.type = type;
         if(type != null) {

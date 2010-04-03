@@ -43,6 +43,7 @@ public class BufferedSegmentReader {
 	private Stack<Delimiters> delimitersStack = new Stack<Delimiters>();
     private Delimiters currentDelimiters;
     private BufferedSegmentListener segmentListener;
+	private boolean ignoreNewLines;
 
     /**
      * Construct the stream reader.
@@ -93,6 +94,18 @@ public class BufferedSegmentReader {
 	}
 	
 	/**
+	 * Set ignore new lines in the EDI Stream.
+	 * <p/>
+	 * Some EDI messages are formatted with new lines for readability and so the
+	 * new line characters should be ignored.
+	 * 
+	 * @param ignoreNewLines True if new line characters should be ignored, otherwise false.
+	 */
+	public void setIgnoreNewLines(boolean ignoreNewLines) {
+		this.ignoreNewLines = ignoreNewLines;
+	}
+	
+	/**
 	 * Read a fixed number of characters from the input source.
 	 * @param numChars The number of characters to read.
 	 * @return The characters in a String.  If the end of the input source
@@ -101,22 +114,51 @@ public class BufferedSegmentReader {
 	 * @throws IOException Error reading from input source.
 	 */
 	public String read(int numChars) throws IOException {
-    	int c;
-    	
-    	segmentBuffer.setLength(0);
-        while((c = reader.read()) != -1) {
-        	segmentBuffer.append((char)c);
-        	if(segmentBuffer.length() == numChars) {
-        		break;
-        	}
-        }
-
+		segmentBuffer.setLength(0);
         try {
-        	return segmentBuffer.toString();
+        	return peek(numChars);
         } finally {
         	segmentBuffer.setLength(0);
         }
-	}	
+	}
+
+	/**
+	 * Peek a fixed number of characters from the input source.
+	 * <p/>
+	 * Peek differs from {@link #read(int)} in that it leaves the
+	 * characters in the segment buffer.
+	 * 
+	 * @param numChars The number of characters to peeked.
+	 * @return The characters in a String.  If the end of the input source
+	 * was reached, the length of the string will be less than the requested number
+	 * of characters.
+	 * @throws IOException Error reading from input source.
+	 */
+	public String peek(int numChars) throws IOException {
+        boolean ignoreCRLF;
+
+        // Ignoring of new lines can be set as part of the segment delimiter, or
+        // as a feature on the parser (the later is the preferred method)...
+        ignoreCRLF = (currentDelimiters.ignoreCRLF() || ignoreNewLines);
+
+		if(segmentBuffer.length() < numChars) {
+			int c;
+	        while((c = reader.read()) != -1) {
+	            if (ignoreCRLF && (c == '\n' || c == '\r')) {
+	                continue;
+	            }
+
+	        	segmentBuffer.append((char)c);
+	        	if(segmentBuffer.length() == numChars) {
+	        		break;
+	        	}
+	        }
+    	}
+    	
+    	int endIndex = Math.min(numChars, segmentBuffer.length());
+    	
+    	return segmentBuffer.substring(0, endIndex);
+	}
 
 	/**
 	 * Set the segment listener.
@@ -152,8 +194,12 @@ public class BufferedSegmentReader {
         int delimiterLen = segmentDelimiter.length;
         String escape = currentDelimiters.getEscape();
         int escapeLen = escape != null ? escape.length() : 0;
-        boolean ignoreCRLF = currentDelimiters.ignoreCRLF();
+        boolean ignoreCRLF;
 
+        // Ignoring of new lines can be set as part of the segment delimiter, or
+        // as a feature on the parser (the later is the preferred method)...
+        ignoreCRLF = (currentDelimiters.ignoreCRLF() || ignoreNewLines);
+        
         if(clearBuffer) {
         	segmentBuffer.setLength(0);
         }
@@ -167,8 +213,9 @@ public class BufferedSegmentReader {
         
         // Read the next segment...
         while(c != -1) {
+        	char theChar = (char) c;
 
-            if (ignoreCRLF && (c == '\n' || c == '\r')) {
+            if (ignoreCRLF && (theChar == '\n' || theChar == '\r')) {
                 c = reader.read();
                 continue;
             }

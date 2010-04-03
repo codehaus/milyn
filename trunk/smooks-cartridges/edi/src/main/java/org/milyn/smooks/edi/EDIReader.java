@@ -83,6 +83,9 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
     @ConfigParam(name = MODEL_CONFIG_KEY)
     private String modelConfigData;
 
+    @ConfigParam(defaultVal = "false")
+    private boolean ignoreNewLines;
+
     @ConfigParam(defaultVal = "UTF-8")
     private Charset encoding;
 
@@ -101,18 +104,13 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
 		EdifactModel edi2xmlMappingModel = getMappingModel();
 		
 		setMappingModel(edi2xmlMappingModel);
-        setValidateValueNodes();
+        
+		// Set features...
+		setFeature(FEATURE_VALIDATE, validate);        
+		setFeature(FEATURE_IGNORE_NEWLINES, ignoreNewLines);        
+
         super.parse(ediSource);
 	}
-
-    /**
-     * Activates or deactivates validation of value-nodes in EDIParser.
-     * @throws SAXNotSupportedException When the XMLReader recognizes the property name but cannot set the requested value.
-     * @throws SAXNotRecognizedException If the property value can't be assigned or retrieved.
-     */
-    private void setValidateValueNodes() throws SAXNotSupportedException, SAXNotRecognizedException {
-        super.setFeature(VALIDATE, validate);        
-    }
 
     /**
 	 * Get the mapping model associated with the supplied SmooksResourceConfiguration.

@@ -35,6 +35,11 @@ public class Segment extends SegmentGroup {
         }
         return this.fields;
     }
+    
+    public Segment addField(Field field) {
+    	getFields().add(field);
+    	return this;
+    }
 
     public String getSegcode() {
         return segcode;
