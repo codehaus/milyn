@@ -17,7 +17,6 @@ package org.milyn.edisax.interchange;
 
 import java.io.IOException;
 
-import org.milyn.edisax.EDIParseException;
 import org.xml.sax.SAXException;
 
 /**
