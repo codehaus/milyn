@@ -34,6 +34,14 @@ public class EDIParseException extends SAXException {
     /**
 	 * Public constructor.	 
 	 * @param message Exception message.
+	 */
+	public EDIParseException(String message) {
+		super(message);
+	}
+
+    /**
+	 * Public constructor.	 
+	 * @param message Exception message.
      * @param cause Exception cause
 	 */
 	public EDIParseException(String message, Exception cause) {

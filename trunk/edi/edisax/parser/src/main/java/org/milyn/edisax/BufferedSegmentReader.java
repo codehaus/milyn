@@ -22,8 +22,10 @@ import org.milyn.edisax.model.internal.Delimiters;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Stack;
 
 /**
@@ -32,10 +34,15 @@ import java.util.Stack;
  */
 public class BufferedSegmentReader {
 
-    private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);
+	private static final int MAX_MARK_READ = 512;
+
+	private static Log logger = LogFactory.getLog(BufferedSegmentReader.class);
 
     public static String IGNORE_CR_LF = "!$";
 
+    private InputStream underlyingByteStream;
+    private boolean marked = false;
+    private Charset readEncoding;
     private Reader reader;
     private StringBuffer segmentBuffer = new StringBuffer(512);
     private String[] currentSegmentFields = null;
@@ -44,6 +51,8 @@ public class BufferedSegmentReader {
     private Delimiters currentDelimiters;
     private BufferedSegmentListener segmentListener;
 	private boolean ignoreNewLines;
+	private int charReadCount = 0;
+
 
     /**
      * Construct the stream reader.
@@ -51,11 +60,76 @@ public class BufferedSegmentReader {
      * @param rootDelimiters Root currentDelimiters.  New currentDelimiters can be pushed and popped.
      */
     public BufferedSegmentReader(InputSource ediInputSource, Delimiters rootDelimiters) {
+    	underlyingByteStream = ediInputSource.getByteStream();
         reader = ediInputSource.getCharacterStream();
         if(reader == null) {
-            reader = new InputStreamReader(ediInputSource.getByteStream());
+        	readEncoding = Charset.defaultCharset();
+            reader = new InputStreamReader(underlyingByteStream, readEncoding);
+        } else if(reader instanceof InputStreamReader) {
+        	readEncoding = Charset.forName(((InputStreamReader) reader).getEncoding());
         }
         this.currentDelimiters = rootDelimiters;
+    }
+
+    /**
+     * Try mark the stream so we can support changing of the reader encoding.
+     * @see #changeEncoding(Charset)
+     */
+	public void mark() {
+        if(underlyingByteStream != null) {
+        	if(underlyingByteStream.markSupported()) {
+	        	// We don't support reader changing after we've read MAX_MARK_READ bytes...
+	        	underlyingByteStream.mark(MAX_MARK_READ);
+	        	marked = true;
+        	} else {
+            	logger.debug("Unable to mark EDI Reader for rest (to change reader encoding).  Underlying InputStream type '" + underlyingByteStream.getClass().getName() + "' does not support mark.");
+        	}
+        } else {
+        	logger.debug("Unable to mark EDI Reader for rest (to change reader encoding).  BufferedSegmentReader instance does not have access to the underlying InputStream.");
+        }
+	}
+    
+    /**
+     * Change the encoding used to read the underlying EDI data stream.
+     * <p/>
+     * {@link #mark()} should have been called first.
+     * @param encoding The new encoding.
+     * @return The old/replaced encoding if known, otherwise null.
+     * @throws IOException Failed to skip already read characters.
+     */
+    public Charset changeEncoding(Charset encoding) throws IOException {
+    	if(underlyingByteStream == null) {
+    		throw new IllegalStateException("Unable to change stream read encoding to '" + encoding + "'.  BufferedSegmentReader does not have access to the underlying stream.");
+    	}
+    	if(readEncoding != null && encoding.equals(readEncoding)) {
+    		return readEncoding;
+    	}
+        if(!underlyingByteStream.markSupported()) {
+        	logger.debug("Unable to to change stream read encoding on a stream that does not support 'mark'.");
+        	return readEncoding;
+        }
+        if(!marked) {
+        	logger.debug("Unable to to change stream read encoding on a stream.  'mark' was not called, or was called and failed.");
+        	return readEncoding;
+        }
+    	
+        // reset the stream...
+        try {
+			underlyingByteStream.reset();
+	    	marked = false;
+		} catch (IOException e) {
+        	logger.debug("Unable to to change stream read encoding on stream because reset failed.  Probably because the mark has been invalidated after reading more than " + MAX_MARK_READ + " bytes from the stream.", e);
+        	return readEncoding;
+		}
+        
+		// Create a new reader and skip passed the already read characters...
+    	reader = new InputStreamReader(underlyingByteStream, encoding);
+    	reader.skip(charReadCount);
+    	try {
+    		return readEncoding;
+    	} finally {
+    		readEncoding = encoding;
+    	}
     }
     
     /**
@@ -144,6 +218,7 @@ public class BufferedSegmentReader {
 		if(segmentBuffer.length() < numChars) {
 			int c;
 	        while((c = reader.read()) != -1) {
+	        	charReadCount++;
 	            if (ignoreCRLF && (c == '\n' || c == '\r')) {
 	                continue;
 	            }
@@ -189,12 +264,14 @@ public class BufferedSegmentReader {
      * @throws IOException Error reading from EDI stream.
      */
     public boolean moveToNextSegment(boolean clearBuffer) throws IOException {
-        int c = reader.read();
         char[] segmentDelimiter = currentDelimiters.getSegmentDelimiter();
         int delimiterLen = segmentDelimiter.length;
         String escape = currentDelimiters.getEscape();
         int escapeLen = escape != null ? escape.length() : 0;
         boolean ignoreCRLF;
+        
+        int c = reader.read();
+        charReadCount++;
 
         // Ignoring of new lines can be set as part of the segment delimiter, or
         // as a feature on the parser (the later is the preferred method)...
@@ -217,6 +294,7 @@ public class BufferedSegmentReader {
 
             if (ignoreCRLF && (theChar == '\n' || theChar == '\r')) {
                 c = reader.read();
+                charReadCount++;
                 continue;
             }
 
@@ -257,6 +335,7 @@ public class BufferedSegmentReader {
             }
             
             c = reader.read();
+            charReadCount++;
         }
 
         if(logger.isDebugEnabled()) {

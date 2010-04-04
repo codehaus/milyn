@@ -16,12 +16,8 @@
 package org.milyn.edisax.interchange;
 
 import java.io.IOException;
-import java.util.Map;
 
-import org.milyn.edisax.BufferedSegmentReader;
-import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Description;
-import org.xml.sax.ContentHandler;
+import org.milyn.edisax.EDIParseException;
 import org.xml.sax.SAXException;
 
 /**
@@ -33,7 +29,8 @@ public interface ControlBlockHandler {
 	/**
 	 * Process a UN/EDIFACT control block.
 	 * @param interchangeContext The interchange context.
-     * @throws SAXException EDI processing exception.
+     * @throws IOException Error reading from stream.
+     * @throws SAXException SAX Error handling segment data.
 	 */
 	void process(InterchangeContext interchangeContext)  throws IOException, SAXException;
 }
