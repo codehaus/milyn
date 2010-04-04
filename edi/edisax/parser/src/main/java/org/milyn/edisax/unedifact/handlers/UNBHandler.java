@@ -16,8 +16,13 @@
 package org.milyn.edisax.unedifact.handlers;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.milyn.edisax.BufferedSegmentReader;
+import org.milyn.edisax.EDIParseException;
+import org.milyn.edisax.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.internal.Component;
@@ -34,16 +39,24 @@ public class UNBHandler implements ControlBlockHandler {
 	
 	private Segment unbSegment;
 	private Segment unzSegment;
+	private Map<String, Charset> repertoireToCharset;
 	
 	public UNBHandler() {
 		createSegmentsDefs();
+		createRepertoireToCharsetMap();
 	}
 
 	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 		
 		segmentReader.moveToNextSegment(false);
+		
+		String[] fields = segmentReader.getCurrentSegmentFields();
+		
 		interchangeContext.mapControlSegment(unbSegment, true);
+		
+		String[] syntaxIdComponents = EDIUtils.split(fields[1], segmentReader.getDelimiters().getComponent(), segmentReader.getDelimiters().getEscape());
+		changeReadEncoding(syntaxIdComponents[0], interchangeContext.getSegmentReader());
 		
         while(true) {
 	        String segCode = segmentReader.peek(3);
@@ -57,6 +70,16 @@ public class UNBHandler implements ControlBlockHandler {
 	        	handler.process(interchangeContext);
 	        }
         }		
+	}
+
+	private void changeReadEncoding(String repertoire, BufferedSegmentReader bufferedSegmentReader) throws EDIParseException, IOException {
+		Charset charset = repertoireToCharset.get(repertoire.toUpperCase());
+		
+		if(charset == null) {
+			throw new EDIParseException("Unknown UN/EDIFACT character stream repertoire code '" + repertoire + "'.");
+		}
+		
+		bufferedSegmentReader.changeEncoding(charset);
 	}
 
 	private void createSegmentsDefs() {
@@ -105,5 +128,26 @@ public class UNBHandler implements ControlBlockHandler {
 		unzSegment.setTruncatable(true);
 		unzSegment.addField(new Field("controlCount", true));
 		unzSegment.addField(new Field("controlRef", true));
+	}
+
+	private void createRepertoireToCharsetMap() {
+		repertoireToCharset = new HashMap<String, Charset>();
+		
+		// http://www.gefeg.com/jswg/cl/v41/40107/cl1.htm
+		repertoireToCharset.put("UNOA", Charset.forName("ASCII"));
+		repertoireToCharset.put("UNOB", Charset.forName("ASCII"));
+		repertoireToCharset.put("UNOC", Charset.forName("ISO8859-1"));
+		repertoireToCharset.put("UNOD", Charset.forName("ISO8859-2"));
+		repertoireToCharset.put("UNOE", Charset.forName("ISO8859-5"));
+		repertoireToCharset.put("UNOF", Charset.forName("ISO8859-7"));
+		repertoireToCharset.put("UNOG", Charset.forName("ISO8859-3"));
+		repertoireToCharset.put("UNOH", Charset.forName("ISO8859-4"));
+		repertoireToCharset.put("UNOI", Charset.forName("ISO8859-6"));
+		repertoireToCharset.put("UNOJ", Charset.forName("ISO8859-8"));
+		repertoireToCharset.put("UNOK", Charset.forName("ISO8859-9"));
+		repertoireToCharset.put("UNOL", Charset.forName("ISO8859-15"));
+		repertoireToCharset.put("UNOW", Charset.forName("UTF-8"));
+		repertoireToCharset.put("UNOX", Charset.forName("ISO-2022-CN"));
+		repertoireToCharset.put("UNOY", Charset.forName("UTF-8"));
 	}
 }

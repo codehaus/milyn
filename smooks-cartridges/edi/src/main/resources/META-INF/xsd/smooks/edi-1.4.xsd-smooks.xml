@@ -26,12 +26,6 @@
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">ignoreNewLines</param>
     </resource-config>
-
-    <resource-config selector="reader">
-        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
-        <param name="attribute">mappingModelEncoding</param>
-        <param name="mapTo">encoding</param>
-    </resource-config>
     
     <resource-config selector="reader">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>

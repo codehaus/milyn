@@ -32,17 +32,6 @@
 			    		 </xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="mappingModelEncoding" type="xs:string" use="optional" default="UTF-8">
-					<xs:annotation>
-						<xs:documentation xml:lang="en">
-						    The character encoding of the mapping model. Default "UTF-8".
-						    <p/>
-						    Not to be confused with the encoding of the EDI message stream, which is controlled
-						    by supplying an appropriately configured Reader instance to the StreamSource passed
-						    to the Smooks.filterSource() method.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
 				<xs:attribute name="ignoreNewLines" type="xs:boolean" use="optional" default="false">
 					<xs:annotation>
 						<xs:documentation xml:lang="en">

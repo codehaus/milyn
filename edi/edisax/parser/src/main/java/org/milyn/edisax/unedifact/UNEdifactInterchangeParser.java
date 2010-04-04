@@ -74,6 +74,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	        boolean validate = getFeature(EDIParser.FEATURE_VALIDATE);
 	        String segCode;
 	        
+	        segmentReader.mark();
 	        segmentReader.setIgnoreNewLines(getFeature(EDIParser.FEATURE_IGNORE_NEWLINES));
 	        
 	        contentHandler.startDocument();
