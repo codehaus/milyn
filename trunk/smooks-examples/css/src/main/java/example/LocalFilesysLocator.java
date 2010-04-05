@@ -20,17 +20,24 @@ import org.milyn.resource.ContainerResourceLocator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.net.URI;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class LocalFilesysLocator implements ContainerResourceLocator {
 
-    public InputStream getResource(String configName, String defaultUri) throws IllegalArgumentException, IOException {
+    private URI baseURI = URI.create("./");
+
+	public InputStream getResource(String configName, String defaultUri) throws IllegalArgumentException, IOException {
         return getResource(defaultUri);
     }
 
     public InputStream getResource(String uri) throws IllegalArgumentException, IOException {
         return new FileInputStream(uri);
     }
+
+	public URI getBaseURI() {
+		return baseURI;
+	}
 }

@@ -18,6 +18,7 @@ package org.milyn.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 /**
  * Interface for locating stream resources from the container..
@@ -42,6 +43,11 @@ public interface ContainerResourceLocator extends ExternalResourceLocator {
 	 * @throws IOException
 	 *             Unable to get the resource stream.
 	 */
-	public InputStream getResource(String configName, String defaultUri)
-			throws IllegalArgumentException, IOException;
+	InputStream getResource(String configName, String defaultUri) throws IllegalArgumentException, IOException;
+	
+    /**
+     * Get the base URI for the locator instance.
+     * @return The base URI for the locator instance.
+     */
+	URI getBaseURI();
 }

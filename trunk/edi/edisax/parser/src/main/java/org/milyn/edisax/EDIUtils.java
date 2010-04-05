@@ -170,7 +170,7 @@ public class EDIUtils {
 		AssertArgument.isNotNull(mappingModels, "mappingModels");
 		AssertArgument.isNotNull(baseURI, "baseURI");
 
-		String[] mappingModelFileTokens = mappingModelFiles.split(";");
+		String[] mappingModelFileTokens = mappingModelFiles.split(",");
 		
 		for(String mappingModelFile : mappingModelFileTokens) {
 			mappingModelFile = mappingModelFile.trim();
@@ -178,11 +178,13 @@ public class EDIUtils {
 			// First try processing based on the file extension
 			if(mappingModelFile.endsWith(".xml")) {
 				if(loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
-					return;
+					// Loaded an XML config... on to next config in list...
+					continue;
 				}
 			} else if(mappingModelFile.endsWith(".zip") || mappingModelFile.endsWith(".jar")) {
 				if(loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
-					return;
+					// Loaded an zipped config... on to next config in list...
+					continue;
 				}
 			}
 			

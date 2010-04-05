@@ -167,7 +167,13 @@ public class AbstractParser {
         } else {
             Reader reader = getReader(source, executionContext);
             inputSource = new InputSource(reader);
+            
+            // Also attach the underlying stream to the InputSource...
+            if(source instanceof StreamSource) {
+            	inputSource.setByteStream(((StreamSource) source).getInputStream());
+            }
         }
+        
         return inputSource;
 
     }

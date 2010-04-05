@@ -17,6 +17,7 @@
 package org.milyn.resource;
 
 import java.io.InputStream;
+import java.net.URI;
 
 import org.milyn.util.ClassUtil;
 
@@ -44,5 +45,9 @@ public class ClasspathResourceLocator implements ContainerResourceLocator {
 		}
 
 		return ClassUtil.getResourceAsStream(uri, getClass());
+	}
+
+	public URI getBaseURI() {
+		return null;
 	}
 }
