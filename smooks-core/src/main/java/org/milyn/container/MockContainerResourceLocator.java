@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Hashtable;
 
 import org.milyn.io.StreamUtils;
@@ -65,5 +66,9 @@ public class MockContainerResourceLocator implements ContainerResourceLocator {
 		}
 		
 		return new ByteArrayInputStream(resBytes);
+	}
+
+	public URI getBaseURI() {
+		return URI.create("./");
 	}
 }

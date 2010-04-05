@@ -15,9 +15,21 @@
 */
 package org.milyn.smooks.edi.unedifact;
 
+import java.io.IOException;
+import java.util.Map;
+
+import org.milyn.cdr.annotation.AppContext;
+import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
+import org.milyn.smooks.edi.ModelLoader;
 import org.milyn.xml.SmooksXMLReader;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * UN/EDIFACT Smooks reader.
@@ -25,11 +37,36 @@ import org.milyn.xml.SmooksXMLReader;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class UNEdifactReader extends UNEdifactInterchangeParser implements SmooksXMLReader  {
+	
+	@ConfigParam
+	private String mappingModel;
 
-	/* (non-Javadoc)
-	 * @see org.milyn.xml.SmooksXMLReader#setExecutionContext(org.milyn.container.ExecutionContext)
-	 */
-	public void setExecutionContext(ExecutionContext executionContext) {
+	@ConfigParam(defaultVal = "false")
+	private boolean validate;
+    
+	@ConfigParam(defaultVal = "false")
+	private boolean ignoreNewLines;
+
+    @AppContext
+    private ApplicationContext applicationContext;
+    
+	public void setExecutionContext(ExecutionContext executionContext) {		
+	}
+
+	@Override
+	public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
+		Map<Description, EdifactModel> mappingModelMap;
 		
+		try {
+			mappingModelMap = ModelLoader.getMappingModels(mappingModel, applicationContext);
+		} catch (EDIConfigurationException e) {
+			throw new IOException("Failed to load mapping model(s) '" + mappingModel + "'.", e);
+		}
+		
+		setMappingModels(mappingModelMap);
+		ignoreNewLines(ignoreNewLines);
+		validate(validate);
+		
+		super.parse(unedifactInterchange);
 	}
 }

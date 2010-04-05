@@ -18,6 +18,7 @@ package org.milyn.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 
 import javax.servlet.ServletConfig;
 
@@ -139,5 +140,9 @@ public class ServletResourceLocator implements ContainerResourceLocator {
 		}
 
 		return resourceStream;
+	}
+
+	public URI getBaseURI() {
+		return URI.create(config.getServletContext().getContextPath());
 	}
 }

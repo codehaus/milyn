@@ -103,6 +103,20 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	}
 
 	/**
+	 * Set the EDI mapping models to be used in all subsequent parse operations.
+	 * <p/>
+	 * The models can be generated through a call to the {@link EDIParser}.
+	 * 
+	 * @param mappingModels The mapping models.
+	 * @return This parser instance.
+	 */
+	public UNEdifactInterchangeParser setMappingModels(Map<Description, EdifactModel> mappingModels) {
+		AssertArgument.isNotNullAndNotEmpty(mappingModels, "mappingModels");		
+		this.mappingModels = mappingModels;
+		return this;
+	}
+
+	/**
 	 * Add EDI mapping models to be used in all subsequent parse operations.
 	 * <p/>
 	 * The models can be generated through a call to the {@link EDIParser}.
@@ -156,6 +170,10 @@ public class UNEdifactInterchangeParser implements XMLReader {
 
 	public void ignoreNewLines(boolean ignoreNewLines) {
 		setFeature(EDIParser.FEATURE_IGNORE_NEWLINES, ignoreNewLines);
+	}
+
+	public void validate(boolean validate) {
+		setFeature(EDIParser.FEATURE_VALIDATE, validate);
 	}
     
     public void setFeature(String name, boolean value) {
