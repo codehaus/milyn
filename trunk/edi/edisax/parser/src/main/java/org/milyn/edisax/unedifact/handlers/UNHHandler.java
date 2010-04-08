@@ -50,7 +50,7 @@ public class UNHHandler implements ControlBlockHandler {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 		Map<Description, EdifactModel> mappingModels = interchangeContext.getMappingModels();
 		
-		interchangeContext.getControlSegmentParser().startElement("message", true);
+		interchangeContext.getControlSegmentParser().startElement("unEdifactMessage", true);
 
 		// Move to the end of the UNH segment and map it's fields..
 		segmentReader.moveToNextSegment(false);
@@ -77,7 +77,7 @@ public class UNHHandler implements ControlBlockHandler {
 		interchangeContext.mapControlSegment(untSegment, true);
 		segmentReader.getSegmentBuffer().setLength(0);
 
-		interchangeContext.getControlSegmentParser().endElement("message", true);
+		interchangeContext.getControlSegmentParser().endElement("unEdifactMessage", true);
 	}
 	
 	private class UNTSegmentListener implements BufferedSegmentListener {
@@ -104,7 +104,7 @@ public class UNHHandler implements ControlBlockHandler {
 		unhSegment.setTruncatable(true);
 		unhSegment.addField(new Field("messageRefNum", true));
 		unhSegment.addField(new Field("messageIdentifier", true).
-                addComponent(new Component("type", true)).
+                addComponent(new Component("id", true)).
                 addComponent(new Component("versionNum", true)).
                 addComponent(new Component("releaseNum", true)).
                 addComponent(new Component("controllingAgencyCode", true)).
@@ -114,7 +114,7 @@ public class UNHHandler implements ControlBlockHandler {
 		unhSegment.addField(new Field("commonAccessRef", false));
 		unhSegment.addField(new Field("transferStatus", false).
                 addComponent(new Component("sequence", true)).
-                addComponent(new Component("firtAndLast", false)));
+                addComponent(new Component("firstAndLast", false)));
 		unhSegment.addField(new Field("subset", false).
                 addComponent(new Component("id", true)).
                 addComponent(new Component("versionNum", false)).
@@ -136,7 +136,7 @@ public class UNHHandler implements ControlBlockHandler {
 		untSegment = new Segment();
 		untSegment.setSegcode("UNT");
 		untSegment.setXmltag("UNT");
-		untSegment.setDescription("UNE - Message Trailer");
+		untSegment.setDescription("UNT - Message Trailer");
 		untSegment.setTruncatable(true);
 		untSegment.addField(new Field("segmentCount", true));
 		untSegment.addField(new Field("messageRefNum", true));

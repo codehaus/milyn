@@ -60,7 +60,7 @@ public class UNEdifactReader extends UNEdifactInterchangeParser implements Smook
 		try {
 			mappingModelMap = ModelLoader.getMappingModels(mappingModel, applicationContext);
 		} catch (EDIConfigurationException e) {
-			throw new IOException("Failed to load mapping model(s) '" + mappingModel + "'.", e);
+			throw (IOException)(new IOException("Failed to load mapping model(s) '" + mappingModel + "'.").initCause(e));
 		}
 		
 		setMappingModels(mappingModelMap);

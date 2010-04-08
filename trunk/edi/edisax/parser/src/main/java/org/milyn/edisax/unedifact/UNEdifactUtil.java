@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.milyn.edisax.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
@@ -66,17 +67,23 @@ public abstract class UNEdifactUtil {
 
 	public static EdifactModel getMappingModel(String messageName, Delimiters delimiters, Map<Description, EdifactModel> mappingModels) throws SAXException {
 		Set<Entry<Description, EdifactModel>> modelSet = mappingModels.entrySet();
+		String[] nameComponents = EDIUtils.split(messageName, delimiters.getComponent(), delimiters.getEscape());
+		StringBuilder lookupNameBuilder = new StringBuilder();
 		
-		// We need to replace the component delimiters in message name from the interchange, with the
-		// default component delimiter, so we can match the name in the interchange against the names
-		// in the config models (which should use the default UN/EDIFACT delimiters)...
-		messageName = messageName.replace(delimiters.getComponent(), ":");
+		// First 4 components are mandatory...we use those as the lookup...
+		for(int i = 0; i < 4; i++) {
+			if(i > 0) {
+				lookupNameBuilder.append(':');
+			}
+			lookupNameBuilder.append(nameComponents[i]);
+		}
+		String lookupName = lookupNameBuilder.toString().trim();
 		
 		for(Entry<Description, EdifactModel> mappingModel : modelSet) {
 			Description description = mappingModel.getKey();
 			String compoundName = description.getName() + ":" + description.getVersion();
 			
-			if(compoundName.equals(messageName.trim())) {
+			if(compoundName.equals(lookupName)) {
 				return mappingModel.getValue();
 			}
 		}
