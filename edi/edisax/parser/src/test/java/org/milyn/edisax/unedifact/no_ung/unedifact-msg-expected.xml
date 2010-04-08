@@ -2,7 +2,7 @@
 	<UNB>
 		<syntaxIdentifier>
 			<id>UNOA</id>
-			<version>3</version>
+			<versionNum>3</versionNum>
 		</syntaxIdentifier>
 		<sender>
 			<id>Acme</id>
@@ -18,11 +18,11 @@
 		</dateTime>
 		<controlRef>6002</controlRef>
 	</UNB>
-	<message>
+	<unEdifactMessage>
 		<UNH>
 			<messageRefNum>0001</messageRefNum>
 			<messageIdentifier>
-				<type>MSG2</type>
+				<id>MSG2</id>
 				<versionNum>S</versionNum>
 				<releaseNum>93A</releaseNum>
 				<controllingAgencyCode>UN</controllingAgencyCode>
@@ -39,12 +39,12 @@
 			<segmentCount>25</segmentCount>
 			<messageRefNum>0001</messageRefNum>
 		</UNT>
-	</message>
-	<message>
+	</unEdifactMessage>
+	<unEdifactMessage>
 		<UNH>
 			<messageRefNum>0001</messageRefNum>
 			<messageIdentifier>
-				<type>MSG2</type>
+				<id>MSG2</id>
 				<versionNum>S</versionNum>
 				<releaseNum>93A</releaseNum>
 				<controllingAgencyCode>UN</controllingAgencyCode>
@@ -61,12 +61,12 @@
 			<segmentCount>25</segmentCount>
 			<messageRefNum>0001</messageRefNum>
 		</UNT>
-	</message>
-	<message>
+	</unEdifactMessage>
+	<unEdifactMessage>
 		<UNH>
 			<messageRefNum>0001</messageRefNum>
 			<messageIdentifier>
-				<type>MSG1</type>
+				<id>MSG1</id>
 				<versionNum>S</versionNum>
 				<releaseNum>93A</releaseNum>
 				<controllingAgencyCode>UN</controllingAgencyCode>
@@ -85,7 +85,7 @@
 			<segmentCount>25</segmentCount>
 			<messageRefNum>0001</messageRefNum>
 		</UNT>
-	</message>
+	</unEdifactMessage>
 	<UNZ>
 		<controlCount>1</controlCount>
 		<controlRef>00000000000001</controlRef>

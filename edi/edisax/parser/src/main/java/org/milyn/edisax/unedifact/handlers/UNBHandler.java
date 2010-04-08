@@ -92,7 +92,7 @@ public class UNBHandler implements ControlBlockHandler {
 		unbSegment.setTruncatable(true);
 		unbSegment.addField(new Field("syntaxIdentifier",               true).
                 addComponent(new Component("id",                        true)).
-                addComponent(new Component("version",                   true)).
+                addComponent(new Component("versionNum",                true)).
                 addComponent(new Component("serviceCodeListDirVersion", false)).
                 addComponent(new Component("codedCharacterEncoding",    false)).
                 addComponent(new Component("releaseNum",                false)));

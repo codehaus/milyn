@@ -72,10 +72,10 @@ public class UNGHandler implements ControlBlockHandler {
 		ungSegment.setDescription("UNG - Group Header");
 		ungSegment.setTruncatable(true);
 		ungSegment.addField(new Field("groupId", false));
-		ungSegment.addField(new Field("applicationSender",  false).
+		ungSegment.addField(new Field("senderApp",  false).
                 addComponent(new Component("id",            true)).
                 addComponent(new Component("codeQualifier", false)));
-		ungSegment.addField(new Field("applicationRecipient", false).
+		ungSegment.addField(new Field("recipientApp", false).
                 addComponent(new Component("id",              true)).
                 addComponent(new Component("codeQualifier",   false)));
 		ungSegment.addField(new Field("dateTime",  false).
