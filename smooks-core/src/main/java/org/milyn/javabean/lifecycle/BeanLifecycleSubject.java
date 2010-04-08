@@ -109,33 +109,36 @@ public class BeanLifecycleSubject {
 
     }
 
-    @SuppressWarnings({ "unchecked", "deprecation" })
+    @SuppressWarnings({ "deprecation" })
 	public void notifyObservers(Object bean) {
-    	if(observers.size() > 0) {
+		List<ObserverContext> observersToRemove = null;
+    	for(ObserverContext observerContext : observers) {
 
-			List<ObserverContext> observersClone = (List<ObserverContext>) observers.clone();
-			for(int i = 0; i < observersClone.size(); i++) {
-				ObserverContext observerContext = observersClone.get(i);
+			if(observerContext.repositoryBeanLifecycleObserver != null) {
 
-				if(observerContext.repositoryBeanLifecycleObserver != null) {
+				BeanContextLifecycleEvent beanLifecycleEvent = new BeanContextLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
 
-					BeanContextLifecycleEvent beanLifecycleEvent = new BeanContextLifecycleEvent(executionContext, beanLifecycle, beanId, bean);
+				observerContext.repositoryBeanLifecycleObserver.onBeanLifecycleEvent(beanLifecycleEvent);
 
-					observerContext.repositoryBeanLifecycleObserver.onBeanLifecycleEvent(beanLifecycleEvent);
+			} else {
 
-				} else {
+				observerContext.observer.onBeanLifecycleEvent(executionContext, beanLifecycle, beanId.getName(), bean);
 
-					observerContext.observer.onBeanLifecycleEvent(executionContext, beanLifecycle, beanId.getName(), bean);
+			}
 
+			if(observerContext.notifyOnce) {
+				if(observersToRemove == null) {
+					observersToRemove = new ArrayList<ObserverContext>();
 				}
+				observersToRemove.add(observerContext);
+			}
 
-				if(observerContext.notifyOnce) {
-					removeObserver(observerContext.observerId);
-				}
-
-    		}
+		}
+    	if(observersToRemove != null) {
+	    	for(ObserverContext observerContext: observersToRemove) {
+				removeObserver(observerContext.observerId);
+	    	}
     	}
-
     }
 
 	/**

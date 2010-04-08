@@ -14,7 +14,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.util.MultiLineToStringBuilder;
