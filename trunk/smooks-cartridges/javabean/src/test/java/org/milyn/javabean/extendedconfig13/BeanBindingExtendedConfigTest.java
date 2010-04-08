@@ -63,7 +63,7 @@ public class BeanBindingExtendedConfigTest extends TestCase {
 		return ClassUtil.getResourceAsStream("/org/milyn/javabean/extendedconfig/" + file, this.getClass());
 	}
 
-    private void assertOrderOK(ExtendedOrder order, boolean checkArrays) {
+    public static void assertOrderOK(ExtendedOrder order, boolean checkArrays) {
 
         // Order total...
         assertEquals(54.2d, order.getTotal());

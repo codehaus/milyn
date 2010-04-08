@@ -30,6 +30,7 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.VisitLifecycleCleanable;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
@@ -41,19 +42,13 @@ import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.factory.MVELFactoryDefinitionParser;
 import org.milyn.javabean.factory.Factory;
 import org.milyn.javabean.factory.FactoryDefinitionParser.FactoryDefinitionParserFactory;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdRegister;
-import org.milyn.javabean.repository.BeanRepositoryManager;
-import org.milyn.javabean.repository.BeanRepository;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,7 +63,7 @@ import java.util.Set;
 @VisitAfterReport(condition = "parameters.containsKey('setOn') || parameters.beanClass.value.endsWith('[]')",
         summary = "Ended bean lifecycle. Set bean on any targets.",
         detailTemplate = "reporting/BeanInstanceCreatorReport_After.html")
-public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer {
+public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer, VisitLifecycleCleanable {
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
@@ -84,6 +79,9 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
     @ConfigParam(name="beanFactory", use=Use.OPTIONAL)
     private String beanFactoryDefinition;
+
+    @ConfigParam(defaultVal = "true")
+    private boolean retain = true;
 
     @Config
     private SmooksResourceConfiguration config;
@@ -176,8 +174,6 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         	initValsExpression.setExpression(initValsExpressionString.toString());
         }
     }
-
-
 
     /**
      * Get the bean runtime information.
@@ -313,7 +309,6 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         }
     }
 
-
 	/**
 	 *  Checks if the class has a default constructor
 	 */
@@ -322,6 +317,15 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 			beanRuntimeInfo.getPopulateType().getConstructor();
 		} catch (NoSuchMethodException e) {
 		    throw new SmooksConfigurationException("Invalid Smooks bean configuration.  Bean class " + beanRuntimeInfo.getPopulateType().getName() + " doesn't have a public default constructor.");
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.delivery.VisitLifecycleCleanable#executeVisitLifecycleCleanup(org.milyn.container.ExecutionContext)
+	 */
+	public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
+		if(!retain) {
+			executionContext.getBeanContext().removeBean(beanId);
 		}
 	}
 }
