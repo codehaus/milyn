@@ -17,6 +17,7 @@
 package org.milyn.javabean.lifecycle;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.milyn.assertion.AssertArgument;
@@ -111,8 +112,9 @@ public class BeanLifecycleSubject {
 
     @SuppressWarnings({ "deprecation" })
 	public void notifyObservers(Object bean) {
-		List<ObserverContext> observersToRemove = null;
-    	for(ObserverContext observerContext : observers) {
+		Iterator<ObserverContext> observerContextIterator = observers.iterator();
+    	while(observerContextIterator.hasNext()) {
+    		ObserverContext observerContext = observerContextIterator.next();
 
 			if(observerContext.repositoryBeanLifecycleObserver != null) {
 
@@ -127,18 +129,10 @@ public class BeanLifecycleSubject {
 			}
 
 			if(observerContext.notifyOnce) {
-				if(observersToRemove == null) {
-					observersToRemove = new ArrayList<ObserverContext>();
-				}
-				observersToRemove.add(observerContext);
+				observerContextIterator.remove();
 			}
 
 		}
-    	if(observersToRemove != null) {
-	    	for(ObserverContext observerContext: observersToRemove) {
-				removeObserver(observerContext.observerId);
-	    	}
-    	}
     }
 
 	/**
