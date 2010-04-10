@@ -74,17 +74,25 @@ public class ConfigSearch {
 	}
 	
 	public boolean matches(SmooksResourceConfiguration config) {
-		if(configNS != null && config.getExtendedConfigNS() != null && !config.getExtendedConfigNS().startsWith(configNS)) {
-			return false;
+		if(configNS != null) {
+			if(config.getExtendedConfigNS() == null || !config.getExtendedConfigNS().startsWith(configNS)) {
+				return false;
+			}
 		}
-		if(selector != null && config.getSelector() != null && !config.getSelector().equalsIgnoreCase(selector)) {
-			return false;
+		if(selector != null) {
+			if(config.getSelector() == null || !config.getSelector().equalsIgnoreCase(selector)) {
+				return false;
+			}
 		}
-		if(selectorNS != null && config.getSelectorNamespaceURI() != null && !config.getSelectorNamespaceURI().equals(selectorNS)) {
-			return false;
+		if(selectorNS != null) {
+			if(config.getSelectorNamespaceURI() == null || !config.getSelectorNamespaceURI().equals(selectorNS)) {
+				return false;
+			}
 		}
-		if(resource != null && config.getResource() != null && !config.getResource().equals(resource)) {
-			return false;
+		if(resource != null) {
+			if(config.getResource() == null || !config.getResource().equals(resource)) {
+				return false;
+			}
 		}
 		
 		if(!params.isEmpty()) {
