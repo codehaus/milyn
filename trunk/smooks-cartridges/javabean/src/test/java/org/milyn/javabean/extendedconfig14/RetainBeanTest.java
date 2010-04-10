@@ -17,10 +17,10 @@ package org.milyn.javabean.extendedconfig14;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.milyn.FilterSettings;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.extendedconfig.ExtendedOrder;
@@ -37,11 +37,21 @@ import junit.framework.TestCase;
  */
 public class RetainBeanTest extends TestCase {
 
-    public void test_01() throws IOException, SAXException {
+    public void test_01_DOM() throws IOException, SAXException {
+    	test_01(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void test_01_SAX() throws IOException, SAXException {
+    	test_01(FilterSettings.DEFAULT_SAX);
+    }
+
+    public void test_01(FilterSettings filterSettings) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_01.xml"));
         JavaResult result = new JavaResult();
-        ExecutionContext execContext = smooks.createExecutionContext();
 
+        smooks.setFilterSettings(filterSettings);
+
+        ExecutionContext execContext = smooks.createExecutionContext();
         //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
         smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 
@@ -55,11 +65,21 @@ public class RetainBeanTest extends TestCase {
         assertNull(result.getBean("orderItem"));
     }
 
-    public void test_02() throws IOException, SAXException {
+    public void test_02_DOM() throws IOException, SAXException {
+    	test_02(FilterSettings.DEFAULT_DOM);
+    }
+
+    public void test_02_SAX() throws IOException, SAXException {
+    	test_02(FilterSettings.DEFAULT_SAX);
+    }
+    
+    public void test_02(FilterSettings filterSettings) throws IOException, SAXException {
         Smooks smooks = new Smooks(getClass().getResourceAsStream("test_bean_02.xml"));
         JavaResult result = new JavaResult();
-        ExecutionContext execContext = smooks.createExecutionContext();
 
+        smooks.setFilterSettings(filterSettings);
+
+        ExecutionContext execContext = smooks.createExecutionContext();
         //execContext.setEventListener(new HtmlReportGenerator("/zap/report.html"));
         smooks.filterSource(execContext, new StreamSource(getInput("order-01.xml")), result);
 

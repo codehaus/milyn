@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -87,16 +88,16 @@ public class UNEdifactReaderTest extends TestCase {
 		StringResult sResult = new StringResult();		
 		ExecutionContext execCtx = smooks.createExecutionContext();
 		
-		execCtx.setEventListener(new HtmlReportGenerator("target/report.html"));
+		//execCtx.setEventListener(new HtmlReportGenerator("target/report.html"));
 		smooks.filterSource(execCtx, new StreamSource(getClass().getResourceAsStream("unedifact-msg-02.edi")), jResult, sResult);
 		
-		UNEdifactMessage message = (UNEdifactMessage) jResult.getBean("unEdifactMessage");
+		List<UNEdifactMessage> messages = (List<UNEdifactMessage>) jResult.getBean("unEdifactMessages");
 
 //		System.out.println(sResult);
-//		System.out.println(new XStream().toXML(message));
+//		System.out.println(new XStream().toXML(messages));
 		
 		XMLUnit.setIgnoreWhitespace( true );
-        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-02.xml")), new StringReader(new XStream().toXML(message)));		
+        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-02.xml")), new StringReader(new XStream().toXML(messages)));		
 	}
 
 	private void createZip() throws IOException {
