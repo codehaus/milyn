@@ -2,6 +2,7 @@ package org.milyn.javabean.context;
 
 import java.util.Map;
 
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
@@ -121,6 +122,27 @@ public interface BeanContext {
 	public abstract void addBeanLifecycleObserver(BeanId beanId,
 			BeanLifecycle lifecycle, String observerId, boolean notifyOnce,
 			BeanContextLifecycleObserver observer);
+
+	/**
+	 * Registers a bean context observer.
+	 *
+	 * @param observer The actual BeanObserver instance.
+	 */
+	public abstract void addObserver(BeanContextLifecycleObserver observer);
+
+	/**
+	 * Notify all observers of a specific bean lifecycle event.
+	 *
+	 * @param event The event.
+	 */
+	public abstract void notifyObservers(BeanContextLifecycleEvent event);
+
+	/**
+	 * Unregisters a bean observer.
+	 *
+	 * @param observer The actual BeanObserver instance.
+	 */
+	public abstract void removeObserver(BeanContextLifecycleObserver observer);
 
 	/**
 	 * Unregisters a bean observer

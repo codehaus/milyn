@@ -189,119 +189,119 @@ public class BeanAccessorTest extends TestCase {
 	 *
 	 * Test adding and replacing a bean
 	 */
-	public void test_bean_lifecycle_begin_observers_associates() {
-        final Object bean1 = new MyGoodBean();
-        final Object bean2 = new MyGoodBean();
-
-        getBeanIdStore().register("bean1");
-        getBeanIdStore().register("bean2");
-
-        MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
-
-        //Add first time
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-
-        observer.reset();
-
-        //Add second time
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-
-        observer.reset();
-
-        //Add another bean
-        BeanAccessor.addBean(executionContext, "bean2", bean2);
-
-        assertFalse(observer.isFired());
-
-        // The following tests are generic for all types of Lifecycle events
-
-        //register override
-        MockBeanLifecycleObserver observer2 = new MockBeanLifecycleObserver();
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer2);
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertFalse(observer.isFired());
-        assertTrue(observer2.isFired());
-
-        observer2.reset();
-
-        //multi observers
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2", false, observer2);
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-        assertTrue(observer2.isFired());
-
-        observer.reset();
-        observer2.reset();
-
-        //unregister one
-        BeanAccessor.removeBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2");
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertTrue(observer.isFired());
-        assertFalse(observer2.isFired());
-
-        observer.reset();
-
-        //unregister last
-        BeanAccessor.removeBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1");
-
-        BeanAccessor.addBean(executionContext, "bean1", bean1);
-
-        assertFalse(observer.isFired());
-        assertFalse(observer2.isFired());
-
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2", false, new BeanLifecycleObserver() {
-
-        	public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
-        		assertEquals(executionContext, executionContext);
-        		assertEquals(BeanLifecycle.BEGIN, lifecycle);
-        		assertEquals("bean1", beanId);
-        		assertEquals(bean1, bean);
-        	}
-
-        });
-
-	}
+//	public void test_bean_lifecycle_begin_observers_associates() {
+//        final Object bean1 = new MyGoodBean();
+//        final Object bean2 = new MyGoodBean();
+//
+//        getBeanIdStore().register("bean1");
+//        getBeanIdStore().register("bean2");
+//
+//        MockBeanLifecycleObserver observer = new MockBeanLifecycleObserver();
+//        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
+//
+//        //Add first time
+//        BeanAccessor.addBean(executionContext, "bean1", bean1);
+//
+//        assertTrue(observer.isFired());
+//
+//        observer.reset();
+//
+//        //Add second time
+//        BeanAccessor.addBean(executionContext, "bean1", bean1);
+//
+//        assertTrue(observer.isFired());
+//
+//        observer.reset();
+//
+//        //Add another bean
+//        BeanAccessor.addBean(executionContext, "bean2", bean2);
+//
+//        assertFalse(observer.isFired());
+//
+//        // The following tests are generic for all types of Lifecycle events
+//
+//        //register override
+//        MockBeanLifecycleObserver observer2 = new MockBeanLifecycleObserver();
+//        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer2);
+//
+//        BeanAccessor.addBean(executionContext, "bean1", bean1);
+//
+//        assertFalse(observer.isFired());
+//        assertTrue(observer2.isFired());
+//
+//        observer2.reset();
+//
+//        //multi observers
+//        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1", false, observer);
+//        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2", false, observer2);
+//
+//        BeanAccessor.addBean(executionContext, "bean1", bean1);
+//
+//        assertTrue(observer.isFired());
+//        assertTrue(observer2.isFired());
+//
+//        observer.reset();
+//        observer2.reset();
+//
+//        //unregister one
+//        BeanAccessor.removeBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2");
+//
+//        BeanAccessor.addBean(executionContext, "bean1", bean1);
+//
+//        assertTrue(observer.isFired());
+//        assertFalse(observer2.isFired());
+//
+//        observer.reset();
+//
+//        //unregister last
+//        BeanAccessor.removeBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer1");
+//
+//        BeanAccessor.addBean(executionContext, "bean1", bean1);
+//
+//        assertFalse(observer.isFired());
+//        assertFalse(observer2.isFired());
+//
+//        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean1", BeanLifecycle.BEGIN, "observer2", false, new BeanLifecycleObserver() {
+//
+//        	public void onBeanLifecycleEvent(ExecutionContext executionContext, BeanLifecycle lifecycle, String beanId, Object bean) {
+//        		assertEquals(executionContext, executionContext);
+//        		assertEquals(BeanLifecycle.BEGIN, lifecycle);
+//        		assertEquals("bean1", beanId);
+//        		assertEquals(bean1, bean);
+//        	}
+//
+//        });
+//
+//	}
 
     /**
 	 * replace with easy mock framework for more control
 	 *
 	 * Test adding and replacing a bean
 	 */
-	public void test_bean_lifecycle_change_observers_associates() {
-        Object bean = new MyGoodBean();
-
-        getBeanIdStore().register("bean");
-
-        MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
-        MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean", BeanLifecycle.CHANGE, "observerChange", false, observerChange);
-
-        //Add first time
-        BeanAccessor.addBean(executionContext, "bean", bean);
-
-        assertFalse(observerChange.isFired());
-
-        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean", BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
-
-        //now do the change
-        BeanAccessor.changeBean(executionContext, "bean", bean);
-
-        assertTrue(observerChange.isFired());
-        assertFalse(observerBegin.isFired());
-
-	}
+//	public void test_bean_lifecycle_change_observers_associates() {
+//        Object bean = new MyGoodBean();
+//
+//        getBeanIdStore().register("bean");
+//
+//        MockBeanLifecycleObserver observerChange = new MockBeanLifecycleObserver();
+//        MockBeanLifecycleObserver observerBegin= new MockBeanLifecycleObserver();
+//        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean", BeanLifecycle.CHANGE, "observerChange", false, observerChange);
+//
+//        //Add first time
+//        BeanAccessor.addBean(executionContext, "bean", bean);
+//
+//        assertFalse(observerChange.isFired());
+//
+//        BeanAccessor.addBeanLifecycleObserver(executionContext, "bean", BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
+//
+//        //now do the change
+//        BeanAccessor.changeBean(executionContext, "bean", bean);
+//
+//        assertTrue(observerChange.isFired());
+//        assertFalse(observerBegin.isFired());
+//
+//	}
 
 
     @Override
