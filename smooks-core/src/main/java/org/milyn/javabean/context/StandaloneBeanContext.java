@@ -8,17 +8,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdRegister;
 import org.milyn.util.MultiLineToStringBuilder;
 
 public class StandaloneBeanContext implements BeanContext {
+	
 	private final ExecutionContext executionContext;
 
 	private final Map<String, Object> beanMap;
@@ -28,6 +28,11 @@ public class StandaloneBeanContext implements BeanContext {
 	private final BeanIdStore beanIdStore;
 
 	private final BeanContextMapAdapter repositoryBeanMapAdapter = new BeanContextMapAdapter();
+	
+	private List<BeanContextLifecycleObserver> lifecycleObservers = new ArrayList<BeanContextLifecycleObserver>();
+	private List<BeanContextLifecycleObserver> addObserversQueue = new ArrayList<BeanContextLifecycleObserver>();
+	private List<BeanContextLifecycleObserver> removeObserversQueue = new ArrayList<BeanContextLifecycleObserver>();
+	private List<BeanContextLifecycleEvent> notifyObserverEventQueue = new ArrayList<BeanContextLifecycleEvent>();
 
 	/**
 	 * Create the StandAloneBeanContext
@@ -55,6 +60,12 @@ public class StandaloneBeanContext implements BeanContext {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
+		// If there's already an instance of this bean, remove it and notify observers of it's removal...
+		Object currentInstance = getBean(beanId);
+		if(currentInstance != null) {
+			notifyObservers(beanId, BeanLifecycle.END, currentInstance);
+		}
+		
 		// Check if the BeanIdList has new BeanIds and if so then
 		// add those new entries to the Map. This ensures we always
 		// have an up to date Map.
@@ -65,6 +76,8 @@ public class StandaloneBeanContext implements BeanContext {
 
         clean(index);
 		repoEntry.setValue(bean);
+		
+		// Add the bean to the context...
 		notifyObservers(beanId, BeanLifecycle.BEGIN, bean);
 	}
 
@@ -147,6 +160,8 @@ public class StandaloneBeanContext implements BeanContext {
         repositoryEntry.clean();
         repositoryEntry.setValue(null);
 
+		notifyObservers(beanId, BeanLifecycle.END, getBean(beanId));
+        
 		return old;
 	}
 
@@ -313,11 +328,13 @@ public class StandaloneBeanContext implements BeanContext {
 	 * @param bean The bean instance
 	 */
     private void notifyObservers(BeanId beanId, BeanLifecycle lifecycle, Object bean) {
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
+//    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
+//
+//    	if(subjectGroup != null) {
+//    		subjectGroup.notifyObservers(lifecycle, bean);
+//    	}
 
-    	if(subjectGroup != null) {
-    		subjectGroup.notifyObservers(lifecycle, bean);
-    	}
+    	notifyObservers(new BeanContextLifecycleEvent(executionContext, lifecycle, beanId, bean));
     }
 
 
@@ -626,4 +643,89 @@ public class StandaloneBeanContext implements BeanContext {
 		}
 
     }
+
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#addObserver(org.milyn.javabean.lifecycle.BeanContextLifecycleObserver)
+	 */
+	public void addObserver(BeanContextLifecycleObserver observer) {
+		if(lifecycleObservers != null) {
+			lifecycleObservers.add(observer);
+		} else {
+			// Will be sync'd up during next notify...
+			addObserversQueue.add(observer);
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#notifyObservers(org.milyn.javabean.lifecycle.BeanContextLifecycleEvent)
+	 */
+	public void notifyObservers(BeanContextLifecycleEvent event) {
+		if(lifecycleObservers != null) {
+			List<BeanContextLifecycleObserver> localObserverListCopy = lifecycleObservers;
+
+			// Null the global List object reference while we're iterating it...
+			lifecycleObservers = null;
+			try {
+				int observerCount = localObserverListCopy.size();
+				for(int i = 0; i < observerCount; i++) {
+					localObserverListCopy.get(i).onBeanLifecycleEvent(event);
+				}
+			} finally {
+				// Reinstate the global List ref so it can be used again...
+				lifecycleObservers = localObserverListCopy;
+
+				// Synchronize the global observer list... there may be observers queued 
+				// for addition or removal.  This can happen if a request to add or remove
+				// an observer was triggered during the above iteration of the
+				// localObserverListCopy list...
+				syncObserverList();
+			}
+			
+			// Handle nested events i.e. events triggered during the above iteration of the
+			// localObserverListCopy list...
+			if(!notifyObserverEventQueue.isEmpty()) {
+				List<BeanContextLifecycleEvent> notifyObserverEventQueueCopy = notifyObserverEventQueue;
+				
+				// Create a new queue for nested notification events created by these events...
+				notifyObserverEventQueue = new ArrayList<BeanContextLifecycleEvent>();
+				
+				// Fire the nested events from the notify queue copy...
+				for(BeanContextLifecycleEvent nestedEvent : notifyObserverEventQueueCopy) {
+					notifyObservers(nestedEvent);
+				}
+			}
+		} else {
+			notifyObserverEventQueue.add(event);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#removeObserver(org.milyn.javabean.lifecycle.BeanContextLifecycleObserver)
+	 */
+	public void removeObserver(BeanContextLifecycleObserver observer) {		
+		if(lifecycleObservers != null) {
+			lifecycleObservers.remove(observer);
+		} else {
+			// Will be sync'd up during next notify...
+			removeObserversQueue.add(observer);
+		}
+	}
+
+	private void syncObserverList() {
+		int addObserverCount = addObserversQueue.size();
+		if(addObserverCount > 0) {
+			for(int i = 0; i < addObserverCount; i++) {
+				lifecycleObservers.add(addObserversQueue.get(i));
+			}
+			addObserversQueue.clear();
+		}
+
+		int removeObserverCount = removeObserversQueue.size();
+		if(removeObserverCount > 0) {
+			for(int i = 0; i < removeObserverCount; i++) {
+				lifecycleObservers.remove(removeObserversQueue.get(i));
+			}
+			removeObserversQueue.clear();
+		}
+	}
 }

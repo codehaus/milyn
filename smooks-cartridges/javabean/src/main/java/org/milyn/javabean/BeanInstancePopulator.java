@@ -38,6 +38,8 @@ import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.observers.ArrayToListChangeObserver;
+import org.milyn.javabean.observers.WireByBeanIdObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.context.BeanIdStore;
@@ -132,6 +134,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private String mapKeyAttribute;
 
     private boolean beanWiring;
+
+    private WireByBeanIdObserver wireByBeanIdObserver;
+	private ArrayToListChangeObserver arrayToListChangeObserver;
 
     public void setBeanId(String beanId) {
         this.beanIdName = beanId;
@@ -241,6 +246,17 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             	}
             	expressionEvaluator.setToType(bindingType);
         	}
+        }
+        
+        if(wireBeanIdName != null) {
+    		wireBeanId = beanIdStore.getBeanId(wireBeanIdName);
+			if(wireBeanId == null) {
+	            wireBeanId = beanIdStore.register(wireBeanIdName);
+	        }
+	        
+			// These observers can be used concurrently across multiple execution contexts...
+	        wireByBeanIdObserver = new WireByBeanIdObserver(wireBeanId, beanId, this);
+	        arrayToListChangeObserver = new ArrayToListChangeObserver(wireBeanId, property, this);
         }
 
         if(logger.isDebugEnabled()) {
@@ -391,46 +407,33 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         }
     }
 
-    private BeanId getWireBeanId() {
-    	if(wireBeanId == null) {
-    		wireBeanId = beanIdStore.getBeanId(wireBeanIdName);
-    	}
-
-		if(wireBeanId == null) {
-            wireBeanId = beanIdStore.register(wireBeanIdName);
-        }
-
-        return wireBeanId;
-    }
-
     private void bindBeanValue(final ExecutionContext executionContext) {
-    	final BeanId targetBeanId = getWireBeanId();
-
     	final BeanContext beanContext = executionContext.getBeanContext();
 
-    	Object bean = beanContext.getBean(targetBeanId);
+    	Object bean = beanContext.getBean(wireBeanId);
         if(bean == null) {
 
             if(logger.isDebugEnabled()) {
-                logger.debug("Registering bean BEGIN wiring observer for wiring bean '" + targetBeanId + "' onto target bean '" + beanId.getName() + "'.");
+                logger.debug("Registering bean BEGIN wiring observer for wiring bean '" + wireBeanId + "' onto target bean '" + beanId.getName() + "'.");
             }
 
             // Register the observer which looks for the creation of the selected bean via its beanIdName...
-        	beanContext.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanContextLifecycleObserver(){
-
-                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-                    Object eventBean = event.getBean();
-                    beanContext.associateLifecycles(beanId , targetBeanId);
-                    populateAndSetPropertyValue(eventBean, beanContext, targetBeanId, executionContext);
-                }
-
-            });
+            beanContext.addObserver(wireByBeanIdObserver);
+//        	beanContext.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanContextLifecycleObserver(){
+//
+//                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
+//                    Object eventBean = event.getBean();
+//                    beanContext.associateLifecycles(beanId , targetBeanId);
+//                    populateAndSetPropertyValue(eventBean, beanContext, targetBeanId, executionContext);
+//                }
+//
+//            });
         } else {
-            populateAndSetPropertyValue(bean, beanContext, targetBeanId, executionContext);
+            populateAndSetPropertyValue(bean, beanContext, wireBeanId, executionContext);
         }
 	}
 
-    private void populateAndSetPropertyValue(Object bean, BeanContext beanContext, BeanId targetBeanId, final ExecutionContext executionContext) {
+    public void populateAndSetPropertyValue(Object bean, BeanContext beanContext, BeanId targetBeanId, final ExecutionContext executionContext) {
         BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
 
        // When this observer is triggered then we look if we got something we can set immediately or that we got an array collection.
@@ -443,14 +446,15 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             }
             // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
             // can then set this array
+            beanContext.addObserver(arrayToListChangeObserver);
 
-            beanContext.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanContextLifecycleObserver() {
-                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-
-                    setPropertyValue(property, event.getBean(), executionContext);
-
-                }
-            });
+//            beanContext.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanContextLifecycleObserver() {
+//                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
+//
+//                    setPropertyValue(property, event.getBean(), executionContext);
+//
+//                }
+//            });
 
         } else {
             setPropertyValue(property, bean, executionContext);
@@ -470,7 +474,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     		doExtendLifecycle = isDefaultExtendLifecycle(executionContext);
         }
     	if(!doExtendLifecycle) {
-     		executionContext.getBeanContext().removeBeanLifecycleObserver(getWireBeanId(), BeanLifecycle.BEGIN, getId());
+     		executionContext.getBeanContext().removeBeanLifecycleObserver(wireBeanId, BeanLifecycle.BEGIN, getId());
     	}
     }
 
@@ -519,7 +523,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     @SuppressWarnings("unchecked")
-	private void setPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
+	public void setPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
     	if ( dataObject == null )
     	{
     		return;

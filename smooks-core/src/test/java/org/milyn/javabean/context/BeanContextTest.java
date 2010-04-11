@@ -304,31 +304,31 @@ public class BeanContextTest extends TestCase {
 	/**
 	 * Test adding and replacing a bean
 	 */
-	public void test_bean_lifecycle_change_observers_associates() {
-        Object bean = new MyGoodBean();
-
-        BeanId beanId = getBeanIdStore().register("bean");
-
-        BeanContext BeanContext = getBeanContext();
-
-        MockRepositoryBeanLifecycleObserver observerChange = new MockRepositoryBeanLifecycleObserver();
-        MockRepositoryBeanLifecycleObserver observerBegin = new MockRepositoryBeanLifecycleObserver();
-        BeanContext.addBeanLifecycleObserver(beanId, BeanLifecycle.CHANGE, "observerChange", false, observerChange);
-
-        //Add first time
-        BeanContext.addBean(beanId, bean);
-
-        assertFalse(observerChange.isFired());
-
-        BeanContext.addBeanLifecycleObserver(beanId, BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
-
-        //now do the change
-        BeanContext.changeBean(beanId, bean);
-
-        assertTrue(observerChange.isFired());
-        assertFalse(observerBegin.isFired());
-
-	}
+//	public void test_bean_lifecycle_change_observers_associates() {
+//        Object bean = new MyGoodBean();
+//
+//        BeanId beanId = getBeanIdStore().register("bean");
+//
+//        BeanContext BeanContext = getBeanContext();
+//
+//        MockRepositoryBeanLifecycleObserver observerChange = new MockRepositoryBeanLifecycleObserver();
+//        MockRepositoryBeanLifecycleObserver observerBegin = new MockRepositoryBeanLifecycleObserver();
+//        BeanContext.addBeanLifecycleObserver(beanId, BeanLifecycle.CHANGE, "observerChange", false, observerChange);
+//
+//        //Add first time
+//        BeanContext.addBean(beanId, bean);
+//
+//        assertFalse(observerChange.isFired());
+//
+//        BeanContext.addBeanLifecycleObserver(beanId, BeanLifecycle.BEGIN, "observerBegin", false, observerBegin);
+//
+//        //now do the change
+//        BeanContext.changeBean(beanId, bean);
+//
+//        assertTrue(observerChange.isFired());
+//        assertFalse(observerBegin.isFired());
+//
+//	}
 
 	/**
 	 * Test adding and replacing a bean
