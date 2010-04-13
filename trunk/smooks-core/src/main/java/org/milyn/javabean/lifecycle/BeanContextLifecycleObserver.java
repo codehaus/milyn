@@ -25,6 +25,9 @@ package org.milyn.javabean.lifecycle;
  */
 public interface BeanContextLifecycleObserver {
 
+	/**
+	 * Bean lifecycle event method.
+	 * @param event The event.
+	 */
 	void onBeanLifecycleEvent(BeanContextLifecycleEvent event);
-
 }

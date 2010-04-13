@@ -13,7 +13,6 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.MultiLineToStringBuilder;
 
@@ -60,10 +59,10 @@ public class StandaloneBeanContext implements BeanContext {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
-		// If there's already an instance of this bean, remove it and notify observers of it's removal...
+		// If there's already an instance of this bean, notify observers of it's removal (removal by being overwritten)...
 		Object currentInstance = getBean(beanId);
 		if(currentInstance != null) {
-			notifyObservers(beanId, BeanLifecycle.END, currentInstance);
+	    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.END, beanId, bean));
 		}
 		
 		// Check if the BeanIdList has new BeanIds and if so then
@@ -78,7 +77,7 @@ public class StandaloneBeanContext implements BeanContext {
 		repoEntry.setValue(bean);
 		
 		// Add the bean to the context...
-		notifyObservers(beanId, BeanLifecycle.BEGIN, bean);
+    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.BEGIN, beanId, bean));
 	}
 
     /* (non-Javadoc)
@@ -142,7 +141,7 @@ public class StandaloneBeanContext implements BeanContext {
 		if(entries.size() > index && entries.get(index).getValue() != null) {
 			entries.get(index).setValue(bean);
 
-			notifyObservers(beanId, BeanLifecycle.CHANGE, bean);
+	    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.CHANGE, beanId, bean));
     	} else {
     		throw new IllegalStateException("The bean '" + beanId + "' can't be changed because it isn't in the repository.");
     	}
@@ -160,7 +159,7 @@ public class StandaloneBeanContext implements BeanContext {
         repositoryEntry.clean();
         repositoryEntry.setValue(null);
 
-		notifyObservers(beanId, BeanLifecycle.END, getBean(beanId));
+    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.CHANGE, beanId, getBean(beanId)));
         
 		return old;
 	}
@@ -187,48 +186,6 @@ public class StandaloneBeanContext implements BeanContext {
 			entry.setValue(null);
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.javabean.context.BeanContext#associateLifecycles(org.milyn.javabean.repository.BeanId, org.milyn.javabean.repository.BeanId)
-	 */
-	public void associateLifecycles(BeanId parentBeanId, BeanId childBeanId) {
-    	AssertArgument.isNotNull(parentBeanId, "parentBeanId");
-    	AssertArgument.isNotNull(childBeanId, "childBeanId");
-
-    	checkUpdatedBeanIdList();
-
-    	int parentId = parentBeanId.getIndex();
-    	int childId = childBeanId.getIndex();
-
-    	List<Integer> associations = entries.get(parentId).getLifecycleAssociation();
-
-        if(!associations.contains(childId)) {
-            associations.add(childId);
-        }
-    }
-
-	/* (non-Javadoc)
-	 * @see org.milyn.javabean.context.BeanContext#addBeanLifecycleObserver(org.milyn.javabean.repository.BeanId, org.milyn.javabean.lifecycle.BeanLifecycle, java.lang.String, boolean, org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver)
-	 */
-	public void addBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanContextLifecycleObserver observer) {
-    	AssertArgument.isNotNull(beanId, "beanId");
-
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, true);
-    	subjectGroup.addObserver(lifecycle, observerId, notifyOnce, observer);
-    }
-
-	/* (non-Javadoc)
-	 * @see org.milyn.javabean.context.BeanContext#removeBeanLifecycleObserver(org.milyn.javabean.repository.BeanId, org.milyn.javabean.lifecycle.BeanLifecycle, java.lang.String)
-	 */
-	public void removeBeanLifecycleObserver(BeanId beanId, BeanLifecycle lifecycle,String observerId) {
-    	AssertArgument.isNotNull(beanId, "beanId");
-
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
-
-    	if(subjectGroup != null) {
-    		subjectGroup.removeObserver(lifecycle, observerId);
-    	}
-    }
 
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#getBean(java.lang.String)
@@ -319,51 +276,6 @@ public class StandaloneBeanContext implements BeanContext {
         }
     }
 
-    /**
-	 * Notify all the observers from the given {@link BeanId} that the given
-	 * {@link BeanLifecycle} event happend.
-	 *
-	 * @param beanId The {@link BeanId} from which the observers are notified.
-	 * @param lifecycle The {@link BeanLifecycle} to be notified of
-	 * @param bean The bean instance
-	 */
-    private void notifyObservers(BeanId beanId, BeanLifecycle lifecycle, Object bean) {
-//    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
-//
-//    	if(subjectGroup != null) {
-//    		subjectGroup.notifyObservers(lifecycle, bean);
-//    	}
-
-    	notifyObservers(new BeanContextLifecycleEvent(executionContext, lifecycle, beanId, bean));
-    }
-
-
-
-    /**
-     * Returns the {@link BeanLifecycleSubjectGroup} of the given {@link BeanId}.
-     *
-     * @param beanId The BeanId from which the {@link BeanLifecycleSubjectGroup} needs to be returned
-     * @param createIfNotExist If the {@link BeanLifecycleSubjectGroup needs to be created if it not already exists
-     * @return The {@link BeanLifecycleSubjectGroup} if found or created else <code>null</code>.
-     */
-    private BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup(BeanId beanId, boolean createIfNotExist) {
-    	checkUpdatedBeanIdList();
-
-    	ContextEntry repositoryEntry = entries.get(beanId.getIndex());
-
-    	BeanLifecycleSubjectGroup subjectGroup = repositoryEntry.getBeanLifecycleSubjectGroup();
-
-    	if(subjectGroup == null && createIfNotExist) {
-
-    		subjectGroup = new BeanLifecycleSubjectGroup(executionContext, beanId);
-
-    		repositoryEntry.setBeanLifecycleSubjectGroup(subjectGroup);
-
-    	}
-
-    	return subjectGroup;
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -392,8 +304,6 @@ public class StandaloneBeanContext implements BeanContext {
 
     	private final List<Integer> lifecycleAssociation = new ArrayList<Integer>();
 
-    	private BeanLifecycleSubjectGroup beanLifecycleSubjectGroup;
-
         private boolean cleaning = false;
 
         private boolean beanInContext = true;
@@ -406,20 +316,6 @@ public class StandaloneBeanContext implements BeanContext {
 			this.entry = entry;
 		}
 
-		/**
-		 * @return the beanId
-		 */
-		public BeanId getBeanId() {
-			return beanId;
-		}
-
-		/**
-		 * @return the entry
-		 */
-		public Entry<String, Object> getEntry() {
-			return entry;
-		}
-
 		public Object getValue() {
 			return entry.getValue();
 		}
@@ -429,27 +325,6 @@ public class StandaloneBeanContext implements BeanContext {
                 value = null;
             }
             entry.setValue(value);
-		}
-
-		/**
-		 * @return the lifecycleAssociation
-		 */
-		public List<Integer> getLifecycleAssociation() {
-			return lifecycleAssociation;
-		}
-
-		/**
-		 * @return the beanLifecycleSubjectGroup
-		 */
-		public BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup() {
-			return beanLifecycleSubjectGroup;
-		}
-
-		/**
-		 * @param beanLifecycleSubjectGroup the beanLifecycleSubjectGroup to set
-		 */
-		public void setBeanLifecycleSubjectGroup(BeanLifecycleSubjectGroup beanLifecycleSubjectGroup) {
-			this.beanLifecycleSubjectGroup = beanLifecycleSubjectGroup;
 		}
 
         public void clean() {
@@ -667,6 +542,8 @@ public class StandaloneBeanContext implements BeanContext {
 			lifecycleObservers = null;
 			try {
 				int observerCount = localObserverListCopy.size();
+//				for(int i = 0; i < observerCount; i++) {
+//				localObserverListCopy.get(i).onBeanLifecycleEvent(event);
 				for(int i = 0; i < observerCount; i++) {
 					localObserverListCopy.get(i).onBeanLifecycleEvent(event);
 				}

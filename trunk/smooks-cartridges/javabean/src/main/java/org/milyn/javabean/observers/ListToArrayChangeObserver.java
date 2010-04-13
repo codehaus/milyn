@@ -23,21 +23,21 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
 
 /**
- * Array to List change event listener.
+ * List to array change event listener.
  * <p/>
  * Arrays start out their lives as Lists.  When the list is populated with all
- * wired in object entries, the List is converted to an Array.  This listener listens
+ * wired in object entries, the List is converted to an Array.  This observer listens
  * for that event and triggers the wiring of the array into the target bean.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class ArrayToListChangeObserver implements BeanContextLifecycleObserver {
+public class ListToArrayChangeObserver implements BeanContextLifecycleObserver {
 	
     private String property;
     private BeanInstancePopulator populator;
 	private BeanId watchedBean;
 	
-	public ArrayToListChangeObserver(BeanId watchedBean, String property, BeanInstancePopulator populator) {
+	public ListToArrayChangeObserver(BeanId watchedBean, String property, BeanInstancePopulator populator) {
 		this.watchedBean = watchedBean;
 		this.property = property;
 		this.populator = populator;
@@ -50,7 +50,7 @@ public class ArrayToListChangeObserver implements BeanContextLifecycleObserver {
 		if(event.getBeanId() == watchedBean && event.getLifecycle() == BeanLifecycle.CHANGE) {
 			ExecutionContext executionContext = event.getExecutionContext();
 
-			// Set the list on the object, via the populator...
+			// Set the array on the object, via the populator...
 			populator.setPropertyValue(property, event.getBean(), executionContext);
 			// Remove this observer...
 			executionContext.getBeanContext().removeObserver(this);

@@ -24,6 +24,13 @@ import junit.framework.TestCase;
 import org.milyn.Order;
 import org.milyn.Smooks;
 import org.milyn.TestConstants;
+import org.milyn.container.ExecutionContext;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.context.BeanIdStore;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
+import org.milyn.javabean.repository.BeanId;
 import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
@@ -42,9 +49,17 @@ public class SmooksPerfTest extends TestCase {
 
         long start = System.currentTimeMillis();
         JavaResult javaResult = null;
+        NoddyObserver nobserver = new NoddyObserver();
         for(int i = 0; i < TestConstants.NUM_ITERATIONS; i++) {
+        	ExecutionContext execContext = smooks.createExecutionContext();
+        	BeanContext beanCtx = execContext.getBeanContext();
+//        	
+//        	for(int ii = 0; ii < 15; ii++) {
+//        		beanCtx.addObserver(nobserver);
+//        	}
+        	
             javaResult = new JavaResult();
-            smooks.filterSource(new StreamSource(TestConstants.getMessageReader()), javaResult);
+            smooks.filterSource(execContext, new StreamSource(TestConstants.getMessageReader()), javaResult);
         }
         
         System.out.println("Smooks took: " + (System.currentTimeMillis() - start));
@@ -52,5 +67,17 @@ public class SmooksPerfTest extends TestCase {
         if(order != null) {
         	System.out.println("Num order items: " + order.getOrderItems().size());
         }
+    }
+    
+    class NoddyObserver implements BeanContextLifecycleObserver {
+
+    	private BeanId beanId = new BeanId((BeanIdStore)null, 0, null);
+    	
+		public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
+			if(event.getBeanId() == beanId && event.getLifecycle() == BeanLifecycle.BEGIN) {
+				int s = beanId.getIndex();
+				s = s++;
+			}
+		}    	
     }
 }

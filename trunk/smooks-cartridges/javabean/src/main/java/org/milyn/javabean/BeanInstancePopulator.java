@@ -35,10 +35,7 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
-import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
-import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.observers.ArrayToListChangeObserver;
+import org.milyn.javabean.observers.ListToArrayChangeObserver;
 import org.milyn.javabean.observers.WireByBeanIdObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.context.BeanContext;
@@ -72,8 +69,6 @@ import java.util.*;
 public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore, SAXVisitAfter, Producer, Consumer {
 
     private static final Log logger = LogFactory.getLog(BeanInstancePopulator.class);
-
-    private static final String EC_DEFAULT_EXTEND_LIFECYCLE = BeanInstancePopulator.class + "#" + BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE;
 
     private static final String EXPRESSION_VALUE_VARIABLE_NAME = "_VALUE";
 
@@ -136,7 +131,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private boolean beanWiring;
 
     private WireByBeanIdObserver wireByBeanIdObserver;
-	private ArrayToListChangeObserver arrayToListChangeObserver;
+	private ListToArrayChangeObserver listToArrayChangeObserver;
 
     public void setBeanId(String beanId) {
         this.beanIdName = beanId;
@@ -256,7 +251,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 	        
 			// These observers can be used concurrently across multiple execution contexts...
 	        wireByBeanIdObserver = new WireByBeanIdObserver(wireBeanId, beanId, this);
-	        arrayToListChangeObserver = new ArrayToListChangeObserver(wireBeanId, property, this);
+	        listToArrayChangeObserver = new ListToArrayChangeObserver(wireBeanId, property, this);
         }
 
         if(logger.isDebugEnabled()) {
@@ -304,9 +299,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     	if(!beanWiring && !isAttribute) {
             bindDomDataValue(element, executionContext);
     	}
-    	if(beanWiring) {
-    		extendLifecycle(executionContext);
-    	}
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -329,9 +321,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     	if(!beanWiring && !isAttribute) {
             bindSaxDataValue(element, executionContext);
-    	}
-    	if(beanWiring) {
-    		extendLifecycle(executionContext);
     	}
     }
 
@@ -446,7 +435,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             }
             // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
             // can then set this array
-            beanContext.addObserver(arrayToListChangeObserver);
+            beanContext.addObserver(listToArrayChangeObserver);
 
 //            beanContext.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanContextLifecycleObserver() {
 //                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
@@ -459,47 +448,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         } else {
             setPropertyValue(property, bean, executionContext);
         }
-    }
-
-    /**
-     * Checks if we need to stop listening for the bean begin lifecycle.
-     * If we need to stop listening then it will remove the lifecycle observer.
-     *
-     * @param executionContext
-     */
-    private void extendLifecycle(ExecutionContext executionContext) {
-
-    	Boolean doExtendLifecycle = extendLifecycle;
-    	if(doExtendLifecycle == null) {
-    		doExtendLifecycle = isDefaultExtendLifecycle(executionContext);
-        }
-    	if(!doExtendLifecycle) {
-     		executionContext.getBeanContext().removeBeanLifecycleObserver(wireBeanId, BeanLifecycle.BEGIN, getId());
-    	}
-    }
-
-    /**
-     * This method efficiently returns the global configuration {@link BeanPopulator#GLOBAL_DEFAULT_EXTEND_LIFECYCLE}.
-     *
-     * @param executionContext
-     * @return the global parameter for wire after element
-     */
-    private boolean isDefaultExtendLifecycle(ExecutionContext executionContext) {
-
-    	//Look in the execution context to see if we can find the property there
-    	Boolean defaultExtendLifecycle = (Boolean) executionContext.getAttribute(EC_DEFAULT_EXTEND_LIFECYCLE);
-
-    	//if we can't find it there then we need to search the global-parameters and add the result
-    	//to the execution context
-    	if(defaultExtendLifecycle == null) {
-
-    		String wireAfterElementStr = executionContext.getConfigParameter(BeanPopulator.GLOBAL_DEFAULT_EXTEND_LIFECYCLE, "false");
-
-    		defaultExtendLifecycle = Boolean.parseBoolean(wireAfterElementStr.trim());
-
-    		executionContext.setAttribute(EC_DEFAULT_EXTEND_LIFECYCLE, defaultExtendLifecycle);
-    	}
-    	return defaultExtendLifecycle;
     }
 
     private void bindExpressionValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {

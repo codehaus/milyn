@@ -16,24 +16,7 @@ public class BeanRepositoryPerformance {
 
 	private ExecutionContext executionContext;
 
-	public static void main(String[] args) {
-
-
-		//new BeanRepositoryPerformance().test_BeanRepository_performance();
-
-		//new BeanRepositoryPerformance().test_BeanContext_performance();
-		new BeanRepositoryPerformance().test_old_BeanAccessor_performance();
-	}
-
 	public void _test_dummy() {
-	}
-
-	public void test_old_BeanAccessor_performance() {
-
-		test_old_BeanAccessor_performance(100, 100, true);
-		test_old_BeanAccessor_performance(1, 100000, false);
-		test_old_BeanAccessor_performance(10, 100000, false);
-		test_old_BeanAccessor_performance(100, 100000, false);
 	}
 
 	public void test_BeanRepository_performance() {
@@ -51,40 +34,6 @@ public class BeanRepositoryPerformance {
 		test_BeanContext_performance(1, 100000, false);
 		test_BeanContext_performance(10, 100000, false);
 		test_BeanContext_performance(100, 100000, false);
-
-	}
-
-	private void test_old_BeanAccessor_performance(int beans, int loops, boolean warmup) {
-		if(!warmup) {
-			sleep();
-		}
-
-		executionContext = new MockExecutionContext();
-
-		ArrayList<String> beanIds = new ArrayList<String>();
-
-		for(int i = 0; i < beans; i++) {
-			beanIds.add(getBeanId(i));
-		}
-
-		Object bean = new Object();
-
-		long begin = System.currentTimeMillis();
-		for(int l = 0; l < loops; l++) {
-
-			for(String id: beanIds) {
-				OldBeanAccessor.addBean(executionContext, id, bean);
-			}
-			for(String id: beanIds) {
-				OldBeanAccessor.getBean(executionContext, id);
-			}
-		}
-		long end  = System.currentTimeMillis();
-
-		if(!warmup) {
-			log.error("Old BeanAccessor performance beans: " + beans + "; loops: " + loops + "; time: " + (end - begin) + "ms");
-		}
-
 
 	}
 
