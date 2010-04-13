@@ -28,7 +28,6 @@ import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
 import org.milyn.javabean.repository.BeanId;
 
 /**
@@ -165,90 +164,6 @@ public class BeanAccessor {
 		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
 
 		executionContext.getBeanContext().changeBean(beanIdObj, bean);
-    }
-
-
-    /**
-     * Associates the lifeCycle of the childBean with the parentBean. When the parentBean gets overwritten via the
-     * addBean method then the associated child beans will get removed from the bean map.
-     *
-     * @param executionContext The execution context within which the beans are located.
-     * @param parentBean The bean that controlles the lifecycle of its childs
-     * @param childBean The bean that will be associated to the parent
-     * @param addToList Is the child added to a bean list.
-     *
-     */
-    public static void associateLifecycles(ExecutionContext executionContext, String parentBean, String childBean) {
-    	warnUsingDeprecatedMethod();
-
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-		AssertArgument.isNotNullAndNotEmpty(parentBean, "parentBean");
-		AssertArgument.isNotNullAndNotEmpty(childBean, "childBean");
-
-		BeanId parentIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), parentBean);
-
-		BeanId childBeanIdObj =  getBeanId(executionContext.getContext().getBeanIdStore(), childBean);
-
-		if (parentIdObj == null) {
-			throw new IllegalStateException(
-					"The bean with child beanId '" + parentBean + "' is not registered in the BeanIdList of the current ApplicationContext.");
-		}
-
-		executionContext.getBeanContext().associateLifecycles(parentIdObj, childBeanIdObj);
-    }
-
-
-    /**
-     * Registers an observer which observers when a bean gets added.
-     *
-     *
-     * @param executionContext The execution context in which the observer is registered
-     * @param beanId The bean id for which the observer is registered
-     * @param observerId The id of the observer. This is used to unregister the observer
-     * @param observer The actual BeanObserver object
-     */
-    public static void addBeanLifecycleObserver(ExecutionContext executionContext, String beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, final BeanLifecycleObserver observer) {
-    	warnUsingDeprecatedMethod();
-
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-		AssertArgument.isNotNull(lifecycle, "lifecycle");
-		AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
-		AssertArgument.isNotNull(observer, "observer");
-
-		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
-
-		BeanContextLifecycleObserver repositoryBeanLifecycleObserver = new BeanContextLifecycleObserver() {
-
-			public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-				observer.onBeanLifecycleEvent(event.getExecutionContext(), event.getLifecycle(), event.getBeanId().getName(), event.getBean());
-			}
-
-		};
-
-		executionContext.getBeanContext().addBeanLifecycleObserver(beanIdObj, lifecycle, observerId, notifyOnce, repositoryBeanLifecycleObserver);
-    }
-
-
-    /**
-     * Unregisters a bean observer
-     *
-     * @param executionContext The execution context in which the observer is registered
-     * @param beanId The bean id for which the observer is registered
-     * @param observerId The id of the observer to unregister
-     */
-    public static void removeBeanLifecycleObserver(ExecutionContext executionContext, String beanId, BeanLifecycle lifecycle, String observerId) {
-    	warnUsingDeprecatedMethod();
-
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-		AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-		AssertArgument.isNotNull(lifecycle, "lifecycle");
-		AssertArgument.isNotNullAndNotEmpty(observerId, "observerId");
-
-		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
-
-		executionContext.getBeanContext().removeBeanLifecycleObserver(beanIdObj, lifecycle, observerId);
-
     }
 
 	/**

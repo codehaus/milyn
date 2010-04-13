@@ -24,9 +24,6 @@ import org.milyn.javabean.context.StandaloneBeanContext;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleEvent;
-import org.milyn.javabean.lifecycle.BeanRepositoryLifecycleObserver;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,22 +87,6 @@ public class BeanRepository {
 		beanContext.addBean(beanId, bean);
 	}
 
-	public void addBeanLifecycleObserver(BeanId beanId,	BeanLifecycle lifecycle, String observerId, boolean notifyOnce,	final BeanRepositoryLifecycleObserver observer) {
-
-		BeanContextLifecycleObserver beanContextLifecycleObserver = new BeanContextLifecycleObserver() {
-
-			public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-				observer.onBeanLifecycleEvent(new BeanRepositoryLifecycleEvent(event));
-			}
-		};
-
-		beanContext.addBeanLifecycleObserver(beanId, lifecycle, observerId,	notifyOnce, beanContextLifecycleObserver);
-	}
-
-	public void associateLifecycles(BeanId parentBeanId, BeanId childBeanId) {
-		beanContext.associateLifecycles(parentBeanId, childBeanId);
-	}
-
 	public void changeBean(BeanId beanId, Object bean) {
 		beanContext.changeBean(beanId, bean);
 	}
@@ -140,11 +121,6 @@ public class BeanRepository {
 
 	public Object removeBean(String beanId) {
 		return beanContext.removeBean(beanId);
-	}
-
-	public void removeBeanLifecycleObserver(BeanId beanId,
-			BeanLifecycle lifecycle, String observerId) {
-		beanContext.removeBeanLifecycleObserver(beanId, lifecycle, observerId);
 	}
 
 	public void setBeanInContext(BeanId beanId, boolean inContext) {

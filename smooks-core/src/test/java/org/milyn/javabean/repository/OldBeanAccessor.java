@@ -12,8 +12,6 @@ import javax.xml.transform.Source;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
-import org.milyn.javabean.lifecycle.BeanLifecycleObserver;
-import org.milyn.javabean.lifecycle.BeanLifecycleSubjectGroup;
 import org.milyn.payload.FilterResult;
 import org.milyn.payload.FilterSource;
 import org.milyn.payload.JavaResult;
@@ -28,8 +26,6 @@ public class OldBeanAccessor {
     private final Map<String, Object> beans;
 
     private final Map<String, List<String>> lifecycleAssociations = new HashMap<String, List<String>>();
-
-    private final Map<String, BeanLifecycleSubjectGroup> beanLifecycleSubjectGroups = new HashMap<String, BeanLifecycleSubjectGroup>();
 
     /**
      * Public default constructor.
@@ -112,98 +108,6 @@ public class OldBeanAccessor {
         return accessor.beans;
     }
 
-
-
-    /**
-     * Add a bean instance to the specified request under the specified beanId.
-     *
-     * @param executionContext The execution context within which the bean is created.
-     * @param beanId The beanId under which the bean is to be stored.
-     * @param bean The bean instance to be stored.
-     */
-    public static void addBean(ExecutionContext executionContext, String beanId, Object bean) {
-    	addBean(beanId, bean, executionContext, false);
-    }
-
-    /**
-     * Add a bean instance to the specified request under the specified beanId.
-     * <p/>
-     * When "addToList" is set to true, a new bean of type {@link List} is added to the bean map.  This
-     * bean is stored under a new key generated from the "beanId" appended with the string "List" e.g.
-     * the list associated with the beanId "customer" is called "customerList".
-     * @param beanId The beanId under which the bean is to be stored.
-     * @param bean The bean instance to be stored.
-     * @param executionContext The execution context within which the bean is created.
-     * @param addToList Is the bean to be added to a bean list.
-     * @deprecated Because of the new bean binding system, adding to a list this way is deprecated.
-     * 			   Use the {@link #addBean(org.milyn.container.ExecutionContext, String, Object)} method.
-     */
-    @SuppressWarnings("unchecked")
-	@Deprecated
-    public static void addBean(String beanId, Object bean, ExecutionContext executionContext, boolean addToList) {
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-    	AssertArgument.isNotNull(bean, "bean");
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-
-    	OldBeanAccessor accessor = getAccessor(executionContext);
-
-        accessor.cleanAssociatedLifecycleBeans(beanId);
-
-
-        if(addToList) {
-            // Beans that are added to lists take up 2 locations in the bean map... 1 for the current bean
-            // instance (keyed under beanId) and one for the bean list (keyed under beanId + "List").
-            // This was an unfortunate decision!!
-
-            String beanListId = beanId + "List";
-            Object beanList = accessor.beans.get(beanListId);
-
-            if(beanList == null) {
-                // Create the bean list and add it to the bean map...
-                beanList = new ArrayList<Object>();
-                accessor.beans.put(beanListId, beanList);
-
-                //add = true;
-            } else if(!(beanList instanceof List)) {
-                throw new IllegalArgumentException("bean [" + beanId + "] list storage location [" + beanListId + "] is already in use and IS NOT a List (type=" + beanList.getClass().getName() + ").  Try explicitly setting the 'beanId' on one of these bean configs to avoid this name collision.");
-            }
-            // add the bean to the list...
-            ((List<Object>)beanList).add(bean);
-        }
-
-        // Set the bean on the bean map...
-        accessor.beans.put(beanId, bean);
-
-        accessor.notifyObservers(BeanLifecycle.BEGIN, beanId, bean);
-
-    }
-
-    /**
-     * Changes a bean object of the given beanId. The difference to addBean is that the
-     * bean must exist, the associated beans aren't removed and the observers of the
-     * {@link BeanLifecycle#CHANGE} event are notified.
-     *
-     * @param executionContext The execution context within which the bean is created.
-     * @param beanId The beanId under which the bean is to be stored.
-     * @param bean The bean instance to be stored.
-     */
-    public static void changeBean(ExecutionContext executionContext, String beanId, Object bean) {
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-    	AssertArgument.isNotNull(bean, "bean");
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-
-    	OldBeanAccessor accessor = getAccessor(executionContext);
-
-    	if(accessor.beans.containsKey(beanId)) {
-    		accessor.beans.put(beanId, bean);
-
-    		accessor.notifyObservers(BeanLifecycle.CHANGE, beanId, bean);
-    	} else {
-    		throw new IllegalStateException("The bean '" + beanId + "' can't be replaces because it doesn't exits in the map.");
-    	}
-    }
-
-
     /**
      * Associates the lifeCycle of the childBean with the parentBean. When the parentBean gets overwritten via the
      * addBean method then the associated child beans will get removed from the bean map.
@@ -247,38 +151,6 @@ public class OldBeanAccessor {
         }
 
         associateLifecycles(executionContext, parentBean, childBean);
-    }
-
-    /**
-     * Registers an observer which observers when a bean gets added.
-     *
-     *
-     * @param executionContext The execution context in which the observer is registered
-     * @param beanId The bean id for which the observer is registered
-     * @param observerId The id of the observer. This is used to unregister the observer
-     * @param observer The actual BeanObserver object
-     */
-    public static void addBeanLifecycleObserver(ExecutionContext executionContext, String beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-
-    	OldBeanAccessor accessor = getAccessor(executionContext);
-
-    	accessor.addBeanLifecycleObserver(beanId, lifecycle, observerId, notifyOnce, observer);
-    }
-
-    /**
-     * Unregisters a bean observer
-     *
-     * @param executionContext The execution context in which the observer is registered
-     * @param beanId The bean id for which the observer is registered
-     * @param observerId The id of the observer to unregister
-     */
-    public static void removeBeanLifecycleObserver(ExecutionContext executionContext, String beanId, BeanLifecycle lifecycle, String observerId) {
-    	AssertArgument.isNotNull(executionContext, "executionContext");
-
-    	OldBeanAccessor accessor = getAccessor(executionContext);
-
-    	accessor.removeBeanLifecycleObserver(beanId, lifecycle, observerId);
     }
 
     /*
@@ -362,47 +234,5 @@ public class OldBeanAccessor {
             associations.add(childBean);
             lifecycleAssociations.put(parentBean, associations);
         }
-    }
-
-	private void addBeanLifecycleObserver(String beanId, BeanLifecycle lifecycle, String observerId, boolean notifyOnce, BeanLifecycleObserver observer) {
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, true);
-    	subjectGroup.addObserver(lifecycle, observerId, notifyOnce, observer);
-    }
-
-    private void removeBeanLifecycleObserver(String beanId, BeanLifecycle lifecycle,String observerId) {
-    	AssertArgument.isNotNullAndNotEmpty(beanId, "beanId");
-
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
-
-    	if(subjectGroup != null) {
-    		subjectGroup.removeObserver(lifecycle, observerId);
-    	}
-    }
-
-    private void notifyObservers(BeanLifecycle lifecycle, String beanId) {
-    	notifyObservers(lifecycle, beanId, null);
-    }
-
-    private void notifyObservers(BeanLifecycle lifecycle, String beanId, Object bean) {
-    	BeanLifecycleSubjectGroup subjectGroup = getBeanLifecycleSubjectGroup(beanId, false);
-
-    	if(subjectGroup != null) {
-    		subjectGroup.notifyObservers(lifecycle, bean);
-    	}
-    }
-
-    private BeanLifecycleSubjectGroup getBeanLifecycleSubjectGroup(String beanId, boolean createIfNotExist) {
-    	BeanLifecycleSubjectGroup subjectGroup = beanLifecycleSubjectGroups.get(beanId);
-
-    	if(subjectGroup == null && createIfNotExist) {
-    		subjectGroup = new BeanLifecycleSubjectGroup(executionContext, beanId);
-
-    		beanLifecycleSubjectGroups.put(beanId, subjectGroup);
-
-    	}
-
-    	return subjectGroup;
     }
 }

@@ -20,10 +20,8 @@ import org.milyn.delivery.annotation.Initialize;
 import org.milyn.container.ExecutionContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.javabean.context.BeanContext;
-import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.util.CollectionsUtil;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 

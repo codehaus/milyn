@@ -104,26 +104,6 @@ public interface BeanContext {
 	public abstract void clear();
 
 	/**
-	 * Associates the lifeCycle of the childBeanId with the parentBeanId. When the parentBean gets overwritten via the
-	 * addBean method then the associated child beans will get removed from the bean map.
-	 *
-	 * @param parentBeanId The {@link BeanId} of the bean that controlles the lifecycle of its childs
-	 * @param childBeanId The {@link BeanId} of the bean that will be associated to the parent
-	 */
-	public abstract void associateLifecycles(BeanId parentBeanId, BeanId childBeanId);
-
-	/**
-	 * Registers an observer which observers when a bean gets added.
-	 *
-	 * @param beanId The {@link BeanId} for which the observer is registered
-	 * @param observerId The id of the observer. This is used to unregister the observer
-	 * @param observer The actual BeanObserver instance
-	 */
-	public abstract void addBeanLifecycleObserver(BeanId beanId,
-			BeanLifecycle lifecycle, String observerId, boolean notifyOnce,
-			BeanContextLifecycleObserver observer);
-
-	/**
 	 * Registers a bean context observer.
 	 *
 	 * @param observer The actual BeanObserver instance.
@@ -143,15 +123,6 @@ public interface BeanContext {
 	 * @param observer The actual BeanObserver instance.
 	 */
 	public abstract void removeObserver(BeanContextLifecycleObserver observer);
-
-	/**
-	 * Unregisters a bean observer
-	 *
-	 * @param beanId The {@link BeanId} for which the observer is registered
-	 * @param observerId The id of the observer to unregister
-	 */
-	public abstract void removeBeanLifecycleObserver(BeanId beanId,
-			BeanLifecycle lifecycle, String observerId);
 
 	/**
 	 * Returns the bean by it's beanId name.
