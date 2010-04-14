@@ -33,6 +33,7 @@ import org.milyn.event.types.FilterLifecycleEvent;
 import org.milyn.net.URIUtil;
 import org.milyn.payload.FilterResult;
 import org.milyn.payload.FilterSource;
+import org.milyn.payload.JavaResult;
 import org.milyn.profile.Profile;
 import org.milyn.profile.ProfileSet;
 import org.milyn.profile.UnknownProfileMemberException;
@@ -516,7 +517,16 @@ public class Smooks {
                     FilterSource.setSource(executionContext, source);
                     FilterResult.setResults(executionContext, results);
 
-                    messageFilter.doFilter();
+                    try {
+                    	messageFilter.doFilter();
+                    } finally {
+                    	// We want to make sure that all the beans from the BeanContext are available in the
+                    	// JavaResult, if one is supplied by the user...
+                    	JavaResult javaResult = (JavaResult) FilterResult.getResult(executionContext, JavaResult.class);
+                    	if(javaResult != null) {
+                    		javaResult.getResultMap().putAll(executionContext.getBeanContext().getBeanMap());
+                    	}
+                    }
                 } catch(SmooksException e) {
                     executionContext.setTerminationError(e);
                     throw e;
