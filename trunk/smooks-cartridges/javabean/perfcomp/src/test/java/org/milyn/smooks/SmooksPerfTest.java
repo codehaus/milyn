@@ -53,10 +53,10 @@ public class SmooksPerfTest extends TestCase {
         for(int i = 0; i < TestConstants.NUM_ITERATIONS; i++) {
         	ExecutionContext execContext = smooks.createExecutionContext();
         	BeanContext beanCtx = execContext.getBeanContext();
-//        	
-//        	for(int ii = 0; ii < 15; ii++) {
-//        		beanCtx.addObserver(nobserver);
-//        	}
+        	
+        	for(int ii = 0; ii < 15; ii++) {
+        		beanCtx.addObserver(nobserver);
+        	}
         	
             javaResult = new JavaResult();
             smooks.filterSource(execContext, new StreamSource(TestConstants.getMessageReader()), javaResult);

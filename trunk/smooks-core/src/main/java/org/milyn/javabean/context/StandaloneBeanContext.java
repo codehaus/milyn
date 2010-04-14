@@ -542,8 +542,6 @@ public class StandaloneBeanContext implements BeanContext {
 			lifecycleObservers = null;
 			try {
 				int observerCount = localObserverListCopy.size();
-//				for(int i = 0; i < observerCount; i++) {
-//				localObserverListCopy.get(i).onBeanLifecycleEvent(event);
 				for(int i = 0; i < observerCount; i++) {
 					localObserverListCopy.get(i).onBeanLifecycleEvent(event);
 				}
