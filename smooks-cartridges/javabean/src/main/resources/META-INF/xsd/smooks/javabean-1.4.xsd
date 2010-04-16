@@ -237,11 +237,26 @@
 				</xs:documentation>
 			</xs:annotation>
 	    </xs:attribute>
-	    <xs:attribute name="beanIdRef" type="xs:string"
-			use="required">
+	    <xs:attribute name="beanIdRef" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation xml:lang="en">
 					The beanId of the bean to be wired into the
+					specified bean "property" (or List).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	    <xs:attribute name="beanType" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					The required class type to be checked for on the bean to be wired into the
+					specified bean "property" (or List).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	    <xs:attribute name="beanAnnotation" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					A required Annotation type to be checked for on the bean to be wired into the
 					specified bean "property" (or List).
 				</xs:documentation>
 			</xs:annotation>

@@ -129,6 +129,18 @@
 
     <resource-config selector="bean/wiring">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">beanType</param>
+        <param name="mapTo">wireBeanType</param>
+    </resource-config>
+
+    <resource-config selector="bean/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">beanAnnotation</param>
+        <param name="mapTo">wireBeanAnnotation</param>
+    </resource-config>
+
+    <resource-config selector="bean/wiring">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">wireOnElement</param>
         <param name="mapTo">selector</param>
     </resource-config>
@@ -141,6 +153,10 @@
 
     <resource-config selector="bean/wiring">
     	<resource>org.milyn.javabean.ext.WireOnElementChecker</resource>
+    </resource-config>
+
+    <resource-config selector="bean/wiring">
+    	<resource>org.milyn.javabean.ext.WireTargetChecker</resource>
     </resource-config>
 
     <!--

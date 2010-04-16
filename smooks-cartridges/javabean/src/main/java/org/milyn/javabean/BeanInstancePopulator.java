@@ -36,7 +36,7 @@ import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.expression.MVELExpressionEvaluator;
 import org.milyn.javabean.BeanRuntimeInfo.Classification;
 import org.milyn.javabean.observers.ListToArrayChangeObserver;
-import org.milyn.javabean.observers.WireByBeanIdObserver;
+import org.milyn.javabean.observers.BeanWiringObserver;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.context.BeanIdStore;
@@ -47,6 +47,7 @@ import org.milyn.xml.NamespaceMappings;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -84,6 +85,12 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private String wireBeanIdName;
 
     @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private Class<?> wireBeanType;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
+    private Class<? extends Annotation> wireBeanAnnotation;
+
+    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
     private String expression;
     private MVELExpressionEvaluator expressionEvaluator;
     private boolean expressionHasDataVariable = false;
@@ -107,9 +114,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     @ConfigParam(name="default", defaultVal = AnnotationConstants.NULL_STRING)
     private String defaultVal;
 
-    @ConfigParam(defaultVal = AnnotationConstants.NULL_STRING)
-    private Boolean extendLifecycle;
-
     @AppContext
     private ApplicationContext appContext;
 
@@ -128,9 +132,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     private DataDecoder decoder;
     private String mapKeyAttribute;
 
-    private boolean beanWiring;
+    private boolean isBeanWiring;
 
-    private WireByBeanIdObserver wireByBeanIdObserver;
+    private BeanWiringObserver wireByBeanIdObserver;
 	private ListToArrayChangeObserver listToArrayChangeObserver;
 
     public void setBeanId(String beanId) {
@@ -173,10 +177,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         this.defaultVal = defaultVal;
     }
 
-    public void setExtendLifecycle(Boolean extendLifecycle) {
-        this.extendLifecycle = extendLifecycle;
-    }
-
     /**
      * Set the resource configuration on the bean populator.
      * @throws SmooksConfigurationException Incorrectly configured resource.
@@ -186,7 +186,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     	buildId();
 
     	beanRuntimeInfo = BeanRuntimeInfo.getBeanRuntimeInfo(beanIdName, appContext);
-        beanWiring = wireBeanIdName != null;
+        isBeanWiring = (wireBeanIdName != null || wireBeanType != null || wireBeanAnnotation != null);
         isAttribute = (valueAttributeName != null);
 
         if(valueAttributePrefix != null) {
@@ -198,7 +198,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         beanId = beanIdStore.getBeanId(beanIdName);
 
         if (setterMethod == null && property == null ) {
-            if(beanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
+            if(isBeanWiring && (beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION || beanRuntimeInfo.getClassification() == Classification.MAP_COLLECTION)) {
                 // Default the property name if it's a wiring...
                 property = wireBeanIdName;
         	} else if(beanRuntimeInfo.getClassification() == Classification.NON_COLLECTION){
@@ -248,10 +248,15 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 			if(wireBeanId == null) {
 	            wireBeanId = beanIdStore.register(wireBeanIdName);
 	        }
-	        
+        }
+	     
+        if(isBeanWiring) {
 			// These observers can be used concurrently across multiple execution contexts...
-	        wireByBeanIdObserver = new WireByBeanIdObserver(wireBeanId, beanId, this);
-	        listToArrayChangeObserver = new ListToArrayChangeObserver(wireBeanId, property, this);
+	        wireByBeanIdObserver = new BeanWiringObserver(beanId, this).watchedBeanId(wireBeanId).watchedBeanType(wireBeanType).watchedBeanAnnotation(wireBeanAnnotation);
+	        if(wireBeanId != null) {
+	        	// List to array change observer only makes sense if wiring by beanId.
+	        	listToArrayChangeObserver = new ListToArrayChangeObserver(wireBeanId, property, this);
+	        }
         }
 
         if(logger.isDebugEnabled()) {
@@ -285,7 +290,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
     	checkBeanExists(executionContext);
 
-    	if(beanWiring) {
+    	if(isBeanWiring) {
         	bindBeanValue(executionContext);
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
@@ -296,7 +301,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
     	checkBeanExists(executionContext);
 
-    	if(!beanWiring && !isAttribute) {
+    	if(!isBeanWiring && !isAttribute) {
             bindDomDataValue(element, executionContext);
     	}
     }
@@ -304,7 +309,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     	checkBeanExists(executionContext);
 
-        if(beanWiring) {
+        if(isBeanWiring) {
         	bindBeanValue(executionContext);
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
@@ -319,7 +324,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
     	checkBeanExists(executionContext);
 
-    	if(!beanWiring && !isAttribute) {
+    	if(!isBeanWiring && !isAttribute) {
             bindSaxDataValue(element, executionContext);
     	}
     }
@@ -398,8 +403,18 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     private void bindBeanValue(final ExecutionContext executionContext) {
     	final BeanContext beanContext = executionContext.getBeanContext();
+    	Object bean = null;
+    	
+    	if(wireBeanId != null) {
+    		bean = beanContext.getBean(wireBeanId);
+    	}
 
-    	Object bean = beanContext.getBean(wireBeanId);
+        if(bean != null) {
+			if(!BeanWiringObserver.isMatchingBean(bean, wireBeanType, wireBeanAnnotation)) {
+				bean = null;
+			}
+        }
+    	
         if(bean == null) {
 
             if(logger.isDebugEnabled()) {
@@ -408,15 +423,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
             // Register the observer which looks for the creation of the selected bean via its beanIdName...
             beanContext.addObserver(wireByBeanIdObserver);
-//        	beanContext.addBeanLifecycleObserver(targetBeanId, BeanLifecycle.BEGIN, getId(), false, new BeanContextLifecycleObserver(){
-//
-//                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-//                    Object eventBean = event.getBean();
-//                    beanContext.associateLifecycles(beanId , targetBeanId);
-//                    populateAndSetPropertyValue(eventBean, beanContext, targetBeanId, executionContext);
-//                }
-//
-//            });
         } else {
             populateAndSetPropertyValue(bean, beanContext, wireBeanId, executionContext);
         }
@@ -436,15 +442,6 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             // Register an observer which looks for the change that the mutable list of the selected bean gets converted to an array. We
             // can then set this array
             beanContext.addObserver(listToArrayChangeObserver);
-
-//            beanContext.addBeanLifecycleObserver( targetBeanId, BeanLifecycle.CHANGE, getId(), true, new BeanContextLifecycleObserver() {
-//                public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
-//
-//                    setPropertyValue(property, event.getBean(), executionContext);
-//
-//                }
-//            });
-
         } else {
             setPropertyValue(property, bean, executionContext);
         }

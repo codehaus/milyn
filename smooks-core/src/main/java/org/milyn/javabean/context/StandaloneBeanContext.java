@@ -159,7 +159,7 @@ public class StandaloneBeanContext implements BeanContext {
         repositoryEntry.clean();
         repositoryEntry.setValue(null);
 
-    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.CHANGE, beanId, getBean(beanId)));
+    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.END, beanId, getBean(beanId)));
         
 		return old;
 	}
