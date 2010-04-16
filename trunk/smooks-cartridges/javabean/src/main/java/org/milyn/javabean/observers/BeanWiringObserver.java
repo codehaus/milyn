@@ -15,6 +15,8 @@
 */
 package org.milyn.javabean.observers;
 
+import java.lang.annotation.Annotation;
+
 import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.BeanInstancePopulator;
 import org.milyn.javabean.context.BeanContext;
@@ -24,22 +26,38 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
 
 /**
- * {@link BeanContext} Observer for performing a bean wiring by Bean ID.
+ * {@link BeanContext} Observer performing bean wiring.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class WireByBeanIdObserver implements BeanContextLifecycleObserver {
+public class BeanWiringObserver implements BeanContextLifecycleObserver {
 
-	private BeanId watchedBean;
-	private BeanId watchingBean;
+	private BeanId watchedBeanId;
+	private Class<?> watchedBeanType;
+	private Class<? extends Annotation> watchedBeanAnnotation;
+	private BeanId watchingBeanId;
 	private BeanInstancePopulator populator;
 
-	public WireByBeanIdObserver(BeanId watchedBean, BeanId watchingBean, BeanInstancePopulator populator) {
-		this.watchedBean = watchedBean;
-		this.watchingBean = watchingBean;
+	public BeanWiringObserver(BeanId watchingBean, BeanInstancePopulator populator) {
+		this.watchingBeanId = watchingBean;
 		this.populator = populator;		
 	}
 	
+	public BeanWiringObserver watchedBeanId(BeanId watchedBeanId) {
+		this.watchedBeanId = watchedBeanId;
+		return this;
+	}
+
+	public BeanWiringObserver watchedBeanType(Class watchedBeanType) {
+		this.watchedBeanType = watchedBeanType;
+		return this;
+	}
+
+	public BeanWiringObserver watchedBeanAnnotation(Class<? extends Annotation> watchedBeanAnnotation) {
+		this.watchedBeanAnnotation = watchedBeanAnnotation;
+		return this;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.lifecycle.BeanContextLifecycleObserver#onBeanLifecycleEvent(org.milyn.javabean.lifecycle.BeanContextLifecycleEvent)
 	 */
@@ -47,16 +65,40 @@ public class WireByBeanIdObserver implements BeanContextLifecycleObserver {
 		BeanId beanId = event.getBeanId();
 		BeanLifecycle lifecycle = event.getLifecycle();		
 		
-		if(beanId == watchedBean && lifecycle == BeanLifecycle.BEGIN) {
+		if(lifecycle == BeanLifecycle.BEGIN) {
+			if(watchedBeanId != null && beanId != watchedBeanId) {
+				return;
+			}
+
+			Object bean = event.getBean();
+			if(!isMatchingBean(bean, watchedBeanType, watchedBeanAnnotation)) {
+				return;
+			}
+			
 			ExecutionContext executionContext = event.getExecutionContext();
-			populator.populateAndSetPropertyValue(event.getBean(), executionContext.getBeanContext(), watchingBean, executionContext);
-		} else if(beanId == watchingBean && lifecycle == BeanLifecycle.END) {
+			populator.populateAndSetPropertyValue(bean, executionContext.getBeanContext(), watchingBeanId, executionContext);
+		} else if(beanId == watchingBeanId && lifecycle == BeanLifecycle.END) {
 			BeanContext beanContext = event.getExecutionContext().getBeanContext();
 			
 			beanContext.removeObserver(this);
 			// Need to remove the watched bean from the bean context too because it's lifecycle is associated 
 			// with the lifecycle of the watching bean, which has been removed...
-			beanContext.removeBean(watchedBean);
+			if(watchedBeanId != null) {
+				beanContext.removeBean(watchedBeanId);
+			}
 		}
+	}
+	
+	public static boolean isMatchingBean(Object bean, Class<?> type, Class<? extends Annotation> annotation) {
+		Class<? extends Object> beanClass = bean.getClass();
+
+		if(type != null && !type.isAssignableFrom(beanClass)) {
+			return false;
+		}
+		if(annotation != null && !beanClass.isAnnotationPresent(annotation)) {
+			return false;
+		}
+		
+		return true;
 	}
 }

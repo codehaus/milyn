@@ -3,6 +3,7 @@ package org.milyn.javabean;
 /**
  * @author
  */
+@OrderItemAnnotation
 public class OrderItem {
     private long productId;
     private Integer quantity;

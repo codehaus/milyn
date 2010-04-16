@@ -24,7 +24,6 @@ import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
