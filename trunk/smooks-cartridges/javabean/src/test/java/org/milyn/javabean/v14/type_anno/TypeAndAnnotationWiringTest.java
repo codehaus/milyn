@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.javabean.extendedconfig14.type_anno;
+package org.milyn.javabean.v14.type_anno;
 
 import java.io.IOException;
 
