@@ -17,6 +17,7 @@ package org.milyn.payload;
 
 import com.thoughtworks.xstream.XStream;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.javabean.context.StandaloneBeanContext;
 import org.milyn.payload.FilterResult;
 
 import javax.xml.transform.Result;
@@ -57,7 +58,6 @@ public class JavaResult extends FilterResult {
     	}
     }
     
-
     /**
      * Public constructor.
      * <p/>
@@ -79,6 +79,20 @@ public class JavaResult extends FilterResult {
     public Object getBean(String name) {
         return resultMap.get(name);
     }
+
+    /**
+     * Get the first instance of the specified bean type
+     * from this JavaResult instance.
+     * <p/>
+     * This method is only usable when you know that only a single instance of
+     * specific bean type will be present in the JavaResult instance.
+     * 
+     * @param beanType The bean runtime class type.
+     * @return The bean instance, otherwise null.
+     */
+	public <T> T getBean(Class<T> beanType) {
+		return StandaloneBeanContext.getBean(beanType, resultMap);
+	}
 
     /**
      * Get the Java result map.

@@ -90,6 +90,17 @@ public class StandaloneBeanContext implements BeanContext {
     }
 
     /* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#containsBean(org.milyn.javabean.repository.BeanId)
+	 */
+	public boolean containsBean(BeanId beanId) {
+		AssertArgument.isNotNull(beanId, "beanId");
+
+		int index = beanId.getIndex();
+
+		return entries.size() > index && entries.get(index).getValue() != null;
+	}
+
+    /* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#getBeanId(java.lang.String)
 	 */
     public BeanId getBeanId(String beanId) {
@@ -102,17 +113,6 @@ public class StandaloneBeanContext implements BeanContext {
 
         return beanIdObj;
     }
-
-    /* (non-Javadoc)
-	 * @see org.milyn.javabean.context.BeanContext#containsBean(org.milyn.javabean.repository.BeanId)
-	 */
-	public boolean containsBean(BeanId beanId) {
-		AssertArgument.isNotNull(beanId, "beanId");
-
-		int index = beanId.getIndex();
-
-		return entries.size() > index && entries.get(index).getValue() != null;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#getBean(org.milyn.javabean.repository.BeanId)
@@ -127,6 +127,34 @@ public class StandaloneBeanContext implements BeanContext {
 		}
 
 		return entries.get(index).getValue();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#getBean(java.lang.String)
+	 */
+	public Object getBean(String beanId) {
+		return beanMap.get(beanId);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.milyn.javabean.context.BeanContext#getBean(java.lang.Class)
+	 */
+	public <T> T getBean(Class<T> beanType) {
+		return getBean(beanType, beanMap);
+	}
+
+	public static <T> T getBean(Class<T> beanType, Map<String, Object> beanMap) {
+		if(beanMap == null) {
+			return null;
+		}
+		
+		for(Object bean : beanMap.values()) {
+			if(beanType.isInstance(bean)) {
+				return beanType.cast(bean);
+			}
+		}
+		
+		return null;
 	}
 
 	/* (non-Javadoc)
@@ -185,13 +213,6 @@ public class StandaloneBeanContext implements BeanContext {
 		for(ContextEntry entry : entries) {
 			entry.setValue(null);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.milyn.javabean.context.BeanContext#getBean(java.lang.String)
-	 */
-	public Object getBean(String beanId) {
-		return beanMap.get(beanId);
 	}
 
 	/* (non-Javadoc)

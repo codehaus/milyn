@@ -69,10 +69,30 @@ public interface BeanContext {
 	/**
 	 * Get the current bean, specified by the supplied {@link BeanId}.
 	 * <p/>
-	 * @param beanId The {@link BeanId} to get the bean instance from.
-	 * @return The bean instance, or null if no such bean instance exists
+	 * @param beanId The {@link BeanId} of the bean to be returned.
+	 * @return The bean instance, otherwise <code>null</code>.
 	 */
 	public abstract Object getBean(BeanId beanId);
+
+	/**
+	 * Returns the bean by it's beanId name.
+	 * <p/>
+	 * Returns the first bean of the specified type from the BeanContext instance.
+	 *
+	 * @param beanType The type of the bean to be returned.
+	 * @return The bean instance, otherwise <code>null</code>.
+	 */
+	public abstract Object getBean(String beanId);
+
+	/**
+	 * Returns the bean by it's beanId name.
+	 * <p/>
+	 * Returns the first bean of the specified type from the BeanContext instance.
+	 *
+	 * @param beanType The type of the bean to be returned.
+	 * @return The bean instance, otherwise <code>null</code>.
+	 */
+	public abstract <T> T getBean(Class<T> beanType);
 
 	/**
 	 * Changes a bean instance of the given {@link BeanId}. The difference to {@link #addBean(BeanId, Object)}
@@ -123,13 +143,6 @@ public interface BeanContext {
 	 * @param observer The actual BeanObserver instance.
 	 */
 	public abstract void removeObserver(BeanContextLifecycleObserver observer);
-
-	/**
-	 * Returns the bean by it's beanId name.
-	 *
-	 * @return the bean instance or <code>null</code> if it not exists.
-	 */
-	public abstract Object getBean(String beanId);
 
 	/**
 	 * This returns a map which is backed by this repository. Changes made in the map
