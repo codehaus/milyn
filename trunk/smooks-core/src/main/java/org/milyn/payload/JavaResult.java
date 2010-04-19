@@ -83,9 +83,6 @@ public class JavaResult extends FilterResult {
     /**
      * Get the first instance of the specified bean type
      * from this JavaResult instance.
-     * <p/>
-     * This method is only usable when you know that only a single instance of
-     * specific bean type will be present in the JavaResult instance.
      * 
      * @param beanType The bean runtime class type.
      * @return The bean instance, otherwise null.
