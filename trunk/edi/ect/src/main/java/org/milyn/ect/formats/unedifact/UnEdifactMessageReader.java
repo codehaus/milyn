@@ -16,6 +16,7 @@
 package org.milyn.ect.formats.unedifact;
 
 import org.milyn.edisax.model.internal.*;
+import org.milyn.ect.common.XmlTagEncoder;
 
 import java.io.*;
 import java.util.HashMap;
@@ -110,10 +111,10 @@ public class UnEdifactMessageReader {
      * Default settings for UN/EDIFACT.
      */
     private static final String MESSAGE_NAME = "UN-EDIFACT";
-    private static final String DELIMITER_SEGMENT = "&#39;";
+    private static final String DELIMITER_SEGMENT = "&#39;!$";
     private static final String DELIMITER_COMPOSITE = "+";
-    private static final String DELIMITER_SUB_COMPOSITE = "~";
     private static final String DELIMITER_DATA = ":";
+    private static final String DELIMITER_NOT_USED = "~";
     private static final String ESCAPE = "?";
 
     public static Edimap readMessage(Reader reader, boolean isSplitIntoImport, Edimap definitionModel) throws IOException {
@@ -133,14 +134,14 @@ public class UnEdifactMessageReader {
 
             edimap = new Edimap();
             SegmentGroup rootGroup = new SegmentGroup();
-            rootGroup.setXmltag(type);
+            rootGroup.setXmltag(XmlTagEncoder.encode(type));
             edimap.setSegments(rootGroup);            
 
             Delimiters delimiters = new Delimiters();
             delimiters.setSegment(DELIMITER_SEGMENT);
             delimiters.setField(DELIMITER_COMPOSITE);
-            delimiters.setComponent(DELIMITER_SUB_COMPOSITE);
-            delimiters.setSubComponent(DELIMITER_DATA);
+            delimiters.setComponent(DELIMITER_DATA);
+            delimiters.setSubComponent(DELIMITER_NOT_USED);
             delimiters.setEscape(ESCAPE);
             edimap.setDelimiters(delimiters);
 
@@ -271,7 +272,7 @@ public class UnEdifactMessageReader {
 
     private static SegmentGroup createGroup(String id, String name, String mandatory, String maxOccurance, Map<String, String> definitions) {
         SegmentGroup group = new SegmentGroup();
-        group.setXmltag(name.trim());
+        group.setXmltag(XmlTagEncoder.encode(name.trim()));
         group.setDocumentation(definitions.get(id).trim());
         group.setMinOccurs(mandatory.equals("M") ? 1 : 0);
         group.setMaxOccurs(Integer.valueOf(maxOccurance));
@@ -291,10 +292,11 @@ public class UnEdifactMessageReader {
                 segment.getSegments().addAll(importedSegment.getSegments());
             }
         }
-        segment.setXmltag(description.trim());
+        segment.setXmltag(XmlTagEncoder.encode(description.trim()));
         segment.setDocumentation(definitions.get(id).trim());
         segment.setMinOccurs(mandatory.equals("M") ? 1 : 0);
         segment.setMaxOccurs(Integer.valueOf(maxOccurance));
+        segment.setTruncatable(true);
         return segment;
     }
 

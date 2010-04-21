@@ -139,7 +139,7 @@ public class UnEdifactReader implements ConfigReader {
             compositeISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("edcd.")));
             segmentISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("edsd.")));
 
-            edifactModel = UnCefactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
+            edifactModel = UnEdifactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
         } finally {
             if (dataISR != null) {
                 dataISR.close();
