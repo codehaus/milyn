@@ -15,12 +15,16 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import java.io.Serializable;
+
 /**
  * Identifier.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Identifier {
+public class Identifier implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String id;
 	private String versionNum;

@@ -15,12 +15,16 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.Serializable;
+
 /**
  * Message Trailer.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNT {
+public class UNT implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private int segmentCount;
 	private String messageRefNum;

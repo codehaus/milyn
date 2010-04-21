@@ -15,12 +15,16 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import java.io.Serializable;
+
 /**
  * Message Identifier.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MessageIdentifier extends SourceIdentifier {
+public class MessageIdentifier extends SourceIdentifier implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String associationAssignedCode;
 	private String codeListDirVersionNum;

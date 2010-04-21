@@ -15,6 +15,8 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.Serializable;
+
 import org.milyn.smooks.edi.unedifact.model.types.MessageIdentifier;
 import org.milyn.smooks.edi.unedifact.model.types.SourceIdentifier;
 import org.milyn.smooks.edi.unedifact.model.types.TransferStatus;
@@ -24,7 +26,9 @@ import org.milyn.smooks.edi.unedifact.model.types.TransferStatus;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNH {
+public class UNH implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String messageRefNum;
 	private MessageIdentifier messageIdentifier;
