@@ -15,6 +15,7 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,7 +24,9 @@ import java.util.Date;
  * UN/EDIFACT Date and Time. 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DateTime {
+public class DateTime implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private static final String DATE_TIME_FORMAT = "yyyyMMddHHmm";
 

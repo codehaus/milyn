@@ -33,10 +33,10 @@ import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIUtils;
-import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringResult;
+import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange;
 import org.milyn.smooks.edi.unedifact.model.UNEdifactMessage;
 import org.xml.sax.SAXException;
 
@@ -82,7 +82,7 @@ public class UNEdifactReaderTest extends TestCase {
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-01.xml")), new StringReader(result.toString()));		
 	}
 	
-	public void test_java_binding() throws IOException, SAXException {
+	public void test_java_binding_simple_messages() throws IOException, SAXException {
 		Smooks smooks = new Smooks("/org/milyn/smooks/edi/unedifact/smooks-config-jb-01.xml");
 		JavaResult jResult = new JavaResult();		
 		StringResult sResult = new StringResult();		
@@ -98,6 +98,23 @@ public class UNEdifactReaderTest extends TestCase {
 		
 		XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-02.xml")), new StringReader(new XStream().toXML(messages)));		
+	}
+	
+	public void test_java_binding_interchange() throws IOException, SAXException {
+		Smooks smooks = new Smooks("/org/milyn/smooks/edi/unedifact/smooks-config-jb-02.xml");
+		JavaResult jResult = new JavaResult();		
+		StringResult sResult = new StringResult();		
+		ExecutionContext execCtx = smooks.createExecutionContext();
+		
+		//execCtx.setEventListener(new HtmlReportGenerator("target/report.html"));
+		smooks.filterSource(execCtx, new StreamSource(getClass().getResourceAsStream("unedifact-msg-02.edi")), jResult, sResult);
+		
+		UNEdifactInterchange interchange = jResult.getBean(UNEdifactInterchange.class);
+
+//		System.out.println(new XStream().toXML(interchange));
+		
+		XMLUnit.setIgnoreWhitespace( true );
+        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-03.xml")), new StringReader(new XStream().toXML(interchange)));		
 	}
 
 	private void createZip() throws IOException {

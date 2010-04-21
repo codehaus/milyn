@@ -15,6 +15,8 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.Serializable;
+
 import org.milyn.smooks.edi.unedifact.model.types.DateTime;
 import org.milyn.smooks.edi.unedifact.model.types.Party;
 import org.milyn.smooks.edi.unedifact.model.types.Ref;
@@ -25,7 +27,9 @@ import org.milyn.smooks.edi.unedifact.model.types.SyntaxIdentifier;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNB {
+public class UNB implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private SyntaxIdentifier syntaxIdentifier;
 	private Party sender;

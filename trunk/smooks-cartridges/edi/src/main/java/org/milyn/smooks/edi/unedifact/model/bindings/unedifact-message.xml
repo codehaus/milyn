@@ -7,7 +7,8 @@
     	<jb:wiring property="groupHeader" beanIdRef="ungSegment" />
     	<jb:wiring property="messageHeader" beanIdRef="unhSegment" />
     	<jb:wiring property="messageTrailer" beanIdRef="untSegment" />
-    </jb:bean>	
+    	<jb:wiring property="message" beanAnnotation="org.milyn.smooks.edi.EDIMessage" />
+    </jb:bean>
 
     <import file="control-segments.xml" />
 

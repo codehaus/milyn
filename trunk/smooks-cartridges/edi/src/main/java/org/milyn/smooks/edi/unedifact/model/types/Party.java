@@ -15,12 +15,16 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import java.io.Serializable;
+
 /**
  * Interchange Party (sender or recipient).
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Party {
+public class Party implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private String id;
 	private String codeQualifier;

@@ -15,12 +15,16 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.Serializable;
+
 /**
  * Interchange Trailer (UNZ) Control Segment Data.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNZ {
+public class UNZ implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private int controlCount;
 	private String controlRef;

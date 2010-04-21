@@ -15,12 +15,16 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.Serializable;
+
 /**
  * UN/EDIFACT message.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNEdifactMessage {
+public class UNEdifactMessage implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private UNB interchangeHeader;
 	private UNG groupHeader;

@@ -15,6 +15,8 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.Serializable;
+
 import org.milyn.smooks.edi.unedifact.model.types.Application;
 import org.milyn.smooks.edi.unedifact.model.types.DateTime;
 import org.milyn.smooks.edi.unedifact.model.types.MessageVersion;
@@ -24,7 +26,9 @@ import org.milyn.smooks.edi.unedifact.model.types.MessageVersion;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNG {
+public class UNG implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String groupId;
 	private Application senderApp;

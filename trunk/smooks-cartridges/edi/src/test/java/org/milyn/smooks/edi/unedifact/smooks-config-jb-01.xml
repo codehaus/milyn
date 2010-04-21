@@ -5,8 +5,6 @@
                       xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.4.xsd">
 
 	<unedifact:reader mappingModel="MSG1-model.xml,MSG2-model.xml,MSG3-model.xml" ignoreNewLines="true" />
-
-	<core:filterSettings type="DOM" />
 	
 	<import file="/org/milyn/smooks/edi/unedifact/model/bindings/unedifact-message.xml" />
 	

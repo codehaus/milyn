@@ -13,32 +13,24 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.smooks.edi.unedifact.model;
+package org.milyn.smooks.edi;
 
-import java.io.Serializable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Group Trailer.
+ * EDI Message marker annotation.
+ * <p/>
+ * Used on EDI messages for wiring into message exchanges/interchanges (e.g. UN/EDIFACT)
+ * by bean type.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNE implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-	
-	private int controlCount;
-	private String groupRef;
-	
-	public int getControlCount() {
-		return controlCount;
-	}
-	public void setControlCount(int controlCount) {
-		this.controlCount = controlCount;
-	}
-	public String getGroupRef() {
-		return groupRef;
-	}
-	public void setGroupRef(String groupRef) {
-		this.groupRef = groupRef;
-	}	
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
+public @interface EDIMessage {
 }
