@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.3.xsd">
 	<medi:description version="D08A" name="UN-EDIFACT"/>
-	<medi:delimiters sub-component=":" segment="&#39;" field="+" component="~"/>
+	<medi:delimiters sub-component="~" segment="&#39;!$" field="+" component=":"/>
 	<medi:segments xmltag="CASRES">
-			<medi:segment xmltag="Message_header" minOccurs="1" maxOccurs="1" segcode="UNH" truncatable="false" >
+			<medi:segment xmltag="Message_header" minOccurs="1" maxOccurs="1" segcode="UNH" truncatable="true" >
 			<medi:documentation>UNH, Message header
        A service segment starting and uniquely identifying a message.
        The message type code for the Legal administration response in
@@ -17,62 +17,62 @@
                      0052 D
                      0054 08A
                      0051 UN</medi:documentation>
-			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" type="String" minLength="0" maxLength="14" required="true" truncatable="false" />
-			<medi:field xmltag="MESSAGE_IDENTIFIER" required="true" truncatable="false" >
-				<medi:component xmltag="MessageType" type="String" minLength="0" maxLength="6" required="false" truncatable="false" />
+			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" type="String" minLength="0" maxLength="14" required="true" truncatable="true" />
+			<medi:field xmltag="MESSAGE_IDENTIFIER" required="true" truncatable="true" >
+				<medi:component xmltag="MessageType" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
 
-				<medi:component xmltag="MessageVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="MessageVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="MessageReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="MessageReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="ControllingAgency,Coded" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="ControllingAgencyCoded" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="AssociationAssignedCode" type="String" minLength="0" maxLength="6" required="false" truncatable="false" />
+				<medi:component xmltag="AssociationAssignedCode" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
 
-				<medi:component xmltag="CodeListDirectoryVersionNumber" type="String" minLength="0" maxLength="6" required="false" truncatable="false" />
+				<medi:component xmltag="CodeListDirectoryVersionNumber" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
 
-				<medi:component xmltag="MessageTypeSub-functionIdentification" type="String" minLength="0" maxLength="6" required="false" truncatable="false" />
+				<medi:component xmltag="MessageTypeSub-functionIdentification" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
 			</medi:field>
-			<medi:field xmltag="COMMON_ACCESS_REFERENCE" type="String" minLength="0" maxLength="35" required="false" truncatable="false" />
-			<medi:field xmltag="STATUS_OF_THE_TRANSFER" required="false" truncatable="false" >
-				<medi:component xmltag="SequenceOfTransfers" type="BigDecimal" minLength="0" maxLength="2" required="false" truncatable="false" />
+			<medi:field xmltag="COMMON_ACCESS_REFERENCE" type="String" minLength="0" maxLength="35" required="false" truncatable="true" />
+			<medi:field xmltag="STATUS_OF_THE_TRANSFER" required="false" truncatable="true" >
+				<medi:component xmltag="SequenceOfTransfers" type="BigDecimal" minLength="0" maxLength="2" required="false" truncatable="true" />
 
-				<medi:component xmltag="FirstAndLastTransfer" type="String" minLength="1" maxLength="1" required="false" truncatable="false" />
+				<medi:component xmltag="FirstAndLastTransfer" type="String" minLength="1" maxLength="1" required="false" truncatable="true" />
 			</medi:field>
-			<medi:field xmltag="MESSAGE_SUBSET_IDENTIFICATION" required="false" truncatable="false" >
-				<medi:component xmltag="MessageSubsetIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="false" />
+			<medi:field xmltag="MESSAGE_SUBSET_IDENTIFICATION" required="false" truncatable="true" >
+				<medi:component xmltag="MessageSubsetIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="true" />
 
-				<medi:component xmltag="MessageSubsetVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="MessageSubsetVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="MessageSubsetReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="MessageSubsetReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="ControllingAgency,Coded" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="ControllingAgencyCoded" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 			</medi:field>
-			<medi:field xmltag="MESSAGE_IMPLEMENTATION_GUIDELINE_IDENTIFICATION" required="false" truncatable="false" >
-				<medi:component xmltag="MessageImplementationGuidelineIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="false" />
+			<medi:field xmltag="MESSAGE_IMPLEMENTATION_GUIDELINE_IDENTIFICATION" required="false" truncatable="true" >
+				<medi:component xmltag="MessageImplementationGuidelineIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="true" />
 
-				<medi:component xmltag="MessageImplementationGuidelineVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="MessageImplementationGuidelineVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="MessageImplementationGuidelineReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="MessageImplementationGuidelineReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="ControllingAgency,Coded" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="ControllingAgencyCoded" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 			</medi:field>
-			<medi:field xmltag="SCENARIO_IDENTIFICATION" required="false" truncatable="false" >
-				<medi:component xmltag="ScenarioIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="false" />
+			<medi:field xmltag="SCENARIO_IDENTIFICATION" required="false" truncatable="true" >
+				<medi:component xmltag="ScenarioIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="true" />
 
-				<medi:component xmltag="ScenarioVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="ScenarioVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="ScenarioReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="ScenarioReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 
-				<medi:component xmltag="ControllingAgencyCode" type="String" minLength="0" maxLength="3" required="false" truncatable="false" />
+				<medi:component xmltag="ControllingAgencyCode" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
 			</medi:field>
 		</medi:segment>
 
-			<medi:segment xmltag="Beginning_of_message" minOccurs="1" maxOccurs="1" segcode="BGM" truncatable="false" >
+			<medi:segment xmltag="Beginning_of_message" minOccurs="1" maxOccurs="1" segcode="BGM" truncatable="true" >
 			<medi:documentation>BGM, Beginning of message
        A segment for unique identification of the message type, its
        function, and the reference number for the response.</medi:documentation>
-			<medi:field xmltag="DOCUMENT/MESSAGE_NAME" required="false" truncatable="false" >
+			<medi:field xmltag="DOCUMENT_MESSAGE_NAME" required="false" truncatable="true" >
 				<medi:documentation> Identification of a type of document/message by codeor name. Code preferred.</medi:documentation>
 				<medi:component xmltag="Document_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the document name.</medi:documentation>				</medi:component>
@@ -86,7 +86,7 @@
 				<medi:component xmltag="Document_name" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 					<medi:documentation> Name of a document.</medi:documentation>				</medi:component>
 			</medi:field>
-			<medi:field xmltag="DOCUMENT/MESSAGE_IDENTIFICATION" required="false" truncatable="false" >
+			<medi:field xmltag="DOCUMENT_MESSAGE_IDENTIFICATION" required="false" truncatable="true" >
 				<medi:documentation> Identification of a document/message by its numberand eventually its version or revision.</medi:documentation>
 				<medi:component xmltag="Document_identifier" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 					<medi:documentation> To identify a document.</medi:documentation>				</medi:component>
@@ -97,18 +97,18 @@
 				<medi:component xmltag="Revision_identifier" type="String" minLength="0" maxLength="6" required="false" truncatable="true" >
 					<medi:documentation> To identify a revision.</medi:documentation>				</medi:component>
 			</medi:field>
-			<medi:field xmltag="Message_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+			<medi:field xmltag="Message_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 				<medi:documentation> Code indicating the function of the message.</medi:documentation>			</medi:field>
-			<medi:field xmltag="Response_type_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+			<medi:field xmltag="Response_type_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 				<medi:documentation> Code specifying the type of acknowledgment required ortransmitted.</medi:documentation>			</medi:field>
 		</medi:segment>
 
-			<medi:segment xmltag="Date/time/period" minOccurs="1" maxOccurs="9" segcode="DTM" truncatable="false" >
+			<medi:segment xmltag="Date_time_period" minOccurs="1" maxOccurs="9" segcode="DTM" truncatable="true" >
 			<medi:documentation>DTM, Date/time/period
        A segment identifying the relevant dates and times associated
        with the response. The segment must be specified at least once
        to specify the processing date of the response message.</medi:documentation>
-			<medi:field xmltag="DATE/TIME/PERIOD" required="true" truncatable="false" >
+			<medi:field xmltag="DATE_TIME_PERIOD" required="true" truncatable="true" >
 				<medi:documentation> Date and/or time, or period relevant to thespecified date/time/period type.</medi:documentation>
 				<medi:component xmltag="Date_or_time_or_period_function_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code qualifying the function of a date, time orperiod.</medi:documentation>				</medi:component>
@@ -121,11 +121,11 @@
 			</medi:field>
 		</medi:segment>
 
-			<medi:segment xmltag="Application_error_information" minOccurs="0" maxOccurs="9" segcode="ERC" truncatable="false" >
+			<medi:segment xmltag="Application_error_information" minOccurs="0" maxOccurs="9" segcode="ERC" truncatable="true" >
 			<medi:documentation>ERC, Application error information
        A segment identifying the type of application errors within the
        message to which CASRES is a response.</medi:documentation>
-			<medi:field xmltag="APPLICATION_ERROR_DETAIL" required="true" truncatable="false" >
+			<medi:field xmltag="APPLICATION_ERROR_DETAIL" required="true" truncatable="true" >
 				<medi:documentation> Code assigned by the recipient of a message toindicate a data validation error condition.</medi:documentation>
 				<medi:component xmltag="Application_error_code" type="String" minLength="0" maxLength="8" required="true" truncatable="true" >
 					<medi:documentation> Code specifying an application error.</medi:documentation>				</medi:component>
@@ -138,13 +138,13 @@
 			</medi:field>
 		</medi:segment>
 
-			<medi:segment xmltag="Place/location_identification" minOccurs="0" maxOccurs="9" segcode="LOC" truncatable="false" >
+			<medi:segment xmltag="Place_location_identification" minOccurs="0" maxOccurs="9" segcode="LOC" truncatable="true" >
 			<medi:documentation>LOC, Place/location identification
        A segment identifying the jurisdiction and court or tribunal
        locations associated with the response message.</medi:documentation>
-			<medi:field xmltag="Location_function_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="false" >
+			<medi:field xmltag="Location_function_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 				<medi:documentation> Code identifying the function of a location.</medi:documentation>			</medi:field>
-			<medi:field xmltag="LOCATION_IDENTIFICATION" required="false" truncatable="false" >
+			<medi:field xmltag="LOCATION_IDENTIFICATION" required="false" truncatable="true" >
 				<medi:documentation> Identification of a location by code or name.</medi:documentation>
 				<medi:component xmltag="Location_identifier" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 					<medi:documentation> To identify a location.</medi:documentation>				</medi:component>
@@ -158,7 +158,7 @@
 				<medi:component xmltag="Location_name" type="String" minLength="0" maxLength="256" required="false" truncatable="true" >
 					<medi:documentation> Name of the location.</medi:documentation>				</medi:component>
 			</medi:field>
-			<medi:field xmltag="RELATED_LOCATION_ONE_IDENTIFICATION" required="false" truncatable="false" >
+			<medi:field xmltag="RELATED_LOCATION_ONE_IDENTIFICATION" required="false" truncatable="true" >
 				<medi:documentation> Identification the first related location by code orname.</medi:documentation>
 				<medi:component xmltag="First_related_location_identifier" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 					<medi:documentation> To identify a first related location.</medi:documentation>				</medi:component>
@@ -172,7 +172,7 @@
 				<medi:component xmltag="First_related_location_name" type="String" minLength="0" maxLength="70" required="false" truncatable="true" >
 					<medi:documentation> Name of first related location.</medi:documentation>				</medi:component>
 			</medi:field>
-			<medi:field xmltag="RELATED_LOCATION_TWO_IDENTIFICATION" required="false" truncatable="false" >
+			<medi:field xmltag="RELATED_LOCATION_TWO_IDENTIFICATION" required="false" truncatable="true" >
 				<medi:documentation> Identification of second related location by code orname.</medi:documentation>
 				<medi:component xmltag="Second_related_location_identifier" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 					<medi:documentation> To identify a second related location.</medi:documentation>				</medi:component>
@@ -186,15 +186,15 @@
 				<medi:component xmltag="Second_related_location_name" type="String" minLength="0" maxLength="70" required="false" truncatable="true" >
 					<medi:documentation> Name of the second related location.</medi:documentation>				</medi:component>
 			</medi:field>
-			<medi:field xmltag="Relation_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+			<medi:field xmltag="Relation_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 				<medi:documentation> Code specifying a relation.</medi:documentation>			</medi:field>
 		</medi:segment>
 
-			<medi:segment xmltag="Reference" minOccurs="0" maxOccurs="9" segcode="RFF" truncatable="false" >
+			<medi:segment xmltag="Reference" minOccurs="0" maxOccurs="9" segcode="RFF" truncatable="true" >
 			<medi:documentation>RFF, Reference
        A segment to specify a particular reference associated with the
        response when required, e.g. reference number for a legal case.</medi:documentation>
-			<medi:field xmltag="REFERENCE" required="true" truncatable="false" >
+			<medi:field xmltag="REFERENCE" required="true" truncatable="true" >
 				<medi:documentation> Identification of a reference.</medi:documentation>
 				<medi:component xmltag="Reference_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code qualifying a reference.</medi:documentation>				</medi:component>
@@ -213,11 +213,11 @@
 			</medi:field>
 		</medi:segment>
 
-			<medi:segment xmltag="Monetary_amount" minOccurs="0" maxOccurs="99" segcode="MOA" truncatable="false" >
+			<medi:segment xmltag="Monetary_amount" minOccurs="0" maxOccurs="99" segcode="MOA" truncatable="true" >
 			<medi:documentation>MOA, Monetary amount
        A segment identifying a monetary amount involved in the
        dispute.</medi:documentation>
-			<medi:field xmltag="MONETARY_AMOUNT" required="true" truncatable="false" >
+			<medi:field xmltag="MONETARY_AMOUNT" required="true" truncatable="true" >
 				<medi:documentation> Amount of goods or services stated as a monetaryamount in a specified currency.</medi:documentation>
 				<medi:component xmltag="Monetary_amount_type_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code qualifying the type of monetary amount.</medi:documentation>				</medi:component>
@@ -236,7 +236,7 @@
 			</medi:field>
 		</medi:segment>
 
-			<medi:segment xmltag="Free_text" minOccurs="0" maxOccurs="9" segcode="FTX" truncatable="false" >
+			<medi:segment xmltag="Free_text" minOccurs="0" maxOccurs="9" segcode="FTX" truncatable="true" >
 			<medi:documentation>FTX, Free text
        A segment for free text information in coded or clear form, to
        give further clarification to the response message, e.g. the
@@ -245,11 +245,11 @@
 4.1.2  Detail section
 
        Information to be provided in the Detail section:</medi:documentation>
-			<medi:field xmltag="Text_subject_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="false" >
+			<medi:field xmltag="Text_subject_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 				<medi:documentation> Code qualifying the subject of the text.</medi:documentation>			</medi:field>
-			<medi:field xmltag="Free_text_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+			<medi:field xmltag="Free_text_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 				<medi:documentation> Code specifying the function of free text.</medi:documentation>			</medi:field>
-			<medi:field xmltag="TEXT_REFERENCE" required="false" truncatable="false" >
+			<medi:field xmltag="TEXT_REFERENCE" required="false" truncatable="true" >
 				<medi:documentation> Coded reference to a standard text and its source.</medi:documentation>
 				<medi:component xmltag="Free_text_description_code" type="String" minLength="0" maxLength="17" required="true" truncatable="true" >
 					<medi:documentation> Code specifying free form text.</medi:documentation>				</medi:component>
@@ -260,7 +260,7 @@
 				<medi:component xmltag="Code_list_responsible_agency_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the agency responsible for a codelist.</medi:documentation>				</medi:component>
 			</medi:field>
-			<medi:field xmltag="TEXT_LITERAL" required="false" truncatable="false" >
+			<medi:field xmltag="TEXT_LITERAL" required="false" truncatable="true" >
 				<medi:documentation> Free text; one to five lines.</medi:documentation>
 				<medi:component xmltag="Free_text" type="String" minLength="0" maxLength="512" required="true" truncatable="true" >
 					<medi:documentation> Free form text.</medi:documentation>				</medi:component>
@@ -277,9 +277,9 @@
 				<medi:component xmltag="Free_text" type="String" minLength="0" maxLength="512" required="false" truncatable="true" >
 					<medi:documentation> Free form text.</medi:documentation>				</medi:component>
 			</medi:field>
-			<medi:field xmltag="Language_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+			<medi:field xmltag="Language_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 				<medi:documentation> Code specifying the language name.</medi:documentation>			</medi:field>
-			<medi:field xmltag="Free_text_format_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+			<medi:field xmltag="Free_text_format_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 				<medi:documentation> Code specifying the format of free text.</medi:documentation>			</medi:field>
 		</medi:segment>
 
@@ -287,12 +287,12 @@
 		<medi:documentation>Segment group 1:  NAD-SEQ-FTX
        A group of segments identifying the particulars of a party to a
        dispute.</medi:documentation>
-					<medi:segment xmltag="Name_and_address" minOccurs="1" maxOccurs="1" segcode="NAD" truncatable="false" >
+					<medi:segment xmltag="Name_and_address" minOccurs="1" maxOccurs="1" segcode="NAD" truncatable="true" >
 				<medi:documentation>NAD, Name and address
           A segment identifying the name and address of a party.</medi:documentation>
-				<medi:field xmltag="Party_function_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="false" >
+				<medi:field xmltag="Party_function_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code giving specific meaning to a party.</medi:documentation>				</medi:field>
-				<medi:field xmltag="PARTY_IDENTIFICATION_DETAILS" required="false" truncatable="false" >
+				<medi:field xmltag="PARTY_IDENTIFICATION_DETAILS" required="false" truncatable="true" >
 					<medi:documentation> Identification of a transaction party by code.</medi:documentation>
 					<medi:component xmltag="Party_identifier" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Code specifying the identity of a party.</medi:documentation>					</medi:component>
@@ -303,7 +303,7 @@
 					<medi:component xmltag="Code_list_responsible_agency_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying the agency responsible for a codelist.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="NAME_AND_ADDRESS" required="false" truncatable="false" >
+				<medi:field xmltag="NAME_AND_ADDRESS" required="false" truncatable="true" >
 					<medi:documentation> Unstructured name and address: one to five lines.</medi:documentation>
 					<medi:component xmltag="Name_and_address_description" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Free form description of a name and address line.</medi:documentation>					</medi:component>
@@ -320,7 +320,7 @@
 					<medi:component xmltag="Name_and_address_description" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 						<medi:documentation> Free form description of a name and address line.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="PARTY_NAME" required="false" truncatable="false" >
+				<medi:field xmltag="PARTY_NAME" required="false" truncatable="true" >
 					<medi:documentation> Identification of a transaction party by name, oneto five lines. Party name may be formatted.</medi:documentation>
 					<medi:component xmltag="Party_name" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Name of a party.</medi:documentation>					</medi:component>
@@ -340,7 +340,7 @@
 					<medi:component xmltag="Party_name_format_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying the representation of a party name.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="STREET" required="false" truncatable="false" >
+				<medi:field xmltag="STREET" required="false" truncatable="true" >
 					<medi:documentation> Street address and/or PO Box number in a structuredaddress: one to four lines.</medi:documentation>
 					<medi:component xmltag="Street_and_number_or_post_office_box_identifier" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> To identify a street and number and/or Post Office boxnumber.</medi:documentation>					</medi:component>
@@ -354,9 +354,9 @@
 					<medi:component xmltag="Street_and_number_or_post_office_box_identifier" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 						<medi:documentation> To identify a street and number and/or Post Office boxnumber.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="City_name" type="String" minLength="0" maxLength="35" required="false" truncatable="false" >
+				<medi:field xmltag="City_name" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 					<medi:documentation> Name of a city.</medi:documentation>				</medi:field>
-				<medi:field xmltag="COUNTRY_SUBDIVISION_DETAILS" required="false" truncatable="false" >
+				<medi:field xmltag="COUNTRY_SUBDIVISION_DETAILS" required="false" truncatable="true" >
 					<medi:documentation> To specify a country subdivision, such as state,canton, county, prefecture.</medi:documentation>
 					<medi:component xmltag="Country_subdivision_identifier" type="String" minLength="0" maxLength="9" required="false" truncatable="true" >
 						<medi:documentation> To identify a country subdivision, such as state,canton, county, prefecture.</medi:documentation>					</medi:component>
@@ -370,20 +370,20 @@
 					<medi:component xmltag="Country_subdivision_name" type="String" minLength="0" maxLength="70" required="false" truncatable="true" >
 						<medi:documentation> Name of a country subdivision, such as state, canton,county, prefecture.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="Postal_identification_code" type="String" minLength="0" maxLength="17" required="false" truncatable="false" >
+				<medi:field xmltag="Postal_identification_code" type="String" minLength="0" maxLength="17" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the postal zone or address.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Country_identifier" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Country_identifier" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Identification of the name of the country or othergeographical entity as defined in ISO 3166-1 andUN/ECE Recommendation 3.</medi:documentation>				</medi:field>
 			</medi:segment>
 
-					<medi:segment xmltag="Sequence_details" minOccurs="0" maxOccurs="1" segcode="SEQ" truncatable="false" >
+					<medi:segment xmltag="Sequence_details" minOccurs="0" maxOccurs="1" segcode="SEQ" truncatable="true" >
 				<medi:documentation>SEQ, Sequence details
           A segment to provide for the allocation of a sequence number
           (referenced in the GIR of Segment group 2) to a party
           involved in a dispute.</medi:documentation>
-				<medi:field xmltag="Action_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Action_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the action to be taken or alreadytaken.</medi:documentation>				</medi:field>
-				<medi:field xmltag="SEQUENCE_INFORMATION" required="false" truncatable="false" >
+				<medi:field xmltag="SEQUENCE_INFORMATION" required="false" truncatable="true" >
 					<medi:documentation> Identification of a sequence and source forsequencing.</medi:documentation>
 					<medi:component xmltag="Sequence_position_identifier" type="String" minLength="0" maxLength="10" required="true" truncatable="true" >
 						<medi:documentation> To identify a position in a sequence.</medi:documentation>					</medi:component>
@@ -399,16 +399,16 @@
 				</medi:field>
 			</medi:segment>
 
-					<medi:segment xmltag="Free_text" minOccurs="0" maxOccurs="9" segcode="FTX" truncatable="false" >
+					<medi:segment xmltag="Free_text" minOccurs="0" maxOccurs="9" segcode="FTX" truncatable="true" >
 				<medi:documentation>FTX, Free text
           A segment for free text information in coded or clear form,
           to give further clarification when required of a party, e.g.
           &apos;trading as&apos; and other legal descriptions.</medi:documentation>
-				<medi:field xmltag="Text_subject_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="false" >
+				<medi:field xmltag="Text_subject_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code qualifying the subject of the text.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Free_text_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Free_text_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the function of free text.</medi:documentation>				</medi:field>
-				<medi:field xmltag="TEXT_REFERENCE" required="false" truncatable="false" >
+				<medi:field xmltag="TEXT_REFERENCE" required="false" truncatable="true" >
 					<medi:documentation> Coded reference to a standard text and its source.</medi:documentation>
 					<medi:component xmltag="Free_text_description_code" type="String" minLength="0" maxLength="17" required="true" truncatable="true" >
 						<medi:documentation> Code specifying free form text.</medi:documentation>					</medi:component>
@@ -419,7 +419,7 @@
 					<medi:component xmltag="Code_list_responsible_agency_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying the agency responsible for a codelist.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="TEXT_LITERAL" required="false" truncatable="false" >
+				<medi:field xmltag="TEXT_LITERAL" required="false" truncatable="true" >
 					<medi:documentation> Free text; one to five lines.</medi:documentation>
 					<medi:component xmltag="Free_text" type="String" minLength="0" maxLength="512" required="true" truncatable="true" >
 						<medi:documentation> Free form text.</medi:documentation>					</medi:component>
@@ -436,9 +436,9 @@
 					<medi:component xmltag="Free_text" type="String" minLength="0" maxLength="512" required="false" truncatable="true" >
 						<medi:documentation> Free form text.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="Language_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Language_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the language name.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Free_text_format_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Free_text_format_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the format of free text.</medi:documentation>				</medi:field>
 			</medi:segment>
 
@@ -447,11 +447,11 @@
 		<medi:documentation>Segment group 2:  DOC-GIR-PYT-DTM-MOA-FTX
        A group of segments identifying the particular details
        applicable to a court or tribunal order.</medi:documentation>
-					<medi:segment xmltag="Document/message_details" minOccurs="1" maxOccurs="1" segcode="DOC" truncatable="false" >
+					<medi:segment xmltag="Document_message_details" minOccurs="1" maxOccurs="1" segcode="DOC" truncatable="true" >
 				<medi:documentation>DOC, Document/message details
           A segment to provide relevant descriptive information
           relating to a court or tribunal order (certificate).</medi:documentation>
-				<medi:field xmltag="DOCUMENT/MESSAGE_NAME" required="true" truncatable="false" >
+				<medi:field xmltag="DOCUMENT_MESSAGE_NAME" required="true" truncatable="true" >
 					<medi:documentation> Identification of a type of document/message by codeor name. Code preferred.</medi:documentation>
 					<medi:component xmltag="Document_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying the document name.</medi:documentation>					</medi:component>
@@ -465,7 +465,7 @@
 					<medi:component xmltag="Document_name" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 						<medi:documentation> Name of a document.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="DOCUMENT/MESSAGE_DETAILS" required="false" truncatable="false" >
+				<medi:field xmltag="DOCUMENT_MESSAGE_DETAILS" required="false" truncatable="true" >
 					<medi:documentation> Identification of document/message by number,status, source and/or language.</medi:documentation>
 					<medi:component xmltag="Document_identifier" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 						<medi:documentation> To identify a document.</medi:documentation>					</medi:component>
@@ -485,23 +485,23 @@
 					<medi:component xmltag="Revision_identifier" type="String" minLength="0" maxLength="6" required="false" truncatable="true" >
 						<medi:documentation> To identify a revision.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="Communication_medium_type_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Communication_medium_type_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the type of communication medium.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Document_copies_required_quantity" type="BigDecimal" minLength="0" maxLength="2" required="false" truncatable="false" >
+				<medi:field xmltag="Document_copies_required_quantity" type="BigDecimal" minLength="0" maxLength="2" required="false" truncatable="true" >
 					<medi:documentation> Quantity of document copies required.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Document_originals_required_quantity" type="BigDecimal" minLength="0" maxLength="2" required="false" truncatable="false" >
+				<medi:field xmltag="Document_originals_required_quantity" type="BigDecimal" minLength="0" maxLength="2" required="false" truncatable="true" >
 					<medi:documentation> Quantity of document originals required.</medi:documentation>				</medi:field>
 			</medi:segment>
 
-					<medi:segment xmltag="Related_identification_numbers" minOccurs="0" maxOccurs="99" segcode="GIR" truncatable="false" >
+					<medi:segment xmltag="Related_identification_numbers" minOccurs="0" maxOccurs="99" segcode="GIR" truncatable="true" >
 				<medi:documentation>GIR, Related identification numbers
           A segment to identify a group of parties (via the sequence
           numbers allocated in Segment group 1) related to an order,
           e.g. all the parties that the order is on behalf of, or all
           the parties to which the order applies.</medi:documentation>
-				<medi:field xmltag="Set_type_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="false" >
+				<medi:field xmltag="Set_type_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code qualifying the type of set.</medi:documentation>				</medi:field>
-				<medi:field xmltag="IDENTIFICATION_NUMBER" required="true" truncatable="false" >
+				<medi:field xmltag="IDENTIFICATION_NUMBER" required="true" truncatable="true" >
 					<medi:documentation> The identification of an object.</medi:documentation>
 					<medi:component xmltag="Object_identifier" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Code specifying the unique identity of an object.</medi:documentation>					</medi:component>
@@ -512,7 +512,7 @@
 					<medi:component xmltag="Status_description_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying a status.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="false" >
+				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="true" >
 					<medi:documentation> The identification of an object.</medi:documentation>
 					<medi:component xmltag="Object_identifier" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Code specifying the unique identity of an object.</medi:documentation>					</medi:component>
@@ -523,7 +523,7 @@
 					<medi:component xmltag="Status_description_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying a status.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="false" >
+				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="true" >
 					<medi:documentation> The identification of an object.</medi:documentation>
 					<medi:component xmltag="Object_identifier" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Code specifying the unique identity of an object.</medi:documentation>					</medi:component>
@@ -534,7 +534,7 @@
 					<medi:component xmltag="Status_description_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying a status.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="false" >
+				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="true" >
 					<medi:documentation> The identification of an object.</medi:documentation>
 					<medi:component xmltag="Object_identifier" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Code specifying the unique identity of an object.</medi:documentation>					</medi:component>
@@ -545,7 +545,7 @@
 					<medi:component xmltag="Status_description_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying a status.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="false" >
+				<medi:field xmltag="IDENTIFICATION_NUMBER" required="false" truncatable="true" >
 					<medi:documentation> The identification of an object.</medi:documentation>
 					<medi:component xmltag="Object_identifier" type="String" minLength="0" maxLength="35" required="true" truncatable="true" >
 						<medi:documentation> Code specifying the unique identity of an object.</medi:documentation>					</medi:component>
@@ -558,13 +558,13 @@
 				</medi:field>
 			</medi:segment>
 
-					<medi:segment xmltag="Payment_terms" minOccurs="0" maxOccurs="1" segcode="PYT" truncatable="false" >
+					<medi:segment xmltag="Payment_terms" minOccurs="0" maxOccurs="1" segcode="PYT" truncatable="true" >
 				<medi:documentation>PYT, Payment terms
           A segment identifying the terms of payment, e.g. by
           instalment.</medi:documentation>
-				<medi:field xmltag="Payment_terms_type_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="false" >
+				<medi:field xmltag="Payment_terms_type_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code qualifying the type of payment terms.</medi:documentation>				</medi:field>
-				<medi:field xmltag="PAYMENT_TERMS" required="false" truncatable="false" >
+				<medi:field xmltag="PAYMENT_TERMS" required="false" truncatable="true" >
 					<medi:documentation> Terms of payment information.</medi:documentation>
 					<medi:component xmltag="Payment_terms_description_identifier" type="String" minLength="0" maxLength="17" required="false" truncatable="true" >
 						<medi:documentation> Identification of the terms of payment between theparties to a transaction (generic term).</medi:documentation>					</medi:component>
@@ -578,22 +578,22 @@
 					<medi:component xmltag="Payment_terms_description" type="String" minLength="0" maxLength="35" required="false" truncatable="true" >
 						<medi:documentation> Free form description of the conditions of paymentbetween the parties to a transaction.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="Event_time_reference_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Event_time_reference_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying a time that references an event thatwill or has occurred.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Terms_time_relation_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Terms_time_relation_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code relating terms to a reference date, time orperiod.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Period_type_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Period_type_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the type of period.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Period_count_quantity" type="BigDecimal" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Period_count_quantity" type="BigDecimal" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Count of the number of periods.</medi:documentation>				</medi:field>
 			</medi:segment>
 
-					<medi:segment xmltag="Date/time/period" minOccurs="0" maxOccurs="9" segcode="DTM" truncatable="false" >
+					<medi:segment xmltag="Date_time_period" minOccurs="0" maxOccurs="9" segcode="DTM" truncatable="true" >
 				<medi:documentation>DTM, Date/time/period
           A segment identifying the relevant date, time or period
           associated with the order, e.g. date order made, instalment
           periods.</medi:documentation>
-				<medi:field xmltag="DATE/TIME/PERIOD" required="true" truncatable="false" >
+				<medi:field xmltag="DATE_TIME_PERIOD" required="true" truncatable="true" >
 					<medi:documentation> Date and/or time, or period relevant to thespecified date/time/period type.</medi:documentation>
 					<medi:component xmltag="Date_or_time_or_period_function_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 						<medi:documentation> Code qualifying the function of a date, time orperiod.</medi:documentation>					</medi:component>
@@ -606,11 +606,11 @@
 				</medi:field>
 			</medi:segment>
 
-					<medi:segment xmltag="Monetary_amount" minOccurs="0" maxOccurs="99" segcode="MOA" truncatable="false" >
+					<medi:segment xmltag="Monetary_amount" minOccurs="0" maxOccurs="99" segcode="MOA" truncatable="true" >
 				<medi:documentation>MOA, Monetary amount
           A segment identifying a monetary amount involved in the
           order.</medi:documentation>
-				<medi:field xmltag="MONETARY_AMOUNT" required="true" truncatable="false" >
+				<medi:field xmltag="MONETARY_AMOUNT" required="true" truncatable="true" >
 					<medi:documentation> Amount of goods or services stated as a monetaryamount in a specified currency.</medi:documentation>
 					<medi:component xmltag="Monetary_amount_type_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 						<medi:documentation> Code qualifying the type of monetary amount.</medi:documentation>					</medi:component>
@@ -629,16 +629,16 @@
 				</medi:field>
 			</medi:segment>
 
-					<medi:segment xmltag="Free_text" minOccurs="0" maxOccurs="9" segcode="FTX" truncatable="false" >
+					<medi:segment xmltag="Free_text" minOccurs="0" maxOccurs="9" segcode="FTX" truncatable="true" >
 				<medi:documentation>FTX, Free text
           A segment for free text information in coded or clear form,
           to give further clarification when required to a court or
           tribunal order.</medi:documentation>
-				<medi:field xmltag="Text_subject_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="false" >
+				<medi:field xmltag="Text_subject_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true" >
 					<medi:documentation> Code qualifying the subject of the text.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Free_text_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Free_text_function_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the function of free text.</medi:documentation>				</medi:field>
-				<medi:field xmltag="TEXT_REFERENCE" required="false" truncatable="false" >
+				<medi:field xmltag="TEXT_REFERENCE" required="false" truncatable="true" >
 					<medi:documentation> Coded reference to a standard text and its source.</medi:documentation>
 					<medi:component xmltag="Free_text_description_code" type="String" minLength="0" maxLength="17" required="true" truncatable="true" >
 						<medi:documentation> Code specifying free form text.</medi:documentation>					</medi:component>
@@ -649,7 +649,7 @@
 					<medi:component xmltag="Code_list_responsible_agency_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 						<medi:documentation> Code specifying the agency responsible for a codelist.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="TEXT_LITERAL" required="false" truncatable="false" >
+				<medi:field xmltag="TEXT_LITERAL" required="false" truncatable="true" >
 					<medi:documentation> Free text; one to five lines.</medi:documentation>
 					<medi:component xmltag="Free_text" type="String" minLength="0" maxLength="512" required="true" truncatable="true" >
 						<medi:documentation> Free form text.</medi:documentation>					</medi:component>
@@ -666,22 +666,21 @@
 					<medi:component xmltag="Free_text" type="String" minLength="0" maxLength="512" required="false" truncatable="true" >
 						<medi:documentation> Free form text.</medi:documentation>					</medi:component>
 				</medi:field>
-				<medi:field xmltag="Language_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Language_name_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the language name.</medi:documentation>				</medi:field>
-				<medi:field xmltag="Free_text_format_code" type="String" minLength="0" maxLength="3" required="false" truncatable="false" >
+				<medi:field xmltag="Free_text_format_code" type="String" minLength="0" maxLength="3" required="false" truncatable="true" >
 					<medi:documentation> Code specifying the format of free text.</medi:documentation>				</medi:field>
 			</medi:segment>
 
 	</medi:segmentGroup>
-			<medi:segment xmltag="Message_trailer" minOccurs="1" maxOccurs="1" segcode="UNT" truncatable="false" >
+			<medi:segment xmltag="Message_trailer" minOccurs="1" maxOccurs="1" segcode="UNT" truncatable="true" >
 			<medi:documentation>UNT, Message trailer
        A service segment ending a message, giving the total number of
        segments in the message (including the UNH &amp; UNT) and the
        control reference number of the message.</medi:documentation>
-			<medi:field xmltag="NUMBER_OF_SEGMENTS_IN_MESSAGE" type="BigDecimal" minLength="0" maxLength="10" required="true" truncatable="false" />
-			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" type="String" minLength="0" maxLength="14" required="true" truncatable="false" />
+			<medi:field xmltag="NUMBER_OF_SEGMENTS_IN_MESSAGE" type="BigDecimal" minLength="0" maxLength="10" required="true" truncatable="true" />
+			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" type="String" minLength="0" maxLength="14" required="true" truncatable="true" />
 		</medi:segment>
 
     </medi:segments>
 </medi:edimap>
-

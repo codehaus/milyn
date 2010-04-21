@@ -1,5 +1,5 @@
-<medi:segment xmltag="DATE/TIME/PERIOD" minOccurs="1" maxOccurs="1" segcode="DTM" truncatable="false" description=" To specify date, and/or time, or period.">
-    <medi:field xmltag="DATE/TIME/PERIOD" required="true" truncatable="false">
+<medi:segment xmltag="DATE_TIME_PERIOD" minOccurs="1" maxOccurs="1" segcode="DTM" truncatable="true" description=" To specify date, and/or time, or period.">
+    <medi:field xmltag="DATE_TIME_PERIOD" required="true" truncatable="true">
         <medi:documentation> Date and/or time, or period relevant to thespecified date/time/period type.</medi:documentation>
         <medi:component xmltag="Date_or_time_or_period_function_code_qualifier" type="String" minLength="0" maxLength="3" required="true" truncatable="true">
             <medi:documentation> Code qualifying the function of a date, time orperiod.</medi:documentation>

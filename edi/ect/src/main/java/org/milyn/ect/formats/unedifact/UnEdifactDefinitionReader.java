@@ -17,6 +17,7 @@ package org.milyn.ect.formats.unedifact;
 
 import org.milyn.edisax.model.internal.*;
 import org.milyn.ect.EdiParseException;
+import org.milyn.ect.common.XmlTagEncoder;
 
 import java.io.*;
 import java.util.*;
@@ -28,7 +29,7 @@ import java.util.regex.Matcher;
  * UnCefactDefinitionReader
  * @author bardl
  */
-public class UnCefactDefinitionReader {
+public class UnEdifactDefinitionReader {
 
     /**
      * Matches the line of '-' characters separating the data-, composite- or segment-definitions.
@@ -106,7 +107,31 @@ public class UnCefactDefinitionReader {
      * Group3 = name
      * Group4 = mandatory
      */
-    private static final Pattern SEGMENT_ELEMENT = Pattern.compile("^(\\d{3}) *(\\d{4}|C\\d{3}) *(.*) *(C|M).*");
+    private static final Pattern SEGMENT_ELEMENT = Pattern.compile("^(\\d{3}) *(\\d{4}|C\\d{3}) *(.*) *( C| M).*");
+
+    /**
+     * Extracts information from first SegmentElement when Composite or Data element description exists on several
+     * lines. Could be either a Composite or a Data.
+     * Example: "010    C779 ARRAY STRUCTURE IDENTIFICATION
+     *                       AND SOME MORE DESCRIPTION           M    1 an..15"
+     * Group1 = line number
+     * Group2 = id
+     * Group3 = name
+     * Group4 = mandatory
+     */
+    private static final Pattern FIRST_SEGMENT_ELEMENT = Pattern.compile("^(\\d{3}) *(\\d{4}|C\\d{3}) *(.*)");
+
+    /**
+     * Extracts information from second SegmentElement when Composite or Data element description exists on several
+     * lines. Could be either a Composite or a Data.
+     * Example: "010    C779 ARRAY STRUCTURE IDENTIFICATION
+     *                       AND SOME MORE DESCRIPTION           M    1 an..15"
+     * Group1 = line number
+     * Group2 = id
+     * Group3 = name
+     */
+    private static final Pattern SECOND_SEGMENT_ELEMENT = Pattern.compile("^(.*) *( C| M).*");
+
 
     public static List<Segment> readSegmentDefinitions(Reader dataReader, Reader compositeReader, Reader segmentReader) throws IOException, EdiParseException {
         Map<String, Component> datas = readComponents(dataReader);
@@ -150,8 +175,9 @@ public class UnCefactDefinitionReader {
 
         Segment segment = new Segment();
         segment.setSegcode(segcode);
-        segment.setXmltag(name.trim());
+        segment.setXmltag(XmlTagEncoder.encode(name.trim()));
         segment.setDescription(description);
+        segment.setTruncatable(true);
 
         line = readUntilValue(reader);
 
@@ -159,10 +185,18 @@ public class UnCefactDefinitionReader {
         while (line != null && !line.matches(ELEMENT_SEPARATOR)) {
             matcher = SEGMENT_ELEMENT.matcher(line);
             if (matcher.matches()) {
-                if (matcher.group(2).startsWith("C")) {
-                    segment.getFields().add(copyField(fields.get(matcher.group(2)), matcher.group(4).equalsIgnoreCase("M")));
-                } else {
-                    segment.getFields().add(convertToField(componens.get(matcher.group(2)), matcher.group(4).equalsIgnoreCase("M")));
+                addFieldToSegment(fields, componens, segment, matcher.group(2), matcher.group(4).trim().equalsIgnoreCase("M"));
+            } else {
+                matcher = FIRST_SEGMENT_ELEMENT.matcher(line);
+                if (matcher.matches()) {
+                    String id = matcher.group(2);
+                    line = reader.readLine();
+                    matcher = SECOND_SEGMENT_ELEMENT.matcher(line);
+                    if (matcher.matches()) {
+                        addFieldToSegment(fields, componens, segment, id, matcher.group(2).trim().equalsIgnoreCase("M"));
+                    } else {
+                        throw new EdiParseException("Unable to match current line in segment description file. Erranous line [" + line + "].");
+                    }
                 }
             }
             line = reader.readLine();
@@ -170,14 +204,22 @@ public class UnCefactDefinitionReader {
         return segment;
     }
 
+    private static void addFieldToSegment(Map<String, Field> fields, Map<String, Component> componens, Segment segment, String id, boolean isMandatory) {
+        if (id.startsWith("C")) {
+            segment.getFields().add(copyField(fields.get(id), isMandatory));
+        } else {
+            segment.getFields().add(convertToField(componens.get(id), isMandatory));
+        }
+    }
+
     private static Field convertToField(Component component, boolean isMandatory) {
         Field field = new Field();
-        field.setXmltag(component.getXmltag());
+        field.setXmltag(XmlTagEncoder.encode(component.getXmltag()));
         field.setDocumentation(component.getDocumentation());
         field.setMaxLength(component.getMaxLength());
         field.setMinLength(component.getMinLength());
         field.setRequired(isMandatory);
-        field.setTruncatable(component.isTruncatable());
+        field.setTruncatable(true);
         field.setType(component.getType());
         field.setTypeParameters(component.getTypeParameters());
         return field;
@@ -185,12 +227,12 @@ public class UnCefactDefinitionReader {
 
     private static Field copyField(Field oldField, boolean isMandatory) {
         Field field = new Field();
-        field.setXmltag(oldField.getXmltag());
+        field.setXmltag(XmlTagEncoder.encode(oldField.getXmltag()));
         field.setDocumentation(oldField.getDocumentation());
         field.setMaxLength(oldField.getMaxLength());
         field.setMinLength(oldField.getMinLength());
         field.setRequired(isMandatory);
-        field.setTruncatable(oldField.isTruncatable());
+        field.setTruncatable(true);
         field.setType(oldField.getType());
         field.setTypeParameters(oldField.getTypeParameters());
         field.getComponents().addAll(oldField.getComponents());
@@ -234,7 +276,7 @@ public class UnCefactDefinitionReader {
 
         String description = getValue(reader, "Desc:");
 
-        field.setXmltag(name);
+        field.setXmltag(XmlTagEncoder.encode(name));
         field.setDocumentation(description);
 
         line = readUntilValue(reader);
@@ -260,7 +302,7 @@ public class UnCefactDefinitionReader {
         toComponent.setTruncatable(true);
         toComponent.setType(fromComponent.getType());
         toComponent.setTypeParameters(fromComponent.getTypeParameters());
-        toComponent.setXmltag(fromComponent.getXmltag());
+        toComponent.setXmltag(XmlTagEncoder.encode(fromComponent.getXmltag()));
     }
 
     private static Map<String, Component> readComponents(Reader reader) throws IOException, EdiParseException {
@@ -304,7 +346,7 @@ public class UnCefactDefinitionReader {
         String repr = getValue(reader, "Repr:");
         String[] typeAndOccurance = repr.split(DOTS);
 
-        component.setXmltag(name.trim());
+        component.setXmltag(XmlTagEncoder.encode(name.trim()));
         component.setType(getType(typeAndOccurance));
         component.setMinLength(getMinLength(typeAndOccurance));
         component.setMaxLength(getMaxLength(typeAndOccurance));
@@ -408,9 +450,9 @@ public class UnCefactDefinitionReader {
 
     public static Edimap parse(Reader dataReader, Reader compositeReader, Reader segmentReader) throws IOException, EdiParseException {
 
-        Map<String, Component> datas = UnCefactDefinitionReader.readComponents(dataReader);
-        Map<String, Field> composites = UnCefactDefinitionReader.readFields(compositeReader, datas);
-        List<Segment> segments = UnCefactDefinitionReader.readSegments(segmentReader, composites, datas);
+        Map<String, Component> datas = UnEdifactDefinitionReader.readComponents(dataReader);
+        Map<String, Field> composites = UnEdifactDefinitionReader.readFields(compositeReader, datas);
+        List<Segment> segments = UnEdifactDefinitionReader.readSegments(segmentReader, composites, datas);
 
         Edimap edimap = new Edimap();
         edimap.setSegments(new SegmentGroup());
