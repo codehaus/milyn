@@ -19,7 +19,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIParseException;
 import org.milyn.edisax.EDIUtils;
@@ -36,10 +39,12 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class UNBHandler implements ControlBlockHandler {
+
+	private static Log logger = LogFactory.getLog(UNBHandler.class);
 	
 	private Segment unbSegment;
 	private Segment unzSegment;
-	private Map<String, Charset> repertoireToCharset;
+	private Map<String, Charset> toCharsetMapping;
 	
 	public UNBHandler() {
 		createSegmentsDefs();
@@ -56,7 +61,14 @@ public class UNBHandler implements ControlBlockHandler {
 		interchangeContext.mapControlSegment(unbSegment, true);
 		
 		String[] syntaxIdComponents = EDIUtils.split(fields[1], segmentReader.getDelimiters().getComponent(), segmentReader.getDelimiters().getEscape());
-		changeReadEncoding(syntaxIdComponents[0], interchangeContext.getSegmentReader());
+
+		// First component (index 0) defines the char repertoire.  Fourth 
+		// component (index 3) is optional and can override...
+		if(syntaxIdComponents.length < 4) {
+			changeReadEncoding(syntaxIdComponents[0], interchangeContext.getSegmentReader());
+		} else {
+			changeReadEncoding(syntaxIdComponents[3], interchangeContext.getSegmentReader());
+		}
 		
         while(true) {
 	        String segCode = segmentReader.peek(3);
@@ -72,11 +84,11 @@ public class UNBHandler implements ControlBlockHandler {
         }		
 	}
 
-	private void changeReadEncoding(String repertoire, BufferedSegmentReader bufferedSegmentReader) throws EDIParseException, IOException {
-		Charset charset = repertoireToCharset.get(repertoire.toUpperCase());
+	private void changeReadEncoding(String code, BufferedSegmentReader bufferedSegmentReader) throws EDIParseException, IOException {
+		Charset charset = toCharsetMapping.get(code.toUpperCase());
 		
 		if(charset == null) {
-			throw new EDIParseException("Unknown UN/EDIFACT character stream repertoire code '" + repertoire + "'.");
+			throw new EDIParseException("Unknown UN/EDIFACT character stream encoding code '" + code + "'.");
 		}
 		
 		bufferedSegmentReader.changeEncoding(charset);
@@ -131,23 +143,41 @@ public class UNBHandler implements ControlBlockHandler {
 	}
 
 	private void createRepertoireToCharsetMap() {
-		repertoireToCharset = new HashMap<String, Charset>();
+		toCharsetMapping = new HashMap<String, Charset>();
 		
 		// http://www.gefeg.com/jswg/cl/v41/40107/cl1.htm
-		repertoireToCharset.put("UNOA", Charset.forName("ASCII"));
-		repertoireToCharset.put("UNOB", Charset.forName("ASCII"));
-		repertoireToCharset.put("UNOC", Charset.forName("ISO8859-1"));
-		repertoireToCharset.put("UNOD", Charset.forName("ISO8859-2"));
-		repertoireToCharset.put("UNOE", Charset.forName("ISO8859-5"));
-		repertoireToCharset.put("UNOF", Charset.forName("ISO8859-7"));
-		repertoireToCharset.put("UNOG", Charset.forName("ISO8859-3"));
-		repertoireToCharset.put("UNOH", Charset.forName("ISO8859-4"));
-		repertoireToCharset.put("UNOI", Charset.forName("ISO8859-6"));
-		repertoireToCharset.put("UNOJ", Charset.forName("ISO8859-8"));
-		repertoireToCharset.put("UNOK", Charset.forName("ISO8859-9"));
-		repertoireToCharset.put("UNOL", Charset.forName("ISO8859-15"));
-		repertoireToCharset.put("UNOW", Charset.forName("UTF-8"));
-		repertoireToCharset.put("UNOX", Charset.forName("ISO-2022-CN"));
-		repertoireToCharset.put("UNOY", Charset.forName("UTF-8"));
+		addCharsetMapping("UNOA", "ASCII");
+		addCharsetMapping("UNOB", "ASCII");
+		addCharsetMapping("UNOC", "ISO8859-1");
+		addCharsetMapping("UNOD", "ISO8859-2");
+		addCharsetMapping("UNOE", "ISO8859-5");
+		addCharsetMapping("UNOF", "ISO8859-7");
+		addCharsetMapping("UNOG", "ISO8859-3");
+		addCharsetMapping("UNOH", "ISO8859-4");
+		addCharsetMapping("UNOI", "ISO8859-6");
+		addCharsetMapping("UNOJ", "ISO8859-8");
+		addCharsetMapping("UNOK", "ISO8859-9");
+		addCharsetMapping("UNOL", "ISO8859-15");
+		addCharsetMapping("UNOW", "UTF-8");
+		addCharsetMapping("UNOX", "ISO-2022-CN");
+		addCharsetMapping("UNOY", "UTF-8");
+		
+		// http://www.gefeg.com/jswg/cl/v41/40107/cl17.htm
+		addCharsetMapping("1", "ASCII");
+		addCharsetMapping("2", "ASCII");
+		addCharsetMapping("3", "IBM500");
+		addCharsetMapping("4", "IBM850");
+		addCharsetMapping("5", "UTF-16");
+		addCharsetMapping("6", "UTF-32");
+		addCharsetMapping("7", "UTF-8");
+		addCharsetMapping("8", "UTF-16");
 	}
+
+ 	private void addCharsetMapping(String code, String charsetName) {
+ 		if(Charset.isSupported(charsetName)) {
+ 			toCharsetMapping.put(code, Charset.forName(charsetName));
+ 		} else {
+ 			logger.debug("Unsupported character set '" + charsetName + "'.  Cannot support for '" + code + "' if defined on the syntaxIdentifier field on the UNB segment.  Check the JVM version etc.");
+ 		}
+ 	}
 }
