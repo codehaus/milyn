@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<medi:edimap xmlns:medi="http://www.milyn.org/schema/edi-message-mapping-1.2.xsd">
+
+    <medi:description name="DVD Order" version="1.0"/>
+
+    <medi:delimiters segment="&#10;" field="*" component="^" sub-component="~"/>
+
+    <!--
+        HDR*1*0*59.97*64.92*4.95*20060821
+        CUS*user1*Harry^Fletcher*SD*harry.fletcher@gmail.com
+        ORD*2*1*299*Pulp Fiction*29.99
+    -->
+    <medi:segments xmltag="Order">
+
+        <medi:segment segcode="HDR" xmltag="header">
+            <medi:field xmltag="orderId"/>
+            <medi:field xmltag="statusCode"/>
+            <medi:field xmltag="netAmount" type="BigDecimal"/>
+            <medi:field xmltag="totalAmount" type="BigDecimal"/>
+            <medi:field xmltag="tax" type="BigDecimal"/>
+            <medi:field xmltag="date" type="Date" typeParameters="format=yyyyMMdd"/>
+
+            <medi:segment segcode="CUS" xmltag="customer-details">
+                <medi:field xmltag="username"/>
+                <medi:field xmltag="name">
+                    <medi:component xmltag="firstname"/>
+                    <medi:component xmltag="lastname"/>
+                </medi:field>
+                <medi:field xmltag="state"/>
+                <medi:field xmltag="email"/>
+            </medi:segment>
+
+        </medi:segment>
+
+        <medi:segmentGroup xmltag="order-items">
+            <medi:segment segcode="ORD" xmltag="order-item" maxOccurs="-1">
+                <medi:field xmltag="position" type="Integer"/>
+                <medi:field xmltag="quantity" type="Long"/>
+                <medi:field xmltag="productId"/>
+                <medi:field xmltag="title"/>
+                <medi:field xmltag="price" type="BigDecimal"/>
+            </medi:segment>
+        </medi:segmentGroup>
+
+    </medi:segments>
+
+</medi:edimap>
