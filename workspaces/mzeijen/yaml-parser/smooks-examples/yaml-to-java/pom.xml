@@ -16,7 +16,7 @@
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-yaml</artifactId>
-            <version>${milyn.smooks.yalm.version}</version>
+            <version>${milyn.smooks.yaml.version}</version>
         </dependency>
 
         <dependency>
