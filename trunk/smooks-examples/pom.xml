@@ -42,6 +42,7 @@
         <module>ejc/ejc-use</module>
         <module>edi-with-import-to-java</module>
         <module>ect-unedifact</module>
+        <module>yaml-to-java</module>
     </modules>
 
     <properties>
@@ -62,6 +63,7 @@
 		<milyn.scribe.jpa.version>${milyn.smooks.core.version}</milyn.scribe.jpa.version>
         <milyn.smooks.validation.version>${milyn.smooks.core.version}</milyn.smooks.validation.version>
         <milyn.smooks.ejc.version>${milyn.smooks.core.version}</milyn.smooks.ejc.version>
+        <milyn.smooks.yaml.version>${milyn.smooks.core.version}</milyn.smooks.yaml.version>
     </properties>
 
     <dependencies>
@@ -117,6 +119,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1.1</version>
                 <configuration>
                     <executable>java</executable>
                     <mainClass>example.Main</mainClass>
