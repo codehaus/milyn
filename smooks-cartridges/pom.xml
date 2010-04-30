@@ -61,7 +61,9 @@
    
 		<milyn.smooks.fixed-length.version.base>${milyn.smooks.core.version}</milyn.smooks.fixed-length.version.base>
         <milyn.smooks.fixed-length.version>${milyn.smooks.fixed-length.version.base}</milyn.smooks.fixed-length.version>
-
+        
+		<milyn.smooks.yaml.version.base>${milyn.smooks.core.version}</milyn.smooks.yaml.version.base>
+        <milyn.smooks.yaml.version>${milyn.smooks.yaml.version.base}</milyn.smooks.yaml.version>
     </properties>
 
     <modules>
@@ -81,6 +83,7 @@
 		<module>rules</module>
 		<module>validation</module>
 		<module>fixed-length</module>
+		<module>yaml</module>
     </modules>
 
     <dependencies>
