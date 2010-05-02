@@ -146,8 +146,8 @@ public class UnEdifactMessageReader {
             edimap.setDelimiters(delimiters);
 
             edimap.setDescription(new Description());
-            edimap.getDescription().setName(MESSAGE_NAME);
-            edimap.getDescription().setVersion(version + release);
+            edimap.getDescription().setName(type);
+            edimap.getDescription().setVersion(version + ":" + release + ":" + agency);
 
             Map<String, Segment> segmentDefinitions = null;
             if (isSplitIntoImport) {
