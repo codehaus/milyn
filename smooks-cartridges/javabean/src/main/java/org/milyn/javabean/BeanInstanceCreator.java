@@ -144,6 +144,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     	buildId();
 
         beanId = appContext.getBeanIdStore().register(beanIdName);
+        beanId.setCreateResourceConfiguration(config);
 
         if(StringUtils.isNotBlank(beanFactoryDefinition)) {
     		factory = FactoryDefinitionParserFactory.getInstance(appContext).parse(beanFactoryDefinition);

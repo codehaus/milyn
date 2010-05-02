@@ -168,7 +168,7 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 
 	/**
 	 * @param executionContext
-	 * @param bean
+	 * @param data.bean
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")

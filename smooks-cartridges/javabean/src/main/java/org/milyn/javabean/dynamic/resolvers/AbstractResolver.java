@@ -21,6 +21,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.milyn.javabean.dynamic.DynamicModelBuilder;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -43,20 +44,20 @@ abstract class AbstractResolver implements EntityResolver {
 		return descriptors;
 	}
 
-	protected InputSource resolve(String systemId, String resourceName) throws SAXException {
-		String prefix = getNamespacePrefix(systemId);
+	protected InputSource resolveSchemaLocation(String systemId) throws SAXException {
+		String namespaceId = DynamicModelBuilder.getNamespaceId(systemId, descriptors);
 		
-		if(prefix != null) {
-			String resourceLocation = getDescriptorValue(prefix + "." + resourceName);
+		if(namespaceId != null) {
+			String schemaLocation = DynamicModelBuilder.getSchemaLocation(namespaceId, descriptors);
 			
-			if(resourceLocation == null) {
-				throw new SAXException("Failed to resolve " + resourceName + " for namespace '" + systemId + "'.");
+			if(schemaLocation == null) {
+				throw new SAXException("Failed to resolve schemaLocation for namespace '" + systemId + "'.");
 			}
 			
-			InputStream stream = ClassUtil.getResourceAsStream(resourceLocation, getClass());
+			InputStream stream = ClassUtil.getResourceAsStream(schemaLocation, getClass());
 	
 			if(stream == null) {
-				throw new SAXException(resourceName + " '" + resourceLocation + "' for namespace '" + systemId + "' does not resolve to a Classpath resource.");
+				throw new SAXException("schemaLocation '" + schemaLocation + "' for namespace '" + systemId + "' does not resolve to a Classpath resource.");
 			}
 			
 			return new InputSource(stream);
@@ -64,28 +65,26 @@ abstract class AbstractResolver implements EntityResolver {
 			return null;
 		}
 	}
-	
-	private String getNamespacePrefix(String systemId) {
-		for(Properties descriptor : descriptors) {
-			Set<Entry<Object, Object>> entries = descriptor.entrySet();
-			for(Entry<Object, Object> entry : entries) {
-				if(systemId.equals(entry.getValue())) {
-					return entry.getKey().toString();
-				}
-			}
-		}
-		
-		return null;
-	}
 
-	protected String getDescriptorValue(String name) {
-		for(Properties descriptor : descriptors) {
-			String value = descriptor.getProperty(name);
-			if(value != null) {
-				return value;
-			}
-		}
+	protected InputSource resolveBindingConfigLocation(String systemId) throws SAXException {
+		String namespaceId = DynamicModelBuilder.getNamespaceId(systemId, descriptors);
 		
-		return null;
+		if(namespaceId != null) {
+			String bindingConfigLocation = DynamicModelBuilder.getBindingConfigLocation(namespaceId, descriptors);
+			
+			if(bindingConfigLocation == null) {
+				throw new SAXException("Failed to resolve bindingConfigLocation for namespace '" + systemId + "'.");
+			}
+			
+			InputStream stream = ClassUtil.getResourceAsStream(bindingConfigLocation, getClass());
+	
+			if(stream == null) {
+				throw new SAXException("bindingConfigLocation '" + bindingConfigLocation + "' for namespace '" + systemId + "' does not resolve to a Classpath resource.");
+			}
+			
+			return new InputSource(stream);
+		} else {
+			return null;
+		}
 	}
 }
