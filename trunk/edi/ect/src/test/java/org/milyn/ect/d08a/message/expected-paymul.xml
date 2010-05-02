@@ -3,71 +3,6 @@
 	<medi:description version="D:08A:UN" name="PAYMUL"/>
 	<medi:delimiters sub-component="~" segment="&#39;!$" field="+" component=":"/>
 	<medi:segments xmltag="PAYMUL">
-			<medi:segment xmltag="Message_header" minOccurs="1" maxOccurs="1" segcode="UNH" truncatable="true" >
-			<medi:documentation>UNH, Message header
-       A service segment starting and uniquely identifying a message.
-       The message type code for the Multiple payment order message is
-       PAYMUL.
-
-       Note: Multiple payment order messages conforming to this
-       document must contain the following data in segment UNH,
-       composite S009:
-
-       Data element  0065 PAYMUL
-                     0052 D
-                     0054 08A
-                     0051 UN</medi:documentation>
-			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" type="String" minLength="0" maxLength="14" required="true" truncatable="true" />
-			<medi:field xmltag="MESSAGE_IDENTIFIER" required="true" truncatable="true" >
-				<medi:component xmltag="MessageType" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
-
-				<medi:component xmltag="MessageVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="MessageReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="ControllingAgencyCoded" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="AssociationAssignedCode" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
-
-				<medi:component xmltag="CodeListDirectoryVersionNumber" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
-
-				<medi:component xmltag="MessageTypeSub-functionIdentification" type="String" minLength="0" maxLength="6" required="false" truncatable="true" />
-			</medi:field>
-			<medi:field xmltag="COMMON_ACCESS_REFERENCE" type="String" minLength="0" maxLength="35" required="false" truncatable="true" />
-			<medi:field xmltag="STATUS_OF_THE_TRANSFER" required="false" truncatable="true" >
-				<medi:component xmltag="SequenceOfTransfers" type="BigDecimal" minLength="0" maxLength="2" required="false" truncatable="true" />
-
-				<medi:component xmltag="FirstAndLastTransfer" type="String" minLength="1" maxLength="1" required="false" truncatable="true" />
-			</medi:field>
-			<medi:field xmltag="MESSAGE_SUBSET_IDENTIFICATION" required="false" truncatable="true" >
-				<medi:component xmltag="MessageSubsetIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="true" />
-
-				<medi:component xmltag="MessageSubsetVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="MessageSubsetReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="ControllingAgencyCoded" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-			</medi:field>
-			<medi:field xmltag="MESSAGE_IMPLEMENTATION_GUIDELINE_IDENTIFICATION" required="false" truncatable="true" >
-				<medi:component xmltag="MessageImplementationGuidelineIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="true" />
-
-				<medi:component xmltag="MessageImplementationGuidelineVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="MessageImplementationGuidelineReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="ControllingAgencyCoded" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-			</medi:field>
-			<medi:field xmltag="SCENARIO_IDENTIFICATION" required="false" truncatable="true" >
-				<medi:component xmltag="ScenarioIdentification" type="String" minLength="0" maxLength="14" required="false" truncatable="true" />
-
-				<medi:component xmltag="ScenarioVersionNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="ScenarioReleaseNumber" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-
-				<medi:component xmltag="ControllingAgencyCode" type="String" minLength="0" maxLength="3" required="false" truncatable="true" />
-			</medi:field>
-		</medi:segment>
-
 			<medi:segment xmltag="Beginning_of_message" minOccurs="1" maxOccurs="1" segcode="BGM" truncatable="true" >
 			<medi:documentation>BGM, Beginning of message
        A segment by means of which the sender must uniquely identify
@@ -3039,14 +2974,6 @@
 			</medi:segment>
 
 	</medi:segmentGroup>
-			<medi:segment xmltag="Message_trailer" minOccurs="1" maxOccurs="1" segcode="UNT" truncatable="true" >
-			<medi:documentation>UNT, Message trailer
-       A service segment ending a message, giving the total number of
-       segments in the message (including the UNH &amp; UNT) and the
-       control reference number of the message.</medi:documentation>
-			<medi:field xmltag="NUMBER_OF_SEGMENTS_IN_MESSAGE" type="BigDecimal" minLength="0" maxLength="10" required="true" truncatable="true" />
-			<medi:field xmltag="MESSAGE_REFERENCE_NUMBER" type="String" minLength="0" maxLength="14" required="true" truncatable="true" />
-		</medi:segment>
 
     </medi:segments>
 </medi:edimap>

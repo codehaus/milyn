@@ -1,14 +1,4 @@
 <INVOIC>
-	<Message_header>
-		<MESSAGE_REFERENCE_NUMBER>05231109000001</MESSAGE_REFERENCE_NUMBER>
-		<MESSAGE_IDENTIFIER>
-			<MessageType>INVOIC</MessageType>
-			<MessageVersionNumber>D</MessageVersionNumber>
-			<MessageReleaseNumber>96A</MessageReleaseNumber>
-			<ControllingAgencyCoded>UN</ControllingAgencyCoded>
-			<AssociationAssignedCode>EAN008</AssociationAssignedCode>
-		</MESSAGE_IDENTIFIER>
-	</Message_header>
 	<Beginning_of_message>
 		<DOCUMENT_MESSAGE_NAME>
 			<Document_name_code>82</Document_name_code>
@@ -1749,8 +1739,4 @@
 			</MONETARY_AMOUNT>
 		</Monetary_amount>
 	</Segment_group_54>
-	<Message_trailer>
-		<NUMBER_OF_SEGMENTS_IN_MESSAGE>188</NUMBER_OF_SEGMENTS_IN_MESSAGE>
-		<MESSAGE_REFERENCE_NUMBER>05231109000001</MESSAGE_REFERENCE_NUMBER>
-	</Message_trailer>
 </INVOIC>

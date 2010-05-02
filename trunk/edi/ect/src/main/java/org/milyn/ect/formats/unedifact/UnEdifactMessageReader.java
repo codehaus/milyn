@@ -19,8 +19,7 @@ import org.milyn.edisax.model.internal.*;
 import org.milyn.ect.common.XmlTagEncoder;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,12 +109,13 @@ public class UnEdifactMessageReader {
     /**
      * Default settings for UN/EDIFACT.
      */
-    private static final String MESSAGE_NAME = "UN-EDIFACT";
     private static final String DELIMITER_SEGMENT = "&#39;!$";
     private static final String DELIMITER_COMPOSITE = "+";
     private static final String DELIMITER_DATA = ":";
     private static final String DELIMITER_NOT_USED = "~";
     private static final String ESCAPE = "?";
+
+    private static List<String> ignoreSegments = Arrays.asList("UNA", "UNB", "UNG", "UNH", "UNT", "UNZ", "UNE");
 
     public static Edimap readMessage(Reader reader, boolean isSplitIntoImport, Edimap definitionModel) throws IOException {
 
@@ -240,8 +240,10 @@ public class UnEdifactMessageReader {
             if (line.matches(SEGMENT_REGULAR)) {
                 Matcher matcher = Pattern.compile(SEGMENT_REGULAR).matcher(line);
                 matcher.matches();
-                Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency, isSplitIntoImport, segmentDefinitions);
-                parentGroup.getSegments().add(segment);
+                if (!ignoreSegments.contains(matcher.group(2))) {
+                    Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency, isSplitIntoImport, segmentDefinitions);
+                    parentGroup.getSegments().add(segment);
+                }
             } else if (line.matches(SEGMENT_GROUP_START)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_START).matcher(line);
                 matcher.matches();
