@@ -219,12 +219,7 @@ public class SmooksResourceConfigurationStore {
         }
 
         configList = XMLConfigDigester.digestConfig(resourceConfigStream, baseURI);
-        processAppContextInitializers(configList);
-        configLists.add(configList);
-
-        // XSD v1.0 added profiles to the resource config.  If there were any, add them to the
-        // profile store.
-        addProfileSets(configList.getProfiles());
+        addSmooksResourceConfigurationList(configList);
         
         return configList;
     }
@@ -284,7 +279,12 @@ public class SmooksResourceConfigurationStore {
      * @return All the SmooksResourceConfigurationList instances added on this store.
      */
     public void addSmooksResourceConfigurationList(SmooksResourceConfigurationList resourceList) {
+        processAppContextInitializers(resourceList);
         configLists.add(resourceList);
+
+        // XSD v1.0 added profiles to the resource config.  If there were any, add them to the
+        // profile store.
+        addProfileSets(resourceList.getProfiles());
     }
 
     /**

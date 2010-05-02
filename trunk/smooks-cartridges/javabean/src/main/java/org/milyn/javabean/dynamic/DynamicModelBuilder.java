@@ -19,12 +19,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -35,29 +37,32 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.FilterSettings;
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.SmooksConfigurationException;
+import org.milyn.cdr.SmooksResourceConfiguration;
+import org.milyn.cdr.SmooksResourceConfigurationList;
+import org.milyn.cdr.XMLConfigDigester;
+import org.milyn.container.ExecutionContext;
 import org.milyn.javabean.dynamic.resolvers.DefaultBindingConfigResolver;
 import org.milyn.javabean.dynamic.resolvers.DefaultSchemaResolver;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.payload.JavaResult;
 import org.milyn.util.ClassUtil;
-import org.milyn.xml.XmlUtil;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Dynamic Model Builder.
+ * Dynamic Model Builder (from XML only).
  * <p/>
  * Useful for constructing configuration models etc.  Allows you to build a config model
  * for a dynamic configuration namespace i.e. a config namespace that is evolving and being 
@@ -73,8 +78,7 @@ import org.xml.sax.SAXException;
  * mycomp.bindingConfigLocation=/META-INF/xsd/mycomp-binding.xml
  * </pre>
  * 
- * The default descriptor file is "META-INF/services/org/smooks/javabean/dynamic/ns-descriptors.properties",
- * but you can define a different descriptor file in the constructor.  Of course there can be many instances
+ * You should use a unique descriptor path for a given configuration model.  Of course there can be many instances
  * of this file on the classpath i.e. one per module/jar.  This allows you to easily add extensions and updates
  * to your configuration model, without having to define new Java models for the new namespaces (versions) etc.
  * 
@@ -82,45 +86,46 @@ import org.xml.sax.SAXException;
  */
 public class DynamicModelBuilder {
 	
-    private static Log logger = LogFactory.getLog(DynamicModelBuilder.class);
+	public static final String DESCRIPTOR_NAMESPACE_POSTFIX = ".namespace";
+	public static final String DESCRIPTOR_SCHEMA_LOCATION_POSTFIX = ".schemaLocation";
+	public static final String DESCRIPTOR_BINDING_CONFIG_LOCATION_POSTFIX = ".bindingConfigLocation";
+	
+	private static Log logger = LogFactory.getLog(DynamicModelBuilder.class);
 	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 	static {
 		documentBuilderFactory.setNamespaceAware(true);
 	}
 
-	public static final String DEFAULT_MODEL_BUILDER_NS_DESCRIPTOR = "META-INF/services/org/smooks/javabean/dynamic/ns-descriptors.properties";
-	
-	private EntityResolver schemaResolver;
-	private EntityResolver bindingResolver;
+	private Smooks smooks;
+	private Schema schema;
 	private boolean validate = true;
+	private boolean parseCalled = false;
 
-	public DynamicModelBuilder() {
-		this(DynamicModelBuilder.DEFAULT_MODEL_BUILDER_NS_DESCRIPTOR);
-	}
-
-	public DynamicModelBuilder(String descriptorPath) {
+	public DynamicModelBuilder(String descriptorPath) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
 		
-		List<Properties> descriptors = loadDescriptors(descriptorPath);
-		
-		schemaResolver = new DefaultSchemaResolver(descriptors);
-		bindingResolver = new DefaultBindingConfigResolver(descriptors);
-	}
-	
-	public DynamicModelBuilder setSchemaResolver(EntityResolver schemaResolver) {
-		AssertArgument.isNotNull(schemaResolver, "schemaResolver");
-		this.schemaResolver = schemaResolver;
-		return this;
+		List<Properties> descriptors = loadDescriptors(descriptorPath);				
+		intialize(descriptors, new DefaultSchemaResolver(descriptors), new DefaultBindingConfigResolver(descriptors));
 	}
 
-	public DynamicModelBuilder setBindingResolver(EntityResolver bindingResolver) {
+	public DynamicModelBuilder(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
+		AssertArgument.isNotNull(schemaResolver, "schemaResolver");
 		AssertArgument.isNotNull(bindingResolver, "bindingResolver");
-		this.bindingResolver = bindingResolver;
-		return this;
+
+		List<Properties> descriptors = loadDescriptors(descriptorPath);
+		intialize(descriptors, schemaResolver, bindingResolver);
+	}
+
+	private void intialize(List<Properties> descriptors, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+		this.schema = newSchemaInstance(descriptors, schemaResolver);
+		this.smooks = newSmooksInstance(descriptors, bindingResolver);
+		configureFilterSettings();
 	}
 	
 	public DynamicModelBuilder validate(boolean validate) {
 		this.validate = validate;
+		configureFilterSettings();
 		return this;
 	}
 	
@@ -133,49 +138,68 @@ public class DynamicModelBuilder {
 	}
 	
 	public <T> T parse(Reader message, Class<T> returnType) throws SAXException, IOException {
-		JavaResult result = parse(message);
-		
-		for(Object bean : result.getResultMap().values()) {
-			if(bean.getClass() == returnType) {
-				return returnType.cast(bean);
-			}
-		}
-		
-		return null;
+		Model<JavaResult> model = parse(message);		
+		return model.getModelRoot().getBean(returnType);
 	}
 
-	public JavaResult parse(InputStream message) throws SAXException, IOException {
+	public Model<JavaResult> parse(InputStream message) throws SAXException, IOException {
 		return parse(new InputStreamReader(message));
 	}
 
-	public JavaResult parse(Reader message) throws SAXException, IOException {
-		Document messageDoc = toDocument(message);
-		Set<String> namespaces = getNamespaces(messageDoc);		
+	public Model<JavaResult> parse(Reader message) throws SAXException, IOException {
+		JavaResult result = new JavaResult();
+		ExecutionContext executionContext = smooks.createExecutionContext();
+		BeanTracker beanTracker = new BeanTracker();
+
+		// Mark the builder as being in use!!
+		parseCalled = true;
 		
-		// Validate the message against the schemas...
+		executionContext.getBeanContext().addObserver(beanTracker);
+		
 		if(validate) {
-			validateMessage(messageDoc, namespaces);
+			// Validate the message against the schemas...
+			Document messageDoc = toDocument(message);
+
+	        // Validate the document and then filter it through smooks...
+	        schema.newValidator().validate(new DOMSource(messageDoc));
+			smooks.filterSource(executionContext, new DOMSource(messageDoc), result);
+		} else {
+			smooks.filterSource(executionContext, new StreamSource(message), result);
 		}
 		
-		// Create the Smooks instance for the specified configuration namespaces...
-		Smooks smooks = createSmooks(namespaces);
+		Model<JavaResult> model = new Model<JavaResult>(result, beanTracker.beans);
 		
-		// Filter the message through Smooks and populate a JavaResult from it...
-		JavaResult result = new JavaResult();
-		smooks.filterSource(new DOMSource(messageDoc), result);
-		
-		return result;
+		return model;
 	}
 
-	private Smooks createSmooks(Set<String> namespaces) throws SAXException, IOException {
-		Smooks smooks = new Smooks();
-        
+	public static Smooks newSmooksInstance(List<Properties> descriptors, EntityResolver bindingResolver) throws SAXException, IOException, SmooksConfigurationException {
+		AssertArgument.isNotNullAndNotEmpty(descriptors, "descriptors");
+		AssertArgument.isNotNull(bindingResolver, "bindingResolver");
+
+		Set<String> namespaces = resolveNamespaces(descriptors);
+		
+		// Now create a Smooks instance for processing configurations for these namespaces...
+		Smooks smooks = new Smooks();        
     	for (String namespace : namespaces) {
-    		InputSource schemaSource = bindingResolver.resolveEntity(namespace, namespace);
+    		InputSource bindingSource = bindingResolver.resolveEntity(namespace, namespace);
     		
-    		if(schemaSource != null) {
-	    		if(schemaSource.getByteStream() != null) {
-	    			smooks.addConfigurations(schemaSource.getByteStream());
+    		if(bindingSource != null) {
+	    		if(bindingSource.getByteStream() != null) {
+		    		SmooksResourceConfigurationList configList;
+		
+		            try {
+						configList = XMLConfigDigester.digestConfig(bindingSource.getByteStream(), "./");
+						for(int i = 0; i < configList.size(); i++) {
+							SmooksResourceConfiguration config = configList.get(i);
+							if(config.getSelectorNamespaceURI() == null) {
+								config.setSelectorNamespaceURI(namespace);
+							}
+						}
+					} catch (URISyntaxException e) {
+						throw new SmooksConfigurationException("Unexpected configuration digest exception.", e);
+					}
+	    			
+					smooks.getApplicationContext().getStore().addSmooksResourceConfigurationList(configList);
 	    		} else {
 	    			throw new SAXException("Binding configuration resolver '" + bindingResolver.getClass().getName() + "' failed to resolve binding configuration for namespace '" + namespace + "'.  Resolver must return an InputStream in the InputSource.");
 	    		}
@@ -185,17 +209,65 @@ public class DynamicModelBuilder {
         return smooks;
 	}
 
-	public void validateMessage(Document message, Set<String> namespaces) throws SAXException, IOException {
-		List<Source> schemas = getSchemas(namespaces);
+	private static Set<String> resolveNamespaces(List<Properties> descriptors) {
+		Set<String> namespaces = new LinkedHashSet<String>();
+		for(Properties descriptor : descriptors) {
+			extractNamespaceDecls(descriptor, namespaces);
+		}
+		return namespaces;
+	}
+
+	private static void extractNamespaceDecls(Properties descriptor, Set<String> namespaces) {
+		Set<Entry<Object, Object>> properties = descriptor.entrySet();
+		for(Entry<Object, Object> property: properties) {
+			String key = ((String) property.getKey()).trim();
+			if(key.endsWith(DESCRIPTOR_NAMESPACE_POSTFIX)) {
+				namespaces.add((String) property.getValue());
+			}
+		}
+	}
+
+	public static String getNamespaceId(String namespaceURI, List<Properties> descriptors) {
+		for(Properties descriptor : descriptors) {
+			Set<Entry<Object, Object>> properties = descriptor.entrySet();
+			for(Entry<Object, Object> property: properties) {
+				String key = ((String) property.getKey()).trim();
+				String value = ((String) property.getValue()).trim();
+				if(key.endsWith(DESCRIPTOR_NAMESPACE_POSTFIX) && value.equals(namespaceURI)) {
+					return key.substring(0, (key.length() - DESCRIPTOR_NAMESPACE_POSTFIX.length()));
+				}
+			}
+		}		
+		return null;
+	}
+	
+	public static String getSchemaLocation(String namespaceId, List<Properties> descriptors) {
+		return getDescriptorValue(namespaceId + DESCRIPTOR_SCHEMA_LOCATION_POSTFIX, descriptors);
+	}
+	
+	public static String getBindingConfigLocation(String namespaceId, List<Properties> descriptors) {
+		return getDescriptorValue(namespaceId + DESCRIPTOR_BINDING_CONFIG_LOCATION_POSTFIX, descriptors);
+	}
+	
+	private static String getDescriptorValue(String name, List<Properties> descriptors) {
+		for(Properties descriptor : descriptors) {
+			String value = descriptor.getProperty(name);
+			if(value != null) {
+				return value;
+			}
+		}
+		
+		return null;
+	}
+
+	private Schema newSchemaInstance(List<Properties> descriptors, EntityResolver schemaResolver) throws SAXException, IOException {
+		Set<String> namespaces = resolveNamespaces(descriptors);
+		List<Source> schemas = getSchemas(namespaces, schemaResolver);
 
 		try {
 			// Create the merged Schema instance and from that, create the Validator instance...
-	        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-	        Schema schema = schemaFactory.newSchema(schemas.toArray(new Source[schemas.size()]));
-	        Validator validator = schema.newValidator();
-	
-	        // Validate the document...
-	        validator.validate(new DOMSource(message));
+			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);		
+			return schemaFactory.newSchema(schemas.toArray(new Source[schemas.size()]));
 		} finally {
 			for(Source schemaSource : schemas) {
 				if(schemaSource instanceof StreamSource) {
@@ -210,7 +282,7 @@ public class DynamicModelBuilder {
 		}
     }
 
-	private List<Source> getSchemas(Set<String> namespaces) throws SAXException, IOException {
+	private List<Source> getSchemas(Set<String> namespaces, EntityResolver schemaResolver) throws SAXException, IOException {
 		List<Source> xsdSources = new ArrayList<Source>();
         
     	for (String namespace : namespaces) {
@@ -228,40 +300,6 @@ public class DynamicModelBuilder {
         }
 
         return xsdSources;
-	}
-	
-	private Set<String> getNamespaces(Document messageDoc) {
-		Set<String> namespaces = new HashSet<String>();
-		addNamespaces(messageDoc.getDocumentElement(), namespaces);
-		return namespaces;
-	}
-
-	private void addNamespaces(Element element, Set<String> namespaces) {
-		addNamespace(element, namespaces);
-		
-		// Capture the attribute namespace...
-		NamedNodeMap attributes = element.getAttributes();
-		int attribCount = attributes.getLength();
-		for (int i = 0; i < attribCount; i++) {
-			addNamespace(attributes.item(i), namespaces);
-		}		
-		
-		// Capture the element namespace...
-		NodeList children = element.getChildNodes();
-		int childCount = children.getLength();
-		for (int i = 0; i < childCount; i++) {
-			Node node = children.item(i);			
-			if(node.getNodeType() == Node.ELEMENT_NODE) {
-				addNamespaces((Element) node, namespaces);
-			}
-		}		
-	}
-
-	private void addNamespace(Node node, Set<String> namespaces) {
-		String namespaceURI = node.getNamespaceURI();
-		if(namespaceURI != null && !namespaceURI.trim().equals("") && !XmlUtil.isXMLReservedNamespace(namespaceURI)) {
-			namespaces.add(namespaceURI);
-		}		
 	}
 
 	private Document toDocument(Reader message) {
@@ -288,11 +326,11 @@ public class DynamicModelBuilder {
 		}
 	}
 	
-	private List<Properties> loadDescriptors(String descriptorPath) {
+	private static List<Properties> loadDescriptors(String descriptorPath) {
 		List<Properties> descriptorFiles = new ArrayList<Properties>();
 		
 		try {
-			List<URL> resources = ClassUtil.getResources(descriptorPath, getClass());
+			List<URL> resources = ClassUtil.getResources(descriptorPath, DynamicModelBuilder.class);
 			for(URL resource : resources) {
 				InputStream resStream = resource.openStream();
 				try {
@@ -308,5 +346,34 @@ public class DynamicModelBuilder {
 		}
 		
 		return descriptorFiles;
+	}
+
+	private void configureFilterSettings() {
+		assertParseNotCalled();
+		
+		if(validate) {
+			smooks.setFilterSettings(FilterSettings.DEFAULT_DOM);
+		} else {
+			smooks.setFilterSettings(FilterSettings.DEFAULT_SAX);
+		}
+	}
+	
+	private void assertParseNotCalled() {
+		if(parseCalled) {
+			throw new IllegalStateException("Invalid operation.  The 'parse' method has been invoked at least once.");
+		}		
+	}
+
+	private class BeanTracker implements BeanContextLifecycleObserver {
+		
+		private List<BeanMetadata> beans = new ArrayList<BeanMetadata>();
+
+		public void onBeanLifecycleEvent(BeanContextLifecycleEvent event) {
+			if(event.getLifecycle() == BeanLifecycle.BEGIN || event.getLifecycle() == BeanLifecycle.CHANGE) {
+				BeanMetadata beanMetadata = new BeanMetadata(event.getBean());				
+				beanMetadata.setNamespace(event.getBeanId().getCreateResourceConfiguration().getSelectorNamespaceURI());
+				beans.add(beanMetadata);
+			}
+		}		
 	}
 }

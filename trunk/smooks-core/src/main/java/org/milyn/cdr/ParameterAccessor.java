@@ -16,6 +16,7 @@
 
 package org.milyn.cdr;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -220,5 +221,20 @@ public abstract class ParameterAccessor {
 
         config.setParameter(name, value);
         SmooksUtil.registerResource(config, smooks);
+    }
+
+    public static void removeParameter(String name, Smooks smooks) {
+    	SmooksResourceConfigurationStore configStore = smooks.getApplicationContext().getStore();
+    	Iterator<SmooksResourceConfigurationList> configLists = configStore.getSmooksResourceConfigurationLists();
+
+    	while(configLists.hasNext()) {
+            SmooksResourceConfigurationList list = configLists.next();
+            for(int i = 0; i < list.size(); i++) {
+                SmooksResourceConfiguration nextConfig = list.get(i);
+                if(ParameterAccessor.GLOBAL_PARAMETERS.equals(nextConfig.getSelector())) {
+                	nextConfig.removeParameter(name);
+                }
+            }
+        }
     }
 }

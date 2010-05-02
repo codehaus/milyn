@@ -102,6 +102,17 @@ public class FilterSettings {
     }
 
     protected void applySettings(Smooks smooks) {
+    	// Remove the old params...
+        ParameterAccessor.removeParameter(Filter.STREAM_FILTER_TYPE, smooks);        
+        ParameterAccessor.removeParameter(Filter.ENTITIES_REWRITE, smooks);
+        ParameterAccessor.removeParameter(Filter.DEFAULT_SERIALIZATION_ON, smooks);
+        ParameterAccessor.removeParameter(Filter.TERMINATE_ON_VISITOR_EXCEPTION, smooks);
+        ParameterAccessor.removeParameter(Filter.MAINTAIN_ELEMENT_STACK, smooks);
+        ParameterAccessor.removeParameter(Filter.CLOSE_SOURCE, smooks);
+        ParameterAccessor.removeParameter(Filter.CLOSE_RESULT, smooks);
+        ParameterAccessor.removeParameter(Filter.READER_POOL_SIZE, smooks);
+    	
+    	// Set the params...
         ParameterAccessor.setParameter(Filter.STREAM_FILTER_TYPE, filterType.toString(), smooks);        
         ParameterAccessor.setParameter(Filter.ENTITIES_REWRITE, Boolean.toString(rewriteEntities), smooks);
         ParameterAccessor.setParameter(Filter.DEFAULT_SERIALIZATION_ON, Boolean.toString(defaultSerializationOn), smooks);

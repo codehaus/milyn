@@ -37,6 +37,6 @@ public class DefaultBindingConfigResolver extends AbstractResolver {
 	 * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String, java.lang.String)
 	 */
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-		return resolve(systemId, "bindingConfigLocation");
+		return resolveBindingConfigLocation(systemId);
 	}
 }

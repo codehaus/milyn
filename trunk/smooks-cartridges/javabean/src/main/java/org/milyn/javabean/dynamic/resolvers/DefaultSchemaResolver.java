@@ -36,6 +36,6 @@ public class DefaultSchemaResolver extends AbstractResolver {
 	 * @see org.xml.sax.EntityResolver#resolveEntity(java.lang.String, java.lang.String)
 	 */
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-		return resolve(systemId, "schemaLocation");
+		return resolveSchemaLocation(systemId);
 	}	
 }

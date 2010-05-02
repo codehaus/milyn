@@ -16,6 +16,7 @@
 
 package org.milyn.javabean.repository;
 
+import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.javabean.context.BeanIdStore;
 
 
@@ -42,6 +43,8 @@ public class BeanId {
 
 	private final BeanIdStore beanIdStore;
 
+	private SmooksResourceConfiguration createResourceConfig;
+
 	/**
 	 * @param index
 	 * @param name
@@ -53,16 +56,25 @@ public class BeanId {
 	}
 
 	/**
-	 * @param index
-	 * @param name
-	 * @deprecated Use the constructor with the BeanIdStore
+	 * Set the {@link SmooksResourceConfiguration} associated with the
+	 * {@link BeanInstanceCreator} that is creating the bean with which this
+	 * {@link BeanId} instance is associated.
+	 * @param createResourceConfig The {@link SmooksResourceConfiguration} of the creator.
+	 * @return This object instance.
 	 */
-	@Deprecated
-	@SuppressWarnings("deprecation")
-	public BeanId(BeanIdRegister beanIdRegister, int index, String beanId) {
-		this.beanIdStore = beanIdRegister.getBeanIdStore();
-		this.index = index;
-		this.name = beanId;
+	public BeanId setCreateResourceConfiguration(SmooksResourceConfiguration createResourceConfig) {
+		this.createResourceConfig = createResourceConfig;
+		return this;
+	}
+
+	/**
+	 * Get the {@link SmooksResourceConfiguration} associated with the
+	 * {@link BeanInstanceCreator} that is creating the bean with which this
+	 * {@link BeanId} instance is associated.
+	 * @return The {@link SmooksResourceConfiguration} of the creator.
+	 */
+	public SmooksResourceConfiguration getCreateResourceConfiguration() {
+		return createResourceConfig;
 	}
 
 	/**
@@ -132,5 +144,4 @@ public class BeanId {
 	public String toString() {
 		return name;
 	}
-
 }
