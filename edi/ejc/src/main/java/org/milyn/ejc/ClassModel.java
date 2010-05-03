@@ -17,8 +17,9 @@ package org.milyn.ejc;
 
 import org.apache.commons.logging.Log;
 import org.milyn.javabean.pojogen.JClass;
+
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -64,7 +65,7 @@ public class ClassModel {
      */
     public Map<String, JClass> getCreatedClasses() {
         if ( createdClasses == null ) {
-            this.createdClasses = new HashMap<String, JClass>();
+            this.createdClasses = new LinkedHashMap<String, JClass>();
         }
         return createdClasses;
     }
@@ -112,7 +113,7 @@ public class ClassModel {
 
     private Map<String, ValueNodeInfo> getValueNodeInfos() {
         if ( valueNodeInfos == null) {
-            this.valueNodeInfos = new HashMap<String, ValueNodeInfo>();
+            this.valueNodeInfos = new LinkedHashMap<String, ValueNodeInfo>();
         }
         return valueNodeInfos;
     }

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class BeanWriter {
      * @throws IOException when error ocurrs while saving the implemented class to filesystem.
      * @throws IllegalNameException when class is a keyword in java.
      */
-    public static void writeBeans(ClassModel model, String folder, String bindingFile) throws IOException, IllegalNameException {
+    public static void writeBeansToFolder(ClassModel model, String folder, String bindingFile) throws IOException, IllegalNameException {
         folder = new File(folder).getCanonicalPath();
 
         for ( JClass bean : model.getCreatedClasses().values() ) {
@@ -51,6 +52,25 @@ public class BeanWriter {
         }
 
         writeFactoryClass(folder, model.getRoot(), bindingFile);
+    }
+
+    /**
+     * Iterates through all classes defined in ClassModel and write all the beans to the
+     * supplied writer.
+     * <p/>
+     * Used mainly for test purposes.
+     * 
+     * @param model The {@link org.milyn.ejc.ClassModel}.
+     * @param writer The writer.
+     * 
+     * @throws IOException when error ocurrs while saving the implemented class to filesystem.
+     * @throws IllegalNameException when class is a keyword in java.
+     */
+    public static void writeBeans(ClassModel model, Writer writer) throws IOException, IllegalNameException {
+        for ( JClass bean : model.getCreatedClasses().values() ) {
+            bean.writeClass(writer);
+            writer.write("\n\n");
+        }
     }
 
     /**

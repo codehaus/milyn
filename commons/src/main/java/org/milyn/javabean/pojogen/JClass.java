@@ -26,7 +26,6 @@ import java.io.IOException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CannotCompileException;
-import javassist.NotFoundException;
 
 /**
  * Java POJO model.

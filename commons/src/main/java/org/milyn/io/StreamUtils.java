@@ -188,6 +188,37 @@ public abstract class StreamUtils {
     }
 
     /**
+     * Read the lines lines of characters from the supplied string, trim each line
+     * and add a single newline character.
+     * @param string The String.
+     * @return String containing the line trimmed stream.
+     * @throws IOException
+     */
+    public static String normalizeLines(String string) throws IOException {
+    	return normalizeLines(new StringReader(string));
+    }
+
+    /**
+     * Read the lines lines of characters from the stream, trim each line
+     * and add a single newline character.
+     * @param charStream Character stream.
+     * @return String containing the line trimmed stream.
+     * @throws IOException
+     */
+    public static String normalizeLines(Reader charStream) throws IOException {
+        StringBuffer stringBuf = new StringBuffer();
+        BufferedReader reader = new BufferedReader(charStream);
+        String line;
+
+        while((line = reader.readLine()) != null) {
+            stringBuf.append(line.trim());
+            stringBuf.append('\n');
+        }
+
+        return stringBuf.toString();
+    }
+
+    /**
      * Read the lines lines of characters from the stream and trim each line
      * i.e. remove all leading and trailing whitespace.
      * @param charStream Character stream.
