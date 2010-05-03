@@ -37,6 +37,7 @@
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-ejc" />
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-javabean"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-json"/>
+        	<dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-yaml"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-misc"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-persistence"/>
             <dependency groupId="org.milyn" version="${smooks.version}" artifactId="milyn-smooks-routing"/>

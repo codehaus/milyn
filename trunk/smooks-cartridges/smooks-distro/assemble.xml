@@ -125,6 +125,10 @@
             <param name="target" value="${javadocdir}/smooks-cartridges/json"/>
         </antcall>
         <antcall target="move-javadoc">
+            <param name="source" value="../../smooks-cartridges/yaml"/>
+            <param name="target" value="${javadocdir}/smooks-cartridges/yaml"/>
+        </antcall>
+        <antcall target="move-javadoc">
             <param name="source" value="../../smooks-cartridges/misc"/>
             <param name="target" value="${javadocdir}/smooks-cartridges/misc"/>
         </antcall>
