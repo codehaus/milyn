@@ -17,7 +17,6 @@ package org.milyn.ejc;
 
 import junit.framework.TestCase;
 
-import java.io.InputStream;
 import java.io.IOException;
 
 import org.milyn.edisax.EDIConfigurationException;
@@ -30,18 +29,12 @@ import org.xml.sax.SAXException;
  */
 public class EJCTest extends TestCase {
 
-    public void testCompilation() throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
-//        InputStream in = null;
-//        try {
-//            String configName = "edi-to-xml-order-mapping.xml";
-//            in = Thread.currentThread().getContextClassLoader().getResourceAsStream(configName);
-//
-//            EJC ejc = new EJC();
-//            ejc.compile(in, configName, "test.pakageName", Thread.currentThread().getContextClassLoader().getResource("").getFile());
-//        } finally {
-//            if (in != null) {
-//                in.close();
-//            }
-//        }
+    public void testOrderModel() throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
+    	String configName = "order-mapping.xml";
+        EJC ejc = new EJC();
+                    
+        ClassModel classModel = ejc.compile(getClass().getResourceAsStream(configName), configName, "test.pakageName");
+        
+        ECTTestUtil.assertModelOK(classModel, getClass().getResourceAsStream("order-mapping-model.txt"));        
     }
 }

@@ -24,6 +24,7 @@ import org.milyn.util.FreeMarkerTemplate;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.*;
 
 /**
@@ -48,24 +49,32 @@ public class BindingWriter {
 
 
     public void generate(String bindingfile) throws IOException {
-        Map<String, Object> templatingContextObject = new HashMap<String, Object>();
-        List<ClassConfig> classConfigs = new ArrayList<ClassConfig>();
 
         OutputStreamWriter writer = null;
         try {
             writer = new OutputStreamWriter(new FileOutputStream(bindingfile));
-
-            addClassConfig(classConfigs, classModel.getRoot(), null);
-
-            templatingContextObject.put("classConfigs", classConfigs);
-            templatingContextObject.put("classPackage", classModel.getRoot().getPackageName().replace('.', '/'));
-            writer.write(template.apply(templatingContextObject));
+            writeBindingConfig(writer);
         } finally {
             if (writer != null) {
                 writer.close();
             }
         }
     }
+
+	public static void writeBindingConfig(ClassModel classModel, Writer writer) throws IOException, ClassNotFoundException {
+		(new BindingWriter(classModel)).writeBindingConfig(writer);
+	}
+	
+	public void writeBindingConfig(Writer writer) throws IOException {
+		Map<String, Object> templatingContextObject = new HashMap<String, Object>();
+		List<ClassConfig> classConfigs = new ArrayList<ClassConfig>();
+
+		addClassConfig(classConfigs, classModel.getRoot(), null);
+
+		templatingContextObject.put("classConfigs", classConfigs);
+		templatingContextObject.put("classPackage", classModel.getRoot().getPackageName().replace('.', '/'));
+		writer.write(template.apply(templatingContextObject));
+	}
 
     private ClassConfig addClassConfig(List<ClassConfig> classConfigs, JClass beanClass, String beanId) {
         if(classStack.contains(beanClass)) {

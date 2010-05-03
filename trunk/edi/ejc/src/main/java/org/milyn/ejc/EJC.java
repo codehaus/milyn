@@ -75,17 +75,42 @@ public class EJC {
      * @throws ClassNotFoundException when error occurs while creating bindingfile.
      */
     public void compile(InputStream configFile, String configName, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
+        ClassModel model = compile(configFile, configName, beanPackage);
         String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
+        
+        writeModelToFolder(model, configName, beanPackage, beanFolder, bindingFile);
+    }
 
+    /**
+     * Compiles a edi-mapping-configuration and generates java implementation and
+     * bindingfile.
+     *
+     * The compilation is performed in the following order:
+     * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
+     * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
+     * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
+     * @param mappingModel the edi-mapping-configuration.
+     * @param mappingModelName the name of the edi-mapping-config.
+     * @param beanPackage the package name of generated java classes.
+     * @return The ClassModel.
+     * @throws EDIConfigurationException When edi-mapping-configuration is badly formatted.
+     * @throws IOException When unable to read edi-mapping-configuration.
+     * @throws SAXException When edi-mapping-configuration is badly formatted.
+     * @throws IllegalNameException when name of java-classes is illegal.
+     * @throws ClassNotFoundException when error occurs while creating bindingfile.
+     */
+    public ClassModel compile(InputStream mappingModel, String mappingModelName, String beanPackage) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
         //Read edifact configuration
-        Edimap edimap = readEDIConfig(configFile);
+        Edimap edimap = readEDIConfig(mappingModel);
 
         LOG.info("Reading the edi-configuration...");
         EdiConfigReader ediConfigReader = new EdiConfigReader();
-        ClassModel model = ediConfigReader.parse(edimap, beanPackage);
+        return ediConfigReader.parse(edimap, beanPackage);
+    }
 
-        LOG.info("Writing java beans to " + beanFolder + "...");
-        BeanWriter.writeBeans(model, beanFolder, bindingFile);
+	private void writeModelToFolder(ClassModel model, String configName, String beanPackage, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {		
+		LOG.info("Writing java beans to " + beanFolder + "...");
+        BeanWriter.writeBeansToFolder(model, beanFolder, bindingFile);
 
         LOG.info("Creating bindingfile...");
         String bundleConfigPath = "/" + beanPackage.replace('.', '/') + "/edimappingconfig.xml";
@@ -100,8 +125,7 @@ public class EJC {
         LOG.info(" Files are located in folder ");
         LOG.info(" " + beanFolder);
         LOG.info("-----------------------------------------------------------------------");
-
-    }
+	}
 
     /**
      * Returns the Edimap for a given edi-mapping inputstream.
