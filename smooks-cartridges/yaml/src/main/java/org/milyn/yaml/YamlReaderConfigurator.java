@@ -39,7 +39,6 @@ public class YamlReaderConfigurator implements ReaderConfigurator {
     private String keyWhitspaceReplacement;
     private String keyPrefixOnNumeric;
     private String illegalElementNameCharReplacement;
-    private Charset encoding = Charset.forName("UTF-8");
     private Map<String, String> keyMap;
     private String targetProfile;
     private AliasStrategy aliasStrategy = AliasStrategy.REFER;
@@ -127,20 +126,6 @@ public class YamlReaderConfigurator implements ReaderConfigurator {
     public YamlReaderConfigurator setIllegalElementNameCharReplacement(String illegalElementNameCharReplacement) {
         AssertArgument.isNotNull(illegalElementNameCharReplacement, "illegalElementNameCharReplacement");
         this.illegalElementNameCharReplacement = illegalElementNameCharReplacement;
-        return this;
-    }
-
-    /**
-     * The encoding of the input stream.
-     *
-     * Default: UTF-8
-     *
-     * @param encoding
-     * @return This configurator (for chain calls)
-     */
-    public YamlReaderConfigurator setEncoding(Charset encoding) {
-        AssertArgument.isNotNull(encoding, "encoding");
-        this.encoding = encoding;
         return this;
     }
 
@@ -257,7 +242,6 @@ public class YamlReaderConfigurator implements ReaderConfigurator {
         if(illegalElementNameCharReplacement != null) {
             configurator.getParameters().setProperty("illegalElementNameCharReplacement", illegalElementNameCharReplacement);
         }
-        configurator.getParameters().setProperty("encoding", encoding.name());
         configurator.setTargetProfile(targetProfile);
 
         SmooksResourceConfiguration config = configurator.toConfig();
