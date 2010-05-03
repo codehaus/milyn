@@ -16,7 +16,14 @@
 
 package org.milyn.yaml;
 
-import org.apache.commons.lang.StringUtils;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
@@ -34,7 +41,6 @@ import org.milyn.yaml.handler.EventHandler;
 import org.milyn.yaml.handler.YamlEventStreamHandler;
 import org.milyn.yaml.handler.YamlToSaxHandler;
 import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
@@ -43,27 +49,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.helpers.AttributesImpl;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.events.AliasEvent;
-import org.yaml.snakeyaml.events.CollectionStartEvent;
 import org.yaml.snakeyaml.events.Event;
-import org.yaml.snakeyaml.events.NodeEvent;
-import org.yaml.snakeyaml.events.ScalarEvent;
-import org.yaml.snakeyaml.events.Event.ID;
-
-import javax.xml.XMLConstants;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-import java.util.Map;
 
 /**
  * YAML to SAX event reader.
@@ -107,10 +94,6 @@ import java.util.Map;
  *   &lt;key from="fromKey" to="toKey" /&gt;
  *   &lt;key from="fromKey"&gt;&lt;to&gt;&lt;/key&gt;
  *  &lt;/param&gt;
- *  &lt;!--
- *      (Optional) The encoding of the input stream. Default of 'UTF-8'
- *  --&gt;
- *  &lt;param name="<b>encoding</b>"&gt;<i>&lt;encoding&gt;</i>&lt;/param&gt;
  *  &lt;!--
  *      (Optional) The strategy how to handle YAML anchors and aliases. Possible values:
  *          - REFER: Adds a 'id' attribute to the element with the anchor and the 'ref' attribute to the elements with the alias.
@@ -182,9 +165,6 @@ public class YamlReader implements SmooksXMLReader {
 	@ConfigParam(defaultVal = DEFAULT_ALIAS_NAME)
     private String aliasAttributeName;
 
-    @ConfigParam(defaultVal = "UTF-8")
-    private Charset encoding;
-
     @ConfigParam(defaultVal = "false")
     private boolean indent;
 
@@ -227,7 +207,7 @@ public class YamlReader implements SmooksXMLReader {
 			// Get a reader for the YAML source...
 	        Reader yamlStreamReader = yamlInputSource.getCharacterStream();
 	        if(yamlStreamReader == null) {
-	            yamlStreamReader = new InputStreamReader(yamlInputSource.getByteStream(), encoding);
+	            throw new SmooksException("The InputSource doesn't provide a Reader character stream. Make sure that you supply a reader to the Smooks.filterSource method.");
 	        }
 	        YamlToSaxHandler yamlToSaxHandler = new YamlToSaxHandler(contentHandler, anchorAttributeName, aliasAttributeName, indent);
 
@@ -374,21 +354,6 @@ public class YamlReader implements SmooksXMLReader {
 	public void setIllegalElementNameCharReplacement(
 			String illegalElementNameCharReplacement) {
 		this.illegalElementNameCharReplacement = illegalElementNameCharReplacement;
-	}
-
-	/**
-	 * @return the encoding
-	 */
-	public Charset getEncoding() {
-		return encoding;
-	}
-
-
-	/**
-	 * @param encoding the encoding to set
-	 */
-	public void setEncoding(Charset encoding) {
-		this.encoding = encoding;
 	}
 
     public void setIndent(boolean indent) {

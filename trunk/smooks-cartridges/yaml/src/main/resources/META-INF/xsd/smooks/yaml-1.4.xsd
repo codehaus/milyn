@@ -174,13 +174,6 @@
 			    		 </xs:documentation>
 			    	</xs:annotation>
     			</xs:attribute>
-    			<xs:attribute name="encoding" type="xs:string" use="optional" default="UTF-8">
-    				<xs:annotation>
-			    		 <xs:documentation xml:lang="en">
-			    		 	The encoding of the input stream. Default of 'UTF-8'
-			    		 </xs:documentation>
-			    	</xs:annotation>
-    			</xs:attribute>
                 <xs:attribute name="indent" type="xs:boolean" use="optional" default="false">
                     <xs:annotation>
                         <xs:documentation xml:lang="en">
