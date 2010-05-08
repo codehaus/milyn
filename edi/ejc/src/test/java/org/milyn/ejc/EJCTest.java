@@ -35,6 +35,6 @@ public class EJCTest extends TestCase {
                     
         ClassModel classModel = ejc.compile(getClass().getResourceAsStream(configName), configName, "test.pakageName");
         
-        ECTTestUtil.assertModelOK(classModel, getClass().getResourceAsStream("order-mapping-model.txt"));        
+        ECTTestUtil.assertEquals(classModel, getClass().getResourceAsStream("order-mapping-model.txt"));        
     }
 }

@@ -18,20 +18,19 @@ package org.milyn.edisax;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.archive.Archive;
+import org.milyn.archive.ArchiveClassLoader;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
@@ -218,10 +217,10 @@ public class EDIUtils {
 		
 		InputStream rawZipStream = locator.getResource(mappingModelFile);
 		if(rawZipStream != null) {
-			Map<String, byte[]> zipEntries = loadZipEntries(rawZipStream);
+            Archive archive = loadArchive(rawZipStream);
 			
-			if(zipEntries != null) {
-				List<String> rootMappingModels = getMappingModelList(zipEntries);
+			if(archive != null) {
+				List<String> rootMappingModels = getMappingModelList(archive);
 				
 				if(rootMappingModels.isEmpty()) {
 					logger.debug("Configured mapping model file '" + mappingModelFile + "' is not a valid Mapping Model zip file.  Check that the zip has a valid '" + EDI_MAPPING_MODEL_ZIP_LIST_FILE + "' mapping list file.");
@@ -231,9 +230,9 @@ public class EDIUtils {
 				ClassLoader threadCCL = Thread.currentThread().getContextClassLoader();
 				
 				try {
-					ZippedModelsClassLoader zipClassLoader = new ZippedModelsClassLoader(threadCCL, zipEntries);
+					ArchiveClassLoader archiveClassLoader = new ArchiveClassLoader(threadCCL, archive);
 					
-					Thread.currentThread().setContextClassLoader(zipClassLoader);
+					Thread.currentThread().setContextClassLoader(archiveClassLoader);
 					for (String rootMappingModel : rootMappingModels) {
 						EdifactModel mappingModel = EDIParser.parseMappingModel(rootMappingModel, baseURI);
 						mappingModels.put(mappingModel.getEdimap().getDescription(), mappingModel);
@@ -249,9 +248,9 @@ public class EDIUtils {
 		return false;
 	}
 
-	private static List<String> getMappingModelList(Map<String, byte[]> zipEntries) throws IOException {
+	private static List<String> getMappingModelList(Archive archive) throws IOException {
 		List<String> rootMappingModels = new ArrayList<String>();
-		byte[] zipEntryBytes = zipEntries.get(EDI_MAPPING_MODEL_ZIP_LIST_FILE);
+		byte[] zipEntryBytes = archive.getEntries().get(EDI_MAPPING_MODEL_ZIP_LIST_FILE);
 		
 		if(zipEntryBytes != null) {
 			ByteArrayInputStream entryStream = new ByteArrayInputStream(zipEntryBytes);
@@ -275,59 +274,12 @@ public class EDIUtils {
 		return rootMappingModels;
 	}
 
-	private static Map<String, byte[]> loadZipEntries(InputStream rawStream) {
-		Map<String, byte[]> zipEntries = new HashMap<String, byte[]>();
-		
-		try {
-			ZipInputStream zipStream = new ZipInputStream(rawStream);
-			ZipEntry zipEntry = zipStream.getNextEntry();
-			ByteArrayOutputStream outByteStream = new ByteArrayOutputStream();
-			byte[] byteReadBuffer = new byte[512];
-			int byteReadCount;
-			
-			while(zipEntry != null) {
-				while((byteReadCount = zipStream.read(byteReadBuffer)) != -1) {
-					outByteStream.write(byteReadBuffer, 0, byteReadCount);
-				}
-				zipEntries.put(zipEntry.getName(), outByteStream.toByteArray());
-				outByteStream.reset();
-				
-				zipEntry = zipStream.getNextEntry();
-			}
+	private static Archive loadArchive(InputStream rawStream) {
+        try {
+            return new Archive("ediZip", new ZipInputStream(rawStream));
 		} catch(Exception e) {
 			// Assume it's not a Zip file.  Just return null...
 			return null;
-		} finally {
-			try {
-				rawStream.close();
-			} catch (IOException e) {
-				logger.error("Unexpected error closing EDI Mapping Model Zip stream.", e);
-			}
-		}
-		
-		return zipEntries;
-	}
-	
-	private static class ZippedModelsClassLoader extends ClassLoader {
-
-		private Map<String, byte[]> zipEntries;
-		
-		public ZippedModelsClassLoader(ClassLoader parent, Map<String, byte[]> zipEntries) {
-			super(parent);
-			this.zipEntries = zipEntries;
-		}
-
-		/* (non-Javadoc)
-		 * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
-		 */
-		@Override
-		public InputStream getResourceAsStream(String name) {
-			byte[] bytes = zipEntries.get(name);
-			if(bytes != null) {
-				return new ByteArrayInputStream(bytes);
-			} else {
-				return super.getResourceAsStream(name);
-			}
 		}
 	}
 }
