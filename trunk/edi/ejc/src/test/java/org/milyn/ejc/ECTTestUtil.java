@@ -29,7 +29,7 @@ import org.milyn.io.StreamUtils;
  */
 public class ECTTestUtil {
 
-	public static void assertModelOK(ClassModel model, InputStream expectedModel) throws IOException, IllegalNameException, ClassNotFoundException {
+	public static void assertEquals(ClassModel model, InputStream expectedModel) throws IOException, IllegalNameException, ClassNotFoundException {
         StringWriter writer = new StringWriter();
 
         BeanWriter.writeBeans(model, writer);
