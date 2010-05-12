@@ -63,7 +63,7 @@ public class AntRunner {
                     configureProject(antScriptStream, properties);
                     return;
                 } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("Unable resolve caller Class '" + callerStackFrame.getClassName() + "' for AntRunner on current Thread.");
+                    throw new RuntimeException("Unexpected Exception: Unable resolve caller Class '" + callerStackFrame.getClassName() + "' for AntRunner on current Thread.");
                 }
             }
         }
@@ -132,7 +132,7 @@ public class AntRunner {
                     int eqIndex = property.indexOf('=');
 
                     if(eqIndex == -1 || eqIndex + 1 == property.length()) {
-                        throw new RuntimeException("Invalid AntExecute property '" + property + "'.  No value.");
+                        throw new RuntimeException("Invalid AntRunner property '" + property + "'.  No value.");
                     }
 
                     String key = property.substring(0, eqIndex);
