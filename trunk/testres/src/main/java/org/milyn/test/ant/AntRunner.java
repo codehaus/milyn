@@ -21,7 +21,6 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 
 import java.io.*;
-import java.util.Map;
 
 /**
  * AntRunner test utility.
@@ -32,28 +31,68 @@ public class AntRunner {
 
     private Project project = new Project();
 
+    /**
+     * Public constructor.
+     * <p/>
+     * The <code>antScript</code> parameter is a filename on the classpath,
+     * relative to the caller Class.  AntRunner (<code>this</code>) uses the
+     * current Thread's {@link Thread#getStackTrace Stack Trace}
+     * to determine the calling Class.
+     *
+     * @param antScript The Ant script to be executed.  Classpath resource relative
+     * to the caller Class.
+     * @param properties Optional Ant properties.
+     * @throws IOException Error reading Ant Script.
+     */
     public AntRunner(String antScript, String... properties) throws IOException {
         StackTraceElement[] thisStack = Thread.currentThread().getStackTrace();
 
         for(int i = 0; i < thisStack.length; i++) {
-            StackTraceElement trace = thisStack[i];
-            if(trace.getClassName().equals(AntRunner.class.getName())) {
-                StackTraceElement callerTraceElement = thisStack[i + 1];
+            StackTraceElement stackFrame = thisStack[i];
+
+            if(stackFrame.getClassName().equals(getClass().getName())) {
+                StackTraceElement callerStackFrame = thisStack[i + 1];
                 try {
-                    Class callerClass = Class.forName(callerTraceElement.getClassName());
-                    configureProject(callerClass.getResourceAsStream(antScript), properties);
+                    Class callerClass = Class.forName(callerStackFrame.getClassName());
+                    InputStream antScriptStream = callerClass.getResourceAsStream(antScript);
+
+                    if(antScriptStream == null) {
+                        throw new RuntimeException("Unable resolve Ant Script resource '" + antScript + "' relative to caller class '" + callerClass.getName() + "'.");
+                    }
+
+                    configureProject(antScriptStream, properties);
                     return;
                 } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("Unable resolve caller Class for AntRunner on current Thread.");
+                    throw new RuntimeException("Unable resolve caller Class '" + callerStackFrame.getClassName() + "' for AntRunner on current Thread.");
                 }
             }
         }
 
-        throw new RuntimeException("Unable resolve caller Class for AntRunner on current Thread.");
+        throw new RuntimeException("Unexpected Exception: Unable resolve caller Class for AntRunner on current Thread.");
     }
 
+    /**
+     * Public constructor.
+     *
+     * @param antScript The Ant script to be executed.
+     * @param properties Optional Ant properties.
+     * @throws IOException Error reading Ant Script.
+     */
     public AntRunner(InputStream antScript, String... properties) throws IOException {
         configureProject(antScript, properties);
+    }
+
+    /**
+     * Run a target on the Ant Script.
+     * @param target The target to run.
+     * @return <code>this</code> class instance.
+     */
+    public AntRunner run(String target) {
+        if(target == null) {
+            throw new IllegalArgumentException("null 'target' argument.");
+        }
+        project.executeTarget(target);
+        return this;
     }
 
     private void configureProject(InputStream antScript, String[] properties) throws IOException {
@@ -105,13 +144,5 @@ public class AntRunner {
         } finally {
             antScript.close();
         }
-    }
-
-    public AntRunner run(String target) {
-        if(target == null) {
-            throw new IllegalArgumentException("null 'target' argument.");
-        }
-        project.executeTarget(target);
-        return this;
     }
 }
