@@ -33,7 +33,7 @@ public class AntExecutor {
 
     public AntExecutor(InputStream antScript, String... properties) throws IOException {
         if(antScript == null) {
-            throw new IllegalArgumentException("null 'anScript' argument.");
+            throw new IllegalArgumentException("null 'antScript' argument.");
         }
 
         try {
@@ -83,6 +83,9 @@ public class AntExecutor {
     }
 
     public AntExecutor execute(String target) {
+        if(target == null) {
+            throw new IllegalArgumentException("null 'target' argument.");
+        }
         project.executeTarget(target);
         return this;
     }
