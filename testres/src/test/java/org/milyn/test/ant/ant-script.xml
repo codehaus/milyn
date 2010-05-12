@@ -3,7 +3,10 @@
 
     <target name="xtarg">
         <echo message="Hello ${xvar}!!" />
-        <mkdir dir="./target/zapme" />
+    </target>
+
+    <target name="ytarg">
+        <echo message="Goodbye ${xvar}!!" />
     </target>
 
 </project>

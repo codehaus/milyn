@@ -29,17 +29,14 @@ import java.io.*;
  */
 public class AntExecutor {
 
-    public static void execute(InputStream antScript, String target, String... properties) throws IOException {
+    private Project project = new Project();
+
+    public AntExecutor(InputStream antScript, String... properties) throws IOException {
         if(antScript == null) {
             throw new IllegalArgumentException("null 'anScript' argument.");
         }
-        if(target == null) {
-            throw new IllegalArgumentException("null 'target' argument.");
-        }
 
         try {
-            Project project = new Project();
-
             project.init();
 
             DefaultLogger antLogger = new DefaultLogger();
@@ -80,10 +77,13 @@ public class AntExecutor {
                     project.setProperty(key, value);
                 }
             }
-
-            project.executeTarget(target);
         } finally {
             antScript.close();
         }
+    }
+
+    public AntExecutor execute(String target) {
+        project.executeTarget(target);
+        return this;
     }
 }
