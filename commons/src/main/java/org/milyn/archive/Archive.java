@@ -40,11 +40,28 @@ public class Archive {
 
     /**
      * Public constructor.
+     */
+    public Archive() {
+        this.archiveName = "Unknown";
+    }
+
+    /**
+     * Public constructor.
      * @param archiveName The archive name of the deployment.
      */
     public Archive(String archiveName) {
         AssertArgument.isNotNull(archiveName, "archiveName");
         this.archiveName = archiveName;
+    }
+
+    /**
+     * Public constructor.
+     * @param archiveStream Archive stream containing initial archive entries.
+     * @throws IOException Error reading from zip stream.
+     */
+    public Archive(ZipInputStream archiveStream) throws IOException {
+        this.archiveName = "Unknown";
+        addEntries(archiveStream);
     }
 
     /**

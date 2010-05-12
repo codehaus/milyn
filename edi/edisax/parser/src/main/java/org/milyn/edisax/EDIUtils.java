@@ -276,7 +276,7 @@ public class EDIUtils {
 
 	private static Archive loadArchive(InputStream rawStream) {
         try {
-            return new Archive("ediZip", new ZipInputStream(rawStream));
+            return new Archive(new ZipInputStream(rawStream));
 		} catch(Exception e) {
 			// Assume it's not a Zip file.  Just return null...
 			return null;

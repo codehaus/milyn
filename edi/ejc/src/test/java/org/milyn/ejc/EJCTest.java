@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 
+import org.milyn.archive.Archive;
 import org.milyn.edisax.EDIConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -35,6 +36,8 @@ public class EJCTest extends TestCase {
                     
         ClassModel classModel = ejc.compile(getClass().getResourceAsStream(configName), configName, "test.pakageName");
         
-        ECTTestUtil.assertEquals(classModel, getClass().getResourceAsStream("order-mapping-model.txt"));        
+        ECTTestUtil.assertEquals(classModel, getClass().getResourceAsStream("order-mapping-model.txt"));
+
+        Archive archive = ECTTestUtil.buildModelArchive(classModel);
     }
 }
