@@ -28,7 +28,6 @@ public class AntExecutorTest extends TestCase {
     public void test() throws IOException {
         AntExecutor executor = new AntExecutor(getClass().getResourceAsStream("ant-script.xml"), "xvar=Tom");
 
-        executor.execute("xtarg");
-        executor.execute("ytarg");
+        executor.execute("xtarg").execute("ytarg");
     }
 }
