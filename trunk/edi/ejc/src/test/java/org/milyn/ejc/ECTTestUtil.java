@@ -21,7 +21,9 @@ import java.io.StringWriter;
 
 import junit.framework.TestCase;
 
+import org.milyn.archive.Archive;
 import org.milyn.io.StreamUtils;
+import org.milyn.javabean.pojogen.JClass;
 
 /**
  * 
@@ -40,4 +42,22 @@ public class ECTTestUtil {
 		
         TestCase.assertEquals("Expected mapping model not the same as actual.", StreamUtils.normalizeLines(expected), StreamUtils.normalizeLines(actual));
 	}
+
+    public static Archive buildModelArchive(ClassModel model) {
+        Archive archive = new Archive();
+
+        for ( JClass bean : model.getCreatedClasses().values() ) {
+            StringWriter classWriter = new StringWriter();
+
+            try {
+                bean.writeClass(classWriter);
+            } catch (IOException e) {
+                TestCase.fail("Unexpected IO error writing class to Stringwriter.");
+            }
+
+            
+        }
+
+        return archive;
+    }
 }
