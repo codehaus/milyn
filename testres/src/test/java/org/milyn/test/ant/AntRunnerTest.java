@@ -26,7 +26,7 @@ import java.io.IOException;
 public class AntRunnerTest extends TestCase {
 
     public void test() throws IOException {
-        AntRunner antRunner = new AntRunner(getClass().getResourceAsStream("ant-script.xml"), "xvar=Tom");
+        AntRunner antRunner = new AntRunner("ant-script.xml", "xvar=Tom");
 
         antRunner.run("xtarg").run("ytarg");
     }

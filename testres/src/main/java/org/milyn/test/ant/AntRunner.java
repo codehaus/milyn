@@ -21,6 +21,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 
 import java.io.*;
+import java.util.Map;
 
 /**
  * AntRunner test utility.
@@ -31,7 +32,31 @@ public class AntRunner {
 
     private Project project = new Project();
 
+    public AntRunner(String antScript, String... properties) throws IOException {
+        StackTraceElement[] thisStack = Thread.currentThread().getStackTrace();
+
+        for(int i = 0; i < thisStack.length; i++) {
+            StackTraceElement trace = thisStack[i];
+            if(trace.getClassName().equals(AntRunner.class.getName())) {
+                StackTraceElement callerTraceElement = thisStack[i + 1];
+                try {
+                    Class callerClass = Class.forName(callerTraceElement.getClassName());
+                    configureProject(callerClass.getResourceAsStream(antScript), properties);
+                    return;
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("Unable resolve caller Class for AntRunner on current Thread.");
+                }
+            }
+        }
+
+        throw new RuntimeException("Unable resolve caller Class for AntRunner on current Thread.");
+    }
+
     public AntRunner(InputStream antScript, String... properties) throws IOException {
+        configureProject(antScript, properties);
+    }
+
+    private void configureProject(InputStream antScript, String[] properties) throws IOException {
         if(antScript == null) {
             throw new IllegalArgumentException("null 'antScript' argument.");
         }
