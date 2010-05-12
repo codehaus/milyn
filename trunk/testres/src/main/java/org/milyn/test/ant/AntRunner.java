@@ -23,15 +23,15 @@ import org.apache.tools.ant.ProjectHelper;
 import java.io.*;
 
 /**
- * AntExecutor test utility.
+ * AntRunner test utility.
  * 
  * <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class AntExecutor {
+public class AntRunner {
 
     private Project project = new Project();
 
-    public AntExecutor(InputStream antScript, String... properties) throws IOException {
+    public AntRunner(InputStream antScript, String... properties) throws IOException {
         if(antScript == null) {
             throw new IllegalArgumentException("null 'antScript' argument.");
         }
@@ -82,7 +82,7 @@ public class AntExecutor {
         }
     }
 
-    public AntExecutor execute(String target) {
+    public AntRunner run(String target) {
         if(target == null) {
             throw new IllegalArgumentException("null 'target' argument.");
         }

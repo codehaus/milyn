@@ -23,11 +23,11 @@ import java.io.IOException;
 /**
  * <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class AntExecutorTest extends TestCase {
+public class AntRunnerTest extends TestCase {
 
     public void test() throws IOException {
-        AntExecutor executor = new AntExecutor(getClass().getResourceAsStream("ant-script.xml"), "xvar=Tom");
+        AntRunner antRunner = new AntRunner(getClass().getResourceAsStream("ant-script.xml"), "xvar=Tom");
 
-        executor.execute("xtarg").execute("ytarg");
+        antRunner.run("xtarg").run("ytarg");
     }
 }
