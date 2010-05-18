@@ -40,7 +40,7 @@ public class ECTTestUtil {
         String expected = StreamUtils.readStreamAsString(expectedModel);
         String actual = writer.toString();
 		
-        TestCase.assertEquals("Expected mapping model not the same as actual.", StreamUtils.normalizeLines(expected), StreamUtils.normalizeLines(actual));
+        TestCase.assertEquals("Expected mapping model not the same as actual.", StreamUtils.normalizeLines(expected, true), StreamUtils.normalizeLines(actual, true));
 	}
 
     public static Archive buildModelArchive(ClassModel model) {

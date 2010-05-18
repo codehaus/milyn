@@ -80,15 +80,15 @@ public class BeanRepository {
 	}
 
 	public void addBean(BeanId beanId, Object bean) {
-		beanContext.addBean(beanId, bean);
+		beanContext.addBean(beanId, bean, null);
 	}
 
 	public void addBean(String beanId, Object bean) {
-		beanContext.addBean(beanId, bean);
+		beanContext.addBean(beanId, bean, null);
 	}
 
 	public void changeBean(BeanId beanId, Object bean) {
-		beanContext.changeBean(beanId, bean);
+		beanContext.changeBean(beanId, bean, null);
 	}
 
 	public void clear() {
@@ -116,11 +116,11 @@ public class BeanRepository {
 	}
 
 	public Object removeBean(BeanId beanId) {
-		return beanContext.removeBean(beanId);
+		return beanContext.removeBean(beanId, null);
 	}
 
 	public Object removeBean(String beanId) {
-		return beanContext.removeBean(beanId);
+		return beanContext.removeBean(beanId, null);
 	}
 
 	public void setBeanInContext(BeanId beanId, boolean inContext) {

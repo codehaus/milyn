@@ -91,7 +91,7 @@ public class BeanRepositoryPerformance {
 
 			for(BeanId id: beanIds) {
 				BeanContext beanContext = executionContext.getBeanContext();
-				beanContext.addBean(id, bean);
+				beanContext.addBean(id, bean, null);
 			}
 			for(BeanId id: beanIds) {
 				BeanContext beanContext = executionContext.getBeanContext();

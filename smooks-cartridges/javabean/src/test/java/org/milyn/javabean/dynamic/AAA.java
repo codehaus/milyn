@@ -15,15 +15,27 @@
 */
 package org.milyn.javabean.dynamic;
 
+import org.milyn.javabean.dynamic.serialize.DefaultNamespace;
+
+@DefaultNamespace(uri = "http://www.acme.com/xsd/aaa.xsd", prefix = "aaa")
 public class AAA {
 
-	private int intProperty;
+	private double doubleProperty;
+    private double intProperty;
 
-	public int getIntProperty() {
-		return intProperty;
-	}
+    public double getDoubleProperty() {
+        return doubleProperty;
+    }
 
-	public void setIntProperty(int intProperty) {
-		this.intProperty = intProperty;
-	}	
+    public void setDoubleProperty(double doubleProperty) {
+        this.doubleProperty = doubleProperty;
+    }
+
+    public double getIntProperty() {
+        return intProperty;
+    }
+
+    public void setIntProperty(double intProperty) {
+        this.intProperty = intProperty;
+    }
 }

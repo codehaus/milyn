@@ -54,7 +54,7 @@ public class BeanResultCleanup implements ExecutionLifecycleCleanable {
         for(Entry<String, Object> beanEntry : beanSet) {
             String beanID = beanEntry.getKey();
             if(!beanIDSet.contains(beanID)) {
-            	beanContext.removeBean(beanID);
+            	beanContext.removeBean(beanID, null);
             }
         }
     }

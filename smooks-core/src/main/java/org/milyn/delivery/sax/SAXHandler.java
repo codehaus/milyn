@@ -18,7 +18,6 @@ package org.milyn.delivery.sax;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
-import org.milyn.cdr.ParameterAccessor;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
@@ -130,7 +129,7 @@ public class SAXHandler extends DefaultHandler2 {
         QName elementQName;
         String elementName;
 
-        elementQName = SAXElement.toQName(namespaceURI, localName, qName);
+        elementQName = SAXUtil.toQName(namespaceURI, localName, qName);
         elementName = elementQName.getLocalPart();
 
         if(isRoot) {

@@ -35,6 +35,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
@@ -42,9 +43,6 @@ import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdRegister;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.ObjectStore;
 import org.milyn.scribe.invoker.DaoInvoker;
@@ -52,6 +50,8 @@ import org.milyn.scribe.invoker.DaoInvokerFactory;
 import org.milyn.scribe.register.DaoRegister;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 
 /**
  * DAO Inserter
@@ -151,28 +151,28 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 	}
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	insert(executionContext);
+    	insert(executionContext, SAXUtil.toQName(element));
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	insert(executionContext);
+    	insert(executionContext, SAXUtil.toQName(element));
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	insert(executionContext);
+    	insert(executionContext, element.getName());
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	insert(executionContext);
+    	insert(executionContext, element.getName());
     }
 
 	/**
 	 * @param executionContext
-	 * @param data.bean
+	 * @param source
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void insert(final ExecutionContext executionContext) {
+	private void insert(final ExecutionContext executionContext, final QName source) {
 
 		if(logger.isDebugEnabled()) {
 			logger.debug("Inserting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'.");
@@ -204,9 +204,9 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 				if(result == null) {
 					result = bean;
 				}
-				beanRepository.addBean(insertedBeanId, result);
+				beanRepository.addBean(insertedBeanId, result, source);
 			} else if(result != null && bean != result) {
-				beanRepository.changeBean(beanId, bean);
+				beanRepository.changeBean(beanId, bean, source);
 			}
 		} finally {
 			if(dao != null) {

@@ -13,7 +13,8 @@
     </xs:element>
 
     <xs:complexType name="value">
-        <xs:attribute name="property" type="xs:string" />
+        <xs:attribute name="property1" type="xs:double" />
+        <xs:attribute name="property2" type="xs:int" />
     </xs:complexType>
     
 </xs:schema>

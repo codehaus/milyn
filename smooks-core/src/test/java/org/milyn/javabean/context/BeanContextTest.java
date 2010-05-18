@@ -51,8 +51,8 @@ public class BeanContextTest extends TestCase {
         assertNull(BeanContext.getBean(beanId1));
         assertNull(BeanContext.getBean(beanId2));
 
-        BeanContext.addBean(beanId1, bean1);
-        BeanContext.addBean(beanId2, bean2);
+        BeanContext.addBean(beanId1, bean1, null);
+        BeanContext.addBean(beanId2, bean2, null);
 
         assertEquals(bean1, BeanContext.getBean(beanId1));
         assertEquals(bean2, BeanContext.getBean(beanId2));
@@ -78,11 +78,11 @@ public class BeanContextTest extends TestCase {
 
         assertNull(BeanContext.getBean(beanId1));
 
-        BeanContext.addBean( beanId1, bean1);
+        BeanContext.addBean( beanId1, bean1, null);
 
         assertEquals(bean1, BeanContext.getBean(beanId1));
 
-        BeanContext.addBean( beanId1, newBean1);
+        BeanContext.addBean( beanId1, newBean1, null);
 
         assertEquals(newBean1, BeanContext.getBean(beanId1));
     }
@@ -100,18 +100,18 @@ public class BeanContextTest extends TestCase {
 
         BeanContext BeanContext = getBeanContext();
 
-        BeanContext.addBean(beanId1, bean1);
+        BeanContext.addBean(beanId1, bean1, null);
 
         assertEquals(bean1, BeanContext.getBean(beanId1));
 
-        BeanContext.changeBean(beanId1, newBean1);
+        BeanContext.changeBean(beanId1, newBean1, null);
 
         assertEquals(newBean1, BeanContext.getBean(beanId1));
 
         boolean fired = false;
 
         try {
-        	BeanContext.changeBean(beanIdNE, new Object());
+        	BeanContext.changeBean(beanIdNE, new Object(), null);
         } catch (IllegalStateException e) {
         	fired = true;
 		}
@@ -132,7 +132,7 @@ public class BeanContextTest extends TestCase {
 		BeanContext BeanContext = getBeanContext();
 		Map<String, Object> beanMap = BeanContext.getBeanMap();
 
-		BeanContext.addBean(beanId1, bean1);
+		BeanContext.addBean(beanId1, bean1, null);
 
 		assertEquals(1, beanMap.size());
 		assertEquals(bean1, beanMap.get(beanId1.getName()));

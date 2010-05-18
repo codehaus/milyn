@@ -31,6 +31,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import javax.xml.namespace.QName;
+
 /**
  * W3C DOM utility methods.
  * @author tfennelly

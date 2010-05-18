@@ -33,8 +33,11 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXElementVisitor;
 import org.milyn.delivery.sax.SAXText;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.javabean.repository.BeanId;
 import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 
 /**
  * Static variable binding visitor.
@@ -73,7 +76,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        bindParamaters(executionContext);
+        bindParamaters(executionContext, element.getName());
     }
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -86,28 +89,28 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        bindParamaters(executionContext);
+        bindParamaters(executionContext, SAXUtil.toQName(element));
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
     }
 
-    private void bindParamaters(ExecutionContext executionContext) {
+    private void bindParamaters(ExecutionContext executionContext, QName source) {
         List<?> params = config.getParameterList();
 
         for (Object parameter : params) {
             // It's either an object, or list of objects...
             if (parameter instanceof List<?>) {
                 // Bind the first paramater...
-                bindParameter((Parameter) ((List<?>) parameter).get(0), executionContext);
+                bindParameter((Parameter) ((List<?>) parameter).get(0), executionContext, source);
             } else if (parameter instanceof Parameter) {
-                bindParameter((Parameter) parameter, executionContext);
+                bindParameter((Parameter) parameter, executionContext, source);
             }
         }
     }
 
 
-	private void bindParameter(Parameter parameter, ExecutionContext executionContext) {
+	private void bindParameter(Parameter parameter, ExecutionContext executionContext, QName source) {
         Map<String, Object> params = null;
 
         BeanContext beanContext = executionContext.getBeanContext();
@@ -123,7 +126,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
 
         if(params == null) {
             params = new HashMap<String, Object>();
-            beanContext.addBean(beanId, params);
+            beanContext.addBean(beanId, params, source);
         }
 
         params.put(parameter.getName(), parameter.getValue(executionContext.getDeliveryConfig()));

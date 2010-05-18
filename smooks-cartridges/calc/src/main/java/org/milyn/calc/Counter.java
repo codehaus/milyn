@@ -30,6 +30,7 @@ import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.expression.MVELExpressionEvaluator;
@@ -37,6 +38,8 @@ import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 
 /**
  * The counter can increment or decrement a value.
@@ -135,28 +138,28 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 			ExecutionContext executionContext) throws SmooksException,
 			IOException {
 
-		count(executionContext);
+		count(executionContext, element.getName());
 	}
 
 	public void visitAfter(SAXElement element, ExecutionContext executionContext)
 		throws SmooksException, IOException {
 
-		count(executionContext);
+		count(executionContext, element.getName());
 	}
 
 	public void visitBefore(Element element, ExecutionContext executionContext)
 		throws SmooksException {
 
-		count(executionContext);
+		count(executionContext, SAXUtil.toQName(element));
 	}
 
 	public void visitAfter(Element element, ExecutionContext executionContext)
 		throws SmooksException {
 
-		count(executionContext);
+		count(executionContext, SAXUtil.toQName(element));
 	}
 
-	public void count(ExecutionContext executionContext) {
+	public void count(ExecutionContext executionContext, QName source) {
 		BeanContext beanContext = executionContext.getBeanContext();
 
 		Long value = (Long) beanContext.getBean(beanId);
@@ -172,7 +175,7 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 				value = value - amount;
 			}
 		}
-		beanContext.addBean(beanId, value);
+		beanContext.addBean(beanId, value, source);
 	}
 
 

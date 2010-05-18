@@ -107,7 +107,7 @@ public class EntityLocatorTest extends BaseTestCase {
 
             //We put an object on the 'entity' location to check if the locater removes it because it found
             //no result
-            executionContext.getBeanContext().addBean("entity", new Object());
+            executionContext.getBeanContext().addBean("entity", new Object(), null);
 
             PersistenceUtil.setDAORegister(executionContext, new SingleDaoRegister<Object>(dao));
 
