@@ -17,6 +17,7 @@
 package org.milyn.javabean.lifecycle;
 
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.javabean.repository.BeanId;
 
 import javax.xml.namespace.QName;
@@ -31,7 +32,7 @@ public class BeanContextLifecycleEvent {
 
 	private final ExecutionContext executionContext;
 
-    private QName source;
+    private Fragment source;
 
 	private final BeanLifecycle lifecycle;
 
@@ -48,7 +49,7 @@ public class BeanContextLifecycleEvent {
 	 * @param lifecycle Lifecycle.
 	 * @param bean Bean instance.
 	 */
-	public BeanContextLifecycleEvent(ExecutionContext executionContext, QName source, BeanLifecycle lifecycle, BeanId beanId, Object bean) {
+	public BeanContextLifecycleEvent(ExecutionContext executionContext, Fragment source, BeanLifecycle lifecycle, BeanId beanId, Object bean) {
 
 		this.executionContext = executionContext;
         this.source = source;
@@ -68,7 +69,7 @@ public class BeanContextLifecycleEvent {
      * Get the even source fragment.
      * @return Source fragment.
      */
-    public QName getSource() {
+    public Fragment getSource() {
         return source;
     }
 

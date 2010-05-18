@@ -28,6 +28,7 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.dom.serialize.TextSerializationUnit;
 import org.milyn.delivery.sax.DefaultSAXElementSerializer;
 import org.milyn.delivery.sax.SAXElement;
@@ -343,7 +344,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
             Writer writer = new StringWriter();
             applyTemplate(template, element, executionContext, writer);
 
-            executionContext.getBeanContext().addBean(getBindBeanId(), writer.toString(), element.getName());
+            executionContext.getBeanContext().addBean(getBindBeanId(), writer.toString(), new Fragment(element));
         } else {
             Writer writer = element.getWriter(this);
             applyTemplate(template, element, executionContext, writer);

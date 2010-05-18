@@ -28,6 +28,7 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
@@ -151,19 +152,19 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 	}
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	insert(executionContext, SAXUtil.toQName(element));
+    	insert(executionContext, new Fragment(element));
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	insert(executionContext, SAXUtil.toQName(element));
+    	insert(executionContext, new Fragment(element));
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	insert(executionContext, element.getName());
+    	insert(executionContext, new Fragment(element));
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	insert(executionContext, element.getName());
+    	insert(executionContext, new Fragment(element));
     }
 
 	/**
@@ -172,7 +173,7 @@ public class EntityInserter implements DOMElementVisitor, SAXVisitBefore, SAXVis
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void insert(final ExecutionContext executionContext, final QName source) {
+	private void insert(final ExecutionContext executionContext, final Fragment source) {
 
 		if(logger.isDebugEnabled()) {
 			logger.debug("Inserting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'.");

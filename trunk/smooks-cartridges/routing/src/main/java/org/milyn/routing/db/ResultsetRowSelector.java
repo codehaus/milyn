@@ -33,6 +33,7 @@ import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
@@ -161,11 +162,11 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        selectRow(executionContext, element.getName());
+        selectRow(executionContext, new Fragment(element));
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        selectRow(executionContext, element.getName());
+        selectRow(executionContext, new Fragment(element));
     }
 
     /* (non-Javadoc)
@@ -173,7 +174,7 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 	 */
 	public void visitBefore(Element element, ExecutionContext executionContext)
 			throws SmooksException {
-		selectRow(executionContext, SAXUtil.toQName(element));
+		selectRow(executionContext, new Fragment(element));
 	}
 
     /* (non-Javadoc)
@@ -181,10 +182,10 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext)
 			throws SmooksException {
-		selectRow(executionContext, SAXUtil.toQName(element));
+		selectRow(executionContext, new Fragment(element));
 	}
 
-    private void selectRow(ExecutionContext executionContext, QName source) throws SmooksException {
+    private void selectRow(ExecutionContext executionContext, Fragment source) throws SmooksException {
     	BeanContext beanRepository = executionContext.getBeanContext();
 
     	Map<String, Object> beanMapClone = new HashMap<String, Object>(beanRepository.getBeanMap());

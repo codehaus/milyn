@@ -28,6 +28,7 @@ import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.Config;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.sax.SAXElement;
@@ -76,7 +77,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        bindParamaters(executionContext, element.getName());
+        bindParamaters(executionContext, new Fragment(element));
     }
 
     public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
@@ -89,13 +90,13 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        bindParamaters(executionContext, SAXUtil.toQName(element));
+        bindParamaters(executionContext, new Fragment(element));
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
     }
 
-    private void bindParamaters(ExecutionContext executionContext, QName source) {
+    private void bindParamaters(ExecutionContext executionContext, Fragment source) {
         List<?> params = config.getParameterList();
 
         for (Object parameter : params) {
@@ -110,7 +111,7 @@ public class StaticVariableBinder implements SAXElementVisitor, DOMElementVisito
     }
 
 
-	private void bindParameter(Parameter parameter, ExecutionContext executionContext, QName source) {
+	private void bindParameter(Parameter parameter, ExecutionContext executionContext, Fragment source) {
         Map<String, Object> params = null;
 
         BeanContext beanContext = executionContext.getBeanContext();

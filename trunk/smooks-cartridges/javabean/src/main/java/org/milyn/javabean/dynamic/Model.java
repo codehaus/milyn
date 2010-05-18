@@ -56,9 +56,6 @@ public class Model<T> {
         AssertArgument.isNotNull(modelRoot, "modelRoot");
         AssertArgument.isNotNull(builder, "builder");
 
-        // Make sure the configs for the default profile have been resolved...
-        builder.getDescriptor().getSmooks().createExecutionContext();
-
 		this.modelRoot = modelRoot;
 		this.modelMetadata = new ArrayList<BeanMetadata>();
         this.beanWriters = builder.getDescriptor().getBeanWriters();

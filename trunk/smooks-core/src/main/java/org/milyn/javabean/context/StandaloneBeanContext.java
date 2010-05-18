@@ -10,13 +10,12 @@ import java.util.Map.Entry;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.MultiLineToStringBuilder;
-
-import javax.xml.namespace.QName;
 
 public class StandaloneBeanContext implements BeanContext {
 	
@@ -57,7 +56,7 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#addBean(org.milyn.javabean.repository.BeanId, java.lang.Object)
 	 */
-	public void addBean(BeanId beanId, Object bean, QName source) {
+	public void addBean(BeanId beanId, Object bean, Fragment source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
@@ -85,7 +84,7 @@ public class StandaloneBeanContext implements BeanContext {
     /* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#addBean(java.lang.String, java.lang.Object)
 	 */
-    public void addBean(String beanId, Object bean, QName source) {
+    public void addBean(String beanId, Object bean, Fragment source) {
         AssertArgument.isNotNull(beanId, "beanId");
 
         addBean(getBeanId(beanId), bean, source);
@@ -162,7 +161,7 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#changeBean(org.milyn.javabean.repository.BeanId, java.lang.Object)
 	 */
-	public void changeBean(BeanId beanId, Object bean, QName source) {
+	public void changeBean(BeanId beanId, Object bean, Fragment source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
@@ -180,7 +179,7 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#removeBean(org.milyn.javabean.repository.BeanId)
 	 */
-	public Object removeBean(BeanId beanId, QName source) {
+	public Object removeBean(BeanId beanId, Fragment source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 
         ContextEntry repositoryEntry = entries.get(beanId.getIndex());
@@ -197,7 +196,7 @@ public class StandaloneBeanContext implements BeanContext {
     /* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#removeBean(java.lang.String)
 	 */
-    public Object removeBean(String beanId, QName source) {
+    public Object removeBean(String beanId, Fragment source) {
         BeanId beanIDObj = getBeanId(beanId);
 
         if(beanIDObj != null) {

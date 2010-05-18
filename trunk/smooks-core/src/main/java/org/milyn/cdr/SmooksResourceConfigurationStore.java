@@ -452,4 +452,14 @@ public class SmooksResourceConfigurationStore {
             }
         }
     }
+
+    public List<SmooksResourceConfiguration> lookupResource(ConfigSearch configSearch) {
+        List<SmooksResourceConfiguration> resultSet = new ArrayList<SmooksResourceConfiguration>();
+
+        for(SmooksResourceConfigurationList configList : configLists) {
+            resultSet.addAll(configList.lookupResource(configSearch));
+        }
+
+        return resultSet;
+    }
 }

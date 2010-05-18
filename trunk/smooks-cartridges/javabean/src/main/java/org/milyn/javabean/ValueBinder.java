@@ -28,6 +28,7 @@ import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.ordering.Producer;
@@ -232,14 +233,14 @@ public class ValueBinder implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 	public void visitBefore(Element element, ExecutionContext executionContext)
 			throws SmooksException {
 		if(isAttribute) {
-			bindValue(DomUtils.getAttributeValue(element, valueAttributeName), executionContext, SAXUtil.toQName(element));
+			bindValue(DomUtils.getAttributeValue(element, valueAttributeName), executionContext, new Fragment(element));
 		}
 	}
 
 	public void visitAfter(Element element, ExecutionContext executionContext)
 			throws SmooksException {
 		if(!isAttribute) {
-			bindValue(DomUtils.getAllText(element, false), executionContext, SAXUtil.toQName(element));
+			bindValue(DomUtils.getAllText(element, false), executionContext, new Fragment(element));
 		}
 	}
 
@@ -247,7 +248,7 @@ public class ValueBinder implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 			ExecutionContext executionContext) throws SmooksException,
 			IOException {
 		if(isAttribute) {
-			bindValue(SAXUtil.getAttribute(valueAttributeName, element.getAttributes()), executionContext, element.getName());
+			bindValue(SAXUtil.getAttribute(valueAttributeName, element.getAttributes()), executionContext, new Fragment(element));
 		} else {
             // Turn on Text Accumulation...
             element.accumulateText();
@@ -257,11 +258,11 @@ public class ValueBinder implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 	public void visitAfter(SAXElement element, ExecutionContext executionContext)
 			throws SmooksException, IOException {
 		if(!isAttribute) {
-			bindValue(element.getTextContent(), executionContext, element.getName());
+			bindValue(element.getTextContent(), executionContext, new Fragment(element));
 		}
 	}
 
-	private void bindValue(String dataString, ExecutionContext executionContext, QName source) {
+	private void bindValue(String dataString, ExecutionContext executionContext, Fragment source) {
 		Object valueObj = decodeDataString(dataString, executionContext);
 
 		BeanContext beanContext = executionContext.getBeanContext();
