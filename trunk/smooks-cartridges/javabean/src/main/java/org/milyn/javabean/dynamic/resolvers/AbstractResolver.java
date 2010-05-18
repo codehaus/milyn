@@ -18,10 +18,8 @@ package org.milyn.javabean.dynamic.resolvers;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
-import java.util.Map.Entry;
 
-import org.milyn.javabean.dynamic.DynamicModelBuilder;
+import org.milyn.javabean.dynamic.Descriptor;
 import org.milyn.util.ClassUtil;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -45,10 +43,10 @@ abstract class AbstractResolver implements EntityResolver {
 	}
 
 	protected InputSource resolveSchemaLocation(String systemId) throws SAXException {
-		String namespaceId = DynamicModelBuilder.getNamespaceId(systemId, descriptors);
+		String namespaceId = Descriptor.getNamespaceId(systemId, descriptors);
 		
 		if(namespaceId != null) {
-			String schemaLocation = DynamicModelBuilder.getSchemaLocation(namespaceId, descriptors);
+			String schemaLocation = Descriptor.getSchemaLocation(namespaceId, descriptors);
 			
 			if(schemaLocation == null) {
 				throw new SAXException("Failed to resolve schemaLocation for namespace '" + systemId + "'.");
@@ -67,10 +65,10 @@ abstract class AbstractResolver implements EntityResolver {
 	}
 
 	protected InputSource resolveBindingConfigLocation(String systemId) throws SAXException {
-		String namespaceId = DynamicModelBuilder.getNamespaceId(systemId, descriptors);
+		String namespaceId = Descriptor.getNamespaceId(systemId, descriptors);
 		
 		if(namespaceId != null) {
-			String bindingConfigLocation = DynamicModelBuilder.getBindingConfigLocation(namespaceId, descriptors);
+			String bindingConfigLocation = Descriptor.getBindingConfigLocation(namespaceId, descriptors);
 			
 			if(bindingConfigLocation == null) {
 				throw new SAXException("Failed to resolve bindingConfigLocation for namespace '" + systemId + "'.");

@@ -57,14 +57,14 @@ public class SAXElementTest extends TestCase {
             new SAXElement("http://x", null, null, new AttributesImpl(), null);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertEquals("Invalid SAXELement name paramaters: namespaceURI='http://x', localName='null', qName='null'.", e.getMessage());
+            assertEquals("Invalid QName: namespaceURI='http://x', localName='null', qName='null'.", e.getMessage());
         }
 
         try {
             new SAXElement(null, null, null, new AttributesImpl(), null);
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertEquals("Invalid SAXELement name paramaters: namespaceURI='null', localName='null', qName='null'.", e.getMessage());
+            assertEquals("Invalid QName: namespaceURI='null', localName='null', qName='null'.", e.getMessage());
         }
     }
 

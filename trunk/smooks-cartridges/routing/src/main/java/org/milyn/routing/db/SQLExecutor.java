@@ -17,6 +17,7 @@ package org.milyn.routing.db;
 
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfigurationFactory;
@@ -48,6 +49,7 @@ import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -164,24 +166,24 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
     }
 
     public void visitBefore(SAXElement saxElement, ExecutionContext executionContext) throws SmooksException, IOException {
-            executeSQL(executionContext);
+            executeSQL(executionContext, saxElement.getName());
         }
 
     public void visitAfter(SAXElement saxElement, ExecutionContext executionContext) throws SmooksException, IOException {
-            executeSQL(executionContext);
+            executeSQL(executionContext, saxElement.getName());
         }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-            executeSQL(executionContext);
+            executeSQL(executionContext, SAXUtil.toQName(element));
         }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-            executeSQL(executionContext);
+            executeSQL(executionContext, SAXUtil.toQName(element));
         }
 
 
 
-	private void executeSQL(ExecutionContext executionContext) throws SmooksException {
+	private void executeSQL(ExecutionContext executionContext, QName source) throws SmooksException {
         Connection connection = AbstractDataSource.getConnection(datasource, executionContext);
         BeanContext beanContext = executionContext.getBeanContext();
 
@@ -191,7 +193,7 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
             if(!statementExec.isJoin()) {
                 if(statementExec.getStatementType() == StatementType.QUERY) {
                     if(resultSetScope == ResultSetScope.EXECUTION) {
-                        beanContext.addBean(resultSetBeanId, statementExec.executeUnjoinedQuery(connection));
+                        beanContext.addBean(resultSetBeanId, statementExec.executeUnjoinedQuery(connection), source);
                     } else {
                         List<Map<String, Object>> resultMap;
                         // Cached in the application context...
@@ -207,7 +209,7 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
                             }
                         }
                         resultMap = rsContextObj.resultSet;
-                        beanContext.addBean(resultSetBeanId, resultMap);
+                        beanContext.addBean(resultSetBeanId, resultMap, source);
                     }
                 } else {
                     statementExec.executeUnjoinedUpdate(connection);
@@ -216,7 +218,7 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
                 if(statementExec.getStatementType() == StatementType.QUERY) {
                     List<Map<String, Object>> resultMap = new ArrayList<Map<String, Object>>();
                     statementExec.executeJoinedQuery(connection, beanMap, resultMap);
-                    beanContext.addBean(resultSetBeanId, resultMap);
+                    beanContext.addBean(resultSetBeanId, resultMap, source);
                 } else {
                     if(resultSetBeanId == null) {
                         statementExec.executeJoinedUpdate(connection, beanMap);

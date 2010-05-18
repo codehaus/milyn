@@ -40,6 +40,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.expression.ExpressionEvaluator;
@@ -51,6 +52,8 @@ import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.util.FreeMarkerTemplate;
 import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
@@ -158,11 +161,11 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        selectRow(executionContext);
+        selectRow(executionContext, element.getName());
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        selectRow(executionContext);
+        selectRow(executionContext, element.getName());
     }
 
     /* (non-Javadoc)
@@ -170,7 +173,7 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 	 */
 	public void visitBefore(Element element, ExecutionContext executionContext)
 			throws SmooksException {
-		selectRow(executionContext);
+		selectRow(executionContext, SAXUtil.toQName(element));
 	}
 
     /* (non-Javadoc)
@@ -178,10 +181,10 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext)
 			throws SmooksException {
-		selectRow(executionContext);
+		selectRow(executionContext, SAXUtil.toQName(element));
 	}
 
-    private void selectRow(ExecutionContext executionContext) throws SmooksException {
+    private void selectRow(ExecutionContext executionContext, QName source) throws SmooksException {
     	BeanContext beanRepository = executionContext.getBeanContext();
 
     	Map<String, Object> beanMapClone = new HashMap<String, Object>(beanRepository.getBeanMap());
@@ -206,7 +209,7 @@ public class ResultsetRowSelector implements SmooksResourceConfigurationFactory,
 
                     if(whereEvaluator.eval(beanMapClone)) {
                     	selectedRow = row;
-                    	beanRepository.addBean(beanIdObj, selectedRow);
+                    	beanRepository.addBean(beanIdObj, selectedRow, source);
                     }
                 }
 

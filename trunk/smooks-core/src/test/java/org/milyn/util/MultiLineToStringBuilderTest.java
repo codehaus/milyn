@@ -26,26 +26,26 @@ public class MultiLineToStringBuilderTest extends TestCase {
 
 		FilterResult.setResults(context, dummyResult);
 
-		context.getBeanContext().addBean("string", "blaat");
-		context.getBeanContext().addBean("emptyMap", Collections.emptyMap());
-		context.getBeanContext().addBean("emptyList", Collections.emptyList());
-		context.getBeanContext().addBean("emptyArray", new String[0]);
+		context.getBeanContext().addBean("string", "blaat", null);
+		context.getBeanContext().addBean("emptyMap", Collections.emptyMap(), null);
+		context.getBeanContext().addBean("emptyList", Collections.emptyList(), null);
+		context.getBeanContext().addBean("emptyArray", new String[0], null);
 
 		Map<String, String> stringMap = new HashMap<String, String>();
 		stringMap.put("v1", "some text");
 		stringMap.put("v2", "other text");
 		stringMap.put("v3", null);
 
-		context.getBeanContext().addBean("stringMap", stringMap);
+		context.getBeanContext().addBean("stringMap", stringMap, null);
 
 		List<Integer> integerList = new ArrayList<Integer>();
 		integerList.add(1);
 		integerList.add(2);
 		integerList.add(null);
 
-		context.getBeanContext().addBean("integerList", integerList);
+		context.getBeanContext().addBean("integerList", integerList, null);
 
-		context.getBeanContext().addBean("stringArray", new String[] {"a1", "a2", "a3", null});
+		context.getBeanContext().addBean("stringArray", new String[] {"a1", "a2", "a3", null}, null);
 
 		Map<String, Object> objectMap = new LinkedHashMap<String, Object>();
 		objectMap.put("self", objectMap);
@@ -62,7 +62,7 @@ public class MultiLineToStringBuilderTest extends TestCase {
 
 		object2Map.put("list", list);
 
-		context.getBeanContext().addBean("objectMap", objectMap);
+		context.getBeanContext().addBean("objectMap", objectMap, null);
 
 		context.getAttributes().put("multiline", "hello\nworld");
 

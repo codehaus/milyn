@@ -34,17 +34,23 @@ import java.io.*;
 */
 public class FreeMarkerTemplate {
 
+    public static final String DEFAULT_MACHINE_READABLE_NUMBER_FORMAT = "#.##########";
+    
     private String templateText;
     private Template template;
 
     public FreeMarkerTemplate(String templateText) {
+        this(templateText, createDefaultConfiguration());
+    }
+
+    public FreeMarkerTemplate(String templateText, Configuration config) {
         AssertArgument.isNotNullAndNotEmpty(templateText, "templateText");
         this.templateText = templateText;
         Reader templateReader = new StringReader(templateText);
 
         try {
             try {
-                template = new Template("free-marker-template", templateReader, new Configuration());
+                template = new Template("free-marker-template", templateReader, config);
             } finally {
                 templateReader.close();
             }
@@ -54,16 +60,18 @@ public class FreeMarkerTemplate {
     }
 
     public FreeMarkerTemplate(String templatePath, Class basePath) {
+        this(templatePath, basePath, createDefaultConfiguration());        
+    }
+
+    public FreeMarkerTemplate(String templatePath, Class basePath, Configuration config) {
         AssertArgument.isNotNullAndNotEmpty(templatePath, "templatePath");
         this.templateText = templatePath;
 
         try {
-            Configuration configuration = new Configuration();
-
             if(basePath != null) {
-                configuration.setClassForTemplateLoading(basePath, "");
+                config.setClassForTemplateLoading(basePath, "");
             }
-            template = configuration.getTemplate(templatePath);
+            template = config.getTemplate(templatePath);
         } catch (IOException e) {
             throw new IllegalStateException("Unexpected IOException.", e);
         }
@@ -87,5 +95,11 @@ public class FreeMarkerTemplate {
         } catch (IOException e) {
             throw new IllegalStateException("Unexpected IOException.", e);
         }
+    }
+
+    private static Configuration createDefaultConfiguration() {
+        Configuration config = new Configuration();
+        config.setNumberFormat(DEFAULT_MACHINE_READABLE_NUMBER_FORMAT);
+        return config;
     }
 }

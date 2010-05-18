@@ -28,7 +28,6 @@ import org.milyn.SmooksException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.serialize.ContextObjectSerializationUnit;
 import org.milyn.delivery.dom.serialize.TextSerializationUnit;
 import org.milyn.delivery.sax.DefaultSAXElementSerializer;
 import org.milyn.delivery.sax.SAXElement;
@@ -41,14 +40,12 @@ import org.milyn.event.report.annotation.VisitAfterReport;
 import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.io.AbstractOutputStreamResource;
 import org.milyn.io.NullWriter;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.templating.AbstractTemplateProcessor;
 import org.milyn.templating.TemplatingConfiguration;
+import org.milyn.util.FreeMarkerTemplate;
 import org.milyn.xml.DomUtils;
-import org.milyn.xml.Namespace;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Document;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -80,6 +77,8 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
 
     @ConfigParam(name = Filter.ENTITIES_REWRITE, defaultVal = "true")
     private boolean rewriteEntities;
+    @ConfigParam(name = "templating.freemarker.defaultNumberFormat", defaultVal = FreeMarkerTemplate.DEFAULT_MACHINE_READABLE_NUMBER_FORMAT)
+    private String defaultNumberFormat;
 
     private Template defaultTemplate;
     private Template templateBefore;
@@ -109,6 +108,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
         Configuration configuration = new Configuration();
 
         configuration.setSharedVariable("serialize", new NodeModelSerializer());
+        configuration.setNumberFormat(defaultNumberFormat);
 
         if (config.isInline()) {
             byte[] templateBytes = config.getBytes();
@@ -343,7 +343,7 @@ public class FreeMarkerTemplateProcessor extends AbstractTemplateProcessor imple
             Writer writer = new StringWriter();
             applyTemplate(template, element, executionContext, writer);
 
-            executionContext.getBeanContext().addBean(getBindBeanId(), writer.toString());
+            executionContext.getBeanContext().addBean(getBindBeanId(), writer.toString(), element.getName());
         } else {
             Writer writer = element.getWriter(this);
             applyTemplate(template, element, executionContext, writer);

@@ -35,6 +35,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
@@ -42,15 +43,14 @@ import org.milyn.event.report.annotation.VisitBeforeReport;
 import org.milyn.javabean.context.BeanContext;
 import org.milyn.javabean.context.BeanIdStore;
 import org.milyn.javabean.repository.BeanId;
-import org.milyn.javabean.repository.BeanIdRegister;
-import org.milyn.javabean.repository.BeanRepository;
-import org.milyn.javabean.repository.BeanRepositoryManager;
 import org.milyn.persistence.util.PersistenceUtil;
 import org.milyn.scribe.invoker.DaoInvoker;
 import org.milyn.scribe.invoker.DaoInvokerFactory;
 import org.milyn.scribe.register.DaoRegister;
 import org.milyn.util.CollectionsUtil;
 import org.w3c.dom.Element;
+
+import javax.xml.namespace.QName;
 
 
 /**
@@ -155,28 +155,28 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	}
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	delete(executionContext);
+    	delete(executionContext, SAXUtil.toQName(element));
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	delete(executionContext);
+    	delete(executionContext, SAXUtil.toQName(element));
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	delete(executionContext);
+    	delete(executionContext, element.getName());
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	delete(executionContext);
+    	delete(executionContext, element.getName());
     }
 
 	/**
 	 * @param executionContext
-	 * @param data.bean
+	 * @param source
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void delete(final ExecutionContext executionContext) {
+	private void delete(final ExecutionContext executionContext, final QName source) {
 
 		if(logger.isDebugEnabled()) {
 			logger.debug("Deleting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'");
@@ -216,9 +216,9 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 				if(result == null) {
 					result = bean;
 				}
-				beanContext.addBean(deletedBeanId, result);
+				beanContext.addBean(deletedBeanId, result, source);
 			} else if(result != null && bean != result) {
-				beanContext.changeBean(beanId, bean);
+				beanContext.changeBean(beanId, bean, source);
 			}
 
 

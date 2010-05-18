@@ -16,6 +16,8 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.MultiLineToStringBuilder;
 
+import javax.xml.namespace.QName;
+
 public class StandaloneBeanContext implements BeanContext {
 	
 	private final ExecutionContext executionContext;
@@ -37,17 +39,17 @@ public class StandaloneBeanContext implements BeanContext {
 	 * Create the StandAloneBeanContext
 	 *
 	 * @param executionContext The {@link ExecutionContext} to which this object is bound to.
-	 * @param beanIdList The {@link BeanIdRegister} to which this object is bound to.
+	 * @param beanIdStore The {@link BeanIdStore} to which this object is bound to.
 	 * @param beanMap The {@link Map} in which the bean's will be set. It is important not to modify this map outside of
 	 * the BeanRepository! It is only provided as constructor parameter because in some situations we need to control
 	 * which {@link Map} is used.
 	 */
-	public StandaloneBeanContext(ExecutionContext executionContext, BeanIdStore beanIdList, Map<String, Object> beanMap) {
+	public StandaloneBeanContext(ExecutionContext executionContext, BeanIdStore beanIdStore, Map<String, Object> beanMap) {
 		this.executionContext = executionContext;
-		this.beanIdStore = beanIdList;
+		this.beanIdStore = beanIdStore;
 		this.beanMap = beanMap;
 
-		entries = new ArrayList<ContextEntry>(beanIdList.size());
+		entries = new ArrayList<ContextEntry>(beanIdStore.size());
 
 		updateBeanMap();
 	}
@@ -55,14 +57,14 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#addBean(org.milyn.javabean.repository.BeanId, java.lang.Object)
 	 */
-	public void addBean(BeanId beanId, Object bean) {
+	public void addBean(BeanId beanId, Object bean, QName source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
 		// If there's already an instance of this bean, notify observers of it's removal (removal by being overwritten)...
 		Object currentInstance = getBean(beanId);
 		if(currentInstance != null) {
-	    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.END, beanId, bean));
+	    	notifyObservers(new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.END, beanId, bean));
 		}
 		
 		// Check if the BeanIdList has new BeanIds and if so then
@@ -77,16 +79,16 @@ public class StandaloneBeanContext implements BeanContext {
 		repoEntry.setValue(bean);
 		
 		// Add the bean to the context...
-    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.BEGIN, beanId, bean));
+    	notifyObservers(new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.BEGIN, beanId, bean));
 	}
 
     /* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#addBean(java.lang.String, java.lang.Object)
 	 */
-    public void addBean(String beanId, Object bean) {
+    public void addBean(String beanId, Object bean, QName source) {
         AssertArgument.isNotNull(beanId, "beanId");
 
-        addBean(getBeanId(beanId), bean);
+        addBean(getBeanId(beanId), bean, source);
     }
 
     /* (non-Javadoc)
@@ -160,7 +162,7 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#changeBean(org.milyn.javabean.repository.BeanId, java.lang.Object)
 	 */
-	public void changeBean(BeanId beanId, Object bean) {
+	public void changeBean(BeanId beanId, Object bean, QName source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
 
@@ -169,7 +171,7 @@ public class StandaloneBeanContext implements BeanContext {
 		if(entries.size() > index && entries.get(index).getValue() != null) {
 			entries.get(index).setValue(bean);
 
-	    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.CHANGE, beanId, bean));
+	    	notifyObservers(new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.CHANGE, beanId, bean));
     	} else {
     		throw new IllegalStateException("The bean '" + beanId + "' can't be changed because it isn't in the repository.");
     	}
@@ -178,7 +180,7 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#removeBean(org.milyn.javabean.repository.BeanId)
 	 */
-	public Object removeBean(BeanId beanId) {
+	public Object removeBean(BeanId beanId, QName source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 
         ContextEntry repositoryEntry = entries.get(beanId.getIndex());
@@ -187,7 +189,7 @@ public class StandaloneBeanContext implements BeanContext {
         repositoryEntry.clean();
         repositoryEntry.setValue(null);
 
-    	notifyObservers(new BeanContextLifecycleEvent(executionContext, BeanLifecycle.END, beanId, getBean(beanId)));
+    	notifyObservers(new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.END, beanId, getBean(beanId)));
         
 		return old;
 	}
@@ -195,11 +197,11 @@ public class StandaloneBeanContext implements BeanContext {
     /* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#removeBean(java.lang.String)
 	 */
-    public Object removeBean(String beanId) {
+    public Object removeBean(String beanId, QName source) {
         BeanId beanIDObj = getBeanId(beanId);
 
         if(beanIDObj != null) {
-            return removeBean(beanIDObj);
+            return removeBean(beanIDObj, source);
         }
 
         return null;
@@ -225,7 +227,7 @@ public class StandaloneBeanContext implements BeanContext {
 
     /**
 	 * Checks if the repository is still in sync with
-	 * then {@link BeanIdRegister}.
+	 * then {@link BeanIdStore}.
 	 */
 	private void checkUpdatedBeanIdList() {
 
@@ -240,7 +242,7 @@ public class StandaloneBeanContext implements BeanContext {
 
 	/**
 	 * Sync's the BeanRepositories bean map with
-	 * the bean map from the {@link BeanIdRegister}. All
+	 * the bean map from the {@link BeanIdStore}. All
 	 * missing keys that are in the BeanIdList's map are added
 	 * to the BeanRepositories map.
 	 */
@@ -492,7 +494,7 @@ public class StandaloneBeanContext implements BeanContext {
 				old = getBean(beanId);
 			}
 
-			addBean(beanId, value);
+			addBean(beanId, value, null);
 
 			return old;
 		}
@@ -505,7 +507,7 @@ public class StandaloneBeanContext implements BeanContext {
 
 			for(Entry<? extends String, ? extends Object> entry : map.entrySet()) {
 
-				addBean(entry.getKey(), entry.getValue());
+				addBean(entry.getKey(), entry.getValue(), null);
 
 			}
 		}
@@ -521,7 +523,7 @@ public class StandaloneBeanContext implements BeanContext {
 			}
 			BeanId beanId = beanIdStore.getBeanId((String)key);
 
-			return beanId == null ? null : removeBean(beanId);
+			return beanId == null ? null : removeBean(beanId, null);
 		}
 
 		/* (non-Javadoc)

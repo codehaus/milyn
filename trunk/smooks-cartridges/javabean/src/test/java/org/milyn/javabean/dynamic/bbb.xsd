@@ -11,7 +11,7 @@
 	    <xs:complexType>
 	        <xs:sequence>
 	        	<xs:element name="bbb" type="bbb:bbb"/>
-	        	<xs:element ref="aaa:aaa"/>
+	        	<xs:element ref="aaa:aaa" minOccurs="0" maxOccurs="unbounded"/>
 	        </xs:sequence>
 	    </xs:complexType>
     </xs:element>

@@ -19,6 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.delivery.sax.SAXUtil;
+import org.milyn.javabean.ext.BeanConfigUtil;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.Parameter;
@@ -47,6 +49,7 @@ import org.milyn.javabean.factory.FactoryDefinitionParser.FactoryDefinitionParse
 import org.milyn.javabean.repository.BeanId;
 import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -67,14 +70,14 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 
     private static Log logger = LogFactory.getLog(BeanInstanceCreator.class);
 
-	public static final String INIT_VAL_EXPRESSION = "initValExpression";
+    public static final String INIT_VAL_EXPRESSION = "initValExpression";
 
     private String id;
 
     @ConfigParam(name="beanId")
     private String beanIdName;
 
-    @ConfigParam(name="beanClass", use=Use.OPTIONAL)
+    @ConfigParam(name= BeanConfigUtil.BEAN_CLASS_CONFIG, use=Use.OPTIONAL)
     private String beanClassName;
 
     @ConfigParam(name="beanFactory", use=Use.OPTIONAL)
@@ -194,11 +197,11 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        createAndSetBean(executionContext);
+        createAndSetBean(executionContext, SAXUtil.toQName(element));
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        createAndSetBean(executionContext);
+        createAndSetBean(executionContext, element.getName());
     }
 
 
@@ -206,17 +209,17 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-		visitAfter(executionContext);
+		visitAfter(executionContext, SAXUtil.toQName(element));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-		visitAfter(executionContext);
+		visitAfter(executionContext, element.getName());
 	}
 
-	public void visitAfter(ExecutionContext executionContext) {
+	public void visitAfter(ExecutionContext executionContext, QName source) {
         Classification thisBeanType = beanRuntimeInfo.getClassification();
         boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 
@@ -229,21 +232,21 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
             if(logger.isDebugEnabled()) {
                 logger.debug("Converting bean [" + beanIdName + "] to an array and rebinding to context.");
             }
-            bean = convert(executionContext, bean);
+            bean = convert(executionContext, bean, source);
         }
 	}
 
 
-    private Object convert(ExecutionContext executionContext, Object bean) {
+    private Object convert(ExecutionContext executionContext, Object bean, QName source) {
 
         bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
 
-        executionContext.getBeanContext().changeBean(beanId, bean);
+        executionContext.getBeanContext().changeBean(beanId, bean, source);
 
     	return bean;
     }
 
-	private void createAndSetBean(ExecutionContext executionContext) {
+	private void createAndSetBean(ExecutionContext executionContext, QName source) {
         Object bean;
         BeanContext beanContext = executionContext.getBeanContext();
 
@@ -254,7 +257,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
         }
 
         beanContext.setBeanInContext(beanId, false);
-        beanContext.addBean(beanId, bean);
+        beanContext.addBean(beanId, bean, source);
         beanContext.setBeanInContext(beanId, true);
 
         if (logger.isDebugEnabled()) {
@@ -326,7 +329,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	 */
 	public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
 		if(!retain) {
-			executionContext.getBeanContext().removeBean(beanId);
+			executionContext.getBeanContext().removeBean(beanId, null);
 		}
 	}
 }

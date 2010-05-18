@@ -190,7 +190,7 @@ public class SQLExecutorTest extends TestCase
 
             BeanId requiredOrderNumId = beanIdStore.register("requiredOrderNum");
 
-            beanContext.addBean(requiredOrderNumId, 9999);
+            beanContext.addBean(requiredOrderNumId, 9999, null);
             try {
                 smooks.filterSource(execContext, new StringSource("<doc/>"), null);
                 fail("Expected DataSelectionException");

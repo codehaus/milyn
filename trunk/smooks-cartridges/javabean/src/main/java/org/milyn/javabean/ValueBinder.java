@@ -43,6 +43,8 @@ import org.milyn.util.CollectionsUtil;
 import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
+
 /**
  * Value Binder.
  * <p/>
@@ -230,14 +232,14 @@ public class ValueBinder implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 	public void visitBefore(Element element, ExecutionContext executionContext)
 			throws SmooksException {
 		if(isAttribute) {
-			bindValue(DomUtils.getAttributeValue(element, valueAttributeName), executionContext);
+			bindValue(DomUtils.getAttributeValue(element, valueAttributeName), executionContext, SAXUtil.toQName(element));
 		}
 	}
 
 	public void visitAfter(Element element, ExecutionContext executionContext)
 			throws SmooksException {
 		if(!isAttribute) {
-			bindValue(DomUtils.getAllText(element, false), executionContext);
+			bindValue(DomUtils.getAllText(element, false), executionContext, SAXUtil.toQName(element));
 		}
 	}
 
@@ -245,7 +247,7 @@ public class ValueBinder implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 			ExecutionContext executionContext) throws SmooksException,
 			IOException {
 		if(isAttribute) {
-			bindValue(SAXUtil.getAttribute(valueAttributeName, element.getAttributes()), executionContext);
+			bindValue(SAXUtil.getAttribute(valueAttributeName, element.getAttributes()), executionContext, element.getName());
 		} else {
             // Turn on Text Accumulation...
             element.accumulateText();
@@ -255,19 +257,19 @@ public class ValueBinder implements DOMElementVisitor, SAXVisitBefore, SAXVisitA
 	public void visitAfter(SAXElement element, ExecutionContext executionContext)
 			throws SmooksException, IOException {
 		if(!isAttribute) {
-			bindValue(element.getTextContent(), executionContext);
+			bindValue(element.getTextContent(), executionContext, element.getName());
 		}
 	}
 
-	private void bindValue(String dataString, ExecutionContext executionContext) {
+	private void bindValue(String dataString, ExecutionContext executionContext, QName source) {
 		Object valueObj = decodeDataString(dataString, executionContext);
 
 		BeanContext beanContext = executionContext.getBeanContext();
 
 		if(valueObj == null) {
-			beanContext.removeBean(beanId);
+			beanContext.removeBean(beanId, source);
 		} else {
-			beanContext.addBean(beanId, valueObj);
+			beanContext.addBean(beanId, valueObj, source);
 		}
 	}
 

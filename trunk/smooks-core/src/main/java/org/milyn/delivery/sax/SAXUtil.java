@@ -15,7 +15,11 @@
 */
 package org.milyn.delivery.sax;
 
+import org.milyn.xml.DomUtils;
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
+
+import javax.xml.namespace.QName;
 
 /**
  * SAX utility methods.
@@ -109,5 +113,60 @@ public abstract class SAXUtil {
         }
 
         return depth;
+    }
+
+    /**
+     * Create a {@link javax.xml.namespace.QName} instance from the supplied element naming parameters.
+     *
+     * @param namespaceURI The Namespace URI, or the empty string if the
+     *                     element has no Namespace URI or if Namespace
+     *                     processing is not being performed.
+     * @param localName    The local name (without prefix), or the
+     *                     empty string if Namespace processing is not being
+     *                     performed.
+     * @param qName        The qualified name (with prefix), or the
+     *                     empty string if qualified names are not available.
+     * @return A {@link javax.xml.namespace.QName} instance representing the element named by the supplied parameters.
+     */
+    public static QName toQName(String namespaceURI, String localName, String qName) {
+        if (namespaceURI != null) {
+            int colonIndex;
+
+            if (namespaceURI.length() != 0 && qName != null && (colonIndex = qName.indexOf(':')) != -1) {
+                String prefix = qName.substring(0, colonIndex);
+                String qNameLocalName = qName.substring(colonIndex + 1);
+
+                return new QName(namespaceURI.intern(), qNameLocalName, prefix);
+            } else if (localName != null && localName.length() != 0) {
+                return new QName(namespaceURI, localName);
+            } else if (qName != null && qName.length() != 0) {
+                return new QName(namespaceURI, qName);
+            } else {
+                thowInvalidNameException(namespaceURI, localName, qName);
+            }
+        } else if (localName != null && localName.length() != 0) {
+            return new QName(localName);
+        } else {
+            thowInvalidNameException(namespaceURI, localName, qName);
+        }
+
+        return null;
+    }
+
+    /**
+     * Create a {@link QName} instance for the supplied DOM {@link org.w3c.dom.Element}.
+     * @param element The element.
+     * @return Element QName.
+     */
+    public static QName toQName(Element element) {
+        if(element == null) {
+            return null;
+        }
+
+        return toQName(element.getNamespaceURI(), DomUtils.getName(element), element.getNodeName());
+    }
+
+    static void thowInvalidNameException(String namespaceURI, String localName, String qName) {
+        throw new IllegalArgumentException("Invalid QName: namespaceURI='" + namespaceURI + "', localName='" + localName + "', qName='" + qName + "'.");
     }
 }

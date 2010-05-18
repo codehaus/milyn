@@ -8,6 +8,8 @@ import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.javabean.repository.BeanId;
 import org.milyn.javabean.repository.BeanIdRegister;
 
+import javax.xml.namespace.QName;
+
 /**
  * Bean Context
  * <p/>
@@ -35,8 +37,9 @@ public interface BeanContext {
 	 *
 	 * @param beanId The {@link BeanId} under which the bean is to be stored.
 	 * @param bean The bean instance to be stored.
+     * @param source Source fragment.
 	 */
-	public abstract void addBean(BeanId beanId, Object bean);
+	public abstract void addBean(BeanId beanId, Object bean, QName source);
 
 	/**
 	 * Add a bean instance under the specified beanId.
@@ -46,8 +49,9 @@ public interface BeanContext {
 	 *
 	 * @param beanId The beanId under which the bean is to be stored.
 	 * @param bean The bean instance to be stored.
+     * @param source Source fragment.
 	 */
-	public abstract void addBean(String beanId, Object bean);
+	public abstract void addBean(String beanId, Object bean, QName source);
 
 	/**
 	 * Get the {@link BeanId} instance for the specified beanId String.
@@ -101,22 +105,25 @@ public interface BeanContext {
 	 *
 	 * @param beanId The {@link BeanId} under which the bean instance is to be stored.
 	 * @param bean The bean instance to be stored.
+     * @param source Source fragment.
 	 */
-	public abstract void changeBean(BeanId beanId, Object bean);
+	public abstract void changeBean(BeanId beanId, Object bean, QName source);
 
 	/**
 	 * Removes a bean and all its associated lifecycle beans from the bean map
 	 *
 	 * @param beanId The beanId to remove the beans from.
+     * @param source Source fragment.
 	 */
-	public abstract Object removeBean(BeanId beanId);
+	public abstract Object removeBean(BeanId beanId, QName source);
 
 	/**
 	 * Removes a bean and all its associated lifecycle beans from the bean map
 	 *
 	 * @param beanId The beanId to remove the beans from.
+     * @param source Source fragment.
 	 */
-	public abstract Object removeBean(String beanId);
+	public abstract Object removeBean(String beanId, QName source);
 
 	/**
 	 * Removes all the beans from the bean map

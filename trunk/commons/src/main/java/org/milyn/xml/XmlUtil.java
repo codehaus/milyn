@@ -49,6 +49,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -107,6 +108,11 @@ public class XmlUtil {
     public static final char[] QUOT = new char[] {'&', 'q', 'u', 'o', 't', ';'};
     public static final char[] APOS = new char[] {'&', 'a', 'p', 'o', 's', ';'};
 
+    private static final String COMMENT_START = "<!--";
+    private static final String COMMENT_END   = "-->";
+    private static final String CDATA_START   = "<![CDATA[";
+    private static final String CDATA_END     = "]]>";
+    
 	public static boolean isXMLReservedNamespace(String namespace) {
 		return xmlReservedNamespaces.contains(namespace);
 	}
@@ -644,6 +650,71 @@ public class XmlUtil {
             domExcep.initCause(e);
             throw domExcep;
         }
+    }
+
+    /**
+     * Indent the supplied XML string by the number of spaces specified in the
+     * 'indent' param.
+     * <p/>
+     * The indents are only inserted after newlines, where the first non-whitespace character
+     * is '<'.
+     *
+     * @param xml The XML to indent.
+     * @param indent The number of spaces to insert as the indent.
+     * @return The indented XML string.
+     */
+    public static String indent(String xml, int indent) {
+        StringBuffer indentedXml = new StringBuffer();
+        int xmlLen = xml.length();
+        char[] indentChars = new char[indent];
+
+        Arrays.fill(indentChars, ' ');
+
+        int i = 0;
+        while(i < xmlLen) {
+            if(isStartOf(xml, i, COMMENT_START)) {
+                int commentEnd = xml.indexOf(COMMENT_END, i);
+                indentedXml.append(xml, i, commentEnd);
+                i = commentEnd;
+            } else if(isStartOf(xml, i, CDATA_START)) {
+                int cdataEnd  = xml.indexOf(CDATA_END, i);
+                indentedXml.append(xml, i, cdataEnd);
+                i = cdataEnd;
+            } else {
+                char nextChar = xml.charAt(i);
+
+                indentedXml.append(nextChar);
+
+                if(nextChar == '\n') {
+                    // We're at the start of a new line.  Need to determine
+                    // if the next sequence of non-whitespace characters are the start/end of
+                    // an XML element.  If it is... add an indent before....
+                    while(i < xmlLen) {
+                        i++;
+
+                        char preXmlChar = xml.charAt(i);
+                        if(!Character.isWhitespace(preXmlChar)) {
+                            if(preXmlChar == '<') {
+                                if(!isStartOf(xml, i, COMMENT_START) && !isStartOf(xml, i, CDATA_START)) {
+                                    indentedXml.append(indentChars);
+                                }
+                            }
+                            break;
+                        } else {
+                            indentedXml.append(preXmlChar);
+                        }
+                    }
+                } else {
+                    i++;
+                }
+            }
+        }
+
+        return indentedXml.toString();
+    }
+
+    private static boolean isStartOf(String xml, int i, String substring) {
+        return xml.regionMatches(i, substring, 0, substring.length());
     }
 
     /**

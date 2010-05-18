@@ -43,7 +43,7 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
         smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
         
         execContext = smooks.createExecutionContext();
-        execContext.getBeanContext().addBean("aBean", bean);
+        execContext.getBeanContext().addBean("aBean", bean, null);
         bean.put("a", "hello");
         
         smooks.filterSource(execContext, new StreamSource(new StringReader("<a/>")), null);
@@ -53,7 +53,7 @@ public class BeanMapExpressionEvaluatorTest extends TestCase {
         smooks = new Smooks(getClass().getResourceAsStream("smooks-config-01.xml"));
 
         execContext = smooks.createExecutionContext();
-        execContext.getBeanContext().addBean("aBean", bean);
+        execContext.getBeanContext().addBean("aBean", bean, null);
         bean.put("a", "goodbye");        
         
         smooks.filterSource(execContext, new StreamSource(new StringReader("<a/>")), null);

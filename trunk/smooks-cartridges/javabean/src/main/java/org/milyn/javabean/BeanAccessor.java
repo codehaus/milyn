@@ -141,7 +141,7 @@ public class BeanAccessor {
 
 		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
 
-		executionContext.getBeanContext().addBean(beanIdObj, bean);
+		executionContext.getBeanContext().addBean(beanIdObj, bean, null);
 
     }
 
@@ -163,12 +163,12 @@ public class BeanAccessor {
 
 		BeanId beanIdObj = getBeanId(executionContext.getContext().getBeanIdStore(), beanId);
 
-		executionContext.getBeanContext().changeBean(beanIdObj, bean);
+		executionContext.getBeanContext().changeBean(beanIdObj, bean, null);
     }
 
 	/**
+	 * @param beanIdStore
 	 * @param beanId
-	 * @param beanIdRegister
 	 */
 	private static BeanId getBeanId(BeanIdStore beanIdStore, String beanId) {
 		warnUsingDeprecatedMethod();

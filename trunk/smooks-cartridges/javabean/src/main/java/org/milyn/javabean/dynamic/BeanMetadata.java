@@ -16,6 +16,7 @@
 package org.milyn.javabean.dynamic;
 
 import org.milyn.assertion.AssertArgument;
+import org.milyn.javabean.dynamic.serialize.BeanWriter;
 
 /**
  * Bean metadata.
@@ -28,8 +29,10 @@ public class BeanMetadata {
 	
 	private Object bean;
 	private String namespace;
+    private String namespacePrefix;
+    private BeanWriter writer;
 
-	public BeanMetadata(Object bean) {
+    public BeanMetadata(Object bean) {
 		AssertArgument.isNotNull(bean, "bean");
 		this.bean = bean;
 	}
@@ -46,4 +49,22 @@ public class BeanMetadata {
 	public String getNamespace() {
 		return namespace;
 	}
+
+    public String getNamespacePrefix() {
+        return namespacePrefix;
+    }
+
+    public BeanMetadata setNamespacePrefix(String namespacePrefix) {
+        this.namespacePrefix = namespacePrefix;
+        return this;
+    }
+
+    public BeanWriter getWriter() {
+        return writer;
+    }
+
+    public BeanMetadata setWriter(BeanWriter writer) {
+        this.writer = writer;
+        return this;
+    }
 }

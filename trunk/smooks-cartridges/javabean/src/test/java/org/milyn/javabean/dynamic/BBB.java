@@ -15,35 +15,29 @@
 */
 package org.milyn.javabean.dynamic;
 
+import org.milyn.javabean.dynamic.serialize.DefaultNamespace;
+
+import java.util.List;
+
+@DefaultNamespace(uri = "http://www.acme.com/xsd/bbb.xsd", prefix = "bbb")
 public class BBB {
 
-	private AAA aaa;
+	private List<AAA> aaas;
 	private float floatProperty;
-	
-	/**
-	 * @return the aaa
-	 */
-	public AAA getAaa() {
-		return aaa;
-	}
-	/**
-	 * @param aaa the aaa to set
-	 */
-	public void setAaa(AAA aaa) {
-		this.aaa = aaa;
-	}
-	/**
-	 * @return the floatProperty
-	 */
-	public float getFloatProperty() {
-		return floatProperty;
-	}
-	/**
-	 * @param floatProperty the floatProperty to set
-	 */
-	public void setFloatProperty(float floatProperty) {
-		this.floatProperty = floatProperty;
-	}
-	
-	
+
+    public List<AAA> getAaas() {
+        return aaas;
+    }
+
+    public void setAaas(List<AAA> aaas) {
+        this.aaas = aaas;
+    }
+
+    public float getFloatProperty() {
+        return floatProperty;
+    }
+
+    public void setFloatProperty(float floatProperty) {
+        this.floatProperty = floatProperty;
+    }
 }

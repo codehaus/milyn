@@ -12,6 +12,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import org.milyn.io.StreamUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -549,43 +550,39 @@ public class XmlUtilTest extends TestCase {
 		assertEquals("zval", XmlUtil.getString(doc, "/x/z/text()"));
 		assertEquals("y", XmlUtil.getString(doc, "/x/*[1]/name()"));
 		assertEquals("z", XmlUtil.getString(doc, "/x/*[2]/name()"));
-		assertEquals("<x><y attrib=\"attribval\"/><z>zval</z></x>", XmlUtil
-				.getString(doc, "/x"));
+		assertEquals("<x><y attrib=\"attribval\"/><z>zval</z></x>", XmlUtil.getString(doc, "/x"));
 	}
 
-	/**
-	 * Main method needed to make a self runnable class
-	 * 
-	 * @param args
-	 *            This is required for main method
-	 */
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(new TestSuite(XmlUtilTest.class));
-	}
+    public void test_indent_01() throws IOException {
+        test_indent("xml1.xml");
+    }
+
+    public void test_indent_02() throws IOException {
+        test_indent("xml2.xml");
+    }
+
+    public void test_indent_03() throws IOException {
+        test_indent("xml3.xml");
+    }
+
+    public void test_indent_04() throws IOException {
+        test_indent("xml4.xml");
+    }
+
+    public void test_indent_05() throws IOException {
+        test_indent("xml5.xml");
+    }
+
+    public void test_indent_06() throws IOException {
+        test_indent("xml6.xml");
+    }
+
+    public void test_indent(String inXml) throws IOException {
+        String xmlString = StreamUtils.readStreamAsString(getClass().getResourceAsStream(inXml));
+        String indentedXML = XmlUtil.indent(xmlString, 4);
+
+        String indentedXmlExpected = StreamUtils.readStreamAsString(getClass().getResourceAsStream(inXml + ".outexpected"));
+
+        assertEquals(StreamUtils.normalizeLines(indentedXmlExpected, false), StreamUtils.normalizeLines(indentedXML, false));
+    }
 }
-
-//
-// The following code is a static inner class which will provide access to
-// all the methods of the target test class XmlUtil. To use
-// this class simply copy it into XmlUtil and construct instances of the
-// UnitTest using its constructors - these are copies of the constructors in
-// XmlUtil.
-// In sumation, construct and use XmlUtil.UnitTest in your unit test in the same
-// way as you'd expect to use
-// XmlUtil.
-//
-/*
- * public static class UnitTest { XmlUtil testTargetInst = null;
- * 
- * public UnitTest() { testTargetInst = new XmlUtil(); }
- * 
- * public UnitTest(XmlUtil testTarget) { setTestTarget(testTarget); }
- * 
- * public void setTestTarget(XmlUtil testTarget) { testTargetInst = testTarget; }
- * 
- * //----------------------------------------------------------------------
- * 
- * public static void removeEntities (java.io.Reader param0,java.io.Writer
- * param1) throws java.io.IOException { XmlUtil.removeEntities( param0, param1); } }
- */
-

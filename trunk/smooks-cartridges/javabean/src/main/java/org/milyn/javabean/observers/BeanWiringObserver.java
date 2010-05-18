@@ -84,7 +84,7 @@ public class BeanWiringObserver implements BeanContextLifecycleObserver {
 			// Need to remove the watched bean from the bean context too because it's lifecycle is associated 
 			// with the lifecycle of the watching bean, which has been removed...
 			if(watchedBeanId != null) {
-				beanContext.removeBean(watchedBeanId);
+				beanContext.removeBean(watchedBeanId, event.getSource());
 			}
 		}
 	}

@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.persistence.NonUniqueResultException;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
 import org.milyn.SmooksException;
@@ -34,6 +35,7 @@ import org.milyn.delivery.dom.DOMElementVisitor;
 import org.milyn.delivery.ordering.Consumer;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.event.report.annotation.VisitAfterReport;
@@ -182,14 +184,14 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-		lookup(executionContext);
+		lookup(executionContext, SAXUtil.toQName(element));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-		lookup(executionContext);
+		lookup(executionContext, element.getName());
 	}
 
 	public void initParameterContainer(ExecutionContext executionContext) {
@@ -197,7 +199,7 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	}
 
 	@SuppressWarnings("unchecked")
-	public void lookup(ExecutionContext executionContext) {
+	public void lookup(ExecutionContext executionContext, QName source) {
 		final DaoRegister emr = PersistenceUtil.getDAORegister(executionContext);
 
 		Object dao = null;
@@ -265,9 +267,9 @@ public class EntityLocator implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 			BeanContext beanContext = executionContext.getBeanContext();
 
 			if(result == null) {
-				beanContext.removeBean(beanId);
+				beanContext.removeBean(beanId, source);
 			} else {
-				beanContext.addBean(beanId, result);
+				beanContext.addBean(beanId, result, source);
 			}
 		} finally {
 			if(dao != null) {
