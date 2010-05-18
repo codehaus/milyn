@@ -65,6 +65,8 @@ public class SAXParser extends AbstractParser {
     }
 
     public void cleanup() {
-        saxHandler.cleanup();
+        if(saxHandler != null) {
+            saxHandler.cleanup();
+        }
     }
 }

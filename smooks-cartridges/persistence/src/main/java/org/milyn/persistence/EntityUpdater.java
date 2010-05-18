@@ -28,6 +28,7 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
@@ -152,19 +153,19 @@ public class EntityUpdater implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	}
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	update(executionContext, SAXUtil.toQName(element));
+    	update(executionContext, new Fragment(element));
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	update(executionContext, SAXUtil.toQName(element));
+    	update(executionContext, new Fragment(element));
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	update(executionContext, element.getName());
+    	update(executionContext, new Fragment(element));
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	update(executionContext, element.getName());
+    	update(executionContext, new Fragment(element));
     }
 
 	/**
@@ -173,7 +174,7 @@ public class EntityUpdater implements DOMElementVisitor, SAXVisitBefore, SAXVisi
      * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void update(final ExecutionContext executionContext, QName source) {
+	private void update(final ExecutionContext executionContext, Fragment source) {
 
 		if(logger.isDebugEnabled()) {
 			logger.debug("Updating bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'.");

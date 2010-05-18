@@ -18,6 +18,7 @@ package org.milyn.templating;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.assertion.AssertArgument;
@@ -278,7 +279,7 @@ public abstract class AbstractTemplateProcessor implements DOMElementVisitor, Pr
             } else if(action == Action.BIND_TO) {
             	String text = extractTextContent(node, executionContext);
 
-            	executionContext.getBeanContext().addBean(bindBeanId, text, SAXUtil.toQName(element));
+            	executionContext.getBeanContext().addBean(bindBeanId, text, new Fragment(element));
             } else if(action == Action.REPLACE) {
                 // Don't perform any "replace" actions here!
             }

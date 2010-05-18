@@ -28,6 +28,7 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
@@ -155,19 +156,19 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	}
 
     public void visitBefore(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	delete(executionContext, SAXUtil.toQName(element));
+    	delete(executionContext, new Fragment(element));
     }
 
     public void visitAfter(final Element element, final ExecutionContext executionContext) throws SmooksException {
-    	delete(executionContext, SAXUtil.toQName(element));
+    	delete(executionContext, new Fragment(element));
     }
 
     public void visitBefore(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	delete(executionContext, element.getName());
+    	delete(executionContext, new Fragment(element));
     }
 
     public void visitAfter(final SAXElement element, final ExecutionContext executionContext) throws SmooksException, IOException {
-    	delete(executionContext, element.getName());
+    	delete(executionContext, new Fragment(element));
     }
 
 	/**
@@ -176,7 +177,7 @@ public class EntityDeleter implements DOMElementVisitor, SAXVisitBefore, SAXVisi
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void delete(final ExecutionContext executionContext, final QName source) {
+	private void delete(final ExecutionContext executionContext, final Fragment source) {
 
 		if(logger.isDebugEnabled()) {
 			logger.debug("Deleting bean under BeanId '" + beanIdName + "' with DAO '" + daoName + "'");

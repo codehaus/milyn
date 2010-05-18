@@ -2,6 +2,7 @@ package org.milyn.javabean.context;
 
 import java.util.Map;
 
+import org.milyn.delivery.Fragment;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
@@ -35,11 +36,11 @@ public interface BeanContext {
 	/**
 	 * Add a bean instance under the specified {@link BeanId}.
 	 *
-	 * @param beanId The {@link BeanId} under which the bean is to be stored.
-	 * @param bean The bean instance to be stored.
+	 * @param beanId The {@link org.milyn.javabean.repository.BeanId} under which the bean is to be stored.
+     * @param bean The bean instance to be stored.
      * @param source Source fragment.
-	 */
-	public abstract void addBean(BeanId beanId, Object bean, QName source);
+     */
+	public abstract void addBean(BeanId beanId, Object bean, Fragment source);
 
 	/**
 	 * Add a bean instance under the specified beanId.
@@ -48,10 +49,10 @@ public interface BeanContext {
 	 * for the beanId String and then use the {@link #addBean(BeanId, Object)} method.
 	 *
 	 * @param beanId The beanId under which the bean is to be stored.
-	 * @param bean The bean instance to be stored.
+     * @param bean The bean instance to be stored.
      * @param source Source fragment.
-	 */
-	public abstract void addBean(String beanId, Object bean, QName source);
+     */
+	public abstract void addBean(String beanId, Object bean, Fragment source);
 
 	/**
 	 * Get the {@link BeanId} instance for the specified beanId String.
@@ -103,27 +104,27 @@ public interface BeanContext {
 	 * is that the bean must exist, the associated beans aren't removed and the observers of the
 	 * {@link BeanLifecycle#CHANGE} event are notified.
 	 *
-	 * @param beanId The {@link BeanId} under which the bean instance is to be stored.
-	 * @param bean The bean instance to be stored.
+	 * @param beanId The {@link org.milyn.javabean.repository.BeanId} under which the bean instance is to be stored.
+     * @param bean The bean instance to be stored.
      * @param source Source fragment.
-	 */
-	public abstract void changeBean(BeanId beanId, Object bean, QName source);
+     */
+	public abstract void changeBean(BeanId beanId, Object bean, Fragment source);
 
 	/**
 	 * Removes a bean and all its associated lifecycle beans from the bean map
 	 *
 	 * @param beanId The beanId to remove the beans from.
      * @param source Source fragment.
-	 */
-	public abstract Object removeBean(BeanId beanId, QName source);
+     */
+	public abstract Object removeBean(BeanId beanId, Fragment source);
 
 	/**
 	 * Removes a bean and all its associated lifecycle beans from the bean map
 	 *
 	 * @param beanId The beanId to remove the beans from.
      * @param source Source fragment.
-	 */
-	public abstract Object removeBean(String beanId, QName source);
+     */
+	public abstract Object removeBean(String beanId, Fragment source);
 
 	/**
 	 * Removes all the beans from the bean map

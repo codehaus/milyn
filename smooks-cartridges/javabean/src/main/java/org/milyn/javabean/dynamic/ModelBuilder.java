@@ -16,46 +16,28 @@
 package org.milyn.javabean.dynamic;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.*;
-import java.util.Map.Entry;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.FilterSettings;
-import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
-import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.SmooksResourceConfigurationList;
-import org.milyn.cdr.XMLConfigDigester;
 import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.dom.DOMVisitBefore;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.javabean.dynamic.ext.BeanWriterFactory;
-import org.milyn.javabean.dynamic.resolvers.DefaultBindingConfigResolver;
-import org.milyn.javabean.dynamic.resolvers.DefaultSchemaResolver;
 import org.milyn.javabean.dynamic.serialize.BeanWriter;
+import org.milyn.javabean.dynamic.visitor.NamespaceReaper;
+import org.milyn.javabean.dynamic.visitor.UnknownElementDataReaper;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleObserver;
 import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.payload.JavaResult;
-import org.milyn.util.ClassUtil;
 import org.w3c.dom.*;
-import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -93,28 +75,25 @@ public class ModelBuilder {
 
     private Descriptor descriptor;
 	private boolean validate = true;
-	private boolean parseCalled = false;
 
-    public ModelBuilder(String descriptorPath) throws SAXException, IOException {
+    public ModelBuilder(String descriptorPath, boolean validate) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
 
         descriptor = new Descriptor(descriptorPath);
-        descriptor.getSmooks().addVisitor(new NamespaceReaper());
+        this.validate = validate;
+
+        configure();
 	}
 
-	public ModelBuilder(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+	public ModelBuilder(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver, boolean validate) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
 		AssertArgument.isNotNull(schemaResolver, "schemaResolver");
 		AssertArgument.isNotNull(bindingResolver, "bindingResolver");
 
         descriptor = new Descriptor(descriptorPath, schemaResolver, bindingResolver);
-        descriptor.getSmooks().addVisitor(new NamespaceReaper());
-	}
-	
-	public ModelBuilder validate(boolean validate) {
-		this.validate = validate;
-		configureFilterSettings();
-		return this;
+        this.validate = validate;
+
+        configure();
 	}
 	
 	public boolean isValidating() {
@@ -147,9 +126,6 @@ public class ModelBuilder {
         Map<Class<?>, Map<String, BeanWriter>> beanWriters = descriptor.getBeanWriters();
 		BeanTracker beanTracker = new BeanTracker(beanWriters);
 
-		// Mark the builder as being in use!!
-		parseCalled = true;
-		
 		executionContext.getBeanContext().addObserver(beanTracker);
 		
 		if(validate) {
@@ -198,20 +174,18 @@ public class ModelBuilder {
 		}
 	}
 
-	private void configureFilterSettings() {
-		assertParseNotCalled();
-		
+	private void configure() {
+        descriptor.getSmooks().addVisitor(new NamespaceReaper());
+        descriptor.getSmooks().addVisitor(new UnknownElementDataReaper(), "*");
+
 		if(validate) {
-			descriptor.getSmooks().setFilterSettings(FilterSettings.DEFAULT_DOM);
+			descriptor.getSmooks().setFilterSettings(FilterSettings.newDOMSettings());
 		} else {
-			descriptor.getSmooks().setFilterSettings(FilterSettings.DEFAULT_SAX);
+			descriptor.getSmooks().setFilterSettings(FilterSettings.newSAXSettings());
 		}
-	}
-	
-	private void assertParseNotCalled() {
-		if(parseCalled) {
-			throw new IllegalStateException("Invalid operation.  The 'parse' method has been invoked at least once.");
-		}		
+
+        // Create the execution context so as to force resolution of the config...
+        descriptor.getSmooks().createExecutionContext();
 	}
 
     private class BeanTracker implements BeanContextLifecycleObserver {
@@ -248,58 +222,4 @@ public class ModelBuilder {
 			}
 		}		
 	}
-
-    private static class NamespaceReaper implements SAXVisitBefore, DOMVisitBefore {
-
-        public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-            Map<String, String> namespacePrefixMappings = getNamespacePrefixMappings(executionContext);
-            Attributes attributes = element.getAttributes();
-            int attributeCount = attributes.getLength();
-
-            for(int i = 0; i < attributeCount; i++) {
-                String attrNs = attributes.getURI(i);
-
-                if(XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attrNs)) {
-                    String uri = attributes.getValue(i);
-                    String prefix = attributes.getLocalName(i);
-
-                    addMapping(namespacePrefixMappings, uri, prefix);
-                }
-            }
-        }
-
-        public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-            Map<String, String> namespacePrefixMappings = getNamespacePrefixMappings(executionContext);
-            NamedNodeMap attributes = element.getAttributes();
-            int attributeCount = attributes.getLength();
-
-            for(int i = 0; i < attributeCount; i++) {
-                Attr attr = (Attr) attributes.item(i);
-
-                if(XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attr.getNamespaceURI())) {
-                    String uri = attr.getValue();
-                    String prefix = attr.getLocalName();
-
-                    addMapping(namespacePrefixMappings, uri, prefix);
-                }
-            }
-        }
-
-        private void addMapping(Map<String, String> namespacePrefixMappings, String uri, String prefix) {
-            if(uri != null && prefix != null && !namespacePrefixMappings.containsKey(uri)) {
-                namespacePrefixMappings.put(uri, prefix);
-            }
-        }
-
-        public static Map<String, String> getNamespacePrefixMappings(ExecutionContext executionContext) {
-            Map<String, String> namespacePrefixMappings = (Map<String, String>) executionContext.getAttribute(NamespaceReaper.class);
-
-            if(namespacePrefixMappings == null) {
-                namespacePrefixMappings = new LinkedHashMap<String, String>();
-                executionContext.setAttribute(NamespaceReaper.class, namespacePrefixMappings);
-            }
-
-            return namespacePrefixMappings;
-        }
-    }
 }

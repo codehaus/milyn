@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.javabean.ext.BeanConfigUtil;
 import org.milyn.util.CollectionsUtil;
@@ -197,11 +198,11 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        createAndSetBean(executionContext, SAXUtil.toQName(element));
+        createAndSetBean(executionContext, new Fragment(element));
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        createAndSetBean(executionContext, element.getName());
+        createAndSetBean(executionContext, new Fragment(element));
     }
 
 
@@ -209,17 +210,17 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	 * @see org.milyn.delivery.dom.DOMVisitAfter#visitAfter(org.w3c.dom.Element, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-		visitAfter(executionContext, SAXUtil.toQName(element));
+		visitAfter(executionContext, new Fragment(element));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.milyn.delivery.sax.SAXVisitAfter#visitAfter(org.milyn.delivery.sax.SAXElement, org.milyn.container.ExecutionContext)
 	 */
 	public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-		visitAfter(executionContext, element.getName());
+		visitAfter(executionContext, new Fragment(element));
 	}
 
-	public void visitAfter(ExecutionContext executionContext, QName source) {
+	public void visitAfter(ExecutionContext executionContext, Fragment source) {
         Classification thisBeanType = beanRuntimeInfo.getClassification();
         boolean isBeanTypeArray = (thisBeanType == Classification.ARRAY_COLLECTION);
 
@@ -237,7 +238,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
 	}
 
 
-    private Object convert(ExecutionContext executionContext, Object bean, QName source) {
+    private Object convert(ExecutionContext executionContext, Object bean, Fragment source) {
 
         bean = BeanUtils.convertListToArray((List<?>)bean, beanRuntimeInfo.getArrayType());
 
@@ -246,7 +247,7 @@ public class BeanInstanceCreator implements DOMElementVisitor, SAXVisitBefore, S
     	return bean;
     }
 
-	private void createAndSetBean(ExecutionContext executionContext, QName source) {
+	private void createAndSetBean(ExecutionContext executionContext, Fragment source) {
         Object bean;
         BeanContext beanContext = executionContext.getBeanContext();
 

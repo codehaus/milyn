@@ -38,7 +38,7 @@ public class ModelBuilderTest extends TestCase {
 	public static final String NS_DESCRIPTOR = "META-INF/services/org/smooks/javabean/dynamic/ns-descriptors.properties";
 	
 	public void test_1_schema() throws SAXException, IOException {
-		ModelBuilder builder = new ModelBuilder(NS_DESCRIPTOR);
+		ModelBuilder builder = new ModelBuilder(NS_DESCRIPTOR, true);
 		
 		Model<AAA> model = builder.readModel(getClass().getResourceAsStream("aaa-message.xml"), AAA.class);
 		AAA aaa = model.getModelRoot();
@@ -50,11 +50,11 @@ public class ModelBuilderTest extends TestCase {
 	}
 
 	public void test_2_schema_with_validation() throws SAXException, IOException {
-		test_2_schema(new ModelBuilder(NS_DESCRIPTOR).validate(true));
+		test_2_schema(new ModelBuilder(NS_DESCRIPTOR, true));
 	}
 
 	public void test_2_schema_without_validation() throws SAXException, IOException {
-		test_2_schema(new ModelBuilder(NS_DESCRIPTOR).validate(false));
+		test_2_schema(new ModelBuilder(NS_DESCRIPTOR, false));
 	}
 
 	private void test_2_schema(ModelBuilder builder) throws SAXException, IOException {
@@ -80,26 +80,8 @@ public class ModelBuilderTest extends TestCase {
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("bbb-message.xml")), new StringReader(writer.toString()));       
 	}
 
-	public void test_error_on_post_parse_config_change() throws SAXException, IOException {
-		ModelBuilder builder = new ModelBuilder(NS_DESCRIPTOR);
-		
-		// Should be ok to modify the builder config before we do the first parse...
-		builder.validate(false);
-		builder.validate(true);
-		
-		builder.readModel(getClass().getResourceAsStream("bbb-message.xml"), JavaResult.class);
-		
-		// An attempt to modify the builder config should now result in an error because we have called parse...
-		try {
-			builder.validate(false);
-			fail("Expected IllegalStateException");
-		} catch (IllegalStateException e) {
-			assertEquals("Invalid operation.  The 'parse' method has been invoked at least once.", e.getMessage());
-		}
-	}
-
     public void test_build_model() throws IOException, SAXException {
-        ModelBuilder builder = new ModelBuilder(NS_DESCRIPTOR);
+        ModelBuilder builder = new ModelBuilder(NS_DESCRIPTOR, false);
         BBB bbb = new BBB();
         List<AAA> aaas = new ArrayList<AAA>();
         Model<BBB> model = new Model<BBB>(bbb, builder);

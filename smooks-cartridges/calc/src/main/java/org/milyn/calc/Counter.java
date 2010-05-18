@@ -23,6 +23,7 @@ import org.milyn.cdr.annotation.ConfigParam;
 import org.milyn.cdr.annotation.ConfigParam.Use;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.VisitAfterIf;
 import org.milyn.delivery.annotation.VisitBeforeIf;
@@ -138,28 +139,28 @@ public class Counter implements SAXVisitBefore, SAXVisitAfter, DOMVisitBefore, D
 			ExecutionContext executionContext) throws SmooksException,
 			IOException {
 
-		count(executionContext, element.getName());
+		count(executionContext, new Fragment(element));
 	}
 
 	public void visitAfter(SAXElement element, ExecutionContext executionContext)
 		throws SmooksException, IOException {
 
-		count(executionContext, element.getName());
+		count(executionContext, new Fragment(element));
 	}
 
 	public void visitBefore(Element element, ExecutionContext executionContext)
 		throws SmooksException {
 
-		count(executionContext, SAXUtil.toQName(element));
+		count(executionContext, new Fragment(element));
 	}
 
 	public void visitAfter(Element element, ExecutionContext executionContext)
 		throws SmooksException {
 
-		count(executionContext, SAXUtil.toQName(element));
+		count(executionContext, new Fragment(element));
 	}
 
-	public void count(ExecutionContext executionContext, QName source) {
+	public void count(ExecutionContext executionContext, Fragment source) {
 		BeanContext beanContext = executionContext.getBeanContext();
 
 		Long value = (Long) beanContext.getBean(beanId);

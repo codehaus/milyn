@@ -17,6 +17,7 @@ package org.milyn.routing.db;
 
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -166,24 +167,24 @@ public class SQLExecutor implements SmooksResourceConfigurationFactory, SAXVisit
     }
 
     public void visitBefore(SAXElement saxElement, ExecutionContext executionContext) throws SmooksException, IOException {
-            executeSQL(executionContext, saxElement.getName());
+            executeSQL(executionContext, new Fragment(saxElement));
         }
 
     public void visitAfter(SAXElement saxElement, ExecutionContext executionContext) throws SmooksException, IOException {
-            executeSQL(executionContext, saxElement.getName());
+            executeSQL(executionContext, new Fragment(saxElement));
         }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-            executeSQL(executionContext, SAXUtil.toQName(element));
+            executeSQL(executionContext, new Fragment(element));
         }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-            executeSQL(executionContext, SAXUtil.toQName(element));
+            executeSQL(executionContext, new Fragment(element));
         }
 
 
 
-	private void executeSQL(ExecutionContext executionContext, QName source) throws SmooksException {
+	private void executeSQL(ExecutionContext executionContext, Fragment source) throws SmooksException {
         Connection connection = AbstractDataSource.getConnection(datasource, executionContext);
         BeanContext beanContext = executionContext.getBeanContext();
 

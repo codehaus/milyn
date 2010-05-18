@@ -15,15 +15,10 @@
 */
 package org.milyn.routing.basic;
 
+import org.milyn.delivery.Fragment;
 import org.milyn.delivery.dom.DOMVisitAfter;
 import org.milyn.delivery.ordering.Producer;
-import org.milyn.delivery.sax.DynamicSAXElementVisitorList;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.delivery.sax.SAXVisitAfter;
-import org.milyn.delivery.sax.SAXVisitBefore;
-import org.milyn.delivery.sax.SAXElementWriterUtil;
+import org.milyn.delivery.sax.*;
 import org.milyn.javabean.repository.BeanRepository;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.xml.XmlUtil;
@@ -122,7 +117,7 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
     	SAXSerializer serializer = fragmentSerializers.get(bindTo);
 
     	try {
-    		BeanRepository.getInstance(executionContext).addBean(bindTo, serializer.fragmentWriter.toString().trim());
+    		executionContext.getBeanContext().addBean(bindTo, serializer.fragmentWriter.toString().trim(), new Fragment(saxElement));
     	} finally {
             DynamicSAXElementVisitorList.removeDynamicVisitor(serializer, executionContext);
     	}
@@ -140,8 +135,8 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
         if(!omitXMLDeclaration) {
         	serializedFragment = "<?xml version=\"1.0\"?>\n" + serializedFragment;
         }
-        
-		BeanRepository.getInstance(executionContext).addBean(bindTo, serializedFragment);
+
+        executionContext.getBeanContext().addBean(bindTo, serializedFragment, new Fragment(element));
 	}
 	
 	private class SAXSerializer implements SAXElementVisitor {
@@ -227,7 +222,7 @@ public class FragmentSerializer implements SAXVisitBefore, SAXVisitAfter, DOMVis
 				// Already declared (earlier)...
 				return;
 			} else {
-				String prefixNS = element.getAttribute(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix);
+				String prefixNS = element.getAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, prefix);
 				if(prefixNS != null && prefixNS.length() != 0) {
 					// Already declared (on the element)...
 					return;
