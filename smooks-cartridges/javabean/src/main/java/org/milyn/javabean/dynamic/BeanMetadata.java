@@ -16,7 +16,11 @@
 package org.milyn.javabean.dynamic;
 
 import org.milyn.assertion.AssertArgument;
+import org.milyn.delivery.Fragment;
 import org.milyn.javabean.dynamic.serialize.BeanWriter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Bean metadata.
@@ -30,6 +34,9 @@ public class BeanMetadata {
 	private Object bean;
 	private String namespace;
     private String namespacePrefix;
+    private Fragment createSource;
+    private List<Fragment> populateSources = new ArrayList<Fragment>();
+    private String preText;
     private BeanWriter writer;
 
     public BeanMetadata(Object bean) {
@@ -59,6 +66,14 @@ public class BeanMetadata {
         return this;
     }
 
+    public String getPreText() {
+        return preText;
+    }
+
+    public void setPreText(String preText) {
+        this.preText = preText;
+    }
+
     public BeanWriter getWriter() {
         return writer;
     }
@@ -66,5 +81,17 @@ public class BeanMetadata {
     public BeanMetadata setWriter(BeanWriter writer) {
         this.writer = writer;
         return this;
+    }
+
+    public void setCreateSource(Fragment createSource) {
+        this.createSource = createSource;
+    }
+
+    public Fragment getCreateSource() {
+        return createSource;
+    }
+
+    public List<Fragment> getPopulateSources() {
+        return populateSources;
     }
 }

@@ -22,6 +22,7 @@ package org.milyn.javabean.lifecycle;
 public enum BeanLifecycle {
 	
 	BEGIN,
+    POPULATE,
 	CHANGE,
-	END;	
+	END;
 }

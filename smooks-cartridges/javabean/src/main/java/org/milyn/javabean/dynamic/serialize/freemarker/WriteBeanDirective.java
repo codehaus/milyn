@@ -21,6 +21,8 @@ import freemarker.ext.beans.BeanModel;
 import freemarker.template.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.milyn.javabean.dynamic.BeanMetadata;
+import org.milyn.javabean.dynamic.BeanRegistrationException;
 import org.milyn.javabean.dynamic.Model;
 import org.milyn.javabean.dynamic.serialize.BeanWriter;
 import org.milyn.xml.XmlUtil;
@@ -69,7 +71,17 @@ public class WriteBeanDirective implements TemplateDirectiveModel {
             Object bean = ((BeanModel)beanTemplateModel).getWrappedObject();
             BeanModel modelBeanModel = (BeanModel) environment.getDataModel().get(FreeMarkerBeanWriter.MODEL_CTX_KEY);
             Model model = (Model) modelBeanModel.getWrappedObject();
-            BeanWriter beanWriter = model.getBeanWriter(bean);
+            BeanMetadata beanMetadata = model.getBeanMetadata(bean);
+
+            if(beanMetadata == null) {
+                BeanRegistrationException.throwUnregisteredBeanInstanceException(bean);
+            }
+
+            BeanWriter beanWriter = beanMetadata.getWriter();
+
+            if(beanMetadata.getPreText() != null) {
+                environment.getOut().write(beanMetadata.getPreText());
+            }
 
             if(indent > 0) {
                 StringWriter beanWriteBuffer = new StringWriter();
