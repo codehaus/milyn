@@ -27,9 +27,13 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.FilterSettings;
+import org.milyn.Smooks;
 import org.milyn.SmooksException;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.Fragment;
+import org.milyn.javabean.BeanInstancePopulator;
 import org.milyn.javabean.dynamic.serialize.BeanWriter;
 import org.milyn.javabean.dynamic.visitor.NamespaceReaper;
 import org.milyn.javabean.dynamic.visitor.UnknownElementDataReaper;
@@ -175,17 +179,16 @@ public class ModelBuilder {
 	}
 
 	private void configure() {
-        descriptor.getSmooks().addVisitor(new NamespaceReaper());
-        descriptor.getSmooks().addVisitor(new UnknownElementDataReaper(), "*");
+        Smooks smooks = descriptor.getSmooks();
 
-		if(validate) {
-			descriptor.getSmooks().setFilterSettings(FilterSettings.newDOMSettings());
-		} else {
-			descriptor.getSmooks().setFilterSettings(FilterSettings.newSAXSettings());
-		}
+        smooks.addVisitor(new NamespaceReaper());
+        //descriptor.getSmooks().addVisitor(new UnknownElementDataReaper(), "*");
+
+        smooks.setFilterSettings(FilterSettings.newDOMSettings());
+        ParameterAccessor.setParameter(BeanInstancePopulator.NOTIFY_POPULATE, "true", smooks);        
 
         // Create the execution context so as to force resolution of the config...
-        descriptor.getSmooks().createExecutionContext();
+        smooks.createExecutionContext();
 	}
 
     private class BeanTracker implements BeanContextLifecycleObserver {
@@ -202,24 +205,48 @@ public class ModelBuilder {
                 Object bean = event.getBean();
                 BeanMetadata beanMetadata = new BeanMetadata(bean);
                 Map<String, BeanWriter> beanWriters = beanWriterMap.get(bean.getClass());
+                Fragment source = event.getSource();
+                String namespaceURI = source.getNamespaceURI();
+
+                beanMetadata.setNamespace(namespaceURI);
+                beanMetadata.setNamespacePrefix(source.getPrefix());
+                beanMetadata.setCreateSource(source);
+                beans.add(beanMetadata);
+
+                if(source.isDOMElement()) {
+                    beanMetadata.setPreText(UnknownElementDataReaper.getPreText(source.getDOMElement(), beans, event));
+                } else {
+                    // SAX pretext is gathered by an instance of the UnknownElementDataReaper
+                }
 
                 if(beanWriters != null) {
-                    String namespaceURI = event.getSource().getNamespaceURI();
                     BeanWriter beanWriter = beanWriters.get(namespaceURI);
 
                     if(beanWriter != null) {
-                        beanMetadata.setNamespace(namespaceURI);
-                        beanMetadata.setNamespacePrefix(event.getSource().getPrefix());
                         beanMetadata.setWriter(beanWriter);
-
-                        beans.add(beanMetadata);
                     } else if(logger.isDebugEnabled()) {
                         logger.debug("BeanWriters are configured for Object type '" + bean.getClass() + "', but not for namespace '" + namespaceURI + "'.");
                     }
                 } else if(logger.isDebugEnabled()) {
                     logger.debug("No BeanWriters configured for Object type '" + bean.getClass() + "'.");
                 }
-			}
-		}		
-	}
+            } else if(event.getLifecycle() == BeanLifecycle.POPULATE) {
+                BeanMetadata beanMetdata = findMetadata(event.getBean());
+
+                beanMetdata.getPopulateSources().add(event.getSource());
+            }
+		}
+
+        private BeanMetadata findMetadata(Object bean) {
+            for(BeanMetadata metaData : beans) {
+                if(metaData.getBean() == bean) {
+                    return metaData;
+                }
+            }
+
+            BeanRegistrationException.throwUnregisteredBeanInstanceException(bean);
+
+            return null; // Satisfy compiler
+        }
+    }
 }

@@ -18,6 +18,9 @@ package org.milyn.javabean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.SmooksException;
+import org.milyn.delivery.Fragment;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.milyn.javabean.lifecycle.BeanLifecycle;
 import org.milyn.util.CollectionsUtil;
 import org.milyn.util.ClassUtil;
 import org.milyn.cdr.SmooksConfigurationException;
@@ -76,6 +79,8 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     public static final String VALUE_ATTRIBUTE_NAME = "valueAttributeName";
     public static final String VALUE_ATTRIBUTE_PREFIX = "valueAttributePrefix";
 
+    public static final String NOTIFY_POPULATE = "org.milyn.javabean.notify.populate";
+
     private String id;
 
     @ConfigParam(name="beanId")
@@ -113,6 +118,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
 
     @ConfigParam(name="default", defaultVal = AnnotationConstants.NULL_STRING)
     private String defaultVal;
+
+    @ConfigParam(name= NOTIFY_POPULATE, defaultVal = "false")
+    private boolean notifyPopulate;
 
     @AppContext
     private ApplicationContext appContext;
@@ -291,7 +299,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     	checkBeanExists(executionContext);
 
     	if(isBeanWiring) {
-        	bindBeanValue(executionContext);
+        	bindBeanValue(executionContext, new Fragment(element));
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindDomDataValue(element, executionContext);
@@ -310,7 +318,7 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     	checkBeanExists(executionContext);
 
         if(isBeanWiring) {
-        	bindBeanValue(executionContext);
+        	bindBeanValue(executionContext, new Fragment(element));
         } else if(isAttribute) {
             // Bind attribute (i.e. selectors with '@' prefix) values on the visitBefore...
             bindSaxDataValue(element, executionContext);
@@ -361,9 +369,9 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         }
 
         if(expressionEvaluator != null) {
-            bindExpressionValue(propertyName, dataString, executionContext);
+            bindExpressionValue(propertyName, dataString, executionContext, new Fragment(element));
         } else {
-        	decodeAndSetPropertyValue(propertyName, dataString, executionContext);
+        	decodeAndSetPropertyValue(propertyName, dataString, executionContext, new Fragment(element));
         }
     }
 
@@ -395,13 +403,13 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         }
 
         if(expressionEvaluator != null) {
-            bindExpressionValue(propertyName, dataString, executionContext);
+            bindExpressionValue(propertyName, dataString, executionContext, new Fragment(element));
         } else {
-            decodeAndSetPropertyValue(propertyName, dataString, executionContext);
+            decodeAndSetPropertyValue(propertyName, dataString, executionContext, new Fragment(element));
         }
     }
 
-    private void bindBeanValue(final ExecutionContext executionContext) {
+    private void bindBeanValue(final ExecutionContext executionContext, Fragment source) {
     	final BeanContext beanContext = executionContext.getBeanContext();
     	Object bean = null;
     	
@@ -424,11 +432,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             // Register the observer which looks for the creation of the selected bean via its beanIdName...
             beanContext.addObserver(wireByBeanIdObserver);
         } else {
-            populateAndSetPropertyValue(bean, beanContext, wireBeanId, executionContext);
+            populateAndSetPropertyValue(bean, beanContext, wireBeanId, executionContext, source);
         }
 	}
 
-    public void populateAndSetPropertyValue(Object bean, BeanContext beanContext, BeanId targetBeanId, final ExecutionContext executionContext) {
+    public void populateAndSetPropertyValue(Object bean, BeanContext beanContext, BeanId targetBeanId, final ExecutionContext executionContext, Fragment source) {
         BeanRuntimeInfo wiredBeanRI = getWiredBeanRuntimeInfo();
 
        // When this observer is triggered then we look if we got something we can set immediately or that we got an array collection.
@@ -443,11 +451,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
             // can then set this array
             beanContext.addObserver(listToArrayChangeObserver);
         } else {
-            setPropertyValue(property, bean, executionContext);
+            setPropertyValue(property, bean, executionContext, source);
         }
     }
 
-    private void bindExpressionValue(String mapPropertyName, String dataString, ExecutionContext executionContext) {
+    private void bindExpressionValue(String mapPropertyName, String dataString, ExecutionContext executionContext, Fragment source) {
         Map<String, Object> beanMap = executionContext.getBeanContext().getBeanMap();
 
         Map<String, Object> variables = new HashMap<String, Object>();
@@ -456,19 +464,20 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
         }
 
         Object dataObject = expressionEvaluator.exec(beanMap, variables);
-        decodeAndSetPropertyValue(mapPropertyName, dataObject, executionContext);
+        decodeAndSetPropertyValue(mapPropertyName, dataObject, executionContext, source);
     }
 
-	private void decodeAndSetPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
+	private void decodeAndSetPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext, Fragment source) {
         if(dataObject instanceof String) {
-            setPropertyValue(mapPropertyName, decodeDataString((String) dataObject, executionContext), executionContext);
+            setPropertyValue(mapPropertyName, decodeDataString((String) dataObject, executionContext), executionContext, source);
         } else {
-            setPropertyValue(mapPropertyName, dataObject, executionContext);
+            setPropertyValue(mapPropertyName, dataObject, executionContext, source);
         }
+
     }
 
     @SuppressWarnings("unchecked")
-	public void setPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext) {
+	public void setPropertyValue(String mapPropertyName, Object dataObject, ExecutionContext executionContext, Fragment source) {
     	if ( dataObject == null )
     	{
     		return;
@@ -499,6 +508,11 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
                 } else if(property != null) {
                     throw new SmooksConfigurationException("Bean [" + beanIdName + "] configuration invalid.  Bean setter method [" + ClassUtil.toSetterName(property) + "(" + dataObject.getClass().getName() + ")] not found on type [" + beanRuntimeInfo.getPopulateType().getName() + "].  You may need to set a 'decoder' on the binding config.");
                 }
+            }
+
+            if(notifyPopulate) {
+                BeanContextLifecycleEvent event = new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.POPULATE, beanId, bean);
+                executionContext.getBeanContext().notifyObservers(event);
             }
         } catch (IllegalAccessException e) {
             throw new SmooksConfigurationException("Error invoking bean setter method [" + ClassUtil.toSetterName(property) + "] on bean instance class type [" + bean.getClass() + "].", e);

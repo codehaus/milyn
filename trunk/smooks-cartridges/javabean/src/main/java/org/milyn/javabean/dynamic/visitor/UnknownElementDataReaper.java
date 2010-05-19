@@ -17,20 +17,16 @@
 package org.milyn.javabean.dynamic.visitor;
 
 import org.milyn.SmooksException;
-import org.milyn.cdr.ConfigSearch;
-import org.milyn.cdr.SmooksResourceConfiguration;
-import org.milyn.cdr.annotation.AppContext;
-import org.milyn.container.ApplicationContext;
-import org.milyn.container.ExecutionContext;
-import org.milyn.delivery.annotation.Initialize;
-import org.milyn.delivery.dom.DOMElementVisitor;
-import org.milyn.delivery.sax.SAXElement;
-import org.milyn.delivery.sax.SAXElementVisitor;
-import org.milyn.delivery.sax.SAXText;
-import org.milyn.javabean.BeanInstanceCreator;
-import org.w3c.dom.Element;
+import org.milyn.delivery.Fragment;
+import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
+import org.milyn.javabean.dynamic.BeanMetadata;
+import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
+import org.w3c.dom.*;
 
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,69 +37,104 @@ import java.util.List;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UnknownElementDataReaper implements SAXElementVisitor, DOMElementVisitor {
+public class UnknownElementDataReaper {
 
-    @AppContext
-    private ApplicationContext appContext;
-    
-    private List<SmooksResourceConfiguration> creatorConfigs;
+    public static String getPreText(Element element, List<BeanMetadata> beanMetadataSet, BeanContextLifecycleEvent event) {
+        StringWriter serializeWriter = new StringWriter();
+        List<Node> toSerializeNodes = new ArrayList<Node>();
+        Node current = element;
 
-    @Initialize
-    public void initialize() {
-        creatorConfigs = appContext.getStore().lookupResource(new ConfigSearch().resource(BeanInstanceCreator.class.getName()));
-    }
+        // Skip back through the siblings until we get an element that has an associated
+        // bean...
+        while(current != null) {
+            current = current.getPreviousSibling();
 
-    public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-        Element activeReaperElement = (Element) executionContext.getAttribute(UnknownElementDataReaper.class);
+            if(current == null) {
+                // This will result in all siblings back to the start
+                // of this sibling set...
+                break;
+            }
 
-        if(activeReaperElement == null && !isBeanCreatingFragment(element, executionContext)) {
-            executionContext.setAttribute(UnknownElementDataReaper.class, activeReaperElement);
+            if(current instanceof Element) {
+                if(isOnModelSourcePath(new Fragment((Element) current), beanMetadataSet)) {
+                    // The "previous" element is associated with the creation/population of a bean in the
+                    // model, so stop here...
+                    break;
+                }
+            }
+
+            toSerializeNodes.add(0, current);
         }
-    }
 
-    public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-        Element activeReaperElement = (Element) executionContext.getAttribute(UnknownElementDataReaper.class);
-
-        if(element == activeReaperElement) {
+        for(Node node : toSerializeNodes) {
             try {
-                
-            } finally {
-                executionContext.removeAttribute(UnknownElementDataReaper.class);
+                serialize(node, serializeWriter);
+            } catch (IOException e) {
+                throw new SmooksException("Unexpected pre-text node serialization exception.", e);
             }
         }
+
+        return serializeWriter.toString();
     }
 
-    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        if(!isBeanCreatingFragment(element, executionContext)) {
-        }
-    }
-
-    public void onChildText(SAXElement element, SAXText childText, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void onChildElement(SAXElement element, SAXElement childElement, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    }
-
-    private boolean isBeanCreatingFragment(Element element, ExecutionContext executionContext) {
-        for(SmooksResourceConfiguration creatorConfig : creatorConfigs) {
-            if(creatorConfig.isTargetedAtElement(element, executionContext)) {
+    private static boolean isOnModelSourcePath(Fragment fragment, List<BeanMetadata> beanMetadataSet) {
+        for(BeanMetadata beanMetadata : beanMetadataSet) {
+            if(fragment.equals(beanMetadata.getCreateSource())) {
                 return true;
             }
-        }
-        
-        return false;
-    }
 
-    private boolean isBeanCreatingFragment(SAXElement element, ExecutionContext executionContext) {
-        for(SmooksResourceConfiguration creatorConfig : creatorConfigs) {
-            if(creatorConfig.isTargetedAtElement(element, executionContext)) {
-                return true;
+            for(Fragment populateSource : beanMetadata.getPopulateSources()) {
+                if(fragment.isParentFragment(populateSource)) {
+                    return true;
+                }
             }
         }
 
         return false;
+    }
+
+    private static DefaultSerializationUnit serializationUnit;
+    static {
+        serializationUnit = new DefaultSerializationUnit();
+        serializationUnit.setCloseEmptyElements(true);
+        serializationUnit.setRewriteEntities(true); 
+    }
+    private static void serialize(Node node, Writer writer) throws IOException {
+        switch(node.getNodeType()) {
+            case Node.ELEMENT_NODE: {
+                Element element = (Element) node;
+                NodeList children = element.getChildNodes();
+                int childCount = children.getLength();
+
+                serializationUnit.writeElementStart(element, writer);
+
+                // Write the child nodes...
+                for(int i = 0; i < childCount; i++) {
+                    serialize(children.item(i), writer);
+                }
+
+                serializationUnit.writeElementEnd(element, writer);
+                break;
+            }
+            case Node.TEXT_NODE: {
+                serializationUnit.writeElementText((Text)node, writer, null);
+                break;
+            }
+            case Node.COMMENT_NODE: {
+                serializationUnit.writeElementComment((Comment)node, writer, null);
+                break;
+            }
+            case Node.CDATA_SECTION_NODE: {
+                serializationUnit.writeElementCDATA((CDATASection)node, writer, null);
+                break;
+            }
+            case Node.ENTITY_REFERENCE_NODE: {
+                serializationUnit.writeElementEntityRef((EntityReference)node, writer, null);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
     }
 }

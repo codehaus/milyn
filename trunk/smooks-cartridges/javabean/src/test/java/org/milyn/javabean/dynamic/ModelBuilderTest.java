@@ -24,10 +24,10 @@ import java.util.List;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.milyn.payload.JavaResult;
 import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;
+import org.xml.sax.SAXParseException;
 
 /**
  * 
@@ -49,16 +49,25 @@ public class ModelBuilderTest extends TestCase {
 		assertEquals(1234.98765, aaa.getDoubleProperty());
 	}
 
-	public void test_2_schema_with_validation() throws SAXException, IOException {
-		test_2_schema(new ModelBuilder(NS_DESCRIPTOR, true));
+	public void test_2_schema_with_validation_1() throws SAXException, IOException {
+		test_2_schema(new ModelBuilder(NS_DESCRIPTOR, true), "bbb-message.xml");
 	}
+
+    public void test_2_schema_with_validation_2() throws SAXException, IOException {
+        try {
+            test_2_schema(new ModelBuilder(NS_DESCRIPTOR, true), "bbb-message-invalid.xml");
+            fail("Expected SAXParseException");
+        } catch(SAXParseException e) {
+            assertTrue(e.getMessage().indexOf("Invalid content was found starting with element 'boo:ddd'") != -1);
+        }
+    }
 
 	public void test_2_schema_without_validation() throws SAXException, IOException {
-		test_2_schema(new ModelBuilder(NS_DESCRIPTOR, false));
+		test_2_schema(new ModelBuilder(NS_DESCRIPTOR, false), "bbb-message-invalid.xml");
 	}
 
-	private void test_2_schema(ModelBuilder builder) throws SAXException, IOException {
-		Model<BBB> model = builder.readModel(getClass().getResourceAsStream("bbb-message.xml"), BBB.class);
+	private void test_2_schema(ModelBuilder builder, String message) throws SAXException, IOException {
+		Model<BBB> model = builder.readModel(getClass().getResourceAsStream(message), BBB.class);
 		BBB bbb = model.getModelRoot();		
 		assertEquals(1234, bbb.getFloatProperty(), 1.0);
 		
@@ -67,7 +76,7 @@ public class ModelBuilderTest extends TestCase {
         assertEquals(3, aaas.size());
 		assertEquals("http://www.acme.com/xsd/aaa.xsd", model.getBeanMetadata(aaas.get(0)).getNamespace());
 
-		bbb = builder.readObject(getClass().getResourceAsStream("bbb-message.xml"), BBB.class);
+		bbb = builder.readObject(getClass().getResourceAsStream(message), BBB.class);
 		assertEquals(1234, bbb.getFloatProperty(), 1.0);
 
 		aaas = bbb.getAaas();
@@ -77,7 +86,7 @@ public class ModelBuilderTest extends TestCase {
         model.writeModel(writer);
 //        System.out.println(writer);
         XMLUnit.setIgnoreWhitespace( true );
-        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("bbb-message.xml")), new StringReader(writer.toString()));       
+        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream(message)), new StringReader(writer.toString()));       
 	}
 
     public void test_build_model() throws IOException, SAXException {

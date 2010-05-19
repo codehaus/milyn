@@ -18,7 +18,9 @@ package org.milyn.delivery;
 
 import org.milyn.assertion.AssertArgument;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.xml.DomUtils;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * Fragment.
@@ -48,11 +50,11 @@ public class Fragment {
         return saxFragment;
     }
 
-    private boolean isDOMElement() {
+    public boolean isDOMElement() {
         return (domFragment != null);
     }
 
-    private boolean isSAXElement() {
+    public boolean isSAXElement() {
         return (saxFragment != null);
     }
 
@@ -72,5 +74,37 @@ public class Fragment {
             return domFragment.getPrefix();
         }
         return null;
+    }
+
+    public boolean isParentFragment(Fragment fragment) {
+        if(fragment.isDOMElement() && isDOMElement()) {
+            Node parent = fragment.domFragment.getParentNode();
+            while(parent != null) {
+                if(parent == domFragment) {
+                    return true;
+                }
+                parent = parent.getParentNode();
+            }
+        } else if(fragment.isSAXElement() && isSAXElement()) {
+            SAXElement parent = fragment.saxFragment.getParent();
+            while(parent != null) {
+                if(parent == saxFragment) {
+                    return true;
+                }
+                parent = parent.getParent();
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Fragment) {
+            Fragment fragObj = (Fragment) obj;
+            return (this.domFragment == fragObj.domFragment && this.saxFragment == fragObj.saxFragment);
+        }
+
+        return false;
     }
 }

@@ -305,17 +305,15 @@ public class Model<T> {
                 // Install the writer for the configured namespace...
                 Map<String, BeanWriter> classBeanWriters = beanWriters.get(metaData.getBean().getClass());
 
-                if(classBeanWriters == null) {
-                    throw new IOException("No BeanWriters configured for Object type '" + metaData.getBean().getClass() + "'.");
+                if(classBeanWriters != null) {
+                    BeanWriter beanWriter = classBeanWriters.get(metaData.getNamespace());
+
+                    if(beanWriter == null) {
+                        throw new IOException("BeanWriters are configured for Object type '" + metaData.getBean().getClass() + "', but not for namespace '" + metaData.getNamespace() + "'.");
+                    }
+
+                    metaData.setWriter(beanWriter);
                 }
-
-                BeanWriter beanWriter = classBeanWriters.get(metaData.getNamespace());
-
-                if(beanWriter == null) {
-                    throw new IOException("BeanWriters are configured for Object type '" + metaData.getBean().getClass() + "', but not for namespace '" + metaData.getNamespace() + "'.");
-                }
-
-                metaData.setWriter(beanWriter);
             }
         }
     }

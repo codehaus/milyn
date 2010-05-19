@@ -16,6 +16,7 @@
 
 package org.milyn.xml;
 
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Vector;
 
@@ -1021,4 +1022,6 @@ public abstract class DomUtils {
 		
 		return elements;
 	}
+
+
 }

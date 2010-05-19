@@ -76,7 +76,7 @@ public class BeanWiringObserver implements BeanContextLifecycleObserver {
 			}
 			
 			ExecutionContext executionContext = event.getExecutionContext();
-			populator.populateAndSetPropertyValue(bean, executionContext.getBeanContext(), watchingBeanId, executionContext);
+			populator.populateAndSetPropertyValue(bean, executionContext.getBeanContext(), watchingBeanId, executionContext, event.getSource());
 		} else if(beanId == watchingBeanId && lifecycle == BeanLifecycle.END) {
 			BeanContext beanContext = event.getExecutionContext().getBeanContext();
 			

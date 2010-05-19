@@ -51,7 +51,7 @@ public class ListToArrayChangeObserver implements BeanContextLifecycleObserver {
 			ExecutionContext executionContext = event.getExecutionContext();
 
 			// Set the array on the object, via the populator...
-			populator.setPropertyValue(property, event.getBean(), executionContext);
+			populator.setPropertyValue(property, event.getBean(), executionContext, event.getSource());
 			// Remove this observer...
 			executionContext.getBeanContext().removeObserver(this);
 		}
