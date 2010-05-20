@@ -62,6 +62,9 @@ public class Model<T> {
         this.namespacePrefixMappings = new LinkedHashMap<String, String>();
 
         resolveKnownNamespaces();
+
+        // Register the model root bean...
+        registerBean(modelRoot);
 	}
 
 	/**

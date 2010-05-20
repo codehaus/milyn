@@ -103,11 +103,11 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	}
 
 	/**
-	 * Set the EDI mapping models to be used in all subsequent parse operations.
+	 * Set the EDI mapping model to be used in all subsequent parse operations.
 	 * <p/>
-	 * The models can be generated through a call to the {@link EDIParser}.
+	 * The model can be generated through a call to the {@link EDIParser}.
 	 * 
-	 * @param mappingModels The mapping models.
+	 * @param mappingModels The mapping model.
 	 * @return This parser instance.
 	 */
 	public UNEdifactInterchangeParser setMappingModels(Map<Description, EdifactModel> mappingModels) {
@@ -117,11 +117,11 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	}
 
 	/**
-	 * Add EDI mapping models to be used in all subsequent parse operations.
+	 * Add EDI mapping model to be used in all subsequent parse operations.
 	 * <p/>
-	 * The models can be generated through a call to the {@link EDIParser}.
+	 * The model can be generated through a call to the {@link EDIParser}.
 	 * 
-	 * @param mappingModels The mapping models.
+	 * @param mappingModels The mapping model.
 	 * @return This parser instance.
 	 */
 	public UNEdifactInterchangeParser addMappingModels(Map<Description, EdifactModel> mappingModels) {
@@ -131,7 +131,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	}
 
 	/**
-	 * Add EDI mapping models to be used in all subsequent parse operations.
+	 * Add EDI mapping model to be used in all subsequent parse operations.
 	 * 
 	 * @param mappingModelFiles Semi-colon separated list of mapping model files.  Supports zip files.
 	 * @param baseURI The base URI against which the mapping model URIs is to be resolved.
@@ -149,9 +149,9 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	/**
 	 * Add EDI mapping model to be used in all subsequent parse operations.
 	 * <p/>
-	 * The models can be generated through a call to the {@link EDIParser}.
+	 * The model can be generated through a call to the {@link EDIParser}.
 	 * 
-	 * @param mappingModels The mapping models.
+	 * @param mappingModels The mapping model.
 	 * @return This parser instance.
 	 */
 	public UNEdifactInterchangeParser addMappingModel(EdifactModel mappingModel) {

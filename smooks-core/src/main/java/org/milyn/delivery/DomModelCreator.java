@@ -29,7 +29,6 @@ import org.milyn.delivery.sax.SAXVisitAfter;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.milyn.delivery.ordering.Producer;
 import org.milyn.xml.DomUtils;
-import org.milyn.xml.HTMLEntityLookup;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,8 +49,8 @@ import java.util.Set;
  * When used with SAX filtering, this visitor will construct a DOM Fragment of the visited
  * element.  This allows DOM utilities to be used in a Streaming environment.
  * <p/>
- * When 1+ models are nested inside each other, outer models will never contain data from the
- * inner models i.e. the same fragments will never cooexist inside two models.
+ * When 1+ model are nested inside each other, outer model will never contain data from the
+ * inner model i.e. the same fragments will never cooexist inside two model.
  * <p/>
  * Take the following message as an example:
  * <pre>
@@ -78,7 +77,7 @@ import java.util.Set;
  *    &lt;/order-items&gt;
  * &lt;/order&gt;
  * </pre>
- * The {@link DomModelCreator} can be configured to create models for the "order" and "order-item"
+ * The {@link DomModelCreator} can be configured to create model for the "order" and "order-item"
  * message fragments:
  * <pre>
  * &lt;resource-config selector="order,order-item"&gt;
@@ -95,7 +94,7 @@ import java.util.Set;
  *     &lt;order-items /&gt;
  * &lt;/order&gt;
  * </pre>
- * Added to this is the fact that there will only ever be 0 or 1 "order-item" models in memory
+ * Added to this is the fact that there will only ever be 0 or 1 "order-item" model in memory
  * at any given time, with each new "order-item" model overwriting the previous "order-item" model.
  * All this ensures that the memory footprint is kept to a minimum.
  *
@@ -147,7 +146,7 @@ public class DomModelCreator implements DOMVisitBefore, SAXVisitBefore, SAXVisit
             // We need to remove the current DOMCreator from the dynamic visitor list because
             // we want to stop nodes being added to it and instead, have them added to the new
             // DOM.  This prevents a single huge DOM being created for a huge message (being processed
-            // via SAX) because it maintains a hierarchy of models. Inner models can represent collection
+            // via SAX) because it maintains a hierarchy of model. Inner model can represent collection
             // entry instances, with a single model for a single collection entry only being held in memory
             // at any point in time i.e. old ones are overwritten and so freed for GC.
             DynamicSAXElementVisitorList.removeDynamicVisitor(domCreatorStack.peek(), executionContext);

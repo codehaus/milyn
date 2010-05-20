@@ -55,7 +55,7 @@ public class FreeMarkerTemplate {
                 templateReader.close();
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Unexpected IOException.", e);
+            throw new IllegalStateException("Exception creating FreeMarker Template instance for template:\n\n[" + templateText + "]\n\n", e);
         }
     }
 

@@ -49,7 +49,7 @@ import org.xml.sax.SAXException;
 /**
  * Dynamic Model Builder.
  * <p/>
- * Useful for constructing configuration models etc.  Allows you to build a config model
+ * Useful for constructing configuration model etc.  Allows you to build a config model
  * for a dynamic configuration namespace i.e. a config namespace that is evolving and being 
  * extended all the time.  New namespaces can be easily added or extended.  All that's required
  * is to define the new config XSD and the Smooks Java Binding config to bind the data in the 
@@ -65,7 +65,7 @@ import org.xml.sax.SAXException;
  * 
  * You should use a unique descriptor path for a given configuration model.  Of course there can be many instances
  * of this file on the classpath i.e. one per module/jar.  This allows you to easily add extensions and updates
- * to your configuration model, without having to define new Java models for the new namespaces (versions) etc.
+ * to your configuration model, without having to define new Java model for the new namespaces (versions) etc.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */

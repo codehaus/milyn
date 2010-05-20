@@ -33,8 +33,6 @@ import org.milyn.resource.URIResourceLocator;
 import org.milyn.xml.SmooksXMLReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.SAXNotRecognizedException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -115,7 +113,7 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
     /**
 	 * Get the mapping model associated with the supplied SmooksResourceConfiguration.
 	 * <p/>
-	 * The parsed and validated models are cached in the Smooks container context, keyed
+	 * The parsed and validated model are cached in the Smooks container context, keyed
 	 * by the SmooksResourceConfiguration instance.
 	 * @return The Mapping Model.
 	 * @throws IOException Error reading resource configuration data (the mapping model).

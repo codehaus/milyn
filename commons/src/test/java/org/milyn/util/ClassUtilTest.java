@@ -16,6 +16,7 @@
 package org.milyn.util;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -79,4 +80,24 @@ public class ClassUtilTest extends TestCase
 		assertEquals(false, ClassUtil.containsAssignableClass(ArrayList.class, String.class, String.class, String.class)) ;
 
 	}
+
+    public void test_get_setter() {
+        Method nameSetter = ClassUtil.getSetterMethodByProperty("name", Animal.class, String.class);
+        Method ageSetter = ClassUtil.getSetterMethodByProperty("age", Animal.class, int.class);
+
+        assertNotNull(nameSetter);
+        assertEquals("setName", nameSetter.getName());
+        assertNotNull(ageSetter);
+        assertEquals("setAge", ageSetter.getName());
+    }
+
+    public void test_get_getter() {
+        Method nameGetter = ClassUtil.getGetterMethodByProperty("name", Animal.class, String.class);
+        Method ageGetter = ClassUtil.getGetterMethodByProperty("age", Animal.class, int.class);
+
+        assertNotNull(nameGetter);
+        assertEquals("getName", nameGetter.getName());
+        assertNotNull(ageGetter);
+        assertEquals("getAge", ageGetter.getName());
+    }
 }

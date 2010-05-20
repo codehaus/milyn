@@ -65,7 +65,7 @@ public class DomModelCreatorTest extends TestCase {
                 "        </order-item>",
                 XmlUtil.serialize(nodeModel.getModels().get("order-item"), true)));
 
-        // Check all the order-item models added...
+        // Check all the order-item model added...
         assertEquals(2, ModelCatcher.elements.size());
         assertTrue(
                 StreamUtils.compareCharStreams(
@@ -119,7 +119,7 @@ public class DomModelCreatorTest extends TestCase {
                 "<product>222</product>",
                 XmlUtil.serialize(nodeModel.getModels().get("product"), true)));
 
-        // Check all the order-item models added...
+        // Check all the order-item model added...
         assertEquals(4, ModelCatcher.elements.size());
         assertTrue(
                 StreamUtils.compareCharStreams(
@@ -219,7 +219,7 @@ public class DomModelCreatorTest extends TestCase {
                 "        </order-item>",
                 XmlUtil.serialize(nodeModel.getModels().get("order-item"), true)));
 
-        // Check all the order-item models added...
+        // Check all the order-item model added...
         assertEquals(2, ModelCatcher.elements.size());
         assertTrue(
                 StreamUtils.compareCharStreams(

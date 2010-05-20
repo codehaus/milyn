@@ -52,6 +52,7 @@ public class Descriptor {
     public static final String DESCRIPTOR_NAMESPACE_POSTFIX = ".namespace";
     public static final String DESCRIPTOR_SCHEMA_LOCATION_POSTFIX = ".schemaLocation";
     public static final String DESCRIPTOR_BINDING_CONFIG_LOCATION_POSTFIX = ".bindingConfigLocation";
+    public static final String DESCRIPTOR_ORDER_POSTFIX = ".order";
 
     private Smooks smooks;
     private Schema schema;
@@ -89,6 +90,11 @@ public class Descriptor {
 
         try {
             List<URL> resources = ClassUtil.getResources(descriptorPath, ModelBuilder.class);
+
+            if(resources.isEmpty()) {
+                throw new IllegalStateException("Failed to locate any model descriptor file by the name '" + descriptorPath + "' on the classpath.");
+            }
+
             for(URL resource : resources) {
                 InputStream resStream = resource.openStream();
                 try {
@@ -113,8 +119,7 @@ public class Descriptor {
 	}
 
     private Schema newSchemaInstance(List<Properties> descriptors, EntityResolver schemaResolver) throws SAXException, IOException {
-        Set<String> namespaces = resolveNamespaces(descriptors);
-        List<Source> schemas = getSchemas(namespaces, schemaResolver);
+        List<Source> schemas = getSchemas(descriptors, schemaResolver);
 
         try {
             // Create the merged Schema instance and from that, create the Validator instance...
@@ -134,11 +139,12 @@ public class Descriptor {
         }
     }
 
-    private List<Source> getSchemas(Set<String> namespaces, EntityResolver schemaResolver) throws SAXException, IOException {
+    private List<Source> getSchemas(List<Properties> descriptors, EntityResolver schemaResolver) throws SAXException, IOException {
+        Set<Namespace> namespaces = resolveNamespaces(descriptors);
         List<Source> xsdSources = new ArrayList<Source>();
 
-        for (String namespace : namespaces) {
-            InputSource schemaSource = schemaResolver.resolveEntity(namespace, namespace);
+        for (Namespace namespace : namespaces) {
+            InputSource schemaSource = schemaResolver.resolveEntity(namespace.uri, namespace.uri);
 
             if(schemaSource != null) {
                 if(schemaSource.getByteStream() != null) {
@@ -158,12 +164,12 @@ public class Descriptor {
         AssertArgument.isNotNullAndNotEmpty(descriptors, "descriptors");
         AssertArgument.isNotNull(bindingResolver, "bindingResolver");
 
-        Set<String> namespaces = resolveNamespaces(descriptors);
+        Set<Namespace> namespaces = resolveNamespaces(descriptors);
 
         // Now create a Smooks instance for processing configurations for these namespaces...
         Smooks smooks = new Smooks();
-        for (String namespace : namespaces) {
-            InputSource bindingSource = bindingResolver.resolveEntity(namespace, namespace);
+        for (Namespace namespace : namespaces) {
+            InputSource bindingSource = bindingResolver.resolveEntity(namespace.uri, namespace.uri);
 
             if(bindingSource != null) {
                 if(bindingSource.getByteStream() != null) {
@@ -174,7 +180,7 @@ public class Descriptor {
                         for(int i = 0; i < configList.size(); i++) {
                             SmooksResourceConfiguration config = configList.get(i);
                             if(config.getSelectorNamespaceURI() == null) {
-                                config.setSelectorNamespaceURI(namespace);
+                                config.setSelectorNamespaceURI(namespace.uri);
                             }
                         }
                     } catch (URISyntaxException e) {
@@ -191,33 +197,75 @@ public class Descriptor {
         return smooks;
     }
 
-    private static Set<String> resolveNamespaces(List<Properties> descriptors) {
-        Set<String> namespaces = new LinkedHashSet<String>();
+    private static Set<Namespace> resolveNamespaces(List<Properties> descriptors) {
+        List<Namespace> namespaces = new ArrayList<Namespace>();
+
         for(Properties descriptor : descriptors) {
             extractNamespaceDecls(descriptor, namespaces);
         }
-        return namespaces;
+
+        Comparator<Namespace> namspaceSorter = new Comparator<Namespace>() {
+            public int compare(Namespace o1, Namespace o2) {
+                return o1.order - o2.order;
+            }
+        };
+
+        Namespace[] namespaceArray = new Namespace[namespaces.size()];
+        namespaces.toArray(namespaceArray);
+        Arrays.sort(namespaceArray, namspaceSorter);
+
+        Set<Namespace> orderedNamespaceSet = new LinkedHashSet<Namespace>();
+        orderedNamespaceSet.addAll(Arrays.asList(namespaceArray));
+
+        return orderedNamespaceSet;
     }
 
-    private static void extractNamespaceDecls(Properties descriptor, Set<String> namespaces) {
+    private static List<Namespace> extractNamespaceDecls(Properties descriptor, List<Namespace> namespaces) {
         Set<Map.Entry<Object, Object>> properties = descriptor.entrySet();
         for(Map.Entry<Object, Object> property: properties) {
             String key = ((String) property.getKey()).trim();
             if(key.endsWith(DESCRIPTOR_NAMESPACE_POSTFIX)) {
-                namespaces.add((String) property.getValue());
+                Namespace namespace = new Namespace();
+                String namespaceUri = (String) property.getValue();
+                String namespaceId = getNamespaceId(namespaceUri, descriptor);
+
+                if(namespaceId == null) {
+                    throw new SmooksConfigurationException("Unable to resolve namespace ID for namespace URI '" + namespaceUri + "'.");
+                }
+
+                String namespaceOrder = descriptor.getProperty(namespaceId + DESCRIPTOR_ORDER_POSTFIX, Integer.toString(Integer.MAX_VALUE)).trim();
+
+                namespace.uri = namespaceUri;
+                try {
+                    namespace.order = Integer.parseInt(namespaceOrder);
+                } catch(NumberFormatException e) {
+                    throw new SmooksConfigurationException("Invalid value for descriptor config value '" + namespaceId + DESCRIPTOR_ORDER_POSTFIX + "'.  Must be a valid Integer value.");
+                }
+
+                namespaces.add(namespace);
             }
         }
+
+        return namespaces;
     }
 
     public static String getNamespaceId(String namespaceURI, List<Properties> descriptors) {
         for(Properties descriptor : descriptors) {
-            Set<Map.Entry<Object, Object>> properties = descriptor.entrySet();
-            for(Map.Entry<Object, Object> property: properties) {
-                String key = ((String) property.getKey()).trim();
-                String value = ((String) property.getValue()).trim();
-                if(key.endsWith(DESCRIPTOR_NAMESPACE_POSTFIX) && value.equals(namespaceURI)) {
-                    return key.substring(0, (key.length() - DESCRIPTOR_NAMESPACE_POSTFIX.length()));
-                }
+            String id = getNamespaceId(namespaceURI, descriptor);
+            if(id != null) {
+                return id;
+            }
+        }
+        return null;
+    }
+
+    private static String getNamespaceId(String namespaceURI, Properties descriptor) {
+        Set<Map.Entry<Object, Object>> properties = descriptor.entrySet();
+        for(Map.Entry<Object, Object> property: properties) {
+            String key = ((String) property.getKey()).trim();
+            String value = ((String) property.getValue()).trim();
+            if(key.endsWith(DESCRIPTOR_NAMESPACE_POSTFIX) && value.equals(namespaceURI)) {
+                return key.substring(0, (key.length() - DESCRIPTOR_NAMESPACE_POSTFIX.length()));
             }
         }
         return null;
@@ -240,5 +288,10 @@ public class Descriptor {
         }
 
         return null;
+    }
+
+    private static class Namespace {
+        private String uri;
+        private int order;
     }
 }

@@ -20,6 +20,7 @@ import org.milyn.SmooksException;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.dom.DOMVisitBefore;
 import org.milyn.delivery.sax.SAXElement;
+import org.milyn.delivery.sax.SAXUtil;
 import org.milyn.delivery.sax.SAXVisitBefore;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -27,6 +28,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.Attributes;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,24 +38,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class NamespaceReaper implements SAXVisitBefore, DOMVisitBefore {
-
-    public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-        Map<String, String> namespacePrefixMappings = getNamespacePrefixMappings(executionContext);
-        Attributes attributes = element.getAttributes();
-        int attributeCount = attributes.getLength();
-
-        for(int i = 0; i < attributeCount; i++) {
-            String attrNs = attributes.getURI(i);
-
-            if(XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attrNs)) {
-                String uri = attributes.getValue(i);
-                String prefix = attributes.getLocalName(i);
-
-                addMapping(namespacePrefixMappings, uri, prefix);
-            }
-        }
-    }
+public class NamespaceReaper implements DOMVisitBefore {
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
         Map<String, String> namespacePrefixMappings = getNamespacePrefixMappings(executionContext);
@@ -65,9 +50,9 @@ public class NamespaceReaper implements SAXVisitBefore, DOMVisitBefore {
 
             if(XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attr.getNamespaceURI())) {
                 String uri = attr.getValue();
-                String prefix = attr.getLocalName();
+                QName attrQName = SAXUtil.toQName(uri, attr.getLocalName(), attr.getNodeName());
 
-                addMapping(namespacePrefixMappings, uri, prefix);
+                addMapping(namespacePrefixMappings, uri, attrQName.getLocalPart());
             }
         }
     }

@@ -46,7 +46,7 @@ public class EDIUtils {
 
     private static Log logger = LogFactory.getLog(EDIUtils.class);
     
-    public static final String EDI_MAPPING_MODEL_ZIP_LIST_FILE = "META-INF/services/org/smooks/edi/mapping-models.lst";
+    public static final String EDI_MAPPING_MODEL_ZIP_LIST_FILE = "META-INF/services/org/smooks/edi/mapping-model.lst";
 
     /**
      * Splits a String by delimiter as long as delimiter does not follow an escape sequence.

@@ -43,6 +43,7 @@
         <module>edi-with-import-to-java</module>
         <module>ect-unedifact</module>
         <module>yaml-to-java</module>
+        <module>dynamic-model-builder</module>
     </modules>
 
     <properties>
