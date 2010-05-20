@@ -33,6 +33,11 @@
 
     <resource-config selector="writer">
         <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
+        <param name="attribute">beanClass</param>
+    </resource-config>
+
+    <resource-config selector="writer">
+        <resource>org.milyn.cdr.extension.MapToResourceConfigFromAttribute</resource>
         <param name="attribute">class</param>
     </resource-config>
 

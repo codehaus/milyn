@@ -84,7 +84,7 @@ public class ModelBuilderTest extends TestCase {
 
         StringWriter writer = new StringWriter();
         model.writeModel(writer);
-//        System.out.println(writer);
+        System.out.println(writer);
         XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream(message)), new StringReader(writer.toString()));       
 	}
@@ -94,8 +94,6 @@ public class ModelBuilderTest extends TestCase {
         BBB bbb = new BBB();
         List<AAA> aaas = new ArrayList<AAA>();
         Model<BBB> model = new Model<BBB>(bbb, builder);
-
-        model.registerBean(bbb);
 
         bbb.setFloatProperty(1234.87f);
         bbb.setAaas(aaas);

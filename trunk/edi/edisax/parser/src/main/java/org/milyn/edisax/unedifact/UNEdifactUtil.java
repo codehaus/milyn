@@ -88,6 +88,6 @@ public abstract class UNEdifactUtil {
 			}
 		}
 		
-		throw new SAXException("Mapping Model '" + messageName + "' not found in supplied set of Mapping models."); 
+		throw new SAXException("Mapping Model '" + messageName + "' not found in supplied set of Mapping model.");
 	}
 }

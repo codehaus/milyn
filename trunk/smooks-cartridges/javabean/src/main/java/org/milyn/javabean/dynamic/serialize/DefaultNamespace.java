@@ -16,7 +16,7 @@
 
 package org.milyn.javabean.dynamic.serialize;
 
-import javax.xml.namespace.QName;
+import javax.xml.XMLConstants;
 import java.lang.annotation.*;
 
 /**
@@ -29,5 +29,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface DefaultNamespace {
     String uri();
-    String prefix();
+    String prefix() default XMLConstants.DEFAULT_NS_PREFIX;
 }

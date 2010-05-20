@@ -53,8 +53,9 @@ public class FreeMarkerBeanWriter implements BeanWriter {
 
     private FreeMarkerTemplate template;
 
-    private static final WriteBeanDirective writeBeanDirective = new WriteBeanDirective();
     private static final WriteNamespacesDirective writeNamespacesDirective = new WriteNamespacesDirective();
+    private static final WriteBeanDirective writeBeanDirective = new WriteBeanDirective();
+    private static final WriteAttribsDirective writeAttribsDirective = new WriteAttribsDirective();
 
     @Initialize
     public void intialize() {
@@ -90,8 +91,9 @@ public class FreeMarkerBeanWriter implements BeanWriter {
         templateContext.put(MODEL_CTX_KEY, model);
         templateContext.put("nsp", beanMetadata.getNamespacePrefix());
 
-        templateContext.put("writeBean", writeBeanDirective);
         templateContext.put("writeNamespaces", writeNamespacesDirective);
+        templateContext.put("writeBean", writeBeanDirective);
+        templateContext.put("writeAttribs", writeAttribsDirective);
 
         template.apply(templateContext, writer);
     }

@@ -22,6 +22,7 @@ import freemarker.template.*;
 import org.milyn.javabean.dynamic.Model;
 import org.milyn.javabean.dynamic.serialize.BeanWriter;
 
+import javax.xml.XMLConstants;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
@@ -48,7 +49,11 @@ class WriteNamespacesDirective implements TemplateDirectiveModel {
             String uri = nsEntry.getKey();
             String prefix = nsEntry.getValue();
 
-            writer.write("xmlns:" + prefix + "=");
+            if(prefix == null || prefix.equals(XMLConstants.DEFAULT_NS_PREFIX) || prefix.equals("xmlns")) {
+                writer.write("xmlns=");
+            } else {
+                writer.write("xmlns:" + prefix + "=");
+            }
             writer.write('"');
             writer.write(uri);
             writer.write('"');

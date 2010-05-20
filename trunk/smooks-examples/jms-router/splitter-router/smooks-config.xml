@@ -10,12 +10,12 @@
     -->
     <core:filterSettings type="SAX" />
 
-    <!-- Capture the message data 2 seperate DOM models, for "order" and "order-item" fragments... -->
+    <!-- Capture the message data 2 seperate DOM model, for "order" and "order-item" fragments... -->
     <resource-config selector="order,order-item">
         <resource>org.milyn.delivery.DomModelCreator</resource>
     </resource-config>
 
-    <!-- At each "order-iteam", apply a template to the "order" and "order-item" DOM models... -->
+    <!-- At each "order-iteam", apply a template to the "order" and "order-item" DOM model... -->
     <ftl:freemarker applyOnElement="order-item">
         <!--
             Note in the template that we need to use the special FreeMarker variable ".vars"

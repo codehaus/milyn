@@ -68,7 +68,7 @@ public class ModelLoader implements ContentHandler {
 		Map<Description, EdifactModel> mappingModelMap = modelRegistry.get(mappingModelKey);
 		if(mappingModelMap == null) {
 			if(!create) {
-				throw new EDIConfigurationException("Unable to get EDI Mapping Model Map for '" + mappingModelKey + "'.  Models not bound to ApplicationContext.  ModelLoader should have loaded these models during initialization phase.");
+				throw new EDIConfigurationException("Unable to get EDI Mapping Model Map for '" + mappingModelKey + "'.  Models not bound to ApplicationContext.  ModelLoader should have loaded these model during initialization phase.");
 			}
 			mappingModelMap = new HashMap<Description, EdifactModel>();
 			modelRegistry.put(mappingModelKey, mappingModelMap);

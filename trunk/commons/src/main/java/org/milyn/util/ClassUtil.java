@@ -144,6 +144,10 @@ public class ClassUtil {
 	
 	public static List<URL> getResources(String resourcePath, Class<?> caller) throws IOException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        if(resourcePath.startsWith("/")) {
+            resourcePath = resourcePath.substring(1);
+        }
 		
 		if (classLoader != null) {
 			return CollectionsUtil.toList(classLoader.getResources(resourcePath));
@@ -431,24 +435,82 @@ public class ClassUtil {
         return setterName.toString();
     }
 
+    public static String toGetterName(String property) {
+        StringBuffer getterName = new StringBuffer();
+
+        // Add the property string to the buffer...
+        getterName.append(property);
+        // Uppercase the first character...
+        getterName.setCharAt(0, Character.toUpperCase(property.charAt(0)));
+        // Prefix with "get"...
+        getterName.insert(0, "get");
+
+        return getterName.toString();
+    }
+
+    public static String toIsGetterName(String property) {
+        StringBuffer getterName = new StringBuffer();
+
+        // Add the property string to the buffer...
+        getterName.append(property);
+        // Uppercase the first character...
+        getterName.setCharAt(0, Character.toUpperCase(property.charAt(0)));
+        // Prefix with "is"...
+        getterName.insert(0, "is");
+
+        return getterName.toString();
+    }
+
     public static Method getSetterMethod(String setterName, Object bean, Class<?> setterParamType) {
         return getSetterMethod(setterName, bean.getClass(), setterParamType);
     }
 
     public static Method getSetterMethod(String setterName, Class beanclass, Class<?> setterParamType) {
         Method[] methods = beanclass.getMethods();
-        Method beanSetterMethod = null;
 
         for(Method method : methods) {
             if(method.getName().equals(setterName)) {
                 Class<?>[] params = method.getParameterTypes();
                 if(params != null && params.length == 1 && params[0].isAssignableFrom(setterParamType)) {
-                    beanSetterMethod = method;
-                    break;
+                    return method;
                 }
             }
         }
 
-        return beanSetterMethod;
+        return null;
+    }
+
+    public static Method getSetterMethodByProperty(String propertyName, Class<?> beanClass, Class<?> setterParamType) {
+        return getSetterMethod(toSetterName(propertyName), beanClass, setterParamType);
+    }
+
+    public static Method getGetterMethod(String getterName, Object bean, Class<?> returnType) {
+        return getGetterMethod(getterName, bean.getClass(), returnType);
+    }
+
+    public static Method getGetterMethod(String getterName, Class beanclass, Class<?> returnType) {
+        Method[] methods = beanclass.getMethods();
+
+        for(Method method : methods) {
+            if(method.getName().equals(getterName)) {
+                if(returnType != null) {
+                    if(method.getReturnType().isAssignableFrom(returnType)) {
+                        return method;
+                    }
+                } else {
+                    return method;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static Method getGetterMethodByProperty(String propertyName, Class<?> beanClass, Class<?> returnType) {
+        Method getter = getGetterMethod(toGetterName(propertyName), beanClass, returnType);
+        if(getter == null) {
+            getter = getGetterMethod(toIsGetterName(propertyName), beanClass, returnType);
+        }
+        return getter;
     }
 }

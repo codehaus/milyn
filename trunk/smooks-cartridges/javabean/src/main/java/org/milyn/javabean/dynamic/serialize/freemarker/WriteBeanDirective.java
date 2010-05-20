@@ -18,6 +18,7 @@ package org.milyn.javabean.dynamic.serialize.freemarker;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
+import freemarker.ext.beans.StringModel;
 import freemarker.template.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +34,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
+ * Write bean directive.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class WriteBeanDirective implements TemplateDirectiveModel {
@@ -40,13 +42,24 @@ public class WriteBeanDirective implements TemplateDirectiveModel {
     private static Log logger = LogFactory.getLog(WriteBeanDirective.class);
 
     public void execute(Environment environment, Map params, TemplateModel[] templateModels, TemplateDirectiveBody templateDirectiveBody) throws TemplateException, IOException {
-        SimpleScalar beanNameScalar = (SimpleScalar) params.get("name");
+        Object beanParam = params.get("bean");
+
+        if(beanParam == null) {
+            if(params.containsKey("bean")) {
+                throw new TemplateException("Mandatory <@writeBean> directive parameter 'bean' is defined, but the bean is not visible in the model.  Should be a valid model object reference (no quotes) e.g. <@writeBean bean=customer.address />.", environment);
+            } else {
+                throw new TemplateException("Mandatory <@writeBean> directive parameter 'bean' is not defined.  Should be a valid model object reference (no quotes) e.g. <@writeBean bean=customer.address />.", environment);
+            }
+        }
+
+        if(!(beanParam instanceof StringModel)) {
+            throw new TemplateException("Mandatory <@writeBean> directive parameter 'bean' not defined properly.  Should be a valid model object reference (no quotes) e.g. <@writeBean bean=customer.address />.", environment);
+        }
+
+        StringModel beanModel = (StringModel) beanParam;
         SimpleScalar indentScalar = (SimpleScalar) params.get("indent");
         int indent = 0;
 
-        if(beanNameScalar == null) {
-            throw new TemplateException("Mandatory <@writeBean> directive parameter 'name' node defined e.g. <@writeBean name='customer' />.", environment);
-        }
         if(indentScalar != null) {
             String indentParamVal = indentScalar.getAsString().trim();
             try {
@@ -57,42 +70,30 @@ public class WriteBeanDirective implements TemplateDirectiveModel {
             }
         }
 
-        String beanName = beanNameScalar.getAsString();
-        TemplateModel beanTemplateModel = environment.getLocalVariable(beanName);
+        Object bean = beanModel.getWrappedObject();
+        BeanModel modelBeanModel = (BeanModel) environment.getDataModel().get(FreeMarkerBeanWriter.MODEL_CTX_KEY);
+        Model model = (Model) modelBeanModel.getWrappedObject();
+        BeanMetadata beanMetadata = model.getBeanMetadata(bean);
 
-        if(beanTemplateModel == null) {
-            beanTemplateModel = environment.getDataModel().get(beanName);
-            if(beanTemplateModel == null) {
-                return;
-            }
+        if(beanMetadata == null) {
+            BeanRegistrationException.throwUnregisteredBeanInstanceException(bean);
         }
 
-        if(beanTemplateModel instanceof BeanModel) {
-            Object bean = ((BeanModel)beanTemplateModel).getWrappedObject();
-            BeanModel modelBeanModel = (BeanModel) environment.getDataModel().get(FreeMarkerBeanWriter.MODEL_CTX_KEY);
-            Model model = (Model) modelBeanModel.getWrappedObject();
-            BeanMetadata beanMetadata = model.getBeanMetadata(bean);
+        BeanWriter beanWriter = beanMetadata.getWriter();
 
-            if(beanMetadata == null) {
-                BeanRegistrationException.throwUnregisteredBeanInstanceException(bean);
-            }
+        if(beanMetadata.getPreText() != null) {
+            environment.getOut().write(beanMetadata.getPreText());
+        }
 
-            BeanWriter beanWriter = beanMetadata.getWriter();
+        if(indent > 0) {
+            StringWriter beanWriteBuffer = new StringWriter();
 
-            if(beanMetadata.getPreText() != null) {
-                environment.getOut().write(beanMetadata.getPreText());
-            }
+            beanWriteBuffer.write('\n');
+            beanWriter.write(bean, beanWriteBuffer, model);
 
-            if(indent > 0) {
-                StringWriter beanWriteBuffer = new StringWriter();
-
-                beanWriteBuffer.write('\n');
-                beanWriter.write(bean, beanWriteBuffer, model);
-
-                environment.getOut().write(XmlUtil.indent(beanWriteBuffer.toString(), indent));
-            } else {
-                beanWriter.write(bean, environment.getOut(), model);
-            }
+            environment.getOut().write(XmlUtil.indent(beanWriteBuffer.toString(), indent));
+        } else {
+            beanWriter.write(bean, environment.getOut(), model);
         }
     }
 }

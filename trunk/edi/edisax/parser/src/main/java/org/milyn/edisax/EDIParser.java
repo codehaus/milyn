@@ -141,7 +141,7 @@ public class EDIParser implements XMLReader {
      * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
      * schema.
      * @param baseURI The base URI against which the config path is to be resolved.  This works on down
-     * and helps in resolving imported models.
+     * and helps in resolving imported model.
      * @return The Edimap for the mapping model.
      * @throws IOException Error reading the model stream.
      * @throws SAXException Invalid model.

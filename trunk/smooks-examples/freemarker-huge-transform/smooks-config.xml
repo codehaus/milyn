@@ -14,7 +14,7 @@
     Create 2 NodeModels.  One high level model for the "order"
     (header etc) and then one per "order-item".
 
-    These models are used in the FreeMarker templating resources
+    These model are used in the FreeMarker templating resources
     defined below.  You need to make sure you set the selector such
     that the total memory footprint is as low as possible.  In this
     example, the "order" model will contain everything accept the
