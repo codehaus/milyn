@@ -100,6 +100,11 @@
         <resource>org.milyn.javabean.ext.DecodeParamResolver</resource>
     </resource-config>
 
+    <resource-config selector="bean/value">
+        <resource>org.milyn.javabean.ext.InitValExpressionSetter</resource>
+        <param name="initValAttrib">default</param>
+    </resource-config>
+
     <!--
         Bean Instance Populator Resource (Wiring)...
     -->
