@@ -17,7 +17,7 @@
 package org.smooks.model.csv;
 
 import org.milyn.javabean.dynamic.serialize.DefaultNamespace;
-import org.smooks.model.core.SmooksReader;
+import org.smooks.model.core.Reader;
 import org.smooks.model.csv.ListBinding;
 import org.smooks.model.csv.MapBinding;
 import org.smooks.model.csv.SingleBinding;
@@ -28,7 +28,7 @@ import org.smooks.model.csv.SingleBinding;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @DefaultNamespace(uri = "http://www.milyn.org/xsd/smooks/csv-1.3.xsd", prefix = "csv13")
-public class CSVReader implements SmooksReader {
+public class CSVReader implements Reader {
 
     private String fields;
     private Character separator;
