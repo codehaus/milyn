@@ -78,11 +78,22 @@ public class WriteAttribsDirective implements TemplateDirectiveModel {
         String[] attribs = attribsParamVal.split(",");
 
         for(int i = 0; i < attribs.length; i++) {
-            String attrib = attribs[i];
-            Method getterMethod = ClassUtil.getGetterMethodByProperty(attrib, bean.getClass(), null);
+            String[] attribTokens = attribs[i].split("@");
+            String propertyName;
+            String attributeName;
+
+            if(attribTokens.length == 2) {
+                propertyName = attribTokens[0];
+                attributeName = attribTokens[1];
+            } else {
+                propertyName = attribTokens[0];
+                attributeName = attribTokens[0];
+            }
+
+            Method getterMethod = ClassUtil.getGetterMethodByProperty(propertyName, bean.getClass(), null);
 
             if(getterMethod == null) {
-                throw new TemplateException("<@writeAttribs> directive unable to locate getter method for attribute property '" + attrib + "' on bean class type '" + bean.getClass().getName() + "'.", environment);
+                throw new TemplateException("<@writeAttribs> directive unable to locate getter method for attribute property '" + propertyName + "' on bean class type '" + bean.getClass().getName() + "'.", environment);
             }
 
             try {
@@ -93,15 +104,15 @@ public class WriteAttribsDirective implements TemplateDirectiveModel {
                     if(i > 0) {
                         environment.getOut().write(' ');
                     }
-                    environment.getOut().write(attrib);
+                    environment.getOut().write(attributeName);
                     environment.getOut().write("=\"");
                     XmlUtil.encodeAttributeValue(attribStringVal, 0, attribStringVal.length, environment.getOut());
                     environment.getOut().write("\"");
                 }
             } catch (IllegalAccessException e) {
-                throw new TemplateException("<@writeAttribs> directive getter method '" + getterMethod + "' for attribute property '" + attrib + "' failed.", e, environment);
+                throw new TemplateException("<@writeAttribs> directive getter method '" + getterMethod + "' for attribute property '" + propertyName + "' failed.", e, environment);
             } catch (InvocationTargetException e) {
-                throw new TemplateException("<@writeAttribs> directive getter method '" + getterMethod + "' for attribute property '" + attrib + "' failed.", e, environment);
+                throw new TemplateException("<@writeAttribs> directive getter method '" + getterMethod + "' for attribute property '" + propertyName + "' failed.", e, environment);
             }
         }
     }

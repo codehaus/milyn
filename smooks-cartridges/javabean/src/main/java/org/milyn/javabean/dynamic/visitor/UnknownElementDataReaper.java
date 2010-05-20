@@ -74,7 +74,15 @@ public class UnknownElementDataReaper {
             }
         }
 
-        return serializeWriter.toString();
+        // Get rid of training space characters (only spaces - not all whitespace).
+        // This helps eliminate ugly indentation issues in the serialized XML...
+        StringBuilder trimEnd = new StringBuilder(serializeWriter.toString());
+        while(trimEnd.length() > 0 && trimEnd.charAt(trimEnd.length() - 1) == ' ') {
+            trimEnd.deleteCharAt(trimEnd.length() - 1);
+        }
+
+
+        return trimEnd.toString();
     }
 
     private static boolean isOnModelSourcePath(Fragment fragment, List<BeanMetadata> beanMetadataSet) {

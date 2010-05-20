@@ -16,15 +16,10 @@
 
 package org.smooks.model.core;
 
-import java.lang.annotation.*;
-
 /**
- * Marker interface for Smooks configuration components.
- * <p/>
- * Components implementing this interface will be wired into the
- * {@link SmooksModel} class.
+ * Marker interface for Smooks reader components.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface NamespaceRoot {
+public interface SmooksReader {
 }

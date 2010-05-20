@@ -13,8 +13,6 @@
         <jb:value property="rootElementName" data="reader/@rootElementName" />
         <jb:value property="recordElementName" data="reader/@recordElementName" />
         <jb:value property="indent" data="reader/@indent" />
-        <jb:value property="strict" data="reader/@strict" />
-        <jb:value property="validateHeader" data="reader/@validateHeader" />
 
         <!-- only one of the following will be wired in... -->
         <jb:wiring property="singleBinding" beanIdRef="singleBinding" />
@@ -38,7 +36,7 @@
     <!-- Writers (marshal)... -->
 
     <dmb:writer beanId="csvReader" class="org.milyn.javabean.dynamic.serialize.freemarker.FreeMarkerBeanWriter">
-        <param name="template">/org/smooks/model/csv/v1_3/v1.3.ftl</param>
+        <param name="template">/org/smooks/model/csv/v1_2/v1.2.ftl</param>
     </dmb:writer>
 
 </smooks-resource-list>

@@ -6,13 +6,13 @@
     <!--
     Main Smooks model bean.
 
-    All bean implementing the NamespaceRoot interface will be wired in as a component.
+    All bean implementing the SmooksReader interface will be wired in as a component.
     -->
     <jb:bean beanId="smooksModel" class="org.smooks.model.core.SmooksModel" createOnElement="#document">
-        <jb:wiring property="modelComponents" beanIdRef="modelComponents" />
+        <jb:wiring property="readers" beanIdRef="readers" />
     </jb:bean>
-    <jb:bean beanId="modelComponents" class="java.util.ArrayList" createOnElement="#document">
-        <jb:wiring beanType="org.smooks.model.core.NamespaceRoot" />
+    <jb:bean beanId="readers" class="java.util.ArrayList" createOnElement="#document">
+        <jb:wiring beanType="org.smooks.model.core.SmooksReader" />
     </jb:bean>
 
     <!--

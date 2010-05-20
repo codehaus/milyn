@@ -1,8 +1,4 @@
 <?xml version="1.0"?>
 <smooks-resource-list <@writeNamespaces/>>
-
-	<#list bean.modelComponents as modelComponent>
-    <@writeBean bean=modelComponent />
-    </#list>
-
+<#list bean.readers as reader><@writeBean bean=reader /></#list>
 </smooks-resource-list>

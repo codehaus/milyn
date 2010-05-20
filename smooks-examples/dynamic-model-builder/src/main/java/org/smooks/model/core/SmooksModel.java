@@ -31,13 +31,13 @@ public class SmooksModel {
 
     public static final String MODEL_DESCRIPTOR = "META-INF/org/smooks/model/descriptor.properties";
 
-    private List<NamespaceRoot> modelComponents = new ArrayList<NamespaceRoot>();
+    private List<SmooksReader> readers = new ArrayList<SmooksReader>();
 
-    public List<NamespaceRoot> getModelComponents() {
-        return modelComponents;
+    public List<SmooksReader> getReaders() {
+        return readers;
     }
 
-    public void setModelComponents(List<NamespaceRoot> modelComponents) {
-        this.modelComponents = modelComponents;
+    public void setReaders(List<SmooksReader> readers) {
+        this.readers = readers;
     }
 }
