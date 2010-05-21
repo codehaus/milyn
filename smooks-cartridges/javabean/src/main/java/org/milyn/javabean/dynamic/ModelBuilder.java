@@ -80,7 +80,7 @@ public class ModelBuilder {
 
     private Descriptor descriptor;
 	private boolean validate = true;
-    public String reportPath;
+    private String reportPath;
 
     public ModelBuilder(String descriptorPath, boolean validate) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
