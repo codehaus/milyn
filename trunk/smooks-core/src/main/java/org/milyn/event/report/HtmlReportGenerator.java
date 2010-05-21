@@ -54,6 +54,13 @@ public class HtmlReportGenerator extends AbstractReportGenerator {
     public void applyTemplate(Report report) throws IOException {
         FreeMarkerTemplate template;
 
+        System.out.println();
+        System.out.println("****************************************************************************************");
+        System.out.println("  HTML REPORT GENERATOR IN USE!!!");
+        System.out.println("  Please disable in Production mode.  This feature is a major performance drain!!");
+        System.out.println("****************************************************************************************");
+        System.out.println();
+
         if(report instanceof DOMReport) {
             template = new FreeMarkerTemplate("html/template-dom.html", HtmlReportGenerator.class);
         } else {

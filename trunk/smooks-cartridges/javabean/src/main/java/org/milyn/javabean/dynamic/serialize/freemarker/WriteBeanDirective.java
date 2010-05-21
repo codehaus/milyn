@@ -66,7 +66,7 @@ public class WriteBeanDirective implements TemplateDirectiveModel {
                 indent = Integer.parseInt(indentParamVal);
                 indent = Math.min(indent, 100);
             } catch(NumberFormatException e) {
-                logger.debug("Invalid <@writeBean> 'indent' parameter value '" + indentParamVal + "'.  Must be a valid integer (<= 100).");                
+                logger.debug("Invalid <@writeNamespaces> 'indent' parameter value '" + indentParamVal + "'.  Must be a valid integer (<= 100).");                
             }
         }
 

@@ -33,6 +33,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Fragment;
+import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.javabean.BeanInstancePopulator;
 import org.milyn.javabean.dynamic.serialize.BeanWriter;
 import org.milyn.javabean.dynamic.visitor.NamespaceReaper;
@@ -79,6 +80,7 @@ public class ModelBuilder {
 
     private Descriptor descriptor;
 	private boolean validate = true;
+    public String reportPath;
 
     public ModelBuilder(String descriptorPath, boolean validate) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
@@ -108,6 +110,10 @@ public class ModelBuilder {
         return descriptor;
     }
 
+    public void setReportPath(String reportPath) {
+        this.reportPath = reportPath;
+    }
+
     public <T> T readObject(InputStream message, Class<T> returnType) throws SAXException, IOException {
 		return readObject(new InputStreamReader(message), returnType);
 	}
@@ -129,6 +135,10 @@ public class ModelBuilder {
 		ExecutionContext executionContext = descriptor.getSmooks().createExecutionContext();
         Map<Class<?>, Map<String, BeanWriter>> beanWriters = descriptor.getBeanWriters();
 		BeanTracker beanTracker = new BeanTracker(beanWriters);
+
+        if(reportPath != null) {
+            executionContext.setEventListener(new HtmlReportGenerator(reportPath));            
+        }
 
 		executionContext.getBeanContext().addObserver(beanTracker);
 		
