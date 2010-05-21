@@ -16,14 +16,17 @@
 
 package example;
 
+import org.milyn.javabean.dynamic.BeanMetadata;
 import org.milyn.javabean.dynamic.Model;
 import org.milyn.javabean.dynamic.ModelBuilder;
 import org.smooks.model.core.SmooksModel;
+import org.smooks.model.javabean.Bean;
 import org.xml.sax.SAXException;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 /**
  * Main example class.
@@ -33,7 +36,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, SAXException {
 
-        ModelBuilder modelBuilder = new ModelBuilder(SmooksModel.MODEL_DESCRIPTOR, false);
+        ModelBuilder modelBuilder = new ModelBuilder("META-INF/org/smooks/model/descriptor.properties", false);
         Model<SmooksModel> model;
         SmooksModel smooksModel;
 
@@ -42,6 +45,11 @@ public class Main {
         smooksModel = model.getModelRoot();
 
         // Make modifications to the smooksModel instance etc....
+        List<Bean> beans = smooksModel.getBeans();
+        for(Bean bean : beans) {
+            BeanMetadata beanMetadata = model.getBeanMetadata(bean);
+            // etc ...
+        }
 
         // Serialize the model back out...
         model.writeModel(new PrintWriter(System.out));
