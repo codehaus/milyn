@@ -7,15 +7,13 @@
                       xmlns:csv13="http://www.milyn.org/xsd/smooks/csv-1.3.xsd">
 
     <!-- Reader from v1.2 -->
-    <csv12:reader fields="name,address,age" rootElementName="people" recordElementName="person" indent="true"/>
+    <csv12:reader fields="name,address" rootElementName="people" recordElementName="person" indent="true"/>
 
     <!-- Reader from v1.3 -->
     <csv13:reader fields="name,address,age" rootElementName="people" recordElementName="person" indent="true" strict="true"/>
 
     <!--
-    Create an "example.beans.Order" bean instance when we visit the start of the <order> element.
-    Assign the new bean instance to the beanId of "order".
-    Wire in the "header" and "orderItems" beans.
+    Create an "example.beans.Order" bean instance ...
     -->
     <jb12:bean beanId="order" class="example.model.Order" createOnElement="order">
         <jb12:wiring property="header" beanIdRef="header" />
@@ -23,16 +21,14 @@
     </jb12:bean>
 
     <!--
-    Create an ArrayList bean instance when we visit the start of the <order> element.
-    This bean is wired into the "order" bean.
+    Create an ArrayList bean instance ...
     -->
     <jb11:bindings beanId="orderItems" class="java.util.ArrayList" createOnElement="order" createOnElementNS="http://boohoo">
         <jb11:wiring beanIdRef="orderItem" />
     </jb11:bindings>
 
     <!--
-    Create an ArrayList bean instance when we visit the start of the <order> element.
-    This bean is wired into the "order" bean.
+    Create an ArrayList bean instance ...
     -->
     <jb13:bean beanId="orderItems" class="java.util.ArrayList" createOnElement="order">
         <jb13:wiring beanIdRef="orderItem" />
