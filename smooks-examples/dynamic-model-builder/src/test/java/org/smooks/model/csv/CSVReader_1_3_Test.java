@@ -65,7 +65,7 @@ public class CSVReader_1_3_Test extends TestCase {
 
         StringWriter modelWriter = new StringWriter();
         model.writeModel(modelWriter);
-        System.out.println(modelWriter);
+//        System.out.println(modelWriter);
         XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream(messageFile)), new StringReader(modelWriter.toString()));
     }

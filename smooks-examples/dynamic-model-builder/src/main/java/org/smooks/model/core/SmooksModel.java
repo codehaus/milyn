@@ -17,6 +17,7 @@
 package org.smooks.model.core;
 
 import org.milyn.javabean.dynamic.serialize.DefaultNamespace;
+import org.smooks.model.javabean.Bean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,7 @@ public class SmooksModel {
     public static final String MODEL_DESCRIPTOR = "META-INF/org/smooks/model/descriptor.properties";
 
     private List<Reader> readers = new ArrayList<Reader>();
+    private List<Bean> beans = new ArrayList<Bean>();
 
     public List<Reader> getReaders() {
         return readers;
@@ -39,5 +41,13 @@ public class SmooksModel {
 
     public void setReaders(List<Reader> readers) {
         this.readers = readers;
+    }
+
+    public List<Bean> getBeans() {
+        return beans;
+    }
+
+    public void setBeans(List<Bean> beans) {
+        this.beans = beans;
     }
 }

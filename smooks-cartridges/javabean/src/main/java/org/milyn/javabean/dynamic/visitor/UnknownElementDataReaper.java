@@ -19,13 +19,12 @@ package org.milyn.javabean.dynamic.visitor;
 import org.milyn.SmooksException;
 import org.milyn.delivery.Fragment;
 import org.milyn.delivery.dom.serialize.DefaultSerializationUnit;
+import org.milyn.io.StreamUtils;
 import org.milyn.javabean.dynamic.BeanMetadata;
 import org.milyn.javabean.lifecycle.BeanContextLifecycleEvent;
 import org.w3c.dom.*;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,13 +73,27 @@ public class UnknownElementDataReaper {
             }
         }
 
-        // Get rid of training space characters (only spaces - not all whitespace).
+        // Get rid of leading and space characters (only spaces - not all whitespace).
         // This helps eliminate ugly indentation issues in the serialized XML...
-        StringBuilder trimEnd = new StringBuilder(serializeWriter.toString());
+        String xml;
+        try {
+            xml = normalizeLines(serializeWriter.toString());
+        } catch (IOException e) {
+            throw new SmooksException("Unexpected pre-text node serialization exception while attempting to remove excess whitespace.", e);
+        }
+        StringBuilder trimEnd = new StringBuilder(xml);
+        while(trimEnd.length() > 0 && trimEnd.charAt(0) == ' ') {
+            trimEnd.deleteCharAt(0);
+        }
+        while(trimEnd.length() > 1 && trimEnd.charAt(0) == '\n' && trimEnd.charAt(1) == '\n') {
+            trimEnd.deleteCharAt(0);
+        }
         while(trimEnd.length() > 0 && trimEnd.charAt(trimEnd.length() - 1) == ' ') {
             trimEnd.deleteCharAt(trimEnd.length() - 1);
         }
-
+        while(trimEnd.length() > 1 && trimEnd.charAt(trimEnd.length() - 1) == '\n' && trimEnd.charAt(trimEnd.length() - 2) == '\n') {
+            trimEnd.deleteCharAt(trimEnd.length() - 1);
+        }
 
         return trimEnd.toString();
     }
@@ -99,6 +112,20 @@ public class UnknownElementDataReaper {
         }
 
         return false;
+    }
+
+    public static String normalizeLines(String xml) throws IOException {
+        StringBuffer stringBuf = new StringBuffer();
+        int xmlLength = xml.length();
+
+        for(int i = 0; i < xmlLength; i++) {
+            char character = xml.charAt(i);
+            if(character != '\r') {
+                stringBuf.append(character);
+            }
+        }
+
+        return stringBuf.toString();
     }
 
     private static DefaultSerializationUnit serializationUnit;

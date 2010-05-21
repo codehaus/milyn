@@ -8,9 +8,13 @@
     -->
     <jb:bean beanId="smooksModel" class="org.smooks.model.core.SmooksModel" createOnElement="#document">
         <jb:wiring property="readers" beanIdRef="readers" />
+        <jb:wiring property="beans" beanIdRef="beans" />
     </jb:bean>
     <jb:bean beanId="readers" class="java.util.ArrayList" createOnElement="#document">
         <jb:wiring beanType="org.smooks.model.core.Reader" />
+    </jb:bean>
+    <jb:bean beanId="beans" class="java.util.ArrayList" createOnElement="#document">
+        <jb:wiring beanType="org.smooks.model.javabean.Bean" />
     </jb:bean>
 
     <!--

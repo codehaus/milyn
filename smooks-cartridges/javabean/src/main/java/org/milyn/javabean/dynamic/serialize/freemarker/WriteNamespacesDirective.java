@@ -39,11 +39,27 @@ class WriteNamespacesDirective implements TemplateDirectiveModel {
         Model model = (Model) modelBeanModel.getWrappedObject();
         Map<String, String> namespaces = model.getNamespacePrefixMappings();
         Set<Map.Entry<String, String>> nsEntries = namespaces.entrySet();
-        boolean addSpace = false;
+        boolean addNewline = false;
+        SimpleScalar indentScalar = (SimpleScalar) params.get("indent");
+        int indent = 12;
+
+        if(indentScalar != null) {
+            String indentParamVal = indentScalar.getAsString().trim();
+            try {
+                indent = Integer.parseInt(indentParamVal);
+                indent = Math.min(indent, 100);
+            } catch(NumberFormatException e) {
+                indent = 12;
+            }
+        }
+
 
         for(Map.Entry<String, String> nsEntry : nsEntries) {
-            if(addSpace) {
-                writer.write(' ');
+            if(addNewline) {
+                writer.write('\n');
+                for(int i = 0; i < indent; i++) {
+                    writer.write(' ');
+                }
             }
 
             String uri = nsEntry.getKey();
@@ -58,7 +74,7 @@ class WriteNamespacesDirective implements TemplateDirectiveModel {
             writer.write(uri);
             writer.write('"');
             
-            addSpace = true;
+            addNewline = true;
         }
     }
 }
