@@ -62,6 +62,15 @@ public class Segment extends SegmentGroup {
         this.segref = value;
     }
 
+    @Override
+    public String getJavaName() {
+        if(segref != null) {
+            return segref;
+        } else {
+            return super.getJavaName();
+        }
+    }
+
     public boolean isTruncatable() {
         return truncatable != null && truncatable;
     }

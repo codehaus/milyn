@@ -104,9 +104,9 @@ public class Delimiters {
         this.ignoreCRLF = segment.endsWith("!$");
 
         if (ignoreCRLF) {
-            this.segmentDelimiter = segment.replace("!$", "").toCharArray();
+            segmentDelimiter = segment.replace("!$", "").toCharArray();
         } else {
-            this.segmentDelimiter = segment.toCharArray();
+            segmentDelimiter = segment.toCharArray();
         }
 	}
 }

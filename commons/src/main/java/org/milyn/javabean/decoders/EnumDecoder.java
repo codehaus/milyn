@@ -36,6 +36,7 @@ import java.util.Properties;
 @DecodeType({Enum.class})
 public class EnumDecoder implements DataDecoder, Configurable {
 
+    private Properties configuration;
     private Class enumType;
     private MappingDecoder mappingDecoder = new MappingDecoder();
 
@@ -59,6 +60,12 @@ public class EnumDecoder implements DataDecoder, Configurable {
 
         mappingDecoder.setConfiguration(resourceConfig);
         mappingDecoder.setStrict(false);
+
+        this.configuration = resourceConfig;
+    }
+
+    public Properties getConfiguration() {
+        return configuration;
     }
 
     public void setEnumType(Class enumType) {

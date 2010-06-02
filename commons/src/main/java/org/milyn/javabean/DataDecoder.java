@@ -51,6 +51,7 @@ import java.util.Collections;
  * where type is the Java datatype to which the implementation decodes.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @see org.milyn.javabean.DataEncoder
  */
 public interface DataDecoder {
     

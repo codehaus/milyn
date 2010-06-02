@@ -57,6 +57,8 @@ public abstract class LocaleAwareDateDecoder implements Configurable
 
     protected String format;
 
+    private Properties configuration;
+    
     /*
      * 	Need to initialize a default decoder as not calls can be make
      * 	directly to decode without calling setConfigurtion.
@@ -74,6 +76,11 @@ public abstract class LocaleAwareDateDecoder implements Configurable
         verifyLocale = Boolean.parseBoolean(resourceConfig.getProperty(VERIFY_LOCALE, "false"));
 
         decoder = new SimpleDateFormat(format.trim(), getLocale( languageCode, countryCode ));
+        this.configuration = resourceConfig;
+    }
+
+    public Properties getConfiguration() {
+        return configuration;
     }
 
     /**

@@ -13,7 +13,7 @@
 	See the GNU Lesser General Public License for more details:
 	http://www.gnu.org/licenses/lgpl.txt
 */
-package org.milyn.ejc;
+package org.milyn.ejc.order;
 
 import junit.framework.TestCase;
 
@@ -21,6 +21,10 @@ import java.io.IOException;
 
 import org.milyn.archive.Archive;
 import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.ejc.ClassModel;
+import org.milyn.ejc.EJC;
+import org.milyn.ejc.EJCTestUtil;
+import org.milyn.ejc.IllegalNameException;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,13 +35,7 @@ import org.xml.sax.SAXException;
 public class EJCTest extends TestCase {
 
     public void testOrderModel() throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
-    	String configName = "order-mapping.xml";
-        EJC ejc = new EJC();
-                    
-        ClassModel classModel = ejc.compile(getClass().getResourceAsStream(configName), configName, "test.pakageName");
-        
-        ECTTestUtil.assertEquals(classModel, getClass().getResourceAsStream("order-mapping-model.txt"));
-
-        Archive archive = ECTTestUtil.buildModelArchive(classModel);
+        //EJCTestUtil.dumpModel(getClass().getResourceAsStream("order-mapping.xml"));
+        EJCTestUtil.testModel("order-mapping.xml", "order.edi", "OrderFactory");
     }
 }

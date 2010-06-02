@@ -52,4 +52,8 @@ public class MappingNode {
     public void setParent(MappingNode parent) {
         this.parent = parent;
     }
+
+    public String getJavaName() {
+        return xmltag;
+    }
 }

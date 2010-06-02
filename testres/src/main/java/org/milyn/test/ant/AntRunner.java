@@ -109,6 +109,7 @@ public class AntRunner {
             antLogger.setMessageOutputLevel(Project.MSG_INFO);
 
             project.addBuildListener(antLogger);
+            project.setBaseDir(new File("./"));
 
             File executeScript = new File("./target/ant-exec.xml");
             FileOutputStream fileOs = new FileOutputStream(executeScript);

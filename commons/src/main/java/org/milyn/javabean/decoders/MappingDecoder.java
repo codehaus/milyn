@@ -39,6 +39,10 @@ public class MappingDecoder implements DataDecoder, Configurable {
         strict = resourceConfig.getProperty("strict", "true").equals("true");
     }
 
+    public Properties getConfiguration() {
+        return resourceConfig;
+    }
+
     public Object decode(String data) throws DataDecodeException {
         if(resourceConfig != null) {
             String mappingValue = resourceConfig.getProperty(data);

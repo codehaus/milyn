@@ -64,7 +64,7 @@ public class EJC {
      * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
      * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
      * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
-     * @param configFile the edi-mapping-configuration.
+     * @param mappingModel the edi-mapping-configuration.
      * @param configName the name of the edi-mapping-config.
      * @param beanPackage the package name of generated java classes.
      * @param beanFolder the folder to place the generated java classes.
@@ -73,9 +73,10 @@ public class EJC {
      * @throws SAXException When edi-mapping-configuration is badly formatted.
      * @throws IllegalNameException when name of java-classes is illegal.
      * @throws ClassNotFoundException when error occurs while creating bindingfile.
+     * @deprecated Use {@link #compile(java.io.InputStream, String, String)}.
      */
-    public void compile(InputStream configFile, String configName, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
-        ClassModel model = compile(configFile, configName, beanPackage);
+    public void compile(InputStream mappingModel, String configName, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
+        ClassModel model = compile(mappingModel, beanPackage);
         String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
         
         writeModelToFolder(model, configName, beanPackage, beanFolder, bindingFile);
@@ -90,7 +91,31 @@ public class EJC {
      * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
      * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
      * @param mappingModel the edi-mapping-configuration.
-     * @param mappingModelName the name of the edi-mapping-config.
+     * @param beanPackage the package name of generated java classes.
+     * @param beanFolder the folder to place the generated java classes.
+     * @throws EDIConfigurationException When edi-mapping-configuration is badly formatted.
+     * @throws IOException When unable to read edi-mapping-configuration.
+     * @throws SAXException When edi-mapping-configuration is badly formatted.
+     * @throws IllegalNameException when name of java-classes is illegal.
+     * @throws ClassNotFoundException when error occurs while creating bindingfile.
+     */
+    public void compile(InputStream mappingModel, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
+        byte[] mappingModelBytes = StreamUtils.readStream(mappingModel);
+        ClassModel model = compile(new ByteArrayInputStream(mappingModelBytes), beanPackage);
+        String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
+
+        writeModelToFolder(model, new ByteArrayInputStream(mappingModelBytes), beanPackage, beanFolder, bindingFile);
+    }
+
+    /**
+     * Compiles a edi-mapping-configuration and generates java implementation and
+     * bindingfile.
+     *
+     * The compilation is performed in the following order:
+     * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
+     * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
+     * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
+     * @param mappingModel the edi-mapping-configuration.
      * @param beanPackage the package name of generated java classes.
      * @return The ClassModel.
      * @throws EDIConfigurationException When edi-mapping-configuration is badly formatted.
@@ -99,7 +124,7 @@ public class EJC {
      * @throws IllegalNameException when name of java-classes is illegal.
      * @throws ClassNotFoundException when error occurs while creating bindingfile.
      */
-    public ClassModel compile(InputStream mappingModel, String mappingModelName, String beanPackage) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
+    public ClassModel compile(InputStream mappingModel, String beanPackage) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
         //Read edifact configuration
         Edimap edimap = readEDIConfig(mappingModel);
 
@@ -108,23 +133,35 @@ public class EJC {
         return ediConfigReader.parse(edimap, beanPackage);
     }
 
-	private void writeModelToFolder(ClassModel model, String configName, String beanPackage, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {		
-		LOG.info("Writing java beans to " + beanFolder + "...");
-        BeanWriter.writeBeansToFolder(model, beanFolder, bindingFile);
+    public static void writeModelToFolder(ClassModel model, InputStream mappingModel, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {
+        writeModelToFolder(model, mappingModel, model.getRoot().getPackageName(), beanFolder, bindingFile);
+    }
 
-        LOG.info("Creating bindingfile...");
-        String bundleConfigPath = "/" + beanPackage.replace('.', '/') + "/edimappingconfig.xml";
-        FileUtils.copyFile(configName, beanFolder + bundleConfigPath);
+    private static void writeModelToFolder(ClassModel model, String mappingModelPath, String beanPackage, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {
+        writeModelToFolder(model, new FileInputStream(mappingModelPath), beanPackage, beanFolder, bindingFile);
+    }
 
-        BindingWriter bindingWriter = new BindingWriter(model);
-        bindingWriter.generate(bindingFile);
+	private static void writeModelToFolder(ClassModel model, InputStream mappingModel, String beanPackage, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {
+        try {
+            LOG.info("Writing java beans to " + beanFolder + "...");
+            BeanWriter.writeBeansToFolder(model, beanFolder, bindingFile);
 
-        LOG.info("-----------------------------------------------------------------------");
-        LOG.info(" Compiltation complete.");
-        LOG.info("-----------------------------------------------------------------------");
-        LOG.info(" Files are located in folder ");
-        LOG.info(" " + beanFolder);
-        LOG.info("-----------------------------------------------------------------------");
+            LOG.info("Creating bindingfile...");
+            String bundleConfigPath = "/" + beanPackage.replace('.', '/') + "/edimappingconfig.xml";
+            FileUtils.writeFile(StreamUtils.readStream(mappingModel), new File(beanFolder + bundleConfigPath));
+
+            BindingWriter bindingWriter = new BindingWriter(model);
+            bindingWriter.generate(bindingFile);
+
+            LOG.info("-----------------------------------------------------------------------");
+            LOG.info(" Compiltation complete.");
+            LOG.info("-----------------------------------------------------------------------");
+            LOG.info(" Files are located in folder ");
+            LOG.info(" " + beanFolder);
+            LOG.info("-----------------------------------------------------------------------");
+        } finally {
+            mappingModel.close();
+        }
 	}
 
     /**

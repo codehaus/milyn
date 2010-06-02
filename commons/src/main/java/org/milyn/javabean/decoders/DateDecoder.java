@@ -19,8 +19,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.milyn.assertion.AssertArgument;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DataEncoder;
 import org.milyn.javabean.DecodeType;
 
 /**
@@ -39,7 +41,7 @@ import org.milyn.javabean.DecodeType;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @DecodeType(Date.class)
-public class DateDecoder extends LocaleAwareDateDecoder implements DataDecoder {
+public class DateDecoder extends LocaleAwareDateDecoder implements DataDecoder, DataEncoder {
 
     public Object decode(String data) throws DataDecodeException {
         try {
@@ -49,6 +51,17 @@ public class DateDecoder extends LocaleAwareDateDecoder implements DataDecoder {
             }
         } catch (ParseException e) {
             throw new DataDecodeException("Error decoding Date data value '" + data + "' with decode format '" + format + "'.", e);
+        }
+    }
+
+    public String encode(Object date) throws DataDecodeException {
+        AssertArgument.isNotNull(date, "date");
+        if(!(date instanceof Date)) {
+            throw new DataDecodeException("Cannot encode Object type '" + date.getClass().getName() + "'.  Must be type '" + Date.class.getName() + "'.");
+        }
+        // Must be sync'd - DateFormat is not synchronized.
+        synchronized(decoder) {
+            return decoder.format((Date) date);
         }
     }
 }

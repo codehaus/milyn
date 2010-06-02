@@ -36,8 +36,12 @@ public class JClass {
 
     private String packageName;
     private String className;
+    private Set<JType> rawImports = new LinkedHashSet<JType>();
+    private Set<JType> implementTypes = new LinkedHashSet<JType>();
+    private Set<JType> extendTypes = new LinkedHashSet<JType>();
     private Class<?> skeletonClass;
     private List<JNamedType> properties = new ArrayList<JNamedType>();
+    private List<JMethod> constructors = new ArrayList<JMethod>();
     private List<JMethod> methods = new ArrayList<JMethod>();
     private boolean fluentSetters = true;
 
@@ -66,6 +70,18 @@ public class JClass {
         return className;
     }
 
+    public Set<JType> getRawImports() {
+        return rawImports;
+    }
+
+    public Set<JType> getImplementTypes() {
+        return implementTypes;
+    }
+
+    public Set<JType> getExtendTypes() {
+        return extendTypes;
+    }
+
     public void setFluentSetters(boolean fluentSetters) {
         this.fluentSetters = fluentSetters;
     }
@@ -91,30 +107,34 @@ public class JClass {
         return skeletonClass;
     }
 
-    public JClass addProperty(JNamedType property) {
+    public void addProperty(JNamedType property) {
         AssertArgument.isNotNull(property, "property");
         assertPropertyUndefined(property);
 
         properties.add(property);
+    }
+
+    public JClass addBeanProperty(JNamedType property) {
+        addProperty(property);
 
         String propertyName = property.getName();
         String capitalizedPropertyName = Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);
 
         // Add property getter method...
         JMethod getterMethod = new JMethod(property.getType(), "get" + capitalizedPropertyName);
-        getterMethod.setBody("return " + property.getName() + ";");
+        getterMethod.appendToBody("return " + property.getName() + ";");
         methods.add(getterMethod);
 
         // Add property setter method...
         if(fluentSetters) {
             JMethod setterMethod = new JMethod(new JType(getSkeletonClass()), "set" + capitalizedPropertyName);
             setterMethod.addParameter(property);
-            setterMethod.setBody("this." + property.getName() + " = " + property.getName() + ";  return this;");
+            setterMethod.appendToBody("this." + property.getName() + " = " + property.getName() + ";  return this;");
             methods.add(setterMethod);
         } else {
             JMethod setterMethod = new JMethod("set" + capitalizedPropertyName);
             setterMethod.addParameter(property);
-            setterMethod.setBody("this." + property.getName() + " = " + property.getName() + ";");
+            setterMethod.appendToBody("this." + property.getName() + " = " + property.getName() + ";");
             methods.add(setterMethod);
         }
 
@@ -125,18 +145,66 @@ public class JClass {
         return properties;
     }
 
+    public List<JMethod> getConstructors() {
+        return constructors;
+    }
+
     public List<JMethod> getMethods() {
         return methods;
+    }
+
+    public JMethod getDefaultConstructor() {
+        for(JMethod constructor : constructors) {
+            if(constructor.getParameters().isEmpty()) {
+                return constructor;
+            }
+        }
+
+        JMethod constructor = new JMethod(getClassName());
+        constructors.add(constructor);
+
+        return constructor;
     }
 
     public Set<Class<?>> getImports() {
         Set<Class<?>> importSet = new LinkedHashSet<Class<?>>();
 
+        addImports(importSet, implementTypes);
+        addImports(importSet, extendTypes);
         for(JNamedType property : properties) {
             property.getType().addImports(importSet, new String[] {"java.lang", packageName});
         }
+        addMethodImportData(constructors, importSet);
+        addMethodImportData(methods, importSet);
+        addImports(importSet, rawImports);
 
         return importSet;
+    }
+
+    private void addImports(Set<Class<?>> importSet, Collection<JType> types) {
+        for(JType property : types) {
+            property.addImports(importSet, new String[] {"java.lang", packageName});
+        }
+    }
+
+    private void addMethodImportData(List<JMethod> methodList, Set<Class<?>> importSet) {
+        for(JMethod method : methodList) {
+            method.getReturnType().addImports(importSet, new String[] {"java.lang", packageName});
+            for(JNamedType param : method.getParameters()) {
+                param.getType().addImports(importSet, new String[] {"java.lang", packageName});
+            }
+            for(JType exception : method.getExceptions()) {
+                exception.addImports(importSet, new String[] {"java.lang", packageName});
+            }
+        }
+    }
+
+    public String getImplementsDecl() {
+        return PojoGenUtil.getTypeDecl("implements", implementTypes);
+    }
+
+    public String getExtendsDecl() {
+        return PojoGenUtil.getTypeDecl("extends", extendTypes);
     }
 
     public void writeClass(Writer writer) throws IOException {

@@ -17,8 +17,7 @@ package org.milyn.javabean.pojogen;
 
 import org.milyn.assertion.AssertArgument;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Method model.
@@ -30,7 +29,8 @@ public class JMethod {
     private JType returnType;
     private String methodName;
     private List<JNamedType> parameters = new ArrayList<JNamedType>();
-    private String body;
+    private Set<JType> exceptions = new LinkedHashSet<JType>();
+    private StringBuilder bodyBuilder = new StringBuilder();
 
     public JMethod(String methodName) {
         AssertArgument.isNotNull(methodName, "methodName");
@@ -66,20 +66,26 @@ public class JMethod {
         return parameters;
     }
 
+    public JMethod appendToBody(String codeString) {
+        bodyBuilder.append(codeString);
+        return this;
+    }
+
+    public int bodyLength() {
+        return bodyBuilder.length();
+    }
+
     public String getBody() {
-        return body;
+        return bodyBuilder.toString();
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public Set<JType> getExceptions() {
+        return exceptions;
     }
 
-    public String getSignature() {
+    public String getParamSignature() {
         StringBuilder signature = new StringBuilder();
 
-        signature.append(returnType);
-        signature.append(" ");
-        signature.append(methodName);
         signature.append("(");
         for(int i = 0; i < parameters.size(); i++) {
             if(i > 0) {
@@ -88,6 +94,10 @@ public class JMethod {
             signature.append(parameters.get(i));
         }
         signature.append(")");
+
+        if(!exceptions.isEmpty()) {
+            signature.append(PojoGenUtil.getTypeDecl("throws", exceptions));
+        }
 
         return signature.toString();
     }
