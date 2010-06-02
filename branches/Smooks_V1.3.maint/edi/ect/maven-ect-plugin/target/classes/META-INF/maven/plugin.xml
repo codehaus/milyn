@@ -1,0 +1,61 @@
+<plugin>
+  <description></description>
+  <groupId>org.milyn</groupId>
+  <artifactId>maven-ect-plugin</artifactId>
+  <version>1.3.2-SNAPSHOT</version>
+  <goalPrefix>ect</goalPrefix>
+  <isolatedRealm>false</isolatedRealm>
+  <inheritedByDefault>true</inheritedByDefault>
+  <mojos>
+    <mojo>
+      <goal>generate</goal>
+      <description> ECT Mojo.
+ 
+ @author bardl
+</description>
+      <requiresDependencyResolution>runtime</requiresDependencyResolution>
+      <requiresDirectInvocation>false</requiresDirectInvocation>
+      <requiresProject>true</requiresProject>
+      <requiresReports>false</requiresReports>
+      <aggregator>false</aggregator>
+      <requiresOnline>false</requiresOnline>
+      <inheritedByDefault>true</inheritedByDefault>
+      <phase>generate-sources</phase>
+      <implementation>org.milyn.ect.maven.ECTMojo</implementation>
+      <language>java</language>
+      <instantiationStrategy>per-lookup</instantiationStrategy>
+      <executionStrategy>once-per-session</executionStrategy>
+      <parameters>
+        <parameter>
+          <name>messageName</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>true</editable>
+          <description>The name of the message as defined in the message definition file (&apos;src&apos;) e.g. &apos;INVOIC&apos; for UN/EDIFACT.</description>
+        </parameter>
+        <parameter>
+          <name>srcType</name>
+          <type>java.lang.String</type>
+          <required>true</required>
+          <editable>true</editable>
+          <description>The EDI message definition type.  Currently Supports &apos;UNEDIFACT&apos; only.</description>
+        </parameter>
+        <parameter>
+          <name>src</name>
+          <type>java.io.File</type>
+          <required>true</required>
+          <editable>true</editable>
+          <description>The message definition file.  Depends on the message definition type (&apos;srcType&apos;) e.g. for UN/EDIFACT, this is a ZIP file that can be downloaded from the web.</description>
+        </parameter>
+        <parameter>
+          <name>outFile</name>
+          <type>java.io.File</type>
+          <required>false</required>
+          <editable>true</editable>
+          <description></description>
+        </parameter>
+      </parameters>
+    </mojo>
+  </mojos>
+  <dependencies/>
+</plugin>
