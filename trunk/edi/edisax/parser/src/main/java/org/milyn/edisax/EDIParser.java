@@ -530,9 +530,14 @@ public class EDIParser implements XMLReader {
 
 		// Iterate over the fields and map them...
         int numFields = currentSegmentFields.length - 1; // It's "currentSegmentFields.length - 1" because we don't want to include the segment code.
+        int numFieldsMapped = segment.getFields().size();
+        boolean ignoreUnmappedFields = segment.isIgnoreUnmappedFields();
         Delimiters delimiters = segmentReader.getDelimiters();
         String fieldRepeat = delimiters.getFieldRepeat();
 		for(int i = 0; i < numFields; i++) {
+			if (ignoreUnmappedFields && i >= numFieldsMapped) {
+                break;
+            }
 			String fieldMessageVal = currentSegmentFields[i + 1]; // +1 to skip the segment code
 			Field expectedField = expectedFields.get(i);
 
@@ -631,8 +636,9 @@ public class EDIParser implements XMLReader {
         List<Field> expectedFields = segment.getFields();
 
         int numFieldsExpected = expectedFields.size() + 1; // It's "expectedFields.length + 1" because the segment code is included.
-
-        if(currentSegmentFields.length != numFieldsExpected) {
+        int numberOfFieldsToValidate = 0;
+        
+        if(currentSegmentFields.length < numFieldsExpected) { 
             boolean throwException = false;
 
             // If we don't have all the fields we're expecting, check is the Segment truncatable
@@ -652,9 +658,22 @@ public class EDIParser implements XMLReader {
             if(throwException) {
                 throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segment.getSegcode() + "] expected to contain " + (numFieldsExpected - 1) + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", segment, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
+            
+            numberOfFieldsToValidate = currentSegmentFields.length;
+            
+        } else if (currentSegmentFields.length > numFieldsExpected) {
+        	// we have more fields than we are expecting.
+        	if(segment.isIgnoreUnmappedFields()) {
+        		numberOfFieldsToValidate= numFieldsExpected;
+        	} else {
+        		throw new EDIParseException(edifactModel.getEdimap(), "Segment [" + segment.getSegcode() + "] expected to contain " + (numFieldsExpected - 1) + " fields.  Actually contains " + (currentSegmentFields.length - 1) + " fields (not including segment code).  Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", segment, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
+        	}
+        } else {
+        	// number of fields matches the expected number of fields.
+        	numberOfFieldsToValidate = currentSegmentFields.length;
         }
 
-        for (int i = 1; i < currentSegmentFields.length; i++) {
+        for (int i = 1; i < numberOfFieldsToValidate; i++) {
             Field field = expectedFields.get(i-1);
             if (field.getComponents().size() == 0 && (!currentSegmentFields[i].equals(""))) {
                 validateValueNode(field, currentSegmentFields[i]);

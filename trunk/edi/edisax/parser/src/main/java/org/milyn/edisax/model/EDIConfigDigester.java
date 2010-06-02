@@ -343,6 +343,7 @@ public class EDIConfigDigester {
         segment.setSegcode(getAttributeValue(node, "segcode"));
         segment.setSegref(getAttributeValue(node, "segref"));
         segment.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
+        segment.setIgnoreUnmappedFields(getNodeValueAsBoolean(node, "ignoreUnmappedFields"));
         segment.setDescription(getAttributeValue(node, "description"));
         setValuesForMappingNode(node, segment, namespacePrefix, parent);
     }

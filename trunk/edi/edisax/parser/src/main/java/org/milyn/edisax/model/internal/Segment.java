@@ -27,6 +27,7 @@ public class Segment extends SegmentGroup {
     private Pattern segcodePattern;
     private String segref;
     private Boolean truncatable;
+    private Boolean ignoreUnmappedFields;
     private String description;
 
     public List<Field> getFields() {
@@ -77,6 +78,14 @@ public class Segment extends SegmentGroup {
 
     public void setTruncatable(Boolean value) {
         this.truncatable = value;
+    }
+    
+    public void setIgnoreUnmappedFields(Boolean value) {
+    	this.ignoreUnmappedFields = value;
+    }
+    
+    public boolean isIgnoreUnmappedFields() {
+    	return ignoreUnmappedFields != null && ignoreUnmappedFields;
     }
 
     public String getDescription() {
