@@ -14,31 +14,24 @@
  *  http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.smooks.model.csv;
+package org.milyn.javabean;
 
 /**
- * CSV Reader inline binding configuration.
- * 
+ * Data encoder.
+ * <p/>
+ * This is an extension interface for adding encode capability to a
+ * {@link org.milyn.javabean.DataDecoder} implementation.
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
+ * @see org.milyn.javabean.DataDecoder
  */
-public abstract class Binding {
+public interface DataEncoder extends DataDecoder {
 
-    private String beanId;
-    private String beanClass;
-
-    public String getBeanId() {
-        return beanId;
-    }
-
-    public void setBeanId(String beanId) {
-        this.beanId = beanId;
-    }
-
-    public String getBeanClass() {
-        return beanClass;
-    }
-
-    public void setBeanClass(String beanClass) {
-        this.beanClass = beanClass;
-    }
+    /**
+     * Encode an object to a string.
+     * @param object The object to be encoded.
+     * @return The encoded object.
+     * @throws DataDecodeException Error encoding object.
+     */
+    public String encode(Object object) throws DataDecodeException;
 }

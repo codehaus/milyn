@@ -36,7 +36,7 @@ public class ArchiveClassLoaderTest extends TestCase {
 
         ArchiveClassLoader classLoader = new ArchiveClassLoader(archive);
 
-        Class clazzInst = classLoader.findClass(Archive.class.getName());
+        Class clazzInst = classLoader.loadClass(Archive.class.getName());
 
         // Classes are loaded by different classloaders, so shouldn't be the same class instance...
         assertNotSame(Archive.class, clazzInst);

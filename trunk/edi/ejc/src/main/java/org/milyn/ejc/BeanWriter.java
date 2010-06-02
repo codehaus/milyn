@@ -35,6 +35,12 @@ public class BeanWriter {
 
     private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
 
+    private static boolean generateFromEDINR = false;
+
+    public static void setGenerateFromEDINR(boolean generateFromEDINR) {
+        BeanWriter.generateFromEDINR = generateFromEDINR;
+    }
+
     /**
      * Iterates through all classes defined in ClassModel. For each class it generates the class
      * implementation and saves the new class to filesystem.
@@ -51,7 +57,7 @@ public class BeanWriter {
             writeToFile(folder, bean);
         }
 
-        writeFactoryClass(folder, model.getRoot(), bindingFile);
+        writeFactoryClass(folder, model, bindingFile);
     }
 
     /**
@@ -70,27 +76,30 @@ public class BeanWriter {
         for ( JClass bean : model.getCreatedClasses().values() ) {
             bean.writeClass(writer);
             writer.write("\n\n");
+            writer.flush();
         }
     }
 
     /**
      * Creates the factory class for wrapping the filtering logic in Smooks.
      * @param folder the folder where the factory-class should be created.
-     * @param rootClass the root class giving name to the factory-class.
+     * @param model The ClassModel instance.
      * @param bindingFile the bindingfile created by the EJC.
      * @throws IllegalNameException when class name violates keywords in java.
      * @throws IOException when error ocurrrs while writing factory to file.
      */
-    private static void writeFactoryClass(String folder, JClass rootClass, String bindingFile) throws IllegalNameException, IOException {
+    private static void writeFactoryClass(String folder, ClassModel model, String bindingFile) throws IllegalNameException, IOException {
+        JClass rootClass = model.getRoot();
         String packageName = rootClass.getPackageName();
         String className = rootClass.getClassName();
         String classId = EJCUtils.encodeAttributeName(null, rootClass.getClassName());
 
-        Map<String, String> configs = new HashMap<String,String>();
+        Map<String, Object> configs = new HashMap<String, Object>();
         configs.put("package", packageName);
         configs.put("className", className);
         configs.put("classId", classId);
         configs.put("bindingFile", new File(bindingFile).getName());
+        configs.put("generateFromEDINR", generateFromEDINR);
 
         FreeMarkerTemplate template;
         FileOutputStream fileOutputStream = null;

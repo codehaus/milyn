@@ -14,7 +14,7 @@
 
         <medi:segment segcode="HDR" xmltag="header">
             <medi:field xmltag="orderId"/>
-            <medi:field xmltag="statusCode"/>
+            <medi:field xmltag="statusCode" type="Integer"/>
             <medi:field xmltag="netAmount" type="BigDecimal"/>
             <medi:field xmltag="totalAmount" type="BigDecimal"/>
             <medi:field xmltag="tax" type="BigDecimal"/>

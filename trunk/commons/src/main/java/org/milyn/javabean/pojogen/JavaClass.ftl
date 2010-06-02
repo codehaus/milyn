@@ -7,14 +7,20 @@ package ${class.packageName};
 import ${importClass.name};    
 </#list>
 
-public class ${class.className} {
+public class ${class.className}${class.implementsDecl}${class.extendsDecl} {
 
     <#list class.properties as property>
     private ${property};
     </#list>
+    <#list class.constructors as constructor>
+
+    public ${class.className}${constructor.paramSignature} {
+        ${constructor.body}
+    }
+    </#list>
     <#list class.methods as method>
 
-    public ${method.signature} {
+    public ${method.returnType} ${method.methodName}${method.paramSignature} {
         ${method.body}
     }
     </#list>

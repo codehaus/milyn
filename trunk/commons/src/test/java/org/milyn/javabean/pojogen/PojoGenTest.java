@@ -21,7 +21,11 @@ import java.io.StringWriter;
 import java.io.IOException;
 import java.util.List;
 
+import org.milyn.io.NullWriter;
 import org.milyn.io.StreamUtils;
+import org.milyn.javabean.DataDecoder;
+import org.milyn.profile.BasicProfile;
+import org.milyn.profile.Profile;
 
 /**
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
@@ -35,14 +39,20 @@ public class PojoGenTest extends TestCase {
         aClass.setFluentSetters(true);
         bClass.setFluentSetters(false);
 
-        aClass.addProperty(new JNamedType(new JType(int.class), "primVar"));
-        aClass.addProperty(new JNamedType(new JType(Double.class), "doubleVar"));
-        aClass.addProperty(new JNamedType(new JType(BBBClass.class), "objVar"));
-        aClass.addProperty(new JNamedType(new JType(List.class, BBBClass.class), "genericVar"));
+        aClass.addBeanProperty(new JNamedType(new JType(int.class), "primVar"));
+        aClass.addBeanProperty(new JNamedType(new JType(Double.class), "doubleVar"));
+        aClass.addBeanProperty(new JNamedType(new JType(BBBClass.class), "objVar"));
+        aClass.addBeanProperty(new JNamedType(new JType(List.class, BBBClass.class), "genericVar"));
+
+        aClass.getImplementTypes().add(new JType(DataDecoder.class));
+        aClass.getImplementTypes().add(new JType(Profile.class));
+
+        aClass.getExtendTypes().add(new JType(NullWriter.class));
+        aClass.getExtendTypes().add(new JType(BasicProfile.class));
 
         // Wire AClass into BClass...
-        bClass.addProperty(new JNamedType(new JType(BBBClass.class), "bbbVar"));
-        bClass.addProperty(new JNamedType(new JType(aClass.getSkeletonClass()), "aClassVar"));
+        bClass.addBeanProperty(new JNamedType(new JType(BBBClass.class), "bbbVar"));
+        bClass.addBeanProperty(new JNamedType(new JType(aClass.getSkeletonClass()), "aClassVar"));
 
         StringWriter aWriter = new StringWriter();
         StringWriter bWriter = new StringWriter();
@@ -61,9 +71,9 @@ public class PojoGenTest extends TestCase {
     public void test_duplicateProperty() {
         JClass aClass = new JClass("com.acme", "AClass");
 
-        aClass.addProperty(new JNamedType(new JType(Double.class), "xVar"));
+        aClass.addBeanProperty(new JNamedType(new JType(Double.class), "xVar"));
         try {
-            aClass.addProperty(new JNamedType(new JType(Integer.class), "xVar"));
+            aClass.addBeanProperty(new JNamedType(new JType(Integer.class), "xVar"));
             fail("Exected IllegalArgumentException.");
         } catch(IllegalArgumentException e) {
             assertEquals("Property 'xVar' already defined.", e.getMessage());
@@ -75,10 +85,14 @@ public class PojoGenTest extends TestCase {
             " */\n" +
             "package com.acme;\n" +
             "\n" +
+            "import org.milyn.javabean.DataDecoder;    \n" +
+            "import org.milyn.profile.Profile;    \n" +
+            "import org.milyn.io.NullWriter;    \n" +
+            "import org.milyn.profile.BasicProfile;    \n" +
             "import org.milyn.javabean.pojogen.BBBClass;    \n" +
             "import java.util.List;    \n" +
             "\n" +
-            "public class AClass {\n" +
+            "public class AClass implements DataDecoder, Profile extends NullWriter, BasicProfile {\n" +
             "\n" +
             "    private int primVar;\n" +
             "    private Double doubleVar;\n" +

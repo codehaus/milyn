@@ -31,4 +31,10 @@ public interface Configurable {
      * @throws SmooksConfigurationException Bad component configuration.
      */
     void setConfiguration(Properties config) throws SmooksConfigurationException;
+
+    /**
+     * Get the component configuration.
+     * @return The component configuration properties.
+     */
+    Properties getConfiguration();
 }

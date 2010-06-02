@@ -19,7 +19,9 @@ import com.acme.order.model.*;
 
 import java.io.IOException;
 import java.io.File;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.xml.sax.SAXException;
@@ -61,6 +63,22 @@ public class Main {
         System.out.println("\tDate:       " + header.getDate());
         System.out.println("\tProduct 1:  " + orderItem1.getProductId() + ", " + orderItem1.getTitle() + ", " + orderItem1.getPrice());
         System.out.println("\tProduct 2:  " + orderItem2.getProductId() + ", " + orderItem2.getTitle() + ", " + orderItem2.getPrice());
+        System.out.println();
+
+        System.out.println();
+        System.out.println("Make some modifications to the model and add an additional OrderItem ...");
+        System.out.println();
+
+        header.setStatusCode(2);
+        header.getCustomerDetails().setEmail("me@smooks.com");
+        orderItems.add(new OrderItem().setPosition(3).setPrice(new BigDecimal(27.98f)).setProductId("S45").setQuantity(4L).setTitle("Baby Rattlers"));
+
+        System.out.println();
+        System.out.println("Write the modified model to System.out ...");
+        System.out.println();
+
+        orderFactory.toEDI(order, new PrintWriter(System.out));
+
         System.out.println();
     }
 }

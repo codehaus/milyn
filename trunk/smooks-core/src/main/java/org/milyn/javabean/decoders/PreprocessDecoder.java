@@ -57,7 +57,11 @@ public class PreprocessDecoder implements DataDecoder, Configurable {
 		}
 	}
 
-	public void setBaseDecoder(DataDecoder baseDecoder) {
+    public Properties getConfiguration() {
+        return config;
+    }
+
+    public void setBaseDecoder(DataDecoder baseDecoder) {
 		this.baseDecoder = baseDecoder;
 		if(baseDecoder instanceof Configurable) {
 			((Configurable)baseDecoder).setConfiguration(config);

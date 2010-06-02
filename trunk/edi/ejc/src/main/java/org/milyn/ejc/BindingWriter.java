@@ -63,6 +63,7 @@ public class BindingWriter {
 
 	public static void writeBindingConfig(ClassModel classModel, Writer writer) throws IOException, ClassNotFoundException {
 		(new BindingWriter(classModel)).writeBindingConfig(writer);
+        writer.flush();
 	}
 	
 	public void writeBindingConfig(Writer writer) throws IOException {

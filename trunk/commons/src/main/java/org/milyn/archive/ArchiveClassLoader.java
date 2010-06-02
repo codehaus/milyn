@@ -20,6 +20,8 @@ import org.milyn.assertion.AssertArgument;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link Archive} based {@link ClassLoader}.
@@ -29,6 +31,7 @@ import java.io.InputStream;
 public class ArchiveClassLoader extends ClassLoader {
 
     private Archive archive;
+    private Map<String, Class> loadedClasses = new HashMap<String, Class>();
 
     public ArchiveClassLoader(Archive archive) {
         this(Thread.currentThread().getContextClassLoader(), archive);
@@ -41,14 +44,22 @@ public class ArchiveClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        Class loadedClass = loadedClasses.get(name);
+
+        if(loadedClass != null) {
+            return loadedClass;
+        }
+
         String resName = name.replace('.', '/') + ".class";
         byte[] classBytes = archive.getEntries().get(resName);
 
         if(classBytes != null) {
-            return defineClass(name, classBytes, 0, classBytes.length);
+            loadedClass = defineClass(name, classBytes, 0, classBytes.length);
+            loadedClasses.put(name, loadedClass);
+            return loadedClass;
         } else {
-            return super.findClass(name);
+            return super.loadClass(name);
         }
     }
 

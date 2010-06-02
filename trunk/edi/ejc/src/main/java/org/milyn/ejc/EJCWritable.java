@@ -14,31 +14,25 @@
  *  http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.smooks.model.csv;
+package org.milyn.ejc;
+
+import org.milyn.edisax.model.internal.Delimiters;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
- * CSV Reader inline binding configuration.
+ * EJC Writable bean.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public abstract class Binding {
+public interface EJCWritable {
 
-    private String beanId;
-    private String beanClass;
-
-    public String getBeanId() {
-        return beanId;
-    }
-
-    public void setBeanId(String beanId) {
-        this.beanId = beanId;
-    }
-
-    public String getBeanClass() {
-        return beanClass;
-    }
-
-    public void setBeanClass(String beanClass) {
-        this.beanClass = beanClass;
-    }
+    /**
+     * Write the bean to the specified {@link Writer} instance.
+     * @param writer The target writer.
+     * @param delimiters The delimiters.
+     * @throws IOException Error writing bean.
+     */
+    void write(Writer writer, Delimiters delimiters) throws IOException;
 }

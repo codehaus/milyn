@@ -16,6 +16,7 @@
 package org.milyn.ejc;
 
 import org.apache.commons.logging.Log;
+import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.javabean.pojogen.JClass;
 
 import java.util.LinkedHashMap;
@@ -40,8 +41,17 @@ public class ClassModel {
     private static Log LOG = EJCLogFactory.getLog(ClassModel.class);
 
     private JClass root;
+    private Edimap edimap;
     private Map<String, JClass> createdClasses;
     private Map<String, ValueNodeInfo> valueNodeInfos;
+
+    public void setEdimap(Edimap edimap) {
+        this.edimap = edimap;
+    }
+
+    public Edimap getEdimap() {
+        return edimap;
+    }
 
     /**
      * Returns the root {@link org.milyn.javabean.pojogen.JClass}.

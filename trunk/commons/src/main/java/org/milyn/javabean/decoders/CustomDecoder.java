@@ -32,6 +32,7 @@ import java.util.Properties;
 public class CustomDecoder implements DataDecoder, Configurable {
 
     public static final String CLASS_PROPERTY_NAME = "decoderClass";
+    private Properties configuration;
     private DataDecoder delegateDecoder;
 
     public void setConfiguration(Properties config) throws SmooksConfigurationException {
@@ -47,6 +48,12 @@ public class CustomDecoder implements DataDecoder, Configurable {
         if (delegateDecoder instanceof Configurable) {
             ((Configurable)delegateDecoder).setConfiguration(config);
         }
+
+        this.configuration = config;
+    }
+
+    public Properties getConfiguration() {
+        return configuration;
     }
 
     public Object decode(String data) throws DataDecodeException {
