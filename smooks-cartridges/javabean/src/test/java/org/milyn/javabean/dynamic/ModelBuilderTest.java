@@ -21,6 +21,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -30,21 +31,21 @@ import junit.framework.TestCase;
 import org.xml.sax.SAXParseException;
 
 /**
- * 
+ *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class ModelBuilderTest extends TestCase {
 
 	public static final String NS_DESCRIPTOR = "META-INF/services/org/smooks/javabean/dynamic/ns-descriptors.properties";
-	
+
 	public void test_1_schema() throws SAXException, IOException {
 		ModelBuilder builder = new ModelBuilder(NS_DESCRIPTOR, true);
-		
+
 		Model<AAA> model = builder.readModel(getClass().getResourceAsStream("aaa-message.xml"), AAA.class);
 		AAA aaa = model.getModelRoot();
 		assertEquals(1234.98765, aaa.getDoubleProperty());
 		assertEquals("http://www.acme.com/xsd/aaa.xsd", model.getBeanMetadata(aaa).getNamespace());
-		
+
 		aaa = builder.readObject(getClass().getResourceAsStream("aaa-message.xml"), AAA.class);
 		assertEquals(1234.98765, aaa.getDoubleProperty());
 	}
@@ -68,9 +69,9 @@ public class ModelBuilderTest extends TestCase {
 
 	private void test_2_schema(ModelBuilder builder, String message) throws SAXException, IOException {
 		Model<BBB> model = builder.readModel(getClass().getResourceAsStream(message), BBB.class);
-		BBB bbb = model.getModelRoot();		
+		BBB bbb = model.getModelRoot();
 		assertEquals(1234, bbb.getFloatProperty(), 1.0);
-		
+
 		assertEquals("http://www.acme.com/xsd/bbb.xsd", model.getBeanMetadata(bbb).getNamespace());
 		List<AAA> aaas = bbb.getAaas();
         assertEquals(3, aaas.size());
@@ -86,7 +87,7 @@ public class ModelBuilderTest extends TestCase {
         model.writeModel(writer);
         System.out.println(writer);
         XMLUnit.setIgnoreWhitespace( true );
-        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream(message)), new StringReader(writer.toString()));       
+        XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream(message)), new StringReader(writer.toString()));
 	}
 
     public void test_build_model() throws IOException, SAXException {
@@ -117,4 +118,10 @@ public class ModelBuilderTest extends TestCase {
         XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("bbb-message.xml")), new StringReader(writer.toString()));
     }
+
+    @Override
+    protected void setUp() throws Exception {
+    	Locale.setDefault(new Locale("en", "IE"));
+    }
+
 }
