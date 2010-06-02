@@ -254,33 +254,32 @@ public class StandaloneBeanContext implements BeanContext {
 	 */
 	private void updateBeanMap() {
 
-		for(String beanId : beanIdStore.getBeanIdMap().keySet()) {
+		Map<String, BeanId> beanIdMap = beanIdStore.getBeanIdMap();
 
-			if(!beanMap.containsKey(beanId) ) {
-				beanMap.put(beanId, null);
+		int largestBeanIdIndex = -1;
+		for (Entry<String, BeanId> beanIdEntry : beanIdMap.entrySet()) {
+			String beanIdName = beanIdEntry.getKey();
+			BeanId beanId = beanIdEntry.getValue();
+			if (!beanMap.containsKey(beanIdName)) {
+				beanMap.put(beanIdName, null);
+			}
+			if (largestBeanIdIndex < beanId.getIndex()) {
+				largestBeanIdIndex = beanId.getIndex();
 			}
 		}
-		updateRepositoryEntries();
-	}
+		if(largestBeanIdIndex >= 0) {
+			int newEntries = (largestBeanIdIndex - entries.size()) + 1;
+			entries.addAll(Collections.nCopies(newEntries, (ContextEntry) null));
 
-	/**
-	 * Sync's the repository entry list by copying all the
-	 * {@link Entry} instances from the bean map to the bean list. The
-	 * {@link Entry} instances are put at the same index as the index of the
-	 * corresponding BeanId. This ensures that direct access to the BeanId his
-	 * value is possible.
-	 */
-	private void updateRepositoryEntries() {
-		entries.addAll(Collections.nCopies((beanIdStore.size() - entries.size()), (ContextEntry)null));
+			for (Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
 
-		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
+				BeanId beanId = beanIdMap.get(beanMapEntry.getKey());
 
-			BeanId beanId = beanIdStore.getBeanId(beanMapEntry.getKey());
+				int index = beanId.getIndex();
+				if (entries.get(index) == null) {
 
-			int index = beanId.getIndex();
-			if(entries.get(index) == null) {
-
-				entries.set(index, new ContextEntry(beanId, beanMapEntry));
+					entries.set(index, new ContextEntry(beanId, beanMapEntry));
+				}
 			}
 		}
 	}
@@ -292,7 +291,7 @@ public class StandaloneBeanContext implements BeanContext {
 	 * @param beanId The index of the parent BeanId.
 	 */
 	private void clean(int beanId) {
-        entries.get(beanId).clean();
+		entries.get(beanId).clean();
     }
 
     /* (non-Javadoc)
