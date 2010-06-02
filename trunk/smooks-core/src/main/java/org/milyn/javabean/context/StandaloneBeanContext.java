@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.Fragment;
@@ -18,7 +20,9 @@ import org.milyn.javabean.repository.BeanId;
 import org.milyn.util.MultiLineToStringBuilder;
 
 public class StandaloneBeanContext implements BeanContext {
-	
+
+	private static final Log log = LogFactory.getLog(StandaloneBeanContext.class);
+
 	private final ExecutionContext executionContext;
 
 	private final Map<String, Object> beanMap;
@@ -28,7 +32,7 @@ public class StandaloneBeanContext implements BeanContext {
 	private final BeanIdStore beanIdStore;
 
 	private final BeanContextMapAdapter repositoryBeanMapAdapter = new BeanContextMapAdapter();
-	
+
 	private List<BeanContextLifecycleObserver> lifecycleObservers = new ArrayList<BeanContextLifecycleObserver>();
 	private List<BeanContextLifecycleObserver> addObserversQueue = new ArrayList<BeanContextLifecycleObserver>();
 	private List<BeanContextLifecycleObserver> removeObserversQueue = new ArrayList<BeanContextLifecycleObserver>();
@@ -65,7 +69,7 @@ public class StandaloneBeanContext implements BeanContext {
 		if(currentInstance != null) {
 	    	notifyObservers(new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.END, beanId, bean));
 		}
-		
+
 		// Check if the BeanIdList has new BeanIds and if so then
 		// add those new entries to the Map. This ensures we always
 		// have an up to date Map.
@@ -76,7 +80,7 @@ public class StandaloneBeanContext implements BeanContext {
 
         clean(index);
 		repoEntry.setValue(bean);
-		
+
 		// Add the bean to the context...
     	notifyObservers(new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.BEGIN, beanId, bean));
 	}
@@ -148,13 +152,13 @@ public class StandaloneBeanContext implements BeanContext {
 		if(beanMap == null) {
 			return null;
 		}
-		
+
 		for(Object bean : beanMap.values()) {
 			if(beanType.isInstance(bean)) {
 				return beanType.cast(bean);
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -189,7 +193,7 @@ public class StandaloneBeanContext implements BeanContext {
         repositoryEntry.setValue(null);
 
     	notifyObservers(new BeanContextLifecycleEvent(executionContext, source, BeanLifecycle.END, beanId, getBean(beanId)));
-        
+
 		return old;
 	}
 
@@ -247,35 +251,39 @@ public class StandaloneBeanContext implements BeanContext {
 	 */
 	private void updateBeanMap() {
 
-		for(String beanId : beanIdStore.getBeanIdMap().keySet()) {
+		Map<String, BeanId> beanIdMap = beanIdStore.getBeanIdMap();
 
-			if(!beanMap.containsKey(beanId) ) {
-				beanMap.put(beanId, null);
+		int newBeanIds = 0;
+		int largestBeanIdIndex = 0;
+		for(Entry<String, BeanId> beanIdEntry : beanIdMap.entrySet()) {
+			String beanIdName = beanIdEntry.getKey();
+			BeanId beanId = beanIdEntry.getValue();
+			if(!beanMap.containsKey(beanIdName) ) {
+				beanMap.put(beanIdName, null);
+
+				newBeanIds++;
+			}
+			if(largestBeanIdIndex < beanId.getIndex()) {
+				largestBeanIdIndex = beanId.getIndex();
 			}
 		}
-		updateRepositoryEntries();
-	}
+		if(newBeanIds > 0) {
+			int newEntries = (largestBeanIdIndex - entries.size()) + 1;
+			entries.addAll(Collections.nCopies(newEntries, (ContextEntry)null));
 
-	/**
-	 * Sync's the repository entry list by copying all the
-	 * {@link Entry} instances from the bean map to the bean list. The
-	 * {@link Entry} instances are put at the same index as the index of the
-	 * corresponding BeanId. This ensures that direct access to the BeanId his
-	 * value is possible.
-	 */
-	private void updateRepositoryEntries() {
-		entries.addAll(Collections.nCopies((beanIdStore.size() - entries.size()), (ContextEntry)null));
+			for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
 
-		for(Entry<String, Object> beanMapEntry : beanMap.entrySet()) {
+				BeanId beanId = beanIdMap.get(beanMapEntry.getKey());
 
-			BeanId beanId = beanIdStore.getBeanId(beanMapEntry.getKey());
+				int index = beanId.getIndex();
+				if(entries.get(index) == null) {
 
-			int index = beanId.getIndex();
-			if(entries.get(index) == null) {
-
-				entries.set(index, new ContextEntry(beanId, beanMapEntry));
+					entries.set(index, new ContextEntry(beanId, beanMapEntry));
+				}
 			}
 		}
+
+
 	}
 
 	/**
@@ -285,7 +293,10 @@ public class StandaloneBeanContext implements BeanContext {
 	 * @param beanId The index of the parent BeanId.
 	 */
 	private void clean(int beanId) {
-        entries.get(beanId).clean();
+		ContextEntry entry = entries.get(beanId);
+		if(entry != null) {
+			entry.clean();
+		}
     }
 
     /* (non-Javadoc)
@@ -552,7 +563,7 @@ public class StandaloneBeanContext implements BeanContext {
 			addObserversQueue.add(observer);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#notifyObservers(org.milyn.javabean.lifecycle.BeanContextLifecycleEvent)
 	 */
@@ -571,21 +582,21 @@ public class StandaloneBeanContext implements BeanContext {
 				// Reinstate the global List ref so it can be used again...
 				lifecycleObservers = localObserverListCopy;
 
-				// Synchronize the global observer list... there may be observers queued 
+				// Synchronize the global observer list... there may be observers queued
 				// for addition or removal.  This can happen if a request to add or remove
 				// an observer was triggered during the above iteration of the
 				// localObserverListCopy list...
 				syncObserverList();
 			}
-			
+
 			// Handle nested events i.e. events triggered during the above iteration of the
 			// localObserverListCopy list...
 			if(!notifyObserverEventQueue.isEmpty()) {
 				List<BeanContextLifecycleEvent> notifyObserverEventQueueCopy = notifyObserverEventQueue;
-				
+
 				// Create a new queue for nested notification events created by these events...
 				notifyObserverEventQueue = new ArrayList<BeanContextLifecycleEvent>();
-				
+
 				// Fire the nested events from the notify queue copy...
 				for(BeanContextLifecycleEvent nestedEvent : notifyObserverEventQueueCopy) {
 					notifyObservers(nestedEvent);
@@ -599,7 +610,7 @@ public class StandaloneBeanContext implements BeanContext {
 	/* (non-Javadoc)
 	 * @see org.milyn.javabean.context.BeanContext#removeObserver(org.milyn.javabean.lifecycle.BeanContextLifecycleObserver)
 	 */
-	public void removeObserver(BeanContextLifecycleObserver observer) {		
+	public void removeObserver(BeanContextLifecycleObserver observer) {
 		if(lifecycleObservers != null) {
 			lifecycleObservers.remove(observer);
 		} else {
