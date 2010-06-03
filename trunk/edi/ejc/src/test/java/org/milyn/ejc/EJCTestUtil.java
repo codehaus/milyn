@@ -90,6 +90,12 @@ public class EJCTestUtil {
             TestCase.fail("Exception resolving caller class: " + e.getMessage());
         }
 
+        System.out.println("Stack Trace Elements:");
+        for(StackTraceElement sel : thisStack) {
+            System.out.println("*********** " + sel);
+        }
+        System.out.println("**************** Caller Class:" + callerClass.getName());
+
         Archive archive = null;
         try {
             archive = buildModelArchive(callerClass.getResourceAsStream(ediMappingModelFile), ORG_SMOOKS_EJC_TEST);
