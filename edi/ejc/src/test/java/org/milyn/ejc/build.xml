@@ -6,7 +6,7 @@
     <target name="delete">
 
         <echo message="Deleting ${ejc.dir} ..." />
-        <delete dir="${ejc.dir}" />        
+        <delete dir="${ejc.dir}" failonerror="false" />        
 
     </target>
 
