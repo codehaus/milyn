@@ -38,21 +38,42 @@ public interface BeanContext {
 	 *
 	 * @param beanId The {@link org.milyn.javabean.repository.BeanId} under which the bean is to be stored.
      * @param bean The bean instance to be stored.
+     */
+	public abstract void addBean(BeanId beanId, Object bean);
+
+    /**
+     * Add a bean instance under the specified beanId string.
+     * <p/>
+     * Generates a {@link BeanId} in the background.
+     *
+     * @param beanId The {@link org.milyn.javabean.repository.BeanId} under which the bean is to be stored.
+     * @param bean The bean instance to be stored.
      * @param source Source fragment.
      */
-	public abstract void addBean(BeanId beanId, Object bean, Fragment source);
+    public abstract void addBean(BeanId beanId, Object bean, Fragment source);
 
 	/**
 	 * Add a bean instance under the specified beanId.
 	 * <p/>
 	 * If performance is important, you should get (and cache) a {@link BeanId} instance
-	 * for the beanId String and then use the {@link #addBean(BeanId, Object)} method.
+	 * for the beanId String and then use the {@link #addBean(BeanId, Object, Fragment)} method.
 	 *
 	 * @param beanId The beanId under which the bean is to be stored.
      * @param bean The bean instance to be stored.
+     */
+	public abstract void addBean(String beanId, Object bean);
+
+    /**
+     * Add a bean instance under the specified beanId.
+     * <p/>
+     * If performance is important, you should get (and cache) a {@link BeanId} instance
+     * for the beanId String and then use the {@link #addBean(BeanId, Object, Fragment)} method.
+     *
+     * @param beanId The beanId under which the bean is to be stored.
+     * @param bean The bean instance to be stored.
      * @param source Source fragment.
      */
-	public abstract void addBean(String beanId, Object bean, Fragment source);
+    public abstract void addBean(String beanId, Object bean, Fragment source);
 
 	/**
 	 * Get the {@link BeanId} instance for the specified beanId String.
@@ -84,7 +105,7 @@ public interface BeanContext {
 	 * <p/>
 	 * Returns the first bean of the specified type from the BeanContext instance.
 	 *
-	 * @param beanType The type of the bean to be returned.
+	 * @param beanId The type of the bean to be returned.
 	 * @return The bean instance, otherwise <code>null</code>.
 	 */
 	public abstract Object getBean(String beanId);
