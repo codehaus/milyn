@@ -64,13 +64,10 @@ public class StandaloneBeanContext implements BeanContext {
 		updateBeanMap();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.milyn.javabean.context.BeanContext#addBean(org.milyn.javabean.repository
-	 * .BeanId, java.lang.Object)
-	 */
+    public void addBean(BeanId beanId, Object bean) {
+        addBean(beanId, bean, null);
+    }
+
 	public void addBean(BeanId beanId, Object bean, Fragment source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 		AssertArgument.isNotNull(bean, "bean");
@@ -99,12 +96,12 @@ public class StandaloneBeanContext implements BeanContext {
 				BeanLifecycle.BEGIN, beanId, bean));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see org.milyn.javabean.context.BeanContext#addBean(java.lang.String,
-	 * java.lang.Object)
-	 */
+    public void addBean(String beanId, Object bean) {
+        AssertArgument.isNotNull(beanId, "beanId");
+
+        addBean(getBeanId(beanId), bean, null);
+    }
+
 	public void addBean(String beanId, Object bean, Fragment source) {
 		AssertArgument.isNotNull(beanId, "beanId");
 
