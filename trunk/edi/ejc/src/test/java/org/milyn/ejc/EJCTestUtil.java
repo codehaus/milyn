@@ -83,18 +83,20 @@ public class EJCTestUtil {
         StackTraceElement[] thisStack = Thread.currentThread().getStackTrace();
         Class callerClass = null;
 
-        try {
-            callerClass = Class.forName(thisStack[2].getClassName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            TestCase.fail("Exception resolving caller class: " + e.getMessage());
+        for(int i = 0; i < thisStack.length; i++) {
+            if(thisStack[i].getClassName().equals(EJCTestUtil.class.getName())) {
+                try {
+                    callerClass = Class.forName(thisStack[i + 1].getClassName());
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    TestCase.fail("Exception resolving caller class: " + e.getMessage());
+                }
+            }
         }
 
-        System.out.println("Stack Trace Elements:");
-        for(StackTraceElement sel : thisStack) {
-            System.out.println("*********** " + sel);
+        if(callerClass == null) {
+            TestCase.fail("Failed to resolve caller class.");
         }
-        System.out.println("**************** Caller Class:" + callerClass.getName());
 
         Archive archive = null;
         try {
