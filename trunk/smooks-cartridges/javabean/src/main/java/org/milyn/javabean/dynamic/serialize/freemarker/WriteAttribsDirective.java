@@ -42,8 +42,6 @@ import java.util.Map;
  */
 public class WriteAttribsDirective implements TemplateDirectiveModel {
 
-    private static Log logger = LogFactory.getLog(WriteAttribsDirective.class);
-
     public void execute(Environment environment, Map params, TemplateModel[] templateModels, TemplateDirectiveBody templateDirectiveBody) throws TemplateException, IOException {
         Object beanParam = params.get("bean");
         Object bean;
