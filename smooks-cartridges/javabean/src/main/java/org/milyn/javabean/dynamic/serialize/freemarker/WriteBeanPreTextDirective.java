@@ -18,8 +18,10 @@ package org.milyn.javabean.dynamic.serialize.freemarker;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
-import freemarker.ext.beans.StringModel;
-import freemarker.template.*;
+import freemarker.template.SimpleScalar;
+import freemarker.template.TemplateDirectiveBody;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.javabean.dynamic.BeanMetadata;
@@ -30,31 +32,18 @@ import org.milyn.xml.XmlUtil;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Write bean directive.
+ * Write bean pretext directive.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class WriteBeanDirective extends AbstractBeanDirective {
+public class WriteBeanPreTextDirective extends AbstractBeanDirective {
 
-    private static Log logger = LogFactory.getLog(WriteBeanDirective.class);
+    private static Log logger = LogFactory.getLog(WriteBeanPreTextDirective.class);
 
     public void execute(Environment environment, Map params, TemplateModel[] templateModels, TemplateDirectiveBody templateDirectiveBody) throws TemplateException, IOException {
-        Object bean = getBeanObject(environment, params, "writeBean");
-
-        SimpleScalar indentScalar = (SimpleScalar) params.get("indent");
-        int indent = 0;
-        if(indentScalar != null) {
-            String indentParamVal = indentScalar.getAsString().trim();
-            try {
-                indent = Integer.parseInt(indentParamVal);
-                indent = Math.min(indent, 100);
-            } catch(NumberFormatException e) {
-                logger.debug("Invalid <@writeNamespaces> 'indent' parameter value '" + indentParamVal + "'.  Must be a valid integer (<= 100).");
-            }
-        }
+        Object bean = getBeanObject(environment, params, "writePreText");
 
         BeanModel modelBeanModel = (BeanModel) environment.getDataModel().get(FreeMarkerBeanWriter.MODEL_CTX_KEY);
         Model model = (Model) modelBeanModel.getWrappedObject();
@@ -64,21 +53,8 @@ public class WriteBeanDirective extends AbstractBeanDirective {
             BeanRegistrationException.throwUnregisteredBeanInstanceException(bean);
         }
 
-        BeanWriter beanWriter = beanMetadata.getWriter();
-
         if(beanMetadata.getPreText() != null) {
             environment.getOut().write(beanMetadata.getPreText());
-        }
-
-        if(indent > 0) {
-            StringWriter beanWriteBuffer = new StringWriter();
-
-            beanWriteBuffer.write('\n');
-            beanWriter.write(bean, beanWriteBuffer, model);
-
-            environment.getOut().write(XmlUtil.indent(beanWriteBuffer.toString(), indent));
-        } else {
-            beanWriter.write(bean, environment.getOut(), model);
         }
     }
 

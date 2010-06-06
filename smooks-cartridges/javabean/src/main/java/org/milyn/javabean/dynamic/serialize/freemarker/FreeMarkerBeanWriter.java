@@ -55,6 +55,7 @@ public class FreeMarkerBeanWriter implements BeanWriter {
 
     private static final WriteNamespacesDirective writeNamespacesDirective = new WriteNamespacesDirective();
     private static final WriteBeanDirective writeBeanDirective = new WriteBeanDirective();
+    private static final WriteBeanPreTextDirective writePreTextDirective = new WriteBeanPreTextDirective();
     private static final WriteAttribsDirective writeAttribsDirective = new WriteAttribsDirective();
 
     @Initialize
@@ -93,6 +94,7 @@ public class FreeMarkerBeanWriter implements BeanWriter {
 
         templateContext.put("writeNamespaces", writeNamespacesDirective);
         templateContext.put("writeBean", writeBeanDirective);
+        templateContext.put("writePreText", writePreTextDirective);
         templateContext.put("writeAttribs", writeAttribsDirective);
 
         template.apply(templateContext, writer);
