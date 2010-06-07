@@ -28,13 +28,27 @@ import junit.framework.TestCase;
  */
 public class DateDecoderTest extends TestCase {
 
-    public void test_DateDecoder() {
+    public void test_DateDecoder_01() {
         DateDecoder decoder = new DateDecoder();
         Properties config = new Properties();
 
         config.setProperty(DateDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
 	    config.setProperty(DateDecoder.LOCALE_LANGUAGE_CODE, "en");
 	    config.setProperty(DateDecoder.LOCALE_COUNTRY_CODE, "IE");
+        decoder.setConfiguration(config);
+
+        Date date_a = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
+        assertEquals(1163616328000L, date_a.getTime());
+        Date date_b = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
+        assertNotSame(date_a, date_b);
+    }
+
+    public void test_DateDecoder_02() {
+        DateDecoder decoder = new DateDecoder();
+        Properties config = new Properties();
+
+        config.setProperty(DateDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
+	    config.setProperty(DateDecoder.LOCALE, "en-IE");
         decoder.setConfiguration(config);
 
         Date date_a = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
