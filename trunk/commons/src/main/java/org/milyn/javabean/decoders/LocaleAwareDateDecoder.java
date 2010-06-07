@@ -7,18 +7,19 @@ import java.text.*;
 import java.util.*;
 
 /**
- * LocaleAwareDateDecoder is a decoder 'helper' that can be subclassed
- * by Date decoders to enable them to use locale specific date formats.
+ * LocaleAwareDateDecoder is a decoder 'helper' that can be subclassed by Date decoders to enable
+ * them to use locale specific date formats.
+ * <p/>
+ * Usage (on Java Binding value config using the {@link org.milyn.javabean.decoders.DateDecoder}):
  * <pre>
- * Usage:
- * &lt;resource-config selector="decoder:DecoderName"&gt;
- *      &lt;resource&gt;org.milyn.javabean.decoders.DateDecoder&lt;/resource&gt;
- *      &lt;param name="format"&gt;EEE MMM dd HH:mm:ss z yyyy&lt;/param&gt;
- * &lt;/resource-config&gt;
- * Optional parameters:
- *      &lt;param name="locale-language"&gt;sv&lt;/param&gt;
- *      &lt;param name="locale-country"&gt;SE&lt;/param&gt;
- *      &lt;param name="verify-locale"&gt;false&lt;/param&gt;
+ * &lt;jb:value property="date" decoder="Date" data="order/@date"&gt;
+ *     &lt;-- Format: Defaults to "yyyy-MM-dd'T'HH:mm:ss" (SOAP) --&gt;
+ *     &lt;jb:decodeParam name="format"&gt;EEE MMM dd HH:mm:ss z yyyy&lt;/jb:decodeParam&gt;
+ *     &lt;-- Locale: Defaults to machine Locale --&gt;
+ *     &lt;jb:decodeParam name="locale"&gt;sv-SE&lt;/jb:decodeParam&gt;
+ *     &lt;-- Verify Locale: Default false --&gt;
+ *     &lt;jb:decodeParam name="verify-locale"&gt;true&lt;/jb:decodeParam&gt;
+ * &lt;/jb:value&gt;
  * </pre>
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
@@ -31,9 +32,14 @@ public abstract class LocaleAwareDateDecoder implements Configurable
     public static final String FORMAT = "format";
 
     /**
-     * Default date format string
+     * Default date format string.
      */
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+    /**
+     * Locale.  Hyphen separated ISO Language Code and Country Code e.g. "en-IE".
+     */
+    public static final String LOCALE = "locale";
 
     /**
      * ISO Language Code. Lower case two-letter code defined by ISO-639
@@ -71,8 +77,24 @@ public abstract class LocaleAwareDateDecoder implements Configurable
             throw new SmooksConfigurationException("Decoder must specify a 'format' parameter.");
         }
 
-        final String languageCode = resourceConfig.getProperty(LOCALE_LANGUAGE_CODE);
-        final String countryCode = resourceConfig.getProperty(LOCALE_COUNTRY_CODE);
+        final String locale = resourceConfig.getProperty(LOCALE);
+        final String languageCode;
+        final String countryCode;
+
+        if(locale != null) {
+            String[] localTokens = locale.split("-");
+
+            languageCode = localTokens[0];
+            if(localTokens.length == 2) {
+                countryCode = localTokens[1];
+            } else {
+                countryCode = null;
+            }
+        } else {
+            languageCode = resourceConfig.getProperty(LOCALE_LANGUAGE_CODE);
+            countryCode = resourceConfig.getProperty(LOCALE_COUNTRY_CODE);
+        }
+
         verifyLocale = Boolean.parseBoolean(resourceConfig.getProperty(VERIFY_LOCALE, "false"));
 
         decoder = new SimpleDateFormat(format.trim(), getLocale( languageCode, countryCode ));
