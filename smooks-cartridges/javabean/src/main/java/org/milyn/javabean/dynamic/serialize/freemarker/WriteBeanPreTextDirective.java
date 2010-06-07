@@ -40,8 +40,6 @@ import java.util.Map;
  */
 public class WriteBeanPreTextDirective extends AbstractBeanDirective {
 
-    private static Log logger = LogFactory.getLog(WriteBeanPreTextDirective.class);
-
     public void execute(Environment environment, Map params, TemplateModel[] templateModels, TemplateDirectiveBody templateDirectiveBody) throws TemplateException, IOException {
         Object bean = getBeanObject(environment, params, "writePreText");
 
@@ -49,12 +47,11 @@ public class WriteBeanPreTextDirective extends AbstractBeanDirective {
         Model model = (Model) modelBeanModel.getWrappedObject();
         BeanMetadata beanMetadata = model.getBeanMetadata(bean);
 
-        if(beanMetadata == null) {
-            BeanRegistrationException.throwUnregisteredBeanInstanceException(bean);
-        }
-
-        if(beanMetadata.getPreText() != null) {
-            environment.getOut().write(beanMetadata.getPreText());
+        if(beanMetadata != null && beanMetadata.getPreText() != null) {
+            String preText = beanMetadata.getPreText().trim();
+            if(preText.length() > 0) {
+                environment.getOut().write(preText);
+            }
         }
     }
 
