@@ -19,6 +19,9 @@ import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DecodeType;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 /**
  * Short Decoder
  * 
@@ -26,13 +29,29 @@ import org.milyn.javabean.DecodeType;
  *
  */
 @DecodeType({Short.class, short.class})
-public class ShortDecoder implements DataDecoder {
+public class ShortDecoder extends NumberDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-        try {
-            return Short.parseShort(data.trim());
-        } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode Short value '" + data + "'.", e);
+        NumberFormat format = getNumberFormat();
+
+        if(format != null) {
+            try {
+                Number number = format.parse(data.trim());
+                
+                if(isPercentage()) {
+                    return (short) (number.doubleValue() * 100);
+                } else {
+                    return number.shortValue();
+                }
+            } catch (ParseException e) {
+                throw new DataDecodeException("Failed to decode Short value '" + data + "' using NumberFormat instance " + format + ".", e);
+            }
+        } else {
+            try {
+                return Short.parseShort(data.trim());
+            } catch(NumberFormatException e) {
+                throw new DataDecodeException("Failed to decode Short value '" + data + "'.", e);
+            }
         }
     }
 }

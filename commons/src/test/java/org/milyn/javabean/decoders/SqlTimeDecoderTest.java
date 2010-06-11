@@ -33,8 +33,8 @@ public class SqlTimeDecoderTest extends TestCase {
         config.setProperty(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
         
         SqlTimeDecoder decoder = new SqlTimeDecoder();
-        config.setProperty(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
-	    config.setProperty(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
+        config.setProperty(LocaleAwareDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setProperty(LocaleAwareDecoder.LOCALE_COUNTRY_CODE, "IE");
         decoder.setConfiguration(config);
 
         Object object = decoder.decode("Wed Nov 15 13:45:28 EST 2006");

@@ -38,7 +38,7 @@
                 <medi:field xmltag="quantity" type="Long"/>
                 <medi:field xmltag="productId"/>
                 <medi:field xmltag="title"/>
-                <medi:field xmltag="price" type="BigDecimal"/>
+                <medi:field xmltag="price" type="BigDecimal" typeParameters="format=#,###.##"/>
             </medi:segment>
         </medi:segmentGroup>
 

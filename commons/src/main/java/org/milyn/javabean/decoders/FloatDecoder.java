@@ -19,19 +19,33 @@ import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DecodeType;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 /**
  * Float decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @DecodeType({Float.class, float.class})
-public class FloatDecoder implements DataDecoder {
+public class FloatDecoder extends NumberDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-        try {
-            return Float.parseFloat(data.trim());
-        } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode float value '" + data + "'.", e);
+        NumberFormat format = getNumberFormat();
+
+        if(format != null) {
+            try {
+                Number number = format.parse(data.trim());
+                return number.floatValue();
+            } catch (ParseException e) {
+                throw new DataDecodeException("Failed to decode Float value '" + data + "' using NumberFormat instance " + format + ".", e);
+            }
+        } else {
+            try {
+                return Float.parseFloat(data.trim());
+            } catch(NumberFormatException e) {
+                throw new DataDecodeException("Failed to decode float value '" + data + "'.", e);
+            }
         }
     }
 }

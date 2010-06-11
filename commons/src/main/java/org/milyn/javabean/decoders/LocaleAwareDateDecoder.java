@@ -24,7 +24,7 @@ import java.util.*;
  *
  * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
-public abstract class LocaleAwareDateDecoder implements Configurable
+public abstract class LocaleAwareDateDecoder extends LocaleAwareDecoder
 {
     /**
      * Date format configuration key.
@@ -37,17 +37,14 @@ public abstract class LocaleAwareDateDecoder implements Configurable
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     /**
-     * Locale.  Hyphen separated ISO Language Code and Country Code e.g. "en-IE".
-     */
-    public static final String LOCALE = "locale";
-
-    /**
      * ISO Language Code. Lower case two-letter code defined by ISO-639
+     * @deprecated Use {@link LocaleAwareDecoder}.
      */
     public static final String LOCALE_LANGUAGE_CODE = "locale-language";
 
     /**
      * ISO Country Code. Upper case two-letter code defined by ISO-3166
+     * @deprecated Use {@link LocaleAwareDecoder}.
      */
     public static final String LOCALE_COUNTRY_CODE = "locale-country";
 
@@ -56,15 +53,12 @@ public abstract class LocaleAwareDateDecoder implements Configurable
      * Whether or not a check should be performed to verify that
      * the specified locale is installed. This operation can take some
      * time and should be turned off in a production evironment
+     * @deprecated Use {@link LocaleAwareDecoder}.
      */
     public static final String VERIFY_LOCALE = "verify-locale";
 
-    private boolean verifyLocale;
-
     protected String format;
 
-    private Properties configuration;
-    
     /*
      * 	Need to initialize a default decoder as not calls can be make
      * 	directly to decode without calling setConfigurtion.
@@ -72,66 +66,18 @@ public abstract class LocaleAwareDateDecoder implements Configurable
     protected SimpleDateFormat decoder = new SimpleDateFormat( DEFAULT_DATE_FORMAT );
 
     public void setConfiguration(Properties resourceConfig) throws SmooksConfigurationException {
+        super.setConfiguration(resourceConfig);
+
         format = resourceConfig.getProperty(FORMAT, DEFAULT_DATE_FORMAT);
         if (format == null) {
             throw new SmooksConfigurationException("Decoder must specify a 'format' parameter.");
         }
 
-        final String locale = resourceConfig.getProperty(LOCALE);
-        final String languageCode;
-        final String countryCode;
-
-        if(locale != null) {
-            String[] localTokens = locale.split("-");
-
-            languageCode = localTokens[0];
-            if(localTokens.length == 2) {
-                countryCode = localTokens[1];
-            } else {
-                countryCode = null;
-            }
+        Locale configuredLocale = getLocale();
+        if(configuredLocale != null) {
+            decoder = new SimpleDateFormat(format.trim(), configuredLocale);
         } else {
-            languageCode = resourceConfig.getProperty(LOCALE_LANGUAGE_CODE);
-            countryCode = resourceConfig.getProperty(LOCALE_COUNTRY_CODE);
+            decoder = new SimpleDateFormat(format.trim());
         }
-
-        verifyLocale = Boolean.parseBoolean(resourceConfig.getProperty(VERIFY_LOCALE, "false"));
-
-        decoder = new SimpleDateFormat(format.trim(), getLocale( languageCode, countryCode ));
-        this.configuration = resourceConfig;
-    }
-
-    public Properties getConfiguration() {
-        return configuration;
-    }
-
-    /**
-     * Returns a Locale matching the passed in languageCode, and countryCode
-     *
-     * @param languageCode	lowercase two-letter ISO-639 code.
-     * @param countryCode	uppercase two-letter ISO-3166 code.
-     * @return Locale		matching the passed in languageCode and optionally the
-     * 						countryCode. If languageCode is null the default Locale
-     * 						will be returned.
-     * @throws SmooksConfigurationException
-     * 						if the Locale is not installed on the system
-     */
-    protected Locale getLocale(final String languageCode, final String countryCode ) {
-    	Locale locale = null;
-    	if ( languageCode == null )
-    		locale = Locale.getDefault();
-    	else if ( countryCode == null  )
-    		locale = new Locale( languageCode.trim() );
-    	else
-    		locale =  new Locale( languageCode.trim(), countryCode.trim() );
-    	if ( verifyLocale )
-    		if ( !isLocalInstalled( locale ) )
-    			throw new SmooksConfigurationException( "Locale " + locale + " is not available on this system.");
-    	return locale;
-    }
-
-    protected boolean isLocalInstalled(final Locale locale )
-    {
-    	return Arrays.asList( Locale.getAvailableLocales() ).contains( locale );
     }
 }

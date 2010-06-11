@@ -27,14 +27,16 @@ import junit.framework.TestCase;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class DateDecoderTest extends TestCase {
+    
+    private Locale defaultLocale;
 
     public void test_DateDecoder_01() {
         DateDecoder decoder = new DateDecoder();
         Properties config = new Properties();
 
         config.setProperty(DateDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
-	    config.setProperty(DateDecoder.LOCALE_LANGUAGE_CODE, "en");
-	    config.setProperty(DateDecoder.LOCALE_COUNTRY_CODE, "IE");
+	    config.setProperty(LocaleAwareDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setProperty(LocaleAwareDecoder.LOCALE_COUNTRY_CODE, "IE");
         decoder.setConfiguration(config);
 
         Date date_a = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
@@ -48,7 +50,7 @@ public class DateDecoderTest extends TestCase {
         Properties config = new Properties();
 
         config.setProperty(DateDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
-	    config.setProperty(DateDecoder.LOCALE, "en-IE");
+	    config.setProperty(LocaleAwareDecoder.LOCALE, "en-IE");
         decoder.setConfiguration(config);
 
         Date date_a = (Date) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
@@ -58,7 +60,11 @@ public class DateDecoderTest extends TestCase {
     }
 
     public void setUp() {
+        defaultLocale = Locale.getDefault();
 		Locale.setDefault( new Locale("de", "DE") );
 	}
 
+    protected void tearDown() throws Exception {
+        Locale.setDefault(defaultLocale);
+    }
 }

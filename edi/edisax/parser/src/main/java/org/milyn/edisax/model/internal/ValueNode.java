@@ -86,8 +86,10 @@ public class ValueNode extends MappingNode {
             }
 
             decodeParams = new Properties();
-            for (Map.Entry<String,String> entry : parameters) {
-                decodeParams.setProperty(entry.getKey(), entry.getValue());
+            if(parameters != null) {
+                for (Map.Entry<String,String> entry : parameters) {
+                    decodeParams.setProperty(entry.getKey(), entry.getValue());
+                }
             }
             ((Configurable)decoder).setConfiguration(decodeParams);
         }
