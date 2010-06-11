@@ -19,13 +19,27 @@ import junit.framework.TestCase;
 
 import org.milyn.javabean.DataDecodeException;
 
+import java.util.Locale;
+import java.util.Properties;
+
 /**
  * Test for the ShortDecoder
  * 
  * @author <a href="mailto:daniel.bevenius@gmail.com">daniel.bevenius@gmail.com</a>
  */
 public class ShortDecodingTest extends TestCase {
+
 	private final ShortDecoder decoder = new ShortDecoder();
+    private Locale defaultLocale;
+
+    public void setUp() {
+        defaultLocale = Locale.getDefault();
+		Locale.setDefault( new Locale("en", "IE") );
+	}
+
+    protected void tearDown() throws Exception {
+        Locale.setDefault(defaultLocale);
+    }
 
     public void test_empty_ok_value() {
         assertEquals(new Short((short)1), decoder.decode("1"));
@@ -38,5 +52,47 @@ public class ShortDecodingTest extends TestCase {
         } catch (DataDecodeException e) {
             assertEquals("Failed to decode Short value ''.", e.getMessage());
         }
+    }
+
+    public void test_decode_locale_config() {
+        ShortDecoder decoder = new ShortDecoder();
+        Properties config = new Properties();
+
+        config.setProperty(ShortDecoder.LOCALE, "de-DE");
+        decoder.setConfiguration(config);
+
+        Short shortVal = (Short) decoder.decode("1234,45");   // comma for decimal point
+        assertEquals(new Short((short)1234), shortVal);
+    }
+
+    public void test_decode_format_config() {
+        ShortDecoder decoder = new ShortDecoder();
+        Properties config = new Properties();
+
+        config.setProperty(ShortDecoder.FORMAT, "#,###.##");
+        decoder.setConfiguration(config);
+
+        Short shortVal = (Short) decoder.decode("1,234.45");
+        assertEquals(new Short((short)1234), shortVal);
+    }
+
+    public void test_encode_format_config() {
+        ShortDecoder decoder = new ShortDecoder();
+        Properties config = new Properties();
+
+        config.setProperty(ShortDecoder.FORMAT, "#,###.##");
+        decoder.setConfiguration(config);
+
+        assertEquals("1,234", decoder.encode((short)1234));
+    }
+
+    public void test_encode_locale_config() {
+        ShortDecoder decoder = new ShortDecoder();
+        Properties config = new Properties();
+
+        config.setProperty(ShortDecoder.LOCALE, "de-DE");
+        decoder.setConfiguration(config);
+
+        assertEquals("1234", decoder.encode((short)1234));
     }
 }

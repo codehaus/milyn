@@ -19,7 +19,10 @@ import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DecodeType;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 /**
  * {@link BigInteger} Decoder.
@@ -27,13 +30,31 @@ import java.math.BigInteger;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @DecodeType(BigInteger.class)
-public class BigIntegerDecoder implements DataDecoder {
+public class BigIntegerDecoder extends NumberDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-        try {
-            return new BigInteger(data.trim());
-        } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode BigInteger value '" + data + "'.", e);
+        NumberFormat format = getNumberFormat();
+
+        if(format != null) {
+            try {
+                Number number = format.parse(data.trim());
+
+                if(number instanceof BigInteger) {
+                    return number;
+                } else if(number instanceof BigDecimal) {
+                    return ((BigDecimal) number).toBigInteger();
+                }
+
+                return new BigInteger(String.valueOf(number.intValue()));
+            } catch (ParseException e) {
+                throw new DataDecodeException("Failed to decode BigInteger value '" + data + "' using NumberFormat instance " + format + ".", e);
+            }
+        } else {
+            try {
+                return new BigInteger(data.trim());
+            } catch(NumberFormatException e) {
+                throw new DataDecodeException("Failed to decode BigInteger value '" + data + "'.", e);
+            }
         }
     }
 }

@@ -36,8 +36,8 @@ public class CalendarDecoderTest extends TestCase {
 	    config.setProperty(CalendarDecoder.FORMAT, "EEE MMM dd HH:mm:ss z yyyy");
 
 	    CalendarDecoder decoder = new CalendarDecoder();
-	    config.setProperty(CalendarDecoder.LOCALE_LANGUAGE_CODE, "en");
-	    config.setProperty(CalendarDecoder.LOCALE_COUNTRY_CODE, "IE");
+	    config.setProperty(LocaleAwareDecoder.LOCALE_LANGUAGE_CODE, "en");
+	    config.setProperty(LocaleAwareDecoder.LOCALE_COUNTRY_CODE, "IE");
 	    decoder.setConfiguration(config);
 
 	    Calendar cal_a = (Calendar) decoder.decode("Wed Nov 15 13:45:28 EST 2006");
@@ -55,9 +55,9 @@ public class CalendarDecoderTest extends TestCase {
 	    CalendarDecoder decoder = new CalendarDecoder();
 
 	    config.setProperty(CalendarDecoder.FORMAT, dateFormat );
-	    config.setProperty(CalendarDecoder.LOCALE_LANGUAGE_CODE, "sv");
-	    config.setProperty(CalendarDecoder.LOCALE_COUNTRY_CODE, "SE");
-	    config.setProperty(CalendarDecoder.VERIFY_LOCALE, "true");
+	    config.setProperty(LocaleAwareDecoder.LOCALE_LANGUAGE_CODE, "sv");
+	    config.setProperty(LocaleAwareDecoder.LOCALE_COUNTRY_CODE, "SE");
+	    config.setProperty(LocaleAwareDecoder.VERIFY_LOCALE, "true");
 	    decoder.setConfiguration(config);
 
 	    Calendar cal_a = (Calendar) decoder.decode( dateString );

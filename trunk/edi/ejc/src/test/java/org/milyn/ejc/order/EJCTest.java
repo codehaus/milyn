@@ -35,7 +35,6 @@ import org.xml.sax.SAXException;
 public class EJCTest extends TestCase {
 
     public void testOrderModel() throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
-        //EJCTestUtil.dumpModel(getClass().getResourceAsStream("order-mapping.xml"));
         EJCTestUtil.testModel("order-mapping.xml", "order.edi", "OrderFactory");
     }
 }

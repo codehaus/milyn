@@ -19,19 +19,38 @@ import org.milyn.javabean.DataDecodeException;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DecodeType;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 /**
  * Integer Decoder.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @DecodeType({Integer.class, int.class})
-public class IntegerDecoder implements DataDecoder {
+public class IntegerDecoder extends NumberDecoder {
 
     public Object decode(String data) throws DataDecodeException {
-        try {
-            return Integer.parseInt(data.trim());
-        } catch(NumberFormatException e) {
-            throw new DataDecodeException("Failed to decode Integer value '" + data + "'.", e);
+        NumberFormat format = getNumberFormat();
+
+        if(format != null) {
+            try {
+                Number number = format.parse(data.trim());
+
+                if(isPercentage()) {
+                    return (int) (number.doubleValue() * 100);
+                } else {
+                    return number.intValue();
+                }
+            } catch (ParseException e) {
+                throw new DataDecodeException("Failed to decode Integer value '" + data + "' using NumberFormat instance " + format + ".", e);
+            }
+        } else {
+            try {
+                return Integer.parseInt(data.trim());
+            } catch(NumberFormatException e) {
+                throw new DataDecodeException("Failed to decode Integer value '" + data + "'.", e);
+            }
         }
     }
 }

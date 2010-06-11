@@ -335,15 +335,19 @@ public class EdiConfigReader {
 
                 // Configure the encoder in the constructor (if needed)....
                 if(dataDecoder instanceof Configurable) {
-                    Set<Map.Entry<Object, Object>> encoderConfig = ((Configurable) dataDecoder).getConfiguration().entrySet();
-                    String encoderPropertiesName = encoderName + "Properties";
+                    Properties configuration = ((Configurable) dataDecoder).getConfiguration();
 
-                    jClass.getRawImports().add(new JType(Properties.class));
-                    defaultConstructor.appendToBody("\n        Properties " + encoderPropertiesName + " = new Properties();");
-                    for(Map.Entry<Object, Object> entry : encoderConfig) {
-                        defaultConstructor.appendToBody("\n        " + encoderPropertiesName + ".setProperty(\"" + entry.getKey() + "\", \"" + entry.getValue() + "\");");
+                    if(configuration != null) {
+                        Set<Map.Entry<Object, Object>> encoderConfig = configuration.entrySet();
+                        String encoderPropertiesName = encoderName + "Properties";
+
+                        jClass.getRawImports().add(new JType(Properties.class));
+                        defaultConstructor.appendToBody("\n        Properties " + encoderPropertiesName + " = new Properties();");
+                        for(Map.Entry<Object, Object> entry : encoderConfig) {
+                            defaultConstructor.appendToBody("\n        " + encoderPropertiesName + ".setProperty(\"" + entry.getKey() + "\", \"" + entry.getValue() + "\");");
+                        }
+                        defaultConstructor.appendToBody("\n        " + encoderName + ".setConfiguration(" + encoderPropertiesName + ");");
                     }
-                    defaultConstructor.appendToBody("\n        " + encoderName + ".setConfiguration(" + encoderPropertiesName + ");");
                 }
 
                 // Add the encoder encode instruction to te write method...
