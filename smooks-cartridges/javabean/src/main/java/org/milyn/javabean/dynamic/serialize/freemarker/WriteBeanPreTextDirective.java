@@ -21,7 +21,6 @@ import freemarker.ext.beans.BeanModel;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
-import org.milyn.io.StreamUtils;
 import org.milyn.javabean.dynamic.BeanMetadata;
 import org.milyn.javabean.dynamic.Model;
 
