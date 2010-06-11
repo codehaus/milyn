@@ -18,20 +18,14 @@ package org.milyn.javabean.dynamic.serialize.freemarker;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
-import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateModel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.milyn.io.StreamUtils;
 import org.milyn.javabean.dynamic.BeanMetadata;
-import org.milyn.javabean.dynamic.BeanRegistrationException;
 import org.milyn.javabean.dynamic.Model;
-import org.milyn.javabean.dynamic.serialize.BeanWriter;
-import org.milyn.xml.XmlUtil;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Map;
 
 /**
@@ -50,9 +44,24 @@ public class WriteBeanPreTextDirective extends AbstractBeanDirective {
         if(beanMetadata != null && beanMetadata.getPreText() != null) {
             String preText = beanMetadata.getPreText().trim();
             if(preText.length() > 0) {
-                environment.getOut().write(preText);
+                environment.getOut().write(trimPretext(beanMetadata.getPreText()));
             }
         }
     }
 
+    private String trimPretext(String string) {
+        StringBuffer stringBuf = new StringBuffer(string);
+
+        while(stringBuf.length() > 0) {
+            char firstChar = stringBuf.charAt(0);
+
+            if(firstChar == '\r' || firstChar == '\n') {
+                stringBuf.deleteCharAt(0);
+            } else {
+                break;
+            }
+        }
+
+        return stringBuf.toString();
+    }
 }
