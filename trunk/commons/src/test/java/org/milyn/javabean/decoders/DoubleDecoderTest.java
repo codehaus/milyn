@@ -57,7 +57,7 @@ public class DoubleDecoderTest extends TestCase {
         DoubleDecoder decoder = new DoubleDecoder();
         Properties config = new Properties();
 
-        config.setProperty(DoubleDecoder.LOCALE, "de-DE");
+        config.setProperty(DoubleDecoder.LOCALE, "de_DE");
         decoder.setConfiguration(config);
 
         Double doubleVal = (Double) decoder.decode("1234,45");   // comma for decimal point
