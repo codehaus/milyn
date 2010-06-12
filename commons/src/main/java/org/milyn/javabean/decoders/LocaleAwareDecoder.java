@@ -72,7 +72,13 @@ public abstract class LocaleAwareDecoder implements DataDecoder, Configurable
         final String countryCode;
 
         if(locale != null) {
-            String[] localTokens = locale.split("-");
+            String[] localTokens;
+
+            if(locale.indexOf('-') != -1) {
+                localTokens = locale.split("-");
+            } else {
+                localTokens = locale.split("_");                
+            }
 
             languageCode = localTokens[0];
             if(localTokens.length == 2) {

@@ -45,6 +45,12 @@ public abstract class NumberDecoder extends LocaleAwareDecoder implements DataEn
         String pattern = config.getProperty(FORMAT);
         Locale locale = getLocale();
 
+        if(locale == null && pattern == null) {
+            // Don't create a formatter if neither locale or
+            // pattern are configured...
+            return;
+        }
+
         if(locale == null) {
             locale = Locale.getDefault();
         }
