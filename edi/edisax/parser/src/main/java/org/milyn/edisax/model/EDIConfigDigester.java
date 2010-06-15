@@ -258,6 +258,7 @@ public class EDIConfigDigester {
             segmentGroup.setMaxOccurs(getNodeValueAsInteger(node, "maxOccurs"));
             segmentGroup.setMinOccurs(getNodeValueAsInteger(node, "minOccurs"));
             setValuesForMappingNode(node, segmentGroup, namespacePrefix, parent);
+            segmentGroup.setGenerateXmlEvents(getNodeValueAsBoolean(node, "generateXmlEvents", true));
 
             NodeList nodes = node.getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {
@@ -448,6 +449,21 @@ public class EDIConfigDigester {
             }
 
         }
+    }
+
+    /**
+     * Gets attribute value from node if it exists. Otherwise returns null.
+     * @param node the node.
+     * @param name the name of the attribute.
+     * @param defaultVal The default value.
+     * @return Boolean value if attribute exists in node.
+     */
+    private static Boolean getNodeValueAsBoolean(Node node, String name, Boolean defaultVal) {
+        Boolean value = getNodeValueAsBoolean(node, name);
+        if (value == null) {
+            return defaultVal;
+        }
+        return value;
     }
 
     /**
