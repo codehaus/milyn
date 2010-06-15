@@ -46,8 +46,8 @@ public class    EJCtoJavaTest extends TestCase {
             assertEquals("Fletcher, Harry", name.getLastname() + ", " + name.getFirstname());
             assertEquals("harry.fletcher@gmail", header.getCustomerDetails().getEmail());
             assertNotNull(header.getDate());
-            assertEquals("364, The 40-Year-Old Virgin, 29.98", orderItem1.getProductId() + ", " + orderItem1.getTitle() + ", " + orderItem1.getPrice());
-            assertEquals("299, Pulp Fiction, 29.99", orderItem2.getProductId() + ", " + orderItem2.getTitle() + ", " + orderItem2.getPrice());
+            assertEquals("364, The 40-Year-Old Virgin", orderItem1.getProductId() + ", " + orderItem1.getTitle());
+            assertEquals("299, Pulp Fiction", orderItem2.getProductId() + ", " + orderItem2.getTitle());
         } finally {
             ediStream.close();
         }
