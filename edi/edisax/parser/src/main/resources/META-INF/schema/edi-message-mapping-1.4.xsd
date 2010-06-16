@@ -168,8 +168,7 @@ The escape attribute specifies a character that can be used before a delimiter t
 					<xs:element ref="segment"/>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="xmltag" type="xs:string" use="required"/>
-            <xs:attribute name="generateXmlEvents" type="xs:boolean" use="optional"/>
+			<xs:attribute name="xmltag" type="xs:string" use="optional"/>
 			<xs:attributeGroup ref="bounds"/>
 		</xs:complexType>
 	</xs:element>

@@ -107,6 +107,11 @@ public class EdiConfigReader {
      */
     private void parseSegmentGroup(SegmentGroup segmentGroup, JClass parent) throws IllegalNameException {
         LOG.debug("Parsing SegmentGroup " + segmentGroup.getXmltag());
+
+        if(segmentGroup.getJavaName() == null) {
+            throw new EJCException("The <segmentGroup> element can optionally omit the 'xmltag' attribute.  However, this attribute must be present for EJC to work properly.  It is omitted from one of the <segmentGroup> elements in this configuration.");
+        }
+
         JClass child = createChildAndConnectWithParent(parent, segmentGroup, segmentGroup.getMaxOccurs());
 
         if (segmentGroup instanceof Segment) {

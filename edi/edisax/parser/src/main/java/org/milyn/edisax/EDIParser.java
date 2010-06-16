@@ -473,13 +473,12 @@ public class EDIParser implements XMLReader {
                 mapSegment(currentSegmentFields, (Segment) expectedSegmentGroup);
             } else {
                 String xmlTag = expectedSegmentGroup.getXmltag();
-                boolean generateXmlEvents = expectedSegmentGroup.generateXmlEvents();
 
-                if(generateXmlEvents && xmlTag != null) {
+                if(xmlTag != null) {
                     startElement(xmlTag, true);
                 }
                 mapSegments(expectedSegmentGroup.getSegments(), currentSegmentFields);
-                if(generateXmlEvents && xmlTag != null) {
+                if(xmlTag != null) {
                     endElement(xmlTag, true);
                 }
             }
