@@ -32,7 +32,7 @@
 		</medi:segment>
 
         <!-- This group should not be triggered -->
-        <medi:segmentGroup xmltag="segTwo" generateXmlEvents="false" minOccurs="0">
+        <medi:segmentGroup xmltag="segTwo" minOccurs="0">
             <medi:segment xmltag="segAA" segcode="1A">
                 <medi:field xmltag="field-1" />
             </medi:segment>

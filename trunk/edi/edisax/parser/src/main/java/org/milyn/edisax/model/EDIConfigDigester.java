@@ -258,7 +258,6 @@ public class EDIConfigDigester {
             segmentGroup.setMaxOccurs(getNodeValueAsInteger(node, "maxOccurs"));
             segmentGroup.setMinOccurs(getNodeValueAsInteger(node, "minOccurs"));
             setValuesForMappingNode(node, segmentGroup, namespacePrefix, parent);
-            segmentGroup.setGenerateXmlEvents(getNodeValueAsBoolean(node, "generateXmlEvents", true));
 
             NodeList nodes = node.getChildNodes();
             for (int i = 0; i < nodes.getLength(); i++) {

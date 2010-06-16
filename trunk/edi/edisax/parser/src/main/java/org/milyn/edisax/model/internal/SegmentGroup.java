@@ -29,7 +29,6 @@ public class SegmentGroup extends MappingNode {
     private List<SegmentGroup> segments;
     private Integer minOccurs;
     private Integer maxOccurs;
-    private boolean generateXmlEvents = true;
 
     public List<SegmentGroup> getSegments() {
         if (segments == null) {
@@ -68,13 +67,5 @@ public class SegmentGroup extends MappingNode {
 
     public void setMaxOccurs(Integer value) {
         this.maxOccurs = value;
-    }
-
-    public boolean generateXmlEvents() {
-        return generateXmlEvents;
-    }
-
-    public void setGenerateXmlEvents(boolean generateXmlEvents) {
-        this.generateXmlEvents = generateXmlEvents;
     }
 }
