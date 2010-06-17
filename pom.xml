@@ -69,6 +69,7 @@
                 <module>scribe</module>
                 <module>edi</module>
                 <module>smooks-cartridges</module>
+                <module>smooks-all</module>
                 <module>smooks-examples</module>
             </modules>
             <activation>
@@ -86,6 +87,7 @@
                 <module>scribe</module>
                 <module>edi</module>
                 <module>smooks-cartridges</module>
+                <module>smooks-all</module>
             </modules>
         </profile>
     </profiles>
