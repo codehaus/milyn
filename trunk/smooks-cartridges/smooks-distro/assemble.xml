@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="assemble" name="Assembly">
 
-    <property name="version.base" value="1.3"/>
-    <property name="version" value="${version.base}"/>
-    <property name="mvn.version" value="1.3"/>
+    <property name="version.base" value="1.4"/>
+    <property name="version" value="${version.base}-SNAPSHOT"/>
+    <property name="mvn.version" value="1.4-SNAPSHOT"/>
 
     <property name="mainDistroName" value="smooks-${version}"/>
     <property name="mainTargetdir" value="target/${mainDistroName}"/>
@@ -38,6 +38,11 @@
             <property name="todir" value="../target/lib" />
             <property name="user.home" value="../target" /> <!-- needed for downloading the ant-maven plugin -->
         </ant>
+
+        <!-- Remove all milyn jars accept milyn-smooks-all.. -->
+        <delete>
+            <fileset dir="./target/lib" includes="milyn-*.jar" excludes="milyn-smooks-all-*.jar" />
+        </delete>
 
         <exec dir="../../" executable="${mvnexec}">
             <arg line="javadoc:javadoc -P noexamples"/>
