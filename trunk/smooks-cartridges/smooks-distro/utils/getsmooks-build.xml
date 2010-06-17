@@ -46,6 +46,17 @@
         <delete>
             <fileset dir="./${todir}" includes="xml-apis*.jar,junit*,log4j*,hsqldb*,servlet-api*,xalan*,jbossall-client*,jboss-j2ee*,jdom*,cglib-full*,cglib-nodep*,struts*,mockejb*,mockrunner*,commons-beanutils*,commons-digester*,commons-fileupload*,commons-validator*,oro*,xmlunit*,hibernate-core-*,ibatis-sqlmap-*,dom4j-*,ant-*,javassist-3.10.0.GA.jar" />
         </delete>
+
+        <antcall target="remove.but.all" />
+    </target>
+
+    <target name="remove.but.all" unless="keep.sub.modules">
+
+        <!-- Remove all milyn jars accept milyn-smooks-all.. -->
+        <delete>
+            <fileset dir="./${todir}" includes="milyn-*.jar" excludes="milyn-smooks-all-*.jar" />
+        </delete>
+
     </target>
 
     <target name="get-nekohtml" depends="maven.get">

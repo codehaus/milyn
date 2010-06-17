@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="assemble" name="Assembly">
+<project default="get-smooks" name="Assembly">
 
     <property name="version.base" value="1.4"/>
     <property name="version" value="${version.base}-SNAPSHOT"/>
@@ -33,16 +33,7 @@
     </target>
 
     <target name="run-assemble">
-        <ant dir="utils" antfile="getsmooks-build.xml">
-            <property name="smooks.version" value="${mvn.version}" />
-            <property name="todir" value="../target/lib" />
-            <property name="user.home" value="../target" /> <!-- needed for downloading the ant-maven plugin -->
-        </ant>
-
-        <!-- Remove all milyn jars accept milyn-smooks-all.. -->
-        <delete>
-            <fileset dir="./target/lib" includes="milyn-*.jar" excludes="milyn-smooks-all-*.jar" />
-        </delete>
+        <antcall target="get-smooks"/>
 
         <exec dir="../../" executable="${mvnexec}">
             <arg line="javadoc:javadoc -P noexamples"/>
@@ -60,6 +51,14 @@
 
         <antcall target="buildMainDistro"/>
         <antcall target="buildExamplesDistro"/>
+    </target>
+
+    <target name="get-smooks">
+        <ant dir="utils" antfile="getsmooks-build.xml">
+            <property name="smooks.version" value="${mvn.version}" />
+            <property name="todir" value="../target/lib" />
+            <property name="user.home" value="../target" /> <!-- needed for downloading the ant-maven plugin -->
+        </ant>
     </target>
 
     <target name="buildMainDistro">
