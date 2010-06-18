@@ -57,21 +57,33 @@ public class Descriptor {
     private Smooks smooks;
     private Schema schema;
 
-    Descriptor(String descriptorPath) throws SAXException, IOException {
+    public Descriptor(List<Properties> descriptors) throws SAXException, IOException {
+        AssertArgument.isNotNullAndNotEmpty(descriptors, "descriptors");
+
+        intialize(descriptors, new DefaultSchemaResolver(descriptors), new DefaultBindingConfigResolver(descriptors));
+    }
+
+    public Descriptor(String descriptorPath) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
 
-		List<Properties> descriptors = loadDescriptors(descriptorPath);
+		List<Properties> descriptors = loadDescriptors(descriptorPath, getClass());
 		intialize(descriptors, new DefaultSchemaResolver(descriptors), new DefaultBindingConfigResolver(descriptors));
 	}
 
-	Descriptor(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+	public Descriptor(String descriptorPath, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
-		AssertArgument.isNotNull(schemaResolver, "schemaResolver");
 		AssertArgument.isNotNull(bindingResolver, "bindingResolver");
 
-		List<Properties> descriptors = loadDescriptors(descriptorPath);
+		List<Properties> descriptors = loadDescriptors(descriptorPath, getClass());
 		intialize(descriptors, schemaResolver, bindingResolver);
 	}
+
+    public Descriptor(List<Properties> descriptors, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
+        AssertArgument.isNotNullAndNotEmpty(descriptors, "descriptors");
+        AssertArgument.isNotNull(bindingResolver, "bindingResolver");
+
+        intialize(descriptors, schemaResolver, bindingResolver);
+    }
 
     public Smooks getSmooks() {
         return smooks;
@@ -85,11 +97,11 @@ public class Descriptor {
         return BeanWriterFactory.getBeanWriters(smooks.getApplicationContext());
     }
 
-    private List<Properties> loadDescriptors(String descriptorPath) {
+    public static List<Properties> loadDescriptors(String descriptorPath, Class<?> loaderClass) {
         List<Properties> descriptorFiles = new ArrayList<Properties>();
 
         try {
-            List<URL> resources = ClassUtil.getResources(descriptorPath, ModelBuilder.class);
+            List<URL> resources = ClassUtil.getResources(descriptorPath, loaderClass);
 
             if(resources.isEmpty()) {
                 throw new IllegalStateException("Failed to locate any model descriptor file by the name '" + descriptorPath + "' on the classpath.");
@@ -97,13 +109,7 @@ public class Descriptor {
 
             for(URL resource : resources) {
                 InputStream resStream = resource.openStream();
-                try {
-                    Properties descriptor = new Properties();
-                    descriptor.load(resStream);
-                    descriptorFiles.add(descriptor);
-                } finally {
-                    resStream.close();
-                }
+                descriptorFiles.add(loadDescriptor(resStream));
             }
         } catch (IOException e) {
             throw new IllegalStateException("Unexpected IO Exception when reading Dynamic Namespace Descriptor files from classpath.", e);
@@ -112,9 +118,21 @@ public class Descriptor {
         return descriptorFiles;
     }
 
+    public static Properties loadDescriptor(InputStream descriptorStream) throws IOException {
+        AssertArgument.isNotNull(descriptorStream, "descriptorStream");
+        try {
+            Properties descriptor = new Properties();
+            descriptor.load(descriptorStream);
+            return descriptor;
+        } finally {
+            descriptorStream.close();
+        }
+    }
 
     private void intialize(List<Properties> descriptors, EntityResolver schemaResolver, EntityResolver bindingResolver) throws SAXException, IOException {
-		this.schema = newSchemaInstance(descriptors, schemaResolver);
+        if(schemaResolver != null) {
+            this.schema = newSchemaInstance(descriptors, schemaResolver);
+        }
 		this.smooks = newSmooksInstance(descriptors, bindingResolver);
 	}
 
@@ -165,6 +183,7 @@ public class Descriptor {
         AssertArgument.isNotNull(bindingResolver, "bindingResolver");
 
         Set<Namespace> namespaces = resolveNamespaces(descriptors);
+        Map<String, Smooks> extendedConfigDigesters = new HashMap<String, Smooks>();
 
         // Now create a Smooks instance for processing configurations for these namespaces...
         Smooks smooks = new Smooks();
@@ -176,7 +195,7 @@ public class Descriptor {
                     SmooksResourceConfigurationList configList;
 
                     try {
-                        configList = XMLConfigDigester.digestConfig(bindingSource.getByteStream(), "./");
+                        configList = XMLConfigDigester.digestConfig(bindingSource.getByteStream(), "./", extendedConfigDigesters);
                         for(int i = 0; i < configList.size(); i++) {
                             SmooksResourceConfiguration config = configList.get(i);
                             if(config.getSelectorNamespaceURI() == null) {

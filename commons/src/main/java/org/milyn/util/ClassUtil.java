@@ -27,11 +27,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -144,21 +140,22 @@ public class ClassUtil {
 	
 	public static List<URL> getResources(String resourcePath, Class<?> caller) throws IOException {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Set<URL> resources = new LinkedHashSet<URL>();
 
         if(resourcePath.startsWith("/")) {
             resourcePath = resourcePath.substring(1);
         }
 		
 		if (classLoader != null) {
-			return CollectionsUtil.toList(classLoader.getResources(resourcePath));
+			resources.addAll(CollectionsUtil.toList(classLoader.getResources(resourcePath)));
 		}
 
 		classLoader = caller.getClassLoader();
 		if (classLoader != null) {
-			return CollectionsUtil.toList(classLoader.getResources(resourcePath));
+            resources.addAll(CollectionsUtil.toList(classLoader.getResources(resourcePath)));
 		}
 
-		return new ArrayList<URL>();
+		return new ArrayList<URL>(resources);
 	}
 
     public static List<Class> findInstancesOf(final Class type, String[] igrnoreList, String[] includeList) {
@@ -235,17 +232,16 @@ public class ClassUtil {
 
         long start = System.currentTimeMillis();
         List<Class<T>> classes = new ArrayList<Class<T>>();
-        Enumeration<URL> cpURLs;
+        List<URL> cpURLs;
         int resCount = 0;
 
         try {
-            cpURLs = Thread.currentThread().getContextClassLoader().getResources(fileName);
+            cpURLs = getResources(fileName, ClassUtil.class);
         } catch (IOException e) {
             throw new RuntimeException("Error getting resource URLs for resource : " + fileName, e);
         }
 
-        while (cpURLs.hasMoreElements()) {
-            URL url = cpURLs.nextElement();
+        for (URL url : cpURLs) {
             addClasses(url, instanceOf, classes);
             resCount++;
         }

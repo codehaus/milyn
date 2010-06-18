@@ -82,6 +82,15 @@ public class ModelBuilder {
 	private boolean validate = true;
     private String reportPath;
 
+    public ModelBuilder(Descriptor descriptor, boolean validate) throws SAXException, IOException {
+		AssertArgument.isNotNull(descriptor, "descriptor");
+
+        this.descriptor = descriptor;
+        this.validate = validate;
+
+        configure();
+	}
+
     public ModelBuilder(String descriptorPath, boolean validate) throws SAXException, IOException {
 		AssertArgument.isNotNullAndNotEmpty(descriptorPath, "descriptorPath");
 
@@ -142,7 +151,7 @@ public class ModelBuilder {
 
 		executionContext.getBeanContext().addObserver(beanTracker);
 		
-		if(validate) {
+		if(validate && descriptor.getSchema() != null) {
 			// Validate the message against the schemas...
 			Document messageDoc = toDocument(message);
 

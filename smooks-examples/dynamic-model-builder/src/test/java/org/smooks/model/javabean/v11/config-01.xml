@@ -33,8 +33,10 @@
     <jb:bindings beanId="header" class="example.model.Header" createOnElement="header">
         <!-- value config -->
         <jb:value property="date" decoder="Date" data="header/date" dataNS="http://boohoo">
+            <!-- decode format... -->
             <jb:decodeParam name="format">EEE MMM dd HH:mm:ss z yyyy</jb:decodeParam>
             <jb:decodeParam name="locale-language">en</jb:decodeParam>
+            <!-- decode country... -->
             <jb:decodeParam name="locale-country">IE</jb:decodeParam>
         </jb:value>
         <!-- value config -->
