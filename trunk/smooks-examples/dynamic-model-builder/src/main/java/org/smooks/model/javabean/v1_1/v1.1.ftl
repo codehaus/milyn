@@ -7,6 +7,7 @@
         <@writePreText bean=valueBinding />
         <${nsp}:value <@writeAttribs bean=valueBinding attribs="property,setterMethod,data,dataNS,decoder,defaultVal@default"/>>
             <#list valueBinding.decodeParams as decodeParam>
+            <@writePreText bean=decodeParam />
             <${nsp}:decodeParam <@writeAttribs bean=decodeParam attribs="name"/>>${decodeParam.value}</${nsp}:decodeParam>
             </#list>
         </${nsp}:value>
