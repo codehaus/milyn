@@ -31,6 +31,17 @@
 
         <dependency>
             <groupId>org.milyn</groupId>
+            <artifactId>milyn-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-calc</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -44,6 +55,7 @@
             <artifactId>milyn-smooks-fixed-length</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-edi</artifactId>
@@ -54,6 +66,12 @@
             <artifactId>milyn-smooks-ejc</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-edisax-parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-javabean</artifactId>
@@ -102,6 +120,11 @@
 
         <dependency>
             <groupId>org.milyn</groupId>
+            <artifactId>milyn-scribe-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
             <artifactId>milyn-scribe-hibernate</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -130,6 +153,19 @@
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>src-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>sources</classifier>
+                            <excludeTransitive>true</excludeTransitive>
+                            <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
