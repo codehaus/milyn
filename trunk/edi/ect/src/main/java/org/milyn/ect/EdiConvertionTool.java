@@ -15,12 +15,10 @@
 */
 package org.milyn.ect;
 
-import org.milyn.ect.formats.unedifact.UnEdifactReader;
+import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.model.internal.Edimap;
-import org.milyn.util.ClassUtil;
 
 import java.io.*;
-import java.util.*;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -30,9 +28,8 @@ import java.util.zip.ZipInputStream;
 public class EdiConvertionTool {    
 
     public static void convertUnEdifact(ZipInputStream inputStream, String messageName, Writer writer) throws InstantiationException, IllegalAccessException, IOException, EdiParseException {
-        ConfigReader configReader = ConfigReader.Impls.UNEDIFACT.newInstance();
-        configReader.initialize(inputStream, false);
-        Edimap edimap = configReader.getMappingModelForMessage(messageName);
+        EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(inputStream, false);
+        Edimap edimap = ediSpecificationReader.getMappingModel(messageName);
 
         ConfigWriter configWriter = new ConfigWriter();
         configWriter.generate(writer, edimap);        

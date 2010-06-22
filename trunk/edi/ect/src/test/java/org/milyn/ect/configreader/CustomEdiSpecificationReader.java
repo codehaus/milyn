@@ -15,7 +15,7 @@
 */
 package org.milyn.ect.configreader;
 
-import org.milyn.ect.ConfigReader;
+import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.ect.EdiParseException;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Description;
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.HashSet;
 
-public class CustomConfigReader implements ConfigReader {
+public class CustomEdiSpecificationReader implements EdiSpecificationReader {
     public void initialize(InputStream inputStream, boolean useImport) throws IOException, EdiParseException {
     }
 
@@ -35,7 +35,7 @@ public class CustomConfigReader implements ConfigReader {
         return new HashSet<String>();
     }
 
-    public Edimap getMappingModelForMessage(String messageName) throws IOException {
+    public Edimap getMappingModel(String messageName) throws IOException {
         return createEdimap();
     }
 

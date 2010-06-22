@@ -15,7 +15,7 @@
 */
 package org.milyn.ect.formats.unedifact;
 
-import org.milyn.ect.ConfigReader;
+import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.ect.EdiParseException;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Edimap;
@@ -29,10 +29,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * UnEdifactReader
+ * UN/EDIFACT Specification Reader.
+ * 
  * @author bardl
  */
-public class UnEdifactReader implements ConfigReader {
+public class UnEdifactSpecificationReader implements EdiSpecificationReader {
     
     private static final int BUFFER = 2048;
     private static final String INTERCHANGE_DEFINITION = "un-edifact-interchange-definition.xml";
@@ -42,14 +43,14 @@ public class UnEdifactReader implements ConfigReader {
     private Map<String, byte[]> messageFiles;
     private Edimap definitionModel;
 
-    public void initialize(InputStream inputStream, boolean useImport) throws IOException, EdiParseException {
+    public UnEdifactSpecificationReader(ZipInputStream specificationInStream, boolean useImport) throws IOException {
         this.useImport = useImport;
 
-        if (!(inputStream instanceof ZipInputStream)) {
+        if (!(specificationInStream instanceof ZipInputStream)) {
             throw new IOException("InputStream should be a ZipInputStream when parsing UnEdifact specification.");
         }
 
-        ZipInputStream zipInputStream = (ZipInputStream)inputStream;
+        ZipInputStream zipInputStream = (ZipInputStream)specificationInStream;
 
         definitionFiles = new HashMap<String, byte[]>();
         messageFiles = new HashMap<String, byte[]>();
@@ -73,7 +74,7 @@ public class UnEdifactReader implements ConfigReader {
         return messageFiles.keySet();
     }
 
-    public Edimap getMappingModelForMessage(String messageName) throws IOException {
+    public Edimap getMappingModel(String messageName) throws IOException {
         return parseEdiMessage(messageName);
     }
 
@@ -103,30 +104,6 @@ public class UnEdifactReader implements ConfigReader {
         }
         return definitionModel;
     }
-
-//    private static EdimapConfiguration parseEDIMessage(String fileName, String outFile, String definitionResource, Import interchangeEnvImport) throws IOException {
-//
-//        Edimap edimap;
-//        Reader messageISR = null;
-//        InputStream messageFIS = null;
-//        try {
-//            messageFIS = new FileInputStream(fileName);
-//            messageISR = new InputStreamReader(messageFIS);
-//            edimap = UnEdifactMessageReader.readMessage(messageISR);
-//            if (edimap != null) {
-//                edimap.getImports().get(0).setResource(definitionResource);
-//                edimap.getImports().add(interchangeEnvImport);
-//            }
-//        } finally {
-//            if (messageFIS != null) {
-//                messageFIS.close();
-//            }
-//            if (messageISR != null) {
-//                messageISR.close();
-//            }
-//        }
-//        return new EdimapConfiguration(edimap, outFile);
-//    }
 
     private Edimap parseEDIDefinitionFiles() throws IOException, EdiParseException {
 
