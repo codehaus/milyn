@@ -16,6 +16,7 @@
 package org.milyn.ect;
 
 import junit.framework.TestCase;
+import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.internal.Edimap;
@@ -28,37 +29,57 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 /**
- * ConfigReaderTest
+ * UnEdifactSpecificationReaderTest.
+ * 
  * @author bardl
  */
-public class UnEdifactReaderTest extends TestCase {
+public class UnEdifactSpecificationReaderTest extends TestCase {
 
     public void test_D08A_Messages() throws InstantiationException, IllegalAccessException, IOException, EdiParseException {
 
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org" + File.separator + "milyn" + File.separator + "ect" + File.separator + "D08A.zip");
+//        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org" + File.separator + "milyn" + File.separator + "ect" + File.separator + "D08A.zip");
+        InputStream inputStream = getClass().getResourceAsStream("D08A.zip");
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
-        ConfigReader configReader = ConfigReader.Impls.UNEDIFACT.newInstance();
-        configReader.initialize(zipInputStream, false);
+        EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(zipInputStream, false);
 
-        test("BANSTA", configReader);
-        test("CASRES", configReader);
-        test("INVOIC", configReader);
-        test("PAYMUL", configReader);
-        test("TPFREP", configReader);
+        test("BANSTA", ediSpecificationReader);
+        test("CASRES", ediSpecificationReader);
+        test("INVOIC", ediSpecificationReader);
+        test("PAYMUL", ediSpecificationReader);
+        test("TPFREP", ediSpecificationReader);
+    }
+
+    public void test_getMessages() throws InstantiationException, IllegalAccessException, IOException {
+        InputStream inputStream = getClass().getResourceAsStream("D08A.zip");
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+
+        EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(zipInputStream, false);
+        ConfigWriter configWriter = new ConfigWriter();
+
+        Set<String> messages = ediSpecificationReader.getMessageNames();
+        for(String message : messages) {
+
+            System.out.println(message);
+
+            Edimap model = ediSpecificationReader.getMappingModel(message);
+            StringWriter writer = new StringWriter();
+
+            configWriter.generate(writer, model);
+        }
     }
 
     public void test_D08A_Segments() throws InstantiationException, IllegalAccessException, IOException, EdiParseException, ParserConfigurationException, SAXException {
 
-        InputStream inputStream = ClassUtil.getResourceAsStream("D08A.zip", this.getClass());
+        InputStream inputStream = getClass().getResourceAsStream("D08A.zip");
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
-        ConfigReader configReader = ConfigReader.Impls.UNEDIFACT.newInstance();
-        configReader.initialize(zipInputStream, false);
-        Edimap edimap = configReader.getDefinitionModel();
+        UnEdifactSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(zipInputStream, false);
+        Edimap edimap = ediSpecificationReader.getDefinitionModel();
 
         StringWriter stringWriter = new StringWriter();
         ConfigWriter configWriter = new ConfigWriter();
@@ -75,11 +96,10 @@ public class UnEdifactReaderTest extends TestCase {
         InputStream inputStream = ClassUtil.getResourceAsStream("D08A.zip", this.getClass());
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
-        ConfigReader configReader = ConfigReader.Impls.UNEDIFACT.newInstance();
-        configReader.initialize(zipInputStream, false);
+        EdiSpecificationReader ediSpecificationReader = new UnEdifactSpecificationReader(zipInputStream, false);
 
         //Test INVOIC
-        String mappingModel = getEdiMessageAsString(configReader, "INVOIC");
+        String mappingModel = getEdiMessageAsString(ediSpecificationReader, "INVOIC");
         testPackage("d96a-invoic-1", mappingModel);
     }
 
@@ -104,8 +124,8 @@ public class UnEdifactReaderTest extends TestCase {
         }
     }
 
-    private String getEdiMessageAsString(ConfigReader configReader, String messageType) throws IllegalAccessException, InstantiationException, IOException {
-        Edimap edimap = configReader.getMappingModelForMessage(messageType);
+    private String getEdiMessageAsString(EdiSpecificationReader ediSpecificationReader, String messageType) throws IllegalAccessException, InstantiationException, IOException {
+        Edimap edimap = ediSpecificationReader.getMappingModel(messageType);
         StringWriter sw = new StringWriter();
         ConfigWriter writer = new ConfigWriter();
         writer.generate(sw, edimap);
@@ -124,8 +144,8 @@ public class UnEdifactReaderTest extends TestCase {
         assertTrue("Segment [" + segmentCode + "] is incorrect.", result.contains(expected));
     }
     
-    private void test(String messageName, ConfigReader configReader) throws IOException {
-    	Edimap edimap = configReader.getMappingModelForMessage(messageName);
+    private void test(String messageName, EdiSpecificationReader ediSpecificationReader) throws IOException {
+    	Edimap edimap = ediSpecificationReader.getMappingModel(messageName);
 
         StringWriter stringWriter = new StringWriter();
         ConfigWriter configWriter = new ConfigWriter();

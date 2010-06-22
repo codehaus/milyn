@@ -24,6 +24,7 @@ import java.io.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.io.FileUtils;
 import org.milyn.io.StreamUtils;
 
 /**
@@ -120,7 +121,7 @@ public class Archive {
         String className = clazz.getName();
 
         className = className.replace('.', '/') + ".class";
-        addEntry(className, "/" + className);
+        addClasspathResourceEntry(className, "/" + className);
 
         return this;
     }
@@ -170,7 +171,7 @@ public class Archive {
      * @return This archive instance.
      * @throws java.io.IOException Failed to read resource from classpath.
      */
-    public Archive addEntry(String path, String resource) throws IOException {
+    public Archive addClasspathResourceEntry(String path, String resource) throws IOException {
         AssertArgument.isNotNull(path, "path");
         AssertArgument.isNotNull(resource, "resource");
 
@@ -179,6 +180,26 @@ public class Archive {
             throw new IOException("Classpath resource '" + resource + "' no found.");
         } else {
             addEntry(path, resourceStream);
+        }
+
+        return this;
+    }
+
+    /**
+     * Add the supplied character data as an entry in the deployment.
+     *
+     * @param path The target path of the entry when added to the archive.
+     * @param data The data.
+     * @return This archive instance.
+     */
+    public Archive addEntry(String path, String data) {
+        AssertArgument.isNotNullAndNotEmpty(path, "path");
+        AssertArgument.isNotNull(data, "data");
+
+        try {
+            entries.put(trimLeadingSlash(path.trim()), data.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Unexpected UnsupportedEncodingException exception for encoding 'UTF-8' when writing Archive entry from a StringBuilder instance.", e);
         }
 
         return this;
@@ -236,18 +257,11 @@ public class Archive {
      * for the data contained in the streams supplied entries arg.
      * specifying the entry name and the value is a InputStream containing
      * the entry data.
-     * @param outputStream The archive output stream.
+     * @param archiveStream The archive output stream.
      * @throws java.io.IOException Write failure.
      */
-    public void toOutputStream(OutputStream outputStream) throws IOException {
-        AssertArgument.isNotNull(outputStream, "outputStream");
-        ZipOutputStream archiveStream;
-
-        if(outputStream instanceof ZipOutputStream) {
-            archiveStream = (ZipOutputStream) outputStream;
-        } else {
-            archiveStream = new ZipOutputStream(outputStream);
-        }
+    public void toOutputStream(ZipOutputStream archiveStream) throws IOException {
+        AssertArgument.isNotNull(archiveStream, "archiveStream");
 
         try {
             writeEntriesToArchive(archiveStream);
@@ -265,6 +279,35 @@ public class Archive {
     }
 
     /**
+     * Output the entries to the specified output folder on the file system.
+     * @param outputFolder The target output folder.
+     * @throws java.io.IOException Write failure.
+     */
+    public void toFileSystem(File outputFolder) throws IOException {
+        AssertArgument.isNotNull(outputFolder, "outputFolder");
+
+        if(outputFolder.isFile()) {
+            throw new IOException("Cannot write Archive entries to '" + outputFolder.getAbsolutePath() + "'.  This is a normal file i.e. not a directory.");            
+        }
+        if(!outputFolder.exists()) {
+            outputFolder.mkdirs();
+        }
+
+        Set<Map.Entry<String, byte[]>> entrySet = entries.entrySet();
+        for (Map.Entry<String, byte[]> entry : entrySet) {
+            byte[] fileBytes = entry.getValue();
+
+            if(fileBytes == null) {
+                fileBytes = new byte[0];
+            }
+
+            File entryFile = new File(outputFolder, entry.getKey());
+            entryFile.getParentFile().mkdirs();
+            FileUtils.writeFile(fileBytes, entryFile);
+        }
+    }
+
+    /**
      * Create a {@link ZipInputStream} for the entries defined in this
      * archive.
      * @return The {@link ZipInputStream} for the entries in this archive.
@@ -273,7 +316,7 @@ public class Archive {
     public ZipInputStream toInputStream() throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        toOutputStream(outputStream);
+        toOutputStream(new ZipOutputStream(outputStream));
 
         return new ZipInputStream(new ByteArrayInputStream(outputStream.toByteArray()));
     }

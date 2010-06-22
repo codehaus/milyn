@@ -17,6 +17,7 @@ package org.milyn.archive;
 
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.util.zip.ZipEntry;
@@ -79,5 +80,21 @@ public class ArchiveTest extends TestCase {
         // Archive.class
         zipEntry = zipInputStream.getNextEntry();
         assertEquals("org/milyn/archive/Archive.class", zipEntry.getName());
+    }
+
+    public void test_toFileSystem() throws IOException {
+        Archive archive = new Archive();
+
+        archive.addEntry("//my/resource.txt", new ByteArrayInputStream("Hi!!".getBytes()));
+        archive.addEntry("my/emptyfile.xxx");
+        archive.addEntry(Archive.class);
+
+        File folder = new File("./target/ArchiveTest-myzip-contents");
+
+        archive.toFileSystem(folder);
+
+        assertTrue(new File(folder, "my/resource.txt").exists());
+        assertTrue(new File(folder, "my/emptyfile.xxx").exists());
+        assertTrue(new File(folder, "org/milyn/archive/Archive.class").exists());
     }
 }
