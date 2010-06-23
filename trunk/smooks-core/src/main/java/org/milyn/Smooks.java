@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksConfigurationException;
-import org.milyn.ReaderConfigurator;
 import org.milyn.xml.NamespaceMappings;
 import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
@@ -47,7 +46,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -335,7 +333,7 @@ public class Smooks {
      * The created context is profile agnostic and should be used where profile based targeting is not in use.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filterSource(ExecutionContext, Source, Result[])}.
+     * {@link #filterSource(org.milyn.container.ExecutionContext, javax.xml.transform.Source, javax.xml.transform.Result...)} 
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
@@ -354,7 +352,7 @@ public class Smooks {
      * the transfromation/analysis resources must be configured with profile targeting information.
      * <p/>
      * The context returned from this method is used in subsequent calls to
-     * {@link #filterSource(ExecutionContext, Source, Result[])}.
+     * {@link #filterSource(org.milyn.container.ExecutionContext, javax.xml.transform.Source, javax.xml.transform.Result...)}.
      * It allows access to the execution context instance
      * before and after calls on this method.  This means the caller has an opportunity to set and get data
      * {@link org.milyn.container.BoundAttributeStore bound} to the execution context (before and after the calls), providing the
@@ -418,7 +416,7 @@ public class Smooks {
      * @param source           The filter Source.
      * @param result           The filter Result.
      * @throws SmooksException Failed to filter.
-     * @deprecated Use {@link #filterSource(javax.xml.transform.Source, javax.xml.transform.Result[])}
+     * @deprecated Use {@link #filterSource(javax.xml.transform.Source, javax.xml.transform.Result...)}.
      */
     public void filter(Source source, Result result) throws SmooksException {
         filterSource(createExecutionContext(), source, result);
@@ -433,7 +431,7 @@ public class Smooks {
      * @param executionContext The {@link ExecutionContext} for this filter operation. See
      *                         {@link #createExecutionContext(String)}.
      * @throws SmooksException Failed to filter.
-     * @deprecated Use {@link #filterSource(ExecutionContext, Source, Result[])}.
+     * @deprecated Use {@link #filterSource(org.milyn.container.ExecutionContext, javax.xml.transform.Source, javax.xml.transform.Result...)}.
      */
     public void filter(Source source, Result result, ExecutionContext executionContext) throws SmooksException {
         filterSource(executionContext, source, result);
@@ -506,6 +504,9 @@ public class Smooks {
 	                FilterBypass filterBypass = deliveryConfig.getFilterBypass();                
 	                if(filterBypass != null && filterBypass.bypass(executionContext, source, results[0])) {
 	                	// We're done... a filter bypass was applied...
+                        if(logger.isDebugEnabled()) {
+                            logger.debug("FilterBypass '" + filterBypass.getClass().getName() + "' applied.");
+                        }
 	                	return;
 	                }
                 }

@@ -49,7 +49,7 @@ public class UnEdifactMessageReader {
     /**
      * Marks the end of the Message Definition section.
      */
-    private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *Segment index .*)";
+    private static final String MESSAGE_DEFINITION_END = "([\\d\\.]* *(Data)? *[S|s]egment index .*)";
 
 
     /**
@@ -74,7 +74,7 @@ public class UnEdifactMessageReader {
      * Group4 = isMandatory
      * Group5 = max occurance
      */
-    private static String SEGMENT_REGULAR = "(\\d{4}) *(\\w{3}) *([\\w /]*) *(M|C) *(\\d*)[ \\|]*";
+    private static String SEGMENT_REGULAR = "(\\d{4})[\\+\\* ]*(\\w{3}) *([\\w /]*) *(M|C) *(\\d*)[ \\|]*";
 
     /**
      * Matches and extracts information from start of segment group.
@@ -83,7 +83,7 @@ public class UnEdifactMessageReader {
      * Group4 = isMandatory
      * Group5 = max occurance 
      */
-    private static String SEGMENT_GROUP_START = "(\\d{4}) *-* *(Segment group \\d*) *-* *(C|M) *(\\d*)[-+|]*";
+    private static String SEGMENT_GROUP_START = "(\\d{4})[\\+\\* ]*-* *(Segment group \\d*) *-* *(C|M) *(\\d*)[-+|]*";
 
     /**
      * Matches and extracts information from segment at end of segment group.
@@ -94,7 +94,7 @@ public class UnEdifactMessageReader {
      * Group5 = max occurance
      * Group6 = nrOfClosedGroups
      */
-    private static String SEGMENT_GROUP_END = "(\\d{4}) *(\\w{3}) *([\\w /]*) *(C|M) *(\\d*)([-|\\+]*)";
+    private static String SEGMENT_GROUP_END = "(\\d{4})[\\+\\* ]*(\\w{3}) *([\\w /]*) *(C|M) *(\\d*)([-|\\+]*)";
 
     /**
      * Newline character applied between documentation lines.
@@ -153,7 +153,7 @@ public class UnEdifactMessageReader {
             if (isSplitIntoImport) {
                 Import ediImport = new Import();
                 ediImport.setNamespace(agency);
-                ediImport.setResource("TODO");
+                ediImport.setResource(definitionModel.getDescription().getName() + ".xml");  // TODO: Review with BŒrd
                 edimap.getImports().add(ediImport);
             }  else {
                 segmentDefinitions = getSegmentDefinitions(definitionModel);

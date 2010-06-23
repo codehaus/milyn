@@ -52,7 +52,7 @@ public class UnEdifactDefinitionReader {
      * Group6 = min occurance
      * Group7 = max occurance
      */
-    private static final Pattern WHOLE_DATA_ELEMENT = Pattern.compile("^(\\d{3}) *(\\d{4}) *(.*) *.*(C|M) *(an|n|a)(\\.*)(\\d*)");
+    private static final Pattern WHOLE_DATA_ELEMENT = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *.*(C|M) *(an|n|a)(\\.*)(\\d*)");
 
     /**
      * Extracts information from Data element occuring on one single row in Composite definition.
@@ -61,7 +61,7 @@ public class UnEdifactDefinitionReader {
      * Group2 = id
      * Group3 = name
      */
-    private static final Pattern FIRST_DATA_ELEMENT_PART = Pattern.compile("^(\\d{3}) *(\\d{4}) *(.*) *");
+    private static final Pattern FIRST_DATA_ELEMENT_PART = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}) *(.*) *");
 
     /**
      * Extracts information from Data element occuring on one single row in Composite definition.
@@ -81,7 +81,8 @@ public class UnEdifactDefinitionReader {
      * Group2 = name
      * Group3 = usage (not used today)
      */
-    private static final Pattern ELEMENT_HEADER = Pattern.compile("[X ]*(\\w{4}) *(.*) *\\[(\\w)\\]");
+    private static final Pattern ELEMENT_HEADER = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*) *\\[(\\w)\\]");
+    private static final Pattern ELEMENT_HEADER_OLD = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*)");
 
     /**
      * Extracts information from Composite header.
@@ -89,7 +90,7 @@ public class UnEdifactDefinitionReader {
      * Group1 = id
      * Group2 = name
      */
-    private static final Pattern COMPOSITE_HEADER = Pattern.compile(" *(\\w{4}) *(.*)");
+    private static final Pattern COMPOSITE_HEADER = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{4}) *(.*)");
 
     /**
      * Extracts information from Segment header.
@@ -97,7 +98,7 @@ public class UnEdifactDefinitionReader {
      * Group1 = id
      * Group2 = name
      */
-    private static final Pattern SEGMENT_HEADER = Pattern.compile(" *(\\w{3}) *(.*)");
+    private static final Pattern SEGMENT_HEADER = Pattern.compile("[X\\|\\+\\-\\*\\# ]*(\\w{3}) *(.*)");
 
     /**
      * Extracts information from SegmentElement. Could be either a Composite or a Data.
@@ -107,7 +108,7 @@ public class UnEdifactDefinitionReader {
      * Group3 = name
      * Group4 = mandatory
      */
-    private static final Pattern SEGMENT_ELEMENT = Pattern.compile("^(\\d{3}) *(\\d{4}|C\\d{3}) *(.*) *( C| M).*");
+    private static final Pattern SEGMENT_ELEMENT = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*) *( C| M).*");
 
     /**
      * Extracts information from first SegmentElement when Composite or Data element description exists on several
@@ -119,7 +120,7 @@ public class UnEdifactDefinitionReader {
      * Group3 = name
      * Group4 = mandatory
      */
-    private static final Pattern FIRST_SEGMENT_ELEMENT = Pattern.compile("^(\\d{3}) *(\\d{4}|C\\d{3}) *(.*)");
+    private static final Pattern FIRST_SEGMENT_ELEMENT = Pattern.compile("^(\\d{3})[X\\|\\+\\-\\*\\# ]*(\\d{4}|C\\d{3}) *(.*)");
 
     /**
      * Extracts information from second SegmentElement when Composite or Data element description exists on several
@@ -338,7 +339,13 @@ public class UnEdifactDefinitionReader {
             id = headerMatcher.group(1);
             name = headerMatcher.group(2);
         } else {
-            throw new EdiParseException("Unable to extract id and name for Data element from line [" + line + "].");
+	    Matcher headerMatcherOld = ELEMENT_HEADER_OLD.matcher(line);
+	    if (headerMatcherOld.matches()) {
+		id = headerMatcherOld.group(1);
+		name = headerMatcherOld.group(2);
+	    } else {
+		throw new EdiParseException("Unable to extract id and name for Data element from line [" + line + "].");
+	    }
         }
 
         String description = getValue(reader, "Desc:");
@@ -389,15 +396,18 @@ public class UnEdifactDefinitionReader {
 
     private static String getValue(BufferedReader reader, String prefix) throws IOException {
         StringBuilder result = new StringBuilder();
-        String line = readUntilValue(reader);
-
-        line = line.trim();
-        if (line.startsWith(prefix)) {
-            result.append(line.replace(prefix, ""));
-            line = reader.readLine();
-            while (line.length() != 0) {
-                result.append(line.trim());
+        String line;
+        while ((line = readUntilValue(reader)) != null)
+        {
+            line = line.replace("|", "").trim();
+            if (line.startsWith(prefix)) {
+                result.append(line.replace(prefix, ""));
                 line = reader.readLine();
+                while (line != null && line.length() != 0) {
+                    result.append(line.trim());
+                    line = reader.readLine();
+                }
+                break;
             }
         }
         return result.toString();

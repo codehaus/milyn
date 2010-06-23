@@ -798,7 +798,7 @@ public class EDIParser implements XMLReader {
         if(indent) {
             indent();
         }
-        contentHandler.startElement(null, elementName, "", EMPTY_ATTRIBS);
+        contentHandler.startElement(null, elementName, elementName, EMPTY_ATTRIBS);
         indentDepth.value++;
     }
 
@@ -807,7 +807,7 @@ public class EDIParser implements XMLReader {
         if(indent) {
             indent();
         }
-        contentHandler.endElement(null, elementName, "");
+        contentHandler.endElement(null, elementName, elementName);
     }
 
     // HACK :-) it's hardly going to be deeper than this!!

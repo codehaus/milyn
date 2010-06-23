@@ -15,8 +15,10 @@
 */
 package org.milyn.ect.maven;
 
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 import org.jfrog.maven.annomojo.annotations.MojoPhase;
@@ -35,48 +37,43 @@ import java.io.File;
 @MojoPhase("generate-sources")
 @MojoRequiresDependencyResolution
 public class ECTMojo extends AbstractMojo {
-	
-	@MojoParameter(required = true, description = "The name of the message as defined in the message definition file ('src') e.g. 'INVOIC' for UN/EDIFACT.")
-	private String messageName;
 
-    @MojoParameter(required = true, description = "The EDI message definition type.  Currently Supports 'UNEDIFACT' only.")
-    private String srcType ;
+    @MojoParameter(expression = "${project}", required = true, readonly = true)
+    private MavenProject project;
 
     @MojoParameter(required = true, description = "The message definition file.  Depends on the message definition type ('srcType') e.g. for UN/EDIFACT, this is a ZIP file that can be downloaded from the web.")
     private File src;
 
-    @MojoParameter(required = false)
-    private File outFile;
-	
+    @MojoParameter(required = true, description = "The EDI message definition type.  Currently Supports 'UNEDIFACT' only.")
+    private String srcType ;
+
+    @MojoParameter(expression = "target/ect", required = false)
+    private File destDir;
+
     public void execute() throws MojoExecutionException {
     	
         if(!src.exists()) {
-        	throw new MojoExecutionException("EDI mapping model '" + src.getAbsolutePath() + "' not found.");
+        	throw new MojoExecutionException("EDI Specification file '" + src.getAbsolutePath() + "' not found.");
         }
-        
+
+        // Currently supports UN/EDIFACT only...
         if(srcType.equals("UNEDIFACT")) {
-        	// Currently supports UN/EDIFACT only...
         	ECTUnEdifactExecutor ect = new ECTUnEdifactExecutor();
-        	
+
             try {
                 ect.setUnEdifactZip(src);
-                
-                if(outFile == null) {
-                	outFile = new File("target/" + srcType + "-" + messageName + "-model.xml");
-                }
-                
-                File outDir = outFile.getParentFile();
-                if(outDir != null && !outDir.exists()) {
-                	outDir.mkdirs();
-                }
-                
-                ect.setOutFile(outFile);
-                ect.setMessageName(messageName);
+                ect.setUrn(project.getGroupId() + ":" + project.getArtifactId() + ":" + project.getVersion());
+                ect.setMappingModelFolder(destDir);
+
                 ect.execute();
-                
-                getLog().info("UN/EDIFACT message model for message '" + messageName + "' generated in '" + outFile.getAbsolutePath() + "'.");
+
+                Resource resource = new Resource();
+                resource.setDirectory(destDir.getPath());
+                project.addResource(resource);
+
+                getLog().info("UN/EDIFACT mapping model set for '" + src.getName() + "' generated in '" + destDir.getAbsolutePath() + "'.");
             } catch (EdiParseException e) {
-                throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);
+                throw new MojoExecutionException("Error Executing ECT Maven Plugin.  See chained cause.", e);
             } 
         } else {
             throw new MojoExecutionException("Unsupported ECT 'srcType' configuration value '" + srcType + "'.  Currently support 'UNEDIFACT' only.");

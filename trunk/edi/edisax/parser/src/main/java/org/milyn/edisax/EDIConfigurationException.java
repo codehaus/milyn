@@ -29,4 +29,8 @@ public class EDIConfigurationException extends Exception {
     public EDIConfigurationException(String message) {
         super(message);
     }
+
+    public EDIConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

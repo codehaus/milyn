@@ -21,6 +21,7 @@ package org.milyn.ect;
 
 import java.io.*;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * {@link org.milyn.ect.EdiConvertionTool} Executor specific for Un/Edifact format.
@@ -29,53 +30,53 @@ import java.util.zip.ZipInputStream;
 public class ECTUnEdifactExecutor {
 
     private File unEdifactZip;
-    private File outFile;
-    private String messageName;
+    private String urn;
+    private File mappingModelZip;
+    private File mappingModelFolder;
 
     public void execute() throws EdiParseException {
-        assertMandatoryProperty(unEdifactZip, "unEdifactZip");
-        assertMandatoryProperty(outFile, "outFile");
-        assertMandatoryProperty(messageName, "messageName");
+        assertConfigOK();
 
-        if(!unEdifactZip.exists()) {
-            throw new EdiParseException("Specified EDI Mapping Model file '" + unEdifactZip.getAbsoluteFile() + "' does not exist.");
-        }
-        if(unEdifactZip.exists() && unEdifactZip.isDirectory()) {
-            throw new EdiParseException("Specified EDI Mapping Model file '" + unEdifactZip.getAbsoluteFile() + "' exists, but is a directory.  Must be an EDI Mapping Model file.");
-        }
-
-        ZipInputStream zipInputStream;
-        FileInputStream fileInputStream;
+        ZipInputStream definitionZipStream;
         try {
-            fileInputStream = new FileInputStream(unEdifactZip);
-            zipInputStream = new ZipInputStream(fileInputStream);
+            definitionZipStream = new ZipInputStream(new FileInputStream(unEdifactZip));
         } catch (FileNotFoundException e) {
             throw new EdiParseException("Error opening zip file containing the Un/Edifact specification '" + unEdifactZip.getAbsoluteFile() + "'.", e);
         }
 
-        Writer writer;
         try {
-            writer = new FileWriter(outFile);
-        } catch (IOException e) {
-            throw new EdiParseException("Error opening writer for outFile '" + outFile.getAbsoluteFile() + "'.", e);
-        }
-        try {
-            EdiConvertionTool.convertUnEdifact(zipInputStream, messageName, writer);
+            if(mappingModelZip != null) {
+                EdiConvertionTool.fromUnEdifactSpec(definitionZipStream, new ZipOutputStream(new FileOutputStream(mappingModelZip)), urn);
+            } else {
+                EdiConvertionTool.fromUnEdifactSpec(definitionZipStream, mappingModelFolder, urn);
+            }
         } catch (Exception e) {
             throw new EdiParseException("Error parsing the Un/Edifact specification '" + unEdifactZip.getAbsoluteFile() + "'.", e);
-        } finally {
-            try {                                
-                zipInputStream.close();
-                fileInputStream.close();
-            } catch (IOException e) {
-                throw new EdiParseException("Error closing the zip file containing the Un/Edifact specification '" + unEdifactZip.getAbsoluteFile() + "'.", e);
-            }
+        } 
+    }
 
-            try {
-                writer.close();
-            } catch (IOException e) {
-                throw new EdiParseException("Error closing the outFile '" + outFile.getAbsoluteFile() + "'.", e);
-            }
+    private void assertConfigOK() {
+        if(unEdifactZip == null) {
+            throw new EdiParseException("Mandatory UN/EDIFACT ECT property 'unEdifactZip' + not specified.");
+        }
+        if(urn == null) {
+            throw new EdiParseException("Mandatory UN/EDIFACT ECT property 'urn' + not specified.");
+        }
+        if(mappingModelZip == null && mappingModelFolder == null) {
+            throw new EdiParseException("One of the properties 'mappingModelZip' or 'mappingModelFolder' must be specified on the UN/EDIFACT ECT configuration.");
+        }
+        if(mappingModelZip != null && mappingModelFolder != null) {
+            throw new EdiParseException("Only one of the properties 'mappingModelZip' and 'mappingModelFolder' should be specified on the UN/EDIFACT ECT configuration.");
+        }
+
+        if(!unEdifactZip.exists()) {
+            throw new EdiParseException("Specified UN/EDIFACT definition zip file '" + unEdifactZip.getAbsoluteFile() + "' does not exist.");
+        }
+        if(unEdifactZip.isDirectory()) {
+            throw new EdiParseException("Specified UN/EDIFACT definition zip file '" + unEdifactZip.getAbsoluteFile() + "' exists, but is a directory.  Must be a zip file.");
+        }
+        if(mappingModelZip != null && mappingModelZip.exists()) {
+            throw new EdiParseException("Specified mapping model zip file '" + mappingModelZip.getAbsoluteFile() + "' already exists.");
         }
     }
 
@@ -83,17 +84,15 @@ public class ECTUnEdifactExecutor {
         this.unEdifactZip = unEdifactZip;
     }
 
-    public void setOutFile(File outFile) {
-        this.outFile = outFile;
+    public void setUrn(String urn) {
+        this.urn = urn;
     }
 
-    public void setMessageName(String messageName) {
-        this.messageName = messageName;
+    public void setMappingModelZip(File mappingModelZip) {
+        this.mappingModelZip = mappingModelZip;
     }
 
-    private void assertMandatoryProperty(Object obj, String name) {
-        if(obj == null) {
-            throw new EdiParseException("Mandatory EJC property '" + name + "' + not specified.");
-        }
+    public void setMappingModelFolder(File mappingModelFolder) {
+        this.mappingModelFolder = mappingModelFolder;
     }
 }

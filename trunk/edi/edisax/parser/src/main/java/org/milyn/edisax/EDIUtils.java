@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -34,7 +36,9 @@ import org.milyn.archive.ArchiveClassLoader;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
+import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.util.ClassUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -47,6 +51,7 @@ public class EDIUtils {
     private static Log logger = LogFactory.getLog(EDIUtils.class);
     
     public static final String EDI_MAPPING_MODEL_ZIP_LIST_FILE = "META-INF/services/org/smooks/edi/mapping-model.lst";
+    public static final String EDI_MAPPING_MODEL_URN = "META-INF/services/org/smooks/edi/urn";
 
     /**
      * Splits a String by delimiter as long as delimiter does not follow an escape sequence.
@@ -185,6 +190,11 @@ public class EDIUtils {
 					// Loaded an zipped config... on to next config in list...
 					continue;
 				}
+            } else if(mappingModelFile.startsWith("urn:")) {
+                String urn = mappingModelFile.substring(4);
+                List<String> rootMappingModels = getMappingModelList(urn);
+
+                loadMappingModels(mappingModels, baseURI, rootMappingModels);
 			}
 			
 			// The file extension didn't match up with what we expected, so perform a
@@ -197,7 +207,7 @@ public class EDIUtils {
 		}
     }
 
-	private static boolean loadXMLMappingModel(String mappingModelFile, Map<Description, EdifactModel> mappingModels, URI baseURI) throws EDIConfigurationException {
+    private static boolean loadXMLMappingModel(String mappingModelFile, Map<Description, EdifactModel> mappingModels, URI baseURI) throws EDIConfigurationException {
 		try {
 			EdifactModel model = EDIParser.parseMappingModel(mappingModelFile, baseURI);
 			mappingModels.put(model.getEdimap().getDescription(), model);
@@ -207,74 +217,115 @@ public class EDIUtils {
 		} catch (SAXException e) {
 			logger.debug("Configured mapping model file '" + mappingModelFile + "' is not a valid Mapping Model xml file.");
 			return false;
-		}		
+		}
 	}
 
-	private static boolean loadZippedMappingModels(String mappingModelFile, Map<Description, EdifactModel> mappingModels, URI baseURI) throws IOException, SAXException, EDIConfigurationException {
+    private static boolean loadZippedMappingModels(String mappingModelFile, Map<Description, EdifactModel> mappingModels, URI baseURI) throws IOException, SAXException, EDIConfigurationException {
 		URIResourceLocator locator = new URIResourceLocator();
-		
+
 		locator.setBaseURI(baseURI);
-		
+
 		InputStream rawZipStream = locator.getResource(mappingModelFile);
 		if(rawZipStream != null) {
             Archive archive = loadArchive(rawZipStream);
-			
+
 			if(archive != null) {
 				List<String> rootMappingModels = getMappingModelList(archive);
-				
+
 				if(rootMappingModels.isEmpty()) {
 					logger.debug("Configured mapping model file '" + mappingModelFile + "' is not a valid Mapping Model zip file.  Check that the zip has a valid '" + EDI_MAPPING_MODEL_ZIP_LIST_FILE + "' mapping list file.");
 					return false;
 				}
-				
+
 				ClassLoader threadCCL = Thread.currentThread().getContextClassLoader();
-				
+
 				try {
 					ArchiveClassLoader archiveClassLoader = new ArchiveClassLoader(threadCCL, archive);
-					
+
 					Thread.currentThread().setContextClassLoader(archiveClassLoader);
-					for (String rootMappingModel : rootMappingModels) {
-						EdifactModel mappingModel = EDIParser.parseMappingModel(rootMappingModel, baseURI);
-						mappingModels.put(mappingModel.getEdimap().getDescription(), mappingModel);
-					}
-				} finally {
+                    loadMappingModels(mappingModels, baseURI, rootMappingModels);
+                } finally {
 					Thread.currentThread().setContextClassLoader(threadCCL);
 				}
-				
+
 				return true;
-			}		
+			}
 		}
-		
+
 		return false;
 	}
 
-	private static List<String> getMappingModelList(Archive archive) throws IOException {
-		List<String> rootMappingModels = new ArrayList<String>();
+    private static void loadMappingModels(Map<Description, EdifactModel> mappingModels, URI baseURI, List<String> rootMappingModels) throws IOException, SAXException, EDIConfigurationException {
+        for (String rootMappingModel : rootMappingModels) {
+            try {
+                EdifactModel mappingModel = EDIParser.parseMappingModel(rootMappingModel, baseURI);
+                mappingModels.put(mappingModel.getEdimap().getDescription(), mappingModel);
+            } catch(Exception e) {
+                throw new EDIConfigurationException("Error parsing EDI Mapping Model '" + rootMappingModel + "'.", e);
+            }
+        }
+    }
+
+    private static List<String> getMappingModelList(Archive archive) throws IOException {
 		byte[] zipEntryBytes = archive.getEntries().get(EDI_MAPPING_MODEL_ZIP_LIST_FILE);
-		
+
 		if(zipEntryBytes != null) {
-			ByteArrayInputStream entryStream = new ByteArrayInputStream(zipEntryBytes);
-			
-			try {
-				BufferedReader lineReader = new BufferedReader(new InputStreamReader(entryStream, "UTF-8"));
-				
-				String line = lineReader.readLine();
-				while(line != null) {
-					line = line.trim();
-					if(line.length() > 0 && !line.startsWith("#")) {
-						rootMappingModels.add(line);
-					}					
-					line = lineReader.readLine();
-				}
-			} finally {
-				entryStream.close();
-			}
-		}
-			
-		return rootMappingModels;
+            return getMappingModelList(new ByteArrayInputStream(zipEntryBytes));
+        }
+
+		return Collections.EMPTY_LIST;
 	}
 
-	private static Archive loadArchive(InputStream rawStream) {
+    private static List<String> getMappingModelList(String urn) throws IOException, EDIConfigurationException {
+        List<URL> urnFiles = ClassUtil.getResources(EDI_MAPPING_MODEL_URN, EDIUtils.class);
+
+        for(URL urnFile : urnFiles) {
+            InputStream urnStream = urnFile.openStream();
+            try {
+                String archiveURN = StreamUtils.readStreamAsString(urnStream);
+                if(archiveURN.equals(urn)) {
+                    String urnFileString = urnFile.toString();
+                    int lastBangIndex = urnFileString.lastIndexOf('!');
+                    String listFile = urnFileString.substring(0, lastBangIndex) + "!/" + EDI_MAPPING_MODEL_ZIP_LIST_FILE;
+                    List<URL> zipListFiles = ClassUtil.getResources(EDI_MAPPING_MODEL_ZIP_LIST_FILE, EDIUtils.class);
+
+                    for(URL zipListFile : zipListFiles) {
+                        if(zipListFile.toString().equals(listFile)) {
+                            return getMappingModelList(zipListFile.openStream());
+                        }
+                    }
+                }
+            } finally {
+                urnStream.close();
+            }
+        }
+
+        throw new EDIConfigurationException("Failed to locate jar file for EDI Mapping Model URN '" + urn + "'.  Jar must be available on classpath.");
+    }
+
+    private static List<String> getMappingModelList(InputStream modelListStream) throws IOException {
+        List<String> rootMappingModels = new ArrayList<String>();
+
+        try {
+            BufferedReader lineReader = new BufferedReader(new InputStreamReader(modelListStream, "UTF-8"));
+
+            String line = lineReader.readLine();
+            while(line != null) {
+                line = line.trim();
+                if(line.length() > 0 && !line.startsWith("#")) {
+                    rootMappingModels.add(line);
+                }
+                line = lineReader.readLine();
+            }
+
+        } finally {
+            modelListStream.close();
+        }
+
+        return rootMappingModels;
+    }
+
+    private static Archive loadArchive(InputStream rawStream) {
         try {
             return new Archive(new ZipInputStream(rawStream));
 		} catch(Exception e) {
