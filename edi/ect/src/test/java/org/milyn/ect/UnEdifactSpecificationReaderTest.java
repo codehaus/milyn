@@ -64,7 +64,7 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
         Set<String> messages = ediSpecificationReader.getMessageNames();
         for(String message : messages) {
 
-            System.out.println(message);
+//            System.out.println(message);
 
             Edimap model = ediSpecificationReader.getMappingModel(message);
             StringWriter writer = new StringWriter();
@@ -86,6 +86,9 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
         configWriter.generate(stringWriter, edimap);
 
         String result = stringWriter.toString();
+
+        System.out.println(result);
+
         testSegment("BGM", result);
         testSegment("DTM", result);
         testSegment("NAD", result);

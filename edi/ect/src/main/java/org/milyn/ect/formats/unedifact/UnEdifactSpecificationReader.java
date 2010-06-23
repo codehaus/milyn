@@ -18,11 +18,14 @@ package org.milyn.ect.formats.unedifact;
 import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.ect.EdiParseException;
 import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.util.ClassUtil;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -71,11 +74,17 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
     }
 
     public Set<String> getMessageNames() {
-        return messageFiles.keySet();
+        Set<String> names = new HashSet<String>(messageFiles.keySet());
+        names.add(definitionModel.getDescription().getName());
+        return names;
     }
 
     public Edimap getMappingModel(String messageName) throws IOException {
-        return parseEdiMessage(messageName);
+        if(messageName.equals(definitionModel.getDescription().getName())) {
+            return definitionModel;
+        } else {
+            return parseEdiMessage(messageName);
+        }
     }
 
     private Edimap parseEdiMessage(String messageName) throws IOException {
@@ -94,14 +103,6 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
     }
 
     public Edimap getDefinitionModel() throws IOException {
-        if (definitionModel.getDescription() == null) {
-            Edimap messageEdimap = parseEdiMessage(messageFiles.keySet().iterator().next());
-
-            // Prepare Edimap for output.
-            definitionModel.getSegments().setXmltag(messageEdimap.getDescription().getName() + "-Definition");
-            definitionModel.setDescription(messageEdimap.getDescription());
-            definitionModel.setDelimiters(messageEdimap.getDelimiters());
-        }
         return definitionModel;
     }
 
@@ -117,6 +118,9 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
             segmentISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("edsd.")));
 
             edifactModel = UnEdifactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
+            edifactModel.setDescription(new Description().setName("_UnEdifactDefinitionMap").setVersion("local"));
+            edifactModel.getSegments().setXmltag("DefinitionMap");
+            edifactModel.setDelimiters(UNEdifactInterchangeParser.defaultUNEdifactDelimiters);
         } finally {
             if (dataISR != null) {
                 dataISR.close();
@@ -139,8 +143,9 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
 
         ZipEntry fileEntry = folderZip.getNextEntry();
         while (fileEntry != null) {
+            String fName = new File(fileEntry.getName().toLowerCase()).getName().replaceFirst("tr", "ed");
             for (ZipDirectoryEntry entry : entries) {
-                if (fileEntry.getName().toLowerCase().startsWith(entry.getDirectory())) {
+                if (fName.startsWith(entry.getDirectory())) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                     byte[] bytes = new byte[BUFFER];
@@ -165,12 +170,14 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
 
         ZipEntry fileEntry = folderZip.getNextEntry();
         while (fileEntry != null) {
-            if (fileEntry.getName().toLowerCase().startsWith(entry) || entry.equals("*")) {
+            String fName = new File(fileEntry.getName().toLowerCase()).getName().replaceFirst("tr", "ed");
+            if (fName.startsWith(entry) || entry.equals("*")) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                 byte[] bytes = new byte[2048];
                 int size;
                   while ((size = folderZip.read(bytes, 0, bytes.length)) != -1) {
+                    translatePseudoGraph(bytes);
                     baos.write(bytes, 0, size);
                   }
 
@@ -191,6 +198,28 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         return result;
     }
 
+    private static void translatePseudoGraph(byte[] bytes)
+    {
+	for (int i=0, l=bytes.length; i<l; i++)
+	{
+	    switch(bytes[i])
+	    {
+		case (byte)0xC4:
+		    bytes[i] = (byte)'-';
+		    break;
+
+		case (byte)0xC1:
+		case (byte)0xBF:
+		case (byte)0xD9:
+		    bytes[i] = (byte)'+';
+		    break;
+
+		case (byte)0xB3:
+		    bytes[i] = (byte)'|';
+		    break;
+	    }
+	}
+    }
 
     private static class ZipDirectoryEntry {
         private String directory;

@@ -17,14 +17,19 @@ package example;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.edisax.EDIUtils;
 import org.milyn.event.report.HtmlReportGenerator;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.StringSource;
 import org.milyn.container.ExecutionContext;
+import org.milyn.util.CollectionsUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Simple example main class.
@@ -40,10 +45,10 @@ public class Main {
             ExecutionContext executionContext = smooks.createExecutionContext();
             StringWriter writer = new StringWriter();
 
-            // Configure the execution context to generate a report...
-            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
-
-            smooks.filterSource(executionContext, new StringSource(readInputMessage()), new StreamResult(writer));
+//            // Configure the execution context to generate a report...
+//            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
+//
+//            smooks.filterSource(executionContext, new StringSource(readInputMessage()), new StreamResult(writer));
 
             return writer.toString();
         } finally {
@@ -63,7 +68,7 @@ public class Main {
         System.out.println("======================================\n\n");
     }
 
-    private static String readInputMessage() throws FileNotFoundException, IOException {
+    private static String readInputMessage() throws IOException {
         return StreamUtils.readStreamAsString(new FileInputStream("INVOIC.edi"));
     }
 }

@@ -53,7 +53,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 
     private Map<String, Boolean> features = new HashMap<String, Boolean>();
 	
-	private static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
+	public static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
 	
 	private Map<Description, EdifactModel> mappingModels = new HashMap<Description, EdifactModel>();
 	private ContentHandler contentHandler;
@@ -78,7 +78,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	        segmentReader.setIgnoreNewLines(getFeature(EDIParser.FEATURE_IGNORE_NEWLINES));
 	        
 	        contentHandler.startDocument();
-	        contentHandler.startElement(XMLConstants.NULL_NS_URI, "unEdifact", StringUtils.EMPTY, new AttributesImpl());
+	        contentHandler.startElement(XMLConstants.NULL_NS_URI, "unEdifact", "unEdifact", new AttributesImpl());
 	
 	        while(true) {
 		        segCode = segmentReader.peek(3);
@@ -95,7 +95,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	        }
 	        
 	        contentHandler.characters(new char[] {'\n'}, 0, 1);
-	        contentHandler.endElement(XMLConstants.NULL_NS_URI, "unEdifact", StringUtils.EMPTY);
+	        contentHandler.endElement(XMLConstants.NULL_NS_URI, "unEdifact", "unEdifact");
 	        contentHandler.endDocument();
         } finally {
         	contentHandler = null;

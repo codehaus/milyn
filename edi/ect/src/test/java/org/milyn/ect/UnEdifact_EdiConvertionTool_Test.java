@@ -28,7 +28,7 @@ import java.util.zip.ZipOutputStream;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UnEdifact_ModelConfigSetWriterTest extends TestCase {
+public class UnEdifact_EdiConvertionTool_Test extends TestCase {
 
     public void test_D08A() throws IOException {
         InputStream inputStream = getClass().getResourceAsStream("D08A.zip");
@@ -37,6 +37,6 @@ public class UnEdifact_ModelConfigSetWriterTest extends TestCase {
 
         modelSetFile.delete();
 
-        ModelConfigSetWriter.fromUnEdifactSpec(zipInputStream, new ZipOutputStream(new FileOutputStream(modelSetFile)), "org/smooks/edi/unedifact/d08a");
+        EdiConvertionTool.fromUnEdifactSpec(zipInputStream, new ZipOutputStream(new FileOutputStream(modelSetFile)), "org.milyn.edi.unedifact:d08a:1.0-SNAPSHOT");
     }
 }
