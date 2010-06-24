@@ -9,13 +9,21 @@
     <name>Milyn Smooks EDI Generation</name>
 
     <properties>
-        <milyn.smooks.core.version>1.4-SNAPSHOT</milyn.smooks.core.version> <!-- ## Smooks Version ## -->
+        <smooks.version>1.4-SNAPSHOT</smooks.version> <!-- ## Smooks Version ## -->
+
+        <!-- UN/EDIFACT versions... -->
+        <d08a.version>1.0-SNAPSHOT</d08a.version>
+        <d03b.version>1.0-SNAPSHOT</d03b.version>
     </properties>
 
     <profiles>
         <profile>
             <id>all</id>
             <modules>
+                <!-- UN/EDIFACT D03B... -->
+                <module>unedifact/d03b/mapping</module>
+                <module>unedifact/d03b/test</module>
+
                 <!-- UN/EDIFACT D08A... -->
                 <module>unedifact/d08a/mapping</module>
                 <module>unedifact/d08a/test</module>
@@ -27,6 +35,9 @@
         <profile>
             <id>deploy</id>
             <modules>
+                <!-- UN/EDIFACT D03B... -->
+                <module>unedifact/d03b/mapping</module>
+
                 <!-- UN/EDIFACT D08A... -->
                 <module>unedifact/d08a/mapping</module>
             </modules>
@@ -37,13 +48,13 @@
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>milyn-smooks-edi</artifactId>
-            <version>${milyn.smooks.core.version}</version>
+            <version>${smooks.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.milyn</groupId>
             <artifactId>testres</artifactId>
-            <version>${milyn.smooks.core.version}</version>
+            <version>${smooks.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
