@@ -26,6 +26,7 @@ import org.milyn.util.CollectionsUtil;
 import org.xml.sax.SAXException;
 
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.net.URL;
 import java.util.Enumeration;
@@ -42,13 +43,9 @@ public class Main {
         Smooks smooks = new Smooks("smooks-config.xml");
 
         try {
-            ExecutionContext executionContext = smooks.createExecutionContext();
             StringWriter writer = new StringWriter();
 
-//            // Configure the execution context to generate a report...
-//            executionContext.setEventListener(new HtmlReportGenerator("target/report/report.html"));
-//
-//            smooks.filterSource(executionContext, new StringSource(readInputMessage()), new StreamResult(writer));
+            smooks.filterSource(new StreamSource(new FileInputStream("PAXLST.edi")), new StreamResult(writer));
 
             return writer.toString();
         } finally {
@@ -69,6 +66,6 @@ public class Main {
     }
 
     private static String readInputMessage() throws IOException {
-        return StreamUtils.readStreamAsString(new FileInputStream("INVOIC.edi"));
+        return StreamUtils.readStreamAsString(new FileInputStream("PAXLST.edi"));
     }
 }
