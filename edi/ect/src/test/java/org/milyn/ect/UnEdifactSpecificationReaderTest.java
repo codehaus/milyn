@@ -87,7 +87,7 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
 
         String result = stringWriter.toString();
 
-        System.out.println(result);
+//        System.out.println(result);
 
         testSegment("BGM", result);
         testSegment("DTM", result);

@@ -8,9 +8,92 @@
     <version>1.4-SNAPSHOT</version> <!-- base pom version - do not remove this comment -->
     <name>Milyn Smooks EDI Generation</name>
 
-    <modules>
-        <module>unedifact/d08a/mapping</module>
-    </modules>
+    <properties>
+        <milyn.smooks.core.version>1.4-SNAPSHOT</milyn.smooks.core.version> <!-- ## Smooks Version ## -->
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>all</id>
+            <modules>
+                <!-- UN/EDIFACT D08A... -->
+                <module>unedifact/d08a/mapping</module>
+                <module>unedifact/d08a/test</module>
+            </modules>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>deploy</id>
+            <modules>
+                <!-- UN/EDIFACT D08A... -->
+                <module>unedifact/d08a/mapping</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-edi</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>testres</artifactId>
+            <version>${milyn.smooks.core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/java</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
 
     <distributionManagement>
         <repository>

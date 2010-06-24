@@ -175,36 +175,43 @@ public class EDIUtils {
 		AssertArgument.isNotNull(baseURI, "baseURI");
 
 		String[] mappingModelFileTokens = mappingModelFiles.split(",");
-		
-		for(String mappingModelFile : mappingModelFileTokens) {
-			mappingModelFile = mappingModelFile.trim();
-			
-			// First try processing based on the file extension
-			if(mappingModelFile.endsWith(".xml")) {
-				if(loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
-					// Loaded an XML config... on to next config in list...
-					continue;
-				}
-			} else if(mappingModelFile.endsWith(".zip") || mappingModelFile.endsWith(".jar")) {
-				if(loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
-					// Loaded an zipped config... on to next config in list...
-					continue;
-				}
-            } else if(mappingModelFile.startsWith("urn:")) {
-                String urn = mappingModelFile.substring(4);
-                List<String> rootMappingModels = getMappingModelList(urn);
 
-                loadMappingModels(mappingModels, baseURI, rootMappingModels);
-			}
-			
-			// The file extension didn't match up with what we expected, so perform a
-			// brute force attempt to process the config... 
-			if(!loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
-				if(!loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
-					throw new EDIConfigurationException("Failed to process EDI Mapping Model config file '" + mappingModelFile + "'.  Not a valid EDI Mapping Model configuration.");
-				}
-			}
-		}
+        EdifactModel.addImportCache();
+        try {
+            for(String mappingModelFile : mappingModelFileTokens) {
+                mappingModelFile = mappingModelFile.trim();
+
+                // First try processing based on the file extension
+                if(mappingModelFile.endsWith(".xml")) {
+                    if(loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
+                        // Loaded an XML config... on to next config in list...
+                        continue;
+                    }
+                } else if(mappingModelFile.endsWith(".zip") || mappingModelFile.endsWith(".jar")) {
+                    if(loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
+                        // Loaded an zipped config... on to next config in list...
+                        continue;
+                    }
+                } else if(mappingModelFile.startsWith("urn:")) {
+                    String urn = mappingModelFile.substring(4);
+                    List<String> rootMappingModels = getMappingModelList(urn);
+
+                    loadMappingModels(mappingModels, baseURI, rootMappingModels);
+
+                    continue;
+                }
+
+                // The file extension didn't match up with what we expected, so perform a
+                // brute force attempt to process the config...
+                if(!loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
+                    if(!loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
+                        throw new EDIConfigurationException("Failed to process EDI Mapping Model config file '" + mappingModelFile + "'.  Not a valid EDI Mapping Model configuration.");
+                    }
+                }
+            }
+        } finally {
+            EdifactModel.removeImportCache();
+        }
     }
 
     private static boolean loadXMLMappingModel(String mappingModelFile, Map<Description, EdifactModel> mappingModels, URI baseURI) throws EDIConfigurationException {
@@ -285,8 +292,8 @@ public class EDIUtils {
                 String archiveURN = StreamUtils.readStreamAsString(urnStream);
                 if(archiveURN.equals(urn)) {
                     String urnFileString = urnFile.toString();
-                    int lastBangIndex = urnFileString.lastIndexOf('!');
-                    String listFile = urnFileString.substring(0, lastBangIndex) + "!/" + EDI_MAPPING_MODEL_ZIP_LIST_FILE;
+                    String listFile = urnFileString.substring(0, urnFileString.length() - EDI_MAPPING_MODEL_URN.length()) + EDI_MAPPING_MODEL_ZIP_LIST_FILE;
+
                     List<URL> zipListFiles = ClassUtil.getResources(EDI_MAPPING_MODEL_ZIP_LIST_FILE, EDIUtils.class);
 
                     for(URL zipListFile : zipListFiles) {

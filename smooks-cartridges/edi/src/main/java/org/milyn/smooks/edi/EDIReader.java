@@ -128,10 +128,14 @@ public class EDIReader extends EDIParser implements SmooksXMLReader {
             if(edifactModel == null) {
 				try {
 	            	ContainerResourceLocator resourceLocator = applicationContext.getResourceLocator();
-	            	
+
+                    if(modelConfigData.startsWith("urn:") || modelConfigData.endsWith(".jar") || modelConfigData.endsWith(".zip")) {
+                        throw new IOException("Unsupported mapping model config URI for basic EDI Parser '" + modelConfigData + "'.  Check that you are using the correct EDI parser.  You may need to configure an Interchange Parser, such as the UN/EDIFACT parser.");
+                    }
+
 	            	if(resourceLocator instanceof URIResourceLocator) {
 	            		// This will resolve config paths relative to the containing smooks config file....
-	            		edifactModel = EDIParser.parseMappingModel(modelConfigData, ((URIResourceLocator)resourceLocator).getBaseURI());
+	            		edifactModel = EDIParser.parseMappingModel(modelConfigData, (resourceLocator).getBaseURI());
 	            	} else {
 	            		edifactModel = EDIParser.parseMappingModel(modelConfigData, URIResourceLocator.getSystemBaseURI());
 	            	}

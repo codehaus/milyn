@@ -15,6 +15,7 @@
 */
 package org.milyn.ect.formats.unedifact;
 
+import org.milyn.ect.EdiParseException;
 import org.milyn.edisax.model.internal.*;
 import org.milyn.ect.common.XmlTagEncoder;
 
@@ -28,11 +29,6 @@ import java.util.regex.Pattern;
  * @author bardl
  */
 public class UnEdifactMessageReader {
-
-    /**
-     * The namespace used when referencing the interchange envelope definition.
-     */
-    public static final String INTERCHANGE_NAMESPACE = "envelope";
 
     /**
      * Marks the start of the Message Definition section.
@@ -74,7 +70,7 @@ public class UnEdifactMessageReader {
      * Group4 = isMandatory
      * Group5 = max occurance
      */
-    private static String SEGMENT_REGULAR = "(\\d{4})[\\+\\* ]*(\\w{3}) *([\\w /]*) *(M|C) *(\\d*)[ \\|]*";
+    private static String SEGMENT_REGULAR = "(\\d{4})[\\+\\* ]*(\\w{3}) *(.*) *(M|C) *(\\d*)[ \\|]*";
 
     /**
      * Matches and extracts information from start of segment group.
@@ -237,14 +233,7 @@ public class UnEdifactMessageReader {
     private static int parseNextSegment(BufferedReader reader, SegmentGroup parentGroup, Map<String, String> definitions, String agency, boolean isSplitIntoImport, Map<String, Segment> segmentDefinitions) throws IOException {
         String line = reader.readLine();
         while (line != null) {
-            if (line.matches(SEGMENT_REGULAR)) {
-                Matcher matcher = Pattern.compile(SEGMENT_REGULAR).matcher(line);
-                matcher.matches();
-                if (!ignoreSegments.contains(matcher.group(2))) {
-                    Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency, isSplitIntoImport, segmentDefinitions);
-                    parentGroup.getSegments().add(segment);
-                }
-            } else if (line.matches(SEGMENT_GROUP_START)) {
+            if (line.matches(SEGMENT_GROUP_START)) {
                 Matcher matcher = Pattern.compile(SEGMENT_GROUP_START).matcher(line);
                 matcher.matches();
                 SegmentGroup group = createGroup(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), definitions);
@@ -261,6 +250,13 @@ public class UnEdifactMessageReader {
                 Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency, isSplitIntoImport, segmentDefinitions);
                 parentGroup.getSegments().add(segment);
                 return extractPlusCharacter(matcher.group(6)).length() - 1;
+            } else if (line.matches(SEGMENT_REGULAR)) {
+                Matcher matcher = Pattern.compile(SEGMENT_REGULAR).matcher(line);
+                matcher.matches();
+                if (!ignoreSegments.contains(matcher.group(2))) {
+                    Segment segment = createSegment(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5), definitions, agency, isSplitIntoImport, segmentDefinitions);
+                    parentGroup.getSegments().add(segment);
+                }
             }
             
             line = reader.readLine();
@@ -288,6 +284,11 @@ public class UnEdifactMessageReader {
             segment.setSegref(agency + ":" + segcode);
         } else {
             Segment importedSegment = segmentDefinitions.get(segcode);
+
+            if(importedSegment == null) {
+                throw new EdiParseException("Unknown segment code '" + segcode + "'.");
+            }
+
             segment.getFields().addAll(importedSegment.getFields());
 
             if (importedSegment.getSegments().size() > 0) {
