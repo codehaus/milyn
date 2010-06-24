@@ -20,6 +20,8 @@ import org.milyn.ect.EdiParseException;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.edisax.model.internal.Field;
+import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.util.ClassUtil;
 
@@ -62,6 +64,8 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         // Read Definition Configuration
         definitionModel = parseEDIDefinitionFiles();
 
+        addMissingDefinitions(definitionModel);
+
         //Interchange envelope is inserted into the definitions. Handcoded at the moment.
         try {
             EdifactModel interchangeEnvelope = new EdifactModel();
@@ -85,6 +89,22 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         } else {
             return parseEdiMessage(messageName);
         }
+    }
+
+    private void addMissingDefinitions(Edimap definitionModel) {
+        Segment ugh = new Segment();
+        Segment ugt = new Segment();
+
+        ugh.setSegcode("UGH");
+        ugh.setXmltag("UGH");
+        ugh.addField(new Field("id", true));
+
+        ugt.setSegcode("UGT");
+        ugt.setXmltag("UGT");
+        ugt.addField(new Field("id", true));
+
+        definitionModel.getSegments().getSegments().add(ugh);
+        definitionModel.getSegments().getSegments().add(ugt);
     }
 
     private Edimap parseEdiMessage(String messageName) throws IOException {

@@ -59,7 +59,7 @@
 
     <profiles>
         <profile>
-            <id>withexamples</id>
+            <id>all</id>
             <modules>
                 <module>testres</module>
                 <module>commons</module>
@@ -77,7 +77,7 @@
             </activation>
         </profile>
         <profile>
-            <id>noexamples</id>
+            <id>deploy</id>
             <modules>
                 <module>testres</module>
                 <module>commons</module>

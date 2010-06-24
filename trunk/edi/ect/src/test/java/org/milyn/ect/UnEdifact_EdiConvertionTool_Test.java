@@ -17,11 +17,14 @@
 package org.milyn.ect;
 
 import junit.framework.TestCase;
+import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.model.EDIConfigDigester;
+import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.smooks.edi.unedifact.UNEdifactReader;
+import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -31,12 +34,26 @@ import java.util.zip.ZipOutputStream;
 public class UnEdifact_EdiConvertionTool_Test extends TestCase {
 
     public void test_D08A() throws IOException {
-        InputStream inputStream = getClass().getResourceAsStream("D08A.zip");
-        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        ZipInputStream zipInputStream = new ZipInputStream(getClass().getResourceAsStream("D08A.zip"));
         File modelSetFile = new File("./target/D08A-mapping-model.zip");
 
         modelSetFile.delete();
 
         EdiConvertionTool.fromUnEdifactSpec(zipInputStream, new ZipOutputStream(new FileOutputStream(modelSetFile)), "org.milyn.edi.unedifact:d08a:1.0-SNAPSHOT");
+    }
+
+    public void test_MILYN_475() throws IOException, EDIConfigurationException, SAXException {
+        ZipInputStream zipInputStream = new ZipInputStream(getClass().getResourceAsStream("D08A.zip"));
+        UnEdifactSpecificationReader specReader = new UnEdifactSpecificationReader(zipInputStream, false);
+        ByteArrayOutputStream serializedMap = new ByteArrayOutputStream();
+
+        Edimap jupreq = specReader.getMappingModel("JUPREQ");
+        Writer writer = new OutputStreamWriter(serializedMap);
+        ConfigWriter configWriter = new ConfigWriter();
+
+        configWriter.generate(writer, jupreq);
+        writer.flush();
+
+        EDIConfigDigester.digestConfig(new ByteArrayInputStream(serializedMap.toByteArray()));
     }
 }

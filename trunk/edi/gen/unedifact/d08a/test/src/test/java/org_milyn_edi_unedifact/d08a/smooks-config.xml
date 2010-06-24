@@ -2,9 +2,6 @@
 <smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
                        xmlns:unedifact="http://www.milyn.org/xsd/smooks/unedifact-1.4.xsd">
 
-    <!--
-    Configure the EDI Reader to parse the UN/EDIFACT d08a message set...
-    -->
     <unedifact:reader mappingModel="urn:org.milyn.edi.unedifact:d08a-mapping:1.0-SNAPSHOT" />
 
 </smooks-resource-list>

@@ -41,6 +41,8 @@ public class EdifactModel {
 	private URI modelURI;
 	private URI importBaseURI;
 
+    private static ThreadLocal<ImportCache> importCacheContext = new ThreadLocal<ImportCache>();
+
     /**
      * Public default Constructor.
      */
@@ -114,21 +116,33 @@ public class EdifactModel {
     private void importFiles(Node<String> parent, Edimap edimap, DependencyTree<String> tree) throws SAXException, EDIConfigurationException, IOException {
         Edimap importedEdimap;
         Node<String> child, conflictNode;
+        ImportCache importCache = importCacheContext.get();
+
         for (Import imp : edimap.getImports()) {
-            String resource = imp.getResource();
-            
-			child = new Node<String>(resource);
-            conflictNode = tree.add(parent, child);
-            if ( conflictNode != null ) {
-                throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + resource + "] and [" + conflictNode.getValue() + "]");
+            URI importUri = imp.getResourceURI();
+            Map<String, Segment> importedSegments = null;
+
+            if(importCache != null) {
+                importedSegments = importCache.getSegmentMap(importUri);
             }
-            
-            URI resourceURI = imp.getResourceURI();
-			EDIConfigDigester digester = new EDIConfigDigester(resourceURI, URIResourceLocator.extractBaseURI(resourceURI));
-            
-            importedEdimap = digester.digestEDIConfig(findUrl(resource));
-            importFiles(child, importedEdimap, tree);
-            Map<String, Segment> importedSegments = createImportMap(importedEdimap);
+
+            if(importedSegments == null) {
+                child = new Node<String>(importUri.toString());
+                conflictNode = tree.add(parent, child);
+                if ( conflictNode != null ) {
+                    throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + importUri + "] and [" + conflictNode.getValue() + "]");
+                }
+
+                EDIConfigDigester digester = new EDIConfigDigester(importUri, URIResourceLocator.extractBaseURI(importUri));
+
+                importedEdimap = digester.digestEDIConfig(new URIResourceLocator().getResource(importUri.toString()));
+                importFiles(child, importedEdimap, tree);
+                importedSegments = createImportMap(importedEdimap);
+
+                if(importCache != null) {
+                    importCache.addSegmentMap(importUri, importedSegments);
+                }
+            }
 
             applyImportOnSegments(edimap.getSegments().getSegments(), imp, importedSegments);            
         }
@@ -329,6 +343,27 @@ public class EdifactModel {
 
         public List<Node<T>> getChildren() {
             return children;
+        }
+    }
+
+    public static void addImportCache() {
+        importCacheContext.set(new ImportCache());
+    }
+
+    public static void removeImportCache() {
+        importCacheContext.remove();
+    }
+
+    public static class ImportCache {
+
+        private Map<URI, Map<String, Segment>> cache = new HashMap<URI, Map<String, Segment>>();
+
+        public Map<String, Segment> getSegmentMap(URI importUri) {
+            return cache.get(importUri);
+        }
+
+        public void addSegmentMap(URI importUri, Map<String, Segment> map) {
+            cache.put(importUri, map);
         }
     }
 }
