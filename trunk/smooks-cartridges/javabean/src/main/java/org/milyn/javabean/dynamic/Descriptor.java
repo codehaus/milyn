@@ -22,6 +22,7 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.SmooksResourceConfigurationList;
 import org.milyn.cdr.XMLConfigDigester;
+import org.milyn.cdr.xpath.SelectorStep;
 import org.milyn.javabean.dynamic.ext.BeanWriterFactory;
 import org.milyn.javabean.dynamic.resolvers.DefaultBindingConfigResolver;
 import org.milyn.javabean.dynamic.resolvers.DefaultSchemaResolver;
@@ -198,8 +199,15 @@ public class Descriptor {
                         configList = XMLConfigDigester.digestConfig(bindingSource.getByteStream(), "./", extendedConfigDigesters);
                         for(int i = 0; i < configList.size(); i++) {
                             SmooksResourceConfiguration config = configList.get(i);
+                            
                             if(config.getSelectorNamespaceURI() == null) {
-                                config.setSelectorNamespaceURI(namespace.uri);
+                                SelectorStep selectorStep = config.getSelectorStep();
+
+                                // And if there isn't a namespace prefix specified on the element (unresolved at this point),
+                                // then assign the binding config namespace...
+                                if(selectorStep.getTargetElement().getPrefix().equals(XMLConstants.DEFAULT_NS_PREFIX)) {
+                                    config.setSelectorNamespaceURI(namespace.uri);
+                                }
                             }
                         }
                     } catch (URISyntaxException e) {
