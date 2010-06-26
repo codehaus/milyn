@@ -54,7 +54,7 @@ public class EJCExecutor {
         }
 
         try {
-            ejc.compile(configInputStream, ediMappingModel.getAbsolutePath(), packageName, destDir.getAbsolutePath());
+            ejc.compile(configInputStream, packageName, destDir.getAbsolutePath());
         } catch (Exception e) {
             throw new EJCException("Error compiling EDI Mapping Model '" + ediMappingModel.getAbsoluteFile() + "'.", e);
         } finally {

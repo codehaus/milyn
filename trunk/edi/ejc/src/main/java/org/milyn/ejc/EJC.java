@@ -23,7 +23,6 @@ import org.milyn.io.FileUtils;
 import org.xml.sax.SAXException;
 import org.apache.commons.logging.Log;
 import static org.milyn.ejc.EJCLogFactory.Level;
-import org.milyn.javabean.gen.ConfigGenerator;
 
 import java.io.*;
 
@@ -31,7 +30,7 @@ import java.io.*;
  * EJC is the main class parsing parameters and starting the compilation of the edi-mapping-config.
  * The compilation consists of the following steps:
  * <ol>
- * <li>{@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.</li>
+ * <li>{@link ClassModelCompiler} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.</li>
  * <li>{@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.</li>
  * <li>{@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.</li>
  * </ol>
@@ -61,7 +60,7 @@ public class EJC {
      * bindingfile.
      *
      * The compilation is performed in the following order:
-     * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
+     * 1. {@link ClassModelCompiler} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
      * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
      * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
      * @param mappingModel the edi-mapping-configuration.
@@ -87,7 +86,7 @@ public class EJC {
      * bindingfile.
      *
      * The compilation is performed in the following order:
-     * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
+     * 1. {@link ClassModelCompiler} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
      * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
      * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
      * @param mappingModel the edi-mapping-configuration.
@@ -112,7 +111,7 @@ public class EJC {
      * bindingfile.
      *
      * The compilation is performed in the following order:
-     * 1. {@link org.milyn.ejc.EdiConfigReader} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
+     * 1. {@link ClassModelCompiler} - parse a edi-mapping-file a creates a {@link org.milyn.ejc.ClassModel}.
      * 2. {@link org.milyn.ejc.BeanWriter} - generates javaimplementation from {@link org.milyn.ejc.ClassModel}.
      * 3. {@link org.milyn.ejc.BindingWriter} - generates a bindingfile from {@link org.milyn.ejc.ClassModel}.
      * @param mappingModel the edi-mapping-configuration.
@@ -129,8 +128,8 @@ public class EJC {
         Edimap edimap = readEDIConfig(mappingModel);
 
         LOG.info("Reading the edi-configuration...");
-        EdiConfigReader ediConfigReader = new EdiConfigReader();
-        return ediConfigReader.parse(edimap, beanPackage);
+        ClassModelCompiler classModelCompiler = new ClassModelCompiler();
+        return classModelCompiler.compile(edimap, beanPackage);
     }
 
     public static void writeModelToFolder(ClassModel model, InputStream mappingModel, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {

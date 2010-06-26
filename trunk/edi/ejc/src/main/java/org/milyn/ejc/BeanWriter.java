@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class BeanWriter {
 
-    private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
+    private static Log LOG = EJCLogFactory.getLog(ClassModelCompiler.class);
 
     private static boolean generateFromEDINR = false;
 
