@@ -30,19 +30,19 @@ import java.io.Writer;
 import java.util.*;
 
 /**
- * org.milyn.ejc.EdiConfigReader parses a Edimap and generates events while parsing.
+ * Compiles a {@link ClassModel} from an {@link Edimap}.
  *
  * @author bardl
  */
-public class EdiConfigReader {
+public class ClassModelCompiler {
 
-    private static Log LOG = EJCLogFactory.getLog(EdiConfigReader.class);
+    private static Log LOG = EJCLogFactory.getLog(ClassModelCompiler.class);
 
-    private Map<String, JClass> segRefClasses = new HashMap<String, JClass>();
+    private Map<String, JClass> classesBySegref = new HashMap<String, JClass>();
 
     private ClassModel model;
 
-    public ClassModel parse(Edimap edimap, String classPackage) throws IllegalNameException {
+    public ClassModel compile(Edimap edimap, String classPackage) throws IllegalNameException {
         model = new ClassModel();
 
         model.setEdimap(edimap);
@@ -118,10 +118,10 @@ public class EdiConfigReader {
             Segment segment = (Segment) segmentGroup;
             String segRef = segment.getSegref();
 
-            if(segRef == null || !segRefClasses.containsKey(segRef)) {
+            if(segRef == null || !classesBySegref.containsKey(segRef)) {
                 parseFields(segment.getFields(), child);
                 if(segRef != null) {
-                    segRefClasses.put(segRef, child);
+                    classesBySegref.put(segRef, child);
                 }
             }
         }
@@ -288,7 +288,7 @@ public class EdiConfigReader {
         if(mappingNode instanceof Segment) {
             String segRef = ((Segment)mappingNode).getSegref();
             if(segRef != null) {
-                return segRefClasses.get(segRef);
+                return classesBySegref.get(segRef);
             }
         }
 
