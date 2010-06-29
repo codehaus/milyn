@@ -15,6 +15,8 @@
 */
 package org.milyn.ejc;
 
+import org.milyn.edisax.model.internal.MappingNode;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,16 +27,27 @@ import java.util.Map;
  * @author bardl.
  */
 public class ValueNodeInfo {
-    private String xmlElementName;
+    private MappingNode mappingNode;
     private List<Map.Entry<String,String>> decoderConfigs;
 
-    public ValueNodeInfo(String xmlElementName, List<Map.Entry<String,String>> decoderConfigs) {
-        this.xmlElementName = xmlElementName;
+    public ValueNodeInfo(MappingNode mappingNode, List<Map.Entry<String,String>> decoderConfigs) {
+        this.mappingNode = mappingNode;
         this.decoderConfigs = decoderConfigs;
     }
 
-    public String getXmlElementName() {
-        return xmlElementName;
+    public String getSelector() {
+        StringBuilder builder = new StringBuilder();
+        MappingNode node = mappingNode;
+
+        while(node != null) {
+            if(builder.length() > 0) {
+                builder.insert(0, "/");
+            }
+            builder.insert(0, node.getXmltag());
+            node = node.getParent();
+        }
+
+        return builder.toString();
     }
 
     public List<Map.Entry<String,String>> getDecoderConfigs() {
