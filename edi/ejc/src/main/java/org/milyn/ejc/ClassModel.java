@@ -110,11 +110,11 @@ public class ClassModel {
     }
 
     public String getClassXmlElementName(String className) {
-        return getValueNodeInfos().get(className).getXmlElementName();
+        return getValueNodeInfos().get(className).getSelector();
     }
 
     public String getPropertyXmlElementName(String className, String propertyName) {
-        return getValueNodeInfos().get(className + "." + propertyName).getXmlElementName();
+        return getValueNodeInfos().get(className + "." + propertyName).getSelector();
     }
 
     public List<Map.Entry<String, String>> getPropertyDecoderConfigs(String className, String propertyName) {

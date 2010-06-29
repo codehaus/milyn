@@ -52,7 +52,7 @@ public class ClassModelCompiler {
 
         //Insert root class into classModel and its' corresponding xmltag-value.
         model.addClass(rootClass);
-        model.addClassValueNodeConfig(rootClass, new ValueNodeInfo(segmentGroup.getXmltag(), null));
+        model.addClassValueNodeConfig(rootClass, new ValueNodeInfo(segmentGroup, null));
         model.setRoot(rootClass);
 
         LOG.debug("Added root class [" + rootClass + "] to ClassModel.");
@@ -193,7 +193,7 @@ public class ClassModelCompiler {
         }
         String propertyName = EJCUtils.encodeAttributeName(jtype, valueNode.getXmltag());
         parent.addBeanProperty(new JNamedType(jtype, propertyName));
-        model.addPropertyValueNodeConfig(parent.getClassName(), propertyName, new ValueNodeInfo(valueNode.getXmltag(), valueNode.getTypeParameters()));
+        model.addPropertyValueNodeConfig(parent.getClassName(), propertyName, new ValueNodeInfo(valueNode, valueNode.getTypeParameters()));
     }
 
     /**
@@ -278,8 +278,8 @@ public class ClassModelCompiler {
 
         parent.addBeanProperty(new JNamedType(jtype, propertyName));
         model.addClass(child);
-        model.addClassValueNodeConfig(child, new ValueNodeInfo(mappingNode.getXmltag(), null));
-        model.addPropertyValueNodeConfig(child.getClassName(), propertyName, new ValueNodeInfo(mappingNode.getXmltag(), null));
+        model.addClassValueNodeConfig(child, new ValueNodeInfo(mappingNode, null));
+        model.addPropertyValueNodeConfig(child.getClassName(), propertyName, new ValueNodeInfo(mappingNode, null));
 
         return child;
     }

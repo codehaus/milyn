@@ -98,7 +98,7 @@ public class BindingWriter {
                 Class<? extends DataDecoder> decoder = DataDecoder.Factory.getInstance(type);
 
                 if(decoder != null) {
-                    String xmlElementName = classModel.getClassXmlElementName(beanClass.getClassName()) + " " + classModel.getPropertyXmlElementName(beanClass.getClassName(), field.getName());
+                    String xmlElementName = classModel.getPropertyXmlElementName(beanClass.getClassName(), field.getName());
                     List<Map.Entry<String, String>> decoderConfigs = classModel.getPropertyDecoderConfigs(beanClass.getClassName(), field.getName());
                     bindings.add(new BindingConfig(field, xmlElementName, decoderConfigs));
                 } else {
