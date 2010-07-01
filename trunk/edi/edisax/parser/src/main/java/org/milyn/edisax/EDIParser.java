@@ -148,17 +148,30 @@ public class EDIParser implements XMLReader {
      * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
     public static EdifactModel parseMappingModel(String mappingConfig, URI baseURI) throws IOException, SAXException, EDIConfigurationException {
-    	if(isValidURI(mappingConfig)) {
-    		URIResourceLocator resourceLocator = new URIResourceLocator();
-    		URI importBaseURI;
-    		
+        String[] mappingConfigTokens = mappingConfig.split("!");
+        String ediMappingModel;
+        Description mappingDescription = null;
+
+        if(mappingConfigTokens.length == 1) {
+            ediMappingModel = mappingConfigTokens[0];
+        } else if(mappingConfigTokens.length == 3) {
+            ediMappingModel = mappingConfigTokens[0];
+            mappingDescription = new Description().setName(mappingConfigTokens[1]).setVersion(mappingConfigTokens[2]);            
+        } else {
+            throw new EDIConfigurationException("Invalid mapping model configuration '" + mappingConfig + "'.  Must contain either 1 or 3 tokens.");
+        }
+
+        if(isValidURI(ediMappingModel)) {
+            URIResourceLocator resourceLocator = new URIResourceLocator();
+            URI importBaseURI;
+
     		resourceLocator.setBaseURI(baseURI);    		
-    		URI resourceURI = resourceLocator.resolveURI(mappingConfig);
+    		URI resourceURI = resourceLocator.resolveURI(ediMappingModel);
 			importBaseURI = URIResourceLocator.extractBaseURI(resourceURI);
     		
-    		return parseMappingModel(getMappingConfigData(resourceLocator, mappingConfig), resourceURI, importBaseURI);    		
+    		return parseMappingModel(getMappingConfigData(resourceLocator, ediMappingModel), mappingDescription, resourceURI, importBaseURI);
     	} else {
-    		return parseMappingModel(new StringReader(mappingConfig), null, baseURI);
+    		return parseMappingModel(new StringReader(ediMappingModel), mappingDescription, null, baseURI);
     	}
     }
 
@@ -176,7 +189,7 @@ public class EDIParser implements XMLReader {
      * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
     public static EdifactModel parseMappingModel(InputStream mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
-    	return parseMappingModel(mappingConfigStream, null, URIResourceLocator.getSystemBaseURI());
+    	return parseMappingModel(mappingConfigStream, null, null, URIResourceLocator.getSystemBaseURI());
     }
 
     /**
@@ -187,6 +200,7 @@ public class EDIParser implements XMLReader {
      * @param mappingConfigStream Config stream.  Must conform with the
      * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
      * schema.
+     * @param mappingDescription Mapping Model Description.
      * @param resourceURI The resource URI.
      * @param importBaseURI The base URI for loading imports.
      * @return The Edimap for the mapping model.
@@ -194,10 +208,10 @@ public class EDIParser implements XMLReader {
      * @throws SAXException Invalid model.
      * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
-    public static EdifactModel parseMappingModel(InputStream mappingConfigStream, URI resourceURI, URI importBaseURI) throws IOException, SAXException, EDIConfigurationException {
+    public static EdifactModel parseMappingModel(InputStream mappingConfigStream, Description mappingDescription, URI resourceURI, URI importBaseURI) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
         try {
-            return parseMappingModel(new InputStreamReader(mappingConfigStream), resourceURI, importBaseURI);
+            return parseMappingModel(new InputStreamReader(mappingConfigStream), mappingDescription, resourceURI, importBaseURI);
         } finally {
             mappingConfigStream.close();
         }
@@ -217,7 +231,7 @@ public class EDIParser implements XMLReader {
      * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
     public static EdifactModel parseMappingModel(Reader mappingConfigStream) throws IOException, SAXException, EDIConfigurationException {
-    	return parseMappingModel(mappingConfigStream, null, URIResourceLocator.getSystemBaseURI());
+    	return parseMappingModel(mappingConfigStream, null, null, URIResourceLocator.getSystemBaseURI());
     }
 
     /**
@@ -228,6 +242,7 @@ public class EDIParser implements XMLReader {
      * @param mappingConfigStream Config stream.  Must conform with the
      * <a href="http://www.milyn.org/schema/edi-message-mapping-1.0.xsd">edi-message-mapping-1.0.xsd</a>
      * schema.
+     * @param mappingDescription Mapping Model Description.
      * @param resourceURI The resource URI.
      * @param importBaseURI The base URI for loading imports.
      * @return The EdifactModel for the mapping model.
@@ -235,22 +250,15 @@ public class EDIParser implements XMLReader {
      * @throws SAXException Invalid model.
      * @throws EDIConfigurationException when edi-mapping-configuration is incorrect.
      */
-    public static EdifactModel parseMappingModel(Reader mappingConfigStream, URI resourceURI, URI importBaseURI) throws IOException, SAXException, EDIConfigurationException {
+    public static EdifactModel parseMappingModel(Reader mappingConfigStream, Description mappingDescription, URI resourceURI, URI importBaseURI) throws IOException, SAXException, EDIConfigurationException {
         AssertArgument.isNotNull(mappingConfigStream, "mappingConfigStream");
         AssertArgument.isNotNull(importBaseURI, "importBaseURI");
         // The resourceURI can be null e.g. when the mapping model was inlined in the Smooks config.
 
         EdifactModel edifactModel;
-        String mappingConfig;
 
-    	try {
-    		mappingConfig = StreamUtils.readStream(mappingConfigStream);
-    	} finally {
-    		mappingConfigStream.close();
-    	}
-
-        edifactModel = new EdifactModel(resourceURI, importBaseURI);
-        edifactModel.parseSequence(new ByteArrayInputStream(mappingConfig.getBytes()));
+        edifactModel = new EdifactModel(resourceURI, importBaseURI, mappingConfigStream);
+        edifactModel.setDescription(mappingDescription);
 
 		return edifactModel;
     }

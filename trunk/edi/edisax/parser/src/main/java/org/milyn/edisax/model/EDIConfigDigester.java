@@ -32,6 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URI;
 import java.util.*;
 
@@ -94,14 +95,37 @@ public class EDIConfigDigester {
      */
     public Edimap digestEDIConfig(InputStream stream) throws IOException, SAXException, EDIConfigurationException {
         Document configDoc;
-        byte[] streamBuffer = StreamUtils.readStream(stream);
 
         try {
-            configDoc = XmlUtil.parseStream(new ByteArrayInputStream(streamBuffer));
+            configDoc = XmlUtil.parseStream(stream);
         } catch (ParserConfigurationException ee) {
             throw new SAXException("Unable to parse Smooks configuration.", ee);
         }
 
+        return digestEDIConfig(configDoc);
+    }
+
+    /**
+     * Digest the XML edi-message-mapping configuration stream.
+     * @param stream the edi-message-mapping stream.
+     * @return the {@link org.milyn.edisax.model.internal.Edimap}.
+     * @throws IOException Error parsing the XML stream.
+     * @throws SAXException Error parsing the XML stream.
+     * @throws EDIConfigurationException Multiple or no namespaces in edi-message-mapping.
+     */
+    public Edimap digestEDIConfig(Reader stream) throws IOException, SAXException, EDIConfigurationException {
+        Document configDoc;
+
+        try {
+            configDoc = XmlUtil.parseStream(stream);
+        } catch (ParserConfigurationException ee) {
+            throw new SAXException("Unable to parse Smooks configuration.", ee);
+        }
+
+        return digestEDIConfig(configDoc);
+    }
+
+    private Edimap digestEDIConfig(Document configDoc) throws SAXException, EDIConfigurationException, IOException {
         XsdDOMValidator validator = new XsdDOMValidator(configDoc);
 
         if (validator.getNamespaces().size() == 0) {

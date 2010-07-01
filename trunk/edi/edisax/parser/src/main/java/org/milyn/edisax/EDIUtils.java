@@ -52,6 +52,12 @@ public class EDIUtils {
     
     public static final String EDI_MAPPING_MODEL_ZIP_LIST_FILE = "META-INF/services/org/smooks/edi/mapping-model.lst";
     public static final String EDI_MAPPING_MODEL_URN = "META-INF/services/org/smooks/edi/urn";
+    /**
+     * Most model sets contain a set of common definitions (common types).
+     * These common definitions should be stored in a file by this name and be
+     * the first file listed in the model list file.
+     */
+    public static final String MODEL_SET_DEFINITIONS_FILE = "__modelset_definitions";
 
     /**
      * Splits a String by delimiter as long as delimiter does not follow an escape sequence.
@@ -176,41 +182,36 @@ public class EDIUtils {
 
 		String[] mappingModelFileTokens = mappingModelFiles.split(",");
 
-        EdifactModel.addImportCache();
-        try {
-            for(String mappingModelFile : mappingModelFileTokens) {
-                mappingModelFile = mappingModelFile.trim();
+        for(String mappingModelFile : mappingModelFileTokens) {
+            mappingModelFile = mappingModelFile.trim();
 
-                // First try processing based on the file extension
-                if(mappingModelFile.endsWith(".xml")) {
-                    if(loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
-                        // Loaded an XML config... on to next config in list...
-                        continue;
-                    }
-                } else if(mappingModelFile.endsWith(".zip") || mappingModelFile.endsWith(".jar")) {
-                    if(loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
-                        // Loaded an zipped config... on to next config in list...
-                        continue;
-                    }
-                } else if(mappingModelFile.startsWith("urn:")) {
-                    String urn = mappingModelFile.substring(4);
-                    List<String> rootMappingModels = getMappingModelList(urn);
-
-                    loadMappingModels(mappingModels, baseURI, rootMappingModels);
-
+            // First try processing based on the file extension
+            if(mappingModelFile.endsWith(".xml")) {
+                if(loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
+                    // Loaded an XML config... on to next config in list...
                     continue;
                 }
+            } else if(mappingModelFile.endsWith(".zip") || mappingModelFile.endsWith(".jar")) {
+                if(loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
+                    // Loaded an zipped config... on to next config in list...
+                    continue;
+                }
+            } else if(mappingModelFile.startsWith("urn:")) {
+                String urn = mappingModelFile.substring(4);
+                List<String> rootMappingModels = getMappingModelList(urn);
 
-                // The file extension didn't match up with what we expected, so perform a
-                // brute force attempt to process the config...
-                if(!loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
-                    if(!loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
-                        throw new EDIConfigurationException("Failed to process EDI Mapping Model config file '" + mappingModelFile + "'.  Not a valid EDI Mapping Model configuration.");
-                    }
+                loadMappingModels(mappingModels, baseURI, rootMappingModels);
+
+                continue;
+            }
+
+            // The file extension didn't match up with what we expected, so perform a
+            // brute force attempt to process the config...
+            if(!loadXMLMappingModel(mappingModelFile, mappingModels, baseURI)) {
+                if(!loadZippedMappingModels(mappingModelFile, mappingModels, baseURI)) {
+                    throw new EDIConfigurationException("Failed to process EDI Mapping Model config file '" + mappingModelFile + "'.  Not a valid EDI Mapping Model configuration.");
                 }
             }
-        } finally {
-            EdifactModel.removeImportCache();
         }
     }
 
@@ -266,7 +267,9 @@ public class EDIUtils {
         for (String rootMappingModel : rootMappingModels) {
             try {
                 EdifactModel mappingModel = EDIParser.parseMappingModel(rootMappingModel, baseURI);
-                mappingModels.put(mappingModel.getEdimap().getDescription(), mappingModel);
+
+                mappingModel.setAssociateModels(mappingModels.values());
+                mappingModels.put(mappingModel.getDescription(), mappingModel);
             } catch(Exception e) {
                 throw new EDIConfigurationException("Error parsing EDI Mapping Model '" + rootMappingModel + "'.", e);
             }

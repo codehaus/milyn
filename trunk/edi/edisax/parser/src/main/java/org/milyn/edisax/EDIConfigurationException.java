@@ -16,11 +16,13 @@
 
 package org.milyn.edisax;
 
+import org.milyn.SmooksException;
+
 /**
  * EDI message configuration exception.
  * @author bardl
  */
-public class EDIConfigurationException extends Exception {
+public class EDIConfigurationException extends SmooksException {
 
     /**
      * Creates a new EDIConfigurationException.   

@@ -17,6 +17,7 @@ package org.milyn.ect.formats.unedifact;
 
 import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.ect.EdiParseException;
+import org.milyn.edisax.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
@@ -26,10 +27,7 @@ import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.util.ClassUtil;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -51,15 +49,9 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
     public UnEdifactSpecificationReader(ZipInputStream specificationInStream, boolean useImport) throws IOException {
         this.useImport = useImport;
 
-        if (!(specificationInStream instanceof ZipInputStream)) {
-            throw new IOException("InputStream should be a ZipInputStream when parsing UnEdifact specification.");
-        }
-
-        ZipInputStream zipInputStream = (ZipInputStream)specificationInStream;
-
         definitionFiles = new HashMap<String, byte[]>();
         messageFiles = new HashMap<String, byte[]>();
-        readDefinitionEntries(zipInputStream, new ZipDirectoryEntry("eded.", definitionFiles), new ZipDirectoryEntry("edcd.", definitionFiles), new ZipDirectoryEntry("edsd.", definitionFiles), new ZipDirectoryEntry("edmd.", "*", messageFiles));
+        readDefinitionEntries(specificationInStream, new ZipDirectoryEntry("eded.", definitionFiles), new ZipDirectoryEntry("edcd.", definitionFiles), new ZipDirectoryEntry("edsd.", definitionFiles), new ZipDirectoryEntry("edmd.", "*", messageFiles));
 
         // Read Definition Configuration
         definitionModel = parseEDIDefinitionFiles();
@@ -68,8 +60,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
 
         //Interchange envelope is inserted into the definitions. Handcoded at the moment.
         try {
-            EdifactModel interchangeEnvelope = new EdifactModel();
-            interchangeEnvelope.parseSequence(ClassUtil.getResourceAsStream(INTERCHANGE_DEFINITION, this.getClass()));
+            EdifactModel interchangeEnvelope = new EdifactModel(ClassUtil.getResourceAsStream(INTERCHANGE_DEFINITION, this.getClass()));
             definitionModel.getSegments().getSegments().addAll(interchangeEnvelope.getEdimap().getSegments().getSegments());
         } catch (Exception e) {
             throw new EdiParseException(e.getMessage(), e);
@@ -78,8 +69,9 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
     }
 
     public Set<String> getMessageNames() {
-        Set<String> names = new HashSet<String>(messageFiles.keySet());
+        Set<String> names = new LinkedHashSet<String>();
         names.add(definitionModel.getDescription().getName());
+        names.addAll(messageFiles.keySet());
         return names;
     }
 
@@ -138,7 +130,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
             segmentISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("edsd.")));
 
             edifactModel = UnEdifactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
-            edifactModel.setDescription(new Description().setName("_UnEdifactDefinitionMap").setVersion("local"));
+            edifactModel.setDescription(new Description().setName(EDIUtils.MODEL_SET_DEFINITIONS_FILE).setVersion("local"));
             edifactModel.getSegments().setXmltag("DefinitionMap");
             edifactModel.setDelimiters(UNEdifactInterchangeParser.defaultUNEdifactDelimiters);
         } finally {
@@ -155,9 +147,6 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         return edifactModel;
 
     }
-
-
-
 
     private static void readDefinitionEntries(ZipInputStream folderZip, ZipDirectoryEntry... entries) throws IOException {
 

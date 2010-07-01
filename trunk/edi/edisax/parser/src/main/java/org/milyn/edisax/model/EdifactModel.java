@@ -20,16 +20,16 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParseException;
 import org.milyn.edisax.model.internal.*;
+import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**                                          
  * EdifactModel contains all logic for handling imports for the
@@ -37,44 +37,99 @@ import java.util.Map;
  */
 public class EdifactModel {
 
-    private org.milyn.edisax.model.internal.Edimap edimap;
-	private URI modelURI;
-	private URI importBaseURI;
+    private Description description;
+    private String mappingConfig;
+    private URI modelURI;
+    private URI importBaseURI;
 
-    private static ThreadLocal<ImportCache> importCacheContext = new ThreadLocal<ImportCache>();
+    private volatile Edimap edimap;
+    private Collection<EdifactModel> associateModels;
 
     /**
-     * Public default Constructor.
+     * Public Constructor.
+     * @param edimap Mapping Model.
      */
-    public EdifactModel() {    	
+    public EdifactModel(Edimap edimap) {
+        AssertArgument.isNotNull(edimap, "edimap");
+        this.edimap = edimap;
+    }
+
+    /**
+     * Public Constructor.
+     */
+    public EdifactModel(InputStream mappingModelStream) throws IOException {
+        AssertArgument.isNotNull(mappingModelStream, "mappingModelStream");
 		this.importBaseURI = URIResourceLocator.getSystemBaseURI();
+        try {
+            this.mappingConfig = StreamUtils.readStreamAsString(mappingModelStream);
+        } finally {
+            mappingModelStream.close();
+        }
     }
     
     /**
      * Public constructor.
      * @param modelURI The model resource URI.
      * @param importBaseURI The base URI for loading imports.
+     * @param mappingModelStream The edi-message-mapping.
 	 */
-	public EdifactModel(URI modelURI, URI importBaseURI) {
+	public EdifactModel(URI modelURI, URI importBaseURI, InputStream mappingModelStream) throws IOException {
 		AssertArgument.isNotNull(importBaseURI, "importBaseURI");
+        AssertArgument.isNotNull(mappingModelStream, "mappingModelStream");
+
 		this.modelURI = modelURI;
 		this.importBaseURI = importBaseURI;
+        try {
+            this.mappingConfig = StreamUtils.readStreamAsString(mappingModelStream);
+        } finally {
+            mappingModelStream.close();
+        }
 	}
+
+    /**
+     * Public constructor.
+     * @param modelURI The model resource URI.
+     * @param importBaseURI The base URI for loading imports.
+     * @param mappingModelStream The edi-message-mapping.
+	 */
+	public EdifactModel(URI modelURI, URI importBaseURI, Reader mappingModelStream) throws IOException {
+		AssertArgument.isNotNull(importBaseURI, "importBaseURI");
+        AssertArgument.isNotNull(mappingModelStream, "mappingModelStream");
+
+		this.modelURI = modelURI;
+		this.importBaseURI = importBaseURI;
+        try {
+            this.mappingConfig = StreamUtils.readStream(mappingModelStream);
+        } finally {
+            mappingModelStream.close();
+        }
+	}
+
+    public void setDescription(Description description) {
+        this.description = description;
+    }
+
+    public Description getDescription() {
+        if(description != null) {
+            return description;
+        }
+        return getEdimap().getDescription();
+    }
 
 	/**
      * Returns the edimap containing the parser logic.
      * @return edi-message-mapping.
      */
     public Edimap getEdimap() {
+        if(edimap == null) {
+            // Lazy parsing of the Edimap configuration...
+            try {
+                parseSequence();
+            } catch (Exception e) {
+                throw new EDIConfigurationException("Error parsing EDI Mapping Model [" + mappingConfig + "].", e);
+            }
+        }
         return edimap;
-    }
-
-    /**
-     * Sets the edimap containing the parser logic.
-     * @param edimap the edi-message-mapping
-     */
-    public void setEdimap(Edimap edimap) {
-        this.edimap = edimap;
     }
 
     /**
@@ -82,24 +137,47 @@ public class EdifactModel {
      * @return delimiters.
      */
     public Delimiters getDelimiters() {
-        return edimap.getDelimiters();
+        return getEdimap().getDelimiters();
     }
 
     /**
-     * Parse the edifact edimap specified in the edi-message-mapping.
-     * @param inputStream the edi-message-mapping.
+     * Get the model URI.
+     * @return The model URI.
+     */
+    public URI getModelURI() {
+        return modelURI;
+    }
+
+    /**
+     * Set a set of models that are associated with this model instance.
+     * <p/>
+     * An associate set of models could be (for example) the other models in
+     * a UN/EDIFACT model set, or some other interchange type.
+     *
+     * @param associateModels Associate models.
+     */
+    public void setAssociateModels(Collection<EdifactModel> associateModels) {
+        this.associateModels = associateModels;
+    }
+
+    /**
+     * Set the edifact edimap from the mapping model InputStream.
      * @throws org.milyn.edisax.EDIParseException is thrown when EdifactModel is unable to initialize edimap.
      * @throws org.milyn.edisax.EDIConfigurationException is thrown when edi-message-mapping contains multiple or no namespace declaration.
      * @throws java.io.IOException is thrown when error occurs when parsing edi-message-mapping.
      */
-    public void parseSequence(InputStream inputStream) throws SAXException, EDIConfigurationException, IOException {
+    private synchronized void parseSequence() throws EDIConfigurationException, IOException, SAXException {
+
+        if(edimap != null) {
+            return;
+        }
 
         //To prevent circular dependency the name/url of all imported urls are stored in a dependency tree.
         //If a name/url already exists in a parent node, we have a circular dependency.
         DependencyTree<String> tree = new DependencyTree<String>();
         EDIConfigDigester digester = new EDIConfigDigester(modelURI, importBaseURI);
 
-        edimap = digester.digestEDIConfig(inputStream);
+        edimap = digester.digestEDIConfig(new StringReader(mappingConfig));
         importFiles(tree.getRoot(), edimap, tree);
     }
 
@@ -116,36 +194,40 @@ public class EdifactModel {
     private void importFiles(Node<String> parent, Edimap edimap, DependencyTree<String> tree) throws SAXException, EDIConfigurationException, IOException {
         Edimap importedEdimap;
         Node<String> child, conflictNode;
-        ImportCache importCache = importCacheContext.get();
 
         for (Import imp : edimap.getImports()) {
             URI importUri = imp.getResourceURI();
             Map<String, Segment> importedSegments = null;
 
-            if(importCache != null) {
-                importedSegments = importCache.getSegmentMap(importUri);
+            child = new Node<String>(importUri.toString());
+            conflictNode = tree.add(parent, child);
+            if ( conflictNode != null ) {
+                throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + importUri + "] and [" + conflictNode.getValue() + "]");
             }
 
+            importedSegments = getImportedSegments(importUri);
             if(importedSegments == null) {
-                child = new Node<String>(importUri.toString());
-                conflictNode = tree.add(parent, child);
-                if ( conflictNode != null ) {
-                    throw new EDIParseException(edimap, "Circular dependency encountered in edi-message-mapping with imported files [" + importUri + "] and [" + conflictNode.getValue() + "]");
-                }
-
                 EDIConfigDigester digester = new EDIConfigDigester(importUri, URIResourceLocator.extractBaseURI(importUri));
 
                 importedEdimap = digester.digestEDIConfig(new URIResourceLocator().getResource(importUri.toString()));
                 importFiles(child, importedEdimap, tree);
                 importedSegments = createImportMap(importedEdimap);
-
-                if(importCache != null) {
-                    importCache.addSegmentMap(importUri, importedSegments);
-                }
             }
 
             applyImportOnSegments(edimap.getSegments().getSegments(), imp, importedSegments);            
         }
+    }
+
+    private Map<String, Segment> getImportedSegments(URI importUri) {
+        if(associateModels != null) {
+            for(EdifactModel model : associateModels) {
+                if(model.getModelURI().equals(importUri)) {
+                    return createImportMap(model.getEdimap());
+                }
+            }
+        }
+
+        return null;
     }
 
     private void applyImportOnSegments(List<SegmentGroup> segmentGroup, Import imp, Map<String, Segment> importedSegments) throws EDIParseException {
@@ -233,29 +315,6 @@ public class EdifactModel {
     }
 
     /**
-     * Returns the InputStream of the specified url.
-     * @param url the url to locate.
-     * @return InputStream of the specified url.
-     * @throws EDIParseException Thrown when unable to locate the specified url.
-     */
-    private InputStream findUrl(String url) throws EDIParseException {
-        InputStream inputStream;
-
-        if (url == null || url.equals("")) {
-            return null;
-        }
-
-        //Try to locate definition from URIResourceLocator.
-        try {
-            inputStream = new URIResourceLocator().getResource(url);
-        } catch (IOException e) {
-            throw new EDIParseException(edimap, "Unable to locate EDI Mapping Model [" + url + "]", e);
-        }
-
-        return inputStream;
-    }
-
-    /**
      * Returns truncatable attributes specified in import element in the importing edi-message-mapping
      * if it exists. Otherwise it sets value of the truncatable attribute found the imported segment.
      * @param truncatableImporting truncatable value found in import element in importing edi-message-mapping.
@@ -270,7 +329,6 @@ public class EdifactModel {
         return result;
     }
 
-    
     /************************************************************************
      * Private classes  used for locating and preventing cyclic dependency. *
      ************************************************************************/
@@ -343,27 +401,6 @@ public class EdifactModel {
 
         public List<Node<T>> getChildren() {
             return children;
-        }
-    }
-
-    public static void addImportCache() {
-        importCacheContext.set(new ImportCache());
-    }
-
-    public static void removeImportCache() {
-        importCacheContext.remove();
-    }
-
-    public static class ImportCache {
-
-        private Map<URI, Map<String, Segment>> cache = new HashMap<URI, Map<String, Segment>>();
-
-        public Map<String, Segment> getSegmentMap(URI importUri) {
-            return cache.get(importUri);
-        }
-
-        public void addSegmentMap(URI importUri, Map<String, Segment> map) {
-            cache.put(importUri, map);
         }
     }
 }

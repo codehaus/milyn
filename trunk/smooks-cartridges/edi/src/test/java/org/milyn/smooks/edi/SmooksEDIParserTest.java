@@ -82,7 +82,7 @@ public class SmooksEDIParserTest extends TestCase {
 			test("<z/>");
 			fail("Expected SAXException.");
 		} catch(SmooksException e) {
-			assertEquals("Error parsing EDI mapping model [<z/>].  Target Profile(s) [org.milyn.profile.profile#default_profile].", e.getCause().getMessage());
+			assertEquals("Error parsing EDI Mapping Model [<z/>].", e.getCause().getMessage());
 		}
 	}
 
