@@ -65,14 +65,13 @@ public class InterchangeContext {
 		controlSegmentParser.setBufferedSegmentReader(segmentReader);
 		controlSegmentParser.setContentHandler(contentHandler);
 		controlSegmentParser.setIndentDepth(indentDepth);
-		
-		EdifactModel controlModel = new EdifactModel();
-		controlSegmentParser.setMappingModel(controlModel);
-		
-		Edimap controlMap = new Edimap();
-		controlMap.setDescription(new Description().setName("EDI Message Interchange Control Model").setVersion("N/A"));
-		controlModel.setEdimap(controlMap);		
-	}
+
+        Edimap controlMap = new Edimap();
+        EdifactModel controlModel = new EdifactModel(controlMap);
+
+        controlMap.setDescription(new Description().setName("EDI Message Interchange Control Model").setVersion("N/A"));
+        controlSegmentParser.setMappingModel(controlModel);
+    }
 
 	public BufferedSegmentReader getSegmentReader() {
 		return segmentReader;

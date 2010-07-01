@@ -133,7 +133,10 @@ public class EdiConvertionTool {
             archive.addEntry(messageEntryPath, messageEntryWriter.toString());
 
             // Add this messages archive entry to the mapping model list file...
-            modelListBuilder.append("/" + messageEntryPath + "\n");
+            modelListBuilder.append("/" + messageEntryPath);
+            modelListBuilder.append("!" + model.getDescription().getName());
+            modelListBuilder.append("!" + model.getDescription().getVersion());
+            modelListBuilder.append("\n");
         }
 
         // Add the generated mapping model to the archive...

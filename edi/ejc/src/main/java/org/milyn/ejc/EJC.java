@@ -172,8 +172,7 @@ public class EJC {
      * @throws SAXException When edi-mapping-configuration is badly formatted.
      */
     private Edimap readEDIConfig(InputStream inputStream) throws EDIConfigurationException, IOException, SAXException {
-        EdifactModel edifactModel = new EdifactModel();
-        edifactModel.parseSequence(inputStream);
+        EdifactModel edifactModel = new EdifactModel(inputStream);
         return edifactModel.getEdimap();
     }
 

@@ -18,6 +18,7 @@ package org.milyn.edisax.unedifact;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
@@ -55,7 +56,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	
 	public static final Delimiters defaultUNEdifactDelimiters = new Delimiters().setSegment("'").setField("+").setComponent(":").setEscape("?");
 	
-	private Map<Description, EdifactModel> mappingModels = new HashMap<Description, EdifactModel>();
+	private Map<Description, EdifactModel> mappingModels = new LinkedHashMap<Description, EdifactModel>();
 	private ContentHandler contentHandler;
 
 	public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
