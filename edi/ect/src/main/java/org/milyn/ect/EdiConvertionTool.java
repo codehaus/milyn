@@ -20,11 +20,13 @@ import org.milyn.archive.Archive;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.EDIUtils;
-import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.edisax.model.internal.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -124,6 +126,8 @@ public class EdiConvertionTool {
             Edimap model = ediSpecificationReader.getMappingModel(message);
             String messageEntryPath = pathPrefix + "/" + message + ".xml";
 
+            removeDuplicateSegments(model.getSegments());
+
             // Generate the mapping model for this message...
             messageEntryWriter.getBuffer().setLength(0);
             configWriter.generate(messageEntryWriter, model);
@@ -146,5 +150,101 @@ public class EdiConvertionTool {
         archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_URN, urn);
 
         return archive;
+    }
+
+    private static void removeDuplicateSegments(SegmentGroup segmentGroup) {
+        if(segmentGroup instanceof Segment) {
+            removeDuplicateFields(((Segment)segmentGroup).getFields()); 
+        }
+
+        List<SegmentGroup> segments = segmentGroup.getSegments();
+        if(segments != null) {
+            removeDuplicateMappingNodes(segments);
+            for(SegmentGroup childSegmentGroup : segments) {
+                removeDuplicateSegments(childSegmentGroup);
+            }
+        }
+    }
+
+    private static void removeDuplicateFields(List<Field> fields) {
+        if(fields != null && !fields.isEmpty()) {
+            // Remove the duplicates from the fields themselves...
+            removeDuplicateMappingNodes(fields);
+
+            // Drill down into the field components...
+            for(Field field : fields) {
+                removeDuplicateComponents(field.getComponents());
+            }
+        }
+    }
+
+    private static void removeDuplicateComponents(List<Component> components) {
+        if(components != null && !components.isEmpty()) {
+            // Remove the duplicates from the components themselves...
+            removeDuplicateMappingNodes(components);
+
+            // Remove duplicate sub components from each component...
+            for(Component component : components) {
+                removeDuplicateMappingNodes(component.getSubComponents());
+            }
+        }
+    }
+
+    private static void removeDuplicateMappingNodes(List mappingNodes) {
+        if(mappingNodes == null || mappingNodes.isEmpty()) {
+            return;
+        }
+        
+        Set<String> nodeNames = getMappingNodeNames(mappingNodes);
+
+        if(nodeNames.size() < mappingNodes.size()) {
+            // There may be duplicates... find them and number them...
+            for(String nodeName : nodeNames) {
+                int nodeCount = getMappingNodeCount(mappingNodes, nodeName);
+                if(nodeCount > 1) {
+                    removeDuplicateMappingNodes(mappingNodes, nodeName);
+                }
+            }
+        }
+    }
+
+    private static void removeDuplicateMappingNodes(List mappingNodes, String nodeName) {
+        int tagIndex = 1;
+
+        for(Object mappingNodeObj : mappingNodes) {
+            MappingNode mappingNode = (MappingNode) mappingNodeObj;
+            String xmlTag = mappingNode.getXmltag();
+
+            if(xmlTag != null && xmlTag.equals(nodeName)) {
+                mappingNode.setXmltag(xmlTag + "_" + tagIndex);
+                tagIndex++;
+            }
+        }
+    }
+
+    private static Set<String> getMappingNodeNames(List mappingNodes) {
+        Set<String> nodeNames = new LinkedHashSet<String>();
+
+        for(Object mappingNode : mappingNodes) {
+            String xmlTag = ((MappingNode) mappingNode).getXmltag();
+            if(xmlTag != null) {
+                nodeNames.add(xmlTag);
+            }
+        }
+
+        return nodeNames;
+    }
+
+    private static int getMappingNodeCount(List mappingNodes, String nodeName) {
+        int nodeCount = 0;
+
+        for(Object mappingNode : mappingNodes) {
+            String xmlTag = ((MappingNode) mappingNode).getXmltag();
+            if(xmlTag != null && xmlTag.equals(nodeName)) {
+                nodeCount++;
+            }
+        }
+
+        return nodeCount;
     }
 }

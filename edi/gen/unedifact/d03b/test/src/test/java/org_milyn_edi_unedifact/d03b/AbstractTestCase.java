@@ -15,10 +15,18 @@ import java.io.StringReader;
 public abstract class AbstractTestCase extends TestCase {
 
     public void runTest(String messageInFile, String expectedResFile) throws IOException, SAXException {
+        runTest(messageInFile, expectedResFile, false);
+    }
+
+    public void runTest(String messageInFile, String expectedResFile, boolean dumpResult) throws IOException, SAXException {
         Smooks smooks = new Smooks(AbstractTestCase.class.getResourceAsStream("smooks-config.xml"));
         StringResult result = new StringResult();
 
         smooks.filterSource(new StreamSource(getClass().getResourceAsStream(messageInFile)), result);
+
+        if(dumpResult) {
+            System.out.println(result);
+        }
 
         XMLUnit.setIgnoreWhitespace(true);
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream(expectedResFile)), new StringReader(result.toString()));
