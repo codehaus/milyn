@@ -25,7 +25,7 @@ import org.milyn.container.ApplicationContext;
 import org.milyn.delivery.ContentHandler;
 import org.milyn.delivery.annotation.Initialize;
 import org.milyn.edisax.EDIConfigurationException;
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
 import org.xml.sax.SAXException;

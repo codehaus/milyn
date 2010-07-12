@@ -216,6 +216,9 @@ public class EdifactModel {
 
             applyImportOnSegments(edimap.getSegments().getSegments(), imp, importedSegments);            
         }
+
+        // Imports have been applied on the segments, so clear them now...
+        edimap.getImports().clear();
     }
 
     private Map<String, Segment> getImportedSegments(URI importUri) {

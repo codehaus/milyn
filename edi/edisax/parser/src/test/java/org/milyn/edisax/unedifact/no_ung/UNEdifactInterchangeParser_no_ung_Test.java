@@ -28,7 +28,7 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.MockContentHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;

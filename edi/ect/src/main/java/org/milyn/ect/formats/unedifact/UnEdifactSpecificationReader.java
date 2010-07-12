@@ -17,9 +17,8 @@ package org.milyn.ect.formats.unedifact;
 
 import org.milyn.ect.EdiSpecificationReader;
 import org.milyn.ect.EdiParseException;
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.Segment;
@@ -130,7 +129,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
             segmentISR = new InputStreamReader(new ByteArrayInputStream(definitionFiles.get("edsd.")));
 
             edifactModel = UnEdifactDefinitionReader.parse(dataISR, compositeISR, segmentISR);
-            edifactModel.setDescription(new Description().setName(EDIUtils.MODEL_SET_DEFINITIONS_FILE).setVersion("local"));
+            edifactModel.setDescription(EDIUtils.MODEL_SET_DEFINITIONS_DESCRIPTION);
             edifactModel.getSegments().setXmltag("DefinitionMap");
             edifactModel.setDelimiters(UNEdifactInterchangeParser.defaultUNEdifactDelimiters);
         } finally {

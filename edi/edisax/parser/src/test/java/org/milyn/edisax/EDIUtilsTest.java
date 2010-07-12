@@ -3,19 +3,9 @@ package org.milyn.edisax;
 import junit.framework.TestCase;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.StringReader;
-import java.util.List;
 
+import org.milyn.edisax.util.EDIUtils;
 import org.xml.sax.SAXException;
-import org.xml.sax.InputSource;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.helpers.DefaultHandler;
-import org.milyn.edisax.model.EDIConfigDigester;
-import org.milyn.edisax.model.EdifactModel;
-import org.milyn.edisax.model.internal.Segment;
-import org.milyn.io.StreamUtils;
 
 /**
  * @author bardl

@@ -17,6 +17,9 @@ package org.milyn.javabean.pojogen;
 
 import org.milyn.assertion.AssertArgument;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -67,20 +70,35 @@ public class JMethod {
     }
 
     public JMethod appendToBody(String codeString) {
+        assertNotFinalized();
         bodyBuilder.append(codeString);
         return this;
     }
 
     public int bodyLength() {
+        assertNotFinalized();
         return bodyBuilder.length();
     }
 
     public String getBody() {
+        assertNotFinalized();
         return bodyBuilder.toString();
     }
 
     public Set<JType> getExceptions() {
         return exceptions;
+    }
+
+    public void finalizeMethod() {
+        assertNotFinalized();
+        bodyBuilder.setLength(0);
+        bodyBuilder = null;
+    }
+
+    private void assertNotFinalized() {
+        if(bodyBuilder == null) {
+            throw new IllegalStateException("JMethod already finalized.");
+        }
     }
 
     public String getParamSignature() {

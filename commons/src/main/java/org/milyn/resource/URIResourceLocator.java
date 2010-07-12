@@ -69,6 +69,8 @@ public class URIResourceLocator implements ContainerResourceLocator {
      */
     public static final String BASE_URI_SYSKEY = "org.milyn.resource.baseuri";
 
+    public static final URI DEFAULT_BASE_URI = URI.create("./");
+
     private URI baseURI = getSystemBaseURI();
 
     public InputStream getResource(String configName, String defaultUri)
@@ -92,9 +94,12 @@ public class URIResourceLocator implements ContainerResourceLocator {
         // ... then try it as a URL...
         File fileUnresolved = new File(uri.inputURI);
         File fileResolved = null;
+        StringBuilder errorBuilder = new StringBuilder();
 
+        errorBuilder.append("\tFile System: " + fileUnresolved.getAbsolutePath() + "\n");
         if(scheme == null) {
             fileResolved = new File(uri.resolvedURI.getPath());
+            errorBuilder.append("\tFile System: " + fileResolved.getAbsolutePath() + "\n");
         }
 
         if (fileUnresolved.exists()) {
@@ -111,16 +116,18 @@ public class URIResourceLocator implements ContainerResourceLocator {
             if (path.charAt(0) != '/') {
                 path = "/" + path;
             }
+            errorBuilder.append("\tClasspath: " + path + "\n");
             stream = ClassUtil.getResourceAsStream(path, getClass());
         } else {
             url = uri.resolvedURI.toURL();
             URLConnection connection = url.openConnection();
 
+            errorBuilder.append("\tURL: " + url + "\n");
             stream = connection.getInputStream();
         }
 
         if (stream == null) {
-            throw new IOException("Failed to access data stream for resource [" + uri.inputURI + "]. Tried filesystem, classpath and URL.");
+            throw new IOException("Failed to access data stream for resource [" + uri.inputURI + "]. Tried (in order):\n" + errorBuilder);
         }
 
         return stream;
@@ -222,7 +229,7 @@ public class URIResourceLocator implements ContainerResourceLocator {
 			logger.warn("Error extracting base URI.", e);
 		}
     	
-		return URI.create("./");
+		return DEFAULT_BASE_URI;
 	}
 
     private static class ResolvedURI {

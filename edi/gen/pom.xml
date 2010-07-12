@@ -12,16 +12,21 @@
         <smooks.version>1.4-SNAPSHOT</smooks.version> <!-- ## Smooks Version ## -->
 
         <!-- UN/EDIFACT versions... -->
-        <d08a.version>1.0-SNAPSHOT</d08a.version>
+        <d93a.version>1.0-SNAPSHOT</d93a.version>
         <d03b.version>1.0-SNAPSHOT</d03b.version>
+        <d08a.version>1.0-SNAPSHOT</d08a.version>
     </properties>
 
     <profiles>
         <profile>
             <id>all</id>
             <modules>
+                <!-- UN/EDIFACT D93A... -->
+                <!--<module>unedifact/d93a/mapping</module>-->
+
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
+                <!--<module>unedifact/d03b/binding</module>-->
                 <module>unedifact/d03b/test</module>
 
                 <!-- UN/EDIFACT D08A... -->

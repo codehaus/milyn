@@ -40,7 +40,6 @@ public class EdifactModelTest extends TestCase {
         InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-config-truncatableSegmentsExists.xml")));
         EdifactModel ediModel = new EdifactModel(input);
 
-        assertTrue("The truncatableSegments attribute should exist in Import element.", ediModel.getEdimap().getImports().get(0).isTruncatableSegments());
         assertTrue("The truncatable attribute should have value [true] in Segment.", ((Segment)ediModel.getEdimap().getSegments().getSegments().get(0).getSegments().get(0)).isTruncatable());
     }
 
@@ -48,7 +47,6 @@ public class EdifactModelTest extends TestCase {
         InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-config-truncatableSegmentsExists-relativepath.xml")));
         EdifactModel ediModel = new EdifactModel(URI.create(packageName + "/" + "edi-config-truncatableSegmentsExists-relativepath.xml"), URI.create(packageName), input);
 
-        assertTrue("The truncatableSegments attribute should exist in Import element.", ediModel.getEdimap().getImports().get(0).isTruncatableSegments());
         assertTrue("The truncatable attribute should have value [true] in Segment.", ((Segment)ediModel.getEdimap().getSegments().getSegments().get(0).getSegments().get(0)).isTruncatable());
     }
 
@@ -56,7 +54,6 @@ public class EdifactModelTest extends TestCase {
         InputStream input = new ByteArrayInputStream(StreamUtils.readStream(getClass().getResourceAsStream("edi-config-truncatableSegmentsNotExists.xml")));
         EdifactModel ediModel = new EdifactModel(input);
 
-        assertTrue("The truncatableSegments attribute should not exist in Import element.", ediModel.getEdimap().getImports().get(0).isTruncatableSegments() == null);
         assertTrue("The truncatable attribute should have value [true] in Segment.", !((Segment)ediModel.getEdimap().getSegments().getSegments().get(0).getSegments().get(0)).isTruncatable());
     }        
 }

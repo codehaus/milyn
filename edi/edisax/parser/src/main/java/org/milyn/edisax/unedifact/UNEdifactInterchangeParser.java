@@ -23,12 +23,11 @@ import java.util.Map;
 
 import javax.xml.XMLConstants;
 
-import org.apache.commons.lang.StringUtils;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.EdifactModel;
@@ -152,7 +151,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	 * <p/>
 	 * The model can be generated through a call to the {@link EDIParser}.
 	 * 
-	 * @param mappingModels The mapping model.
+	 * @param mappingModel The mapping model.
 	 * @return This parser instance.
 	 */
 	public UNEdifactInterchangeParser addMappingModel(EdifactModel mappingModel) {

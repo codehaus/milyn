@@ -22,6 +22,8 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.*;
+import org.milyn.delivery.replay.EndElementEvent;
+import org.milyn.delivery.replay.StartElementEvent;
 import org.milyn.delivery.sax.terminate.TerminateException;
 import org.milyn.event.ExecutionEventListener;
 import org.milyn.event.report.AbstractReportGenerator;
@@ -30,9 +32,7 @@ import org.milyn.event.types.ElementVisitEvent;
 import org.milyn.event.types.ResourceTargetingEvent;
 import org.milyn.io.NullWriter;
 import org.milyn.xml.DocType;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.*;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -45,7 +45,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SAXHandler extends DefaultHandler2 {
+public class SAXHandler extends SmooksContentHandler {
 
     private static Log logger = LogFactory.getLog(SAXHandler.class);
     private ExecutionContext execContext;
@@ -75,6 +75,12 @@ public class SAXHandler extends DefaultHandler2 {
     }
 
     public SAXHandler(ExecutionContext executionContext, Writer writer) {
+        this(executionContext, writer, null);
+    }
+
+    public SAXHandler(ExecutionContext executionContext, Writer writer, SmooksContentHandler parentContentHandler) {
+        super(executionContext, parentContentHandler);
+
         this.execContext = executionContext;
         this.writer = writer;
         eventListener = executionContext.getEventListener();
@@ -87,9 +93,9 @@ public class SAXHandler extends DefaultHandler2 {
         SAXElementVisitorMap starStarVisitorConfigs = visitorConfigMap.get("**");
 
         if(starVisitorConfigs != null) {
-        	globalVisitorConfig = starVisitorConfigs.merge(starStarVisitorConfigs);
+            globalVisitorConfig = starVisitorConfigs.merge(starStarVisitorConfigs);
         } else {
-        	globalVisitorConfig = starStarVisitorConfigs;
+            globalVisitorConfig = starStarVisitorConfigs;
         }
 
         rewriteEntities = contentDeliveryConfig.isRewriteEntities();
@@ -122,14 +128,14 @@ public class SAXHandler extends DefaultHandler2 {
         }
     }
 
-    public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+    public void startElement(StartElementEvent startEvent) throws SAXException {
         WriterManagedSAXElement element;
         boolean isRoot = (currentProcessor == null);
         SAXElementVisitorMap elementVisitorConfig;
         QName elementQName;
         String elementName;
 
-        elementQName = SAXUtil.toQName(namespaceURI, localName, qName);
+        elementQName = SAXUtil.toQName(startEvent.uri, startEvent.localName, startEvent.qName);
         elementName = elementQName.getLocalPart();
 
         if(isRoot) {
@@ -150,17 +156,17 @@ public class SAXHandler extends DefaultHandler2 {
             currentProcessor = processor;
             // Register the "presence" of the element...
             if(eventListener != null) {
-                eventListener.onEvent(new ElementPresentEvent(new WriterManagedSAXElement(elementQName, atts, currentProcessor.element)));
+                eventListener.onEvent(new ElementPresentEvent(new WriterManagedSAXElement(elementQName, startEvent.atts, currentProcessor.element)));
             }
         } else {
             if(!isRoot) {
                 // Push the existing "current" processor onto the stack and create a new current
                 // based on this start event...
-                element = new WriterManagedSAXElement(elementQName, atts, currentProcessor.element);
+                element = new WriterManagedSAXElement(elementQName, startEvent.atts, currentProcessor.element);
                 element.setWriter(getWriter());
                 onChildElement(element);
             } else {
-                element = new WriterManagedSAXElement(elementQName, atts, null);
+                element = new WriterManagedSAXElement(elementQName, startEvent.atts, null);
                 element.setWriter(writer);
             }
 
@@ -173,7 +179,7 @@ public class SAXHandler extends DefaultHandler2 {
         }
     }
 
-    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+    public void endElement(EndElementEvent endEvent) throws SAXException {
         boolean flush = false;
 
         // Apply the dynamic visitors...

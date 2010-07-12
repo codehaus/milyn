@@ -67,10 +67,10 @@ truncatable attribute for all Components in edi-definition.
 		<xs:complexType>
 			<xs:attribute name="segment" type="xs:string" use="required"/>
 			<xs:attribute name="field" type="xs:string" use="required"/>
-			<xs:attribute name="fieldRepeat" type="xs:string" use="optional"/>
 			<xs:attribute name="component" type="xs:string" use="required"/>
-			<xs:attribute name="sub-component" type="xs:string" use="required"/>
-			<xs:attribute name="escape" type="xs:string" use="optional">
+            <xs:attribute name="sub-component" type="xs:string" use="optional"/>
+            <xs:attribute name="fieldRepeat" type="xs:string" use="optional"/>
+            <xs:attribute name="escape" type="xs:string" use="optional">
 				<xs:annotation>
 					<xs:documentation>The delimiter attributes mark the boundary tokens between the EDI message parts - segment, field, component and sub-component.
 

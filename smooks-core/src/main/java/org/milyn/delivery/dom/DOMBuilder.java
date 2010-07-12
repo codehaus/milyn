@@ -18,14 +18,15 @@ package org.milyn.delivery.dom;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.SmooksContentHandler;
+import org.milyn.delivery.replay.EndElementEvent;
+import org.milyn.delivery.replay.StartElementEvent;
 import org.milyn.dtd.DTDStore;
 import org.milyn.xml.DocType;
 import org.milyn.cdr.ParameterAccessor;
 import org.milyn.delivery.Filter;
 import org.w3c.dom.*;
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.DefaultHandler2;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -41,7 +42,7 @@ import java.util.Stack;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DOMBuilder extends DefaultHandler2 {
+public class DOMBuilder extends SmooksContentHandler {
 
     private static Log logger = LogFactory.getLog(DOMBuilder.class);
     private static DocumentBuilder documentBuilder;
@@ -65,6 +66,12 @@ public class DOMBuilder extends DefaultHandler2 {
     }
 
     public DOMBuilder(ExecutionContext execContext) {
+        this(execContext, null);
+    }
+
+    public DOMBuilder(ExecutionContext execContext, SmooksContentHandler parentContentHandler) {
+        super(execContext, parentContentHandler);
+        
         this.execContext = execContext;
         initialiseEmptyElements();
         rewriteEntities = ParameterAccessor.getBoolParameter(Filter.ENTITIES_REWRITE, true, execContext.getDeliveryConfig());
@@ -117,32 +124,32 @@ public class DOMBuilder extends DefaultHandler2 {
     public void endDocument() throws SAXException {
     }
 
-    public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+    public void startElement(StartElementEvent startEvent) throws SAXException {
         Element newElement = null;
-        int attsCount = atts.getLength();
+        int attsCount = startEvent.atts.getLength();
         Node currentNode = (Node)nodeStack.peek();
 
         try {
-            if(namespaceURI != null && qName != null && !qName.equals("")) {
-                newElement = ownerDocument.createElementNS(namespaceURI.intern(), qName);
+            if(startEvent.uri != null && startEvent.qName != null && !startEvent.qName.equals("")) {
+                newElement = ownerDocument.createElementNS(startEvent.uri.intern(), startEvent.qName);
             } else {
-                newElement = ownerDocument.createElement(localName.intern());
+                newElement = ownerDocument.createElement(startEvent.localName.intern());
             }
 
             currentNode.appendChild(newElement);
-            if(!emptyElements.contains(qName != null?qName.toLowerCase():localName.toLowerCase())) {
+            if(!emptyElements.contains(startEvent.qName != null?startEvent.qName.toLowerCase():startEvent.localName.toLowerCase())) {
                 nodeStack.push(newElement);
             }
         } catch(DOMException e) {
-            logger.error("DOMException creating start element: namespaceURI=" + namespaceURI + ", localName=" + localName, e);
+            logger.error("DOMException creating start element: namespaceURI=" + startEvent.uri + ", localName=" + startEvent.localName, e);
             throw e;
         }
 
         for(int i = 0; i < attsCount; i++) {
-            String attNamespace = atts.getURI(i);
-            String attQName = atts.getQName(i);
-            String attLocalName = atts.getLocalName(i);
-            String attValue = atts.getValue(i);
+            String attNamespace = startEvent.atts.getURI(i);
+            String attQName = startEvent.atts.getQName(i);
+            String attLocalName = startEvent.atts.getLocalName(i);
+            String attValue = startEvent.atts.getValue(i);
             try {
                 if(attNamespace != null && attQName != null) {
                     attNamespace = attNamespace.intern();
@@ -158,19 +165,19 @@ public class DOMBuilder extends DefaultHandler2 {
                     newElement.setAttribute(attLocalName.intern(), attValue);
                 }
             } catch(DOMException e) {
-                logger.error("DOMException setting element attribute " + attLocalName + "=" + attValue + "[namespaceURI=" + namespaceURI + ", localName=" + localName + "].", e);
+                logger.error("DOMException setting element attribute " + attLocalName + "=" + attValue + "[namespaceURI=" + startEvent.uri + ", localName=" + startEvent.localName + "].", e);
                 throw e;
             }
         }
     }
 
-    public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
+    public void endElement(EndElementEvent endEvent) throws SAXException {
         String elName;
 
-        if(qName != null && !qName.equals("")) {
-            elName = qName.toLowerCase();
+        if(endEvent.qName != null && !endEvent.qName.equals("")) {
+            elName = endEvent.qName.toLowerCase();
         }else {
-            elName = localName.toLowerCase();
+            elName = endEvent.localName.toLowerCase();
         }
 
         if(!emptyElements.contains(elName)) {
@@ -178,7 +185,7 @@ public class DOMBuilder extends DefaultHandler2 {
             if(index != -1) {
                 nodeStack.setSize(index);
             } else {
-                logger.warn("Ignoring unexpected end [" + localName + "] element event. Request: [" + execContext.getDocumentSource() + "] - document location: [" + getCurPath() + "]");
+                logger.warn("Ignoring unexpected end [" + endEvent.localName + "] element event. Request: [" + execContext.getDocumentSource() + "] - document location: [" + getCurPath() + "]");
             }
         }
     }

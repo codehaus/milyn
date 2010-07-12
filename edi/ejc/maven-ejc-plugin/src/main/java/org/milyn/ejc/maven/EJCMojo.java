@@ -26,8 +26,11 @@ import org.jfrog.maven.annomojo.annotations.MojoParameter;
 import org.milyn.ejc.EJC;
 import org.milyn.ejc.EJCExecutor;
 import org.milyn.ejc.EJCException;
+import org.milyn.ejc.IllegalNameException;
+import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * EJC Mojo.
@@ -45,36 +48,57 @@ public class EJCMojo extends AbstractMojo {
     private File destDir;
 
     @MojoParameter(expression = "src/main/resources/edi-model.xml", required = false)
-    private File ediMappingFile;
+    private String ediMappingFile;
 
-    @MojoParameter(required = true)
+    @MojoParameter(required = false)
     private String packageName;
 
     public void execute() throws MojoExecutionException {
         EJCExecutor ejc = new EJCExecutor();
 
-        if(ediMappingFile.exists()) {
-            try {
-                ejc.setDestDir(destDir);
-                ejc.setEdiMappingModel(ediMappingFile);
-                ejc.setPackageName(packageName);
-
-                if(destDir.exists()) {
-                    destDir.delete();
+        try {
+            if(ediMappingFile.startsWith("urn:")) {
+                if(packageName != null) {
+                    throw new MojoExecutionException("Invalid ECT configuration.  'packageName' must not be configured for 'urn' mapping model configurations.");
                 }
 
-                ejc.execute();
-                project.addCompileSourceRoot(destDir.getPath());
-
-                Resource resource = new Resource();
-                resource.setDirectory(destDir.getPath());
-                resource.addInclude("**/*.xml");
-                project.addResource(resource);
-            } catch (EJCException e) {
-                throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);
+                String urn = ediMappingFile.substring(4);
+                
+                packageName = urn.replace(".", "_").replace(":", ".").replace("-", "_");
+            } else if(packageName == null) {
+                throw new MojoExecutionException("Invalid ECT configuration.  'packageName' must be configured for non 'urn' mapping model configurations.");
+            } else {
+                File mappingFileObj = new File(project.getBasedir(), ediMappingFile);
+                if(mappingFileObj.exists()) {
+                    ediMappingFile = mappingFileObj.toURI().toString();
+                }
             }
-        } else {
-            throw new MojoExecutionException("EDI mapping model '" + ediMappingFile.getAbsolutePath() + "' not found.");
+
+            ejc.setDestDir(destDir);
+            ejc.setEdiMappingModel(ediMappingFile);
+            ejc.setPackageName(packageName);
+
+            if(destDir.exists()) {
+                destDir.delete();
+            }
+
+            ejc.execute();
+            project.addCompileSourceRoot(destDir.getPath());
+
+            Resource resource = new Resource();
+            resource.setDirectory(destDir.getPath());
+            resource.addInclude("**/*.xml");
+            project.addResource(resource);
+        } catch (EJCException e) {
+            throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);
+        } catch (SAXException e) {
+            throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);
+        } catch (IOException e) {
+            throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);
+        } catch (ClassNotFoundException e) {
+            throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);
+        } catch (IllegalNameException e) {
+            throw new MojoExecutionException("Error Executing EJC Maven Plugin.  See chained cause.", e);
         }
     }
 }

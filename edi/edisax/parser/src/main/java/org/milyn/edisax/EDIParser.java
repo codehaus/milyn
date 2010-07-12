@@ -19,7 +19,7 @@ package org.milyn.edisax;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.*;
-import org.milyn.io.StreamUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.javabean.DataDecodeException;
 import org.milyn.lang.MutableInt;
 import org.milyn.resource.URIResourceLocator;

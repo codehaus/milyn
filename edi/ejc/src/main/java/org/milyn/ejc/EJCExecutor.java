@@ -15,10 +15,17 @@
 */
 package org.milyn.ejc;
 
+import org.milyn.edisax.util.EDIUtils;
+import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.Description;
+import org.milyn.resource.URIResourceLocator;
+import org.xml.sax.SAXException;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link EJC} Executor.
@@ -26,47 +33,52 @@ import java.io.IOException;
  */
 public class EJCExecutor {
 
-    private File ediMappingModel;
+    private String ediMappingModel;
     private File destDir;
     private String packageName;
 
-    public void execute() throws EJCException {
+    public void execute() throws EJCException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
         assertMandatoryProperty(ediMappingModel, "ediMappingModel");
         assertMandatoryProperty(destDir, "destDir");
         assertMandatoryProperty(packageName, "packageName");
 
-        if(!ediMappingModel.exists()) {
-            throw new EJCException("Specified EDI Mapping Model file '" + ediMappingModel.getAbsoluteFile() + "' does not exist.");
-        }
-        if(ediMappingModel.exists() && ediMappingModel.isDirectory()) {
-            throw new EJCException("Specified EDI Mapping Model file '" + ediMappingModel.getAbsoluteFile() + "' exists, but is a directory.  Must be an EDI Mapping Model file.");
-        }
         if(destDir.exists() && !destDir.isDirectory()) {
             throw new EJCException("Specified EJC destination directory '" + destDir.getAbsoluteFile() + "' exists, but is not a directory.");
         }
 
-        EJC ejc = new EJC();
-        FileInputStream configInputStream;
-        try {
-            configInputStream = new FileInputStream(ediMappingModel);
-        } catch (FileNotFoundException e) {
-            throw new EJCException("Error opening EDI Mapping Model InputStream '" + ediMappingModel.getAbsoluteFile() + "'.", e);
+        Map<Description, EdifactModel> mappingModels = new LinkedHashMap<Description, EdifactModel>();
+        EDIUtils.loadMappingModels(ediMappingModel, mappingModels, URIResourceLocator.DEFAULT_BASE_URI);
+
+        EdifactModel definitionsModel = mappingModels.get(EDIUtils.MODEL_SET_DEFINITIONS_DESCRIPTION);
+        String commonsPackageName = packageName + ".common";
+        ClassModel definitionsClassModel = null;
+
+        if(definitionsModel != null) {
+            EJC ejc = new EJC();
+            definitionsClassModel = ejc.compile(definitionsModel.getEdimap(), commonsPackageName, destDir.getAbsolutePath());
         }
 
-        try {
-            ejc.compile(configInputStream, packageName, destDir.getAbsolutePath());
-        } catch (Exception e) {
-            throw new EJCException("Error compiling EDI Mapping Model '" + ediMappingModel.getAbsoluteFile() + "'.", e);
-        } finally {
-            try {
-                configInputStream.close();
-            } catch (IOException e) {
-                throw new EJCException("Error closing EDI Mapping Model '" + ediMappingModel.getAbsoluteFile() + "'.", e);
+        Set<Map.Entry<Description, EdifactModel>> modelSet = mappingModels.entrySet();
+        for(Map.Entry<Description, EdifactModel> model : modelSet) {
+            Description description = model.getKey();
+
+            if(description.equals(EDIUtils.MODEL_SET_DEFINITIONS_DESCRIPTION)) {
+                // Already done (above).  Skip it...
+                continue;
+            }
+
+            EJC ejc = new EJC();
+            ejc.include(commonsPackageName);
+            if(definitionsClassModel != null) {
+                String messagePackageName = packageName + "." + description.getName();
+                ejc.compile(model.getValue().getEdimap(), messagePackageName, destDir.getAbsolutePath(), definitionsClassModel.getClassesByNode());
+            } else {
+                ejc.compile(model.getValue().getEdimap(), packageName, destDir.getAbsolutePath());
             }
         }
     }
 
-    public void setEdiMappingModel(File ediMappingModel) {
+    public void setEdiMappingModel(String ediMappingModel) {
         this.ediMappingModel = ediMappingModel;
     }
 

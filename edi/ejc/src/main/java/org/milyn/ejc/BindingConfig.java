@@ -15,83 +15,75 @@
 */
 package org.milyn.ejc;
 
+import org.milyn.javabean.pojogen.JClass;
 import org.milyn.javabean.pojogen.JNamedType;
-import org.milyn.javabean.DataDecoder;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * BindingConfig
  *
- * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  * @author bardl
+ * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class BindingConfig {
 
-    private JNamedType property;
-    private String wireBeanId;
-    private String selector;
-    private List<Map.Entry<String, String>> decoderConfigs;
+    private String beanId;
+    private String createOnElement;
+    private JClass beanClass;
+    private Class<?> runtimeClass;
+    private JNamedType propertyOnParent;
+    private List<ValueNodeInfo> valueBindings = new ArrayList<ValueNodeInfo>();
+    private List<BindingConfig> wireBindings = new ArrayList<BindingConfig>();
 
-    public BindingConfig(JNamedType property, String selector, List<Map.Entry<String, String>> decoderConfigs) {
-        this.property = property;
-        this.selector = selector;
-        this.decoderConfigs = decoderConfigs;
+    public BindingConfig(String beanId, String createOnElement, JClass beanClass, JNamedType propertyOnParent) {
+        this.beanId = beanId;
+        this.createOnElement = createOnElement;
+        this.beanClass = beanClass;
+        this.propertyOnParent = propertyOnParent;
     }
 
-    public BindingConfig(String wireBeanId, String selector) {
-        this.wireBeanId = wireBeanId;
-        this.selector = selector;
+    public BindingConfig(String beanId, String createOnElement, Class<?> runtimeClass, JNamedType propertyOnParent) {
+        this.beanId = beanId;
+        this.createOnElement = createOnElement;
+        this.runtimeClass = runtimeClass;
+        this.propertyOnParent = propertyOnParent;
     }
 
-    public BindingConfig(JNamedType property, String wireBeanId, String selector) {
-        this.property = property;
-        this.wireBeanId = wireBeanId;
-        this.selector = selector;
+    public String getBeanId() {
+        return beanId;
     }
 
-    public JNamedType getProperty() {
-        return property;
+    public String getCreateOnElement() {
+        return createOnElement;
     }
 
-    public String getSelector() {
-        return selector;
+    public JClass getBeanClass() {
+        return beanClass;
     }
 
-    public boolean isWiring() {
-        return (wireBeanId != null);
-    }
-
-    public boolean isBoundToProperty() {
-        return (property != null);
-    }
-
-    public String getWireBeanId() {
-        return wireBeanId;
-    }
-
-    public List<Map.Entry<String, String>> getDecoderConfigs() {
-        return decoderConfigs;
-    }
-
-    public String getType() {
-        Class type = property.getType().getType();
-
-        if(type.isArray()) {
-            return "$DELETE:NOT-APPLICABLE$";
+    public Class<?> getRuntimeClass() {
+        if(beanClass != null) {
+            return beanClass.getSkeletonClass();
+        } else {
+            return runtimeClass;
         }
+    }
 
-        Class<? extends DataDecoder> decoder = DataDecoder.Factory.getInstance(type);
+    public JNamedType getPropertyOnParent() {
+        return propertyOnParent;
+    }
 
-        if(type.isPrimitive() || type.getPackage().equals(String.class.getPackage())) {
-            String typeAlias = decoder.getSimpleName();
+    public void setPropertyOnParent(JNamedType propertyOnParent) {
+        this.propertyOnParent = propertyOnParent;
+    }
 
-            if(typeAlias.endsWith("Decoder")) {
-                return typeAlias.substring(0, typeAlias.length() - "Decoder".length());
-            }
-        }
+    public List<ValueNodeInfo> getValueBindings() {
+        return valueBindings;
+    }
 
-        return decoder.getName();
+    public List<BindingConfig> getWireBindings() {
+        return wireBindings;
     }
 }

@@ -32,7 +32,7 @@ import org.milyn.FilterSettings;
 import org.milyn.Smooks;
 import org.milyn.container.ExecutionContext;
 import org.milyn.edisax.EDIConfigurationException;
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.io.StreamUtils;
 import org.milyn.payload.JavaResult;
 import org.milyn.payload.StringResult;

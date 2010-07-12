@@ -23,6 +23,7 @@ import org.milyn.cdr.Parameter;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.cdr.annotation.Configurator;
 import org.milyn.container.ExecutionContext;
+import org.milyn.delivery.sax.SAXHandler;
 import org.milyn.payload.JavaSource;
 import org.milyn.payload.FilterSource;
 import org.milyn.delivery.java.JavaXMLReader;
@@ -89,6 +90,18 @@ public class AbstractParser {
 
     protected SmooksResourceConfiguration getSaxDriverConfig() {
         return saxDriverConfig;
+    }
+
+    public static void attachXMLReader(XMLReader xmlReader, ExecutionContext execContext) {
+        execContext.setAttribute(XMLReader.class, xmlReader);
+    }
+
+    public static XMLReader getXMLReader(ExecutionContext executionContext) {
+        return (XMLReader) executionContext.getAttribute(XMLReader.class);
+    }
+
+    public static void detachXMLReader(ExecutionContext execContext) {
+        execContext.removeAttribute(XMLReader.class);
     }
 
     /**
