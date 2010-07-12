@@ -34,6 +34,7 @@ import javassist.CannotCompileException;
  */
 public class JClass {
 
+    private String uniqueId;
     private String packageName;
     private String className;
     private Set<JType> rawImports = new LinkedHashSet<JType>();
@@ -56,10 +57,16 @@ public class JClass {
     }
 
     public JClass(String packageName, String className) {
+        this(packageName, className, UUID.randomUUID().toString());
+    }
+
+    public JClass(String packageName, String className, String uniqueId) {
         AssertArgument.isNotNull(packageName, "packageName");
         AssertArgument.isNotNull(className, "className");
+        AssertArgument.isNotNull(uniqueId, "uniqueId");
         this.packageName = packageName;
         this.className = className;
+        this.uniqueId = uniqueId;
     }
 
     public String getPackageName() {
@@ -68,6 +75,10 @@ public class JClass {
 
     public String getClassName() {
         return className;
+    }
+
+    public String getUniqueId() {
+        return uniqueId;
     }
 
     public Set<JType> getRawImports() {
@@ -93,13 +104,15 @@ public class JClass {
             try {
                 skeletonClass = Thread.currentThread().getContextClassLoader().loadClass(skeletonClassName);
             } catch (ClassNotFoundException e) {
-                ClassPool pool = ClassPool.getDefault();
+                ClassPool pool = new ClassPool(true);
                 CtClass cc = pool.makeClass(skeletonClassName);
 
                 try {
                     skeletonClass = cc.toClass();
                 } catch (CannotCompileException ee) {
                     throw new IllegalStateException("Unable to create runtime skeleton class for class '" + skeletonClassName + "'.", ee);
+                } finally {
+                    cc.detach();
                 }
             }
         }
@@ -212,6 +225,16 @@ public class JClass {
 
         contextObj.put("class", this);
         writer.write(template.apply(contextObj));
+
+        // Finalize all the methods... allowing them to be GC'd...
+        finalizeMethods(constructors);
+        finalizeMethods(methods);
+    }
+
+    private void finalizeMethods(List<JMethod> methodList) {
+        for(JMethod method : methodList) {
+            method.finalizeMethod();
+        }
     }
 
     private void assertPropertyUndefined(JNamedType property) {

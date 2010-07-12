@@ -26,6 +26,7 @@ import org.milyn.delivery.AbstractParser;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.ext.DefaultHandler2;
 
 /**
  * Smooks SAX data stream parser.
@@ -45,20 +46,32 @@ public class SAXParser extends AbstractParser {
 
         Writer writer = getWriter(result, executionContext);
         ContentDeliveryConfig deliveryConfig = executionContext.getDeliveryConfig();
-        XMLReader saxReader;
+        XMLReader saxReader = getXMLReader(executionContext);
 
-        saxHandler = new SAXHandler(getExecContext(), writer);        
-        saxReader = deliveryConfig.getXMLReader();
+        saxHandler = new SAXHandler(getExecContext(), writer);
+
         try {
-	        if(saxReader == null) {
-	        	saxReader = createXMLReader();
-	        }
-	        configureReader(saxReader, saxHandler, executionContext, source);
+            if(saxReader == null) {
+                saxReader = deliveryConfig.getXMLReader();
+            }
+            if(saxReader == null) {
+                saxReader = createXMLReader();
+            }
+            attachXMLReader(saxReader, executionContext);
+            configureReader(saxReader, saxHandler, executionContext, source);
 	        saxReader.parse(createInputSource(saxReader, source, executionContext));
         } finally {
-	        if(saxReader != null) {
-	        	deliveryConfig.returnXMLReader(saxReader);
-	        }
+            try {
+                if(saxReader != null) {
+                    try {
+                        detachXMLReader(executionContext);
+                    } finally {
+                        deliveryConfig.returnXMLReader(saxReader);
+                    }
+                }
+            } finally {
+                saxHandler.detachHandler();
+            }
         }
         
         return writer;

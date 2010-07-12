@@ -16,6 +16,10 @@
 
 package org.milyn.edisax.model.internal;
 
+import org.milyn.edisax.util.EdimapWriter;
+
+import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,10 +74,7 @@ public class Edimap {
         this.segments = value;
     }
 
-    /**
-     * @deprecated Use {@link #getImports()}.
-     */
-    public List<Import> getImport() {
-    	return getImports();
+    public void write(Writer writer) throws IOException {
+        EdimapWriter.write(this, writer);
     }
 }

@@ -17,8 +17,10 @@ package org.milyn.ejc;
 
 import org.apache.commons.logging.Log;
 import org.milyn.edisax.model.internal.Edimap;
+import org.milyn.edisax.model.internal.MappingNode;
 import org.milyn.javabean.pojogen.JClass;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
@@ -40,10 +42,11 @@ public class ClassModel {
 
     private static Log LOG = EJCLogFactory.getLog(ClassModel.class);
 
-    private JClass root;
+    private BindingConfig rootBeanConfig;
     private Edimap edimap;
     private Map<String, JClass> createdClasses;
-    private Map<String, ValueNodeInfo> valueNodeInfos;
+    private Collection<JClass> referencedClasses;
+    private Map<MappingNode, JClass> classesByNode;
 
     public void setEdimap(Edimap edimap) {
         this.edimap = edimap;
@@ -53,20 +56,12 @@ public class ClassModel {
         return edimap;
     }
 
-    /**
-     * Returns the root {@link org.milyn.javabean.pojogen.JClass}.
-     * @return athe root {@link org.milyn.javabean.pojogen.JClass}.
-     */
-    public JClass getRoot() {
-        return root;
+    public BindingConfig getRootBeanConfig() {
+        return rootBeanConfig;
     }
 
-    /**
-     * Sets the root {@link org.milyn.javabean.pojogen.JClass}.
-     * @param root the {@link org.milyn.javabean.pojogen.JClass}.
-     */
-    public void setRoot(JClass root) {
-        this.root = root;
+    public void setRootBeanConfig(BindingConfig rootBeanConfig) {
+        this.rootBeanConfig = rootBeanConfig;
     }
 
     /**
@@ -84,47 +79,24 @@ public class ClassModel {
      * Adds a {@link org.milyn.javabean.pojogen.JClass} to the ClassModel.
      * @param jclass the {@link org.milyn.javabean.pojogen.JClass} to add.
      */
-    public void addClass(JClass jclass) {
+    public void addCreatedClass(JClass jclass) {
         getCreatedClasses().put(jclass.getClassName(), jclass);
         LOG.info("Added class " + jclass.getPackageName() + "." + jclass.getClassName() + " to model.");
     }
 
-    /**
-     * Adds a {@link org.milyn.ejc.ValueNodeInfo} belonging a specific {@link org.milyn.javabean.pojogen.JClass} to ClassModel.
-     * @param jclass the {@link org.milyn.javabean.pojogen.JClass} to which the {@link org.milyn.ejc.ValueNodeInfo} exists.
-     * @param valueNodeInfo the {@link org.milyn.ejc.ValueNodeInfo} to add.
-     */
-    public void addClassValueNodeConfig(JClass jclass, ValueNodeInfo valueNodeInfo) {
-        getValueNodeInfos().put(jclass.getClassName(), valueNodeInfo);
+    public void setClassesByNode(Map<MappingNode, JClass> classesBySegref) {
+        this.classesByNode = classesBySegref;
     }
 
-    /**
-     * Adds a {@link org.milyn.ejc.ValueNodeInfo} belonging a specific {@link org.milyn.javabean.pojogen.JClass} and '
-     * {@link org.milyn.javabean.pojogen.JNamedType} to ClassModel. Both classname and namedType is given as a String-value.
-     * @param className the 
-     * @param propertyName
-     * @param valueNodeInfo
-     */
-    public void addPropertyValueNodeConfig(String className, String propertyName, ValueNodeInfo valueNodeInfo) {
-        getValueNodeInfos().put(className + "." + propertyName, valueNodeInfo);
+    public Map<MappingNode, JClass> getClassesByNode() {
+        return classesByNode;
     }
 
-    public String getClassXmlElementName(String className) {
-        return getValueNodeInfos().get(className).getSelector();
+    public boolean isClassCreator(JClass jClass) {
+        return createdClasses.containsValue(jClass);
     }
 
-    public String getPropertyXmlElementName(String className, String propertyName) {
-        return getValueNodeInfos().get(className + "." + propertyName).getSelector();
-    }
-
-    public List<Map.Entry<String, String>> getPropertyDecoderConfigs(String className, String propertyName) {
-        return getValueNodeInfos().get(className + "." + propertyName).getDecoderConfigs();
-    }
-
-    private Map<String, ValueNodeInfo> getValueNodeInfos() {
-        if ( valueNodeInfos == null) {
-            this.valueNodeInfos = new LinkedHashMap<String, ValueNodeInfo>();
-        }
-        return valueNodeInfos;
+    public void setReferencedClasses(Collection<JClass> referencedClasses) {
+        this.referencedClasses = referencedClasses;
     }
 }

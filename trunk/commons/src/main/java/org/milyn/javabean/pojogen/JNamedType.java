@@ -23,6 +23,7 @@ import org.milyn.assertion.AssertArgument;
  * @author <a href="mailto:tom.fennelly@jboss.com">tom.fennelly@jboss.com</a>
  */
 public class JNamedType {
+    
     private JType type;
     private String name;
 

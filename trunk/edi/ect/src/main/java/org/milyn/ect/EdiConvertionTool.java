@@ -19,7 +19,7 @@ package org.milyn.ect;
 import org.milyn.archive.Archive;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.internal.*;
 
 import java.io.File;
@@ -117,7 +117,6 @@ public class EdiConvertionTool {
     private static Archive createArchive(EdiSpecificationReader ediSpecificationReader, String urn) throws IOException {
         Archive archive = new Archive();
         StringBuilder modelListBuilder = new StringBuilder();
-        ConfigWriter configWriter = new ConfigWriter();
         Set<String> messages = ediSpecificationReader.getMessageNames();
         StringWriter messageEntryWriter = new StringWriter();
         String pathPrefix = urn.replace(".", "_").replace(":", "/");
@@ -130,8 +129,7 @@ public class EdiConvertionTool {
 
             // Generate the mapping model for this message...
             messageEntryWriter.getBuffer().setLength(0);
-            configWriter.generate(messageEntryWriter, model);
-            messageEntryWriter.flush();
+            model.write(messageEntryWriter);
 
             // Add the generated mapping model to the archive...
             archive.addEntry(messageEntryPath, messageEntryWriter.toString());

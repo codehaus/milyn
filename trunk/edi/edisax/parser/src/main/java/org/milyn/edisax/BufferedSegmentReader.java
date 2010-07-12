@@ -19,6 +19,7 @@ package org.milyn.edisax;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;

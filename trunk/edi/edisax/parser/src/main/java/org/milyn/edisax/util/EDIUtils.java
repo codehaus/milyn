@@ -14,7 +14,7 @@
 	http://www.gnu.org/licenses/lgpl.txt
 */
 
-package org.milyn.edisax;
+package org.milyn.edisax.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -34,6 +34,8 @@ import org.apache.commons.logging.LogFactory;
 import org.milyn.archive.Archive;
 import org.milyn.archive.ArchiveClassLoader;
 import org.milyn.assertion.AssertArgument;
+import org.milyn.edisax.EDIConfigurationException;
+import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.io.StreamUtils;
@@ -54,10 +56,8 @@ public class EDIUtils {
     public static final String EDI_MAPPING_MODEL_URN = "META-INF/services/org/smooks/edi/urn";
     /**
      * Most model sets contain a set of common definitions (common types).
-     * These common definitions should be stored in a file by this name and be
-     * the first file listed in the model list file.
      */
-    public static final String MODEL_SET_DEFINITIONS_FILE = "__modelset_definitions";
+    public static final Description MODEL_SET_DEFINITIONS_DESCRIPTION = new Description().setName("__modelset_definitions").setVersion("local");
 
     /**
      * Splits a String by delimiter as long as delimiter does not follow an escape sequence.

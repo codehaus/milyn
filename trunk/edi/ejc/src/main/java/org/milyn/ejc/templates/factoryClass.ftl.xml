@@ -47,7 +47,7 @@ public class ${className}Factory {
         }
 
         smooks.filterSource(new StreamSource(ediStream), results);
-        return (${className}) javaResult.getBean("${classId}");
+        return (${className}) javaResult.getBean(${className}.class);
     }
 
     <#if generateFromEDINR == true>

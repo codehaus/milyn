@@ -21,7 +21,6 @@ import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.model.EDIConfigDigester;
 import org.milyn.edisax.model.internal.Edimap;
-import org.milyn.smooks.edi.unedifact.UNEdifactReader;
 import org.xml.sax.SAXException;
 
 import java.io.*;
@@ -49,10 +48,8 @@ public class UnEdifact_EdiConvertionTool_Test extends TestCase {
 
         Edimap jupreq = specReader.getMappingModel("JUPREQ");
         Writer writer = new OutputStreamWriter(serializedMap);
-        ConfigWriter configWriter = new ConfigWriter();
 
-        configWriter.generate(writer, jupreq);
-        writer.flush();
+        jupreq.write(writer);
 
         EDIConfigDigester.digestConfig(new ByteArrayInputStream(serializedMap.toByteArray()));
     }

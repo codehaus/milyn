@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIParseException;
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.internal.Component;

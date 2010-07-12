@@ -36,6 +36,7 @@ public class BeanWriter {
     private static Log LOG = EJCLogFactory.getLog(ClassModelCompiler.class);
 
     private static boolean generateFromEDINR = false;
+    private static FreeMarkerTemplate template = new FreeMarkerTemplate("templates/factoryClass.ftl.xml", BeanWriter.class);
 
     public static void setGenerateFromEDINR(boolean generateFromEDINR) {
         BeanWriter.generateFromEDINR = generateFromEDINR;
@@ -89,7 +90,7 @@ public class BeanWriter {
      * @throws IOException when error ocurrrs while writing factory to file.
      */
     private static void writeFactoryClass(String folder, ClassModel model, String bindingFile) throws IllegalNameException, IOException {
-        JClass rootClass = model.getRoot();
+        JClass rootClass = model.getRootBeanConfig().getBeanClass();
         String packageName = rootClass.getPackageName();
         String className = rootClass.getClassName();
         String classId = EJCUtils.encodeAttributeName(null, rootClass.getClassName());
@@ -101,14 +102,12 @@ public class BeanWriter {
         configs.put("bindingFile", new File(bindingFile).getName());
         configs.put("generateFromEDINR", generateFromEDINR);
 
-        FreeMarkerTemplate template;
         FileOutputStream fileOutputStream = null;
         OutputStreamWriter writer = null;
         try {
             File file = new File(folder + "/" + packageName.replace(".", "/"));
             fileOutputStream = new FileOutputStream(file.getCanonicalPath()+ "/" + className + "Factory.java");
             writer = new OutputStreamWriter(fileOutputStream);
-            template = new FreeMarkerTemplate("templates/factoryClass.ftl.xml", BeanWriter.class);
 
             writer.write(template.apply(configs));
 

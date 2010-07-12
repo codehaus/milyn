@@ -24,6 +24,8 @@ import org.apache.tools.ant.BuildException;
 import org.milyn.ejc.EJC;
 import org.milyn.ejc.EJCExecutor;
 import org.milyn.ejc.EJCException;
+import org.milyn.ejc.IllegalNameException;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,7 +38,7 @@ import java.io.IOException;
  */
 public class EJCAntTask extends EJCExecutor {
 
-    public void execute() throws BuildException {
+    public void execute() throws BuildException, IOException, ClassNotFoundException, SAXException, IllegalNameException {
         try {
             super.execute();
         } catch (EJCException e) {

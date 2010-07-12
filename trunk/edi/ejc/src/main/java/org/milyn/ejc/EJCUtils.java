@@ -75,7 +75,9 @@ public class EJCUtils {
             result += "s";
         }
 
-        assertLegalName(result);
+        if (reservedKeywords.contains(result)) {
+            result = "_" + result;
+        }
 
         return result;
     }

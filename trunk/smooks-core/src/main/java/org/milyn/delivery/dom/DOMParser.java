@@ -122,18 +122,30 @@ public class DOMParser extends AbstractParser {
   		
   		if(executionContext != null) {
 			ContentDeliveryConfig deliveryConfig = executionContext.getDeliveryConfig();        
-	  		XMLReader domReader = deliveryConfig.getXMLReader();
-	  		
+	  		XMLReader domReader = getXMLReader(executionContext);
+
 	  		try {
-	  			if(domReader == null) {
-	  				domReader = createXMLReader();
-	  			}	        
-		        configureReader(domReader, contentHandler, executionContext, source);
+                if(domReader == null) {
+                    domReader = deliveryConfig.getXMLReader();
+                }
+                if(domReader == null) {
+                    domReader = createXMLReader();
+                }
+                attachXMLReader(domReader, executionContext);
+                configureReader(domReader, contentHandler, executionContext, source);
 		        domReader.parse(createInputSource(domReader, source, getExecContext()));
 	  		} finally {
-	  			if(domReader != null) {
-	  				deliveryConfig.returnXMLReader(domReader);
-	  			}
+                try {
+                    try {
+                        detachXMLReader(executionContext);
+                    } finally {
+                        if(domReader != null) {
+                            deliveryConfig.returnXMLReader(domReader);
+                        }
+                    }
+                } finally {
+                    contentHandler.detachHandler();
+                }
 	  		}
   		} else {
 	  		XMLReader domReader = createXMLReader();

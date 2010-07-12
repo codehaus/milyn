@@ -95,6 +95,25 @@ public class ValueNode extends MappingNode {
         }
     }
 
+    public String getTypeParametersString() {
+        if(parameters == null) {
+            return null;
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for(Map.Entry<String,String> parameter : parameters) {
+            if(builder.length() > 0) {
+                builder.append(";");
+            }
+            builder.append(parameter.getKey());
+            builder.append("=");
+            builder.append(parameter.getValue());
+        }
+
+        return builder.toString();
+    }
+
     public Integer getMinLength() {
         return minLength;
     }

@@ -296,7 +296,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     public void visitBefore(Element element, ExecutionContext executionContext) throws SmooksException {
-    	checkBeanExists(executionContext);
+        if(!beanExists(executionContext)) {
+            logger.debug("Cannot bind data onto bean '" + beanId + "' as bean does not exist in BeanContext.");
+            return;
+        }
 
     	if(isBeanWiring) {
         	bindBeanValue(executionContext, new Fragment(element));
@@ -307,7 +310,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     public void visitAfter(Element element, ExecutionContext executionContext) throws SmooksException {
-    	checkBeanExists(executionContext);
+        if(!beanExists(executionContext)) {
+            logger.debug("Cannot bind data onto bean '" + beanId + "' as bean does not exist in BeanContext.");
+            return;
+        }
 
     	if(!isBeanWiring && !isAttribute) {
             bindDomDataValue(element, executionContext);
@@ -315,7 +321,10 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    	checkBeanExists(executionContext);
+        if(!beanExists(executionContext)) {
+            logger.debug("Cannot bind data onto bean '" + beanId + "' as bean does not exist in BeanContext.");
+            return;
+        }
 
         if(isBeanWiring) {
         	bindBeanValue(executionContext, new Fragment(element));
@@ -330,17 +339,18 @@ public class BeanInstancePopulator implements DOMElementVisitor, SAXVisitBefore,
     }
 
     public void visitAfter(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
-    	checkBeanExists(executionContext);
+        if(!beanExists(executionContext)) {
+            logger.debug("Cannot bind data onto bean '" + beanId + "' as bean does not exist in BeanContext.");
+            return;
+        }
 
     	if(!isBeanWiring && !isAttribute) {
             bindSaxDataValue(element, executionContext);
     	}
     }
 
-    private void checkBeanExists(ExecutionContext executionContext) {
-    	if(executionContext.getBeanContext().getBean(beanId) == null) {
-    		throw new SmooksConfigurationException("Can't populate object '"  + beanRuntimeInfo.getPopulateType().getName() + "' with bean id '" + beanId + "' because there is no object in the bean context under that bean id.");
-    	}
+    private boolean beanExists(ExecutionContext executionContext) {
+        return (executionContext.getBeanContext().getBean(beanId) != null);
     }
 
     private void bindDomDataValue(Element element, ExecutionContext executionContext) {

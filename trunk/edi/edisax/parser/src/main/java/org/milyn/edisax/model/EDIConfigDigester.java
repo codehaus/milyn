@@ -539,11 +539,11 @@ public class EDIConfigDigester {
             Node n = nodes.item(i);
             if (n.getNodeName().equals(name)) {
                 return n.getTextContent();
-            } else if (node.hasChildNodes()) {
-                String value = getNodeValue(n, name);
-                if (value != null) {
-                    return value;
-                }
+//            } else if (node.hasChildNodes()) {
+//                String value = getNodeValue(n, name);
+//                if (value != null) {
+//                    return value;
+//                }
             }
         }
         return null;  //().getNamedItem(name) != null ? node.getAttributes().getNamedItem(name).getNodeValue() : null;

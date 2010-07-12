@@ -15,8 +15,9 @@
 */
 package org.milyn.ejc;
 
-import org.milyn.edisax.model.internal.MappingNode;
+import org.milyn.javabean.pojogen.JNamedType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,31 +28,30 @@ import java.util.Map;
  * @author bardl.
  */
 public class ValueNodeInfo {
-    private MappingNode mappingNode;
+
+    private JNamedType property;
+    private String dataSelector;
     private List<Map.Entry<String,String>> decoderConfigs;
 
-    public ValueNodeInfo(MappingNode mappingNode, List<Map.Entry<String,String>> decoderConfigs) {
-        this.mappingNode = mappingNode;
+    public ValueNodeInfo(JNamedType property, String dataSelector, List<Map.Entry<String,String>> decoderConfigs) {
+        this.property = property;
+        this.dataSelector = dataSelector;
         this.decoderConfigs = decoderConfigs;
     }
 
-    public String getSelector() {
-        StringBuilder builder = new StringBuilder();
-        MappingNode node = mappingNode;
+    public JNamedType getProperty() {
+        return property;
+    }
 
-        while(node != null) {
-            if(builder.length() > 0) {
-                builder.insert(0, "/");
-            }
-            builder.insert(0, node.getXmltag());
-            node = node.getParent();
-        }
-
-        return builder.toString();
+    public String getDataSelector() {
+        return dataSelector;
     }
 
     public List<Map.Entry<String,String>> getDecoderConfigs() {
         return decoderConfigs;
     }
 
+    public String getDecoderType() {
+        return property.getType().getType().getSimpleName();
+    }
 }

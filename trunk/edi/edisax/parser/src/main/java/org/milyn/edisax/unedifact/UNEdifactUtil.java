@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.milyn.edisax.EDIUtils;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;

@@ -13,23 +13,22 @@
 
     <edi:reader mappingModel="/${classPackage}/edimappingconfig.xml" validate="false" />
 
-    <#list classConfigs as classConfig>
+    <#list beanConfigs as beanConfig>
 
-    <jb:bean beanId="${classConfig.beanId}" class="${classConfig.beanClass.name}<#if classConfig.array>[]</#if>" createOnElement="${classConfig.elementName}">
-    <#list classConfig.bindings as binding>
-        <#if binding.wiring>
-        <jb:wiring <#if binding.boundToProperty>property="${binding.property.name}" </#if>beanIdRef="${binding.wireBeanId}" />
-        <#else>
-        <#if binding.decoderConfigs?exists>
-        <jb:value <#if binding.boundToProperty>property="${binding.property.name}" </#if><#if !binding.wiring>decoder="${binding.type}" </#if>data="${binding.selector}">
-        <#list binding.decoderConfigs as config>
+    <jb:bean beanId="${beanConfig.beanId}" class="${beanConfig.runtimeClass.name}" createOnElement="${beanConfig.createOnElement}">
+    <#list beanConfig.valueBindings as valueBinding>
+        <#if valueBinding.decoderConfigs?exists>
+        <jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}" decoder="${valueBinding.decoderType}">
+        <#list valueBinding.decoderConfigs as config>
             <jb:decodeParam name="${config.key}">${config.value}</jb:decodeParam>
         </#list>
         </jb:value>
         <#else>
-        <jb:value <#if binding.boundToProperty>property="${binding.property.name}" </#if><#if !binding.wiring>decoder="${binding.type}" </#if>data="${binding.selector}"/>
+        <jb:value property="${valueBinding.property.name}" data="${valueBinding.dataSelector}"/>
         </#if>
-        </#if>
+    </#list>
+    <#list beanConfig.wireBindings as binding>
+        <jb:wiring <#if binding.propertyOnParent??>property="${binding.propertyOnParent.name}" </#if>beanIdRef="${binding.beanId}" />
     </#list>
     </jb:bean>
     </#list>
