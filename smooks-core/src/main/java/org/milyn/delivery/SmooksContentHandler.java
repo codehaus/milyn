@@ -36,6 +36,10 @@ public abstract class SmooksContentHandler extends DefaultHandler2 implements SA
 
     private ExecutionContext executionContext;
     private SmooksContentHandler parentContentHandler;
+    private SmooksContentHandler nestedContentHandler;
+    private boolean startReplayed = false;
+    private boolean endReplayed = false;
+    protected ExecutionLifecycleCleanableList cleanupList;
     private SAXEventReplay lastEvent = null;
     private StartElementEvent startEvent = new StartElementEvent();
     private EndElementEvent endEvent = new EndElementEvent();
@@ -45,11 +49,18 @@ public abstract class SmooksContentHandler extends DefaultHandler2 implements SA
         this.executionContext = executionContext;
         this.parentContentHandler = parentContentHandler;
         attachHandler();
+
+        cleanupList = new ExecutionLifecycleCleanableList(executionContext);
+        if(parentContentHandler != null) {
+            cleanupList = parentContentHandler.cleanupList;
+            parentContentHandler.nestedContentHandler = this;
+        }
     }
 
     @Override
     public final void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if(depth == 0 && parentContentHandler != null) {
+        if(!startReplayed && depth == 0 && parentContentHandler != null) {
+            startReplayed = true;
             // Replay the last sax event from the parent handler on this sax handler...
             parentContentHandler.replay(this);
         }
@@ -65,19 +76,22 @@ public abstract class SmooksContentHandler extends DefaultHandler2 implements SA
 
     @Override
     public final void endElement(String uri, String localName, String qName) throws SAXException {
-        endEvent.set(uri, localName, qName);
-        lastEvent = endEvent;
+        try {
+            endEvent.set(uri, localName, qName);
+            lastEvent = endEvent;
 
-        endElement(endEvent);
-        depth--;
-
-        if(depth == 0 && parentContentHandler != null) {
-            // Replay the last sax event from this handler onto the parent handler ...
-            this.replay(parentContentHandler);
-            // Reinstate the parent handler on the XMLReader so all events are
-            // forwarded to it again ...
-            XMLReader xmlReader = AbstractParser.getXMLReader(executionContext);
-            xmlReader.setContentHandler(parentContentHandler);
+            endElement(endEvent);
+            depth--;
+        } finally {
+            if(!endReplayed && depth == 0 && parentContentHandler != null) {
+                endReplayed = true;
+                // Replay the last sax event from this handler onto the parent handler ...
+                this.replay(parentContentHandler);
+                // Reinstate the parent handler on the XMLReader so all events are
+                // forwarded to it again ...
+                XMLReader xmlReader = AbstractParser.getXMLReader(executionContext);
+                xmlReader.setContentHandler(parentContentHandler);
+            }
         }
     }
 
@@ -100,4 +114,14 @@ public abstract class SmooksContentHandler extends DefaultHandler2 implements SA
     public void detachHandler() {
         executionContext.removeAttribute(DefaultHandler2.class);
     }
+
+    public SmooksContentHandler getNestedContentHandler() {
+        return nestedContentHandler;
+    }
+
+    public void resetNestedContentHandler() {
+        nestedContentHandler = null;
+    }
+
+    public abstract void cleanup();
 }

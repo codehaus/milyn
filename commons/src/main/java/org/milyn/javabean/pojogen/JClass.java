@@ -40,6 +40,7 @@ public class JClass {
     private Set<JType> rawImports = new LinkedHashSet<JType>();
     private Set<JType> implementTypes = new LinkedHashSet<JType>();
     private Set<JType> extendTypes = new LinkedHashSet<JType>();
+    private Set<JType> annotationTypes = new LinkedHashSet<JType>();
     private Class<?> skeletonClass;
     private List<JNamedType> properties = new ArrayList<JNamedType>();
     private List<JMethod> constructors = new ArrayList<JMethod>();
@@ -91,6 +92,10 @@ public class JClass {
 
     public Set<JType> getExtendTypes() {
         return extendTypes;
+    }
+
+    public Set<JType> getAnnotationTypes() {
+        return annotationTypes;
     }
 
     public void setFluentSetters(boolean fluentSetters) {
@@ -184,6 +189,7 @@ public class JClass {
 
         addImports(importSet, implementTypes);
         addImports(importSet, extendTypes);
+        addImports(importSet, annotationTypes);
         for(JNamedType property : properties) {
             property.getType().addImports(importSet, new String[] {"java.lang", packageName});
         }

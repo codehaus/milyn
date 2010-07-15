@@ -239,4 +239,8 @@ public class HttpServletExecutionContext implements ExecutionContext, HttpReques
 		}
 		return beanContext;
 	}
+
+    public void setBeanContext(BeanContext beanContext) {
+        this.beanContext = beanContext;
+    }
 }

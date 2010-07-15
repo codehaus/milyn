@@ -63,7 +63,6 @@ public class SAXHandler extends SmooksContentHandler {
     private DefaultSAXElementSerializer defaultSerializer = new DefaultSAXElementSerializer();
     private static ContentHandlerConfigMap defaultSerializerMapping;
     private ExecutionEventListener eventListener;
-    private ExecutionLifecycleCleanableList cleanupList;
     private DynamicSAXElementVisitorList dynamicVisitorList;
     private StringBuilder cdataNodeBuilder = new StringBuilder();
     
@@ -114,8 +113,6 @@ public class SAXHandler extends SmooksContentHandler {
         } else {
             terminateOnVisitorException = false;
         }
-
-        cleanupList = new ExecutionLifecycleCleanableList(executionContext);
 
         dynamicVisitorList = new DynamicSAXElementVisitorList(executionContext, cleanupList);
     }

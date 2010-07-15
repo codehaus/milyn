@@ -63,10 +63,23 @@ public class EJC {
 
     private Set<String> includes = new LinkedHashSet<String>();
 
+    private boolean addEDIMessageAnnotation = false;
+
     public EJC include(String includePackage) {
         AssertArgument.isNotNullAndNotEmpty(includePackage, "includePackage");
         includes.add(includePackage);
         return this;
+    }
+
+    /**
+     * Add the {@link org.milyn.smooks.edi.EDIMessage} annotation to the
+     * root class of the generated model.
+     *
+     * @param addEDIMessageAnnotation True if the annotation is to
+     * be added, otherwise false.
+     */
+    public void addEDIMessageAnnotation(boolean addEDIMessageAnnotation) {
+        this.addEDIMessageAnnotation = addEDIMessageAnnotation;
     }
 
     /**
@@ -91,7 +104,7 @@ public class EJC {
     public void compile(InputStream mappingModel, String configName, String beanPackage, String beanFolder) throws EDIConfigurationException, IOException, SAXException, IllegalNameException, ClassNotFoundException {
         ClassModel model = compile(mappingModel, beanPackage);
         String bindingFile = beanFolder + "/" + beanPackage.replace('.', '/') + "/bindingconfig.xml";
-        
+
         writeModelToFolder(model, configName, beanPackage, beanFolder, bindingFile);
     }
 
@@ -180,6 +193,7 @@ public class EJC {
         return model;
     }
 
+
     /**
      * Compiles a edi-mapping-configuration and generates java implementation and
      * bindingfile.
@@ -204,7 +218,6 @@ public class EJC {
         return compile(edimap, beanPackage, (Map<MappingNode, JClass>)null);
     }
 
-
     /**
      * Compiles an {@link Edimap} and generates java implementation and bindingfile.
      *
@@ -219,7 +232,7 @@ public class EJC {
      */
     private ClassModel compile(Edimap edimap, String beanPackage, Map<MappingNode, JClass> commonTypes) throws IllegalNameException {
         LOG.info("Reading the edi-configuration...");
-        ClassModelCompiler classModelCompiler = new ClassModelCompiler(commonTypes);
+        ClassModelCompiler classModelCompiler = new ClassModelCompiler(commonTypes, addEDIMessageAnnotation);
         return classModelCompiler.compile(edimap, beanPackage);
     }
 
@@ -231,7 +244,7 @@ public class EJC {
         writeModelToFolder(model, new FileInputStream(mappingModelPath), beanPackage, beanFolder, bindingFile);
     }
 
-	private void writeModelToFolder(ClassModel model, InputStream mappingModel, String beanPackage, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {
+    private void writeModelToFolder(ClassModel model, InputStream mappingModel, String beanPackage, String beanFolder, String bindingFile) throws IOException, IllegalNameException, ClassNotFoundException {
         try {
             String bundleConfigPath = "/" + beanPackage.replace('.', '/') + "/edimappingconfig.xml";
 
@@ -278,7 +291,7 @@ public class EJC {
      * @throws org.milyn.edisax.EDIConfigurationException when error occurs while reading ediConfiguration.
      * @throws IllegalNameException when xmltag in edi-configuration has a conconflict with reserved java keywords.
      * @throws java.io.IOException when error ocurcurs when reading or writing files.
-     * @throws org.xml.sax.SAXException when error occurs while reading ediConfiguration. 
+     * @throws org.xml.sax.SAXException when error occurs while reading ediConfiguration.
      */
     public static void main(String[] args) throws IOException, EDIConfigurationException, IllegalNameException, SAXException, ClassNotFoundException {
         EJC ejc = new EJC();
@@ -319,7 +332,7 @@ public class EJC {
             return;
         }
 
-        // Set log-level depending on argument VERBOSE or QUIET.        
+        // Set log-level depending on argument VERBOSE or QUIET.
         ((EJCLog)LOG).setLevel(isVerbose ? Level.DEBUG : (isQuiet ? Level.ERROR : Level.INFO));
 
         InputStream configInputStream = null;
@@ -392,7 +405,7 @@ public class EJC {
      * Checks if parameter exists in arguments
      * @param flag the flag to search for.
      * @param args the argumenst to look in.
-     * @return true if flag exists in argumenst, otherwise return false. 
+     * @return true if flag exists in argumenst, otherwise return false.
      */
     private static boolean containsParameter(String flag, String[] args) {
         for (String arg : args) {

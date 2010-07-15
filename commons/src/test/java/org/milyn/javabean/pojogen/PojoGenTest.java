@@ -24,6 +24,7 @@ import java.util.List;
 import org.milyn.io.NullWriter;
 import org.milyn.io.StreamUtils;
 import org.milyn.javabean.DataDecoder;
+import org.milyn.javabean.DecodeType;
 import org.milyn.profile.BasicProfile;
 import org.milyn.profile.Profile;
 
@@ -49,6 +50,8 @@ public class PojoGenTest extends TestCase {
 
         aClass.getExtendTypes().add(new JType(NullWriter.class));
         aClass.getExtendTypes().add(new JType(BasicProfile.class));
+
+        aClass.getAnnotationTypes().add(new JType(DecodeType.class));
 
         // Wire AClass into BClass...
         bClass.addBeanProperty(new JNamedType(new JType(BBBClass.class), "bbbVar"));
@@ -89,9 +92,11 @@ public class PojoGenTest extends TestCase {
             "import org.milyn.profile.Profile;    \n" +
             "import org.milyn.io.NullWriter;    \n" +
             "import org.milyn.profile.BasicProfile;    \n" +
+            "import org.milyn.javabean.DecodeType;     \n" +
             "import org.milyn.javabean.pojogen.BBBClass;    \n" +
             "import java.util.List;    \n" +
             "\n" +
+            "@DecodeType" +
             "public class AClass implements DataDecoder, Profile extends NullWriter, BasicProfile {\n" +
             "\n" +
             "    private int primVar;\n" +

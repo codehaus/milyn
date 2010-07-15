@@ -68,7 +68,9 @@ public class EJCExecutor {
             }
 
             EJC ejc = new EJC();
+            
             ejc.include(commonsPackageName);
+            ejc.addEDIMessageAnnotation(true);
             if(definitionsClassModel != null) {
                 String messagePackageName = packageName + "." + description.getName();
                 ejc.compile(model.getValue().getEdimap(), messagePackageName, destDir.getAbsolutePath(), definitionsClassModel.getClassesByNode());
