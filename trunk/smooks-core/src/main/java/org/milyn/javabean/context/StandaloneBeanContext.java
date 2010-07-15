@@ -21,8 +21,7 @@ import org.milyn.util.MultiLineToStringBuilder;
 
 public class StandaloneBeanContext implements BeanContext {
 
-	private static final Log log = LogFactory
-			.getLog(StandaloneBeanContext.class);
+	private static final Log log = LogFactory.getLog(StandaloneBeanContext.class);
 
 	private final ExecutionContext executionContext;
 
@@ -32,7 +31,7 @@ public class StandaloneBeanContext implements BeanContext {
 
 	private final BeanIdStore beanIdStore;
 
-	private final BeanContextMapAdapter repositoryBeanMapAdapter = new BeanContextMapAdapter();
+	private BeanContextMapAdapter repositoryBeanMapAdapter = new BeanContextMapAdapter();
 
 	private List<BeanContextLifecycleObserver> lifecycleObservers = new ArrayList<BeanContextLifecycleObserver>();
 	private List<BeanContextLifecycleObserver> addObserversQueue = new ArrayList<BeanContextLifecycleObserver>();
@@ -63,6 +62,18 @@ public class StandaloneBeanContext implements BeanContext {
 
 		updateBeanMap();
 	}
+
+    private StandaloneBeanContext(ExecutionContext executionContext, StandaloneBeanContext parentContext) {
+        this.executionContext = executionContext;
+        this.beanIdStore = parentContext.beanIdStore;
+        this.beanMap = parentContext.beanMap;
+        this.entries = parentContext.entries;
+        this.repositoryBeanMapAdapter = parentContext.repositoryBeanMapAdapter;
+        this.lifecycleObservers = parentContext.lifecycleObservers;
+        this.addObserversQueue = parentContext.addObserversQueue;
+        this.removeObserversQueue = parentContext.removeObserversQueue;
+        this.notifyObserverEventQueue = parentContext.notifyObserverEventQueue;
+    }
 
     public void addBean(BeanId beanId, Object bean) {
         addBean(beanId, bean, null);
@@ -366,7 +377,11 @@ public class StandaloneBeanContext implements BeanContext {
 		return MultiLineToStringBuilder.toString(getBeanMap());
 	}
 
-	/**
+    public BeanContext newSubContext(ExecutionContext executionContext) {
+        return new StandaloneBeanContext(executionContext, this);
+    }
+
+    /**
 	 * Repository Entry
 	 * <p/>
 	 * Represents an entry of a BeanId and provides an platform of all the

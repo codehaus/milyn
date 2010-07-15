@@ -7,6 +7,9 @@ package ${class.packageName};
 import ${importClass.name};    
 </#list>
 
+<#list class.annotationTypes as annotationType>
+@${annotationType.type.simpleName}    
+</#list>
 public class ${class.className}${class.implementsDecl}${class.extendsDecl} {
 
     <#list class.properties as property>

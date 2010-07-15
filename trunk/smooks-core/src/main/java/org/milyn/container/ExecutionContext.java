@@ -171,8 +171,14 @@ public interface ExecutionContext extends BoundAttributeStore {
     public boolean isDefaultSerializationOn();
 
     /**
-     * Get the BeanContext in use in this context
-     * @return The BeanContext
+     * Get the BeanContext in use on this context instance.
+     * @return The BeanContext.
      */
-    public abstract BeanContext getBeanContext();
+    public BeanContext getBeanContext();
+
+    /**
+     * Set the BeanContext to be use on this context instance.
+     * @param beanContext The BeanContext.
+     */
+    public void setBeanContext(BeanContext beanContext);
 }

@@ -24,6 +24,7 @@ import org.milyn.javabean.pojogen.JClass;
 import org.milyn.javabean.pojogen.JMethod;
 import org.milyn.javabean.pojogen.JNamedType;
 import org.milyn.javabean.pojogen.JType;
+import org.milyn.smooks.edi.EDIMessage;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -43,14 +44,13 @@ public class ClassModelCompiler {
 
     private ClassModel model;
     private Stack<String> nodeStack = new Stack<String>();
+    private boolean addEDIMessageAnnotation;
 
-    public ClassModelCompiler() {        
-    }
-
-    public ClassModelCompiler(Map<MappingNode, JClass> commonTypes) {
+    public ClassModelCompiler(Map<MappingNode, JClass> commonTypes, boolean addEDIMessageAnnotation) {
         if(commonTypes != null) {
             injectedCommonTypes.putAll(commonTypes);
         }
+        this.addEDIMessageAnnotation = addEDIMessageAnnotation;
     }
 
     public ClassModel compile(Edimap edimap, String classPackage) throws IllegalNameException {
@@ -82,6 +82,10 @@ public class ClassModelCompiler {
         model.setReferencedClasses(injectedCommonTypes.values());
         
         popNode();
+
+        if(addEDIMessageAnnotation) {
+            model.getRootBeanConfig().getBeanClass().getAnnotationTypes().add(new JType(EDIMessage.class));
+        }
 
         return model;
     }

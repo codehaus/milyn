@@ -190,6 +190,10 @@ public class DOMBuilder extends SmooksContentHandler {
         }
     }
 
+    @Override
+    public void cleanup() {        
+    }
+
     private String getCurPath() {
         StringBuffer path = new StringBuffer();
         int stackSize = nodeStack.size();

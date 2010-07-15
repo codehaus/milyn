@@ -205,4 +205,8 @@ public class StandaloneExecutionContext implements ExecutionContext {
 		}
 		return beanContext;
 	}
+
+    public void setBeanContext(BeanContext beanContext) {
+        this.beanContext = beanContext;
+    }
 }

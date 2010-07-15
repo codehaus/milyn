@@ -177,4 +177,8 @@ public class MockExecutionContext implements ExecutionContext {
 		}
 		return beanContext;
 	}
+
+    public void setBeanContext(BeanContext beanContext) {
+        this.beanContext = beanContext;
+    }
 }
