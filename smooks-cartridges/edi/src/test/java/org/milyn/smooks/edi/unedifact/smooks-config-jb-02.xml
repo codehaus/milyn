@@ -8,8 +8,8 @@
 	<import file="/org/milyn/smooks/edi/unedifact/model/bindings/unedifact-interchange.xml" />
 	
 	<!-- The following beans will be wired into the UNEdifactMessage bean instances in the interchange because they have the @EDIMessage annotation. -->
-    <jb:bean beanId="MSG1" class="org.milyn.smooks.edi.unedifact.MSG1" createOnElement="unEdifactMessage/message1" />
-    <jb:bean beanId="MSG2" class="org.milyn.smooks.edi.unedifact.MSG2" createOnElement="unEdifactMessage/message2" />
-    <jb:bean beanId="MSG3" class="org.milyn.smooks.edi.unedifact.MSG3" createOnElement="unEdifactMessage/message3" />
+    <jb:bean beanId="MSG1" class="org.milyn.smooks.edi.unedifact.MSG1" createOnElement="interchangeMessage/message1" />
+    <jb:bean beanId="MSG2" class="org.milyn.smooks.edi.unedifact.MSG2" createOnElement="interchangeMessage/message2" />
+    <jb:bean beanId="MSG3" class="org.milyn.smooks.edi.unedifact.MSG3" createOnElement="interchangeMessage/message3" />
 
 </smooks-resource-list>

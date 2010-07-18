@@ -62,7 +62,7 @@ public class ClassModelCompiler {
 
         pushNode(segmentGroup);
         
-        JClass rootClass = new JClass(classPackage, EJCUtils.encodeClassName(segmentGroup.getXmltag()), getCurrentClassId());
+        JClass rootClass = new JClass(classPackage, EJCUtils.encodeClassName(segmentGroup.getXmltag()), getCurrentClassId()).setSerializable();
         BindingConfig rootBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), rootClass, null);
 
         //Insert root class into classModel and its' corresponding xmltag-value.
@@ -360,7 +360,7 @@ public class ClassModelCompiler {
         boolean addClassToModel = false;
 
         if(child == null) {
-            child = new JClass(parent.getBeanClass().getPackageName(), EJCUtils.encodeClassName(mappingNode.getJavaName()), getCurrentClassId());
+            child = new JClass(parent.getBeanClass().getPackageName(), EJCUtils.encodeClassName(mappingNode.getJavaName()), getCurrentClassId()).setSerializable();
             child.getImplementTypes().add(new JType(EJCWritable.class));
             addClassToModel = true;
             LOG.debug("Created class " + child.getClassName() + ".");

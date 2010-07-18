@@ -26,7 +26,7 @@
 
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
-                <!--<module>unedifact/d03b/binding</module>-->
+                <module>unedifact/d03b/binding</module>
                 <module>unedifact/d03b/test</module>
 
                 <!-- UN/EDIFACT D08A... -->
@@ -52,9 +52,14 @@
     <dependencies>
         <dependency>
             <groupId>org.milyn</groupId>
-            <artifactId>milyn-smooks-edi</artifactId>
+            <artifactId>milyn-smooks-ect</artifactId>
             <version>${smooks.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.milyn</groupId>
+            <artifactId>milyn-smooks-ejc</artifactId>
+            <version>${smooks.version}</version>
         </dependency>
         <dependency>
             <groupId>org.milyn</groupId>

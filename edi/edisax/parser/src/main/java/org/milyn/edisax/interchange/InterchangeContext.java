@@ -37,6 +37,8 @@ import org.xml.sax.SAXNotSupportedException;
  */
 public class InterchangeContext {
 
+    public static final String INTERCHANGE_MESSAGE_BLOCK_ELEMENT_NAME = "interchangeMessage";
+
 	private BufferedSegmentReader segmentReader; 
 	private Map<Description, EdifactModel> mappingModels; 
 	private ContentHandler contentHandler;

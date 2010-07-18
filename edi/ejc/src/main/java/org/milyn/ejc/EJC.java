@@ -263,6 +263,7 @@ public class EJC {
 
         BindingWriter bindingWriter = new BindingWriter(model);
         bindingWriter.generate(bindingFile);
+        model.setBindingFilePath(bindingFile);
 
         LOG.info("-----------------------------------------------------------------------");
         LOG.info(" Compiltation complete.");

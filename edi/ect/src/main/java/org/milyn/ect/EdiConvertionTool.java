@@ -22,11 +22,13 @@ import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.internal.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -146,6 +148,17 @@ public class EdiConvertionTool {
 
         // Add the model set URN to the archive...
         archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_URN, urn);
+
+        // Add an entry for the interchange properties...
+        Properties interchangeProperties = ediSpecificationReader.getInterchangeProperties();
+        ByteArrayOutputStream propertiesOutStream = new ByteArrayOutputStream();
+        try {
+            interchangeProperties.store(propertiesOutStream, "UN/EDIFACT Interchange Properties");
+            propertiesOutStream.flush();
+            archive.addEntry(EDIUtils.EDI_MAPPING_MODEL_INTERCHANGE_PROPERTIES_FILE, propertiesOutStream.toByteArray());
+        } finally {
+            propertiesOutStream.close();
+        }
 
         return archive;
     }
