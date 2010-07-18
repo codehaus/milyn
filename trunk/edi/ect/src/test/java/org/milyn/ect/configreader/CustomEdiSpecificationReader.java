@@ -24,6 +24,7 @@ import org.milyn.edisax.model.internal.SegmentGroup;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -37,6 +38,10 @@ public class CustomEdiSpecificationReader implements EdiSpecificationReader {
 
     public Edimap getMappingModel(String messageName) throws IOException {
         return createEdimap();
+    }
+
+    public Properties getInterchangeProperties() {
+        return new Properties();
     }
 
     public Edimap getDefinitionModel() throws IOException {

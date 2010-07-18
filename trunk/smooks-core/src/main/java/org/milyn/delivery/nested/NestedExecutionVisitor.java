@@ -22,6 +22,7 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
 import org.milyn.delivery.SmooksContentHandler;
 import org.milyn.delivery.VisitLifecycleCleanable;
+import org.milyn.delivery.annotation.Uninitialize;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXHandler;
 import org.milyn.delivery.sax.SAXVisitBefore;
@@ -50,6 +51,13 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
 
     public void setSmooksInstance(Smooks smooksInstance) {
         this.smooksInstance = smooksInstance;
+    }
+
+    @Uninitialize
+    public void closeSmooksInstance() {
+        if(smooksInstance != null) {
+            smooksInstance.close();
+        }
     }
 
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {

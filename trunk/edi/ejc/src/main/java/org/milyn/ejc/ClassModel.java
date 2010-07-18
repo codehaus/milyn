@@ -47,6 +47,7 @@ public class ClassModel {
     private Map<String, JClass> createdClasses;
     private Collection<JClass> referencedClasses;
     private Map<MappingNode, JClass> classesByNode;
+    private String bindingFilePath;
 
     public void setEdimap(Edimap edimap) {
         this.edimap = edimap;
@@ -98,5 +99,13 @@ public class ClassModel {
 
     public void setReferencedClasses(Collection<JClass> referencedClasses) {
         this.referencedClasses = referencedClasses;
+    }
+
+    public String getBindingFilePath() {
+        return bindingFilePath;
+    }
+
+    public void setBindingFilePath(String bindingFilePath) {
+        this.bindingFilePath = bindingFilePath;
     }
 }

@@ -31,7 +31,7 @@
 			</dateTime>
 			<groupRef>groupref11111</groupRef>
 		</UNG>
-		<unEdifactMessage>
+		<interchangeMessage>
 			<UNH>
 				<messageRefNum>0001</messageRefNum>
 				<messageIdentifier>
@@ -52,13 +52,13 @@
 				<segmentCount>25</segmentCount>
 				<messageRefNum>0001</messageRefNum>
 			</UNT>
-		</unEdifactMessage>
+		</interchangeMessage>
 		<UNE>
 			<controlCount>1</controlCount>
 			<groupRef>groupref11111</groupRef>
 		</UNE>
 	</group>
-	<unEdifactMessage>
+	<interchangeMessage>
 		<UNH>
 			<messageRefNum>0001</messageRefNum>
 			<messageIdentifier>
@@ -79,8 +79,8 @@
 			<segmentCount>25</segmentCount>
 			<messageRefNum>0001</messageRefNum>
 		</UNT>
-	</unEdifactMessage>
-	<unEdifactMessage>
+	</interchangeMessage>
+	<interchangeMessage>
 		<UNH>
 			<messageRefNum>0001</messageRefNum>
 			<messageIdentifier>
@@ -103,7 +103,7 @@
 			<segmentCount>25</segmentCount>
 			<messageRefNum>0001</messageRefNum>
 		</UNT>
-	</unEdifactMessage>
+	</interchangeMessage>
 	<UNZ>
 		<controlCount>1</controlCount>
 		<controlRef>00000000000001</controlRef>

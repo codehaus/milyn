@@ -111,7 +111,7 @@ public class UNEdifactReaderTest extends TestCase {
 		
 		UNEdifactInterchange interchange = jResult.getBean(UNEdifactInterchange.class);
 
-//		System.out.println(new XStream().toXML(interchange));
+		System.out.println(new XStream().toXML(interchange));
 		
 		XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-03.xml")), new StringReader(new XStream().toXML(interchange)));		

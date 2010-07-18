@@ -44,7 +44,7 @@
 				<associationCode></associationCode>
 			</messageVersion>
 		</UNG>
-		<unEdifactMessage>
+		<interchangeMessage>
 			<UNH>
 				<messageRefNum>PAXLST16</messageRefNum>
 				<messageIdentifier>
@@ -201,7 +201,7 @@
 				<segmentCount>16</segmentCount>
 				<messageRefNum>PAXLST16</messageRefNum>
 			</UNT>
-		</unEdifactMessage>
+		</interchangeMessage>
 		<UNE>
 			<controlCount>1</controlCount>
 			<groupRef>16</groupRef>

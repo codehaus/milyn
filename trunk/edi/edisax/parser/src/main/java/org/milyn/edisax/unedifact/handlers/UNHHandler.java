@@ -50,7 +50,7 @@ public class UNHHandler implements ControlBlockHandler {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 		Map<Description, EdifactModel> mappingModels = interchangeContext.getMappingModels();
 		
-		interchangeContext.getControlSegmentParser().startElement("unEdifactMessage", true);
+		interchangeContext.getControlSegmentParser().startElement(InterchangeContext.INTERCHANGE_MESSAGE_BLOCK_ELEMENT_NAME, true);
 
 		// Move to the end of the UNH segment and map it's fields..
 		segmentReader.moveToNextSegment(false);
@@ -77,7 +77,7 @@ public class UNHHandler implements ControlBlockHandler {
 		interchangeContext.mapControlSegment(untSegment, true);
 		segmentReader.getSegmentBuffer().setLength(0);
 
-		interchangeContext.getControlSegmentParser().endElement("unEdifactMessage", true);
+		interchangeContext.getControlSegmentParser().endElement(InterchangeContext.INTERCHANGE_MESSAGE_BLOCK_ELEMENT_NAME, true);
 	}
 	
 	private class UNTSegmentListener implements BufferedSegmentListener {

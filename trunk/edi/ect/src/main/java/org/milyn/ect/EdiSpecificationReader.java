@@ -18,6 +18,7 @@ package org.milyn.ect;
 import org.milyn.edisax.model.internal.Edimap;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -26,6 +27,15 @@ import java.util.Set;
  * @author bardl
  */
 public interface EdiSpecificationReader {
+
+    /**
+     * Interchange properties key for the interchange message binding config.
+     */
+    public static final String MESSAGE_BINDING_CONFIG = "messageBindingConfig";
+    /**
+     * Interchange properties key for the top level interchange binding config.
+     */
+    public static final String INTERCHANGE_BINDING_CONFIG = "interchangeBindingConfig";
 
     /**
      * Get a list of the names of the messages defined in the EDI Specification (e.g. UN/EDIFACT
@@ -49,4 +59,10 @@ public interface EdiSpecificationReader {
      *                     an EDI Mapping Model.
      */
     Edimap getMappingModel(String messageName) throws IOException;
+
+    /**
+     * Get the message interchange properties for the associated EDI specification.
+     * @return The message interchange properties for the associated EDI specification.
+     */
+    Properties getInterchangeProperties();
 }

@@ -42,7 +42,7 @@
 			</messageVersion>
 			<applicationPassword>password</applicationPassword>
 		</UNG>
-		<unEdifactMessage>
+		<interchangeMessage>
 			<UNH>
 				<messageRefNum>0001</messageRefNum>
 				<messageIdentifier>
@@ -63,7 +63,7 @@
 				<segmentCount>25</segmentCount>
 				<messageRefNum>0001</messageRefNum>
 			</UNT>
-		</unEdifactMessage>
+		</interchangeMessage>
 		<UNE>
 			<controlCount>1</controlCount>
 			<groupRef>groupref11111</groupRef>

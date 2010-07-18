@@ -19,6 +19,7 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.util.FreeMarkerTemplate;
 import org.milyn.io.StreamUtils;
 
+import java.io.Serializable;
 import java.util.*;
 import java.io.Writer;
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class JClass {
     private List<JMethod> constructors = new ArrayList<JMethod>();
     private List<JMethod> methods = new ArrayList<JMethod>();
     private boolean fluentSetters = true;
+    private boolean serializable;
 
     private static FreeMarkerTemplate template;
 
@@ -123,6 +125,16 @@ public class JClass {
         }
         
         return skeletonClass;
+    }
+
+    public JClass setSerializable() {
+        this.serializable = true;
+        implementTypes.add(new JType(Serializable.class));
+        return this;
+    }
+
+    public boolean isSerializable() {
+        return serializable;
     }
 
     public void addProperty(JNamedType property) {

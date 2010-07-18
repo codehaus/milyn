@@ -12,6 +12,10 @@ import ${importClass.name};
 </#list>
 public class ${class.className}${class.implementsDecl}${class.extendsDecl} {
 
+    <#if class.serializable>
+    private static final long serialVersionUID = 1L;
+    </#if>
+
     <#list class.properties as property>
     private ${property};
     </#list>

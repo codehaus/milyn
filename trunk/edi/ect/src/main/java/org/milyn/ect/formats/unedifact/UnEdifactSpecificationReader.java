@@ -82,6 +82,13 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         }
     }
 
+    public Properties getInterchangeProperties() {
+        Properties properties = new Properties();
+        properties.setProperty(EdiSpecificationReader.MESSAGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/unedifact-message.xml");
+        properties.setProperty(EdiSpecificationReader.INTERCHANGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/unedifact-interchange.xml");
+        return properties;
+    }
+
     private void addMissingDefinitions(Edimap definitionModel) {
         Segment ugh = new Segment();
         Segment ugt = new Segment();

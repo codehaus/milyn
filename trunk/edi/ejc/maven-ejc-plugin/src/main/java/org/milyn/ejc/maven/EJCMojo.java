@@ -59,14 +59,22 @@ public class EJCMojo extends AbstractMojo {
         try {
             if(ediMappingFile.startsWith("urn:")) {
                 if(packageName != null) {
-                    throw new MojoExecutionException("Invalid ECT configuration.  'packageName' must not be configured for 'urn' mapping model configurations.");
+                    throw new MojoExecutionException("Invalid EJC configuration.  'packageName' must not be configured for 'urn' mapping model configurations.");
                 }
 
-                String urn = ediMappingFile.substring(4);
-                
-                packageName = urn.replace(".", "_").replace(":", ".").replace("-", "_");
+                String urn = ediMappingFile.substring(4).trim();
+                String[] urnTokens;
+
+                urn = urn.replace(".", "_").replace("-", "_");
+                urnTokens = urn.split(":");
+
+                if(urnTokens.length != 3) {
+                    throw new MojoExecutionException("'ediMappingFile' urn value must have a minimum of 3 colon separated tokens (4 tokens if including the leading 'urn' token).");
+                }
+
+                packageName = urnTokens[0] + "." + urnTokens[1] + ".v" + urnTokens[2]; 
             } else if(packageName == null) {
-                throw new MojoExecutionException("Invalid ECT configuration.  'packageName' must be configured for non 'urn' mapping model configurations.");
+                throw new MojoExecutionException("Invalid EJC configuration.  'packageName' must be configured for non 'urn' mapping model configurations.");
             } else {
                 File mappingFileObj = new File(project.getBasedir(), ediMappingFile);
                 if(mappingFileObj.exists()) {

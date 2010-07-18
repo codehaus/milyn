@@ -23,10 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
@@ -53,6 +50,7 @@ public class EDIUtils {
     private static Log logger = LogFactory.getLog(EDIUtils.class);
     
     public static final String EDI_MAPPING_MODEL_ZIP_LIST_FILE = "META-INF/services/org/smooks/edi/mapping-model.lst";
+    public static final String EDI_MAPPING_MODEL_INTERCHANGE_PROPERTIES_FILE = "META-INF/services/org/smooks/edi/interchange.properties";
     public static final String EDI_MAPPING_MODEL_URN = "META-INF/services/org/smooks/edi/urn";
     /**
      * Most model sets contain a set of common definitions (common types).
@@ -287,7 +285,58 @@ public class EDIUtils {
 	}
 
     private static List<String> getMappingModelList(String urn) throws IOException, EDIConfigurationException {
+        InputStream mappingModelListStream = getMappingModelConfigStream(urn, EDI_MAPPING_MODEL_ZIP_LIST_FILE);
+
+        if(mappingModelListStream == null) {
+            throw new EDIConfigurationException("Failed to locate jar file for EDI Mapping Model URN '" + urn + "'.  Jar must be available on classpath.");
+        }
+
+        return getMappingModelList(mappingModelListStream);
+    }
+
+    public static Properties getInterchangeProperties(String ediMappingModel) throws IOException {
+        InputStream interchangePropertiesStream = null;
+
+        if(ediMappingModel.startsWith("urn:")) {
+            interchangePropertiesStream = getMappingModelConfigStream(ediMappingModel, EDI_MAPPING_MODEL_INTERCHANGE_PROPERTIES_FILE);
+
+            if(interchangePropertiesStream == null) {
+                throw new EDIConfigurationException("Failed to locate jar file for EDI Mapping Model URN '" + ediMappingModel + "'.  Jar must be available on classpath.");
+            }
+        } else if(ediMappingModel.endsWith(".jar") || ediMappingModel.endsWith(".zip")) {
+            URIResourceLocator locator = new URIResourceLocator();
+
+            InputStream rawZipStream = locator.getResource(ediMappingModel);
+            if(rawZipStream != null) {
+                Archive archive = loadArchive(rawZipStream);
+                if(archive != null) {
+                    byte[] bytes = archive.getEntries().get(EDI_MAPPING_MODEL_INTERCHANGE_PROPERTIES_FILE);
+                    if(bytes != null) {
+                        interchangePropertiesStream = new ByteArrayInputStream(bytes);
+                    }
+                }
+            }
+        }
+
+        if(interchangePropertiesStream != null) {
+            Properties properties = new Properties();
+            try {
+                properties.load(interchangePropertiesStream);
+                return properties;
+            } finally {
+                interchangePropertiesStream.close();
+            }
+        }
+
+        return null;
+    }
+
+    private static InputStream getMappingModelConfigStream(String urn, String fileName) throws IOException, EDIConfigurationException {
         List<URL> urnFiles = ClassUtil.getResources(EDI_MAPPING_MODEL_URN, EDIUtils.class);
+
+        if(urn.startsWith("urn:")) {
+            urn = urn.substring(4);
+        }
 
         for(URL urnFile : urnFiles) {
             InputStream urnStream = urnFile.openStream();
@@ -295,13 +344,13 @@ public class EDIUtils {
                 String archiveURN = StreamUtils.readStreamAsString(urnStream);
                 if(archiveURN.equals(urn)) {
                     String urnFileString = urnFile.toString();
-                    String listFile = urnFileString.substring(0, urnFileString.length() - EDI_MAPPING_MODEL_URN.length()) + EDI_MAPPING_MODEL_ZIP_LIST_FILE;
+                    String modelConfigFile = urnFileString.substring(0, urnFileString.length() - EDI_MAPPING_MODEL_URN.length()) + fileName;
 
-                    List<URL> zipListFiles = ClassUtil.getResources(EDI_MAPPING_MODEL_ZIP_LIST_FILE, EDIUtils.class);
+                    List<URL> urlList = ClassUtil.getResources(fileName, EDIUtils.class);
 
-                    for(URL zipListFile : zipListFiles) {
-                        if(zipListFile.toString().equals(listFile)) {
-                            return getMappingModelList(zipListFile.openStream());
+                    for(URL url : urlList) {
+                        if(url.toString().equals(modelConfigFile)) {
+                            return url.openStream();
                         }
                     }
                 }
