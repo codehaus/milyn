@@ -32,15 +32,15 @@ import java.util.Properties;
  */
 public class ValueNode extends MappingNode {
 
-    private String type;
+    private String dataType;
     private List<Map.Entry<String,String>> parameters;
     private Integer minLength;
     private Integer maxLength;
     private DataDecoder decoder;
     private Class<?> typeClass;
     private Properties decodeParams;
-    
-	public ValueNode() {
+
+    public ValueNode() {
 	}
     
 	public ValueNode(String xmltag) {
@@ -49,14 +49,14 @@ public class ValueNode extends MappingNode {
 		maxLength = 1;
 	}
 
-	public String getType() {
-        return type;
+	public String getDataType() {
+        return dataType;
     }
     
-    public void setType(String type) {
-        this.type = type;
-        if(type != null) {
-            decoder = DataDecoder.Factory.create(type);
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+        if(dataType != null) {
+            decoder = DataDecoder.Factory.create(dataType);
 
             DecodeType decodeType = decoder.getClass().getAnnotation(DecodeType.class);
             if(decodeType != null) {
@@ -77,12 +77,12 @@ public class ValueNode extends MappingNode {
         return parameters;
     }
 
-    public void setTypeParameters(List<Map.Entry<String,String>> parameters) {
+    public void setDataTypeParameters(List<Map.Entry<String,String>> parameters) {
         this.parameters = parameters;
 
         if(decoder instanceof Configurable) {
             if(decoder == null) {
-                throw new IllegalStateException("Illegal call to set parameters before 'type' has been configured on the " + getClass().getName());
+                throw new IllegalStateException("Illegal call to set parameters before 'dataType' has been configured on the " + getClass().getName());
             }
 
             decodeParams = new Properties();
@@ -95,7 +95,7 @@ public class ValueNode extends MappingNode {
         }
     }
 
-    public String getTypeParametersString() {
+    public String getDataTypeParametersString() {
         if(parameters == null) {
             return null;
         }
@@ -132,5 +132,5 @@ public class ValueNode extends MappingNode {
 
     public void isValidForType(String value) throws DataDecodeException {
         decoder.decode(value);
-    }        
+    }
 }

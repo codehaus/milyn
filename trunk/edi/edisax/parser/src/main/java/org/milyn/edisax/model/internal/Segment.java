@@ -25,7 +25,6 @@ public class Segment extends SegmentGroup {
     private List<Field> fields;
     private String segcode;
     private Pattern segcodePattern;
-    private String segref;
     private Boolean truncatable;
     private Boolean ignoreUnmappedFields;
     private String description;
@@ -55,18 +54,10 @@ public class Segment extends SegmentGroup {
         return segcodePattern;
     }
 
-    public String getSegref() {
-        return segref;
-    }
-
-    public void setSegref(String value) {
-        this.segref = value;
-    }
-
     @Override
     public String getJavaName() {
-        if(segref != null) {
-            return segref;
+        if(getNodeTypeRef() != null) {
+            return getNodeTypeRef();
         } else {
             return super.getJavaName();
         }

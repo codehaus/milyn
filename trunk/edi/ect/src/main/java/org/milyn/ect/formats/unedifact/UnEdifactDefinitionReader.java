@@ -221,8 +221,8 @@ public class UnEdifactDefinitionReader {
         field.setMinLength(component.getMinLength());
         field.setRequired(isMandatory);
         field.setTruncatable(true);
-        field.setType(component.getType());
-        field.setTypeParameters(component.getTypeParameters());
+        field.setDataType(component.getDataType());
+        field.setDataTypeParameters(component.getTypeParameters());
         return field;
     }
 
@@ -234,8 +234,8 @@ public class UnEdifactDefinitionReader {
         field.setMinLength(oldField.getMinLength());
         field.setRequired(isMandatory);
         field.setTruncatable(true);
-        field.setType(oldField.getType());
-        field.setTypeParameters(oldField.getTypeParameters());
+        field.setDataType(oldField.getDataType());
+        field.setDataTypeParameters(oldField.getTypeParameters());
         field.getComponents().addAll(oldField.getComponents());
         return field;
     }
@@ -301,8 +301,8 @@ public class UnEdifactDefinitionReader {
         toComponent.setMaxLength(fromComponent.getMaxLength());
         toComponent.setMinLength(fromComponent.getMinLength());
         toComponent.setTruncatable(true);
-        toComponent.setType(fromComponent.getType());
-        toComponent.setTypeParameters(fromComponent.getTypeParameters());
+        toComponent.setDataType(fromComponent.getDataType());
+        toComponent.setDataTypeParameters(fromComponent.getTypeParameters());
         toComponent.setXmltag(XmlTagEncoder.encode(fromComponent.getXmltag()));
     }
 
@@ -354,7 +354,7 @@ public class UnEdifactDefinitionReader {
         String[] typeAndOccurance = repr.split(DOTS);
 
         component.setXmltag(XmlTagEncoder.encode(name.trim()));
-        component.setType(getType(typeAndOccurance));
+        component.setDataType(getType(typeAndOccurance));
         component.setMinLength(getMinLength(typeAndOccurance));
         component.setMaxLength(getMaxLength(typeAndOccurance));
         component.setDocumentation(description);

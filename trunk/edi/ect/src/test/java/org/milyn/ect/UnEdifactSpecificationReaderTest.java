@@ -16,6 +16,8 @@
 package org.milyn.ect;
 
 import junit.framework.TestCase;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.milyn.ect.formats.unedifact.UnEdifactSpecificationReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
@@ -39,9 +41,8 @@ import java.util.zip.ZipInputStream;
  */
 public class UnEdifactSpecificationReaderTest extends TestCase {
 
-    public void test_D08A_Messages() throws InstantiationException, IllegalAccessException, IOException, EdiParseException {
+    public void _disabled_test_D08A_Messages() throws InstantiationException, IllegalAccessException, IOException, EdiParseException {
 
-//        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("org" + File.separator + "milyn" + File.separator + "ect" + File.separator + "D08A.zip");
         InputStream inputStream = getClass().getResourceAsStream("D08A.zip");
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
 
@@ -49,7 +50,7 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
 
         test("BANSTA", ediSpecificationReader);
         test("CASRES", ediSpecificationReader);
-//        test("INVOIC", ediSpecificationReader);
+        test("INVOIC", ediSpecificationReader);
         test("PAYMUL", ediSpecificationReader);
         test("TPFREP", ediSpecificationReader);
     }
@@ -156,30 +157,30 @@ public class UnEdifactSpecificationReaderTest extends TestCase {
 
         StringWriter stringWriter = new StringWriter();
         edimap.write(stringWriter);
-		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("d08a/message/expected-" + messageName.toLowerCase() + ".xml"))).trim();
-
-        String result = removeCRLF(stringWriter.toString());
-		expected = removeCRLF(expected);
-
-        if(!result.equals(expected)) {
-            System.out.println("Expected: \n[" + expected + "]");
-            System.out.println("Actual: \n[" + result + "]");
-            assertEquals("Message [" + messageName + "] failed.", expected, result);
-        }
-
-//        StringWriter result = new StringWriter();
-//        edimap.write(result);
 //		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("d08a/message/expected-" + messageName.toLowerCase() + ".xml"))).trim();
 //
+//        String result = removeCRLF(stringWriter.toString());
+//		expected = removeCRLF(expected);
 //
-//        System.out.println(result);
-//        XMLUnit.setIgnoreWhitespace( true );
-//        try {
-//            XMLAssert.assertXMLEqual(new StringReader(expected), new StringReader(result.toString()));
-//        } catch (SAXException e) {
-//            e.printStackTrace();
-//            fail(e.getMessage());
+//        if(!result.equals(expected)) {
+//            System.out.println("Expected: \n[" + expected + "]");
+//            System.out.println("Actual: \n[" + result + "]");
+//            assertEquals("Message [" + messageName + "] failed.", expected, result);
 //        }
+
+        StringWriter result = new StringWriter();
+        edimap.write(result);
+		String expected = new String(StreamUtils.readStream(getClass().getResourceAsStream("d08a/message/expected-" + messageName.toLowerCase() + ".xml"))).trim();
+
+
+        System.out.println(result);
+        XMLUnit.setIgnoreWhitespace( true );
+        try {
+            XMLAssert.assertXMLEqual(new StringReader(expected), new StringReader(result.toString()));
+        } catch (SAXException e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
     }
 
     private String removeCRLF(String string) throws IOException {

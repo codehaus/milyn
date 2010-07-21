@@ -779,11 +779,11 @@ public class EDIParser implements XMLReader {
         }
 
         // Validate type.
-        if (valueNode.getType() != null && !valueNode.getType().equals("")) {
+        if (valueNode.getDataType() != null && !valueNode.getDataType().equals("")) {
             try {
                 valueNode.isValidForType(value);
             } catch (DataDecodeException e) {
-                throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", e, valueNode, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
+                throw new EDIParseException(edifactModel.getEdimap(), "Validation of expected type [" + valueNode.getDataType() + "] failed for value [" + value + "]. Currently at segment number " + segmentReader.getCurrentSegmentNumber() + ".", e, valueNode, segmentReader.getCurrentSegmentNumber(), segmentReader.getCurrentSegmentFields());
             }
         }
 

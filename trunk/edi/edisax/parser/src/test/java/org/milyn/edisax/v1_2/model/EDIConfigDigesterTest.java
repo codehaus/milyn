@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This testcase tests that all new elements introduced in version 1.2 is digested from
@@ -92,7 +91,7 @@ public class EDIConfigDigesterTest extends TestCase {
 
         // Assert field is read correctly.
         // <medi:field xmltag="aTime" type="Time" format="HHmm" minLength="0" maxLength="4"/>
-        assertEquals("Failed to digest type-attribute for Field", fields.get(0).getType(), "Date");
+        assertEquals("Failed to digest type-attribute for Field", fields.get(0).getDataType(), "Date");
         assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getTypeParameters().get(0).getKey(), "format");
         assertEquals("Failed to digest parameters-attribute for Field", fields.get(0).getTypeParameters().get(0).getValue(), "HHmm");
         assertEquals("Failed to digest minLength-attribute for Field", fields.get(0).getMinLength(), new Integer(0));
@@ -102,7 +101,7 @@ public class EDIConfigDigesterTest extends TestCase {
         // Assert Component is read correctly.
         // <medi:component xmltag="aBinary" required="true" type="Binary" minLength="0" maxLength="8"/>
         Component component = fields.get(1).getComponents().get(0);
-        assertEquals("Failed to digest type-attribute for Component", component.getType(), "Binary");
+        assertEquals("Failed to digest type-attribute for Component", component.getDataType(), "Binary");
         assertNull("Parameters-attribute should be null in Component", component.getTypeParameters());
         assertEquals("Failed to digest minLength-attribute for Component", component.getMinLength(), new Integer(0));
         assertEquals("Failed to digest maxLength-attribute for Component", component.getMaxLength(), new Integer(8));
@@ -111,7 +110,7 @@ public class EDIConfigDigesterTest extends TestCase {
         // Assert SubComponent is read correctly.
         // <medi:sub-component xmltag="aNumeric" type="Numeric" format="#0.00" minLength="1" maxLength="4"/>
         SubComponent subcomponent = fields.get(1).getComponents().get(1).getSubComponents().get(0);
-        assertEquals("Failed to digest type-attribute for SubComponent", subcomponent.getType(), "Double");
+        assertEquals("Failed to digest type-attribute for SubComponent", subcomponent.getDataType(), "Double");
         assertEquals("Failed to digest parameters-attribute for SubComponent", subcomponent.getTypeParameters().get(0).getKey(), "format");
         assertEquals("Failed to digest format-attribute for SubComponent", subcomponent.getTypeParameters().get(0).getValue(), "#0.00");
         assertEquals("Failed to digest minLength-attribute for SubComponent", subcomponent.getMinLength(), new Integer(1));

@@ -100,7 +100,7 @@ public class EdimapWriter {
 
             if(childSegment instanceof Segment) {
                 segmentEl = newElement("segment", parentSegment, childSegment);
-                mapBeanProperties(childSegment, segmentEl, "segcode", "description", "ignoreUnmappedFields", "segref", "truncatable");
+                mapBeanProperties(childSegment, segmentEl, "segcode", "description", "ignoreUnmappedFields", "nodeTypeRef", "truncatable");
 
                 addFields(((Segment)childSegment).getFields(), segmentEl);
             } else {
@@ -117,7 +117,7 @@ public class EdimapWriter {
         for(Field field : fields) {
             Element fieldEl = newElement("field", segmentEl, field);
 
-            mapBeanProperties(field, fieldEl, "xmltag", "truncatable", "maxLength", "minLength", "required", "type", "typeParametersString|typeParameters");
+            mapBeanProperties(field, fieldEl, "xmltag", "truncatable", "maxLength", "minLength", "required", "dataType", "dataTypeParametersString|dataTypeParameters");
             addComponents(field.getComponents(), fieldEl);
         }
     }
@@ -126,7 +126,7 @@ public class EdimapWriter {
         for(Component component : components) {
             Element componentEl = newElement("component", fieldEl, component);
 
-            mapBeanProperties(component, componentEl, "xmltag", "truncatable", "maxLength", "minLength", "required", "type", "typeParametersString|typeParameters");
+            mapBeanProperties(component, componentEl, "xmltag", "truncatable", "maxLength", "minLength", "required", "dataType", "dataTypeParametersString|dataTypeParameters");
             addSubComponents(component.getSubComponents(), componentEl);
         }
     }
@@ -135,7 +135,7 @@ public class EdimapWriter {
         for(SubComponent subComponent : subComponents) {
             Element subComponentEl = newElement("sub-component", componentEl, subComponent);
 
-            mapBeanProperties(subComponent, subComponentEl, "xmltag", "maxLength", "minLength", "required", "type", "typeParametersString|typeParameters");
+            mapBeanProperties(subComponent, subComponentEl, "xmltag", "maxLength", "minLength", "required", "dataType", "dataTypeParametersString|dataTypeParameters");
         }
     }
 
