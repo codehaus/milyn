@@ -19,6 +19,7 @@ package org.milyn.edisax.model.internal;
 public class MappingNode {
 
     private String xmltag;
+    private String nodeTypeRef;
     private String documentation;
     private MappingNode parent;
     
@@ -35,6 +36,14 @@ public class MappingNode {
 
     public void setXmltag(String value) {
         this.xmltag = value;
+    }
+
+    public String getNodeTypeRef() {
+        return nodeTypeRef;
+    }
+
+    public void setNodeTypeRef(String nodeTypeRef) {
+        this.nodeTypeRef = nodeTypeRef;
     }
 
     public String getDocumentation() {

@@ -19,7 +19,6 @@ package org.milyn.edisax.model;
 import org.milyn.resource.URIResourceLocator;
 import org.milyn.xml.XmlUtil;
 import org.milyn.xml.XsdDOMValidator;
-import org.milyn.io.StreamUtils;
 import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDITypeEnum;
@@ -30,7 +29,6 @@ import org.w3c.dom.*;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
@@ -365,7 +363,13 @@ public class EDIConfigDigester {
         segment.setMaxOccurs(getNodeValueAsInteger(node, "maxOccurs"));
         segment.setMinOccurs(getNodeValueAsInteger(node, "minOccurs"));
         segment.setSegcode(getAttributeValue(node, "segcode"));
-        segment.setSegref(getAttributeValue(node, "segref"));
+
+        String nodeTypeRef = getAttributeValue(node, "nodeTypeRef");
+        if(nodeTypeRef == null) {
+            nodeTypeRef = getAttributeValue(node, "segref");
+        }
+        segment.setNodeTypeRef(nodeTypeRef);
+        
         segment.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
         segment.setIgnoreUnmappedFields(getNodeValueAsBoolean(node, "ignoreUnmappedFields"));
         segment.setDescription(getAttributeValue(node, "description"));
@@ -426,10 +430,20 @@ public class EDIConfigDigester {
      */
     private static void setValuesForValueNode(Node node, ValueNode valueNode, String namespacePrefix, MappingNode parent) throws EDIConfigurationException {
         setValuesForMappingNode(node, valueNode, namespacePrefix, parent);
-        valueNode.setType(getAttributeValue(node, "type"));
+        String type = getAttributeValue(node, "dataType");
+        if(type != null) {
+            valueNode.setDataType(type);
+        } else {
+            valueNode.setDataType(getAttributeValue(node, "type"));
+        }
         valueNode.setMinLength(getNodeValueAsInteger(node, "minLength"));
         valueNode.setMaxLength(getNodeValueAsInteger(node, "maxLength"));
-        digestParameters(valueNode, getAttributeValue(node, "typeParameters"));
+        String dataTypeParams = getAttributeValue(node, "dataTypeParameters");
+        if(dataTypeParams != null) {
+            digestParameters(valueNode, dataTypeParams);
+        } else {
+            digestParameters(valueNode, getAttributeValue(node, "typeParameters"));
+        }
     }
 
     /**
@@ -463,11 +477,11 @@ public class EDIConfigDigester {
                     throw new EDIConfigurationException("Invalid use of paramaters in ValueNode. A parameter-entry should consist of a key-value-pair separated with the '='-character. Example: [parameters=\"key1=value1;key2=value2\"]");
                 }
             }
-            valueNode.setTypeParameters(result);
+            valueNode.setDataTypeParameters(result);
 
-            if ( valueNode.getType().equals(EDITypeEnum.CUSTOM_NAME) && customClass == null) {
+            if ( valueNode.getDataType().equals(EDITypeEnum.CUSTOM_NAME) && customClass == null) {
                 throw new EDIConfigurationException("When using the Custom type in ValueNode the custom class type must exist as the first element in parameters");
-            } else if ( customClass != null && !valueNode.getType().equals(EDITypeEnum.CUSTOM_NAME)) {
+            } else if ( customClass != null && !valueNode.getDataType().equals(EDITypeEnum.CUSTOM_NAME)) {
                 throw new EDIConfigurationException("When first parameter in list of parameters is not a key-value-pair the type of the ValueNode should be Custom.");
             }
 

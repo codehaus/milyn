@@ -107,16 +107,21 @@ The escape attribute specifies a character that can be used before a delimiter t
 				<xs:documentation>The name of the xmltag when creating xml-event.</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+        <xs:attribute name="nodeTypeRef" type="xs:string" use="optional">
+            <xs:annotation>
+                <xs:documentation>Specifies a reference identifying the node type specification.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="value-node">
 		<xs:complexContent>
 			<xs:extension base="mapping-node">
-				<xs:attribute name="type" type="paramType" use="optional">
+				<xs:attribute name="dataType" type="paramType" use="optional">
 					<xs:annotation>
-						<xs:documentation>Specifies the type of the value existing in value-node. The standard types are connected to standard DataDecoders in Smooks.</xs:documentation>
+						<xs:documentation>Specifies the data type of the value existing in value-node. The standard types are connected to standard DataDecoders in Smooks.</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="typeParameters" type="xs:string" use="optional">
+				<xs:attribute name="dataTypeParameters" type="xs:string" use="optional">
 					<xs:annotation>
 						<xs:documentation>Parameters used to validate the type of the value-node. Parameters are listed in the form: param1=value1;param2=value2 etc.</xs:documentation>
 					</xs:annotation>
@@ -185,7 +190,6 @@ The escape attribute specifies a character that can be used before a delimiter t
 					</xs:sequence>
 					<xs:attributeGroup ref="bounds"/>
 					<xs:attribute name="segcode" type="xs:string" use="required"/>
-					<xs:attribute name="segref" type="xs:string" use="optional"/>
 					<xs:attribute name="truncatable" type="xs:boolean" use="optional" default="false"/>
 					<xs:attribute name="ignoreUnmappedFields" type="xs:boolean" use="optional" default="false"/>					
 					<xs:attribute name="description" type="xs:string" use="optional"/>

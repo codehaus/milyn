@@ -255,8 +255,8 @@ public class EdifactModel {
      * a value not located in the imported segment but with the namespace referencing the imported file.
      */
     private void applyImportOnSegment(Segment segment, Import imp, Map<String, Segment> importedSegments) throws EDIParseException {
-        if (segment.getSegref() != null && segment.getSegref().startsWith(imp.getNamespace()+":")) {
-            String key = segment.getSegref().substring(segment.getSegref().indexOf(':') + 1);
+        if (segment.getNodeTypeRef() != null && segment.getNodeTypeRef().startsWith(imp.getNamespace()+":")) {
+            String key = segment.getNodeTypeRef().substring(segment.getNodeTypeRef().indexOf(':') + 1);
             Segment importedSegment = importedSegments.get(key);
 
             if (importedSegment == null) {

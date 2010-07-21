@@ -281,7 +281,7 @@ public class UnEdifactMessageReader {
         Segment segment = new Segment();
         segment.setSegcode(segcode);
         if (isSplitIntoImport) {
-            segment.setSegref(agency + ":" + segcode);
+            segment.setNodeTypeRef(agency + ":" + segcode);
         } else {
             Segment importedSegment = segmentDefinitions.get(segcode);
 

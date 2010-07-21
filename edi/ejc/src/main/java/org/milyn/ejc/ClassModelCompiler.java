@@ -237,7 +237,7 @@ public class ClassModelCompiler {
         JType jtype;
         JNamedType childToParentProperty;
 
-        if (valueNode.getType() != null && !valueNode.getType().equals("")) {
+        if (valueNode.getDataType() != null && !valueNode.getDataType().equals("")) {
             jtype = new JType(valueNode.getTypeClass());
         } else {
             // Default type when no specific type is given.
@@ -406,7 +406,7 @@ public class ClassModelCompiler {
 
     private JClass getCommonType(MappingNode mappingNode) {
         if(mappingNode instanceof Segment) {
-            return getCommonTypeBySegCode(((Segment)mappingNode).getSegref());
+            return getCommonTypeBySegCode(mappingNode.getNodeTypeRef());
         } else {
             return injectedCommonTypes.get(mappingNode);
         }
