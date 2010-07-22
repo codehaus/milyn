@@ -78,7 +78,7 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         if(messageName.equals(definitionModel.getDescription().getName())) {
             return definitionModel;
         } else {
-            return parseEdiMessage(messageName);
+            return parseEdiMessage(messageName).getEdimap();
         }
     }
 
@@ -105,19 +105,18 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
         definitionModel.getSegments().getSegments().add(ugt);
     }
 
-    private Edimap parseEdiMessage(String messageName) throws IOException {
+    private UnEdifactMessage parseEdiMessage(String messageName) throws IOException {
         byte[] message = messageFiles.get(messageName);
 
-        Edimap edimap = null;
         if (message != null) {
             InputStreamReader reader = new InputStreamReader(new ByteArrayInputStream(message));
             try {
-                edimap = UnEdifactMessageReader.readMessage(reader, useImport, definitionModel);
+                return new UnEdifactMessage(reader, useImport, definitionModel);
             } finally {
                 reader.close();
             }
         }
-        return edimap;
+        return null;
     }
 
     public Edimap getDefinitionModel() throws IOException {

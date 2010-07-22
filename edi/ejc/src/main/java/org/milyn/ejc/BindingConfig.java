@@ -36,6 +36,7 @@ public class BindingConfig {
     private JNamedType propertyOnParent;
     private List<ValueNodeInfo> valueBindings = new ArrayList<ValueNodeInfo>();
     private List<BindingConfig> wireBindings = new ArrayList<BindingConfig>();
+    private WriteMethod writeMethod = null;
 
     public BindingConfig(String beanId, String createOnElement, JClass beanClass, JNamedType propertyOnParent) {
         this.beanId = beanId;
@@ -85,5 +86,13 @@ public class BindingConfig {
 
     public List<BindingConfig> getWireBindings() {
         return wireBindings;
+    }
+
+    public WriteMethod getWriteMethod() {
+        return writeMethod;
+    }
+
+    public void setWriteMethod(WriteMethod writeMethod) {
+        this.writeMethod = writeMethod;
     }
 }

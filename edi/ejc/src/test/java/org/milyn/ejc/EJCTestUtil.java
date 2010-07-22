@@ -82,7 +82,7 @@ public class EJCTestUtil {
     public static void testModel(String ediMappingModelFile, String ediMessageFile, String factoryClassName) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
         testModel(ediMappingModelFile, ediMessageFile, factoryClassName, false);
     }
-    public static void testModel(String ediMappingModelFile, String ediMessageFile, String factoryClassName, boolean dumpSerialized) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
+    public static void testModel(String ediMappingModelFile, String ediMessageFile, String factoryClassName, boolean dump) throws EDIConfigurationException, IOException, SAXException, IllegalNameException {
         StackTraceElement[] thisStack = Thread.currentThread().getStackTrace();
         Class callerClass = null;
 
@@ -145,7 +145,7 @@ public class EJCTestUtil {
                 TestCase.fail("Exception invoking 'fromEDI' method on Factory class instance: " + e.getMessage());
             }
 
-            if(dumpSerialized) {
+            if(dump) {
                 System.out.println("\n==== Serialized EDI Model ====");
                 System.out.println(ediOut.toString());
                 System.out.println("==============================\n");

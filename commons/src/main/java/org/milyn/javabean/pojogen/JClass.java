@@ -47,7 +47,8 @@ public class JClass {
     private List<JMethod> constructors = new ArrayList<JMethod>();
     private List<JMethod> methods = new ArrayList<JMethod>();
     private boolean fluentSetters = true;
-    private boolean serializable;
+    private boolean serializable = false;
+    private boolean finalized = false;
 
     private static FreeMarkerTemplate template;
 
@@ -247,6 +248,11 @@ public class JClass {
         // Finalize all the methods... allowing them to be GC'd...
         finalizeMethods(constructors);
         finalizeMethods(methods);
+        finalized = true;
+    }
+
+    public boolean isFinalized() {
+        return finalized;
     }
 
     private void finalizeMethods(List<JMethod> methodList) {
@@ -256,10 +262,18 @@ public class JClass {
     }
 
     private void assertPropertyUndefined(JNamedType property) {
+        if(hasProperty(property.getName())) {
+            throw new IllegalArgumentException("Property '" + property.getName() + "' already defined.");
+        }
+    }
+
+    public boolean hasProperty(String propertyName) {
         for(JNamedType definedProperty : properties) {
-            if(property.getName().equals(definedProperty.getName())) {
-                throw new IllegalArgumentException("Property '" + property.getName() + "' already defined.");
+            if(definedProperty.getName().equals(propertyName)) {
+                return true;
             }
         }
+
+        return false;
     }
 }

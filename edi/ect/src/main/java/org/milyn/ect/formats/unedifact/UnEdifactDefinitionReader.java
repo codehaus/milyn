@@ -133,13 +133,6 @@ public class UnEdifactDefinitionReader {
      */
     private static final Pattern SECOND_SEGMENT_ELEMENT = Pattern.compile("^(.*) *( C| M).*");
 
-
-    public static List<Segment> readSegmentDefinitions(Reader dataReader, Reader compositeReader, Reader segmentReader) throws IOException, EdiParseException {
-        Map<String, Component> datas = readComponents(dataReader);
-        Map<String, Field> composites = readFields(compositeReader, datas);
-        return readSegments(segmentReader, composites, datas);
-    }
-
     private static List<Segment> readSegments(Reader reader, Map<String, Field> composites, Map<String, Component> datas) throws IOException, EdiParseException {
         List<Segment> segments = new ArrayList<Segment>();
 
@@ -216,6 +209,7 @@ public class UnEdifactDefinitionReader {
     private static Field convertToField(Component component, boolean isMandatory) {
         Field field = new Field();
         field.setXmltag(XmlTagEncoder.encode(component.getXmltag()));
+        field.setNodeTypeRef(component.getNodeTypeRef());
         field.setDocumentation(component.getDocumentation());
         field.setMaxLength(component.getMaxLength());
         field.setMinLength(component.getMinLength());
@@ -229,6 +223,7 @@ public class UnEdifactDefinitionReader {
     private static Field copyField(Field oldField, boolean isMandatory) {
         Field field = new Field();
         field.setXmltag(XmlTagEncoder.encode(oldField.getXmltag()));
+        field.setNodeTypeRef(oldField.getNodeTypeRef());
         field.setDocumentation(oldField.getDocumentation());
         field.setMaxLength(oldField.getMaxLength());
         field.setMinLength(oldField.getMinLength());
@@ -277,6 +272,7 @@ public class UnEdifactDefinitionReader {
 
         String description = getValue(reader, "Desc:");
 
+        field.setNodeTypeRef(id);
         field.setXmltag(XmlTagEncoder.encode(name));
         field.setDocumentation(description);
 
@@ -353,6 +349,7 @@ public class UnEdifactDefinitionReader {
         String repr = getValue(reader, "Repr:");
         String[] typeAndOccurance = repr.split(DOTS);
 
+        component.setNodeTypeRef(id);
         component.setXmltag(XmlTagEncoder.encode(name.trim()));
         component.setDataType(getType(typeAndOccurance));
         component.setMinLength(getMinLength(typeAndOccurance));

@@ -65,14 +65,19 @@ public class EJCMojo extends AbstractMojo {
                 String urn = ediMappingFile.substring(4).trim();
                 String[] urnTokens;
 
-                urn = urn.replace(".", "_").replace("-", "_");
+                urn = urn.replace("-", "_");
                 urnTokens = urn.split(":");
 
                 if(urnTokens.length != 3) {
                     throw new MojoExecutionException("'ediMappingFile' urn value must have a minimum of 3 colon separated tokens (4 tokens if including the leading 'urn' token).");
                 }
 
-                packageName = urnTokens[0] + "." + urnTokens[1] + ".v" + urnTokens[2]; 
+                String directoryMapping = urnTokens[1];
+                if(directoryMapping.endsWith("_mapping")) {
+                    directoryMapping.substring(0, directoryMapping.length() - "_mapping".length());
+                }
+
+                packageName = urnTokens[0] + "." + directoryMapping;
             } else if(packageName == null) {
                 throw new MojoExecutionException("Invalid EJC configuration.  'packageName' must be configured for non 'urn' mapping model configurations.");
             } else {
