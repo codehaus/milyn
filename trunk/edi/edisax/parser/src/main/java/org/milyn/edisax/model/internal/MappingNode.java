@@ -18,6 +18,8 @@ package org.milyn.edisax.model.internal;
 
 public class MappingNode {
 
+    public static final String INDEXED_NODE_SEPARATOR = "_-_-";
+
     private String xmltag;
     private String nodeTypeRef;
     private String documentation;
@@ -63,6 +65,12 @@ public class MappingNode {
     }
 
     public String getJavaName() {
-        return xmltag;
+        int separatorIndex = xmltag.indexOf(INDEXED_NODE_SEPARATOR);
+
+        if(separatorIndex != -1) {
+            return xmltag.substring(0, separatorIndex);
+        } else {
+            return xmltag;
+        }
     }
 }

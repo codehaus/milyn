@@ -16,18 +16,13 @@
 package org.milyn.ejc;
 
 import org.apache.commons.logging.Log;
-import org.milyn.config.Configurable;
 import org.milyn.edisax.model.internal.*;
-import org.milyn.javabean.DataDecoder;
-import org.milyn.javabean.DataEncoder;
 import org.milyn.javabean.pojogen.JClass;
 import org.milyn.javabean.pojogen.JMethod;
 import org.milyn.javabean.pojogen.JNamedType;
 import org.milyn.javabean.pojogen.JType;
 import org.milyn.smooks.edi.EDIMessage;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 
 /**
@@ -71,6 +66,7 @@ public class ClassModelCompiler {
 
         LOG.debug("Added root class [" + rootClass + "] to ClassModel.");
 
+        addWriteMethod(rootBeanConfig);
         processSegmentGroups(segmentGroup.getSegments(), rootBeanConfig);
 
         LOG.debug("Finished parsing edi-configuration. All segments are added to ClassModel.");
@@ -103,12 +99,10 @@ public class ClassModelCompiler {
     private void processSegmentGroups(List<SegmentGroup> segmentGroups, BindingConfig parent) throws IllegalNameException {
         WriteMethod writeMethod = null;
 
-        if(model.isClassCreator(parent.getBeanClass())) {
-            writeMethod = getWriteMethod(parent.getBeanClass());
-        }
-
         for (SegmentGroup segmentGroup : segmentGroups) {
             BindingConfig childBeanConfig = processSegmentGroup(segmentGroup, parent);
+
+            writeMethod = parent.getWriteMethod();
 
             // Add Write Method details for the property just added...
             if(writeMethod != null) {
@@ -136,11 +130,6 @@ public class ClassModelCompiler {
                 parent.getWireBindings().add(childBeanConfig);
             }
         }
-
-        if(writeMethod != null) {
-            parent.getBeanClass().getImplementTypes().add(new JType(EJCWritable.class));
-            addWriteMethod(writeMethod, parent.getBeanClass());
-        }
     }
 
     /**
@@ -159,18 +148,18 @@ public class ClassModelCompiler {
 
         pushNode(segmentGroup);
 
-        BindingConfig childBinding = createChildAndConnectWithParent(parent, segmentGroup, segmentGroup.getMaxOccurs());
+        BindingConfig segGroupBinding = createChildAndConnectWithParent(parent, segmentGroup, segmentGroup.getMaxOccurs(), null);
 
         if (segmentGroup instanceof Segment) {
             Segment segment = (Segment) segmentGroup;
-            processFields(segment.getFields(), childBinding);
+            processFields(segment.getFields(), segGroupBinding);
         }
 
-        processSegmentGroups(segmentGroup.getSegments(), childBinding);
+        processSegmentGroups(segmentGroup.getSegments(), segGroupBinding);
 
         popNode();
 
-        return childBinding;
+        return segGroupBinding;
     }
 
     /**
@@ -180,12 +169,6 @@ public class ClassModelCompiler {
      * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
      */
     private void processFields(List<Field> fields, BindingConfig parent) throws IllegalNameException {
-        WriteMethod writeMethod = null;
-
-        if(model.isClassCreator(parent.getBeanClass())) {
-            writeMethod = getWriteMethod(parent.getBeanClass());
-        }
-
         for (Field field : fields) {
             LOG.debug("Parsing field " + field.getXmltag());
 
@@ -193,34 +176,23 @@ public class ClassModelCompiler {
 
             if (field.getComponents() != null && field.getComponents().size() > 0) {
                 //Add class type.
-                BindingConfig childBinding = createChildAndConnectWithParent(parent, field, 1);
+                BindingConfig childBinding = createChildAndConnectWithParent(parent, field, 1, DelimiterType.FIELD);
 
                 parent.getWireBindings().add(childBinding);
-
-                if(writeMethod != null) {
-                    // Add Write Method details for the property just added...
-                    writeMethod.writeObject(childBinding.getPropertyOnParent(), DelimiterType.FIELD);
-                }
 
                 // Now add the components to the field...
                 processComponents(field.getComponents(), childBinding);
             } else {
                 // Add primitive type.
-                JNamedType childToParentProperty = createAndAddSimpleType(field, parent);
-
-                if(writeMethod != null) {
-                    // Add Write Method details for the property just added...
-                    writeMethod.writeValue(childToParentProperty, field, DelimiterType.FIELD);
-                }
+                createAndAddSimpleType(field, parent, DelimiterType.FIELD);
             }
 
             popNode();
         }
 
-        if(writeMethod != null) {
-            writeMethod.writeDelimiter(DelimiterType.SEGMENT);
-            writeMethod.addFlush();
-            addWriteMethod(writeMethod, parent.getBeanClass());
+        if(parent.getWriteMethod() != null) {
+            parent.getWriteMethod().writeDelimiter(DelimiterType.SEGMENT);
+            parent.getWriteMethod().addFlush();
         }
     }
 
@@ -231,9 +203,10 @@ public class ClassModelCompiler {
      * typeParameters-value is inserted into classModel.
      * @param valueNode the {@link org.milyn.edisax.model.internal.ValueNode} to process.
      * @param parent the {@link org.milyn.javabean.pojogen.JClass} 'owning' the valueNode.
+     * @param delimiterType Node delimiter type.
      * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
      */
-    private JNamedType createAndAddSimpleType(ValueNode valueNode, BindingConfig parent) throws IllegalNameException {
+    private JNamedType createAndAddSimpleType(ValueNode valueNode, BindingConfig parent, DelimiterType delimiterType) throws IllegalNameException {
         JType jtype;
         JNamedType childToParentProperty;
 
@@ -247,8 +220,10 @@ public class ClassModelCompiler {
         String propertyName = EJCUtils.encodeAttributeName(jtype, valueNode.getXmltag());
         childToParentProperty = new JNamedType(jtype, propertyName);
 
-        if(model.isClassCreator(parent.getBeanClass())) {
-            parent.getBeanClass().addBeanProperty(childToParentProperty);
+        JClass parentBeanClass = parent.getBeanClass();
+        if(!parentBeanClass.isFinalized() && !parentBeanClass.hasProperty(propertyName) && model.isClassCreator(parentBeanClass)) {
+            parentBeanClass.addBeanProperty(childToParentProperty);
+            getWriteMethod(parent).writeValue(childToParentProperty, valueNode, delimiterType);
         }
 
         parent.getValueBindings().add(new ValueNodeInfo(childToParentProperty, getCurrentNodePath(), valueNode.getTypeParameters()));
@@ -263,43 +238,23 @@ public class ClassModelCompiler {
      * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
      */
     private void processComponents(List<Component> components, BindingConfig parent) throws IllegalNameException {
-        WriteMethod writeMethod = null;
-
-        if(model.isClassCreator(parent.getBeanClass())) {
-            writeMethod = getWriteMethod(parent.getBeanClass());
-        }
-
         for (Component component : components) {
 
             pushNode(component);
 
             if (component.getSubComponents() != null && component.getSubComponents().size() > 0) {
                 //Add class type.
-                BindingConfig childBeanConfig = createChildAndConnectWithParent(parent, component, 1);
+                BindingConfig childBeanConfig = createChildAndConnectWithParent(parent, component, 1, DelimiterType.COMPONENT);
 
                 parent.getWireBindings().add(childBeanConfig);
-
-                if(writeMethod != null) {
-                    // Add Write Method details for the property just added...
-                    writeMethod.writeObject(childBeanConfig.getPropertyOnParent(), DelimiterType.COMPONENT);
-                }
 
                 processSubComponents(component.getSubComponents(), childBeanConfig);
             } else {
                 //Add primitive type.
-                JNamedType childToParentProperty = createAndAddSimpleType(component, parent);
-
-                if(writeMethod != null && childToParentProperty != null) {
-                    // Add Write Method details for the property just added...
-                    writeMethod.writeValue(childToParentProperty, component, DelimiterType.COMPONENT);
-                }
+                createAndAddSimpleType(component, parent, DelimiterType.COMPONENT);
             }
 
             popNode();
-        }
-
-        if(writeMethod != null) {
-            addWriteMethod(writeMethod, parent.getBeanClass());
         }
     }
 
@@ -310,29 +265,14 @@ public class ClassModelCompiler {
      * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
      */
     private void processSubComponents(List<SubComponent> subComponents, BindingConfig parent) throws IllegalNameException {
-        WriteMethod writeMethod = null;
-
-        if(model.isClassCreator(parent.getBeanClass())) {
-            writeMethod = getWriteMethod(parent.getBeanClass());
-        }
-
         for (SubComponent subComponent : subComponents) {
 
             pushNode(subComponent);
 
             //Add primitive type.
-            JNamedType childToParentProperty = createAndAddSimpleType(subComponent, parent);
-
-            if(writeMethod != null && childToParentProperty != null) {
-                // Add Write Method details for the property just added...
-                writeMethod.writeValue(childToParentProperty, subComponent, DelimiterType.SUB_COMPONENT);
-            }
+            createAndAddSimpleType(subComponent, parent, DelimiterType.SUB_COMPONENT);
 
             popNode();
-        }
-
-        if(writeMethod != null) {
-            addWriteMethod(writeMethod, parent.getBeanClass());
         }
     }
 
@@ -352,16 +292,16 @@ public class ClassModelCompiler {
      * @param parent The parent BindingConfig.
      * @param mappingNode the {@link org.milyn.edisax.model.internal.MappingNode} to process.
      * @param maxOccurs the number of times {@link org.milyn.edisax.model.internal.MappingNode} can occur.
+     * @param delimiterType
      * @return the created {@link org.milyn.javabean.pojogen.JClass}
      * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
      */
-    private BindingConfig createChildAndConnectWithParent(BindingConfig parent, MappingNode mappingNode, int maxOccurs) throws IllegalNameException {
+    private BindingConfig createChildAndConnectWithParent(BindingConfig parent, MappingNode mappingNode, int maxOccurs, DelimiterType delimiterType) throws IllegalNameException {
         JClass child = getCommonType(mappingNode);
         boolean addClassToModel = false;
 
         if(child == null) {
             child = new JClass(parent.getBeanClass().getPackageName(), EJCUtils.encodeClassName(mappingNode.getJavaName()), getCurrentClassId()).setSerializable();
-            child.getImplementTypes().add(new JType(EJCWritable.class));
             addClassToModel = true;
             LOG.debug("Created class " + child.getClassName() + ".");
         }
@@ -376,15 +316,22 @@ public class ClassModelCompiler {
         String propertyName = EJCUtils.encodeAttributeName(jtype, mappingNode.getXmltag());
         JNamedType childProperty = new JNamedType(jtype, propertyName);
 
-        if(model.isClassCreator(parent.getBeanClass())) {
-            parent.getBeanClass().addBeanProperty(childProperty);
+        BindingConfig childBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), child, childProperty);
+        JClass parentBeanClass = parent.getBeanClass();
+        if(!parentBeanClass.isFinalized() && !parentBeanClass.hasProperty(propertyName) && model.isClassCreator(parentBeanClass)) {
+            parentBeanClass.addBeanProperty(childProperty);
+            if(delimiterType != null) {
+                getWriteMethod(parent).writeObject(childProperty, delimiterType);
+            }
         }
         if(addClassToModel) {
             model.addCreatedClass(child);
             createdClassesByNode.put(mappingNode, child);            
+            childBeanConfig.setWriteMethod(new WriteMethod(child));
+            addClassToModel = true;
         }
 
-        return new BindingConfig(getCurrentClassId(), getCurrentNodePath(), child, childProperty);
+        return childBeanConfig;
     }
 
     private String getCurrentClassId() {
@@ -405,168 +352,72 @@ public class ClassModelCompiler {
     }
 
     private JClass getCommonType(MappingNode mappingNode) {
-        if(mappingNode instanceof Segment) {
-            return getCommonTypeBySegCode(mappingNode.getNodeTypeRef());
-        } else {
-            return injectedCommonTypes.get(mappingNode);
-        }
-    }
+        String nodeTypeRef = mappingNode.getNodeTypeRef();
 
-    private JClass getCommonTypeBySegCode(String segCode) {
-        if(segCode != null) {
-            int colonIndex = segCode.indexOf(':');
+        if(nodeTypeRef != null) {
+            int colonIndex = nodeTypeRef.indexOf(':');
 
             if(colonIndex != -1) {
-                segCode = segCode.substring(colonIndex + 1);
+                nodeTypeRef = nodeTypeRef.substring(colonIndex + 1);
             }
 
-            Set<Map.Entry<MappingNode, JClass>> commonTypes = injectedCommonTypes.entrySet();
-            for(Map.Entry<MappingNode, JClass> typeEntry : commonTypes) {
-                MappingNode mappingNode = typeEntry.getKey();
-
-                if(mappingNode instanceof Segment) {
-                    if(segCode.equals(((Segment)mappingNode).getSegcode())) {
-                        return typeEntry.getValue();
-                    }
-                }
+            JClass commonType = getCommonType(mappingNode, nodeTypeRef, createdClassesByNode);
+            if(commonType == null) {
+                commonType = getCommonType(mappingNode, nodeTypeRef, injectedCommonTypes);
             }
+            return commonType;
+        } else {
+            JClass commonType = createdClassesByNode.get(mappingNode);
+            if(commonType == null) {
+                commonType = injectedCommonTypes.get(mappingNode);
+            }
+            return commonType;
         }
-
-        return null;
     }
 
-    private static class WriteMethod extends JMethod {
+    private JClass getCommonType(MappingNode mappingNode, String nodeTypeRef, Map<MappingNode, JClass> typeSet) {
+        Set<Map.Entry<MappingNode, JClass>> commonTypes = typeSet.entrySet();
+        
+        for(Map.Entry<MappingNode, JClass> typeEntry : commonTypes) {
+            MappingNode entryMappingNode = typeEntry.getKey();
+            String entryNodeTypeRef = entryMappingNode.getNodeTypeRef();
 
-        private JClass jClass;
-
-        private WriteMethod(JClass jClass) {
-            super("write");
-            addParameter(new JType(Writer.class), "writer");
-            addParameter(new JType(Delimiters.class), "delimiters");
-            getExceptions().add(new JType(IOException.class));
-            this.jClass = jClass;
-        }
-
-        public void writeObject(JNamedType property, DelimiterType delimiterType) {
-            writeDelimiter(delimiterType);
-            writeObject(property);
-        }
-
-        public void writeObject(JNamedType property) {
-            appendToBody("\n        if(" + property.getName() + " != null) {");
-            appendToBody("\n            " + property.getName() + ".write(writer, delimiters);");
-            appendToBody("\n        }");
-        }
-
-        public void writeValue(JNamedType property, ValueNode modelNode, DelimiterType delimiterType) {
-            writeDelimiter(delimiterType);
-            writeValue(property, modelNode);
-        }
-
-        public void writeValue(JNamedType property, ValueNode modelNode) {
-            appendToBody("\n        if(" + property.getName() + " != null) {");
-
-            DataDecoder dataDecoder = modelNode.getDecoder();
-            if(dataDecoder instanceof DataEncoder) {
-                String encoderName = property.getName() + "Encoder";
-                Class<? extends DataDecoder> decoderClass = dataDecoder.getClass();
-
-                // Add the property for the encoder instance...
-                jClass.getProperties().add(new JNamedType(new JType(decoderClass), encoderName));
-
-                // Create the encoder in the constructor...
-                JMethod defaultConstructor = jClass.getDefaultConstructor();
-                defaultConstructor.appendToBody("\n        " + encoderName + " = new " + decoderClass.getSimpleName() + "();");
-
-                // Configure the encoder in the constructor (if needed)....
-                if(dataDecoder instanceof Configurable) {
-                    Properties configuration = ((Configurable) dataDecoder).getConfiguration();
-
-                    if(configuration != null) {
-                        Set<Map.Entry<Object, Object>> encoderConfig = configuration.entrySet();
-                        String encoderPropertiesName = encoderName + "Properties";
-
-                        jClass.getRawImports().add(new JType(Properties.class));
-                        defaultConstructor.appendToBody("\n        Properties " + encoderPropertiesName + " = new Properties();");
-                        for(Map.Entry<Object, Object> entry : encoderConfig) {
-                            defaultConstructor.appendToBody("\n        " + encoderPropertiesName + ".setProperty(\"" + entry.getKey() + "\", \"" + entry.getValue() + "\");");
-                        }
-                        defaultConstructor.appendToBody("\n        " + encoderName + ".setConfiguration(" + encoderPropertiesName + ");");
-                    }
+            if(entryMappingNode instanceof Segment) {
+                if(nodeTypeRef.equals(((Segment)entryMappingNode).getSegcode())) {
+                    return typeEntry.getValue();
                 }
-
-                // Add the encoder encode instruction to te write method...
-                appendToBody("\n            writer.write(" + encoderName + ".encode(" + property.getName() + "));");
-            } else {
-                appendToBody("\n            writer.write(" + property.getName() + ".toString());");
-            }
-
-            appendToBody("\n        }");
-        }
-
-        public void writeSegmentCollection(JNamedType property, String segcode) {
-            appendToBody("\n        if(" + property.getName() + " != null && !" + property.getName() + ".isEmpty()) {");
-            appendToBody("\n            for(" + property.getType().getGenericType().getSimpleName() + " " + property.getName() + "Inst : " + property.getName() + ") {");
-            appendToBody("\n                writer.write(\"" + segcode + "\");");
-            appendToBody("\n                writer.write(delimiters.getField());");
-            appendToBody("\n                " + property.getName() + "Inst.write(writer, delimiters);");
-            appendToBody("\n            }");
-            appendToBody("\n        }");
-        }
-
-        public void writeDelimiter(DelimiterType delimiterType) {
-            if(bodyLength() == 0) {
-                return;
-            }
-
-            switch (delimiterType) {
-                case SEGMENT:
-                    appendToBody("\n        writer.write(delimiters.getSegmentDelimiter());");
-                    break;
-                case FIELD:
-                    appendToBody("\n        writer.write(delimiters.getField());");
-                    break;
-                case FIELD_REPEAT:
-                    appendToBody("\n        writer.write(delimiters.getFieldRepeat());");
-                    break;
-                case COMPONENT:
-                    appendToBody("\n        writer.write(delimiters.getComponent());");
-                    break;
-                case SUB_COMPONENT:
-                    appendToBody("\n        writer.write(delimiters.getSubComponent());");
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported '" + DelimiterType.class.getName() + "' enum conversion.  Enum '" + delimiterType + "' not specified in switch statement.");
+            } else if(entryNodeTypeRef != null && entryMappingNode.getClass() == mappingNode.getClass()) {
+                // Must be the same node type exactly...
+                if(nodeTypeRef.equals(entryNodeTypeRef)) {
+                    return typeEntry.getValue();
+                }
             }
         }
-
-        public void addFlush() {
-            appendToBody("\n        writer.flush();");
-        }
+        return null;
     }
 
     /**********************************************************************************************************
      * Private Helper Methods
-     **********************************************************************************************************/
+     *********************************************************************************************************
+     * @param bindingConfig*/
 
-    private WriteMethod getWriteMethod(JClass jClass) {
-        for(JMethod method : jClass.getMethods()) {
+    private WriteMethod getWriteMethod(BindingConfig bindingConfig) {
+        for(JMethod method : bindingConfig.getBeanClass().getMethods()) {
             if(method instanceof WriteMethod) {
                 return (WriteMethod) method;
             }
         }
 
-        return new WriteMethod(jClass);
+        JClass beanClass = bindingConfig.getBeanClass();
+        WriteMethod writeMethod = new WriteMethod(beanClass);
+
+        bindingConfig.setWriteMethod(writeMethod);
+
+        return writeMethod;
     }
 
-    private void addWriteMethod(WriteMethod writeMethod, JClass jClass) {
-        for(JMethod method : jClass.getMethods()) {
-            if(method == writeMethod) {
-                return;
-            }
-        }
-
-        jClass.getMethods().add(writeMethod);
+    private WriteMethod addWriteMethod(BindingConfig bindingConfig) {
+        return getWriteMethod(bindingConfig);
     }
 
     private static boolean isCollection(JNamedType property) {

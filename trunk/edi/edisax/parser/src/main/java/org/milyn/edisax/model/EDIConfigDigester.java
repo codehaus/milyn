@@ -363,17 +363,16 @@ public class EDIConfigDigester {
         segment.setMaxOccurs(getNodeValueAsInteger(node, "maxOccurs"));
         segment.setMinOccurs(getNodeValueAsInteger(node, "minOccurs"));
         segment.setSegcode(getAttributeValue(node, "segcode"));
-
-        String nodeTypeRef = getAttributeValue(node, "nodeTypeRef");
-        if(nodeTypeRef == null) {
-            nodeTypeRef = getAttributeValue(node, "segref");
-        }
-        segment.setNodeTypeRef(nodeTypeRef);
-        
         segment.setTruncatable(getNodeValueAsBoolean(node, "truncatable"));
         segment.setIgnoreUnmappedFields(getNodeValueAsBoolean(node, "ignoreUnmappedFields"));
         segment.setDescription(getAttributeValue(node, "description"));
         setValuesForMappingNode(node, segment, namespacePrefix, parent);
+
+        if(segment.getNodeTypeRef() == null) {
+            // Backward compatibility support.  Schema pre v 1.4 supported a segref
+            // on <segment>, which we thn generalised as nodeTypeRef for all node types.
+            segment.setNodeTypeRef(getAttributeValue(node, "segref"));
+        }
     }
 
     /**
@@ -418,6 +417,7 @@ public class EDIConfigDigester {
      */
     private static void setValuesForMappingNode(Node node, MappingNode mappingNode, String namespacePrefix, MappingNode parent) {
         mappingNode.setXmltag(getAttributeValue(node, "xmltag"));
+        mappingNode.setNodeTypeRef(getAttributeValue(node, "nodeTypeRef"));
         mappingNode.setDocumentation(getNodeValue(node, namespacePrefix + "documentation"));
         mappingNode.setParent(parent);
     }

@@ -40,11 +40,20 @@ public class EJCUtils {
      */
     public static String encodeClassName(String name) throws IllegalNameException {
         String result = name;
-        if (!name.toUpperCase().equals(name)) {
-            result = name.substring(0,1).toUpperCase() + name.substring(1, name.length());
+        if (name.toUpperCase().equals(name)) {
+            StringBuilder nameRebuilder = new StringBuilder();
+
+            nameRebuilder.append(name.toLowerCase());
+            nameRebuilder.setCharAt(0, name.charAt(0));
+            result = nameRebuilder.toString();
         }
         result = EJCUtils.deleteWithPascalNotation(result, '-');
         result = EJCUtils.deleteWithPascalNotation(result, ' ');
+        result = EJCUtils.deleteWithPascalNotation(result, '_');
+
+        if(Character.isLowerCase(result.charAt(0))) {
+            result = Character.toUpperCase(result.charAt(0)) + result.substring(1);
+        }
 
         assertLegalName(result);
 
@@ -64,21 +73,31 @@ public class EJCUtils {
      * @throws IllegalNameException when attribute name is a reserved keyword in java. 
      */
     public static String encodeAttributeName(JType type, String name) throws IllegalNameException {
-        String result = name;
-        if (!name.toUpperCase().equals(name)) {
-            result = name.substring(0,1).toLowerCase() + name.substring(1, name.length());
-        }
-        result = EJCUtils.deleteWithPascalNotation(result, '-');
-        result = EJCUtils.deleteWithPascalNotation(result, ' ');
+        String result = encodeAttributeName(name);
 
         if(type != null && Collection.class.isAssignableFrom(type.getClass())) {
             result += "s";
         }
 
+        return result;
+    }
+
+    public static String encodeAttributeName(String name) {
+        String result;
+
+        if(name.toUpperCase().equals(name)) {
+            result = name.toLowerCase();
+        } else {
+            result = name;
+        }
+
+        result = EJCUtils.deleteWithPascalNotation(result, '-');
+        result = EJCUtils.deleteWithPascalNotation(result, ' ');
+        result = EJCUtils.deleteWithPascalNotation(result, '_');
+
         if (reservedKeywords.contains(result)) {
             result = "_" + result;
         }
-
         return result;
     }
 

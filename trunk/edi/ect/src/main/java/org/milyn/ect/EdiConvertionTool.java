@@ -227,7 +227,7 @@ public class EdiConvertionTool {
             String xmlTag = mappingNode.getXmltag();
 
             if(xmlTag != null && xmlTag.equals(nodeName)) {
-                mappingNode.setXmltag(xmlTag + "_" + tagIndex);
+                mappingNode.setXmltag(xmlTag + MappingNode.INDEXED_NODE_SEPARATOR + tagIndex);
                 tagIndex++;
             }
         }
