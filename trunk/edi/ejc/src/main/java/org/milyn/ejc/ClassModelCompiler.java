@@ -56,7 +56,7 @@ public class ClassModelCompiler {
         SegmentGroup segmentGroup = edimap.getSegments();
 
         pushNode(segmentGroup);
-        
+
         JClass rootClass = new JClass(classPackage, EJCUtils.encodeClassName(segmentGroup.getXmltag()), getCurrentClassId()).setSerializable();
         BindingConfig rootBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), rootClass, null);
 
@@ -76,7 +76,7 @@ public class ClassModelCompiler {
         // are common classes in a model set...
         model.setClassesByNode(createdClassesByNode);
         model.setReferencedClasses(injectedCommonTypes.values());
-        
+
         popNode();
 
         if(addEDIMessageAnnotation) {
@@ -190,9 +190,28 @@ public class ClassModelCompiler {
             popNode();
         }
 
+        collapseSingleFieldSegmentBinding(parent);
+
         if(parent.getWriteMethod() != null) {
             parent.getWriteMethod().writeDelimiter(DelimiterType.SEGMENT);
             parent.getWriteMethod().addFlush();
+        }
+    }
+
+    private void collapseSingleFieldSegmentBinding(BindingConfig parent) {
+        if(parent.getValueBindings().isEmpty() && parent.getWireBindings().size() == 1) {
+            BindingConfig child = parent.getWireBindings().get(0);
+            String parentClassName = parent.getBeanClass().getSkeletonClass().getName();
+            String childClassName = child.getBeanClass().getSkeletonClass().getName();
+
+            if(parentClassName.equals(childClassName)) {
+                // This is a segment with just one field, having the same name
+                // as the segment itself.  Need to collapse the child
+                // up into the parent...
+                parent.setBeanClass(child.getBeanClass());
+                parent.setValueBindings(child.getValueBindings());
+                parent.setWireBindings(child.getWireBindings());
+            }
         }
     }
 
@@ -326,7 +345,7 @@ public class ClassModelCompiler {
         }
         if(addClassToModel) {
             model.addCreatedClass(child);
-            createdClassesByNode.put(mappingNode, child);            
+            createdClassesByNode.put(mappingNode, child);
             childBeanConfig.setWriteMethod(new WriteMethod(child));
             addClassToModel = true;
         }
@@ -377,7 +396,7 @@ public class ClassModelCompiler {
 
     private JClass getCommonType(MappingNode mappingNode, String nodeTypeRef, Map<MappingNode, JClass> typeSet) {
         Set<Map.Entry<MappingNode, JClass>> commonTypes = typeSet.entrySet();
-        
+
         for(Map.Entry<MappingNode, JClass> typeEntry : commonTypes) {
             MappingNode entryMappingNode = typeEntry.getKey();
             String entryNodeTypeRef = entryMappingNode.getNodeTypeRef();

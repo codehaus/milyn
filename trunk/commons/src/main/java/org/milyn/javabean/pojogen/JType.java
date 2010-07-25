@@ -84,4 +84,31 @@ public class JType {
 
         return type.getSimpleName();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof JType) {
+            JType typeObj = (JType) obj;
+
+            if(typeObj.getType().getName().equals(type.getName())) {
+                if(genericType != null && typeObj.genericType != null) {
+                    if(!typeObj.genericType.getName().equals(genericType.getName())) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        if(genericType != null) {
+            return (type.getName().hashCode() + genericType.getName().hashCode());
+        } else {
+            return type.getName().hashCode();
+        }
+    }
 }

@@ -64,6 +64,18 @@ public class BindingConfig {
         return beanClass;
     }
 
+    public void setValueBindings(List<ValueNodeInfo> valueBindings) {
+        this.valueBindings = valueBindings;
+    }
+
+    public void setBeanClass(JClass beanClass) {
+        this.beanClass = beanClass;
+    }
+
+    public void setWireBindings(List<BindingConfig> wireBindings) {
+        this.wireBindings = wireBindings;
+    }
+
     public Class<?> getRuntimeClass() {
         if(beanClass != null) {
             return beanClass.getSkeletonClass();

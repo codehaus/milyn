@@ -51,6 +51,9 @@ public class EJCMojo extends AbstractMojo {
     private String ediMappingFile;
 
     @MojoParameter(required = false)
+    private String messages;
+
+    @MojoParameter(required = false)
     private String packageName;
 
     public void execute() throws MojoExecutionException {
@@ -87,6 +90,7 @@ public class EJCMojo extends AbstractMojo {
                 }
             }
 
+            ejc.setMessages(messages);
             ejc.setDestDir(destDir);
             ejc.setEdiMappingModel(ediMappingFile);
             ejc.setPackageName(packageName);

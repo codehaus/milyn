@@ -20,6 +20,7 @@ import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.resource.URIResourceLocator;
+import org.milyn.util.CollectionsUtil;
 import org.milyn.util.FreeMarkerTemplate;
 import org.xml.sax.SAXException;
 
@@ -35,6 +36,7 @@ import java.util.*;
 public class EJCExecutor {
 
     private String ediMappingModel;
+    private Set<String> messages;
     private File destDir;
     private String packageName;
     private static FreeMarkerTemplate messageBindingTemplate = new FreeMarkerTemplate("templates/interchange-message-bindingConfig.ftl.xml", EJCExecutor.class);
@@ -77,25 +79,27 @@ public class EJCExecutor {
                 continue;
             }
 
-            EJC ejc = new EJC();
-            
-            ejc.include(commonsPackageName);
-            ejc.addEDIMessageAnnotation(true);
-            if(definitionsClassModel != null) {
-                String messagePackageName = packageName + "." + description.getName();
-                ejc.compile(model.getValue().getEdimap(), messagePackageName, destDir.getAbsolutePath(), definitionsClassModel.getClassesByNode());
+            if(messages == null || messages.contains(description.getName())) {
+                EJC ejc = new EJC();
 
-                MessageDefinition messageDef = new MessageDefinition(description.getName(), "/" + messagePackageName.replace('.', '/') + "/" + EJC.BINDINGCONFIG_XML);
-                messageSetDefinitions.add(messageDef);
+                ejc.include(commonsPackageName);
+                ejc.addEDIMessageAnnotation(true);
+                if(definitionsClassModel != null) {
+                    String messagePackageName = packageName + "." + description.getName();
+                    ejc.compile(model.getValue().getEdimap(), messagePackageName, destDir.getAbsolutePath(), definitionsClassModel.getClassesByNode());
 
-                // If this is an interchange, get rid of the edi mapping model config and the
-                // Factory class for the message folder...
-                if(interchangeProperties != null) {
-                    deleteFile(messagePackageName, EJC.EDIMAPPINGCONFIG_XML);
-                    deleteFile(messagePackageName, EJCUtils.encodeClassName(description.getName()) + "Factory.java");
+                    MessageDefinition messageDef = new MessageDefinition(description.getName(), "/" + messagePackageName.replace('.', '/') + "/" + EJC.BINDINGCONFIG_XML);
+                    messageSetDefinitions.add(messageDef);
+
+                    // If this is an interchange, get rid of the edi mapping model config and the
+                    // Factory class for the message folder...
+                    if(interchangeProperties != null) {
+                        deleteFile(messagePackageName, EJC.EDIMAPPINGCONFIG_XML);
+                        deleteFile(messagePackageName, EJCUtils.encodeClassName(description.getName()) + "Factory.java");
+                    }
+                } else {
+                    ejc.compile(model.getValue().getEdimap(), packageName, destDir.getAbsolutePath());
                 }
-            } else {
-                ejc.compile(model.getValue().getEdimap(), packageName, destDir.getAbsolutePath());
             }
         }
 
@@ -157,6 +161,12 @@ public class EJCExecutor {
 
     public void setEdiMappingModel(String ediMappingModel) {
         this.ediMappingModel = ediMappingModel;
+    }
+
+    public void setMessages(String messages) {
+        if(messages != null) {
+            this.messages = CollectionsUtil.toSet(messages.split(","));
+        }
     }
 
     public void setDestDir(File destDir) {
