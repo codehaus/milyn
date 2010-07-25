@@ -29,6 +29,10 @@ import java.util.Set;
 public interface EdiSpecificationReader {
 
     /**
+     * Interchange properties key for the interchange Type e.g. "UNEDIFACT".
+     */
+    public static final String INTERCHANGE_TYPE = "interchangeType";
+    /**
      * Interchange properties key for the interchange message binding config.
      */
     public static final String MESSAGE_BINDING_CONFIG = "messageBindingConfig";

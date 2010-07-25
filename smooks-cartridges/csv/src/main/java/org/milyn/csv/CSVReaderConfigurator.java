@@ -22,6 +22,8 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.assertion.AssertArgument;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CSV Reader configurator.
@@ -106,7 +108,7 @@ public class CSVReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
-    public SmooksResourceConfiguration toConfig() {
+    public List<SmooksResourceConfiguration> toConfig() {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(CSVReader.class);
 
         configurator.getParameters().setProperty("fields", csvFields);

@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -184,9 +185,11 @@ public class Smooks {
      * @param readerConfigurator {@link ReaderConfigurator} instance.
      */
     public void setReaderConfig(ReaderConfigurator readerConfigurator) {
-        SmooksResourceConfiguration readerConfig = readerConfigurator.toConfig();
-        readerConfig.setSelector(AbstractParser.ORG_XML_SAX_DRIVER);
-        addConfiguration(readerConfig);
+        List<SmooksResourceConfiguration> configList = readerConfigurator.toConfig();
+
+        for(SmooksResourceConfiguration config : configList) {
+            addConfiguration(config);
+        }
     }
 
     /**

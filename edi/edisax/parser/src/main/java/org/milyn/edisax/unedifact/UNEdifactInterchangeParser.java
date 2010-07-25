@@ -27,12 +27,16 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.BufferedSegmentReader;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
+import org.milyn.edisax.interchange.ControlBlockHandlerFactory;
+import org.milyn.edisax.unedifact.handlers.UNEdifactControlBlockHandlerFactory;
 import org.milyn.edisax.util.EDIUtils;
 import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
+import org.milyn.xml.hierarchy.HierarchyChangeListener;
+import org.milyn.xml.hierarchy.HierarchyChangeReader;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
@@ -49,7 +53,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNEdifactInterchangeParser implements XMLReader {
+public class UNEdifactInterchangeParser implements XMLReader, HierarchyChangeReader {
 
     private Map<String, Boolean> features = new HashMap<String, Boolean>();
 	
@@ -57,8 +61,9 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	
 	private Map<Description, EdifactModel> mappingModels = new LinkedHashMap<Description, EdifactModel>();
 	private ContentHandler contentHandler;
+    private HierarchyChangeListener hierarchyChangeListener;
 
-	public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
+    public void parse(InputSource unedifactInterchange) throws IOException, SAXException {
 		AssertArgument.isNotNull(unedifactInterchange, "unedifactInterchange");
 
         if(contentHandler == null) {
@@ -83,9 +88,11 @@ public class UNEdifactInterchangeParser implements XMLReader {
 	        while(true) {
 		        segCode = segmentReader.peek(3);
 		        if(segCode.length() == 3) {
-		        	ControlBlockHandler handler = UNEdifactUtil.getControlBlockHandler(segCode);
-		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, validate);
-		        	
+                    ControlBlockHandlerFactory controlBlockHandlerFactory = new UNEdifactControlBlockHandlerFactory(hierarchyChangeListener);
+		        	InterchangeContext interchangeContext = new InterchangeContext(segmentReader, mappingModels, contentHandler, controlBlockHandlerFactory, validate);
+
+                    ControlBlockHandler handler = controlBlockHandlerFactory.getControlBlockHandler(segCode);
+
 					interchangeContext.indentDepth.value++;
 		        	handler.process(interchangeContext);
 					interchangeContext.indentDepth.value--;
@@ -179,7 +186,7 @@ public class UNEdifactInterchangeParser implements XMLReader {
     public void setFeature(String name, boolean value) {
     	features.put(name, value);
     }
-    
+
     public boolean getFeature(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
     	Boolean feature = features.get(name);
     	if(feature == null) {
@@ -187,42 +194,46 @@ public class UNEdifactInterchangeParser implements XMLReader {
     	}
     	return feature;
     }
-    
+
+    public void setHierarchyChangeListener(HierarchyChangeListener listener) {
+        this.hierarchyChangeListener = listener;
+    }
+
     /****************************************************************************
      *
      * The following methods are currently unimplemnted...
      *
      ****************************************************************************/
-    
+
     public void parse(String systemId) throws IOException, SAXException {
     	throw new UnsupportedOperationException("Operation not supports by this reader.");
     }
-    
+
     public DTDHandler getDTDHandler() {
     	return null;
     }
-    
+
     public void setDTDHandler(DTDHandler arg0) {
     }
-    
+
     public EntityResolver getEntityResolver() {
     	return null;
     }
-    
+
     public void setEntityResolver(EntityResolver arg0) {
     }
-    
+
     public ErrorHandler getErrorHandler() {
     	return null;
     }
-    
+
     public void setErrorHandler(ErrorHandler arg0) {
     }
-    
+
     public Object getProperty(String name) throws SAXNotRecognizedException, SAXNotSupportedException {
     	return null;
     }
-    
+
     public void setProperty(String name, Object value) throws SAXNotRecognizedException, SAXNotSupportedException {
     }
 }

@@ -30,7 +30,6 @@ import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.Segment;
-import org.milyn.edisax.unedifact.UNEdifactUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -41,11 +40,11 @@ public class UNBHandler implements ControlBlockHandler {
 
 	private static Log logger = LogFactory.getLog(UNBHandler.class);
 	
-	private Segment unbSegment;
-	private Segment unzSegment;
-	private Map<String, Charset> toCharsetMapping;
+	private static Segment unbSegment;
+	private static Segment unzSegment;
+	private static Map<String, Charset> toCharsetMapping;
 	
-	public UNBHandler() {
+	static {
 		createSegmentsDefs();
 		createRepertoireToCharsetMap();
 	}
@@ -77,7 +76,7 @@ public class UNBHandler implements ControlBlockHandler {
 	    		interchangeContext.mapControlSegment(unzSegment, true);
 	    		break;
 	        } else {	        	
-	        	ControlBlockHandler handler = UNEdifactUtil.getControlBlockHandler(segCode);
+	        	ControlBlockHandler handler = interchangeContext.getControlBlockHandler(segCode);
 	        	handler.process(interchangeContext);
 	        }
         }		
@@ -93,7 +92,7 @@ public class UNBHandler implements ControlBlockHandler {
 		bufferedSegmentReader.changeEncoding(charset);
 	}
 
-	private void createSegmentsDefs() {
+	private static void createSegmentsDefs() {
 		// UNB Segment Definition...
 		// http://www.gefeg.com/jswg/v41/se/se13.htm
 		unbSegment = new Segment();
@@ -141,7 +140,7 @@ public class UNBHandler implements ControlBlockHandler {
 		unzSegment.addField(new Field("controlRef", true));
 	}
 
-	private void createRepertoireToCharsetMap() {
+	private static void createRepertoireToCharsetMap() {
 		toCharsetMapping = new HashMap<String, Charset>();
 		
 		// http://www.gefeg.com/jswg/cl/v41/40107/cl1.htm
@@ -172,7 +171,7 @@ public class UNBHandler implements ControlBlockHandler {
 		addCharsetMapping("8", "UTF-16");
 	}
 
- 	private void addCharsetMapping(String code, String charsetName) {
+ 	private static void addCharsetMapping(String code, String charsetName) {
  		if(Charset.isSupported(charsetName)) {
  			toCharsetMapping.put(code, Charset.forName(charsetName));
  		} else {

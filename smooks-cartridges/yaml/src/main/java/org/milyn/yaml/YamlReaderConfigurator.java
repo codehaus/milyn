@@ -22,6 +22,8 @@ import org.milyn.cdr.Parameter;
 import org.milyn.assertion.AssertArgument;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -223,7 +225,7 @@ public class YamlReaderConfigurator implements ReaderConfigurator {
 	 *
 	 * @return The SmooksResourceConfiguration
 	 */
-	public SmooksResourceConfiguration toConfig() {
+	public List<SmooksResourceConfiguration> toConfig() {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(YamlReader.class);
 
         configurator.getParameters().setProperty("aliasStrategy", aliasStrategy.toString());
@@ -244,13 +246,14 @@ public class YamlReaderConfigurator implements ReaderConfigurator {
         }
         configurator.setTargetProfile(targetProfile);
 
-        SmooksResourceConfiguration config = configurator.toConfig();
+        List<SmooksResourceConfiguration> configList = configurator.toConfig();
+        SmooksResourceConfiguration config = configList.get(0);
 
         if(keyMap != null) {
             Parameter keyMapParam = new Parameter(YamlReader.CONFIG_PARAM_KEY_MAP, keyMap);
             config.setParameter(keyMapParam);
         }
 
-        return config;
+        return configList;
     }
 }

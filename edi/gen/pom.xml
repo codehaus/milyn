@@ -19,6 +19,22 @@
 
     <profiles>
         <profile>
+            <id>testonly</id>
+            <modules>
+                <!-- UN/EDIFACT D93A... -->
+                <!--<module>unedifact/d93a/test</module>-->
+
+                <!-- UN/EDIFACT D03B... -->
+                <module>unedifact/d03b/test</module>
+
+                <!-- UN/EDIFACT D08A... -->
+                <module>unedifact/d08a/test</module>
+            </modules>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
             <id>all</id>
             <modules>
                 <!-- UN/EDIFACT D93A... -->
@@ -33,18 +49,21 @@
                 <module>unedifact/d08a/mapping</module>
                 <module>unedifact/d08a/test</module>
             </modules>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
         </profile>
         <profile>
             <id>deploy</id>
             <modules>
+                <!-- UN/EDIFACT D93A... -->
+                <!--<module>unedifact/d93a/mapping</module>-->
+
                 <!-- UN/EDIFACT D03B... -->
                 <module>unedifact/d03b/mapping</module>
+                <module>unedifact/d03b/binding</module>
+                <module>unedifact/d03b/test</module>
 
                 <!-- UN/EDIFACT D08A... -->
                 <module>unedifact/d08a/mapping</module>
+                <module>unedifact/d08a/test</module>
             </modules>
         </profile>
     </profiles>

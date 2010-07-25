@@ -80,6 +80,13 @@ public class SAXHandler extends SmooksContentHandler {
     public SAXHandler(ExecutionContext executionContext, Writer writer, SmooksContentHandler parentContentHandler) {
         super(executionContext, parentContentHandler);
 
+//        SmooksContentHandler parentHandler = getParentContentHandler();
+//        if(parentHandler != null && parentHandler instanceof SAXHandler) {
+//            SAXHandler parentSAXHandler = (SAXHandler) parentHandler;
+//            currentProcessor = new ElementProcessor();
+//            currentProcessor.element = parentSAXHandler.currentProcessor.element;
+//        }
+
         this.execContext = executionContext;
         this.writer = writer;
         eventListener = executionContext.getEventListener();

@@ -29,6 +29,7 @@ import org.milyn.edisax.model.internal.Description;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.Segment;
 import org.milyn.edisax.unedifact.UNEdifactUtil;
+import org.milyn.xml.hierarchy.HierarchyChangeListener;
 import org.xml.sax.SAXException;
 
 /**
@@ -37,64 +38,63 @@ import org.xml.sax.SAXException;
  */
 public class UNHHandler implements ControlBlockHandler {
 
-	private Segment unhSegment;
-	private Segment untSegment;
-	
-	public UNHHandler() {
-		createSegmentsDefs();
-	}
-	
-	private UNTSegmentListener untSegmentListener = new UNTSegmentListener();
+    private static Segment unhSegment;
+    private static Segment untSegment;
+    private static UNTSegmentListener untSegmentListener = new UNTSegmentListener();
 
-	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
+    static {
+        createSegmentsDefs();
+    }
+
+    private HierarchyChangeListener hierarchyChangeListener;
+
+    public UNHHandler(HierarchyChangeListener hierarchyChangeListener) {
+        this.hierarchyChangeListener = hierarchyChangeListener;
+    }
+
+    public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 		Map<Description, EdifactModel> mappingModels = interchangeContext.getMappingModels();
-		
+
 		interchangeContext.getControlSegmentParser().startElement(InterchangeContext.INTERCHANGE_MESSAGE_BLOCK_ELEMENT_NAME, true);
 
 		// Move to the end of the UNH segment and map it's fields..
 		segmentReader.moveToNextSegment(false);
 		interchangeContext.mapControlSegment(unhSegment, false);
-		
+
 		// Select the mapping model to use for this message...
 		String[] fields = segmentReader.getCurrentSegmentFields();
 		String messageName = fields[2];
 		EdifactModel mappingModel = UNEdifactUtil.getMappingModel(messageName, segmentReader.getDelimiters(), mappingModels);
-		
+
 		// Map the message... stopping at the UNT segment...
 		try {
 			EDIParser parser = interchangeContext.newParser(mappingModel);
-			
+
 			segmentReader.setSegmentListener(untSegmentListener);
-			parser.parse();
+
+            if(hierarchyChangeListener != null) {
+                hierarchyChangeListener.attachXMLReader(parser);
+            }
+
+            parser.parse();
 		} finally {
 			segmentReader.setSegmentListener(null);
-		}		
-		
+            if(hierarchyChangeListener != null) {
+                hierarchyChangeListener.detachXMLReader();
+            }
+		}
+
 		// We're at the end of the UNT segment now.  See the UNTSegmentListener below.
-		
+
 		// Map the UNT segment...
 		interchangeContext.mapControlSegment(untSegment, true);
 		segmentReader.getSegmentBuffer().setLength(0);
 
 		interchangeContext.getControlSegmentParser().endElement(InterchangeContext.INTERCHANGE_MESSAGE_BLOCK_ELEMENT_NAME, true);
 	}
-	
-	private class UNTSegmentListener implements BufferedSegmentListener {
 
-		/* (non-Javadoc)
-		 * @see org.milyn.edisax.BufferedSegmentListener#onSegment(java.lang.StringBuffer)
-		 */
-		public boolean onSegment(BufferedSegmentReader bufferedSegmentReader) {
-			String[] fields = bufferedSegmentReader.getCurrentSegmentFields();
-			
-			// Stop the current segment consumer if we have reached the UNT segment i.e.
-			// only return true if it's not UNT...
-			return !fields[0].equals("UNT");
-		}		
-	}
-
-	private void createSegmentsDefs() {
+    private static void createSegmentsDefs() {
 		// UNH Segment Definition...
 		// http://www.gefeg.com/jswg/v41/se/se16.htm
 		unhSegment = new Segment();
@@ -141,4 +141,15 @@ public class UNHHandler implements ControlBlockHandler {
 		untSegment.addField(new Field("segmentCount", true));
 		untSegment.addField(new Field("messageRefNum", true));
 	}
+
+    private static class UNTSegmentListener implements BufferedSegmentListener {
+
+        public boolean onSegment(BufferedSegmentReader bufferedSegmentReader) {
+            String[] fields = bufferedSegmentReader.getCurrentSegmentFields();
+
+            // Stop the current segment consumer if we have reached the UNT segment i.e.
+            // only return true if it's not UNT...
+            return !fields[0].equals("UNT");
+        }
+    }
 }

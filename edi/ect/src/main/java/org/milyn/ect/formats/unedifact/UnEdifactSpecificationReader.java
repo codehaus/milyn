@@ -36,6 +36,8 @@ import java.util.zip.ZipInputStream;
  * @author bardl
  */
 public class UnEdifactSpecificationReader implements EdiSpecificationReader {
+
+    public static final String INTERCHANGE_TYPE = "UNEDIFACT";
     
     private static final int BUFFER = 2048;
     private static final String INTERCHANGE_DEFINITION = "un-edifact-interchange-definition.xml";
@@ -84,8 +86,11 @@ public class UnEdifactSpecificationReader implements EdiSpecificationReader {
 
     public Properties getInterchangeProperties() {
         Properties properties = new Properties();
-        properties.setProperty(EdiSpecificationReader.MESSAGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/unedifact-message.xml");
-        properties.setProperty(EdiSpecificationReader.INTERCHANGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/unedifact-interchange.xml");
+
+        properties.setProperty(EdiSpecificationReader.INTERCHANGE_TYPE, INTERCHANGE_TYPE);
+        properties.setProperty(EdiSpecificationReader.MESSAGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/bindings/unedifact-message.xml");
+        properties.setProperty(EdiSpecificationReader.INTERCHANGE_BINDING_CONFIG, "/org/milyn/smooks/edi/unedifact/model/bindings/unedifact-interchange.xml");
+
         return properties;
     }
 

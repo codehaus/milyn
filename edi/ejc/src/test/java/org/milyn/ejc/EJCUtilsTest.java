@@ -33,8 +33,11 @@ public class EJCUtilsTest extends TestCase {
     public void testEncodeAttribute() throws IllegalNameException {
         assertEquals("address", EJCUtils.encodeAttributeName("ADDRESS"));
         assertEquals("addRESS", EJCUtils.encodeAttributeName("addRESS"));
+        assertEquals("addRESS", EJCUtils.encodeAttributeName("AddRESS"));
         assertEquals("orderId", EJCUtils.encodeAttributeName("orderId"));
         assertEquals("orderId", EJCUtils.encodeAttributeName("order_id"));
         assertEquals("_default", EJCUtils.encodeAttributeName("default"));
+        assertEquals("_package", EJCUtils.encodeAttributeName("package"));
+        assertEquals("_package", EJCUtils.encodeAttributeName("Package"));
     }
 }

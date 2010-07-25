@@ -17,6 +17,8 @@ package org.milyn;
 
 import org.milyn.cdr.SmooksResourceConfiguration;
 
+import java.util.List;
+
 /**
  * Reader configurator.
  * <p/>
@@ -28,8 +30,8 @@ import org.milyn.cdr.SmooksResourceConfiguration;
 public interface ReaderConfigurator {
 
     /**
-     * Create the {@link org.milyn.cdr.SmooksResourceConfiguration} for the Reader to be used by the Smooks instance.
-     * @return The {@link org.milyn.cdr.SmooksResourceConfiguration}.
+     * Create the {@link org.milyn.cdr.SmooksResourceConfiguration} list for the Reader to be used by the Smooks instance.
+     * @return The {@link org.milyn.cdr.SmooksResourceConfiguration} list.
      */
-    SmooksResourceConfiguration toConfig();
+    List<SmooksResourceConfiguration> toConfig();
 }

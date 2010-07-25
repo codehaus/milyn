@@ -74,7 +74,7 @@ public class EJCMojo extends AbstractMojo {
 
                 String directoryMapping = urnTokens[1];
                 if(directoryMapping.endsWith("_mapping")) {
-                    directoryMapping.substring(0, directoryMapping.length() - "_mapping".length());
+                    directoryMapping = directoryMapping.substring(0, directoryMapping.length() - "_mapping".length());
                 }
 
                 packageName = urnTokens[0] + "." + directoryMapping;

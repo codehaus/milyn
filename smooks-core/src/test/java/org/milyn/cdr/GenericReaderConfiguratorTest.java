@@ -29,7 +29,7 @@ public class GenericReaderConfiguratorTest extends TestCase {
     public void test_resource_only() {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(JavaXMLReader.class);
 
-        SmooksResourceConfiguration config = configurator.toConfig();
+        SmooksResourceConfiguration config = configurator.toConfig().get(0);
         assertConfigOK(config, JavaXMLReader.class.getName(), 0, 0, 0);
     }
 
@@ -45,7 +45,7 @@ public class GenericReaderConfiguratorTest extends TestCase {
         configurator.setFeature("http://e", false);
         configurator.setFeature("http://f", false);
 
-        SmooksResourceConfiguration config = configurator.toConfig();
+        SmooksResourceConfiguration config = configurator.toConfig().get(0);
         assertConfigOK(config, JavaXMLReader.class.getName(), 8, 3, 3);
 
         assertEquals("1", config.getStringParameter("a"));
@@ -65,7 +65,7 @@ public class GenericReaderConfiguratorTest extends TestCase {
         configurator.getParameters().setProperty("a", "1");
         configurator.setFeature("http://a", true);
 
-        SmooksResourceConfiguration config = configurator.toConfig();
+        SmooksResourceConfiguration config = configurator.toConfig().get(0);
         assertConfigOK(config, null, 2, 1, 0);
 
         assertEquals("1", config.getStringParameter("a"));

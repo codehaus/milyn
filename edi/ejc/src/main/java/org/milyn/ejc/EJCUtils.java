@@ -95,9 +95,14 @@ public class EJCUtils {
         result = EJCUtils.deleteWithPascalNotation(result, ' ');
         result = EJCUtils.deleteWithPascalNotation(result, '_');
 
+        if(Character.isUpperCase(result.charAt(0))) {
+            result = Character.toLowerCase(result.charAt(0)) + result.substring(1);
+        }
+
         if (reservedKeywords.contains(result)) {
             result = "_" + result;
         }
+
         return result;
     }
 

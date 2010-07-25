@@ -51,7 +51,9 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Abstract Parser.
@@ -93,15 +95,35 @@ public class AbstractParser {
     }
 
     public static void attachXMLReader(XMLReader xmlReader, ExecutionContext execContext) {
-        execContext.setAttribute(XMLReader.class, xmlReader);
+        getReaders(execContext).push(xmlReader);
     }
 
-    public static XMLReader getXMLReader(ExecutionContext executionContext) {
-        return (XMLReader) executionContext.getAttribute(XMLReader.class);
+    public static XMLReader getXMLReader(ExecutionContext execContext) {
+        Stack<XMLReader> xmlReaderStack = getReaders(execContext);
+
+        if(!xmlReaderStack.isEmpty()) {
+            return xmlReaderStack.peek();
+        } else {
+            return null;
+        }
     }
 
     public static void detachXMLReader(ExecutionContext execContext) {
-        execContext.removeAttribute(XMLReader.class);
+        Stack<XMLReader> xmlReaderStack = getReaders(execContext);
+
+        if(!xmlReaderStack.isEmpty()) {
+            xmlReaderStack.pop();
+        }
+    }
+
+    private static Stack<XMLReader> getReaders(ExecutionContext execContext) {
+        Stack<XMLReader> readers = (Stack<XMLReader>) execContext.getAttribute(XMLReader.class);
+
+        if(readers == null) {
+            readers = new Stack<XMLReader>();
+            execContext.setAttribute(XMLReader.class, readers);
+        }
+        return readers;
     }
 
     /**
@@ -126,28 +148,28 @@ public class AbstractParser {
         return saxDriverConfig;
     }
 
-    protected Reader getReader(Source source, ExecutionContext executionContext) {
+    protected static Reader getReader(Source source, String contentEncoding) {
     	if(source != null) {
 	        if (source instanceof StreamSource) {
 	            StreamSource streamSource = (StreamSource) source;
 	            if (streamSource.getReader() != null) {
 	                return streamSource.getReader();
 	            } else if (streamSource.getInputStream() != null) {
-	            	return streamToReader(streamSource.getInputStream(), executionContext);
+	            	return streamToReader(streamSource.getInputStream(), contentEncoding);
 				} else if (streamSource.getSystemId() != null) {
-					return systemIdToReader(streamSource.getSystemId(), executionContext);
+					return systemIdToReader(streamSource.getSystemId(), contentEncoding);
 				} 
 	            
 	            throw new SmooksException("Invalid " + StreamSource.class.getName() + ".  No InputStream, Reader or SystemId instance.");
 			} else if (source.getSystemId() != null) {
-				return systemIdToReader(source.getSystemId(), executionContext);
+				return systemIdToReader(source.getSystemId(), contentEncoding);
 			} 
     	}
     	
         return new NullReader();
     }
 
-	private Reader systemIdToReader(String systemId, ExecutionContext executionContext) {
+	private static Reader systemIdToReader(String systemId, String contentEncoding) {
 		URL resourceURL;
 		try {
 			resourceURL = new URL(systemId);
@@ -155,16 +177,16 @@ public class AbstractParser {
 		    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Must be a valid URL.", e);
 		}
 		try {
-			return streamToReader(resourceURL.openStream(), executionContext);
+			return streamToReader(resourceURL.openStream(), contentEncoding);
 		} catch (IOException e) {
 		    throw new SmooksException("Invalid System ID on StreamSource: '" + systemId + "'.  Unable to open stream to resource.", e);
 		}
 	}
 
-	private Reader streamToReader(InputStream inputStream, ExecutionContext executionContext) {
+	private static Reader streamToReader(InputStream inputStream, String contentEncoding) {
 		try {
-		    if (executionContext != null) {
-		        return new InputStreamReader(inputStream, executionContext.getContentEncoding());
+		    if (contentEncoding != null) {
+		        return new InputStreamReader(inputStream, contentEncoding);
 		    } else {
 		        return new InputStreamReader(inputStream, "UTF-8");
 		    }
@@ -173,22 +195,28 @@ public class AbstractParser {
 		}
 	}
 
-    protected InputSource createInputSource(XMLReader inputReader, Source source, ExecutionContext executionContext) {
+    protected InputSource createInputSource(XMLReader inputReader, Source source, String contentEncoding) {
         InputSource inputSource;
         if (inputReader instanceof StreamReader) { // Base on marker interface StreamReader, the Source will be created from Reader or from inputStream
             inputSource = new InputSource(getInputStream(source));
         } else {
-            Reader reader = getReader(source, executionContext);
-            inputSource = new InputSource(reader);
-            
-            // Also attach the underlying stream to the InputSource...
-            if(source instanceof StreamSource) {
-            	inputSource.setByteStream(((StreamSource) source).getInputStream());
-            }
+            inputSource = createInputSource(source, contentEncoding);
         }
         
         return inputSource;
 
+    }
+
+    public static InputSource createInputSource(Source source, String contentEncoding) {
+        Reader reader = getReader(source, contentEncoding);
+        InputSource inputSource = new InputSource(reader);
+
+        // Also attach the underlying stream to the InputSource...
+        if(source instanceof StreamSource) {
+            inputSource.setByteStream(((StreamSource) source).getInputStream());
+        }
+        
+        return inputSource;
     }
 
     protected InputStream getInputStream(Source source) {
