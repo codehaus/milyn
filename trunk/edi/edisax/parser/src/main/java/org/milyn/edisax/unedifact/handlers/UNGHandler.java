@@ -23,7 +23,6 @@ import org.milyn.edisax.interchange.InterchangeContext;
 import org.milyn.edisax.model.internal.Component;
 import org.milyn.edisax.model.internal.Field;
 import org.milyn.edisax.model.internal.Segment;
-import org.milyn.edisax.unedifact.UNEdifactUtil;
 import org.xml.sax.SAXException;
 
 /**
@@ -32,38 +31,38 @@ import org.xml.sax.SAXException;
  */
 public class UNGHandler implements ControlBlockHandler {
 
-	private Segment ungSegment;
-	private Segment uneSegment;
-	
-	public UNGHandler() {
+	private static Segment ungSegment;
+	private static Segment uneSegment;
+
+    static {
 		createSegmentsDefs();
 	}
 
-	public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
+    public void process(InterchangeContext interchangeContext) throws IOException, SAXException {
 		BufferedSegmentReader segmentReader = interchangeContext.getSegmentReader();
 
 		interchangeContext.getControlSegmentParser().startElement("group", true);
-		
+
 		segmentReader.moveToNextSegment(false);
 		interchangeContext.mapControlSegment(ungSegment, true);
-		
+
         while(true) {
 	        String segCode = segmentReader.peek(3);
-	        
+
 	        if(segCode.equals("UNE")) {
 	    		segmentReader.moveToNextSegment(false);
 	    		interchangeContext.mapControlSegment(uneSegment, true);
 	    		break;
-	        } else {	        	
-	        	ControlBlockHandler handler = UNEdifactUtil.getControlBlockHandler(segCode);
+	        } else {
+	        	ControlBlockHandler handler = interchangeContext.getControlBlockHandler(segCode);
 	        	handler.process(interchangeContext);
 	        }
-        }		
+        }
 
         interchangeContext.getControlSegmentParser().endElement("group", true);
 	}
-	
-	private void createSegmentsDefs() {
+
+    private static void createSegmentsDefs() {
 		// UNG Segment Definition...
 		// http://www.gefeg.com/jswg/v41/se/se15.htm
 		ungSegment = new Segment();

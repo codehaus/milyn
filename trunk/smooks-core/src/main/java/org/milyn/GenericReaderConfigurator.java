@@ -67,8 +67,10 @@ public class GenericReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
-    public SmooksResourceConfiguration toConfig() {
+    public List<SmooksResourceConfiguration> toConfig() {
         SmooksResourceConfiguration smooksConfig = new SmooksResourceConfiguration();
+
+        smooksConfig.setSelector(AbstractParser.ORG_XML_SAX_DRIVER);        
 
         if(readerClass != null) {
             smooksConfig.setResource(readerClass.getName());
@@ -94,6 +96,9 @@ public class GenericReaderConfigurator implements ReaderConfigurator {
             smooksConfig.setParameter(AbstractParser.FEATURE_OFF, featureOff);
         }
 
-        return smooksConfig;
+        List<SmooksResourceConfiguration> configList = new ArrayList<SmooksResourceConfiguration>();
+        configList.add(smooksConfig);
+
+        return configList;
     }
 }

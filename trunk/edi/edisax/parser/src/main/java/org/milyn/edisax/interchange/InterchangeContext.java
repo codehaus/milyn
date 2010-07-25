@@ -27,8 +27,6 @@ import org.milyn.edisax.model.internal.Segment;
 import org.milyn.lang.MutableInt;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
 
 /**
  * EDI message interchange context object.
@@ -40,27 +38,31 @@ public class InterchangeContext {
     public static final String INTERCHANGE_MESSAGE_BLOCK_ELEMENT_NAME = "interchangeMessage";
 
 	private BufferedSegmentReader segmentReader; 
-	private Map<Description, EdifactModel> mappingModels; 
+	private Map<Description, EdifactModel> mappingModels;
 	private ContentHandler contentHandler;
 	private EDIParser controlSegmentParser;
     public MutableInt indentDepth = new MutableInt(0);
-	private boolean validate;
-    
-	/**
+    private ControlBlockHandlerFactory controlBlockHandlerFactory;
+    private boolean validate;
+
+    /**
 	 * Public constructor.
 	 * 
-	 * @param segmentReader The interchange {@link BufferedSegmentReader} instance.
-	 * @param mappingModels The {@link EdifactModel Mapping Models} to be used for translating the interchange.
-	 * @param contentHandler The {@link ContentHandler content handler} instance to receive the interchange events.
-	 * @param validate Validate the data types of the EDI message data as defined in the mapping model.
+	 * @param segmentReader The interchange {@link org.milyn.edisax.BufferedSegmentReader} instance.
+     * @param mappingModels The {@link org.milyn.edisax.model.EdifactModel Mapping Models} to be used for translating the interchange.
+     * @param contentHandler The {@link org.xml.sax.ContentHandler content handler} instance to receive the interchange events.
+     * @param controlBlockHandlerFactory Control Block Handler Factory.
+     * @param validate Validate the data types of the EDI message data as defined in the mapping model.
 	 */
-	public InterchangeContext(BufferedSegmentReader segmentReader, Map<Description, EdifactModel> mappingModels, ContentHandler contentHandler, boolean validate) {
+	public InterchangeContext(BufferedSegmentReader segmentReader, Map<Description, EdifactModel> mappingModels, ContentHandler contentHandler, ControlBlockHandlerFactory controlBlockHandlerFactory, boolean validate) {
 		AssertArgument.isNotNull(segmentReader, "segmentReader");
 		AssertArgument.isNotNull(mappingModels, "mappingModels");
 		AssertArgument.isNotNull(contentHandler, "contentHandler");
+        AssertArgument.isNotNull(controlBlockHandlerFactory, "controlBlockHandlerFactory");
 		this.segmentReader = segmentReader;
 		this.mappingModels = mappingModels;
 		this.contentHandler = contentHandler;
+        this.controlBlockHandlerFactory = controlBlockHandlerFactory;
 		this.validate = validate;
 		
 		controlSegmentParser = new EDIParser();
@@ -75,43 +77,47 @@ public class InterchangeContext {
         controlSegmentParser.setMappingModel(controlModel);
     }
 
-	public BufferedSegmentReader getSegmentReader() {
+    public ControlBlockHandler getControlBlockHandler(String segCode) throws SAXException {
+        return controlBlockHandlerFactory.getControlBlockHandler(segCode);
+    }
+
+    public BufferedSegmentReader getSegmentReader() {
 		return segmentReader;
 	}
 
-	public Map<Description, EdifactModel> getMappingModels() {
+    public Map<Description, EdifactModel> getMappingModels() {
 		return mappingModels;
 	}
 
-	public ContentHandler getContentHandler() {
+    public ContentHandler getContentHandler() {
 		return contentHandler;
 	}
-	
-	public boolean isValidate() {
+
+    public boolean isValidate() {
 		return validate;
 	}
 
-	public EDIParser newParser(EdifactModel mappingModel) {
+    public EDIParser newParser(EdifactModel mappingModel) {
 		EDIParser parser = new EDIParser();
-		
+
 		parser.setContentHandler(contentHandler);
 		parser.setMappingModel(mappingModel);
 		parser.setBufferedSegmentReader(segmentReader);
 		parser.setIndentDepth(indentDepth);
 		parser.setFeature(EDIParser.FEATURE_VALIDATE, validate);
-		
+
 		return parser;
 	}
 
-	public EDIParser getControlSegmentParser() {
+    public EDIParser getControlSegmentParser() {
 		return controlSegmentParser;
 	}
 
-	public void mapControlSegment(Segment controlSegment, boolean clearSegmentBuffer) throws SAXException {
+    public void mapControlSegment(Segment controlSegment, boolean clearSegmentBuffer) throws SAXException {
 		controlSegmentParser.startElement(controlSegment.getXmltag(), true);
 		controlSegmentParser.mapFields(segmentReader.getCurrentSegmentFields(), controlSegment);
 		controlSegmentParser.endElement(controlSegment.getXmltag(), true);
-		
+
 		// And clear the buffer... we're finished with this data...
 		if(clearSegmentBuffer) {
 			segmentReader.getSegmentBuffer().setLength(0);

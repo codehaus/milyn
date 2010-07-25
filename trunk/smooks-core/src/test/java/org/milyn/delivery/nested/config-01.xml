@@ -9,6 +9,7 @@
     <resource-config selector="order-item">
         <resource>org.milyn.delivery.nested.NestedExecutionVisitor</resource>
         <param name="smooksConfig">/org/milyn/delivery/nested/order-item-config.xml</param>
+        <param name="mapBeans">orderItem</param>
     </resource-config>
 
     <resource-config selector="trailer">

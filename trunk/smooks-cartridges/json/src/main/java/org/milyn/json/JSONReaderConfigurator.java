@@ -22,6 +22,8 @@ import org.milyn.cdr.Parameter;
 import org.milyn.assertion.AssertArgument;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -97,7 +99,7 @@ public class JSONReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
-    public SmooksResourceConfiguration toConfig() {
+    public List<SmooksResourceConfiguration> toConfig() {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(JSONReader.class);
 
         configurator.getParameters().setProperty("rootName", rootName);
@@ -114,15 +116,16 @@ public class JSONReaderConfigurator implements ReaderConfigurator {
         configurator.getParameters().setProperty("nullValueReplacement", nullValueReplacement);
         configurator.getParameters().setProperty("encoding", encoding.name());
 
-        SmooksResourceConfiguration config = configurator.toConfig();
+        List<SmooksResourceConfiguration> configList = configurator.toConfig();
+        SmooksResourceConfiguration config = configList.get(0);
 
         if(keyMap != null) {
             Parameter keyMapParam = new Parameter(JSONReader.CONFIG_PARAM_KEY_MAP, keyMap);
             config.setParameter(keyMapParam);
         }
 
-        configurator.setTargetProfile(targetProfile);
+        config.setTargetProfile(targetProfile);
 
-        return config;
+        return configList;
     }
 }

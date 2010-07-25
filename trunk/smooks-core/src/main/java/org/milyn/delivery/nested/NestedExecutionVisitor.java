@@ -17,31 +17,48 @@ package org.milyn.delivery.nested;
 
 import org.milyn.Smooks;
 import org.milyn.SmooksException;
+import org.milyn.cdr.annotation.AppContext;
 import org.milyn.cdr.annotation.ConfigParam;
+import org.milyn.container.ApplicationContext;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
 import org.milyn.delivery.SmooksContentHandler;
 import org.milyn.delivery.VisitLifecycleCleanable;
+import org.milyn.delivery.annotation.Initialize;
 import org.milyn.delivery.annotation.Uninitialize;
+import org.milyn.delivery.ordering.Producer;
 import org.milyn.delivery.sax.SAXElement;
 import org.milyn.delivery.sax.SAXHandler;
 import org.milyn.delivery.sax.SAXVisitBefore;
+import org.milyn.javabean.context.BeanContext;
+import org.milyn.javabean.repository.BeanId;
+import org.milyn.util.CollectionsUtil;
 import org.xml.sax.XMLReader;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Nested Smooks execution visitor.
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCleanable {
+public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCleanable, Producer {
 
     @ConfigParam
     private String smooksConfig;
 
+    @ConfigParam
+    private String[] mapBeans;
+    private List<BeanId> mapBeanIds = new ArrayList<BeanId>();
+
     @ConfigParam(defaultVal = "true")
     private boolean inheritBeanContext;
+
+    @AppContext
+    private ApplicationContext applicationContext;
 
     private volatile Smooks smooksInstance;
 
@@ -51,6 +68,13 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
 
     public void setSmooksInstance(Smooks smooksInstance) {
         this.smooksInstance = smooksInstance;
+    }
+
+    @Initialize
+    public void preRegBeanIds() {
+        for(String preRegBeanId : mapBeans) {
+            mapBeanIds.add(applicationContext.getBeanIdStore().register(preRegBeanId));
+        }
     }
 
     @Uninitialize
@@ -63,25 +87,32 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
     public void visitBefore(SAXElement element, ExecutionContext executionContext) throws SmooksException, IOException {
         Smooks smooks = getSmooksInstance();
         ExecutionContext nestedExecutionContext = smooks.createExecutionContext();
-        SmooksContentHandler parentContentHandler = SmooksContentHandler.getHandler(executionContext);
-        SmooksContentHandler nestedContentHandler = new SAXHandler(nestedExecutionContext, element.getWriter(this), parentContentHandler);
-        XMLReader xmlReader;
-
-        if(inheritBeanContext) {
-            nestedExecutionContext.setBeanContext(executionContext.getBeanContext().newSubContext(nestedExecutionContext));
-        }
 
         // In case there's an attached event listener...
         nestedExecutionContext.setEventListener(executionContext.getEventListener());
 
+        SmooksContentHandler parentContentHandler = SmooksContentHandler.getHandler(executionContext);
+
+        if(parentContentHandler.getNestedContentHandler() != null) {
+            throw new SmooksException("Illegal use of more than one nested content handler fired on the same element.");
+        }
+
+        SmooksContentHandler nestedContentHandler = new SAXHandler(nestedExecutionContext, element.getWriter(this), parentContentHandler);
+
         // Attach the XMLReader instance to the nested ExecutionContext and then swap the content handler on
         // the XMLReader to be the nested handler created here.  All events wll be forwarded to the ..
-        xmlReader = AbstractParser.getXMLReader(executionContext);
+        XMLReader xmlReader = AbstractParser.getXMLReader(executionContext);
         AbstractParser.attachXMLReader(xmlReader, nestedExecutionContext);
         xmlReader.setContentHandler(nestedContentHandler);
 
+        executionContext.setAttribute(NestedExecutionVisitor.class, nestedExecutionContext);
+
         // Note we do not execute the Smooks filterSource methods for a nested instance... we just install
         // the content handler and redirect the reader events to it...
+    }
+
+    public Set<? extends Object> getProducts() {
+        return CollectionsUtil.toSet(mapBeans);
     }
 
     private Smooks getSmooksInstance() {
@@ -101,12 +132,24 @@ public class NestedExecutionVisitor implements SAXVisitBefore, VisitLifecycleCle
     }
 
     public void executeVisitLifecycleCleanup(ExecutionContext executionContext) {
-        SmooksContentHandler handler = SmooksContentHandler.getHandler(executionContext);
+        ExecutionContext nestedExecutionContext = (ExecutionContext) executionContext.getAttribute(NestedExecutionVisitor.class);
 
         try {
-            handler.getNestedContentHandler().cleanup();
+            if(nestedExecutionContext != null) {
+                BeanContext parentBeanContext = executionContext.getBeanContext();
+                BeanContext nestedBeanContext = nestedExecutionContext.getBeanContext();
+
+                for(BeanId beanId : mapBeanIds) {
+                    Object bean = nestedBeanContext.getBean(beanId.getName());
+
+                    // Add the bean from the nested context onto the parent context and then remove
+                    // it again.  This is enough to fire the wiring and end events...
+                    parentBeanContext.addBean(beanId, bean);
+                    parentBeanContext.removeBean(beanId, null);
+                }
+            }
         } finally {
-            handler.resetNestedContentHandler();
+            executionContext.removeAttribute(NestedExecutionVisitor.class);            
         }
     }
 }

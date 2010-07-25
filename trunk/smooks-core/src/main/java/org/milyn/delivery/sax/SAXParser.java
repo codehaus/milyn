@@ -17,6 +17,7 @@ package org.milyn.delivery.sax;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -24,6 +25,8 @@ import javax.xml.transform.Source;
 import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
 import org.milyn.delivery.ContentDeliveryConfig;
+import org.milyn.delivery.XMLReaderHierarchyChangeListener;
+import org.milyn.xml.hierarchy.HierarchyChangeReader;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.ext.DefaultHandler2;
@@ -58,19 +61,33 @@ public class SAXParser extends AbstractParser {
                 saxReader = createXMLReader();
             }
             attachXMLReader(saxReader, executionContext);
+
             configureReader(saxReader, saxHandler, executionContext, source);
-	        saxReader.parse(createInputSource(saxReader, source, executionContext));
+            if(executionContext != null) {
+                if(saxReader instanceof HierarchyChangeReader) {
+                    ((HierarchyChangeReader)saxReader).setHierarchyChangeListener(new XMLReaderHierarchyChangeListener(executionContext));
+                }
+	            saxReader.parse(createInputSource(saxReader, source, executionContext.getContentEncoding()));
+            } else {
+                saxReader.parse(createInputSource(saxReader, source, Charset.defaultCharset().name()));
+            }
         } finally {
             try {
-                if(saxReader != null) {
-                    try {
-                        detachXMLReader(executionContext);
-                    } finally {
-                        deliveryConfig.returnXMLReader(saxReader);
-                    }
+                if(executionContext != null && saxReader instanceof HierarchyChangeReader) {
+                    ((HierarchyChangeReader)saxReader).setHierarchyChangeListener(null);
                 }
             } finally {
-                saxHandler.detachHandler();
+                try {
+                    if(saxReader != null) {
+                        try {
+                            detachXMLReader(executionContext);
+                        } finally {
+                            deliveryConfig.returnXMLReader(saxReader);
+                        }
+                    }
+                } finally {
+                    saxHandler.detachHandler();
+                }
             }
         }
         

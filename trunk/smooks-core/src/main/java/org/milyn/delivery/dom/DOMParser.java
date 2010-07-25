@@ -23,10 +23,14 @@ import org.milyn.container.ExecutionContext;
 import org.milyn.delivery.AbstractParser;
 import org.milyn.delivery.ContentDeliveryConfig;
 import org.milyn.delivery.Filter;
+import org.milyn.delivery.XMLReaderHierarchyChangeListener;
+import org.milyn.xml.hierarchy.HierarchyChangeListener;
+import org.milyn.xml.hierarchy.HierarchyChangeReader;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.xml.transform.Source;
 
@@ -118,10 +122,11 @@ public class DOMParser extends AbstractParser {
   	 * @throws IOException Unable to read the input stream.
   	 */
   	private void parse(Source source, DOMBuilder contentHandler) throws SAXException, IOException {
-  		ExecutionContext executionContext = Filter.getCurrentExecutionContext();
+  		ExecutionContext executionContext = getExecContext();
   		
   		if(executionContext != null) {
-			ContentDeliveryConfig deliveryConfig = executionContext.getDeliveryConfig();        
+			ContentDeliveryConfig deliveryConfig = executionContext.getDeliveryConfig();
+
 	  		XMLReader domReader = getXMLReader(executionContext);
 
 	  		try {
@@ -131,26 +136,37 @@ public class DOMParser extends AbstractParser {
                 if(domReader == null) {
                     domReader = createXMLReader();
                 }
+
+                if(domReader instanceof HierarchyChangeReader) {
+                    ((HierarchyChangeReader)domReader).setHierarchyChangeListener(new XMLReaderHierarchyChangeListener(executionContext));
+                }
+
                 attachXMLReader(domReader, executionContext);
                 configureReader(domReader, contentHandler, executionContext, source);
-		        domReader.parse(createInputSource(domReader, source, getExecContext()));
+		        domReader.parse(createInputSource(domReader, source, executionContext.getContentEncoding()));
 	  		} finally {
                 try {
-                    try {
-                        detachXMLReader(executionContext);
-                    } finally {
-                        if(domReader != null) {
-                            deliveryConfig.returnXMLReader(domReader);
-                        }
+                    if(domReader instanceof HierarchyChangeReader) {
+                        ((HierarchyChangeReader)domReader).setHierarchyChangeListener(null);
                     }
                 } finally {
-                    contentHandler.detachHandler();
+                    try {
+                        try {
+                            detachXMLReader(executionContext);
+                        } finally {
+                            if(domReader != null) {
+                                deliveryConfig.returnXMLReader(domReader);
+                            }
+                        }
+                    } finally {
+                        contentHandler.detachHandler();
+                    }
                 }
 	  		}
   		} else {
 	  		XMLReader domReader = createXMLReader();
-	        configureReader(domReader, contentHandler, executionContext, source);
-	        domReader.parse(createInputSource(domReader, source, getExecContext()));
+	        configureReader(domReader, contentHandler, null, source);
+	        domReader.parse(createInputSource(domReader, source, Charset.defaultCharset().name()));
   		}
   	}
 }

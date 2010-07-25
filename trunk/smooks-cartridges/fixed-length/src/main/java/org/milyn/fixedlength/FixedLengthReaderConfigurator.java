@@ -22,6 +22,8 @@ import org.milyn.cdr.SmooksConfigurationException;
 import org.milyn.cdr.SmooksResourceConfiguration;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Fixed Length Reader configurator.
@@ -111,7 +113,7 @@ public class FixedLengthReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
-    public SmooksResourceConfiguration toConfig() {
+    public List<SmooksResourceConfiguration> toConfig() {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(FixedLengthReader.class);
 
         configurator.getParameters().setProperty("fields", fields);

@@ -20,6 +20,9 @@ import org.milyn.GenericReaderConfigurator;
 import org.milyn.cdr.SmooksResourceConfiguration;
 import org.milyn.assertion.AssertArgument;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * EDI Reader configurator.
  * <p/>
@@ -43,7 +46,7 @@ public class EDIReaderConfigurator implements ReaderConfigurator {
         return this;
     }
 
-    public SmooksResourceConfiguration toConfig() {
+    public List<SmooksResourceConfiguration> toConfig() {
         GenericReaderConfigurator configurator = new GenericReaderConfigurator(EDIReader.class);
 
         configurator.getParameters().setProperty(EDIReader.MODEL_CONFIG_KEY, mappingModel);

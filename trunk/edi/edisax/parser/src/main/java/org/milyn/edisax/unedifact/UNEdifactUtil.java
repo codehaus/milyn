@@ -15,21 +15,14 @@
 */
 package org.milyn.edisax.unedifact;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
 import org.milyn.edisax.util.EDIUtils;
-import org.milyn.edisax.interchange.ControlBlockHandler;
 import org.milyn.edisax.model.EdifactModel;
 import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
-import org.milyn.edisax.unedifact.handlers.GenericHandler;
-import org.milyn.edisax.unedifact.handlers.UNAHandler;
-import org.milyn.edisax.unedifact.handlers.UNBHandler;
-import org.milyn.edisax.unedifact.handlers.UNGHandler;
-import org.milyn.edisax.unedifact.handlers.UNHHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -38,32 +31,6 @@ import org.xml.sax.SAXException;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public abstract class UNEdifactUtil {
-
-	private static Map<String, ControlBlockHandler> unedifactCtrlBlockHandlers = new HashMap<String, ControlBlockHandler>();
-	private static GenericHandler genericHandler = new GenericHandler();
-	
-	static {
-		// Initialize the control block handlers...
-		unedifactCtrlBlockHandlers.put("UNA", new UNAHandler());
-		unedifactCtrlBlockHandlers.put("UNB", new UNBHandler());
-		unedifactCtrlBlockHandlers.put("UNG", new UNGHandler());
-		unedifactCtrlBlockHandlers.put("UNH", new UNHHandler());
-	}
-	
-	public static ControlBlockHandler getControlBlockHandler(String segCode) throws SAXException {
-		ControlBlockHandler handler = unedifactCtrlBlockHandlers.get(segCode);
-		
-		if(handler == null) {
-			if(segCode.charAt(0) == 'U') {
-				// Just squirt out the control segment contents using the generic handler...
-				handler = genericHandler;
-			} else {
-				throw new SAXException("Unknown UN/EDIFACT control block segment code '" + segCode + "'.");
-			}
-		}
-		
-		return handler;
-	}
 
 	public static EdifactModel getMappingModel(String messageName, Delimiters delimiters, Map<Description, EdifactModel> mappingModels) throws SAXException {
 		Set<Entry<Description, EdifactModel>> modelSet = mappingModels.entrySet();

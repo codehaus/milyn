@@ -20,13 +20,13 @@ import java.io.IOException;
 import org.xml.sax.SAXException;
 
 /**
- * UN/EDIFACT control block handler.
+ * Interchange control block handler.
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public interface ControlBlockHandler {
 
 	/**
-	 * Process a UN/EDIFACT control block.
+	 * Process an interchange control block.
 	 * @param interchangeContext The interchange context.
      * @throws IOException Error reading from stream.
      * @throws SAXException SAX Error handling segment data.
