@@ -46,4 +46,22 @@ public class JNamedType {
     public String toString() {
         return type.toString() + " " + name;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof JNamedType) {
+            JNamedType namedTypeObj = (JNamedType) obj;
+
+            if(namedTypeObj.getName().equals(name) && namedTypeObj.getType().equals(type)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (name.hashCode() + type.hashCode());
+    }
 }

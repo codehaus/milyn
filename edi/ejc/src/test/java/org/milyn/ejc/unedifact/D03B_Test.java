@@ -21,7 +21,8 @@ public class D03B_Test extends TestCase {
         compileUnEdifactDef();
 
         EJCExecutor ejc = new EJCExecutor();
-        
+
+        ejc.setMessages("PAXLST");
         ejc.setDestDir(new File("target/D03B_Test/java"));
         ejc.setEdiMappingModel(MAPPINGS_JAR);
         ejc.setPackageName("org.smooks.test");
