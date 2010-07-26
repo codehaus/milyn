@@ -20,10 +20,7 @@ import org.milyn.edisax.model.internal.Edimap;
 import org.milyn.edisax.model.internal.MappingNode;
 import org.milyn.javabean.pojogen.JClass;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.List;
+import java.util.*;
 
 /**
  * ClassModel contains a Map of {@link org.milyn.javabean.pojogen.JClass} for easy lookup when
@@ -44,7 +41,7 @@ public class ClassModel {
 
     private BindingConfig rootBeanConfig;
     private Edimap edimap;
-    private Map<String, JClass> createdClasses;
+    private List<JClass> createdClasses;
     private Collection<JClass> referencedClasses;
     private Map<MappingNode, JClass> classesByNode;
     private String bindingFilePath;
@@ -66,12 +63,12 @@ public class ClassModel {
     }
 
     /**
-     * Returns a Map of all generated {@link org.milyn.javabean.pojogen.JClass}.
-     * @return a {@link java.util.List} of {@link org.milyn.javabean.pojogen.JClass}.
+     * Returns a List of all generated {@link org.milyn.javabean.pojogen.JClass}.
+     * @return A {@link java.util.List} of {@link org.milyn.javabean.pojogen.JClass}.
      */
-    public Map<String, JClass> getCreatedClasses() {
+    public List<JClass> getCreatedClasses() {
         if ( createdClasses == null ) {
-            this.createdClasses = new LinkedHashMap<String, JClass>();
+            this.createdClasses = new ArrayList<JClass>();
         }
         return createdClasses;
     }
@@ -81,7 +78,7 @@ public class ClassModel {
      * @param jclass the {@link org.milyn.javabean.pojogen.JClass} to add.
      */
     public void addCreatedClass(JClass jclass) {
-        getCreatedClasses().put(jclass.getClassName(), jclass);
+        getCreatedClasses().add(jclass);
         LOG.info("Added class " + jclass.getPackageName() + "." + jclass.getClassName() + " to model.");
     }
 
@@ -94,7 +91,7 @@ public class ClassModel {
     }
 
     public boolean isClassCreator(JClass jClass) {
-        return createdClasses.containsValue(jClass);
+        return createdClasses.contains(jClass);
     }
 
     public void setReferencedClasses(Collection<JClass> referencedClasses) {

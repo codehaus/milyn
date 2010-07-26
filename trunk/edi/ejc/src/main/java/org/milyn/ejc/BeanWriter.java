@@ -54,7 +54,7 @@ public class BeanWriter {
     public static void writeBeansToFolder(ClassModel model, String folder, String bindingFile) throws IOException, IllegalNameException {
         folder = new File(folder).getCanonicalPath();
 
-        for ( JClass bean : model.getCreatedClasses().values() ) {
+        for ( JClass bean : model.getCreatedClasses()) {
             writeToFile(folder, bean);
         }
 
@@ -74,7 +74,7 @@ public class BeanWriter {
      * @throws IllegalNameException when class is a keyword in java.
      */
     public static void writeBeans(ClassModel model, Writer writer) throws IOException, IllegalNameException {
-        for ( JClass bean : model.getCreatedClasses().values() ) {
+        for ( JClass bean : model.getCreatedClasses()) {
             bean.writeClass(writer);
             writer.write("\n\n");
             writer.flush();

@@ -1,8 +1,6 @@
 package org_milyn_edi_unedifact.d03b.PAXLST;
 
-import org.milyn.Smooks;
 import org.milyn.edi.unedifact.d03b.D03BInterchangeFactory;
-import org.milyn.smooks.edi.unedifact.UNEdifactReaderConfigurator;
 import org.milyn.smooks.edi.unedifact.model.UNEdifactInterchange;
 import org.xml.sax.SAXException;
 import org_milyn_edi_unedifact.d03b.AbstractTestCase;
@@ -20,10 +18,10 @@ public class PAXLSTTest extends AbstractTestCase {
     }
 
     public void test_bind() throws IOException, SAXException {
-//        D03BInterchangeFactory factory = D03BInterchangeFactory.getInstance();
-//
-//        UNEdifactInterchange interchange = factory.fromUNEdifact(getClass().getResourceAsStream("message_01.edi"), new StreamResult(System.out));
-//
-//        System.out.println("");
+        D03BInterchangeFactory factory = D03BInterchangeFactory.getInstance();
+
+        UNEdifactInterchange interchange = factory.fromUNEdifact(getClass().getResourceAsStream("message_01.edi"), new StreamResult(System.out));
+
+        System.out.println("");
     }
 }

@@ -320,7 +320,27 @@ public class ClassModelCompiler {
         boolean addClassToModel = false;
 
         if(child == null) {
-            child = new JClass(parent.getBeanClass().getPackageName(), EJCUtils.encodeClassName(mappingNode.getJavaName()), getCurrentClassId()).setSerializable();
+            String packageName = parent.getBeanClass().getPackageName();
+            String className = EJCUtils.encodeClassName(mappingNode.getJavaName());
+            String postfix = mappingNode.getNodeTypeRef();
+
+            if(mappingNode instanceof Field) {
+                packageName += ".field";
+            } else if(mappingNode instanceof Component) {
+                packageName += ".component";
+            } else if(mappingNode instanceof SubComponent) {
+                packageName += ".subcomponent";
+            }
+
+            if(postfix != null) {
+                int colonIdx = postfix.indexOf(":");
+                if(colonIdx != -1) {
+                    postfix = postfix.substring(colonIdx + 1);
+                }
+                className += postfix;
+            }
+
+            child = new JClass(packageName, className, getCurrentClassId()).setSerializable();
             addClassToModel = true;
             LOG.debug("Created class " + child.getClassName() + ".");
         }
