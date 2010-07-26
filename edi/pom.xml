@@ -15,7 +15,7 @@
         <module>ejc/maven-ejc-plugin</module>
         <module>ect</module>
         <module>ect/maven-ect-plugin</module>
-        <!--module>gen</module-->
+        <module>gen</module>
     </modules>
 
     <repositories>

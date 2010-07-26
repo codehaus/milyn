@@ -30,12 +30,9 @@
                 <!-- UN/EDIFACT D08A... -->
                 <module>unedifact/d08a/test</module>
             </modules>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
         </profile>
         <profile>
-            <id>all</id>
+            <id>gen</id>
             <modules>
                 <!-- UN/EDIFACT D93A... -->
                 <!--<module>unedifact/d93a/mapping</module>-->
