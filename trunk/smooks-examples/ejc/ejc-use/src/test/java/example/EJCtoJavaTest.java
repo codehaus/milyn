@@ -21,6 +21,7 @@ import java.io.*;
 import java.util.List;
 
 import com.acme.order.model.*;
+import com.acme.order.model.field.Name;
 import org.xml.sax.SAXException;
 
 /**
