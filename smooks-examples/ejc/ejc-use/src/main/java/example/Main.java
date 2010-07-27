@@ -16,6 +16,7 @@
 package example;
 
 import com.acme.order.model.*;
+import com.acme.order.model.field.Name;
 
 import java.io.IOException;
 import java.io.File;
