@@ -15,30 +15,49 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 /**
  * Group Trailer.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNE implements Serializable {
+public class UNE implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private int controlCount;
-	private String groupRef;
-	
-	public int getControlCount() {
+    private String groupRef;
+
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        writer.write("UNE");
+        writer.write(delimiters.getField());
+        writer.write(controlCount);
+        writer.write(delimiters.getField());
+        if(groupRef != null) {
+            writer.write(groupRef);
+        }
+        writer.write(delimiters.getSegment());
+    }
+
+    public int getControlCount() {
 		return controlCount;
 	}
-	public void setControlCount(int controlCount) {
+
+    public void setControlCount(int controlCount) {
 		this.controlCount = controlCount;
 	}
-	public String getGroupRef() {
+
+    public String getGroupRef() {
 		return groupRef;
 	}
-	public void setGroupRef(String groupRef) {
+
+    public void setGroupRef(String groupRef) {
 		this.groupRef = groupRef;
-	}	
+	}
 }

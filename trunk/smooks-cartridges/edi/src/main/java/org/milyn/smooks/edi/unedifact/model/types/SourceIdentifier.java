@@ -15,20 +15,42 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 /**
  * Sender Identifier.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class SourceIdentifier extends Identifier implements Serializable {
+public class SourceIdentifier extends Identifier implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String controllingAgencyCode;
 
-	public String getControllingAgencyCode() {
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        if(getId() != null) {
+            writer.write(getId());
+        }
+        writer.write(delimiters.getComponent());
+        if(getVersionNum() != null) {
+            writer.write(getVersionNum());
+        }
+        writer.write(delimiters.getComponent());
+        if(getReleaseNum() != null) {
+            writer.write(getReleaseNum());
+        }
+        if(controllingAgencyCode != null) {
+            writer.write(controllingAgencyCode);
+        }
+    }
+
+    public String getControllingAgencyCode() {
 		return controllingAgencyCode;
 	}
 	public void setControllingAgencyCode(String controllingAgencyCode) {

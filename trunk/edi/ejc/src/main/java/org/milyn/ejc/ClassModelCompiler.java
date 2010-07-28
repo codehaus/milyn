@@ -58,7 +58,7 @@ public class ClassModelCompiler {
         pushNode(segmentGroup);
 
         JClass rootClass = new JClass(classPackage, EJCUtils.encodeClassName(segmentGroup.getXmltag()), getCurrentClassId()).setSerializable();
-        BindingConfig rootBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), rootClass, null);
+        BindingConfig rootBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), rootClass, null, null);
 
         //Insert root class into classModel and its' corresponding xmltag-value.
         model.addCreatedClass(rootClass);
@@ -93,41 +93,37 @@ public class ClassModelCompiler {
     /**
      * Process all SegmentGroups in List and insert info into the {@link org.milyn.ejc.ClassModel}.
      * @param segmentGroups the SegmentsGroups to process.
-     * @param parent the JClass 'owning' the SegmentGroups.
+     * @param parentBinding the JClass 'owning' the SegmentGroups.
      * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
      */
-    private void processSegmentGroups(List<SegmentGroup> segmentGroups, BindingConfig parent) throws IllegalNameException {
+    private void processSegmentGroups(List<SegmentGroup> segmentGroups, BindingConfig parentBinding) throws IllegalNameException {
         WriteMethod writeMethod = null;
 
         for (SegmentGroup segmentGroup : segmentGroups) {
-            BindingConfig childBeanConfig = processSegmentGroup(segmentGroup, parent);
+            BindingConfig childBeanConfig = processSegmentGroup(segmentGroup, parentBinding);
 
-            writeMethod = parent.getWriteMethod();
+            writeMethod = parentBinding.getWriteMethod();
 
             // Add Write Method details for the property just added...
             if(writeMethod != null) {
                 if(isCollection(childBeanConfig.getPropertyOnParent())) {
-                    writeMethod.writeSegmentCollection(childBeanConfig.getPropertyOnParent(), segmentGroup.getSegcode());
+                    writeMethod.writeSegmentCollection(childBeanConfig.getPropertyOnParent(), segmentGroup);
                 } else {
-                    if(segmentGroup instanceof Segment) {
-                        writeMethod.appendToBody("\n        writer.write(\"" + segmentGroup.getSegcode() + "\");");
-                        writeMethod.writeDelimiter(DelimiterType.FIELD);
-                    }
-                    writeMethod.writeObject(childBeanConfig.getPropertyOnParent());
+                    writeMethod.writeObject(childBeanConfig.getPropertyOnParent(), parentBinding, segmentGroup);
                 }
             }
 
             if(isCollection(childBeanConfig.getPropertyOnParent())) {
-                BindingConfig collectionBinding = new BindingConfig(childBeanConfig.getBeanId() + "_List", parent.getCreateOnElement(), ArrayList.class, childBeanConfig.getPropertyOnParent());
+                BindingConfig collectionBinding = new BindingConfig(childBeanConfig.getBeanId() + "_List", parentBinding.getCreateOnElement(), ArrayList.class, parentBinding, childBeanConfig.getPropertyOnParent());
 
                 // Wire the List binding into the parent binding and wire the child binding into the list binding...
-                parent.getWireBindings().add(collectionBinding);
+                parentBinding.getWireBindings().add(collectionBinding);
                 collectionBinding.getWireBindings().add(childBeanConfig);
 
                 // And zap the propertyOnParent config because you don't wire onto a property on a collection...
                 childBeanConfig.setPropertyOnParent(null);
             } else {
-                parent.getWireBindings().add(childBeanConfig);
+                parentBinding.getWireBindings().add(childBeanConfig);
             }
         }
     }
@@ -308,19 +304,19 @@ public class ClassModelCompiler {
      * If C occurs several times, i.e. maxOccurs > 1, then C exists in a {@link java.util.List} in parent.
      * The new {@link org.milyn.javabean.pojogen.JClass} is inserted into classModel along with xmltag-value
      * found in the {@link org.milyn.edisax.model.internal.MappingNode}.
-     * @param parent The parent BindingConfig.
+     * @param parentBinding The parentBinding BindingConfig.
      * @param mappingNode the {@link org.milyn.edisax.model.internal.MappingNode} to process.
      * @param maxOccurs the number of times {@link org.milyn.edisax.model.internal.MappingNode} can occur.
      * @param delimiterType
      * @return the created {@link org.milyn.javabean.pojogen.JClass}
      * @throws IllegalNameException when name found in a xmltag-attribute is a java keyword.
      */
-    private BindingConfig createChildAndConnectWithParent(BindingConfig parent, MappingNode mappingNode, int maxOccurs, DelimiterType delimiterType) throws IllegalNameException {
+    private BindingConfig createChildAndConnectWithParent(BindingConfig parentBinding, MappingNode mappingNode, int maxOccurs, DelimiterType delimiterType) throws IllegalNameException {
         JClass child = getCommonType(mappingNode);
         boolean addClassToModel = false;
 
         if(child == null) {
-            String packageName = parent.getBeanClass().getPackageName();
+            String packageName = parentBinding.getBeanClass().getPackageName();
             String className = EJCUtils.encodeClassName(mappingNode.getJavaName());
             String postfix = mappingNode.getNodeTypeRef();
 
@@ -355,19 +351,18 @@ public class ClassModelCompiler {
         String propertyName = EJCUtils.encodeAttributeName(jtype, mappingNode.getXmltag());
         JNamedType childProperty = new JNamedType(jtype, propertyName);
 
-        BindingConfig childBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), child, childProperty);
-        JClass parentBeanClass = parent.getBeanClass();
+        BindingConfig childBeanConfig = new BindingConfig(getCurrentClassId(), getCurrentNodePath(), child, parentBinding, childProperty);
+        JClass parentBeanClass = parentBinding.getBeanClass();
         if(!parentBeanClass.isFinalized() && !parentBeanClass.hasProperty(propertyName) && model.isClassCreator(parentBeanClass)) {
             parentBeanClass.addBeanProperty(childProperty);
             if(delimiterType != null) {
-                getWriteMethod(parent).writeObject(childProperty, delimiterType);
+                getWriteMethod(parentBinding).writeObject(childProperty, delimiterType, parentBinding, mappingNode);
             }
         }
         if(addClassToModel) {
             model.addCreatedClass(child);
             createdClassesByNode.put(mappingNode, child);
             childBeanConfig.setWriteMethod(new WriteMethod(child));
-            addClassToModel = true;
         }
 
         return childBeanConfig;
@@ -433,6 +428,15 @@ public class ClassModelCompiler {
             }
         }
         return null;
+    }
+
+    private void writeSegmentStart(BindingConfig bindingConfig, Segment segment) {
+        WriteMethod writeMethod = bindingConfig.getWriteMethod();
+
+        if(bindingConfig.getParent() == null || writeMethod.getBody().length() > 0) {
+            writeMethod.appendToBody("\n        writer.write(\"" + segment.getSegcode() + "\");");
+            writeMethod.writeDelimiter(DelimiterType.FIELD);
+        }
     }
 
     /**********************************************************************************************************

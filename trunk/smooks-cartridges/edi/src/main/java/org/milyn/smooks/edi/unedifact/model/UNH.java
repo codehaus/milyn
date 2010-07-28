@@ -15,8 +15,12 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
 import org.milyn.smooks.edi.unedifact.model.types.MessageIdentifier;
 import org.milyn.smooks.edi.unedifact.model.types.SourceIdentifier;
 import org.milyn.smooks.edi.unedifact.model.types.TransferStatus;
@@ -26,7 +30,7 @@ import org.milyn.smooks.edi.unedifact.model.types.TransferStatus;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNH implements Serializable {
+public class UNH implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -37,6 +41,39 @@ public class UNH implements Serializable {
 	private SourceIdentifier subset;
 	private SourceIdentifier implementationGuideline;
 	private SourceIdentifier scenario;
+
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        writer.write("UNH");
+        writer.write(delimiters.getField());
+        if(messageRefNum != null) {
+            writer.write(messageRefNum);
+        }
+        writer.write(delimiters.getField());
+        if(messageIdentifier != null) {
+            messageIdentifier.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(commonAccessRef != null) {
+            writer.write(commonAccessRef);
+        }
+        writer.write(delimiters.getField());
+        if(transferStatus != null) {
+            transferStatus.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(subset != null) {
+            subset.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(implementationGuideline != null) {
+            implementationGuideline.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(scenario != null) {
+            scenario.write(writer, delimiters);
+        }
+        writer.write(delimiters.getSegment());
+    }
 
 	public String getMessageRefNum() {
 		return messageRefNum;

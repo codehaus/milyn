@@ -15,30 +15,48 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 /**
  * Reference.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Ref implements Serializable {
+public class Ref implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String ref;
-	private String refQualifier;
-	
-	public String getRef() {
+    private String refQualifier;
+
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        if(ref != null) {
+            writer.write(ref);
+        }
+        writer.write(delimiters.getComponent());
+        if(refQualifier != null) {
+            writer.write(refQualifier);
+        }
+    }
+
+    public String getRef() {
 		return ref;
 	}
-	public void setRef(String ref) {
+
+    public void setRef(String ref) {
 		this.ref = ref;
 	}
-	public String getRefQualifier() {
+
+    public String getRefQualifier() {
 		return refQualifier;
 	}
-	public void setRefQualifier(String refQualifier) {
+
+    public void setRefQualifier(String refQualifier) {
 		this.refQualifier = refQualifier;
-	}	
+	}
 }

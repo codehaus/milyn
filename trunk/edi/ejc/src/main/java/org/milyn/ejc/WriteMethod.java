@@ -16,15 +16,14 @@
 package org.milyn.ejc;
 
 import org.milyn.config.Configurable;
-import org.milyn.edisax.model.internal.DelimiterType;
-import org.milyn.edisax.model.internal.Delimiters;
-import org.milyn.edisax.model.internal.ValueNode;
+import org.milyn.edisax.model.internal.*;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataEncoder;
 import org.milyn.javabean.pojogen.JClass;
 import org.milyn.javabean.pojogen.JMethod;
 import org.milyn.javabean.pojogen.JNamedType;
 import org.milyn.javabean.pojogen.JType;
+import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -33,7 +32,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * EJCWritable bean serialization class.
+ * EDIWritable bean serialization class.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -46,18 +45,24 @@ class WriteMethod extends JMethod {
         addParameter(new JType(Writer.class), "writer");
         addParameter(new JType(Delimiters.class), "delimiters");
         getExceptions().add(new JType(IOException.class));
-        jClass.getImplementTypes().add(new JType(EJCWritable.class));
+        jClass.getImplementTypes().add(new JType(EDIWritable.class));
         jClass.getMethods().add(this);
         this.jClass = jClass;
     }
 
-    public void writeObject(JNamedType property, DelimiterType delimiterType) {
+    public void writeObject(JNamedType property, DelimiterType delimiterType, BindingConfig bindingConfig, MappingNode mappingNode) {
         writeDelimiter(delimiterType);
-        writeObject(property);
+        writeObject(property, bindingConfig, mappingNode);
     }
 
-    public void writeObject(JNamedType property) {
+    public void writeObject(JNamedType property, BindingConfig bindingConfig, MappingNode mappingNode) {
         appendToBody("\n        if(" + property.getName() + " != null) {");
+        if(mappingNode instanceof Segment) {
+            if(bindingConfig.getParent() == null || getBody().length() > 0) {
+                appendToBody("\n            writer.write(\"" + ((Segment)mappingNode).getSegcode() + "\");");
+                appendToBody("\n            writer.write(delimiters.getField());");
+            }
+        }
         appendToBody("\n            " + property.getName() + ".write(writer, delimiters);");
         appendToBody("\n        }");
     }
@@ -108,10 +113,10 @@ class WriteMethod extends JMethod {
         appendToBody("\n        }");
     }
 
-    public void writeSegmentCollection(JNamedType property, String segcode) {
+    public void writeSegmentCollection(JNamedType property, SegmentGroup segmentGroup) {
         appendToBody("\n        if(" + property.getName() + " != null && !" + property.getName() + ".isEmpty()) {");
         appendToBody("\n            for(" + property.getType().getGenericType().getSimpleName() + " " + property.getName() + "Inst : " + property.getName() + ") {");
-        appendToBody("\n                writer.write(\"" + segcode + "\");");
+        appendToBody("\n                writer.write(\"" + segmentGroup.getSegcode() + "\");");
         appendToBody("\n                writer.write(delimiters.getField());");
         appendToBody("\n                " + property.getName() + "Inst.write(writer, delimiters);");
         appendToBody("\n            }");

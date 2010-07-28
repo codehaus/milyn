@@ -22,30 +22,35 @@ import java.io.Serializable;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class Identifier implements Serializable {
+public abstract class Identifier implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String id;
 	private String versionNum;
 	private String releaseNum;
-	
+
 	public String getId() {
 		return id;
 	}
-	public void setId(String id) {
+
+    public void setId(String id) {
 		this.id = id;
 	}
-	public String getVersionNum() {
+
+    public String getVersionNum() {
 		return versionNum;
 	}
-	public void setVersionNum(String versionNum) {
+
+    public void setVersionNum(String versionNum) {
 		this.versionNum = versionNum;
 	}
-	public String getReleaseNum() {
+
+    public String getReleaseNum() {
 		return releaseNum;
 	}
-	public void setReleaseNum(String releaseNum) {
+
+    public void setReleaseNum(String releaseNum) {
 		this.releaseNum = releaseNum;
 	}
 }

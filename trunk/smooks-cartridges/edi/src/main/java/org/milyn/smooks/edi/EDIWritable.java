@@ -14,7 +14,7 @@
  *  http://www.gnu.org/licenses/lgpl.txt
  */
 
-package org.milyn.ejc;
+package org.milyn.smooks.edi;
 
 import org.milyn.edisax.model.internal.Delimiters;
 
@@ -22,11 +22,11 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * EJC Writable bean.
+ * EDI Writable bean.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public interface EJCWritable {
+public interface EDIWritable {
 
     /**
      * Write the bean to the specified {@link Writer} instance.
