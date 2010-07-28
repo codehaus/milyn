@@ -93,8 +93,8 @@ public class UNEdifactReaderTest extends TestCase {
 		
 		List<UNEdifactMessage> messages = (List<UNEdifactMessage>) jResult.getBean("unEdifactMessages");
 
-//		System.out.println(sResult);
-//		System.out.println(new XStream().toXML(messages));
+		System.out.println(sResult);
+		System.out.println(new XStream().toXML(messages));
 		
 		XMLUnit.setIgnoreWhitespace( true );
         XMLAssert.assertXMLEqual(new InputStreamReader(getClass().getResourceAsStream("unedifact-msg-expected-02.xml")), new StringReader(new XStream().toXML(messages)));		

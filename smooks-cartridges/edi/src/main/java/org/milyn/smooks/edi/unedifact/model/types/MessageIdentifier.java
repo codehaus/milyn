@@ -15,22 +15,58 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 /**
  * Message Identifier.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MessageIdentifier extends SourceIdentifier implements Serializable {
+public class MessageIdentifier extends SourceIdentifier implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String associationAssignedCode;
 	private String codeListDirVersionNum;
 	private String typeSubFunctionId;
-	
-	public String getAssociationAssignedCode() {
+
+    @Override
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        if(getId() != null) {
+            writer.write(getId());
+        }
+        writer.write(delimiters.getComponent());
+        if(getVersionNum() != null) {
+            writer.write(getVersionNum());
+        }
+        writer.write(delimiters.getComponent());
+        if(getReleaseNum() != null) {
+            writer.write(getReleaseNum());
+        }
+        writer.write(delimiters.getComponent());
+        if(getControllingAgencyCode() != null) {
+            writer.write(getControllingAgencyCode());
+        }
+        writer.write(delimiters.getComponent());
+        if(associationAssignedCode != null) {
+            writer.write(associationAssignedCode);
+        }
+        writer.write(delimiters.getComponent());
+        if(codeListDirVersionNum != null) {
+            writer.write(codeListDirVersionNum);
+        }
+        writer.write(delimiters.getComponent());
+        if(typeSubFunctionId != null) {
+            writer.write(typeSubFunctionId);
+        }
+    }
+
+    public String getAssociationAssignedCode() {
 		return associationAssignedCode;
 	}
 	public void setAssociationAssignedCode(String associationAssignedCode) {

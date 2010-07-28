@@ -15,7 +15,12 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,7 +29,7 @@ import java.util.Date;
  * UN/EDIFACT Date and Time. 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class DateTime implements Serializable {
+public class DateTime implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -33,20 +38,34 @@ public class DateTime implements Serializable {
 	private String date = "00000000";
 	private String time = "0000";
 	private Date dateObj;
-	
-	public String getDate() {
+
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        if(date != null) {
+            writer.write(date);
+        }
+        writer.write(delimiters.getComponent());
+        if(time != null) {
+            writer.write(time);
+        }
+    }
+
+    public String getDate() {
 		return date;
 	}
-	public void setDate(String date) {
+
+    public void setDate(String date) {
 		this.date = date;
 	}
-	public String getTime() {
+
+    public String getTime() {
 		return time;
 	}
-	public void setTime(String time) {
+
+    public void setTime(String time) {
 		this.time = time;
 	}
-	public Date toDate() throws ParseException {
+
+    public Date toDate() throws ParseException {
 		if(dateObj == null) {
 			dateObj = new SimpleDateFormat(DATE_TIME_FORMAT).parse(date + time);
 		}

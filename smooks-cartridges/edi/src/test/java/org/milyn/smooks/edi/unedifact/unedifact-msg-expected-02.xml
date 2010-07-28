@@ -58,6 +58,10 @@
       </messageVersion>
       <applicationPassword>appPasswd</applicationPassword>
     </groupHeader>
+    <groupTrailer>
+      <controlCount>456</controlCount>
+      <groupRef>groupref</groupRef>
+    </groupTrailer>
     <messageHeader>
       <messageRefNum>mref1</messageRefNum>
       <messageIdentifier>

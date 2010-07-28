@@ -15,37 +15,61 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 /**
  * Message Version.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class MessageVersion implements Serializable {
+public class MessageVersion implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String versionNum;
 	private String releaseNum;
 	private String associationCode;
-	
-	public String getVersionNum() {
+
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        if(versionNum != null) {
+            writer.write(versionNum);
+        }
+        writer.write(delimiters.getComponent());
+        if(releaseNum != null) {
+            writer.write(releaseNum);
+        }
+        writer.write(delimiters.getComponent());
+        if(associationCode != null) {
+            writer.write(associationCode);
+        }
+    }
+
+    public String getVersionNum() {
 		return versionNum;
 	}
-	public void setVersionNum(String versionNum) {
+
+    public void setVersionNum(String versionNum) {
 		this.versionNum = versionNum;
 	}
-	public String getReleaseNum() {
+
+    public String getReleaseNum() {
 		return releaseNum;
 	}
-	public void setReleaseNum(String releaseNum) {
+
+    public void setReleaseNum(String releaseNum) {
 		this.releaseNum = releaseNum;
 	}
-	public String getAssociationCode() {
+
+    public String getAssociationCode() {
 		return associationCode;
 	}
-	public void setAssociationCode(String associationCode) {
+
+    public void setAssociationCode(String associationCode) {
 		this.associationCode = associationCode;
-	}	
+	}
 }

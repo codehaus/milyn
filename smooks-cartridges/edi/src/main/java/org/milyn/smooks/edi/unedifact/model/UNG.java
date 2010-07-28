@@ -15,8 +15,12 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
 import org.milyn.smooks.edi.unedifact.model.types.Application;
 import org.milyn.smooks.edi.unedifact.model.types.DateTime;
 import org.milyn.smooks.edi.unedifact.model.types.MessageVersion;
@@ -26,7 +30,7 @@ import org.milyn.smooks.edi.unedifact.model.types.MessageVersion;
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class UNG implements Serializable {
+public class UNG implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,6 +42,43 @@ public class UNG implements Serializable {
 	private String controllingAgencyCode;
 	private MessageVersion messageVersion;
 	private String applicationPassword;
+
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        writer.write("UNG");
+        writer.write(delimiters.getField());
+        if(groupId != null) {
+            writer.write(groupId);
+        }
+        writer.write(delimiters.getField());
+        if(senderApp != null) {
+            senderApp.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(recipientApp != null) {
+            recipientApp.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(date != null) {
+            date.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(groupRef != null) {
+            writer.write(groupRef);
+        }
+        writer.write(delimiters.getField());
+        if(controllingAgencyCode != null) {
+            writer.write(controllingAgencyCode);
+        }
+        writer.write(delimiters.getField());
+        if(messageVersion != null) {
+            messageVersion.write(writer, delimiters);
+        }
+        writer.write(delimiters.getField());
+        if(applicationPassword != null) {
+            writer.write(applicationPassword);
+        }
+        writer.write(delimiters.getSegment());
+    }
 
 	public String getGroupId() {
 		return groupId;

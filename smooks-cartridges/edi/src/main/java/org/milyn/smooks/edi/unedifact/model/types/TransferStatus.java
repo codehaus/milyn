@@ -15,30 +15,48 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.smooks.edi.EDIWritable;
+
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 /**
  * Transfer Status.
  * 
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class TransferStatus implements Serializable {
+public class TransferStatus implements Serializable, EDIWritable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String sequence;
 	private String firstAndLast;
-	
-	public String getSequence() {
+
+    public void write(Writer writer, Delimiters delimiters) throws IOException {
+        if(sequence != null) {
+            writer.write(sequence);
+        }
+        writer.write(delimiters.getComponent());
+        if(firstAndLast != null) {
+            writer.write(firstAndLast);
+        }
+    }
+
+    public String getSequence() {
 		return sequence;
 	}
-	public void setSequence(String sequence) {
+
+    public void setSequence(String sequence) {
 		this.sequence = sequence;
 	}
-	public String getFirstAndLast() {
+
+    public String getFirstAndLast() {
 		return firstAndLast;
 	}
-	public void setFirstAndLast(String firstAndLast) {
+
+    public void setFirstAndLast(String firstAndLast) {
 		this.firstAndLast = firstAndLast;
 	}
 }

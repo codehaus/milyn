@@ -28,10 +28,11 @@ public class UNEdifactMessage implements Serializable {
 
 	private UNB interchangeHeader;
 	private UNG groupHeader;
+    private UNE groupTrailer;
 	private UNH messageHeader;
 	private UNT messageTrailer;
 	private Object message;
-	
+
 	public UNB getInterchangeHeader() {
 		return interchangeHeader;
 	}
@@ -44,7 +45,13 @@ public class UNEdifactMessage implements Serializable {
 	public void setGroupHeader(UNG groupHeader) {
 		this.groupHeader = groupHeader;
 	}
-	public UNH getMessageHeader() {
+    public UNE getGroupTrailer() {
+        return groupTrailer;
+    }
+    public void setGroupTrailer(UNE groupTrailer) {
+        this.groupTrailer = groupTrailer;
+    }
+    public UNH getMessageHeader() {
 		return messageHeader;
 	}
 	public void setMessageHeader(UNH messageHeader) {
