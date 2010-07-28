@@ -33,22 +33,25 @@ public class BindingConfig {
     private String createOnElement;
     private JClass beanClass;
     private Class<?> runtimeClass;
+    private BindingConfig parent;
     private JNamedType propertyOnParent;
     private List<ValueNodeInfo> valueBindings = new ArrayList<ValueNodeInfo>();
     private List<BindingConfig> wireBindings = new ArrayList<BindingConfig>();
     private WriteMethod writeMethod = null;
 
-    public BindingConfig(String beanId, String createOnElement, JClass beanClass, JNamedType propertyOnParent) {
+    public BindingConfig(String beanId, String createOnElement, JClass beanClass, BindingConfig parent, JNamedType propertyOnParent) {
         this.beanId = beanId;
         this.createOnElement = createOnElement;
         this.beanClass = beanClass;
+        this.parent = parent;
         this.propertyOnParent = propertyOnParent;
     }
 
-    public BindingConfig(String beanId, String createOnElement, Class<?> runtimeClass, JNamedType propertyOnParent) {
+    public BindingConfig(String beanId, String createOnElement, Class<?> runtimeClass, BindingConfig parent, JNamedType propertyOnParent) {
         this.beanId = beanId;
         this.createOnElement = createOnElement;
         this.runtimeClass = runtimeClass;
+        this.parent = parent;
         this.propertyOnParent = propertyOnParent;
     }
 
@@ -82,6 +85,10 @@ public class BindingConfig {
         } else {
             return runtimeClass;
         }
+    }
+
+    public BindingConfig getParent() {
+        return parent;
     }
 
     public JNamedType getPropertyOnParent() {
