@@ -82,6 +82,7 @@ public class Main
 	private static CamelContext configureAndStartCamel() throws Exception
 	{
 		CamelContext context = new DefaultCamelContext();
+		context.addComponent("jms", context.getComponent("mock")); 
 		context.addRoutes(new ExampleRouteBuilder());
 		context.start();
 		return context;
