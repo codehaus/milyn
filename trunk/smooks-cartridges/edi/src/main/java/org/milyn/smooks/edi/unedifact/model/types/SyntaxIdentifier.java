@@ -15,12 +15,17 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Syntax Identifier.
@@ -35,25 +40,41 @@ public class SyntaxIdentifier extends Identifier implements Serializable, EDIWri
 	private String codedCharacterEncoding;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
         if(getId() != null) {
-            writer.write(getId());
+            nodeWriter.write(getId());
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(getVersionNum() != null) {
-            writer.write(getVersionNum());
+            nodeWriter.write(getVersionNum());
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(getReleaseNum() != null) {
-            writer.write(getReleaseNum());
+            nodeWriter.write(getReleaseNum());
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(serviceCodeListDirVersion != null) {
-            writer.write(serviceCodeListDirVersion);
+            nodeWriter.write(serviceCodeListDirVersion);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(codedCharacterEncoding != null) {
-            writer.write(codedCharacterEncoding);
+            nodeWriter.write(codedCharacterEncoding);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
     public String getServiceCodeListDirVersion() {

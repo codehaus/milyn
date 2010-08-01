@@ -85,6 +85,11 @@ public class JMethod {
         return bodyBuilder.toString();
     }
 
+    public StringBuilder getBodyBuilder() {
+        assertNotFinalized();
+        return bodyBuilder;
+    }
+
     public Set<JType> getExceptions() {
         return exceptions;
     }

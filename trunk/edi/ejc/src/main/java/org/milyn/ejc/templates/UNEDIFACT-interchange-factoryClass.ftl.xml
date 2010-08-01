@@ -59,7 +59,7 @@ public class ${messageSetName}InterchangeFactory {
     }
 
     public void toUNEdifact(UNEdifactInterchange interchange, Writer writer) throws IOException {
-        //interchange.write(writer);
+        interchange.write(writer);
     }
 
     private ${messageSetName}InterchangeFactory() throws IOException, SAXException {

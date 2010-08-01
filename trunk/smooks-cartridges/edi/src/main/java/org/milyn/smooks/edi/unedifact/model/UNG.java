@@ -17,9 +17,14 @@ package org.milyn.smooks.edi.unedifact.model;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 import org.milyn.smooks.edi.unedifact.model.types.Application;
 import org.milyn.smooks.edi.unedifact.model.types.DateTime;
@@ -44,39 +49,62 @@ public class UNG implements Serializable, EDIWritable {
 	private String applicationPassword;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
-        writer.write("UNG");
-        writer.write(delimiters.getField());
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
+        nodeWriter.write("UNG");
+        nodeWriter.write(delimiters.getField());
         if(groupId != null) {
-            writer.write(groupId);
+            nodeWriter.write(groupId);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(senderApp != null) {
-            senderApp.write(writer, delimiters);
+            senderApp.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(recipientApp != null) {
-            recipientApp.write(writer, delimiters);
+            recipientApp.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(date != null) {
-            date.write(writer, delimiters);
+            date.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(groupRef != null) {
-            writer.write(groupRef);
+            nodeWriter.write(groupRef);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(controllingAgencyCode != null) {
-            writer.write(controllingAgencyCode);
+            nodeWriter.write(controllingAgencyCode);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(messageVersion != null) {
-            messageVersion.write(writer, delimiters);
+            messageVersion.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(applicationPassword != null) {
-            writer.write(applicationPassword);
+            nodeWriter.write(applicationPassword);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.FIELD, delimiters));
         writer.write(delimiters.getSegment());
     }
 

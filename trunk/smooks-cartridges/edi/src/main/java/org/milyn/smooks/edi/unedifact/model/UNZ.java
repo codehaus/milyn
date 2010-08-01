@@ -15,12 +15,17 @@
 */
 package org.milyn.smooks.edi.unedifact.model;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interchange Trailer (UNZ) Control Segment Data.
@@ -35,13 +40,25 @@ public class UNZ implements Serializable, EDIWritable {
 	private String controlRef;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
-        writer.write("UNZ");
-        writer.write(delimiters.getField());
-        writer.write(controlCount);
-        writer.write(delimiters.getField());
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
+        nodeWriter.write("UNZ");
+        nodeWriter.write(delimiters.getField());
+        nodeWriter.write(Integer.toString(controlCount));
+        nodeTokens.add(nodeWriter.toString());
+        ((StringWriter)nodeWriter).getBuffer().setLength(0);
+
+        nodeWriter.write(delimiters.getField());
         if(controlRef != null) {
-            writer.write(controlRef);
+            nodeWriter.write(controlRef);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.FIELD, delimiters));
         writer.write(delimiters.getSegment());
     }
 

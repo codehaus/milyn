@@ -4,6 +4,9 @@ import junit.framework.TestCase;
 
 import java.io.IOException;
 
+import org.milyn.edisax.model.internal.DelimiterType;
+import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.unedifact.UNEdifactInterchangeParser;
 import org.milyn.edisax.util.EDIUtils;
 import org.xml.sax.SAXException;
 
@@ -93,6 +96,13 @@ public class EDIUtilsTest extends TestCase {
 
 
 	}
+
+    public void test_truncate() {
+//        Delimiters delims = UNEdifactInterchangeParser.defaultUNEdifactDelimiters;
+//
+//        assertEquals("P100971204141", EDIUtils.truncate("P100971204141:::::+++", DelimiterType.SEGMENT, delims));
+//        assertEquals("P100971204141::a:::", EDIUtils.truncate("P100971204141::a:::+++", DelimiterType.SEGMENT, delims));
+    }
 
     private String output(String[] value) {
         if (value == null) {

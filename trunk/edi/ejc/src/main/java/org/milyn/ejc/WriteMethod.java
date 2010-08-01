@@ -17,6 +17,7 @@ package org.milyn.ejc;
 
 import org.milyn.config.Configurable;
 import org.milyn.edisax.model.internal.*;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.javabean.DataDecoder;
 import org.milyn.javabean.DataEncoder;
 import org.milyn.javabean.pojogen.JClass;
@@ -26,10 +27,9 @@ import org.milyn.javabean.pojogen.JType;
 import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * EDIWritable bean serialization class.
@@ -39,8 +39,12 @@ import java.util.Set;
 class WriteMethod extends JMethod {
 
     private JClass jClass;
+    private MappingNode mappingNode;
+    private boolean appendFlush = false;
+    private boolean trunacate;
+    private DelimiterType terminatingDelimiter;
 
-    WriteMethod(JClass jClass) {
+    WriteMethod(JClass jClass, MappingNode mappingNode) {
         super("write");
         addParameter(new JType(Writer.class), "writer");
         addParameter(new JType(Delimiters.class), "delimiters");
@@ -48,6 +52,16 @@ class WriteMethod extends JMethod {
         jClass.getImplementTypes().add(new JType(EDIWritable.class));
         jClass.getMethods().add(this);
         this.jClass = jClass;
+        this.mappingNode = mappingNode;
+        this.trunacate = (mappingNode instanceof ContainerNode && ((ContainerNode)mappingNode).isTruncatable());
+
+        if(trunacate) {
+            jClass.getRawImports().add(new JType(StringWriter.class));
+            jClass.getRawImports().add(new JType(List.class));
+            jClass.getRawImports().add(new JType(ArrayList.class));
+            jClass.getRawImports().add(new JType(EDIUtils.class));
+            jClass.getRawImports().add(new JType(DelimiterType.class));
+        }
     }
 
     public void writeObject(JNamedType property, DelimiterType delimiterType, BindingConfig bindingConfig, MappingNode mappingNode) {
@@ -58,12 +72,16 @@ class WriteMethod extends JMethod {
     public void writeObject(JNamedType property, BindingConfig bindingConfig, MappingNode mappingNode) {
         appendToBody("\n        if(" + property.getName() + " != null) {");
         if(mappingNode instanceof Segment) {
-            if(bindingConfig.getParent() == null || getBody().length() > 0) {
-                appendToBody("\n            writer.write(\"" + ((Segment)mappingNode).getSegcode() + "\");");
-                appendToBody("\n            writer.write(delimiters.getField());");
+            if(!((Segment) mappingNode).getFields().isEmpty() && (bindingConfig.getParent() == null || bodyLength() > 0)) {
+                appendToBody("\n            nodeWriter.write(\"" + ((Segment)mappingNode).getSegcode() + "\");");
+                appendToBody("\n            nodeWriter.write(delimiters.getField());");
             }
         }
-        appendToBody("\n            " + property.getName() + ".write(writer, delimiters);");
+        appendToBody("\n            " + property.getName() + ".write(nodeWriter, delimiters);");
+        if(trunacate) {
+            appendToBody("\n            nodeTokens.add(nodeWriter.toString());");
+            appendToBody("\n            ((StringWriter)nodeWriter).getBuffer().setLength(0);");
+        }
         appendToBody("\n        }");
     }
 
@@ -105,9 +123,14 @@ class WriteMethod extends JMethod {
             }
 
             // Add the encoder encode instruction to te write method...
-            appendToBody("\n            writer.write(" + encoderName + ".encode(" + property.getName() + "));");
+            appendToBody("\n            nodeWriter.write(" + encoderName + ".encode(" + property.getName() + "));");
         } else {
-            appendToBody("\n            writer.write(" + property.getName() + ".toString());");
+            appendToBody("\n            nodeWriter.write(" + property.getName() + ".toString());");
+        }
+
+        if(trunacate) {
+            appendToBody("\n            nodeTokens.add(nodeWriter.toString());");
+            appendToBody("\n            ((StringWriter)nodeWriter).getBuffer().setLength(0);");
         }
 
         appendToBody("\n        }");
@@ -116,33 +139,79 @@ class WriteMethod extends JMethod {
     public void writeSegmentCollection(JNamedType property, SegmentGroup segmentGroup) {
         appendToBody("\n        if(" + property.getName() + " != null && !" + property.getName() + ".isEmpty()) {");
         appendToBody("\n            for(" + property.getType().getGenericType().getSimpleName() + " " + property.getName() + "Inst : " + property.getName() + ") {");
-        appendToBody("\n                writer.write(\"" + segmentGroup.getSegcode() + "\");");
-        appendToBody("\n                writer.write(delimiters.getField());");
-        appendToBody("\n                " + property.getName() + "Inst.write(writer, delimiters);");
+
+        if(segmentGroup instanceof Segment && !((Segment) segmentGroup).getFields().isEmpty()) {
+            appendToBody("\n                nodeWriter.write(\"" + segmentGroup.getSegcode() + "\");");
+            appendToBody("\n                nodeWriter.write(delimiters.getField());");
+            if(trunacate) {
+                appendToBody("\n                nodeTokens.add(nodeWriter.toString());");
+                appendToBody("\n                ((StringWriter)nodeWriter).getBuffer().setLength(0);");
+            }
+        }
+
+        appendToBody("\n                " + property.getName() + "Inst.write(nodeWriter, delimiters);");
         appendToBody("\n            }");
         appendToBody("\n        }");
     }
 
+    @Override
+    public String getBody() {
+        StringBuilder builder = new StringBuilder();
+
+        if(trunacate) {
+            builder.append("\n        Writer nodeWriter = new StringWriter();\n");
+            builder.append("\n        List<String> nodeTokens = new ArrayList<String>();\n");
+        } else {
+            builder.append("\n        Writer nodeWriter = writer;\n");
+        }
+
+        builder.append(super.getBody());
+
+        if(trunacate) {
+            builder.append("\n        nodeTokens.add(nodeWriter.toString());");
+            if(mappingNode instanceof Segment) {
+                builder.append("\n        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.FIELD, delimiters));");
+            } else if(mappingNode instanceof Field) {
+                builder.append("\n        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));");
+            } else if(mappingNode instanceof Component) {
+                builder.append("\n        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.SUBCOMPONENT, delimiters));");
+            }
+        }
+
+        if(terminatingDelimiter != null) {
+            writeDelimiter(terminatingDelimiter, "writer", builder);
+        }
+        if(appendFlush) {
+            builder.append("\n        writer.flush();");
+        }
+
+        return builder.toString();
+    }
+
     public void writeDelimiter(DelimiterType delimiterType) {
+        writeDelimiter(delimiterType, "nodeWriter", getBodyBuilder());
+    }
+
+    private void writeDelimiter(DelimiterType delimiterType, String writerVariableName, StringBuilder builder) {
         if(bodyLength() == 0) {
             return;
         }
 
         switch (delimiterType) {
             case SEGMENT:
-                appendToBody("\n        writer.write(delimiters.getSegmentDelimiter());");
+                builder.append("\n        " + writerVariableName + ".write(delimiters.getSegmentDelimiter());");
                 break;
             case FIELD:
-                appendToBody("\n        writer.write(delimiters.getField());");
+                builder.append("\n        " + writerVariableName + ".write(delimiters.getField());");
                 break;
             case FIELD_REPEAT:
-                appendToBody("\n        writer.write(delimiters.getFieldRepeat());");
+                builder.append("\n        " + writerVariableName + ".write(delimiters.getFieldRepeat());");
                 break;
             case COMPONENT:
-                appendToBody("\n        writer.write(delimiters.getComponent());");
+                builder.append("\n        " + writerVariableName + ".write(delimiters.getComponent());");
                 break;
             case SUB_COMPONENT:
-                appendToBody("\n        writer.write(delimiters.getSubComponent());");
+                builder.append("\n        " + writerVariableName + ".write(delimiters.getSubComponent());");
                 break;
             default:
                 throw new UnsupportedOperationException("Unsupported '" + DelimiterType.class.getName() + "' enum conversion.  Enum '" + delimiterType + "' not specified in switch statement.");
@@ -150,6 +219,10 @@ class WriteMethod extends JMethod {
     }
 
     public void addFlush() {
-        appendToBody("\n        writer.flush();");
+        appendFlush = true;
+    }
+
+    public void addTerminatingDelimiter(DelimiterType delimiterType) {
+        terminatingDelimiter = delimiterType;
     }
 }

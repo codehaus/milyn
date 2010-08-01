@@ -17,9 +17,14 @@ package org.milyn.smooks.edi.unedifact.model;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 import org.milyn.smooks.edi.unedifact.model.types.MessageIdentifier;
 import org.milyn.smooks.edi.unedifact.model.types.SourceIdentifier;
@@ -43,35 +48,56 @@ public class UNH implements Serializable, EDIWritable {
 	private SourceIdentifier scenario;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
-        writer.write("UNH");
-        writer.write(delimiters.getField());
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
+        nodeWriter.write("UNH");
+        nodeWriter.write(delimiters.getField());
         if(messageRefNum != null) {
-            writer.write(messageRefNum);
+            nodeWriter.write(messageRefNum);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(messageIdentifier != null) {
-            messageIdentifier.write(writer, delimiters);
+            messageIdentifier.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(commonAccessRef != null) {
-            writer.write(commonAccessRef);
+            nodeWriter.write(commonAccessRef);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(transferStatus != null) {
-            transferStatus.write(writer, delimiters);
+            transferStatus.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(subset != null) {
-            subset.write(writer, delimiters);
+            subset.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(implementationGuideline != null) {
-            implementationGuideline.write(writer, delimiters);
+            implementationGuideline.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getField());
+        nodeWriter.write(delimiters.getField());
         if(scenario != null) {
-            scenario.write(writer, delimiters);
+            scenario.write(nodeWriter, delimiters);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+        
+        nodeTokens.add(nodeWriter.toString());
+
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.FIELD, delimiters));
         writer.write(delimiters.getSegment());
     }
 

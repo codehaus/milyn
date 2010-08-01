@@ -15,6 +15,7 @@
 */
 package org.milyn.ejc;
 
+import org.milyn.edisax.model.internal.MappingNode;
 import org.milyn.javabean.pojogen.JClass;
 import org.milyn.javabean.pojogen.JNamedType;
 
@@ -33,6 +34,7 @@ public class BindingConfig {
     private String createOnElement;
     private JClass beanClass;
     private Class<?> runtimeClass;
+    private MappingNode mappingNode;
     private BindingConfig parent;
     private JNamedType propertyOnParent;
     private List<ValueNodeInfo> valueBindings = new ArrayList<ValueNodeInfo>();
@@ -65,6 +67,14 @@ public class BindingConfig {
 
     public JClass getBeanClass() {
         return beanClass;
+    }
+
+    public void setMappingNode(MappingNode mappingNode) {
+        this.mappingNode = mappingNode;
+    }
+
+    public MappingNode getMappingNode() {
+        return mappingNode;
     }
 
     public void setValueBindings(List<ValueNodeInfo> valueBindings) {

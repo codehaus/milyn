@@ -34,6 +34,8 @@ import org.milyn.assertion.AssertArgument;
 import org.milyn.edisax.EDIConfigurationException;
 import org.milyn.edisax.EDIParser;
 import org.milyn.edisax.model.EdifactModel;
+import org.milyn.edisax.model.internal.DelimiterType;
+import org.milyn.edisax.model.internal.Delimiters;
 import org.milyn.edisax.model.internal.Description;
 import org.milyn.io.StreamUtils;
 import org.milyn.resource.URIResourceLocator;
@@ -329,6 +331,25 @@ public class EDIUtils {
         }
 
         return null;
+    }
+
+    public static String concatAndTruncate(List<String> nodeTokens, DelimiterType outerDelimiterType, Delimiters delimiters) {
+        if(nodeTokens.isEmpty()) {
+            return "";
+        }
+
+        for(int i = nodeTokens.size() - 1; i >= 0; i--) {
+            if(!delimiters.removeNodeToken(nodeTokens.get(i), outerDelimiterType)) {
+                break;
+            }
+            nodeTokens.remove(i);
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for(String nodeToken : nodeTokens) {
+            stringBuilder.append(nodeToken);
+        }
+        return stringBuilder.toString();
     }
 
     private static InputStream getMappingModelConfigStream(String urn, String fileName) throws IOException, EDIConfigurationException {

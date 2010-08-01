@@ -15,15 +15,20 @@
 */
 package org.milyn.smooks.edi.unedifact.model.types;
 
+import org.milyn.edisax.model.internal.DelimiterType;
 import org.milyn.edisax.model.internal.Delimiters;
+import org.milyn.edisax.util.EDIUtils;
 import org.milyn.smooks.edi.EDIWritable;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * UN/EDIFACT Date and Time. 
@@ -40,13 +45,23 @@ public class DateTime implements Serializable, EDIWritable {
 	private Date dateObj;
 
     public void write(Writer writer, Delimiters delimiters) throws IOException {
+        Writer nodeWriter = new StringWriter();
+        List<String> nodeTokens = new ArrayList<String>();
+
         if(date != null) {
-            writer.write(date);
+            nodeWriter.write(date);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
-        writer.write(delimiters.getComponent());
+        nodeWriter.write(delimiters.getComponent());
         if(time != null) {
-            writer.write(time);
+            nodeWriter.write(time);
+            nodeTokens.add(nodeWriter.toString());
+            ((StringWriter)nodeWriter).getBuffer().setLength(0);
         }
+
+        nodeTokens.add(nodeWriter.toString());
+        writer.write(EDIUtils.concatAndTruncate(nodeTokens, DelimiterType.COMPONENT, delimiters));
     }
 
     public String getDate() {
